@@ -1,0 +1,17 @@
+{
+  "name": "omni-base",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7",
+    "@types/bun": "latest"
+  },
+  "workspaces": [
+    "sdk/*",
+    "tests/test-apps/*"
+  ],
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "version": "v1.1.0",
+  "products": [
+    {
+      "id": "saas_starter",
+      "name": "Starter Plan",
+      "description": "Perfect for individuals and small teams",
+      "type": "service",
+      "prices": [
+        {
+          "id": "starter_monthly",
+          "amount": 999,
+          "currency": "usd",
+          "interval": "month"
+        },
+        {
+          "id": "starter_yearly",
+          "amount": 9999,
+          "currency": "usd",
+          "interval": "year"
+        }
+      ]
+    },
+    {
+      "id": "saas_pro",
+      "name": "Professional Plan",
+      "description": "Advanced features for growing businesses",
+      "type": "service",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 2999,
+          "currency": "usd",
+          "interval": "month"
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 29999,
+          "currency": "usd",
+          "interval": "year"
+        }
+      ]
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise Plan",
+      "description": "Custom solutions for large organizations",
+      "type": "service",
+      "prices": [
+        {
+          "id": "enterprise_custom",
+          "amount": 9999,
+          "currency": "usd",
+          "interval": "month"
+        }
+      ]
+    }
+  ]
+}

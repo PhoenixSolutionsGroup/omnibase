@@ -1,0 +1,62 @@
+{
+  "name": "@omnibase/nextjs",
+  "version": "0.4.2",
+  "description": "OmniBase NextJS 13+ SDK",
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/middleware/index.ts src/tenants/index.ts src/permissions/index.ts src/auth/index.ts --format cjs,esm --dts",
+    "prepublishOnly": "bun run build"
+  },
+  "exports": {
+    "./middleware": {
+      "import": "./dist/middleware/index.js",
+      "require": "./dist/middleware/index.cjs",
+      "types": "./dist/middleware/index.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth/index.js",
+      "require": "./dist/auth/index.cjs",
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./permissions": {
+      "import": "./dist/permissions/index.js",
+      "require": "./dist/permissions/index.cjs",
+      "types": "./dist/permissions/index.d.ts"
+    },
+    "./tenants": {
+      "import": "./dist/tenants/index.js",
+      "require": "./dist/tenants/index.cjs",
+      "types": "./dist/tenants/index.d.ts"
+    }
+  },
+  "keywords": [
+    "omnibase",
+    "sdk",
+    "javascript",
+    "typescript",
+    "nextjs"
+  ],
+  "author": "Phoenix Baker Van Urk",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.0",
+    "@types/set-cookie-parser": "^2.4.10",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2",
+    "next": "^15.5.4"
+  },
+  "dependencies": {
+    "@omnibase/core-js": "workspace:*",
+    "@ory/elements-react": "^1.1.0",
+    "@ory/nextjs": "^1.0.0-rc.0",
+    "cookie": "^1.0.2",
+    "psl": "^1.15.0",
+    "set-cookie-parser": "^2.7.1"
+  }
+}

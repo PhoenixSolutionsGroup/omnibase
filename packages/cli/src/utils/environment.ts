@@ -1,0 +1,168 @@
+import * as fs from "fs";
+import * as path from "path";
+import { config } from "dotenv";
+
+export interface EnvironmentConfig {
+  name: string;
+  apiUrl: string;
+  apiKey?: string;
+  stripeSecretKey?: string;
+  stripePublishableKey?: string;
+  stripeWebhookSecret?: string;
+}
+
+export interface OmnibaseConfig {
+  defaultEnvironment?: string;
+  version: string;
+}
+
+/**
+ * Find the omnibase root directory
+ */
+export function findOmnibaseRoot(): string {
+  let currentDir = process.cwd();
+
+  while (currentDir !== path.parse(currentDir).root) {
+    const omnibaseDir = path.join(currentDir, "omnibase");
+    if (fs.existsSync(omnibaseDir)) {
+      return currentDir;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+
+  throw new Error(
+    "OmniBase project not found. Run 'omnibase init' to initialize a project."
+  );
+}
+
+/**
+ * Get the path to the omnibase config file
+ */
+export function getConfigPath(): string {
+  const projectRoot = findOmnibaseRoot();
+  return path.join(projectRoot, "omnibase", ".omnibase-config");
+}
+
+/**
+ * Load omnibase configuration
+ */
+export function loadOmnibaseConfig(): OmnibaseConfig {
+  const configPath = getConfigPath();
+
+  if (!fs.existsSync(configPath)) {
+    return { version: "1.0.0" };
+  }
+
+  try {
+    const configContent = fs.readFileSync(configPath, "utf8");
+    return JSON.parse(configContent);
+  } catch (error) {
+    console.warn(`Warning: Could not parse config file. Using defaults.`);
+    return { version: "1.0.0" };
+  }
+}
+
+/**
+ * Save omnibase configuration
+ */
+export function saveOmnibaseConfig(config: OmnibaseConfig): void {
+  const configPath = getConfigPath();
+  const configDir = path.dirname(configPath);
+
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
+  }
+
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+}
+
+/**
+ * Get list of available environments
+ */
+export function getAvailableEnvironments(): string[] {
+  try {
+    const projectRoot = findOmnibaseRoot();
+    const environmentsDir = path.join(projectRoot, "omnibase", "environments");
+
+    if (!fs.existsSync(environmentsDir)) {
+      return [];
+    }
+
+    return fs
+      .readdirSync(environmentsDir)
+      .filter((file) => file.startsWith(".env."))
+      .map((file) => file.replace(".env.", ""))
+      .sort();
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
+ * Load environment configuration
+ */
+export function loadEnvironment(envName?: string): EnvironmentConfig {
+  const projectRoot = findOmnibaseRoot();
+
+  // Determine which environment to use
+  let environmentName = envName;
+
+  if (!environmentName) {
+    // Check stored default
+    const config = loadOmnibaseConfig();
+    environmentName = config.defaultEnvironment || "dev";
+  }
+
+  // Load the .env file
+  const envPath = path.join(
+    projectRoot,
+    "omnibase",
+    "environments",
+    `.env.${environmentName}`
+  );
+
+  if (!fs.existsSync(envPath)) {
+    throw new Error(
+      `Environment file not found: .env.${environmentName}\n` +
+        `Available environments: ${getAvailableEnvironments().join(", ")}`
+    );
+  }
+
+  // Parse environment file
+  const envConfig = config({ path: envPath });
+  const env = envConfig.parsed || {};
+
+  if (!env.API_URL) throw new Error("API_URL not set");
+
+  return {
+    name: environmentName,
+    apiUrl: env.API_URL,
+    apiKey: env.OMNIBASE_API_KEY,
+    stripeSecretKey: env.STRIPE_SECRET_KEY,
+    stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY,
+    stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
+  };
+}
+
+/**
+ * Resolve environment with priority: flag > default > dev
+ */
+export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
+  try {
+    if (envFlag) {
+      return loadEnvironment(envFlag);
+    }
+
+    const config = loadOmnibaseConfig();
+    return loadEnvironment(config.defaultEnvironment);
+  } catch (error) {
+    // Fallback to dev
+    try {
+      return loadEnvironment("dev");
+    } catch (fallbackError) {
+      throw new Error(
+        `Could not load any environment. Please ensure you have a .env.dev file in omnibase/environments/`
+      );
+    }
+  }
+}

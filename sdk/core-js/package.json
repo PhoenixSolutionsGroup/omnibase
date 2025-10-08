@@ -1,0 +1,72 @@
+{
+  "name": "@omnibase/core-js",
+  "version": "0.5.10",
+  "description": "OmniBase core Javascript SDK - framework agnostic",
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/index.ts src/permissions/index.ts src/database/index.ts src/tenants/index.ts src/auth/index.ts src/payments/index.ts src/storage/index.ts --format cjs,esm --dts",
+    "prepublishOnly": "npm run build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./auth": {
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./permissions": {
+      "types": "./dist/permissions/index.d.ts",
+      "import": "./dist/permissions/index.js",
+      "require": "./dist/permissions/index.cjs"
+    },
+    "./database": {
+      "types": "./dist/database/index.d.ts",
+      "import": "./dist/database/index.js",
+      "require": "./dist/database/index.cjs"
+    },
+    "./tenants": {
+      "types": "./dist/tenants/index.d.ts",
+      "import": "./dist/tenants/index.js",
+      "require": "./dist/tenants/index.cjs"
+    },
+    "./payments": {
+      "types": "./dist/payments/index.d.ts",
+      "import": "./dist/payments/index.js",
+      "require": "./dist/payments/index.cjs"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "import": "./dist/storage/index.js",
+      "require": "./dist/storage/index.cjs"
+    }
+  },
+  "keywords": [
+    "omnibase",
+    "sdk",
+    "javascript",
+    "typescript"
+  ],
+  "author": "Phoenix Baker Van Urk",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "docusaurus-plugin-typedoc": "^1.4.2",
+    "tsup": "^8.5.0",
+    "typedoc": "^0.28.13",
+    "typedoc-github-wiki-theme": "^2.1.0",
+    "typedoc-plugin-markdown": "^4.9.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@ory/client": "^1.22.3",
+    "@ory/client-fetch": "^1.22.2",
+    "@supabase/postgrest-js": "^1.21.4"
+  }
+}

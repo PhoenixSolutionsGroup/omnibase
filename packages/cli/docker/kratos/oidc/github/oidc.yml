@@ -1,0 +1,7 @@
+id: github
+provider: github
+client_id: ${GITHUB_CLIENT_ID}
+client_secret: ${GITHUB_CLIENT_SECRET}
+scope:
+  - user:email
+mapper_url: file:///etc/config/kratos/oidc/github/oidc.github.jsonnet

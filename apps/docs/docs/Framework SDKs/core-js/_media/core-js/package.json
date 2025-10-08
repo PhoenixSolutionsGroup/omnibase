@@ -1,0 +1,62 @@
+{
+  "name": "@omnibase/core-js",
+  "version": "0.3.0",
+  "description": "OmniBase core Javascript SDK - framework agnostic",
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/permissions/index.ts src/database/index.ts src/tenants/index.ts src/auth/index.ts src/stripe/index.ts --format cjs,esm --dts",
+    "prepublishOnly": "npm run build"
+  },
+  "exports": {
+    "./auth": {
+      "types": "./dist/auth/index.d.ts"
+    },
+    "./permissions": {
+      "import": "./dist/permissions/index.d.ts",
+      "require": "./dist/permissions/index.cjs",
+      "types": "./dist/permissions/index.d.ts"
+    },
+    "./database": {
+      "import": "./dist/database/index.js",
+      "require": "./dist/database/index.cjs",
+      "types": "./dist/database/index.d.ts"
+    },
+    "./tenants": {
+      "import": "./dist/tenants/index.js",
+      "require": "./dist/tenants/index.cjs",
+      "types": "./dist/tenants/index.d.ts"
+    },
+    "./stripe": {
+      "import": "./dist/stripe/index.js",
+      "require": "./dist/stripe/index.cjs",
+      "types": "./dist/stripe/index.d.ts"
+    }
+  },
+  "keywords": [
+    "omnibase",
+    "sdk",
+    "javascript",
+    "typescript"
+  ],
+  "author": "Phoenix Baker Van Urk",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "docusaurus-plugin-typedoc": "^1.4.2",
+    "tsup": "^8.5.0",
+    "typedoc": "^0.28.13",
+    "typedoc-github-wiki-theme": "^2.1.0",
+    "typedoc-plugin-markdown": "^4.9.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@ory/client": "^1.22.3",
+    "@ory/client-fetch": "^1.22.2",
+    "@supabase/postgrest-js": "^1.21.4"
+  }
+}

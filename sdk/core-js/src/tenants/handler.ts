@@ -1,0 +1,120 @@
+import type { OmnibaseClient } from "../client";
+import { TenantInviteManager } from "./invites";
+import { TenantManger } from "./management";
+
+/**
+ * Main tenant management handler
+ *
+ * This is the primary entry point for all tenant-related operations in the
+ * Omnibase SDK. It provides a unified interface to both tenant management
+ * and invitation functionality through dedicated manager instances.
+ *
+ * The handler follows the composition pattern, combining specialized managers
+ * for different aspects of tenant functionality:
+ * - `tenants`: Core tenant operations (create, delete, switch)
+ * - `invites`: User invitation management (create, accept)
+ *
+ * All operations are performed within the context of the authenticated user
+ * and respect tenant-level permissions and row-level security policies.
+ *
+ * @example
+ * ```typescript
+ * import { OmnibaseClient } from '@omnibase/core-js';
+ * import { TenantHandler } from '@omnibase/core-js/tenants';
+ *
+ * const client = new OmnibaseClient({ apiKey: 'your-api-key' });
+ * const tenantHandler = new TenantHandler(client);
+ *
+ * // Create a new tenant
+ * const tenant = await tenantHandler.tenants.createTenant({
+ *   name: 'My Company',
+ *   billing_email: 'billing@company.com',
+ *   user_id: 'user_123'
+ * });
+ *
+ * // Invite users to the tenant
+ * const invite = await tenantHandler.invites.create(tenant.data.tenant.id, {
+ *   email: 'colleague@company.com',
+ *   role: 'member'
+ * });
+ *
+ * // Switch to the new tenant
+ * await tenantHandler.tenants.switchActiveTenant(tenant.data.tenant.id);
+ * ```
+ *
+ * @since 1.0.0
+ * @public
+ * @group Tenant Management
+ */
+export class TenantHandler {
+  /**
+   * Creates a new TenantHandler instance
+   *
+   * Initializes the handler with the provided Omnibase client and sets up
+   * the specialized manager instances for tenant and invitation operations.
+   * The client is used for all underlying HTTP requests and authentication.
+   *
+   * @param omnibaseClient - Configured Omnibase client instance
+   *
+   * @example
+   * ```typescript
+   * const client = new OmnibaseClient({
+   *   apiKey: 'your-api-key',
+   *   baseURL: 'https://api.yourapp.com'
+   * });
+   * const tenantHandler = new TenantHandler(client);
+   * ```
+   *
+   * @group Tenant Management
+   */
+  constructor(private omnibaseClient: OmnibaseClient) {
+    this.invites = new TenantInviteManager(this.omnibaseClient);
+    this.manage = new TenantManger(this.omnibaseClient);
+  }
+
+  /**
+   * Core tenant management operations
+   *
+   * Provides access to tenant lifecycle operations including creation,
+   * deletion, and active tenant switching. All operations respect user
+   * permissions and tenant ownership rules.
+   *
+   * @example
+   * ```typescript
+   * // Create a new tenant
+   * const tenant = await tenantHandler.tenants.createTenant({
+   *   name: 'New Company',
+   *   billing_email: 'billing@newcompany.com',
+   *   user_id: 'user_456'
+   * });
+   *
+   * // Switch to the tenant
+   * await tenantHandler.tenants.switchActiveTenant(tenant.data.tenant.id);
+   *
+   * // Delete the tenant (owner only)
+   * await tenantHandler.tenants.deleteTenant(tenant.data.tenant.id);
+   * ```
+   */
+  public readonly manage: TenantManger;
+
+  /**
+   * Tenant invitation management operations
+   *
+   * Provides access to user invitation functionality including creating
+   * invitations for new users and accepting existing invitations.
+   * Supports role-based access control and secure token-based workflows.
+   *
+   * @example
+   * ```typescript
+   * // Create an invitation
+   * const invite = await tenantHandler.invites.create('tenant_123', {
+   *   email: 'newuser@company.com',
+   *   role: 'admin'
+   * });
+   *
+   * // Accept an invitation (from the invited user's session)
+   * const result = await tenantHandler.invites.accept('invite_token_xyz');
+   * ```
+   */
+  public readonly invites: TenantInviteManager;
+}

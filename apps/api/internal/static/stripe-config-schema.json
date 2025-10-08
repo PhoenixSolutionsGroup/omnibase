@@ -1,0 +1,370 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://your-domain.com/schemas/stripe-config.json",
+  "title": "Stripe Configuration Schema",
+  "description": "Schema for Stripe product and pricing configuration",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the configuration schema"
+    },
+    "meters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/meter"
+      },
+      "description": "Array of Stripe meters for usage-based billing"
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/product"
+      },
+      "description": "Array of Stripe products to create/update"
+    }
+  },
+  "required": ["version", "products"],
+  "additionalProperties": false,
+  "definitions": {
+    "product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Unique identifier for the product"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Display name of the product"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Description of the product"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["service", "good", "metered"],
+          "default": "service",
+          "description": "Type of product (service for subscriptions, good for one-time payments, metered for usage-based)"
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/price"
+          },
+          "minItems": 1,
+          "description": "Array of prices for this product"
+        },
+        "ui": {
+          "$ref": "#/definitions/productUI",
+          "description": "Optional UI configuration for pricing table display"
+        }
+      },
+      "required": ["id", "name", "prices"],
+      "additionalProperties": false
+    },
+    "price": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Unique identifier for the price"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Amount in the smallest currency unit (e.g., cents for USD)"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[a-z]{3}$",
+          "description": "Three-letter ISO 4217 currency code"
+        },
+        "interval": {
+          "type": "string",
+          "enum": ["month", "year", "week", "day"],
+          "description": "Billing interval for recurring prices (required for subscription products)"
+        },
+        "interval_count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "Number of intervals between subscription billings"
+        },
+        "usage_type": {
+          "type": "string",
+          "enum": ["licensed", "metered"],
+          "description": "Usage type for metered billing (required when product type is metered)"
+        },
+        "meter": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Meter ID for metered usage (required when usage_type is metered)"
+        },
+        "billing_scheme": {
+          "type": "string",
+          "enum": ["per_unit", "tiered"],
+          "default": "per_unit",
+          "description": "Billing scheme for the price"
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tier"
+          },
+          "description": "Pricing tiers (required when billing_scheme is tiered)"
+        },
+        "default": {
+          "type": "boolean",
+          "description": "Mark this price as the default price for the product"
+        },
+        "ui": {
+          "$ref": "#/definitions/priceUI",
+          "description": "Optional UI configuration for price display"
+        }
+      },
+      "required": ["id", "amount", "currency"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "billing_scheme": {
+                "const": "tiered"
+              }
+            }
+          },
+          "then": {
+            "required": ["tiers"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "usage_type": {
+                "const": "metered"
+              }
+            }
+          },
+          "then": {
+            "required": ["meter"]
+          }
+        }
+      ]
+    },
+    "tier": {
+      "type": "object",
+      "properties": {
+        "up_to": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "enum": ["inf"]
+            }
+          ],
+          "description": "Upper bound of this tier (use 'inf' for unlimited)"
+        },
+        "flat_amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Flat fee for this tier"
+        },
+        "unit_amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Per-unit amount for this tier"
+        }
+      },
+      "required": ["up_to"],
+      "additionalProperties": false
+    },
+    "productUI": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Display name for pricing table (overrides product name if provided)"
+        },
+        "tagline": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Short tagline for the product"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "description": "Feature list for pricing table"
+        },
+        "badge": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Badge text (e.g., 'Most Popular', 'Best Value')"
+        },
+        "cta_text": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Custom CTA button text"
+        },
+        "highlighted": {
+          "type": "boolean",
+          "description": "Product highlighting for UI"
+        },
+        "sort_order": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sort order for pricing table display"
+        }
+      },
+      "additionalProperties": false
+    },
+    "priceUI": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Display name for this specific price"
+        },
+        "price_display": {
+          "type": "object",
+          "properties": {
+            "custom_text": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "Custom price text (e.g., 'Contact us', 'Free')"
+            },
+            "show_currency": {
+              "type": "boolean",
+              "description": "Show/hide currency symbol"
+            },
+            "suffix": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "Price suffix (e.g., 'per user', 'per request')"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Custom formatting for price display"
+        },
+        "billing_period": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Billing period display text"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "description": "Features specific to this price tier"
+        },
+        "limits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 256,
+                "description": "Display text for limits (e.g., '500 API calls')"
+              },
+              "value": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Actual limit value for enforcement"
+              },
+              "unit": {
+                "type": "string",
+                "maxLength": 50,
+                "description": "Unit of measurement"
+              }
+            },
+            "required": ["text"],
+            "additionalProperties": false
+          },
+          "description": "Usage limits or quotas"
+        }
+      },
+      "additionalProperties": false
+    },
+    "meter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Unique identifier for the meter"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Display name of the meter"
+        },
+        "event_name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Event name for meter events"
+        },
+        "default_aggregation": {
+          "type": "object",
+          "properties": {
+            "formula": {
+              "type": "string",
+              "enum": ["sum", "count", "last"],
+              "description": "How to aggregate usage events"
+            }
+          },
+          "required": ["formula"],
+          "additionalProperties": false
+        },
+        "customer_mapping": {
+          "type": "object",
+          "properties": {
+            "event_payload_key": {
+              "type": "string",
+              "default": "stripe_customer_id",
+              "description": "Key in event payload containing customer ID"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["by_id"],
+              "default": "by_id",
+              "description": "Customer mapping type"
+            }
+          },
+          "additionalProperties": false
+        },
+        "value_settings": {
+          "type": "object",
+          "properties": {
+            "event_payload_key": {
+              "type": "string",
+              "default": "value",
+              "description": "Key in event payload containing usage value"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["id", "display_name", "event_name", "default_aggregation"],
+      "additionalProperties": false
+    }
+  }
+}

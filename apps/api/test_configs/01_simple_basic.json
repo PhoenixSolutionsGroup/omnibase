@@ -1,0 +1,19 @@
+{
+  "version": "v1.0.0",
+  "products": [
+    {
+      "id": "basic_plan",
+      "name": "Basic Plan",
+      "description": "Simple monthly subscription",
+      "type": "service",
+      "prices": [
+        {
+          "id": "basic_monthly",
+          "amount": 999,
+          "currency": "usd",
+          "interval": "month"
+        }
+      ]
+    }
+  ]
+}

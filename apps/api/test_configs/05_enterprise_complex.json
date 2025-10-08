@@ -1,0 +1,214 @@
+{
+  "$schema": "../internal/static/stripe-config-schema.json",
+  "version": "v2.0.0",
+  "meters": [
+    {
+      "id": "analytics_events",
+      "display_name": "Analytics Events",
+      "event_name": "analytics_event",
+      "default_aggregation": {
+        "formula": "sum"
+      }
+    },
+    {
+      "id": "processing_units",
+      "display_name": "Processing Units",
+      "event_name": "processing_unit_usage",
+      "default_aggregation": {
+        "formula": "sum"
+      }
+    },
+    {
+      "id": "cdn_bandwidth",
+      "display_name": "CDN Bandwidth (GB)",
+      "event_name": "cdn_bandwidth_usage",
+      "default_aggregation": {
+        "formula": "sum"
+      }
+    },
+    {
+      "id": "cdn_requests",
+      "display_name": "CDN Requests",
+      "event_name": "cdn_request",
+      "default_aggregation": {
+        "formula": "sum"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "enterprise_platform",
+      "name": "Enterprise Platform",
+      "description": "Complete enterprise solution with base subscription and usage-based add-ons",
+      "type": "service",
+      "prices": [
+        {
+          "id": "enterprise_base_monthly",
+          "amount": 49999,
+          "currency": "usd",
+          "interval": "month"
+        },
+        {
+          "id": "enterprise_base_yearly",
+          "amount": 499999,
+          "currency": "usd",
+          "interval": "year"
+        },
+        {
+          "id": "enterprise_base_monthly_eur",
+          "amount": 44999,
+          "currency": "eur",
+          "interval": "month"
+        }
+      ]
+    },
+    {
+      "id": "advanced_analytics",
+      "name": "Advanced Analytics Module",
+      "description": "AI-powered analytics with tiered usage pricing",
+      "type": "service",
+      "prices": [
+        {
+          "id": "analytics_events_tiered",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "analytics_events",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "tiers": [
+            {
+              "up_to": 10000,
+              "unit_amount": 3,
+              "flat_amount": 1000
+            },
+            {
+              "up_to": 100000,
+              "unit_amount": 2,
+              "flat_amount": null
+            },
+            {
+              "up_to": 1000000,
+              "unit_amount": 1,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data_processing",
+      "name": "Data Processing Engine",
+      "description": "High-performance data processing with complex pricing tiers",
+      "type": "service",
+      "prices": [
+        {
+          "id": "processing_units_complex",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "processing_units",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "tiers": [
+            {
+              "up_to": 1000,
+              "unit_amount": 25,
+              "flat_amount": 5000
+            },
+            {
+              "up_to": 5000,
+              "unit_amount": 20,
+              "flat_amount": null
+            },
+            {
+              "up_to": 25000,
+              "unit_amount": 15,
+              "flat_amount": null
+            },
+            {
+              "up_to": 100000,
+              "unit_amount": 10,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 5,
+              "flat_amount": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "global_cdn",
+      "name": "Global CDN Service",
+      "description": "Worldwide content delivery with geographic pricing",
+      "type": "service",
+      "prices": [
+        {
+          "id": "cdn_bandwidth_premium",
+          "amount": 15,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "cdn_bandwidth",
+          "billing_scheme": "per_unit"
+        },
+        {
+          "id": "cdn_requests_bulk",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "cdn_requests",
+          "billing_scheme": "tiered",
+          "tiers_mode": "volume",
+          "tiers": [
+            {
+              "up_to": 1000000,
+              "unit_amount": 3,
+              "flat_amount": null
+            },
+            {
+              "up_to": 10000000,
+              "unit_amount": 2,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "support_addon",
+      "name": "Premium Support",
+      "description": "24/7 enterprise support with SLA guarantees",
+      "type": "service",
+      "prices": [
+        {
+          "id": "support_monthly",
+          "amount": 9999,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1
+        },
+        {
+          "id": "support_quarterly",
+          "amount": 26999,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 3
+        }
+      ]
+    }
+  ]
+}

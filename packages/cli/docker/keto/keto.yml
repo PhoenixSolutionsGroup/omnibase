@@ -1,0 +1,55 @@
+version: v0.8.0-alpha.2
+
+serve:
+  read:
+    host: 0.0.0.0
+    port: 4466
+    cors:
+      enabled: true
+      allowed_origins:
+        - "*"
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+        - Cookie
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+      allow_credentials: true
+      debug: true
+
+  write:
+    host: 0.0.0.0
+    port: 4467
+    cors:
+      enabled: true
+      allowed_origins:
+        - "*"
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+        - Cookie
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+      allow_credentials: true
+      debug: true
+
+namespaces:
+  location: file:///etc/config/keto/namespaces
+
+log:
+  level: debug
+  format: text

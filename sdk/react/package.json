@@ -1,0 +1,34 @@
+{
+  "name": "@omnibase/react",
+  "version": "0.1.0",
+  "description": "OmniBase React 19+ SDK",
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "prepublishOnly": "bun run build"
+  },
+  "exports":{
+     ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "dependencies": {
+    "@omnibase/core-js": "workspace:*",
+    "@ory/client": "^1.22.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsup": "^8.5.0"
+  }
+}
