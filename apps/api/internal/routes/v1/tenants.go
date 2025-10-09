@@ -21,6 +21,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	router.POST("", tenantHandler.CreateTenant)
 	router.POST("/invites", tenantHandler.CreateTenantUserInvite)
 
+	router.PUT("/users", tenantHandler.UpdateTenantUserRole)
 	router.PUT("/invites/accept", tenantHandler.AcceptInvite)
 	router.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
 
