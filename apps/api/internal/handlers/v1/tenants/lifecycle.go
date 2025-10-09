@@ -104,9 +104,9 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 	})
 }
 
-// Delete api/v1/tenants/{id} - Cleanup Stripe, Cleanup Keto
+// Delete api/v1/tenants - Cleanup Stripe, Cleanup Keto
 func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
-	tenantID := ctx.Param("id")
+	tenantID := ctx.GetString("tenant_id")
 	if tenantID == "" {
 		handlers.NewBadRequestResponse(ctx, "Tenant ID is required")
 		return

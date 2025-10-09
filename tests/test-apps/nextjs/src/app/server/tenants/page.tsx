@@ -1,7 +1,6 @@
 import { omnibase, getDb } from "../../lib/server";
 import { SwitchActiveTenant } from "@omnibase/shadcn";
 import { PageHeader } from "./components/PageHeader";
-import { StatusMessages } from "./components/StatusMessages";
 import { CreateTenantForm } from "./components/CreateTenantForm";
 import { SwitchTenantForm } from "./components/SwitchTenantForm";
 import { CreateInviteForm } from "./components/CreateInviteForm";
@@ -9,6 +8,7 @@ import { AcceptInviteForm } from "./components/AcceptInviteForm";
 import { DeleteTenantForm } from "./components/DeleteTenantForm";
 import { TenantActionsHandler } from "@omnibase/nextjs/tenants";
 import { getServerSession } from "@omnibase/nextjs/auth";
+import { RemoveTenantUserForm } from "./components/RemoveTenantUserForm";
 
 const actions = new TenantActionsHandler(omnibase);
 
@@ -122,6 +122,13 @@ export default async function TenantsPage() {
               action={async (prevState: any, formData: FormData) => {
                 "use server";
                 return actions.manage.delete(prevState, formData);
+              }}
+            />
+
+            <RemoveTenantUserForm
+              action={async (prevState: any, formData: FormData) => {
+                "use server";
+                return actions.user.remove(prevState, formData);
               }}
             />
           </div>
