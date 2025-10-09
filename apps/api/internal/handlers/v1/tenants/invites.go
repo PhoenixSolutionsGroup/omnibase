@@ -11,8 +11,9 @@ import (
 )
 
 type CreateTenantUserInviteRequest struct {
-	Email string `json:"email" binding:"required,email"`
-	Role  string `json:"role" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+	Role      string `json:"role" binding:"required"`
+	InviteURL string `json:"invite_url" binding:"required,url"`
 }
 
 type AcceptInviteRequest struct {
@@ -89,24 +90,24 @@ func (h *TenantHandler) AcceptInvite(ctx *gin.Context) {
 	})
 }
 
-// POST api/v1/tenants/{id}/invites - Send emails, generate invite tokens (w/ expire time)
+// POST api/v1/tenants/invites - Send emails, generate invite tokens (w/ expire time)
 func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 
-	tenantID := ctx.Param("id")
+	tenantID := ctx.GetString("tenant_id")
 	if tenantID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant ID is required")
-		return
-	}
-
-	var req CreateTenantUserInviteRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
+		handlers.NewUnauthorizedResponse(ctx, "Tenant ID is required")
 		return
 	}
 
 	userID := ctx.GetString("user_id")
 	if userID == "" {
 		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
+		return
+	}
+
+	var req CreateTenantUserInviteRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		handlers.NewBadRequestResponse(ctx, "Invalid request format")
 		return
 	}
 
@@ -146,11 +147,10 @@ func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 	}
 
 	// Send email asynchronously to avoid blocking
-	inviteURL := fmt.Sprintf("%s/auth/invite/accept?token=%s", h.cfg.SMTPConfig.FrontendURL, invite.Token)
+	inviteURL := fmt.Sprintf("%s?token=%s", req.InviteURL, invite.Token)
 	if err := h.email.SendInviteEmail(invite.Email, tenant.Name, invite.Role, inviteURL); err != nil {
 		fmt.Printf("Failed to send invite email: %v\n", err)
 	}
-	print("After")
 
 	handlers.NewSuccessResponse(ctx, gin.H{
 		"invite":  invite,

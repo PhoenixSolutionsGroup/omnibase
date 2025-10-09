@@ -22,7 +22,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	router.Use(authMiddleware.RequireSession())
 
 	router.POST("", tenantHandler.CreateTenant)
-	router.POST("/invites/:id", tenantHandler.CreateTenantUserInvite)
+	router.POST("/invites", tenantHandler.CreateTenantUserInvite)
 	router.PUT("/invites/accept", tenantHandler.AcceptInvite)
 	router.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
 	router.DELETE("/:id", tenantHandler.DeleteTenant)
