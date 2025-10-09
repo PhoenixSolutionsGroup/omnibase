@@ -1,6 +1,7 @@
 import type { OmnibaseClient } from "../client";
 import { TenantInviteManager } from "./invites";
 import { TenantManger } from "./management";
+import { TenantUserManager } from "./user";
 
 /**
  * Main tenant management handler
@@ -67,10 +68,29 @@ export class TenantHandler {
    *
    * @group Tenant Management
    */
-  constructor(private omnibaseClient: OmnibaseClient) {
-    this.invites = new TenantInviteManager(this.omnibaseClient);
-    this.manage = new TenantManger(this.omnibaseClient);
+  constructor(omnibaseClient: OmnibaseClient) {
+    this.invites = new TenantInviteManager(omnibaseClient);
+    this.manage = new TenantManger(omnibaseClient);
+    this.user = new TenantUserManager(omnibaseClient);
   }
+
+  /**
+   * Tenant user management operations
+   *
+   * Provides access to operations for managing users within tenants, including
+   * removing users from the active tenant. All operations respect user permissions
+   * and tenant ownership rules.
+   *
+   * @example
+   * ```typescript
+   * // Remove a user from the active tenant
+   * await tenantHandler.user.remove({ user_id: 'user_123' });
+   * ```
+   *
+   * @since 1.0.0
+   * @group Tenant Management
+   */
+  public readonly user: TenantUserManager;
 
   /**
    * Core tenant management operations
