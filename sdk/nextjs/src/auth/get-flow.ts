@@ -170,14 +170,17 @@ export const getLogoutFlow = async ({
       action: async () => {
         "use server";
         const cookieStore = await cookies();
-        cookieStore.set("omnibase_postgrest_jwt", "", {
-          expires: new Date(0),
-          path: "/",
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+        cookieStore.delete("omnibase_postgrest_jwt");
+        cookieStore.delete("ory_kratos_continuity");
+        cookieStore.delete("ory_kratos_session");
+
+        await fetch(flow.logout_url, {
+          credentials: "include",
+          headers: {
+            Cookie: cookieStore.toString(),
+          },
         });
-        redirect(flow.logout_url);
+        redirect(returnTo);
       },
     };
 };
