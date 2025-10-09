@@ -147,8 +147,8 @@ export function addStripeCommands(program: Command): void {
 
   // Upload config command
   stripe
-    .command("upload")
-    .description("Upload the local stripe.config.json to Stripe")
+    .command("push")
+    .description("Push the local stripe.config.json to Stripe")
     .option("--env <environment>", "Override environment for this command")
     .action(async (options) => {
       try {
@@ -156,7 +156,7 @@ export function addStripeCommands(program: Command): void {
         const config = loadStripeConfig();
 
         console.log("✅ Successfully loaded config");
-        console.log("🚀 Uploading to Stripe...");
+        console.log("🚀 Pushing to Stripe...");
 
         const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(

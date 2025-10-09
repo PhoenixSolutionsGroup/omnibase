@@ -9,7 +9,8 @@
   },
   "workspaces": [
     "sdk/*",
-    "tests/test-apps/*"
+    "tests/test-apps/*",
+    "packages/*"
   ],
   "peerDependencies": {
     "typescript": "^5"
