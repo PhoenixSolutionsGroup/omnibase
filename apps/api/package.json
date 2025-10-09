@@ -1,0 +1,6 @@
+{
+  "name": "@omni-base/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OmniBase REST API (Go + Gin)"
+}
