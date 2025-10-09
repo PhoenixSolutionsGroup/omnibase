@@ -29,38 +29,26 @@ export default async function AuthPage({ params, searchParams }: any) {
         returnTo="/"
         flowMap={{
           login: (flow: LoginFlow) => {
-            console.log(JSON.stringify(flow, null, 4));
-            return (
-              <LoginForm
-                flow={{
-                  ...flow,
-                }}
-              />
-            );
+            return <LoginForm flow={flow} />;
           },
           registration: (flow: RegistrationFlow) => {
             flow.return_to = "/auth/onboarding";
-            console.log(JSON.stringify(flow, null, 4));
             return <RegistrationForm flow={flow} />;
           },
 
           recovery: (flow: RecoveryFlow) => {
-            console.log(JSON.stringify(flow.ui, null, 4));
             return <RecoveryForm flow={flow} />;
           },
           settings: (flow: SettingsFlow) => {
-            console.log(JSON.stringify(flow.ui, null, 4));
             return <SettingsForm flow={flow} />;
           },
           verification: (flow: VerificationFlow) => {
-            console.log(JSON.stringify(flow.ui, null, 4));
             return <VerificationForm flow={flow} />;
           },
           onboarding: async () => {
             const session: Session | null = await getServerSession();
             if (!session) return null;
             const { token } = await searchParams;
-            console.log(await searchParams);
             return (
               <TenantCreatorClient
                 config={{
