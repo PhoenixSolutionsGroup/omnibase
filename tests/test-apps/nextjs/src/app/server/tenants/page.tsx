@@ -9,6 +9,7 @@ import { DeleteTenantForm } from "./components/DeleteTenantForm";
 import { TenantActionsHandler } from "@omnibase/nextjs/tenants";
 import { getServerSession } from "@omnibase/nextjs/auth";
 import { RemoveTenantUserForm } from "./components/RemoveTenantUserForm";
+import { UpdateRoleForm } from "./components/UpdateRoleForm";
 
 const actions = new TenantActionsHandler(omnibase);
 
@@ -129,6 +130,13 @@ export default async function TenantsPage() {
               action={async (prevState: any, formData: FormData) => {
                 "use server";
                 return actions.user.remove(prevState, formData);
+              }}
+            />
+
+            <UpdateRoleForm
+              action={async (prevState: any, formData: FormData) => {
+                "use server";
+                return actions.user.updateRole(prevState, formData);
               }}
             />
           </div>
