@@ -3,7 +3,6 @@ package tenants
 import (
 	"api/internal/config"
 	"api/internal/database"
-	"api/internal/service"
 	services_v1 "api/internal/service/v1"
 	"fmt"
 
@@ -14,7 +13,7 @@ import (
 type TenantHandler struct {
 	db      *gorm.DB
 	cfg     *config.Config
-	email   *service.EmailService
+	email   *services_v1.EmailService
 	stripe  *services_v1.StripeService
 	tenants *services_v1.TenantsService
 	keto    *services_v1.KetoService
@@ -28,7 +27,7 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 
 	stripe.Key = cfg.StripeConfig.SecretKey
 
-	emailService, err := service.NewEmailService(cfg.SMTPConfig.ConnectionURI, cfg.SMTPConfig.FromEmail, db)
+	emailService, err := services_v1.NewEmailService(cfg.SMTPConfig.ConnectionURI, cfg.SMTPConfig.FromEmail, db)
 	if err != nil {
 		panic(fmt.Errorf("failed to initialize email service: %w", err))
 	}
