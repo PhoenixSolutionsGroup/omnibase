@@ -25,7 +25,7 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	}
 
 	// Check if current user can manage members in this tenant
-	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "manage_members", currentUserID)
+	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_user", currentUserID)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return
@@ -82,7 +82,7 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 	}
 
 	// Check if current user can manage members in this tenant
-	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "manage_members", currentUserID)
+	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role", currentUserID)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return

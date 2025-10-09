@@ -130,7 +130,7 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 	}
 
 	// Check if user has permission to delete this tenant
-	canDelete, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "delete", userID)
+	canDelete, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "delete_tenant", userID)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return

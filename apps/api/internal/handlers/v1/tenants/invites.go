@@ -146,7 +146,7 @@ func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 	}
 
 	// Check if user can invite others to this tenant
-	canInvite, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "invite", userID)
+	canInvite, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "invite_user", userID)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return

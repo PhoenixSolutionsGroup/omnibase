@@ -7,39 +7,28 @@ class Tenant implements Namespace {
     owners: User[];
     admins: User[];
     members: User[];
-    can_invite: User[];
-    can_delete: User[];
-    can_manage_billing: User[];
-    can_manage_permissions: User[];
+    can_invite_users: User[];
+    can_update_user_role: User[];
+    can_remove_user: User[];
   };
 
   permits = {
-    manage_permissions: (ctx: Context): boolean =>
+    invite_user: (ctx: Context): boolean =>
       this.related.owners.includes(ctx.subject) ||
       this.related.admins.includes(ctx.subject) ||
-      this.related.can_manage_permissions.includes(ctx.subject),
+      this.related.can_invite_users.includes(ctx.subject),
 
-    invite: (ctx: Context): boolean =>
+    delete_tenant: (ctx: Context): boolean =>
+      this.related.owners.includes(ctx.subject),
+
+    remove_user: (ctx: Context): boolean =>
       this.related.owners.includes(ctx.subject) ||
       this.related.admins.includes(ctx.subject) ||
-      this.related.can_invite.includes(ctx.subject),
+      this.related.can_remove_user.includes(ctx.subject),
 
-    delete: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.can_delete.includes(ctx.subject),
-
-    view: (ctx: Context): boolean =>
+    update_user_role: (ctx: Context): boolean =>
       this.related.owners.includes(ctx.subject) ||
       this.related.admins.includes(ctx.subject) ||
-      this.related.members.includes(ctx.subject),
-
-    manage_members: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject),
-
-    manage_billing: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
-      this.related.can_manage_billing.includes(ctx.subject),
+      this.related.can_update_user_role.includes(ctx.subject),
   };
 }
