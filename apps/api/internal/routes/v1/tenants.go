@@ -24,6 +24,6 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	router.PUT("/invites/accept", tenantHandler.AcceptInvite)
 	router.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
 
+	router.DELETE("", tenantHandler.DeleteTenant)
 	router.DELETE("/users", tenantHandler.DeleteTenantUser)
-	router.DELETE("/:id", tenantHandler.DeleteTenant)
 }
