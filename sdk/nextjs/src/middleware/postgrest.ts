@@ -20,7 +20,7 @@ export const postgrestJWTCheckMiddleware = async (
   const json: any = await response.json();
   if (!json || !json.data || !json.data.token) return NextResponse.next();
   const nextResponse = NextResponse.next();
-  nextResponse.cookies.set("omnibase_postgrest_jwt", json.token, {
+  nextResponse.cookies.set("omnibase_postgrest_jwt", json.data.token, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
