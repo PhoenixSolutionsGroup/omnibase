@@ -29,11 +29,11 @@ export default async function AuthPage({ params, searchParams }: any) {
         returnTo="/"
         flowMap={{
           login: (flow: LoginFlow) => {
-            return <LoginForm flow={flow} />;
+            return <LoginForm register_url="/auth/registration" flow={flow} />;
           },
           registration: (flow: RegistrationFlow) => {
             flow.return_to = "/auth/onboarding";
-            return <RegistrationForm flow={flow} />;
+            return <RegistrationForm login_url="/auth/login" flow={flow} />;
           },
 
           recovery: (flow: RecoveryFlow) => {

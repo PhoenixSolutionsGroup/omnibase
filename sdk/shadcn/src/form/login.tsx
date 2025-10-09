@@ -17,9 +17,10 @@ import {
 export type LoginFormProps = {
   flow: LoginFlow;
   Header?: React.ReactNode;
+  register_url?: string;
 };
 
-export function LoginForm({ flow, Header }: LoginFormProps) {
+export function LoginForm({ flow, Header, register_url }: LoginFormProps) {
   const nodesByGroup = groupNodesByGroup(flow.ui.nodes);
   const csrfToken = findCsrfToken(flow.ui.nodes);
 
@@ -33,6 +34,12 @@ export function LoginForm({ flow, Header }: LoginFormProps) {
   // Get password field and submit button from password group
   const passwordInputNodes = filterInputNodes(sortNodes(passwordNodes));
   const submitButton = findSubmitButton(sortNodes(passwordNodes));
+
+  // Build register URL with return_to parameter
+  const registerHref =
+    register_url && flow.return_to
+      ? `${register_url}?return_to=${encodeURIComponent(flow.return_to)}`
+      : register_url;
 
   return (
     <div>
@@ -79,6 +86,19 @@ export function LoginForm({ flow, Header }: LoginFormProps) {
                 {submitButton && <SubmitButton node={submitButton} />}
               </div>
             </form>
+
+            {/* Navigation to Register */}
+            {register_url && (
+              <div className="mt-4 text-center text-sm">
+                Don't have an account?{" "}
+                <a
+                  href={registerHref}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  Go to Register
+                </a>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

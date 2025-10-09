@@ -18,9 +18,14 @@ import { isUiNodeInputAttributes } from "./types";
 export type RegistrationFormProps = {
   flow: RegistrationFlow;
   Header?: React.ReactNode;
+  login_url?: string;
 };
 
-export function RegistrationForm({ flow, Header }: RegistrationFormProps) {
+export function RegistrationForm({
+  flow,
+  Header,
+  login_url,
+}: RegistrationFormProps) {
   const nodesByGroup = groupNodesByGroup(flow.ui.nodes);
   const csrfToken = findCsrfToken(flow.ui.nodes);
 
@@ -46,6 +51,12 @@ export function RegistrationForm({ flow, Header }: RegistrationFormProps) {
   const submitButton =
     findSubmitButton(sortNodes(passwordNodes)) ||
     findSubmitButton(sortNodes(profileNodes));
+
+  // Build login URL with return_to parameter
+  const loginHref =
+    login_url && flow.return_to
+      ? `${login_url}?return_to=${encodeURIComponent(flow.return_to)}`
+      : login_url;
 
   return (
     <div>
@@ -90,6 +101,19 @@ export function RegistrationForm({ flow, Header }: RegistrationFormProps) {
                 {submitButton && <SubmitButton node={submitButton} />}
               </div>
             </form>
+
+            {/* Navigation to Login */}
+            {login_url && (
+              <div className="mt-4 text-center text-sm">
+                Already have an account?{" "}
+                <a
+                  href={loginHref}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  Go to Login
+                </a>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
