@@ -104,4 +104,73 @@ export class TenantUserManager {
         success: true,
       };
   }
+
+  /**
+   * Next.js server action for updating a user's role within a tenant
+   *
+   * This server action handles the complete role update workflow, including form
+   * validation, API calls, and optional redirection. When a user's role is successfully
+   * updated, their permissions and access rights within the tenant are immediately modified.
+   *
+   * The action expects a FormData object with 'user_id' and 'role' fields (both required)
+   * and optionally a 'redirect_to' field. If no redirect URL is provided, the action
+   * returns a success state object instead.
+   *
+   * @param prevState - Previous state from useActionState hook (can be any type)
+   * @param formData - Form data containing the following fields:
+   *   - user_id (required): ID of the user whose role is being updated
+   *   - role (required): New role to assign (e.g., 'admin', 'member', 'viewer')
+   *   - redirect_to (optional): URL to redirect to after successful role update
+   *
+   * @returns Promise that resolves to success/error state object, or redirects on success
+   *
+   * @throws {Error} When user_id or role is missing from form data
+   * @throws {Error} When the role update fails or API returns an error
+   *
+   * @example
+   * ```typescript
+   * import { omnibase } from '@/lib/omnibase-client';
+   *
+   * async function handleUpdateRole(userId: string, newRole: string) {
+   *   const formData = new FormData();
+   *   formData.append('user_id', userId);
+   *   formData.append('role', newRole);
+   *   formData.append('redirect_to', '/tenants/users');
+   *
+   *   try {
+   *     const result = await omnibase.tenants.user.updateRole(null, formData);
+   *     // Will redirect on success, or return error state
+   *   } catch (error) {
+   *     console.error('Failed to update role:', error);
+   *   }
+   * }
+   * ```
+   *
+   * @since 1.0.0
+   * @public
+   * @group Tenant User Management
+   */
+  async updateRole(prevState: any, formData: FormData) {
+    const redirectUrl = formData.get("redirect_to") as string | undefined;
+    const user_id = formData.get("user_id") as string | undefined;
+    const role = formData.get("role") as string | undefined;
+
+    if (!user_id || !role)
+      throw new Error("user_id and role must be sent inside formdata");
+
+    const response = await this.omnibaseClient.tenants.user.updateRole({
+      role,
+      user_id,
+    });
+
+    if (response.error) {
+      return { success: false, error: response.error };
+    }
+
+    if (redirectUrl) redirect(redirectUrl);
+    else
+      return {
+        success: true,
+      };
+  }
 }
