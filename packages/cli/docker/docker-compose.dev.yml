@@ -62,7 +62,7 @@ services:
       - WEBSITE_LOGIN_URL=${WEBSITE_LOGIN_URL:-${WEBSITE_URL}/auth/login}
       - WEBSITE_REGISTRATION_URL=${WEBSITE_REGISTRATION_URL:-${WEBSITE_URL}/auth/registration}
 
-      - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI:-smtp://mailslurper:1025}
+      - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI:-smtp://mailpit:1025?disable_starttls=true}
     volumes:
       - type: bind
         source: ./kratos
@@ -72,13 +72,19 @@ services:
     networks:
       - app-network
 
-  mailslurper:
-    image: oryd/mailslurper:latest-smtps
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
     ports:
-      - "4436:4436"
-      - "4437:4437"
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP server
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
       - app-network
+    restart: unless-stopped
 
   # MinIO - Object Storage
   minio:
@@ -168,7 +174,7 @@ services:
       - S3_FORCE_PATH_STYLE=true
 
       # Email Configuration
-      - SMTP_CONNECTION_URI=smtp://mailslurper:1025
+      - SMTP_CONNECTION_URI=smtp://mailpit:1025
       - SMTP_FROM_EMAIL=noreply@yourapp.com
       - FRONTEND_URL=http://localhost:3000
 
