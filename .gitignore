@@ -9,3 +9,6 @@ tmp
 
 api-old
 .kilocode
+
+playwright-report
+test-results
