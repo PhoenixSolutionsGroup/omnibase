@@ -17,9 +17,10 @@ export const postgrestJWTCheckMiddleware = async (
     },
   });
 
-  const { data }: any = await response.json();
+  const json: any = await response.json();
+  if (!json || !json.data || !json.data.token) return NextResponse.next();
   const nextResponse = NextResponse.next();
-  nextResponse.cookies.set("omnibase_postgrest_jwt", data.token, {
+  nextResponse.cookies.set("omnibase_postgrest_jwt", json.token, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
