@@ -8,6 +8,7 @@ test("Subscribe to monthly Starter Plan", async ({ page }) => {
     .getByRole("link", { name: "💳 Payments Test Stripe" })
     .nth(1)
     .click();
+
   await page.getByRole("button", { name: "Start Free Trial" }).click();
   await expect(page.getByTestId("product-summary-total-amount")).toContainText(
     "$9.99"

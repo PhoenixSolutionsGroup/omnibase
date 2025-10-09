@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createUserProfile } from "../helpers/registration";
 
-test("test", async ({ page }) => {
+test("Create tenant and switch to new tenant", async ({ page }) => {
   await createUserProfile(page);
 
   await page
@@ -22,7 +22,7 @@ test("test", async ({ page }) => {
     .nth(1)
     .click();
   await expect(page.locator("main")).toContainText("Test Tenant 1");
-  await page.getByRole("combobox").click();
+  await page.getByRole("combobox").first().click();
   await page.getByRole("option", { name: "John Doe" }).click();
   await expect(page.locator("main")).toContainText("John Doe");
 });

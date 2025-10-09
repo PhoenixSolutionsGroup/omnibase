@@ -104,13 +104,11 @@ export class TenantInviteManager {
   async create(prevState: any, formData: FormData) {
     try {
       const data = extractCreateTenantInviteData(formData);
-      const response = await this.omnibaseClient.tenants.invites.create(
-        data.tenant_id,
-        {
-          email: data.email,
-          role: data.role,
-        }
-      );
+      const response = await this.omnibaseClient.tenants.invites.create({
+        email: data.email,
+        role: data.role,
+        invite_url: data.invite_url,
+      });
 
       if (response.error) {
         return { success: false, error: response.error };
@@ -184,16 +182,16 @@ const extractAcceptTenantInviteData = (
 };
 
 const extractCreateTenantInviteData = (formData: FormData) => {
-  const tenant_id = formData.get("tenant_id") as string;
+  const invite_url = formData.get("invite_url") as string;
   const email = formData.get("email") as string;
   const role = formData.get("role") as string;
 
-  if (!tenant_id || !email || !role) {
-    throw new Error("Missing required fields: tenant_id, email, role");
+  if (!email || !role || !invite_url) {
+    throw new Error("Missing required fields: invite_url, email, role");
   }
 
   return {
-    tenant_id,
+    invite_url,
     email,
     role,
   };

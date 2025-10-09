@@ -102,7 +102,10 @@ export default async function TenantsPage() {
             <CreateInviteForm
               action={async (prevState: any, formData: FormData) => {
                 "use server";
-                formData.set("tenant_id", activeTenantId);
+                formData.set(
+                  "invite_url",
+                  process.env.NEXT_PUBLIC_WEBSITE_URL! + "/auth/onboarding"
+                );
                 return actions.invites.create(prevState, formData);
               }}
               tenant_id={activeTenantId}

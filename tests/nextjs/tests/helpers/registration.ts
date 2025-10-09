@@ -6,7 +6,7 @@ export interface RegistrationOptions {
   lastName?: string;
   password?: string;
   baseUrl?: string;
-  mailhogUrl?: string;
+  mailpitUrl?: string;
   skipEmailVerification?: boolean;
   skipOrganizationCreation?: boolean;
 }
@@ -34,7 +34,7 @@ export async function createUserProfile(
     lastName = "Doe",
     password = "OHWEGOIPWEHGOPIWE128479821",
     baseUrl = "http://127.0.0.1:3000",
-    mailhogUrl = "http://127.0.0.1:4436",
+    mailpitUrl = "http://127.0.0.1:8025",
     skipEmailVerification = false,
     skipOrganizationCreation = false,
   } = options;
@@ -56,35 +56,33 @@ export async function createUserProfile(
   await page.getByRole("button", { name: "Sign up" }).click();
 
   if (!skipEmailVerification) {
-    // Go to email verification UI and search for email
-    await page.goto(mailhogUrl);
-    await page.getByRole("button", { name: "   Search" }).click();
-    await page.getByLabel("To:").click();
-    await page.getByLabel("To:").fill(email);
+    // Go to Mailpit and search for email
+    await page.goto(mailpitUrl + "/search?q=" + email.toLowerCase());
     await page
-      .getByLabel("Search Mail")
-      .getByText("Search", { exact: true })
+      .getByRole("link", { name: "no-reply@ory.kratos.sh To:" })
       .click();
 
-    await page.waitForTimeout(100);
-    await page.getByRole("link", { name: "Please verify your email" }).click();
+    // Extract verification link from iframe
+    const frame = page.locator("#preview-html").contentFrame();
+    const verificationLink = frame.getByRole("link", {
+      name: "http://127.0.0.1:4433/self-",
+    });
+    await verificationLink.waitFor();
 
-    // Click verification link
-    await page
-      .getByRole("link", { name: "http://127.0.0.1:4433/self-" })
-      .waitFor();
-    await page
-      .getByRole("link", { name: "http://127.0.0.1:4433/self-" })
-      .click();
+    // Get the href attribute and navigate to it
+    const verificationUrl = await verificationLink.getAttribute("href");
+    if (!verificationUrl) {
+      throw new Error("Verification URL not found");
+    }
+
+    await page.goto(verificationUrl);
 
     // Submit verification
-    await page.getByRole("button", { name: "Submit" }).waitFor();
     await page.getByRole("button", { name: "Submit" }).click();
   }
 
   if (!skipOrganizationCreation) {
     // Create organization
-    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Create Organization" }).click();
   }
 

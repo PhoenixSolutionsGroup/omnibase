@@ -33,6 +33,7 @@ export interface TenantCreatorConfig {
     token?: {
       label?: string;
       placeholder?: string;
+      defaultValue?: string;
     };
   };
 }
@@ -54,7 +55,9 @@ export function TenantCreator({
   className,
 }: TenantCreatorProps) {
   const [mode, setMode] = useState<"create" | "join">(
-    config.defaultMode || "create"
+    !!config.joinForm?.token?.defaultValue === true
+      ? "join"
+      : config.defaultMode || "create"
   );
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,7 +70,9 @@ export function TenantCreator({
   );
 
   // Form state for join organization
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(
+    config.joinForm?.token?.defaultValue || ""
+  );
 
   // Auto-fill invite token from URL parameters
   useEffect(() => {

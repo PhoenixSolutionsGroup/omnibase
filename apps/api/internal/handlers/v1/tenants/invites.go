@@ -8,11 +8,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	kratos "github.com/ory/kratos-client-go"
 )
 
 type CreateTenantUserInviteRequest struct {
-	Email string `json:"email" binding:"required,email"`
-	Role  string `json:"role" binding:"required"`
+	Email     string `json:"email" binding:"required,email"`
+	Role      string `json:"role" binding:"required"`
+	InviteURL string `json:"invite_url" binding:"required,url"`
 }
 
 type AcceptInviteRequest struct {
@@ -27,19 +29,52 @@ func (h *TenantHandler) AcceptInvite(ctx *gin.Context) {
 		return
 	}
 
-	// Find invite by token
+	// Find invite by token and retrieve email
 	var invite models.TenantInvite
-	err := h.db.Where("token = ? AND used_at IS NULL AND expires_at > ?",
-		req.Token, time.Now()).First(&invite).Error
+	err := h.db.Select("id, tenant_id, email, role, token, inviter_id, expires_at, used_at, created_at").
+		Where("token = ? AND used_at IS NULL AND expires_at > ?",
+			req.Token, time.Now()).First(&invite).Error
 	if err != nil {
 		handlers.NewBadRequestResponse(ctx, "Invalid or expired invite token")
 		return
 	}
 
-	// Get user ID from context (would be set by auth middleware)
+	// Get user ID and identity from context (set by auth middleware)
 	userID := ctx.GetString("user_id")
 	if userID == "" {
 		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
+		return
+	}
+
+	// Get identity from context to verify email
+	identityValue, exists := ctx.Get("identity")
+	if !exists {
+		handlers.NewUnauthorizedResponse(ctx, "Identity not found in session")
+		return
+	}
+
+	identity, ok := identityValue.(*kratos.Identity)
+	if !ok {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Invalid identity type"))
+		return
+	}
+
+	// Extract email from identity traits
+	traits, ok := identity.Traits.(map[string]interface{})
+	if !ok {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Invalid identity traits"))
+		return
+	}
+
+	identityEmail, ok := traits["email"].(string)
+	if !ok || identityEmail == "" {
+		handlers.NewBadRequestResponse(ctx, "Email not found in identity")
+		return
+	}
+
+	// Verify that the identity email matches the invite email
+	if identityEmail != invite.Email {
+		handlers.NewForbiddenResponse(ctx, "This invite was sent to a different email address")
 		return
 	}
 
@@ -89,24 +124,24 @@ func (h *TenantHandler) AcceptInvite(ctx *gin.Context) {
 	})
 }
 
-// POST api/v1/tenants/{id}/invites - Send emails, generate invite tokens (w/ expire time)
+// POST api/v1/tenants/invites - Send emails, generate invite tokens (w/ expire time)
 func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 
-	tenantID := ctx.Param("id")
+	tenantID := ctx.GetString("tenant_id")
 	if tenantID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant ID is required")
-		return
-	}
-
-	var req CreateTenantUserInviteRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
+		handlers.NewUnauthorizedResponse(ctx, "Tenant ID is required")
 		return
 	}
 
 	userID := ctx.GetString("user_id")
 	if userID == "" {
 		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
+		return
+	}
+
+	var req CreateTenantUserInviteRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		handlers.NewBadRequestResponse(ctx, "Invalid request format")
 		return
 	}
 
@@ -146,11 +181,10 @@ func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 	}
 
 	// Send email asynchronously to avoid blocking
-	inviteURL := fmt.Sprintf("%s/auth/invite/accept?token=%s", h.cfg.SMTPConfig.FrontendURL, invite.Token)
+	inviteURL := fmt.Sprintf("%s?token=%s", req.InviteURL, invite.Token)
 	if err := h.email.SendInviteEmail(invite.Email, tenant.Name, invite.Role, inviteURL); err != nil {
 		fmt.Printf("Failed to send invite email: %v\n", err)
 	}
-	print("After")
 
 	handlers.NewSuccessResponse(ctx, gin.H{
 		"invite":  invite,

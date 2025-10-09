@@ -163,6 +163,8 @@ export type CreateTenantUserInviteRequest = {
   email: string;
   /** Role the invited user will have in the tenant */
   role: string;
+  /** Invite URL - the link that will be sent to the users email suffixed automatically w/ ?token=XYZ */
+  invite_url: string;
 };
 
 /**
@@ -376,21 +378,17 @@ export class TenantInviteManager {
    * @group User Management
    */
   async create(
-    tenantId: string,
     inviteData: CreateTenantUserInviteRequest
   ): Promise<CreateTenantUserInviteResponse> {
-    if (!tenantId) {
-      throw new Error("Tenant ID is required");
-    }
-
-    if (!inviteData.email || !inviteData.role) {
-      throw new Error("Email and role are required");
+    if (!inviteData.email || !inviteData.role || !inviteData.invite_url) {
+      throw new Error(
+        "Missing data in `create` - email, role, invite_url and tenant_id are required"
+      );
     }
 
     try {
-      console.log("PreFetch");
       const response = await this.omnibaseClient.fetch(
-        `/api/v1/tenants/invites/${tenantId}`,
+        `/api/v1/tenants/invites`,
         {
           method: "POST",
           headers: {
@@ -400,8 +398,6 @@ export class TenantInviteManager {
           credentials: "include",
         }
       );
-
-      console.log("PostFetch");
 
       if (!response.ok) {
         const errorData = await response.text();
