@@ -8,7 +8,7 @@ import {
   CreateRelationshipBody,
   PostCheckPermissionBody,
 } from "@ory/client";
-import { resolveEnvironment } from "../utils/environment";
+import { findOmnibaseRoot, resolveEnvironment } from "../utils/environment";
 
 // Helper function to extract meaningful error messages from API responses
 function extractErrorMessage(error: any): string {
@@ -75,13 +75,11 @@ export class PermissionsCommand {
     console.log(`📁 Found ${files.length} namespace file(s):`);
     files.forEach((file) => console.log(`   • ${path.basename(file)}`));
 
-    // Copy files to docker keto namespaces directory
-    const dockerNamespacesDir = path.join(
-      process.cwd(),
-      "docker",
-      "keto",
-      "namespaces"
-    );
+    // Find the CLI package's docker directory (where docker-compose.yml lives)
+    const projectRoot = findOmnibaseRoot();
+    const cliDockerDir = path.join(__dirname, "..", "..", "docker");
+
+    const dockerNamespacesDir = path.join(cliDockerDir, "keto", "namespaces");
 
     if (!fs.existsSync(dockerNamespacesDir)) {
       fs.mkdirSync(dockerNamespacesDir, { recursive: true });
@@ -92,14 +90,19 @@ export class PermissionsCommand {
       const filename = path.basename(file);
       const targetPath = path.join(dockerNamespacesDir, filename);
       fs.copyFileSync(file, targetPath);
-      console.log(`✅ Copied ${filename} to docker/keto/namespaces/`);
+      console.log(`✅ Copied ${filename} to CLI docker/keto/namespaces/`);
     }
 
     // Restart Keto to pick up the new namespaces
     console.log("🔄 Restarting Keto to load new namespaces...");
     try {
-      execSync("cd docker && docker compose restart keto", {
+      execSync("docker compose restart keto", {
         stdio: "inherit",
+        cwd: cliDockerDir,
+        env: {
+          ...process.env,
+          OMNIBASE_PROJECT_DIR: projectRoot,
+        },
       });
       console.log("✅ Keto restarted successfully");
       console.log("🎉 Permissions pushed successfully!");
