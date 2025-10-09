@@ -10,6 +10,8 @@ if (typeof globalThis !== "undefined" && !process.env.NEXT_PUBLIC_ORY_SDK_URL) {
 import { createOryMiddleware } from "@ory/nextjs/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "../auth";
+import { tenantCheckMiddleware } from "./tenant_check";
+import { postgrestJWTCheckMiddleware } from "./postgrest";
 
 /**
  * Configuration options for the OmniBase middleware
@@ -32,7 +34,7 @@ import { getServerSession } from "../auth";
  * @public
  * @group Middleware
  */
-type OmnibaseMiddlewareConfig = {
+export type OmnibaseMiddlewareConfig = {
   /**
    * Enable or disable tenant membership checking
    * @defaultValue true
@@ -129,38 +131,29 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
  * @public
  * @group Middleware
  */
-export const createOmniBaseMiddleware = ({
-  tenant_check,
-  tenant_check_paths,
-  tenant_check_redirect_url,
-}: OmnibaseMiddlewareConfig = defaultConfig) => {
+export const createOmniBaseMiddleware = (
+  api_url: string,
+  config: OmnibaseMiddlewareConfig = defaultConfig
+) => {
   const oryMiddleware = createOryMiddleware({});
   return async (req: NextRequest) => {
-    if (!tenant_check) return oryMiddleware(req);
+    const session = await getServerSession();
 
-    const pathname = req.nextUrl.pathname;
+    const tenantResponse = tenantCheckMiddleware(req, session, config);
+    if (tenantResponse.status !== 200) return tenantResponse;
 
-    const shouldCheckTenant = tenant_check_paths.some((pattern) => {
-      if (pattern.endsWith("/*")) {
-        return pathname.startsWith(pattern.slice(0, -2));
-      }
-      return pathname === pattern || pathname.startsWith(pattern + "/");
+    const jwtResponse = await postgrestJWTCheckMiddleware(
+      req,
+      session,
+      api_url
+    );
+    if (jwtResponse.status !== 200) return jwtResponse;
+
+    const oryResponse = await oryMiddleware(req);
+    jwtResponse.cookies.getAll().forEach((cookie) => {
+      oryResponse.cookies.set(cookie.name, cookie.value, cookie);
     });
 
-    if (!shouldCheckTenant) {
-      return oryMiddleware(req);
-    }
-
-    const session = await getServerSession();
-    if (!session || !session.active) return oryMiddleware(req);
-
-    const metadata_public = session.identity?.metadata_public as any;
-    const is_in_tenant = metadata_public?.is_in_tenant;
-
-    if (!is_in_tenant) {
-      return NextResponse.redirect(new URL(tenant_check_redirect_url, req.url));
-    }
-
-    return oryMiddleware(req);
+    return oryResponse;
   };
 };
