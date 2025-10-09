@@ -8,18 +8,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// DELETE api/v1/tenants/{id}/users/{user_id} - update Keto
+// DELETE api/v1/tenants/users - update Keto
 func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
-	tenantID := ctx.Param("id")
-	targetUserID := ctx.Param("user_id")
+	tenantID := ctx.GetString("tenant_id")
 	currentUserID := ctx.GetString("user_id")
 
-	if tenantID == "" || targetUserID == "" {
+	var req struct {
+		TargetUserID string `json:"user_id" binding:"required"`
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		handlers.NewBadRequestResponse(ctx, "Invalid request format")
+		return
+	}
+
+	if req.TargetUserID == "" {
 		handlers.NewBadRequestResponse(ctx, "Tenant ID and User ID are required")
 		return
 	}
 
-	if currentUserID == "" {
+	if currentUserID == "" || tenantID == "" {
 		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
 		return
 	}
@@ -36,24 +43,37 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	}
 
 	// Remove from database
-	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, targetUserID).Delete(&models.TenantUser{}).Error; err != nil {
+	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).Delete(&models.TenantUser{}).Error; err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to remove user from tenant: %s", err))
 		return
 	}
 
-	// Remove all Keto relations for this user-tenant combination
-	relations := []string{"owners", "admins", "members"}
-	for _, relation := range relations {
-		h.keto.DeleteRelationTuple(ctx.Request.Context(), "Tenant", tenantID, relation, targetUserID)
+	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", req.TargetUserID)
+	if err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed ot list all relationship tuples"))
+		return
 	}
 
-	// Handle tenant cleanup for the removed user
-	if err := h.tenants.HandleUserTenantCleanup(ctx, targetUserID); err != nil {
+	for _, tuple := range tuples {
+		err := h.keto.DeleteRelationTuple(
+			ctx.Request.Context(),
+			tuple.Namespace,
+			tuple.Object,
+			tuple.Relation,
+			tuple.SubjectID,
+		)
+		if err != nil {
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed when deleting relation tuple"))
+			return
+		}
+	}
+
+	if err := h.tenants.HandleUserTenantCleanup(ctx, req.TargetUserID); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to cleanup user tenant state: %s", err))
 		return
 	}
 
-	handlers.NewSuccessResponse(ctx, gin.H{"message": "User removed successfully"})
+	handlers.NewSuccessResponse(ctx, "")
 }
 
 // PUT api/v1/tenants/{id}/users/{user_id}/role - update Keto
