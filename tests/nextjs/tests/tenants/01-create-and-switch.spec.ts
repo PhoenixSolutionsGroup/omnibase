@@ -22,7 +22,7 @@ test("Create tenant and switch to new tenant", async ({ page }) => {
     .nth(1)
     .click();
   await expect(page.locator("main")).toContainText("Test Tenant 1");
-  await page.getByRole("combobox").click();
+  await page.getByRole("combobox").first().click();
   await page.getByRole("option", { name: "John Doe" }).click();
   await expect(page.locator("main")).toContainText("John Doe");
 });
