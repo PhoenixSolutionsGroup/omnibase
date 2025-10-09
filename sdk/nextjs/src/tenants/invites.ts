@@ -98,9 +98,67 @@ export class TenantInviteManager {
     } catch (error: any) {
       throw new Error(error.message ?? "Unknown Error");
     }
-    redirect(redirectUrl);
+    if (redirectUrl) redirect(redirectUrl);
   }
 
+  /**
+   * Next.js server action for creating a tenant invitation
+   *
+   * This server action creates a new invitation for a user to join the active tenant.
+   * An email notification is automatically sent to the invited user with a secure
+   * invitation link. The action validates all required fields and returns success/error
+   * state suitable for use with React's useActionState hook.
+   *
+   * @param prevState - Previous state from useActionState hook (can be any type)
+   * @param formData - Form data containing the following fields:
+   *   - email (required): Email address of the user being invited
+   *   - role (required): Role to assign to the invited user (e.g., 'admin', 'member')
+   *   - invite_url (required): Base URL for the invitation acceptance page
+   *
+   * @returns Promise resolving to success/error state object
+   *
+   * @throws {Error} When required fields (email, role, invite_url) are missing
+   * @throws {Error} When the invitation creation fails or API returns an error
+   *
+   * @example
+   * Using with a form component:
+   * ```typescript
+   * 'use client';
+   *
+   * import { useActionState } from 'react';
+   *
+   * export function InviteUserForm({ action }: { action: any }) {
+   *   const [state, formAction] = useActionState(action, null);
+   *
+   *   return (
+   *     <form action={formAction}>
+   *       <input
+   *         type="email"
+   *         name="email"
+   *         placeholder="user@example.com"
+   *         required
+   *       />
+   *       <select name="role" required>
+   *         <option value="member">Member</option>
+   *         <option value="admin">Admin</option>
+   *       </select>
+   *       <input
+   *         type="hidden"
+   *         name="invite_url"
+   *         value="https://app.example.com/invites"
+   *       />
+   *       <button type="submit">Send Invitation</button>
+   *       {state?.error && <p className="error">{state.error}</p>}
+   *       {state?.success && <p className="success">Invitation sent!</p>}
+   *     </form>
+   *   );
+   * }
+   * ```
+   *
+   * @since 1.0.0
+   * @public
+   * @group Tenant Invitations
+   */
   async create(prevState: any, formData: FormData) {
     try {
       const data = extractCreateTenantInviteData(formData);
@@ -126,32 +184,8 @@ export class TenantInviteManager {
   }
 }
 
-/**
- * Extracts the redirect URL from form data or environment variables
- *
- * This helper function determines where to redirect the user after successfully
- * accepting a tenant invitation. It first checks the form data for a 'redirect_to'
- * field, then falls back to the OMNIBASE_ACCEPT_TENANT_INVITE_REDIRECT_URL
- * environment variable.
- *
- * @param formData - Form data that may contain a redirect_to field
- *
- * @returns The redirect URL to use
- *
- * @throws {Error} When no redirect URL is found in form data or environment variables
- *
- * @internal
- */
-const getRedirectToUrl = (formData: FormData): string => {
-  const url =
-    (formData.get("redirect_to") as string | null) ||
-    process.env.OMNIBASE_ACCEPT_TENANT_INVITE_REDIRECT_URL;
-  if (!url)
-    throw new Error(
-      "Either set `redirect_to` in the form or set OMNIBASE_ACCEPT_TENANT_INVITE_REDIRECT_URL in env variables"
-    );
-
-  return url;
+const getRedirectToUrl = (formData: FormData): string | null => {
+  return formData.get("redirect_to") as string | null;
 };
 
 /**
@@ -181,6 +215,20 @@ const extractAcceptTenantInviteData = (
   };
 };
 
+/**
+ * Extracts and validates tenant invitation data from form data
+ *
+ * This helper function validates that all required fields for creating a tenant
+ * invitation are present in the form data and returns them in a structured format.
+ *
+ * @param formData - Form data containing the invitation details
+ *
+ * @returns Object containing the validated invitation data
+ *
+ * @throws {Error} When any required field (email, role, invite_url) is missing
+ *
+ * @internal
+ */
 const extractCreateTenantInviteData = (formData: FormData) => {
   const invite_url = formData.get("invite_url") as string;
   const email = formData.get("email") as string;

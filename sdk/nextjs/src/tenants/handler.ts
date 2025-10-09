@@ -1,6 +1,7 @@
 import type { OmnibaseClient } from "@omnibase/core-js";
 import { TenantManagementManager } from "./management";
 import { TenantInviteManager } from "./invites";
+import { TenantUserManager } from "./user";
 
 /**
  * Main handler for tenant-related server actions
@@ -67,7 +68,26 @@ export class TenantActionsHandler {
   constructor(omnibaseClient: OmnibaseClient) {
     this.manage = new TenantManagementManager(omnibaseClient);
     this.invites = new TenantInviteManager(omnibaseClient);
+    this.user = new TenantUserManager(omnibaseClient);
   }
+
+  /**
+   * Tenant user management operations manager
+   *
+   * Provides access to server actions for managing users within tenants,
+   * including removing users from the active tenant. All methods are designed
+   * to work with Next.js forms and the useActionState hook.
+   *
+   * @example
+   * ```typescript
+   * // Remove a user from the active tenant
+   * const removeUserAction = tenantHandler.user.remove;
+   * ```
+   *
+   * @since 1.0.0
+   * @group Tenant Handler
+   */
+  user: TenantUserManager;
 
   /**
    * Tenant management operations manager
