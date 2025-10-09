@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createUserProfile } from "../helpers/registration";
 
-test("test", async ({ page }) => {
+test("Create tenant and switch to new tenant", async ({ page }) => {
   await createUserProfile(page);
 
   await page
