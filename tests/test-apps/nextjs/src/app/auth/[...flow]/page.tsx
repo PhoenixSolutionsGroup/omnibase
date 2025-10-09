@@ -7,7 +7,14 @@ import {
   VerificationForm,
 } from "@omnibase/shadcn";
 import TenantCreatorClient from "./tenant-creator";
-import { Session } from "@omnibase/core-js/auth";
+import {
+  LoginFlow,
+  RecoveryFlow,
+  RegistrationFlow,
+  Session,
+  SettingsFlow,
+  VerificationFlow,
+} from "@omnibase/core-js/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { omnibase } from "@/app/lib/server";
@@ -19,8 +26,9 @@ export default async function AuthPage({ params, searchParams }: any) {
         params={params}
         searchParams={searchParams}
         url="/auth"
+        returnTo="/"
         flowMap={{
-          login: (flow) => {
+          login: (flow: LoginFlow) => {
             console.log(JSON.stringify(flow, null, 4));
             return (
               <LoginForm
@@ -30,27 +38,29 @@ export default async function AuthPage({ params, searchParams }: any) {
               />
             );
           },
-          registration: (flow) => {
+          registration: (flow: RegistrationFlow) => {
             flow.return_to = "/auth/onboarding";
             console.log(JSON.stringify(flow, null, 4));
             return <RegistrationForm flow={flow} />;
           },
 
-          recovery: (flow) => {
+          recovery: (flow: RecoveryFlow) => {
             console.log(JSON.stringify(flow.ui, null, 4));
             return <RecoveryForm flow={flow} />;
           },
-          settings: (flow) => {
+          settings: (flow: SettingsFlow) => {
             console.log(JSON.stringify(flow.ui, null, 4));
             return <SettingsForm flow={flow} />;
           },
-          verification: (flow) => {
+          verification: (flow: VerificationFlow) => {
             console.log(JSON.stringify(flow.ui, null, 4));
             return <VerificationForm flow={flow} />;
           },
           onboarding: async () => {
             const session: Session | null = await getServerSession();
             if (!session) return null;
+            const { token } = await searchParams;
+            console.log(await searchParams);
             return (
               <TenantCreatorClient
                 config={{
@@ -63,6 +73,11 @@ export default async function AuthPage({ params, searchParams }: any) {
                         session.identity?.traits.name.first +
                         " " +
                         session.identity?.traits.name.last,
+                    },
+                  },
+                  joinForm: {
+                    token: {
+                      defaultValue: token,
                     },
                   },
                 }}
@@ -92,8 +107,17 @@ export default async function AuthPage({ params, searchParams }: any) {
                     redirect("/");
                   },
 
-                  joinOrganizationAction: async () => {
+                  joinOrganizationAction: async (formData: FormData) => {
                     "use server";
+                    const token = formData.get("token") as string;
+                    if (!token) return;
+                    const response = await omnibase.tenants.invites.accept(
+                      token
+                    );
+
+                    const c = await cookies();
+                    c.set("omnibase_postgrest_jwt", response.data?.token!);
+                    redirect("/");
                   },
                 }}
               />
