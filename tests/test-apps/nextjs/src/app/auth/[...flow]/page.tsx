@@ -1,4 +1,4 @@
-import { FlowRouter, getServerSession } from "@omnibase/nextjs/auth";
+import { FlowRouter, protectedRoute } from "@omnibase/nextjs/auth";
 import {
   LoginForm,
   RecoveryForm,
@@ -32,7 +32,6 @@ export default async function AuthPage({ params, searchParams }: any) {
             return <LoginForm register_url="/auth/registration" flow={flow} />;
           },
           registration: (flow: RegistrationFlow) => {
-            flow.return_to = "/auth/onboarding";
             return <RegistrationForm login_url="/auth/login" flow={flow} />;
           },
 
@@ -46,8 +45,7 @@ export default async function AuthPage({ params, searchParams }: any) {
             return <VerificationForm flow={flow} />;
           },
           onboarding: async () => {
-            const session: Session | null = await getServerSession();
-            if (!session) return null;
+            const session = await protectedRoute("/auth/login");
             const { token } = await searchParams;
             return (
               <TenantCreatorClient
