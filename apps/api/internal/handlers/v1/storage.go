@@ -4,7 +4,6 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/handlers"
-	"api/internal/models"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -12,7 +11,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -29,6 +27,7 @@ type StorageHandler struct {
 	s3PublicClient *s3.Client // Client configured with public endpoint for presigned URLs
 	db             *gorm.DB
 	postgrestURL   string
+	bucketName     string // Single bucket name for this project/tenant
 }
 
 func NewStorageHandler(cfg *config.Config) *StorageHandler {
@@ -67,6 +66,7 @@ func NewStorageHandler(cfg *config.Config) *StorageHandler {
 		s3PublicClient: s3PublicClient,
 		db:             db,
 		postgrestURL:   cfg.PostgRESTURL,
+		bucketName:     cfg.S3Config.BucketName,
 	}
 }
 
@@ -85,8 +85,7 @@ func extractJWTFromCookie(cookieHeader string) string {
 // POST /api/v1/storage/upload
 func (h *StorageHandler) Upload(c *gin.Context) {
 	var req struct {
-		Bucket   string                 `json:"bucket" binding:"required"`
-		Path     string                 `json:"path" binding:"required"`
+		Path     string                 `json:"path" binding:"required"` // User-controlled path (e.g., "public/images/avatar.png")
 		Metadata map[string]interface{} `json:"metadata"`
 	}
 
@@ -105,35 +104,21 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 		return
 	}
 
-	// Get bucket config
-	var bucketConfig models.Bucket
-	if err := h.db.Where("name = ?", req.Bucket).First(&bucketConfig).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			handlers.NewNotFoundErrorResponse(c)
-			return
-		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to get bucket: %w", err))
+	// User controls the full path - they define their own directory structure
+	fullPath := req.Path
+
+	// Always check RLS permission via PostgREST
+	// Users define their own policies based on path patterns (e.g., split_part(path, '/', 1) = 'public')
+	canUpload, err := h.checkRLSPermission(jwt, h.bucketName, fullPath, "INSERT")
+	if err != nil || !canUpload {
+		handlers.NewUnauthorizedResponse(c, "Access denied")
 		return
-	}
-
-	// Build full path with tenant_id/user_id/timestamp-filename.ext structure
-	timestamp := time.Now().Unix()
-	filename := filepath.Base(req.Path)
-	fullPath := fmt.Sprintf("%s/%s/%d-%s", tenantID, userID, timestamp, filename)
-
-	// Check RLS permission via PostgREST for non-public buckets
-	if !bucketConfig.IsPublic {
-		canUpload, err := h.checkRLSPermission(jwt, req.Bucket, fullPath, "INSERT")
-		if err != nil || !canUpload {
-			handlers.NewUnauthorizedResponse(c, "Access denied")
-			return
-		}
 	}
 
 	// Generate pre-signed upload URL (use public client for browser access)
 	presignClient := s3.NewPresignClient(h.s3PublicClient)
 	presignedReq, err := presignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(req.Bucket),
+		Bucket: aws.String(h.bucketName),
 		Key:    aws.String(fullPath),
 	}, s3.WithPresignExpires(15*time.Minute))
 
@@ -144,7 +129,7 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 
 	// Insert metadata via PostgREST
 	metadataRecord := map[string]interface{}{
-		"bucket_name": req.Bucket,
+		"bucket_name": h.bucketName,
 		"path":        fullPath,
 		"tenant_id":   tenantID,
 		"user_id":     userID,
@@ -165,8 +150,7 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 // POST /api/v1/storage/download
 func (h *StorageHandler) Download(c *gin.Context) {
 	var req struct {
-		Bucket string `json:"bucket" binding:"required"`
-		Path   string `json:"path" binding:"required"`
+		Path string `json:"path" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -183,7 +167,7 @@ func (h *StorageHandler) Download(c *gin.Context) {
 	}
 
 	// Check RLS via PostgREST SELECT
-	canAccess, err := h.checkRLSPermission(jwt, req.Bucket, req.Path, "SELECT")
+	canAccess, err := h.checkRLSPermission(jwt, h.bucketName, req.Path, "SELECT")
 	if err != nil || !canAccess {
 		handlers.NewUnauthorizedResponse(c, "Access denied")
 		return
@@ -192,7 +176,7 @@ func (h *StorageHandler) Download(c *gin.Context) {
 	// Generate pre-signed download URL (use public client for browser access)
 	presignClient := s3.NewPresignClient(h.s3PublicClient)
 	presignedReq, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: aws.String(req.Bucket),
+		Bucket: aws.String(h.bucketName),
 		Key:    aws.String(req.Path),
 	}, s3.WithPresignExpires(15*time.Minute))
 
@@ -209,8 +193,7 @@ func (h *StorageHandler) Download(c *gin.Context) {
 // DELETE /api/v1/storage/object
 func (h *StorageHandler) DeleteObject(c *gin.Context) {
 	var req struct {
-		Bucket string `json:"bucket" binding:"required"`
-		Path   string `json:"path" binding:"required"`
+		Path string `json:"path" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -227,14 +210,14 @@ func (h *StorageHandler) DeleteObject(c *gin.Context) {
 	}
 
 	// Delete metadata via PostgREST (RLS enforced)
-	if err := h.deleteFileMetadata(jwt, req.Bucket, req.Path); err != nil {
+	if err := h.deleteFileMetadata(jwt, h.bucketName, req.Path); err != nil {
 		handlers.NewUnauthorizedResponse(c, "Access denied or not found")
 		return
 	}
 
 	// Delete from S3 (only after metadata deletion succeeds)
 	_, err := h.s3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
-		Bucket: aws.String(req.Bucket),
+		Bucket: aws.String(h.bucketName),
 		Key:    aws.String(req.Path),
 	})
 	if err != nil {
