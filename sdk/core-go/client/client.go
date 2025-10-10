@@ -1,8 +1,6 @@
 package omnibase
 
-import (
-	"github.com/omnibase/core-go/storage"
-)
+import "github.com/PhoenixSolutionsGroup/omnibase/sdk/core-go/storage"
 
 // Client is the main entry point for the Omnibase SDK
 type OmnibaseClient struct {
