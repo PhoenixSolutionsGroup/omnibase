@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/pos/tgresql/data
+      # - postgres_data:/var/lib/pos/tgresql/data
       - ./db:/docker-entrypoint-initdb.d
     networks:
       - app-network
@@ -103,6 +103,23 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+  # Create MinIO bucket on startup
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin123; do
+        echo 'Waiting for MinIO to be ready...';
+        sleep 2;
+      done;
+      /usr/bin/mc mb myminio/dev --ignore-existing;
+      echo 'MinIO bucket \"dev\" created successfully';
+      "
+    networks:
+      - app-network
 
   # Adminer - Simple Database Management Interface
   adminer:
@@ -172,6 +189,7 @@ services:
       - S3_REGION=us-east-1
       - S3_USE_SSL=false
       - S3_FORCE_PATH_STYLE=true
+      - S3_BUCKET_NAME=dev
 
       # Email Configuration
       - SMTP_CONNECTION_URI=smtp://mailpit:1025

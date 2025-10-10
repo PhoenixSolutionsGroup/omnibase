@@ -50,34 +50,21 @@ CREATE TABLE auth.tenant_invites (
     FOREIGN KEY (tenant_id) REFERENCES auth.tenants(id) ON DELETE CASCADE
 );
 
--- storage.buckets table
-CREATE TABLE storage.buckets (
-    name TEXT PRIMARY KEY,
-    is_public BOOLEAN NOT NULL DEFAULT false,
-    max_file_size BIGINT DEFAULT 10485760, -- 10MB default
-    allowed_mime_types TEXT[],
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-);
-
--- storage.objects table (new file storage with tenant support)
+-- storage.objects table (path-based storage with user-controlled directory structures)
+-- bucket_name stores the project/tenant S3 bucket from config
+-- path is user-controlled (e.g., "public/images/avatar.png", "users/123/private/doc.pdf")
+-- RLS policies enforce permissions based on path patterns
 CREATE TABLE storage.objects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    bucket_name TEXT NOT NULL REFERENCES storage.buckets(name),
-    path TEXT NOT NULL,
+    bucket_name TEXT NOT NULL, -- Stores project/tenant bucket name from config
+    path TEXT NOT NULL,        -- User-controlled full path including directory structure
     tenant_id TEXT REFERENCES auth.tenants(id),
     user_id TEXT NOT NULL,
     metadata JSONB DEFAULT '{}',
-    is_public BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     UNIQUE(bucket_name, path)
 );
-
--- Seed default buckets
-INSERT INTO storage.buckets (name, is_public, max_file_size) VALUES
-    ('public', true, 10485760),
-    ('user-uploads', false, 10485760),
-    ('avatars', false, 5242880);
 
 -- stripe.stripe_configs table
 CREATE TABLE stripe.stripe_configs (
@@ -108,10 +95,10 @@ CREATE INDEX idx_tenant_invites_tenant_id ON auth.tenant_invites(tenant_id);
 CREATE INDEX idx_tenant_invites_email ON auth.tenant_invites(email);
 CREATE INDEX idx_tenant_invites_token ON auth.tenant_invites(token);
 
-CREATE INDEX idx_objects_bucket_name ON storage.objects(bucket_name);
+CREATE INDEX idx_objects_bucket_tenant_path ON storage.objects(bucket_name, tenant_id, path);
 CREATE INDEX idx_objects_tenant_id ON storage.objects(tenant_id);
 CREATE INDEX idx_objects_user_id ON storage.objects(user_id);
-CREATE INDEX idx_objects_path ON storage.objects(path);
+CREATE INDEX idx_objects_path_prefix ON storage.objects(bucket_name, tenant_id, (split_part(path, '/', 1)));
 
 CREATE INDEX idx_stripe_id_mappings_config_id ON stripe.stripe_id_mappings(config_id);
 CREATE INDEX idx_stripe_id_mappings_config_item_id ON stripe.stripe_id_mappings(config_item_id);

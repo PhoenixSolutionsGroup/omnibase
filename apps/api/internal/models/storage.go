@@ -31,26 +31,13 @@ func (m *StorageMetadata) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, m)
 }
 
-type Bucket struct {
-	Name             string    `json:"name" gorm:"primary_key"`
-	IsPublic         bool      `json:"is_public" gorm:"default:false"`
-	MaxFileSize      int64     `json:"max_file_size" gorm:"default:10485760"`
-	AllowedMimeTypes []string  `json:"allowed_mime_types" gorm:"type:text[]"`
-	CreatedAt        time.Time `json:"created_at"`
-}
-
-func (Bucket) TableName() string {
-	return "storage.buckets"
-}
-
 type StorageObject struct {
 	ID         uuid.UUID       `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	BucketName string          `json:"bucket_name" gorm:"not null"`
-	Path       string          `json:"path" gorm:"not null"`
+	BucketName string          `json:"bucket_name" gorm:"not null"` // Now stores project/tenant bucket name from config
+	Path       string          `json:"path" gorm:"not null"`        // User-controlled full path (e.g., "public/images/avatar.png")
 	TenantID   *string         `json:"tenant_id,omitempty"`
 	UserID     string          `json:"user_id" gorm:"not null"`
 	Metadata   StorageMetadata `json:"metadata,omitempty" gorm:"type:jsonb;default:'{}'"`
-	IsPublic   bool            `json:"is_public" gorm:"default:false"`
 	CreatedAt  time.Time       `json:"created_at"`
 	UpdatedAt  time.Time       `json:"updated_at"`
 }

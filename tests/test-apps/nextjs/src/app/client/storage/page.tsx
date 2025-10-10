@@ -38,16 +38,18 @@ export default function StoragePage() {
     setSuccess("");
 
     try {
-      const result = await omnibase.storage
-        .bucket("public")
-        .upload(`test/${file.name}`, file, {
+      const result = await omnibase.storage.upload(
+        `public/${file.name}`,
+        file,
+        {
           metadata: {
             department: "engineering",
             project: "test-upload",
             tags: ["test", "demo"],
             uploaded_by: "test-user",
           },
-        });
+        }
+      );
 
       setUploadResult(result.path);
       setSuccess(`✅ File uploaded successfully! Path: ${result.path}`);
@@ -70,9 +72,7 @@ export default function StoragePage() {
     setSuccess("");
 
     try {
-      const result = await omnibase.storage
-        .bucket("public")
-        .download(downloadPath);
+      const result = await omnibase.storage.download(downloadPath);
 
       // Open download URL in new tab
       const response = await fetch(result.download_url, {
@@ -112,7 +112,7 @@ export default function StoragePage() {
     setSuccess("");
 
     try {
-      await omnibase.storage.bucket("public").delete(deletePath);
+      await omnibase.storage.delete(deletePath);
       setSuccess(`✅ File deleted successfully! Path: ${deletePath}`);
       setDeletePath("");
     } catch (err: any) {

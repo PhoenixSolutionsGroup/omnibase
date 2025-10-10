@@ -14,7 +14,7 @@ export interface UploadResult {
    */
   upload_url: string;
   /**
-   * Full path where the file will be stored (includes tenant_id prefix)
+   * Full path where the file is stored
    */
   path: string;
 }
@@ -27,37 +27,62 @@ export interface DownloadResult {
 }
 
 /**
- * Storage bucket for file operations
+ * Storage client for file operations with path-based organization
+ *
+ * Users control the full file path and define RLS policies based on path patterns.
+ * Common patterns:
+ * - `public/*` - Public files
+ * - `users/{user_id}/*` - User private files
+ * - `teams/{team_id}/*` - Team shared files
+ *
+ * @example
+ * ```typescript
+ * const storage = omnibase.storage();
+ *
+ * // Upload to public directory
+ * await storage.upload('public/images/avatar.png', file);
+ *
+ * // Upload to user private directory
+ * await storage.upload('users/123/documents/report.pdf', file, {
+ *   metadata: {
+ *     department: 'engineering',
+ *     confidential: true
+ *   }
+ * });
+ *
+ * // Download file
+ * const { download_url } = await storage.download('public/images/avatar.png');
+ *
+ * // Delete file
+ * await storage.delete('users/123/documents/report.pdf');
+ * ```
  */
-export class Bucket {
-  constructor(private client: OmnibaseClient, private name: string) {}
+export class StorageClient {
+  constructor(private client: OmnibaseClient) {}
 
   /**
-   * Upload a file to the bucket
+   * Upload a file to storage
    *
-   * @param path - Path within the bucket (will be prefixed with tenant_id)
+   * @param path - Full path for the file (e.g., "public/images/avatar.png", "users/123/private/doc.pdf")
    * @param file - File or Blob to upload
    * @param options - Upload options including custom metadata
    *
    * @example
    * ```typescript
-   * const result = await storage.bucket('user-uploads').upload(
-   *   'documents/report.pdf',
+   * const result = await storage.upload(
+   *   'public/avatars/user-123.png',
    *   file,
    *   {
    *     metadata: {
-   *       department: 'engineering',
-   *       project: 'Q4-review',
-   *       tags: ['important', 'quarterly']
+   *       userId: '123',
+   *       uploadedBy: 'john@example.com',
+   *       tags: ['profile', 'avatar']
    *     }
    *   }
    * );
    *
-   * // Upload file to S3 using pre-signed URL
-   * await fetch(result.upload_url, {
-   *   method: 'PUT',
-   *   body: file
-   * });
+   * // File is automatically uploaded to S3 via the presigned URL
+   * console.log('File uploaded to:', result.path);
    * ```
    */
   async upload(
@@ -84,7 +109,6 @@ export class Bucket {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bucket: this.name,
         path,
         metadata,
       }),
@@ -117,14 +141,13 @@ export class Bucket {
   }
 
   /**
-   * Download a file from the bucket
+   * Download a file from storage
    *
-   * @param path - Path to the file (including tenant_id prefix)
+   * @param path - Full path to the file
    *
    * @example
    * ```typescript
-   * const { download_url } = await storage.bucket('user-uploads')
-   *   .download('tenant-123/documents/report.pdf');
+   * const { download_url } = await storage.download('public/images/logo.png');
    *
    * // Download the file
    * const response = await fetch(download_url);
@@ -138,7 +161,6 @@ export class Bucket {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bucket: this.name,
         path,
       }),
     });
@@ -155,14 +177,13 @@ export class Bucket {
   }
 
   /**
-   * Delete a file from the bucket
+   * Delete a file from storage
    *
-   * @param path - Path to the file (including tenant_id prefix)
+   * @param path - Full path to the file
    *
    * @example
    * ```typescript
-   * await storage.bucket('user-uploads')
-   *   .delete('tenant-123/documents/report.pdf');
+   * await storage.delete('users/123/documents/old-report.pdf');
    * ```
    */
   async delete(path: string): Promise<void> {
@@ -172,7 +193,6 @@ export class Bucket {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        bucket: this.name,
         path,
       }),
     });
@@ -183,38 +203,5 @@ export class Bucket {
         .catch(() => ({ error: "Delete failed" }))) as { error?: string };
       throw new Error(error.error || "Failed to delete file");
     }
-  }
-}
-
-/**
- * Storage client for file operations
- *
- * @example
- * ```typescript
- * const storage = omnibase.storage();
- *
- * // Upload with metadata
- * await storage.bucket('documents').upload(
- *   'report.pdf',
- *   file,
- *   {
- *     metadata: {
- *       department: 'engineering',
- *       project: 'Q4-review'
- *     }
- *   }
- * );
- * ```
- */
-export class StorageClient {
-  constructor(private client: OmnibaseClient) {}
-
-  /**
-   * Get a bucket reference for file operations
-   *
-   * @param name - Bucket name (e.g., 'public', 'user-uploads', 'avatars')
-   */
-  bucket(name: string): Bucket {
-    return new Bucket(this.client, name);
   }
 }

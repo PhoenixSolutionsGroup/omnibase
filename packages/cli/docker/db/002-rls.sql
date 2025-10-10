@@ -59,7 +59,6 @@ GRANT SELECT ON auth.tenant_invites TO anon_user;
 
 -- Grant permissions on storage tables
 GRANT SELECT, INSERT, UPDATE, DELETE ON storage.objects TO anon_user;
-GRANT SELECT ON storage.buckets TO anon_user;
 
 -- Enable Row Level Security only on auth tables by default
 ALTER TABLE auth.tenants ENABLE ROW LEVEL SECURITY;
@@ -98,32 +97,41 @@ CREATE POLICY tenant_invites_access ON auth.tenant_invites
 
 -- Enable RLS on storage tables
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE storage.buckets ENABLE ROW LEVEL SECURITY;
 
--- Storage RLS policies
-CREATE POLICY storage_buckets_read_all ON storage.buckets
-    FOR SELECT
-    TO anon_user
-    USING (true); -- All authenticated users can see bucket configs
 
+-- Allow public directory read access
 CREATE POLICY storage_objects_public_read ON storage.objects
     FOR SELECT
     TO anon_user
     USING (
-        is_public = true OR bucket_name = 'public'
+        split_part(path, '/', 1) = 'public'
     );
 
+-- Allow authenticated users to upload to public directory
+CREATE POLICY storage_objects_public_insert ON storage.objects
+    FOR INSERT
+    TO anon_user
+    WITH CHECK (
+        split_part(path, '/', 1) = 'public' AND
+        user_id = auth.user_id()
+    );
+
+-- Allow users full control over their own files (any path)
 CREATE POLICY storage_objects_user_all ON storage.objects
     FOR ALL
     TO anon_user
     USING (
         user_id = auth.user_id()
+    )
+    WITH CHECK (
+        user_id = auth.user_id()
     );
 
+-- Allow tenant members to read shared files
 CREATE POLICY storage_objects_tenant_read ON storage.objects
     FOR SELECT
     TO anon_user
     USING (
+        split_part(path, '/', 1) = 'shared' AND
         tenant_id = ANY(auth.user_tenant_ids())
     );
-

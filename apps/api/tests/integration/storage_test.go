@@ -21,8 +21,7 @@ func getAPIURL() string {
 // Test Upload endpoint - should reject without auth
 func TestStorageUpload_NoAuth(t *testing.T) {
 	requestBody := map[string]interface{}{
-		"bucket": "user-uploads",
-		"path":   "test/file.txt",
+		"path": "public/images/test.png",
 	}
 
 	body, _ := json.Marshal(requestBody)
@@ -36,9 +35,9 @@ func TestStorageUpload_NoAuth(t *testing.T) {
 	assert.Equal(t, 401, resp.StatusCode, "Should return 401 without authentication")
 }
 
-func TestStorageUpload_MissingBucket(t *testing.T) {
+func TestStorageUpload_MissingPath(t *testing.T) {
 	requestBody := map[string]interface{}{
-		"path": "test/file.txt",
+		"metadata": map[string]interface{}{"test": "value"},
 	}
 
 	body, _ := json.Marshal(requestBody)
@@ -50,14 +49,43 @@ func TestStorageUpload_MissingBucket(t *testing.T) {
 	resp, err := client.Do(req)
 
 	require.NoError(t, err)
-	assert.Contains(t, []int{400, 401}, resp.StatusCode, "Should return 400 for missing bucket or 401 for bad auth")
+	assert.Contains(t, []int{400, 401}, resp.StatusCode, "Should return 400 for missing path or 401 for bad auth")
+}
+
+func TestStorageUpload_PathStructures(t *testing.T) {
+	testCases := []struct {
+		name string
+		path string
+	}{
+		{"Public file", "public/images/avatar.png"},
+		{"User private file", "users/123/private/document.pdf"},
+		{"Team shared file", "teams/456/shared/data.json"},
+		{"Nested structure", "projects/789/public/assets/logo.svg"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			requestBody := map[string]interface{}{
+				"path": tc.path,
+			}
+
+			body, _ := json.Marshal(requestBody)
+			req, _ := http.NewRequest("POST", getAPIURL()+"/api/v1/storage/upload", bytes.NewBuffer(body))
+			req.Header.Set("Content-Type", "application/json")
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+
+			require.NoError(t, err)
+			assert.Equal(t, 401, resp.StatusCode, "Should return 401 without authentication")
+		})
+	}
 }
 
 // Test Download endpoint - should reject without auth
 func TestStorageDownload_NoAuth(t *testing.T) {
 	requestBody := map[string]interface{}{
-		"bucket": "user-uploads",
-		"path":   "test/file.txt",
+		"path": "public/images/test.png",
 	}
 
 	body, _ := json.Marshal(requestBody)
@@ -72,9 +100,7 @@ func TestStorageDownload_NoAuth(t *testing.T) {
 }
 
 func TestStorageDownload_MissingPath(t *testing.T) {
-	requestBody := map[string]interface{}{
-		"bucket": "user-uploads",
-	}
+	requestBody := map[string]interface{}{}
 
 	body, _ := json.Marshal(requestBody)
 	req, _ := http.NewRequest("POST", getAPIURL()+"/api/v1/storage/download", bytes.NewBuffer(body))
@@ -91,8 +117,7 @@ func TestStorageDownload_MissingPath(t *testing.T) {
 // Test Delete endpoint - should reject without auth
 func TestStorageDelete_NoAuth(t *testing.T) {
 	requestBody := map[string]interface{}{
-		"bucket": "user-uploads",
-		"path":   "test/file.txt",
+		"path": "public/images/test.png",
 	}
 
 	body, _ := json.Marshal(requestBody)
@@ -106,10 +131,8 @@ func TestStorageDelete_NoAuth(t *testing.T) {
 	assert.Equal(t, 401, resp.StatusCode, "Should return 401 without authentication")
 }
 
-func TestStorageDelete_MissingBucket(t *testing.T) {
-	requestBody := map[string]interface{}{
-		"path": "test/file.txt",
-	}
+func TestStorageDelete_MissingPath(t *testing.T) {
+	requestBody := map[string]interface{}{}
 
 	body, _ := json.Marshal(requestBody)
 	req, _ := http.NewRequest("DELETE", getAPIURL()+"/api/v1/storage/object", bytes.NewBuffer(body))
@@ -120,7 +143,7 @@ func TestStorageDelete_MissingBucket(t *testing.T) {
 	resp, err := client.Do(req)
 
 	require.NoError(t, err)
-	assert.Contains(t, []int{400, 401}, resp.StatusCode, "Should return 400 for missing bucket or 401 for bad auth")
+	assert.Contains(t, []int{400, 401}, resp.StatusCode, "Should return 400 for missing path or 401 for bad auth")
 }
 
 // Test malformed JSON
