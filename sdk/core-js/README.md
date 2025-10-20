@@ -1,30 +1,23 @@
 # @omnibase/core-js
 
+**Comprehensive authentication and multi-tenant platform integration**
 
-***
+The OmniBase Core SDK provides everything you need to integrate with the OmniBase platform, including comprehensive authentication flows via Ory Kratos, multi-tenant management, user invitations, and database operations. Built for both browser and Node.js environments with full TypeScript support.
 
-
-OmniBase Core SDK - Comprehensive authentication and multi-tenant platform integration
-
-The OmniBase Core SDK provides everything you need to integrate with the OmniBase platform,
-including comprehensive authentication flows via Ory Kratos, multi-tenant management, user
-invitations, and database operations. Built for both browser and Node.js environments with
-full TypeScript support.
-
-[![npm version](https://badge.fury.io/js/%40omnibase%2Fcore-js.svg)](https://badge.fury.io/js/%40omnibase%2Fcore-js)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+![npm version](https://img.shields.io/npm/v/@omnibase/core-js)
+![License](https://img.shields.io/npm/l/@omnibase/core-js)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
 
 ## Features
 
-- 🔐 **Authentication Flows** - Complete Ory Kratos integration with login, registration, recovery, settings, and verification
-- 🏢 **Multi-tenant Management** - Organization lifecycle management with billing integration
-- 👥 **User Invitations** - Secure tenant user invitation and acceptance workflows
-- 🔄 **Tenant Switching** - Seamless switching between multiple tenant contexts
-- 🗄️ **Database Integration** - Supabase PostgREST client for advanced database operations
-- 🛡️ **Type Safe** - Full TypeScript definitions with comprehensive type safety
-- 🌐 **Universal** - Works in browser and Node.js environments
-- 🔒 **Secure** - HTTP-only cookies and JWT token-based authentication
+| Feature | Description | Documentation |
+|---------|-------------|---------------|
+| Authentication Flows | Complete Ory Kratos integration with login, registration, recovery, settings, and verification | [Auth Docs](https://docs.omnibase.dev) |
+| Multi-tenant Management | Organization lifecycle management with billing integration | [Tenant Docs](https://docs.omnibase.dev) |
+| User Invitations | Secure tenant user invitation and acceptance workflows | [Invitation Docs](https://docs.omnibase.dev) |
+| Tenant Switching | Seamless switching between multiple tenant contexts | [Context Docs](https://docs.omnibase.dev) |
+| Database Integration | Supabase PostgREST client for advanced database operations | [Database Docs](https://docs.omnibase.dev) |
+| Type Safety | Full TypeScript definitions with comprehensive type coverage | [API Reference](https://docs.omnibase.dev) |
 
 ## Quick Start
 
@@ -61,60 +54,28 @@ if (tenant.status === 200 && tenant.data) {
 ## Installation
 
 ```bash
+# npm
 npm install @omnibase/core-js
-# or
+
+# yarn
 yarn add @omnibase/core-js
-# or
+
+# pnpm
 pnpm add @omnibase/core-js
-# or
+
+# bun
 bun add @omnibase/core-js
 ```
 
-## Modules
+## Modules Overview
 
-- **Authentication** - Ory Kratos flow management for login, registration, recovery, settings, and verification flows
-- **Tenants** - Multi-tenant organization management including creation, deletion, user invitations, and tenant switching
-- **Database** - Supabase PostgREST client for direct database access and advanced queries
+The SDK is organized into three main modules:
 
-## Authentication Integration
+- **Authentication** - Ory Kratos flow management for login, registration, recovery, settings, and verification flows with type-safe session handling
+- **Tenants** - Multi-tenant organization management including creation, deletion, user invitations, and tenant switching with billing integration
+- **Database** - Supabase PostgREST client for direct database access and advanced queries with row-level security support
 
-The SDK integrates seamlessly with Ory Kratos self-service authentication flows:
-
-```typescript
-import type {
-  LoginFlow,
-  RegistrationFlow,
-  RecoveryFlow,
-  SettingsFlow,
-  VerificationFlow,
-  Session,
-  FlowType
-} from '@omnibase/core-js';
-
-// Type-safe flow handling
-function handleAuthFlow(flow: FlowType) {
-  switch (flow.type) {
-    case 'login':
-      return processLoginFlow(flow as LoginFlow);
-    case 'registration':
-      return processRegistrationFlow(flow as RegistrationFlow);
-    case 'recovery':
-      return processRecoveryFlow(flow as RecoveryFlow);
-    default:
-      throw new Error(`Unsupported flow type: ${flow.type}`);
-  }
-}
-
-// Session validation
-function isSessionValid(session: Session): boolean {
-  return session.active === true &&
-         session.expires_at ? new Date(session.expires_at) > new Date() : false;
-}
-```
-
-## Multi-tenant Examples
-
-### Complete Tenant Workflow
+## Complete Workflow Example
 
 ```typescript
 import {
@@ -162,169 +123,74 @@ if (newTenant.status === 200 && newTenant.data) {
 }
 ```
 
-### Tenant Management
-
-```typescript
-import { deleteTenant, type ApiResponse } from '@omnibase/core-js';
-
-// Delete a tenant
-const deleteResult = await deleteTenant('tenant-uuid');
-if (deleteResult.status === 200) {
-  console.log('Tenant successfully deleted');
-} else {
-  console.error('Failed to delete tenant:', deleteResult.error);
-}
-```
-
-## Database Integration
-
-```typescript
-import { createClient } from '@omnibase/core-js';
-
-// Create database client for advanced operations
-const db = createClient({
-  url: process.env.DATABASE_URL || 'your-database-url',
-  // additional PostgREST client options
-});
-
-// Use the client for direct database operations
-const { data, error } = await db
-  .from('tenants')
-  .select('*')
-  .eq('active', true);
-
-if (error) {
-  console.error('Database query failed:', error);
-} else {
-  console.log('Active tenants:', data);
-}
-```
-
-## Type Definitions
-
-The SDK provides comprehensive TypeScript types for all operations:
-
-```typescript
-import type {
-  // Authentication types
-  LoginFlow,
-  RegistrationFlow,
-  RecoveryFlow,
-  SettingsFlow,
-  VerificationFlow,
-  LogoutFlow,
-  Session,
-  FlowType,
-
-  // Tenant types
-  Tenant,
-  CreateTenantRequest,
-  CreateTenantResponse,
-  CreateTenantUserInviteRequest,
-  CreateTenantUserInviteResponse,
-  AcceptTenantInviteResponse,
-  SwitchActiveTenantResponse,
-  DeleteTenantResponse,
-  ApiResponse
-} from '@omnibase/core-js';
-```
-
 ## Error Handling
 
-All SDK functions return consistent `ApiResponse` types with proper error handling:
+All SDK functions return consistent `ApiResponse` types:
 
 ```typescript
-try {
-  const result = await createTenant({
-    name: 'My Tenant',
-    billing_email: 'billing@example.com',
-    user_id: 'user-123'
-  });
+const result = await createTenant({
+  name: 'My Tenant',
+  billing_email: 'billing@example.com',
+  user_id: 'user-123'
+});
 
-  if (result.status === 200 && result.data) {
-    console.log('Tenant created:', result.data.tenant);
-  } else {
-    console.error('Failed to create tenant:', result.error);
-  }
-} catch (error) {
-  console.error('Network or unexpected error:', error);
+if (result.status === 200 && result.data) {
+  console.log('Tenant created:', result.data.tenant);
+} else {
+  console.error('Failed:', result.error);
 }
 ```
 
 ## Environment Configuration
 
-The SDK requires environment configuration for proper operation:
-
 ```bash
-# Required environment variables
+# Required: OmniBase authentication endpoint
 OMNIBASE_AUTH_URL=https://your-auth-endpoint.com
 
-# Optional database configuration
+# Optional: Database configuration for PostgREST client
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
 ```
 
 ## Security Features
 
-- **HTTP-only Cookies** - Secure session management resistant to XSS attacks
-- **JWT Tokens** - Row-level security (RLS) policy support for database operations
-- **CSRF Protection** - Built-in protection against cross-site request forgery
-- **Flow-based Authentication** - Secure, stateful authentication flows via Ory Kratos
-- **Token Expiration** - Automatic handling of invitation token expiration
+| Feature | Description |
+|---------|-------------|
+| HTTP-only Cookies | Secure session management resistant to XSS attacks |
+| JWT Tokens | Row-level security policy support for database operations |
+| CSRF Protection | Built-in protection against cross-site request forgery |
+| Flow-based Authentication | Secure, stateful authentication flows via Ory Kratos |
+| Token Expiration | Automatic handling of invitation token expiration |
 
 ## Environment Support
 
-- ✅ **Browser** - Works in all modern browsers with proper CORS handling
-- ✅ **Node.js** - Version 16+ supported with full server-side functionality
-- ✅ **React/Vue/Angular** - Framework agnostic with TypeScript support
-- ✅ **TypeScript** - Full type definitions included with comprehensive coverage
-- ✅ **ESM/CJS** - Supports both module formats for maximum compatibility
-- ✅ **Edge Runtime** - Compatible with Vercel Edge, Cloudflare Workers, and similar platforms
+| Environment | Status | Notes |
+|-------------|--------|-------|
+| Browser | ✅ | All modern browsers with CORS support |
+| Node.js | ✅ | Version 16+ required |
+| React/Vue/Angular | ✅ | Framework agnostic |
+| TypeScript | ✅ | Full type definitions included |
+| ESM/CJS | ✅ | Both module formats supported |
+| Edge Runtime | ✅ | Vercel Edge, Cloudflare Workers compatible |
 
 ## Related Packages
 
-- [`@omnibase/sdk-nextjs`](../sdk-nextjs) - Next.js optimized SDK with middleware and server components
-- [`@omnibase/sdk-shadcn`](../sdk-shadcn) - Pre-built UI components with shadcn/ui integration
+- **[@omnibase/sdk-nextjs](https://www.npmjs.com/package/@omnibase/sdk-nextjs)** - Next.js optimized SDK with middleware and server components
+- **[@omnibase/sdk-shadcn](https://www.npmjs.com/package/@omnibase/sdk-shadcn)** - Pre-built UI components with shadcn/ui integration
 
 ## Architecture
 
-The SDK is built around three core architectural concepts:
+The SDK is built around three core concepts:
 
 1. **Authentication Flows** - Comprehensive Ory Kratos integration handling all user authentication states and transitions
 2. **Multi-tenant Context** - Complete organizational boundary management with billing integration and user access control
 3. **Database Integration** - Direct Supabase PostgREST access for advanced queries and data operations
 
-Each module is designed to work independently or together, allowing you to use only the parts you need for your specific integration requirements. The SDK maintains consistency across all operations with standardized response types and error handling patterns.
+Each module works independently or together, allowing you to use only what you need. The SDK maintains consistency across all operations with standardized response types and error handling patterns.
 
-## Interfaces
+## API Reference
 
-- [TenantInvite](interfaces/TenantInvite.md)
+For detailed API documentation including all types, interfaces, and functions, visit the [full API reference](https://docs.omnibase.dev).
 
-## Type Aliases
+## License
 
-- [FlowType](type-aliases/FlowType.md)
-- [LogoutFlow](type-aliases/LogoutFlow.md)
-- [LoginFlow](type-aliases/LoginFlow.md)
-- [RecoveryFlow](type-aliases/RecoveryFlow.md)
-- [VerificationFlow](type-aliases/VerificationFlow.md)
-- [RegistrationFlow](type-aliases/RegistrationFlow.md)
-- [SettingsFlow](type-aliases/SettingsFlow.md)
-- [Session](type-aliases/Session.md)
-- [AcceptTenantInviteRequest](type-aliases/AcceptTenantInviteRequest.md)
-- [AcceptTenantInviteResponse](type-aliases/AcceptTenantInviteResponse.md)
-- [CreateTenantUserInviteResponse](type-aliases/CreateTenantUserInviteResponse.md)
-- [CreateTenantUserInviteRequest](type-aliases/CreateTenantUserInviteRequest.md)
-- [CreateTenantResponse](type-aliases/CreateTenantResponse.md)
-- [Tenant](type-aliases/Tenant.md)
-- [CreateTenantRequest](type-aliases/CreateTenantRequest.md)
-- [DeleteTenantResponse](type-aliases/DeleteTenantResponse.md)
-- [SwitchActiveTenantResponse](type-aliases/SwitchActiveTenantResponse.md)
-- [ApiResponse](type-aliases/ApiResponse.md)
-
-## Functions
-
-- [createClient](functions/createClient.md)
-- [acceptTenantInvite](functions/acceptTenantInvite.md)
-- [createTenantUserInvite](functions/createTenantUserInvite.md)
-- [createTenant](functions/createTenant.md)
-- [deleteTenant](functions/deleteTenant.md)
-- [switchActiveTenant](functions/switchActiveTenant.md)
+MIT
