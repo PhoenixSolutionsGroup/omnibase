@@ -30,7 +30,7 @@ import { postgrestJWTCheckMiddleware } from "./postgrest";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Middleware
  */
@@ -64,70 +64,46 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
 /**
  * Creates a Next.js middleware function with authentication and tenant checking
  *
- * This middleware combines Ory authentication with OmniBase tenant validation.
- * It intercepts incoming requests to verify user authentication via Ory, and
- * optionally checks if authenticated users belong to a tenant before allowing
- * access to protected routes.
+ * This middleware combines Ory authentication with OmniBase tenant validation
+ * and PostgREST JWT management. It intercepts incoming requests to verify user
+ * authentication via Ory, optionally checks if authenticated users belong to a
+ * tenant, and ensures PostgREST JWT tokens are available for database access.
  *
- * The middleware performs the following checks in order:
- * 1. Delegates authentication to Ory middleware
- * 2. Checks if the current path requires tenant membership
- * 3. Validates that the authenticated user belongs to a tenant
- * 4. Redirects non-tenant users to an onboarding page
+ * The middleware performs the following operations in order:
+ * 1. Retrieves the current user session
+ * 2. Validates tenant membership for configured paths (if enabled)
+ * 3. Ensures PostgREST JWT token is available for database access
+ * 4. Delegates remaining authentication to Ory middleware
+ * 5. Merges cookies from all middleware operations
  *
  * Path matching supports both exact matches and wildcard patterns:
  * - Exact: '/dashboard' matches only '/dashboard'
  * - Prefix: '/dashboard' also matches '/dashboard/settings'
  * - Wildcard: '/api/*' matches all paths starting with '/api/'
  *
- * @param config - Configuration object for middleware behavior
- * @param config.tenant_check - Enable tenant membership validation
- * @param config.tenant_check_paths - Paths requiring tenant membership
- * @param config.tenant_check_redirect_url - Redirect destination for non-tenant users
+ * @param api_url - The OmniBase API URL (typically from NEXT_PUBLIC_OMNIBASE_API_URL)
+ * @param config - Configuration object for middleware behavior (optional)
+ * @param config.tenant_check - Enable tenant membership validation (default: true)
+ * @param config.tenant_check_paths - Paths requiring tenant membership (default: ['/'])
+ * @param config.tenant_check_redirect_url - Redirect destination for non-tenant users (default: '/auth/onboarding')
  *
  * @returns Next.js middleware function that can be exported from middleware.ts
  *
  * @example
- * Basic usage with default configuration:
  * ```typescript
+ * // middleware.ts - Basic usage with default configuration
  * import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
  *
- * export default createOmniBaseMiddleware();
+ * export const middleware = createOmniBaseMiddleware(
+ *   process.env.NEXT_PUBLIC_OMNIBASE_API_URL!
+ * );
  *
  * export const config = {
- *   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+ *   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
  * };
  * ```
  *
- * @example
- * Custom configuration with specific protected paths:
- * ```typescript
- * import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
- *
- * export default createOmniBaseMiddleware({
- *   tenant_check: true,
- *   tenant_check_paths: [
- *     '/dashboard/*',
- *     '/projects/*',
- *     '/settings'
- *   ],
- *   tenant_check_redirect_url: '/onboarding/create-tenant'
- * });
- * ```
- *
- * @example
- * Disable tenant checking for specific deployments:
- * ```typescript
- * import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
- *
- * export default createOmniBaseMiddleware({
- *   tenant_check: false,
- *   tenant_check_paths: [],
- *   tenant_check_redirect_url: '/auth/onboarding'
- * });
- * ```
- *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Middleware
  */

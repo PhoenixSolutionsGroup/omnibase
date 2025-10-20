@@ -36,7 +36,7 @@ import { TenantUserManager } from "./user";
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Tenant Handler
  */
@@ -52,15 +52,27 @@ export class TenantActionsHandler {
    *
    * @example
    * ```typescript
+   * // In your server-side lib file (e.g., lib/server.ts)
    * import { OmnibaseClient } from '@omnibase/core-js';
    * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
+   * import { cookies } from 'next/headers';
    *
-   * const client = new OmnibaseClient({
-   *   apiKey: process.env.OMNIBASE_API_KEY!,
-   *   baseUrl: process.env.OMNIBASE_API_URL
+   * const omnibase = new OmnibaseClient({
+   *   api_url: process.env.OMNIBASE_API_URL!,
+   *   fetch: async (endpoint, options) => {
+   *     const cookieStore = await cookies();
+   *     const cookieHeader = Array.from(cookieStore.getAll())
+   *       .map((cookie) => `${cookie.name}=${cookie.value}`)
+   *       .join('; ');
+   *     return fetch(endpoint, {
+   *       ...options,
+   *       credentials: 'include',
+   *       headers: { Cookie: cookieHeader, ...options.headers }
+   *     });
+   *   }
    * });
    *
-   * const tenantHandler = new TenantActionsHandler(client);
+   * const tenantActions = new TenantActionsHandler(omnibase);
    * ```
    *
    * @group Tenant Handler
@@ -84,7 +96,7 @@ export class TenantActionsHandler {
    * const removeUserAction = tenantHandler.user.remove;
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @group Tenant Handler
    */
   user: TenantUserManager;

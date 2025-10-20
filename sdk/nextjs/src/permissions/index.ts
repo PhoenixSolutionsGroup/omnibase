@@ -13,25 +13,28 @@
  * - Built on Ory Keto's relationship tuples model
  *
  * @example
- * Basic usage with server actions:
  * ```typescript
+ * // app/server/permissions/page.tsx
  * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
- * import { createServerClient } from '@omnibase/nextjs';
+ * import { OmnibaseClient } from '@omnibase/core-js';
  *
- * const client = createServerClient();
- * const permissions = new PermissionActionsHandler(client);
+ * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+ * const permissions = new PermissionActionsHandler(omnibase);
  *
- * // Create a permission relationship
- * const createAction = permissions.relationship.create.bind(permissions.relationship);
- *
- * // Use in a server component
- * <form action={createAction}>
- *   <input name="namespace" value="tenants" />
- *   <input name="object" value="tenant:123" />
- *   <input name="relation" value="member" />
- *   <input name="subject_id" value="user:456" />
- *   <button type="submit">Grant Permission</button>
- * </form>
+ * export default function PermissionsPage() {
+ *   return (
+ *     <form action={async (prevState, formData) => {
+ *       'use server';
+ *       return permissions.relationship.create(prevState, formData);
+ *     }}>
+ *       <input name="namespace" defaultValue="Tenant" />
+ *       <input name="object" placeholder="tenant_123" />
+ *       <input name="relation" placeholder="members" />
+ *       <input name="subject_id" placeholder="user_456" />
+ *       <button type="submit">Grant Permission</button>
+ *     </form>
+ *   );
+ * }
  * ```
  *
  * @module Permissions

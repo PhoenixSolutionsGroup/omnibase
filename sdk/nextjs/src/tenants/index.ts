@@ -20,75 +20,30 @@
  * redirects or error responses.
  *
  * @example
- * Creating a tenant with form action:
+ * Setting up tenant actions in a Next.js server component:
  * ```typescript
- * import { createTenantAction } from '@omnibase/nextjs/tenants';
- * import { useActionState } from 'react';
+ * // In your page.tsx (server component)
+ * import { omnibase } from '@/lib/server';
+ * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
+ * import { getServerSession } from '@omnibase/nextjs/auth';
  *
- * export function CreateTenantForm({ userId }: { userId: string }) {
- *   const [state, action, isPending] = useActionState(createTenantAction, null);
+ * const actions = new TenantActionsHandler(omnibase);
+ *
+ * export default async function TenantsPage() {
+ *   const session = await getServerSession();
  *
  *   return (
- *     <form action={action}>
- *       <input name="name" placeholder="Tenant Name" required />
- *       <input name="billing_email" type="email" placeholder="Billing Email" required />
- *       <input name="user_id" type="hidden" value={userId} />
- *       <input name="redirect_to" type="hidden" value="/dashboard" />
- *
- *       {state?.error && <p className="error">{state.error}</p>}
- *       <button type="submit" disabled={isPending}>
- *         {isPending ? 'Creating...' : 'Create Tenant'}
- *       </button>
- *     </form>
- *   );
- * }
- * ```
- *
- * @example
- * Tenant switching:
- * ```typescript
- * import { switchActiveTenantAction } from '@omnibase/nextjs/tenants';
- * import { useActionState } from 'react';
- *
- * export function TenantSwitcher({ tenants }: { tenants: Tenant[] }) {
- *   const [state, action] = useActionState(switchActiveTenantAction, null);
- *
- *   return (
- *     <form action={action}>
- *       <select name="tenant_id" required>
- *         {tenants.map(tenant => (
- *           <option key={tenant.id} value={tenant.id}>
- *             {tenant.name}
- *           </option>
- *         ))}
- *       </select>
- *       <button type="submit">Switch Tenant</button>
- *       {state?.error && <p className="error">{state.error}</p>}
- *       {state?.success && <p className="success">{state.message}</p>}
- *     </form>
- *   );
- * }
- * ```
- *
- * @example
- * Accepting tenant invitations:
- * ```typescript
- * import { acceptTenantInviteAction } from '@omnibase/nextjs/tenants';
- * import { useActionState } from 'react';
- *
- * export function AcceptInviteForm({ token }: { token: string }) {
- *   const [state, action, isPending] = useActionState(acceptTenantInviteAction, null);
- *
- *   return (
- *     <form action={action}>
- *       <input name="token" type="hidden" value={token} />
- *       <input name="redirect_to" type="hidden" value="/dashboard" />
- *
- *       {state?.error && <p className="error">{state.error}</p>}
- *       <button type="submit" disabled={isPending}>
- *         {isPending ? 'Accepting...' : 'Accept Invitation'}
- *       </button>
- *     </form>
+ *     <div>
+ *       <CreateTenantForm
+ *         action={async (prevState: any, formData: FormData) => {
+ *           'use server';
+ *           formData.set('user_id', session.identity?.id!);
+ *           return actions.manage.create(prevState, formData);
+ *         }}
+ *       />
+ *       <SwitchTenantForm action={actions.manage.switch} />
+ *       <CreateInviteForm action={actions.invites.create} />
+ *     </div>
  *   );
  * }
  * ```

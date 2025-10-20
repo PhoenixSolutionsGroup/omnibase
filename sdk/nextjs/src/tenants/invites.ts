@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
  * a new JWT token with the appropriate tenant context, which is automatically stored
  * in HTTP-only cookies.
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Tenant Invitations
  */
@@ -54,25 +54,27 @@ export class TenantInviteManager {
    * @throws {Error} When any other error occurs during the process
    *
    * @example
-   * Programmatic usage:
+   * Using in a server component:
    * ```typescript
-   * import { omnibase } from '@/lib/omnibase-client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * async function handleAcceptInvite(token: string) {
-   *   const formData = new FormData();
-   *   formData.append('token', token);
-   *   formData.append('redirect_to', '/dashboard');
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   try {
-   *     await omnibase.tenants.invites.accept(null, formData);
-   *     // Will redirect on success
-   *   } catch (error) {
-   *     console.error('Failed to accept invitation:', error);
-   *   }
+   * export default async function AcceptInvitePage() {
+   *   return (
+   *     <AcceptInviteForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         return actions.invites.accept(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Tenant Invitations
    */
@@ -121,41 +123,28 @@ export class TenantInviteManager {
    * @throws {Error} When the invitation creation fails or API returns an error
    *
    * @example
-   * Using with a form component:
+   * Using in a server component:
    * ```typescript
-   * 'use client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * import { useActionState } from 'react';
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   * export function InviteUserForm({ action }: { action: any }) {
-   *   const [state, formAction] = useActionState(action, null);
-   *
+   * export default async function TenantsPage() {
    *   return (
-   *     <form action={formAction}>
-   *       <input
-   *         type="email"
-   *         name="email"
-   *         placeholder="user@example.com"
-   *         required
-   *       />
-   *       <select name="role" required>
-   *         <option value="member">Member</option>
-   *         <option value="admin">Admin</option>
-   *       </select>
-   *       <input
-   *         type="hidden"
-   *         name="invite_url"
-   *         value="https://app.example.com/invites"
-   *       />
-   *       <button type="submit">Send Invitation</button>
-   *       {state?.error && <p className="error">{state.error}</p>}
-   *       {state?.success && <p className="success">Invitation sent!</p>}
-   *     </form>
+   *     <CreateInviteForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         formData.set('invite_url', process.env.NEXT_PUBLIC_WEBSITE_URL! + '/auth/onboarding');
+   *         return actions.invites.create(prevState, formData);
+   *       }}
+   *     />
    *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Tenant Invitations
    */

@@ -13,47 +13,31 @@ import { RelationshipHandler } from "./relationship";
  * the OmnibaseClient which contains server-only authentication and API access.
  *
  * @example
- * Basic initialization and usage:
  * ```typescript
+ * // app/server/permissions/page.tsx
  * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
- * import { createServerClient } from '@omnibase/nextjs';
+ * import { OmnibaseClient } from '@omnibase/core-js';
  *
- * const client = createServerClient();
- * const permissions = new PermissionActionsHandler(client);
- *
- * // Access relationship management
- * export const createRelationship = permissions.relationship.create.bind(
- *   permissions.relationship
- * );
- * export const deleteRelationship = permissions.relationship.delete.bind(
- *   permissions.relationship
- * );
- * ```
- *
- * @example
- * Using in a Next.js server component:
- * ```typescript
- * // app/admin/permissions/page.tsx
- * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
- * import { createServerClient } from '@omnibase/nextjs';
+ * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+ * const permissions = new PermissionActionsHandler(omnibase);
  *
  * export default function PermissionsPage() {
- *   const client = createServerClient();
- *   const permissions = new PermissionActionsHandler(client);
- *
  *   return (
- *     <form action={permissions.relationship.create.bind(permissions.relationship)}>
- *       <input name="namespace" placeholder="tenants" />
- *       <input name="object" placeholder="tenant:123" />
- *       <input name="relation" placeholder="member" />
- *       <input name="subject_id" placeholder="user:456" />
+ *     <form action={async (prevState, formData) => {
+ *       'use server';
+ *       return permissions.relationship.create(prevState, formData);
+ *     }}>
+ *       <input name="namespace" defaultValue="Tenant" />
+ *       <input name="object" placeholder="tenant_123" />
+ *       <input name="relation" placeholder="members" />
+ *       <input name="subject_id" placeholder="user_456" />
  *       <button type="submit">Grant Permission</button>
  *     </form>
  *   );
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Permissions
  */
@@ -64,16 +48,6 @@ export class PermissionActionsHandler {
    * Provides methods to create and delete permission relationships between
    * subjects (users) and objects (resources). Uses Ory Keto's relationship
    * tuple model for fine-grained access control.
-   *
-   * @example
-   * ```typescript
-   * const permissions = new PermissionActionsHandler(client);
-   *
-   * // Use the relationship handler
-   * const createAction = permissions.relationship.create.bind(
-   *   permissions.relationship
-   * );
-   * ```
    */
   public relationship: RelationshipHandler;
 
@@ -88,14 +62,14 @@ export class PermissionActionsHandler {
    *
    * @example
    * ```typescript
-   * import { createServerClient } from '@omnibase/nextjs';
+   * import { OmnibaseClient } from '@omnibase/core-js';
    * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
    *
-   * const client = createServerClient();
-   * const permissions = new PermissionActionsHandler(client);
+   * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+   * const permissions = new PermissionActionsHandler(omnibase);
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @group Permissions
    */
   constructor(omnibaseClient: OmnibaseClient) {

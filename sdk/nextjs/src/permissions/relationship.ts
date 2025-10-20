@@ -18,33 +18,31 @@ import type { OmnibaseClient } from "@omnibase/core-js";
  * React's useFormState hook.
  *
  * @example
- * Basic usage in a server component:
  * ```typescript
+ * // app/server/permissions/page.tsx
  * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
- * import { createServerClient } from '@omnibase/nextjs';
+ * import { OmnibaseClient } from '@omnibase/core-js';
  *
- * const client = createServerClient();
- * const permissions = new PermissionActionsHandler(client);
+ * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+ * const permissions = new PermissionActionsHandler(omnibase);
  *
- * // Bind methods for use as server actions
- * const createRelationship = permissions.relationship.create.bind(
- *   permissions.relationship
- * );
- *
- * export default function GrantPermissionForm() {
+ * export default function PermissionsPage() {
  *   return (
- *     <form action={createRelationship}>
- *       <input name="namespace" defaultValue="tenants" />
- *       <input name="object" placeholder="tenant:123" />
- *       <input name="relation" defaultValue="member" />
- *       <input name="subject_id" placeholder="user:456" />
+ *     <form action={async (prevState, formData) => {
+ *       'use server';
+ *       return permissions.relationship.create(prevState, formData);
+ *     }}>
+ *       <input name="namespace" defaultValue="Tenant" />
+ *       <input name="object" placeholder="tenant_123" />
+ *       <input name="relation" placeholder="members" />
+ *       <input name="subject_id" placeholder="user_456" />
  *       <button type="submit">Grant Permission</button>
  *     </form>
  *   );
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Relationships
  */
@@ -77,51 +75,31 @@ export class RelationshipHandler {
    * @throws {Error} When the API request fails or returns invalid data
    *
    * @example
-   * Using with a form in a server component:
    * ```typescript
+   * // app/server/permissions/page.tsx
    * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
-   * import { createServerClient } from '@omnibase/nextjs';
+   * import { OmnibaseClient } from '@omnibase/core-js';
+   *
+   * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+   * const permissions = new PermissionActionsHandler(omnibase);
    *
    * export default function GrantAccessForm() {
-   *   const client = createServerClient();
-   *   const permissions = new PermissionActionsHandler(client);
-   *
    *   return (
-   *     <form action={permissions.relationship.create.bind(permissions.relationship)}>
-   *       <input name="namespace" value="tenants" hidden />
-   *       <input name="object" placeholder="tenant:123" required />
-   *       <input name="relation" value="member" hidden />
-   *       <input name="subject_id" placeholder="user:456" required />
+   *     <form action={async (prevState, formData) => {
+   *       'use server';
+   *       return permissions.relationship.create(prevState, formData);
+   *     }}>
+   *       <input name="namespace" defaultValue="Tenant" />
+   *       <input name="object" placeholder="tenant_123" required />
+   *       <input name="relation" defaultValue="members" />
+   *       <input name="subject_id" placeholder="user_456" required />
    *       <button type="submit">Grant Access</button>
    *     </form>
    *   );
    * }
    * ```
    *
-   * @example
-   * Using with useFormState in a client component:
-   * ```typescript
-   * 'use client';
-   * import { useFormState } from 'react-dom';
-   * import { createRelationshipAction } from './actions';
-   *
-   * export function GrantAccessForm() {
-   *   const [state, formAction] = useFormState(createRelationshipAction, null);
-   *
-   *   return (
-   *     <form action={formAction}>
-   *       <input name="namespace" defaultValue="tenants" />
-   *       <input name="object" placeholder="tenant:123" />
-   *       <input name="relation" defaultValue="member" />
-   *       <input name="subject_id" placeholder="user:456" />
-   *       <button type="submit">Grant Permission</button>
-   *       {state?.success && <p>Permission granted!</p>}
-   *     </form>
-   *   );
-   * }
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.5.1
    * @group Relationships
    */
   async create(prevState: any, formData: FormData) {
@@ -161,51 +139,31 @@ export class RelationshipHandler {
    * @throws {Error} When the API response status is not 204 (No Content)
    *
    * @example
-   * Using with a form in a server component:
    * ```typescript
+   * // app/server/permissions/page.tsx
    * import { PermissionActionsHandler } from '@omnibase/nextjs/permissions';
-   * import { createServerClient } from '@omnibase/nextjs';
+   * import { OmnibaseClient } from '@omnibase/core-js';
+   *
+   * const omnibase = new OmnibaseClient({ api_url: process.env.OMNIBASE_API_URL! });
+   * const permissions = new PermissionActionsHandler(omnibase);
    *
    * export default function RevokeAccessForm() {
-   *   const client = createServerClient();
-   *   const permissions = new PermissionActionsHandler(client);
-   *
    *   return (
-   *     <form action={permissions.relationship.delete.bind(permissions.relationship)}>
-   *       <input name="namespace" value="tenants" hidden />
-   *       <input name="object" placeholder="tenant:123" required />
-   *       <input name="relation" value="member" hidden />
-   *       <input name="subject_id" placeholder="user:456" required />
+   *     <form action={async (prevState, formData) => {
+   *       'use server';
+   *       return permissions.relationship.delete(prevState, formData);
+   *     }}>
+   *       <input name="namespace" defaultValue="Tenant" />
+   *       <input name="object" placeholder="tenant_123" required />
+   *       <input name="relation" defaultValue="members" />
+   *       <input name="subject_id" placeholder="user_456" required />
    *       <button type="submit">Revoke Access</button>
    *     </form>
    *   );
    * }
    * ```
    *
-   * @example
-   * Using with useFormState in a client component:
-   * ```typescript
-   * 'use client';
-   * import { useFormState } from 'react-dom';
-   * import { deleteRelationshipAction } from './actions';
-   *
-   * export function RevokeAccessForm() {
-   *   const [state, formAction] = useFormState(deleteRelationshipAction, null);
-   *
-   *   return (
-   *     <form action={formAction}>
-   *       <input name="namespace" defaultValue="tenants" />
-   *       <input name="object" placeholder="tenant:123" />
-   *       <input name="relation" defaultValue="member" />
-   *       <input name="subject_id" placeholder="user:456" />
-   *       <button type="submit">Revoke Permission</button>
-   *       {state?.success && <p>Permission revoked!</p>}
-   *     </form>
-   *   );
-   * }
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.5.1
    * @group Relationships
    */
   async delete(prevState: any, formData: FormData) {

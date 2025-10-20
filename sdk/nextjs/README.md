@@ -13,7 +13,7 @@ The Omnibase Next.js SDK provides seamless integration of Ory Kratos authenticat
 | Feature | Description | Documentation |
 |---------|-------------|---------------|
 | Authentication Flows | Complete login, registration, recovery, settings, and verification flows | [Auth Docs](#authentication) |
-| Session Management | Server-side session handling with React Context integration | [Session Docs](#session-management) |
+| Session Management | Server-side session handling with React Context integration | [Session Docs](#authentication) |
 | Flow Router | Automatic routing and handling of authentication flows | [Flow Router](#flow-router) |
 | Multi-tenant Support | Organization management with tenant switching and invitations | [Tenant Docs](#multi-tenant) |
 | Middleware Integration | Next.js middleware for route protection and session management | [Middleware Docs](#middleware) |
@@ -98,13 +98,12 @@ OMNIBASE_DELETE_TENANT_REDIRECT_URL=/               # Redirect after tenant dele
 OMNIBASE_ACCEPT_TENANT_INVITE_REDIRECT_URL=/dashboard # Redirect after accepting invite
 ```
 
-## Authentication
+## Complete Workflow Example
 
-### Session Provider
-
-Wrap your application with the `SessionProvider` to enable server-side session management:
+This example demonstrates a complete authentication and multi-tenant workflow:
 
 ```tsx
+// app/layout.tsx - Setup SessionProvider
 import { SessionProvider } from '@omnibase/nextjs/auth';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -118,17 +117,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     </html>
   );
 }
-```
 
-### Server Session Access
-
-Access session data on the server side:
-
-```tsx
+// app/dashboard/page.tsx - Protected route with session access
 import { getServerSession } from '@omnibase/nextjs/auth';
 import { redirect } from 'next/navigation';
 
-export default async function ProtectedPage() {
+export default async function Dashboard() {
   const session = await getServerSession();
   
   if (!session) {
@@ -138,145 +132,28 @@ export default async function ProtectedPage() {
   return (
     <div>
       <h1>Welcome, {session.identity.traits.email}</h1>
-      <p>Session ID: {session.id}</p>
+      <p>Active Tenant: {session.tenant?.name}</p>
     </div>
   );
 }
-```
 
-## Flow Router
-
-Handle all authentication flows automatically with the `FlowRouter` component:
-
-```tsx
-import { FlowRouter } from '@omnibase/nextjs/auth';
-
-export default function AuthPage({
-  params,
-  searchParams
-}: {
-  params: Promise<{ flow: string[] }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  return (
-    <FlowRouter
-      params={params}
-      searchParams={searchParams}
-      url="/auth"
-      flowMap={{
-        login: (flow) => <LoginForm flow={flow} />,
-        registration: (flow) => <RegistrationForm flow={flow} />,
-        recovery: (flow) => <RecoveryForm flow={flow} />,
-        verification: (flow) => <VerificationForm flow={flow} />,
-        settings: (flow) => <SettingsForm flow={flow} />
-      }}
-      onNotFound={<div>Authentication flow not found</div>}
-    />
-  );
-}
-```
-
-## Multi-tenant
-
-### Creating Tenants
-
-```tsx
+// app/tenant/create/page.tsx - Create tenant with server action
 import { createTenantAction } from '@omnibase/nextjs/auth';
 import { useActionState } from 'react';
 
-export default function CreateTenantForm({ userId }: { userId: string }) {
+export default function CreateTenant({ userId }: { userId: string }) {
   const [state, formAction, isPending] = useActionState(createTenantAction, null);
 
   return (
     <form action={formAction}>
-      <div>
-        <label htmlFor="name">Organization Name</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          disabled={isPending}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="billing_email">Billing Email</label>
-        <input
-          id="billing_email"
-          name="billing_email"
-          type="email"
-          required
-          disabled={isPending}
-        />
-      </div>
-
+      <input name="name" type="text" required />
+      <input name="billing_email" type="email" required />
       <input name="user_id" type="hidden" value={userId} />
-      <input name="redirect_to" type="hidden" value="/dashboard" />
-
-      {state?.error && (
-        <div className="error" role="alert">
-          {state.error}
-        </div>
-      )}
-
+      
+      {state?.error && <div role="alert">{state.error}</div>}
+      
       <button type="submit" disabled={isPending}>
         {isPending ? "Creating..." : "Create Organization"}
-      </button>
-    </form>
-  );
-}
-```
-
-### Switching Tenants
-
-```tsx
-import { switchActiveTenantAction } from '@omnibase/nextjs/auth';
-import { useActionState } from 'react';
-
-export default function TenantSwitcher({ tenantId }: { tenantId: string }) {
-  const [state, action] = useActionState(switchActiveTenantAction, null);
-
-  return (
-    <form action={action}>
-      <input type="hidden" name="tenant_id" value={tenantId} />
-      <button type="submit" disabled={state?.pending}>
-        {state?.pending ? 'Switching...' : 'Switch Organization'}
-      </button>
-
-      {state?.success && (
-        <p style={{ color: 'green' }}>{state.message}</p>
-      )}
-      {state?.error && (
-        <p style={{ color: 'red' }}>{state.error}</p>
-      )}
-    </form>
-  );
-}
-```
-
-### Accepting Tenant Invitations
-
-```tsx
-import { acceptTenantInviteAction } from '@omnibase/nextjs/auth';
-import { useActionState } from 'react';
-
-export default function AcceptInviteForm({ token }: { token: string }) {
-  const [state, formAction, isPending] = useActionState(acceptTenantInviteAction, null);
-
-  return (
-    <form action={formAction}>
-      <input name="token" type="hidden" value={token} />
-      <input name="redirect_to" type="hidden" value="/dashboard" />
-
-      {state?.error && (
-        <div className="error" role="alert">
-          {state.error}
-        </div>
-      )}
-
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Accepting..." : "Accept Invitation"}
       </button>
     </form>
   );
@@ -304,36 +181,13 @@ The middleware automatically handles:
 - Cookie management
 - Ory Kratos integration
 
-## Server Actions
+## Authentication
 
-All server actions follow a consistent pattern and return structured responses:
+The SDK provides comprehensive authentication support through Ory Kratos integration. Access session data on the server using [`getServerSession()`](./src/auth/index.ts), handle authentication flows with [`FlowRouter`](./src/auth/flow-router.ts), and protect routes with middleware.
 
-```tsx
-import { 
-  createTenantAction,
-  switchActiveTenantAction,
-  deleteTenantAction,
-  acceptTenantInviteAction 
-} from '@omnibase/nextjs/auth';
+## Multi-tenant
 
-// All actions return { success: boolean, error?: string, message?: string }
-// Or redirect on success (create, delete, accept invite actions)
-
-// Example with error handling
-async function handleTenantOperation() {
-  const formData = new FormData();
-  formData.append('tenant_id', 'tenant-123');
-
-  const result = await switchActiveTenantAction(formData);
-  
-  if (!result.success) {
-    console.error('Operation failed:', result.error);
-    return;
-  }
-  
-  console.log('Success:', result.message);
-}
-```
+Manage organizations with server actions for creating ([`createTenantAction`](./src/tenants/management.ts)), switching ([`switchActiveTenantAction`](./src/tenants/management.ts)), and deleting tenants ([`deleteTenantAction`](./src/tenants/management.ts)). Handle user invitations with [`acceptTenantInviteAction`](./src/tenants/invites.ts).
 
 ## Error Handling
 
@@ -365,27 +219,14 @@ export default function CreateTenantForm() {
 }
 ```
 
-## Authentication Callback
+## Server Actions
 
-Handle authentication callbacks in your application:
+All server actions return structured responses:
 
 ```tsx
-import { handleAuthCallback, type FlowRedirects } from '@omnibase/nextjs/auth';
-
-const redirects: FlowRedirects = {
-  login: '/dashboard'
-};
-
-export async function GET(request: Request) {
-  return handleAuthCallback(
-    request,
-    (error) => {
-      console.error('Auth callback error:', error);
-      // Handle error response
-    },
-    redirects
-  );
-}
+// Pattern: { success: boolean, error?: string, message?: string }
+// Some actions redirect on success (create, delete, accept invite)
+const [state, action, isPending] = useActionState(createTenantAction, null);
 ```
 
 ## Security Features

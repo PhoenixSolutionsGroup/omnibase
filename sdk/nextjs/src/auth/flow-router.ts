@@ -17,24 +17,48 @@ import type {
 
 /**
  * Maps auth flow types to their corresponding React component functions
+ *
+ * This type defines the structure for mapping authentication flow types to render functions.
+ * Each property represents a different authentication flow, and its value is a function that
+ * receives the flow data and returns a React component to render.
+ *
+ * @example
+ * ```typescript
+ * const flowMap: FlowMap = {
+ *   login: (flow) => <LoginForm flow={flow} />,
+ *   registration: (flow) => <RegisterForm flow={flow} />,
+ *   recovery: (flow) => <RecoveryForm flow={flow} />
+ * };
+ * ```
+ *
+ * @since 0.5.1
+ * @public
+ * @group Flow Routing
  */
 export type FlowMap = {
-  /** Function that takes a LoginFlow and returns a component */
+  /** Function that takes a LoginFlow and returns a component for user authentication */
   login?: (flow: LoginFlow) => ReactNode;
-  /** Function that takes a RegistrationFlow and returns a component */
+  /** Function that takes a RegistrationFlow and returns a component for user registration */
   registration?: (flow: RegistrationFlow) => ReactNode;
-  /** Function that takes a RecoveryFlow and returns a component */
+  /** Function that takes a RecoveryFlow and returns a component for password recovery */
   recovery?: (flow: RecoveryFlow) => ReactNode;
-  /** Function that takes a VerificationFlow and returns a component */
+  /** Function that takes a VerificationFlow and returns a component for email/account verification */
   verification?: (flow: VerificationFlow) => ReactNode;
-  /** Function that takes a SettingsFlow and returns a component */
+  /** Function that takes a SettingsFlow and returns a component for user settings management */
   settings?: (flow: SettingsFlow) => ReactNode;
-  /** Function that takes any flow object and returns a component (for onboarding) */
+  /** Function that takes any flow object and returns a component for custom onboarding */
   onboarding?: (flow: any) => ReactNode;
 };
 
 /**
  * Union type for all possible flow objects
+ *
+ * Represents any valid authentication flow object that can be returned
+ * by the Ory Kratos authentication system.
+ *
+ * @since 0.5.1
+ * @public
+ * @group Flow Routing
  */
 export type FlowObject =
   | LoginFlow
@@ -44,19 +68,35 @@ export type FlowObject =
   | VerificationFlow;
 
 /**
- * Retrieves the appropriate flow object based on the flow type.
+ * Retrieves the appropriate flow object based on the flow type
  *
- * @param flowType - The type of flow to retrieve (login, registration, recovery, verification, settings)
+ * This function acts as a router for authentication flows, delegating to the
+ * appropriate flow retrieval function based on the flow type. It's used internally
+ * by FlowRouter but can also be used independently for custom flow handling.
+ *
+ * @param flowType - The type of flow to retrieve (login, registration, recovery, verification, settings, onboarding)
  * @param props - Configuration object containing URL and search parameters
+ * @param props.url - The UI URL for the specific flow
+ * @param props.searchParams - Promise resolving to search parameters containing flow state
+ *
  * @returns Promise that resolves to the corresponding flow object or null if not found/supported
  *
  * @example
- * ```tsx
- * const flow = await getFlow('login', {
+ * ```typescript
+ * // Retrieve a login flow
+ * const loginFlow = await getFlow('login', {
  *   url: '/auth/login',
  *   searchParams: Promise.resolve({ flow: 'abc123' })
  * });
+ *
+ * if (loginFlow) {
+ *   console.log('Login flow retrieved:', loginFlow.id);
+ * }
  * ```
+ *
+ * @since 0.5.1
+ * @public
+ * @group Flow Routing
  */
 export async function getFlow(
   flowType: keyof FlowMap,
@@ -82,55 +122,86 @@ export async function getFlow(
 
 /**
  * Props for the FlowRouter component
+ *
+ * Configuration object for the FlowRouter component that handles dynamic
+ * authentication flow routing in Next.js applications.
+ *
+ * @since 0.5.1
+ * @public
+ * @group Flow Routing
  */
 export interface FlowRouterProps {
-  /** NextJS params containing the flow type */
+  /** Next.js params promise containing the flow type from dynamic route segments */
   params: Promise<{ flow: string[] }>;
-  /** Map of flow types to React component functions */
+  /** Map of flow types to their corresponding React component render functions */
   flowMap: FlowMap;
-  /** Component to render when flow type is not found */
+  /** Component to render when the requested flow type is not found or not supported */
   onNotFound?: ReactNode;
-  /** URL for the current flow */
+  /** Base URL path for authentication flows (e.g., '/auth') */
   url: string;
-  /** Search parameters from the request */
+  /** Promise resolving to search parameters from the request URL */
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-  /** Return to URL after flow completed */
-  returnTo: string;
+  /**
+   * URL to redirect to after flow completion
+   * @defaultValue "/"
+   */
+  returnTo?: string;
 }
 
 /**
- * Routes auth flows to their corresponding components based on URL parameters.
+ * Routes authentication flows to their corresponding components based on URL parameters
  *
- * @param props - The router props
- * @returns The component for the current flow type
+ * FlowRouter is a server component that dynamically renders the appropriate authentication
+ * UI based on the URL path. It fetches the flow data from Ory Kratos and passes it to
+ * the corresponding render function from the flowMap. This component is designed for
+ * Next.js 13+ App Router with catch-all routes.
+ *
+ * The router extracts the flow type from the URL (e.g., `/auth/login` → `login`),
+ * retrieves the flow object, and invokes the matching render function with the flow data.
+ *
+ * @param props - Configuration props for the router
+ * @param props.params - Next.js params promise containing flow type from route segments
+ * @param props.flowMap - Map of flow types to component render functions
+ * @param props.url - Base URL path for authentication flows
+ * @param props.searchParams - Search parameters from the request URL
+ * @param props.returnTo - URL to redirect to after flow completion (default: "/")
+ * @param props.onNotFound - Optional component to render when flow is not found
+ *
+ * @returns Promise resolving to the rendered component for the current flow
  *
  * @example
  * ```tsx
  * // In your app/auth/[...flow]/page.tsx
- * import { FlowRouter } from '@omnibase/nextjs';
- * import { LoginForm, RegisterForm } from './components';
+ * import { FlowRouter } from '@omnibase/nextjs/auth';
+ * import { LoginForm, RegistrationForm, RecoveryForm } from '@omnibase/shadcn';
  *
  * export default function AuthPage({
  *   params,
  *   searchParams
  * }: {
  *   params: Promise<{ flow: string[] }>;
- *   searchParams: Promise<{ [key: string]: string | string[] | undefined; }>;
+ *   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
  * }) {
  *   return (
  *     <FlowRouter
  *       params={params}
  *       searchParams={searchParams}
  *       url="/auth"
+ *       returnTo="/"
  *       flowMap={{
- *         login: (flow) => <LoginForm flow={flow} />,
- *         registration: (flow) => <RegisterForm flow={flow} />,
+ *         login: (flow) => <LoginForm flow={flow} register_url="/auth/registration" />,
+ *         registration: (flow) => <RegistrationForm flow={flow} login_url="/auth/login" />,
+ *         recovery: (flow) => <RecoveryForm flow={flow} />,
  *       }}
- *       onNotFound={<div>Auth flow not supported</div>}
+ *       onNotFound={<div>Authentication flow not supported</div>}
  *     />
  *   );
  * }
  * ```
+ *
+ * @since 0.5.1
+ * @public
+ * @group Flow Routing
  */
 export async function FlowRouter({
   params,

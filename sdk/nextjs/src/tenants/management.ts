@@ -35,7 +35,7 @@ import { redirect } from "next/navigation";
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Tenant Management
  */
@@ -72,54 +72,27 @@ export class TenantManagementManager {
    * @throws {Error} When any other error occurs during the process
    *
    * @example
-   * Basic usage in a Next.js form:
+   * Using in a server component:
    * ```typescript
-   * import { deleteTenantAction } from '@omnibase/nextjs/tenants';
-   * import { useFormState } from 'react-dom';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * export default function DeleteTenantForm({ tenantId }: { tenantId: string }) {
-   *   const [state, formAction] = useFormState(deleteTenantAction, null);
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   // Form should include:
-   *   // - hidden input with name="tenant_id" value={tenantId}
-   *   // - hidden input with name="redirect_to" value="/dashboard"
-   *   // - submit button
-   *   // - error display: {state?.error && <p>Error: {state.error}</p>}
+   * export default async function TenantsPage() {
+   *   return (
+   *     <DeleteTenantForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         return actions.manage.delete(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @example
-   * Using environment variable for redirect:
-   * ```typescript
-   * // Set OMNIBASE_DELETE_TENANT_REDIRECT_URL=/tenants in your environment
-   *
-   * export default function DeleteTenantForm({ tenantId }: { tenantId: string }) {
-   *   const [state, formAction] = useFormState(deleteTenantAction, null);
-   *
-   *   // Form only needs tenant_id field - redirect URL comes from env var
-   * }
-   * ```
-   *
-   * @example
-   * Programmatic usage:
-   * ```typescript
-   * import { deleteTenantAction } from '@omnibase/nextjs/tenants';
-   *
-   * async function handleDeleteTenant(tenantId: string) {
-   *   const formData = new FormData();
-   *   formData.append('tenant_id', tenantId);
-   *   formData.append('redirect_to', '/dashboard');
-   *
-   *   try {
-   *     await deleteTenantAction(null, formData);
-   *     // Will redirect on success
-   *   } catch (error) {
-   *     console.error('Failed to delete tenant:', error);
-   *   }
-   * }
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Server Actions
    */
@@ -150,70 +123,6 @@ export class TenantManagementManager {
   }
 
   /**
-   * Server Action to create a new tenant with authentication and redirect handling
-   *
-   * @param prevState - Previous action state (required for useActionState compatibility)
-   * @param formData - FormData containing the following required fields:
-   * - `name` (string) - The tenant name
-   * - `billing_email` (string) - Billing email for the tenant
-   * - `user_id` (string) - ID of the user creating the tenant
-   * - `callback_url` (string, optional) - Redirect URL after successful creation.
-   *   If not provided, uses OMNIBASE_ONBOARDING_REDIRECT_URL environment variable
-   *
-   * @returns On business/user errors, returns `{ success: false, error: string }`.
-   * On success, redirects user to callback URL. Server/config errors throw exceptions.
-   *
-   * @example Client-side usage with useActionState:
-   * ```tsx
-   * "use client"
-   * import { useActionState } from "react"
-   * import { createTenantAction } from "@omnibase/nextjs/tenants"
-   *
-   * export function CreateTenantForm({ userId }: { userId: string }) {
-   *   const [state, formAction, isPending] = useActionState(createTenantAction, null)
-   *
-   *   return (
-   *     <form action={formAction}>
-   *       <div>
-   *         <label htmlFor="name">Tenant Name</label>
-   *         <input
-   *           id="name"
-   *           name="name"
-   *           type="text"
-   *           required
-   *           disabled={isPending}
-   *         />
-   *       </div>
-   *
-   *       <div>
-   *         <label htmlFor="billing_email">Billing Email</label>
-   *         <input
-   *           id="billing_email"
-   *           name="billing_email"
-   *           type="email"
-   *           required
-   *           disabled={isPending}
-   *         />
-   *       </div>
-   *
-   *       <input name="user_id" type="hidden" value={userId} />
-   *       <input name="redirect_to" type="hidden" value="/dashboard" />
-   *
-   *       {state?.error && (
-   *         <div className="error" role="alert">
-   *           {state.error}
-   *         </div>
-   *       )}
-   *
-   *       <button type="submit" disabled={isPending}>
-   *         {isPending ? "Creating Tenant..." : "Create Tenant"}
-   *       </button>
-   *     </form>
-   *   )
-   * }
-   * ```
-   */
-  /**
    * Next.js server action for creating a new tenant
    *
    * This server action handles the complete tenant creation workflow, including form
@@ -240,27 +149,31 @@ export class TenantManagementManager {
    * @throws {Error} When any other error occurs during the process
    *
    * @example
-   * Programmatic usage:
+   * Using in a server component:
    * ```typescript
-   * import { omnibase } from '@/lib/omnibase-client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
+   * import { getServerSession } from '@omnibase/nextjs/auth';
    *
-   * async function createNewTenant(userId: string, name: string, email: string) {
-   *   const formData = new FormData();
-   *   formData.append('user_id', userId);
-   *   formData.append('name', name);
-   *   formData.append('billing_email', email);
-   *   formData.append('redirect_to', '/dashboard');
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   try {
-   *     await omnibase.tenants.manage.create(null, formData);
-   *     // Will redirect on success
-   *   } catch (error) {
-   *     console.error('Failed to create tenant:', error);
-   *   }
+   * export default async function TenantsPage() {
+   *   const session = await getServerSession();
+   *
+   *   return (
+   *     <CreateTenantForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         formData.set('user_id', session.identity?.id!);
+   *         return actions.manage.create(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Server Actions
    */
@@ -312,30 +225,27 @@ export class TenantManagementManager {
    * @throws {Error} When any other error occurs during the process
    *
    * @example
-   * Programmatic usage:
+   * Using in a server component:
    * ```typescript
-   * import { omnibase } from '@/lib/omnibase-client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * async function handleSwitchTenant(tenantId: string) {
-   *   const formData = new FormData();
-   *   formData.append('tenant_id', tenantId);
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   try {
-   *     const result = await omnibase.tenants.manage.switch(null, formData);
-   *     if (result.success) {
-   *       console.log('Successfully switched tenant');
-   *       // Optionally navigate to a different page
-   *       window.location.href = '/dashboard';
-   *     } else {
-   *       console.error('Switch failed:', result.error);
-   *     }
-   *   } catch (error) {
-   *     console.error('Failed to switch tenant:', error);
-   *   }
+   * export default async function TenantsPage() {
+   *   return (
+   *     <SwitchTenantForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         return actions.manage.switch(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Server Actions
    */

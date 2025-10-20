@@ -28,7 +28,7 @@ import { redirect } from "next/navigation";
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.5.1
  * @public
  * @group Tenant User Management
  */
@@ -54,7 +54,9 @@ export class TenantUserManager {
    * returns a success state object instead.
    *
    * @param prevState - Previous state from useActionState hook (can be any type)
-   * @param formData - Form data containing the following fields:\n   *   - user_id (required): ID of the user to remove from the tenant\n   *   - redirect_to (optional): URL to redirect to after successful removal
+   * @param formData - Form data containing the following fields:
+   *   - user_id (required): ID of the user to remove from the tenant
+   *   - redirect_to (optional): URL to redirect to after successful removal
    *
    * @returns Promise that resolves to success/error state object, or redirects on success
    *
@@ -62,25 +64,27 @@ export class TenantUserManager {
    * @throws {Error} When the user removal fails or API returns an error
    *
    * @example
-   * Programmatic usage:
+   * Using in a server component:
    * ```typescript
-   * import { omnibase } from '@/lib/omnibase-client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * async function handleRemoveUser(userId: string) {
-   *   const formData = new FormData();
-   *   formData.append('user_id', userId);
-   *   formData.append('redirect_to', '/tenants');
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   try {
-   *     const result = await omnibase.tenants.user.remove(null, formData);
-   *     // Will redirect on success, or return error state
-   *   } catch (error) {
-   *     console.error('Failed to remove user:', error);
-   *   }
+   * export default async function TenantsPage() {
+   *   return (
+   *     <RemoveTenantUserForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         return actions.user.remove(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Tenant User Management
    */
@@ -128,25 +132,27 @@ export class TenantUserManager {
    * @throws {Error} When the role update fails or API returns an error
    *
    * @example
+   * Using in a server component:
    * ```typescript
-   * import { omnibase } from '@/lib/omnibase-client';
+   * // In your page.tsx (server component)
+   * import { omnibase } from '@/lib/server';
+   * import { TenantActionsHandler } from '@omnibase/nextjs/tenants';
    *
-   * async function handleUpdateRole(userId: string, newRole: string) {
-   *   const formData = new FormData();
-   *   formData.append('user_id', userId);
-   *   formData.append('role', newRole);
-   *   formData.append('redirect_to', '/tenants/users');
+   * const actions = new TenantActionsHandler(omnibase);
    *
-   *   try {
-   *     const result = await omnibase.tenants.user.updateRole(null, formData);
-   *     // Will redirect on success, or return error state
-   *   } catch (error) {
-   *     console.error('Failed to update role:', error);
-   *   }
+   * export default async function TenantsPage() {
+   *   return (
+   *     <UpdateRoleForm
+   *       action={async (prevState: any, formData: FormData) => {
+   *         'use server';
+   *         return actions.user.updateRole(prevState, formData);
+   *       }}
+   *     />
+   *   );
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.5.1
    * @public
    * @group Tenant User Management
    */
