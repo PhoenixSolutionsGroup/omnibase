@@ -37,10 +37,13 @@ func NewMigrationHandler(cfg *config.Config) *MigrationHandler {
 }
 
 // POST /migrations - Upload zip and apply migrations
+// The endpoint expects a multipart/form-data request with a "migrations" field containing a zip file
+// The zip file should contain .sql files named like: 001-seed.sql, 002-rls.sql, etc.
+// These will be automatically renamed to golang-migrate format: 001_seed.up.sql, 002_rls.up.sql, etc.
 func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
-	// Create temporary migration directory with timestamp
+	// Create temporary migration directory with timestamp in system temp directory
 	timestamp := time.Now().UnixNano()
-	migrationsDir := fmt.Sprintf("tmp/%d-migrations", timestamp)
+	migrationsDir := filepath.Join(os.TempDir(), fmt.Sprintf("%d-migrations", timestamp))
 
 	// Ensure cleanup happens regardless of success or failure
 	defer func() {
@@ -139,9 +142,25 @@ func (h *MigrationHandler) extractZip(zipFile io.Reader, migrationsDir string) e
 			return err
 		}
 
-		// Save to migrations directory
+		// Save to migrations directory with golang-migrate naming convention
+		// Convert "001-seed.sql" to "001_seed.up.sql"
 		filename := filepath.Base(file.Name)
-		destPath := filepath.Join(migrationsDir, filename)
+
+		// Remove .sql extension and split on hyphen
+		nameWithoutExt := strings.TrimSuffix(filename, ".sql")
+		parts := strings.SplitN(nameWithoutExt, "-", 2)
+
+		// Reconstruct with underscore and .up.sql suffix
+		var newFilename string
+		if len(parts) == 2 {
+			// Format: version_description.up.sql (e.g., "001_seed.up.sql")
+			newFilename = fmt.Sprintf("%s_%s.up.sql", parts[0], parts[1])
+		} else {
+			// Fallback if no hyphen found, just add .up.sql
+			newFilename = nameWithoutExt + ".up.sql"
+		}
+
+		destPath := filepath.Join(migrationsDir, newFilename)
 		if err := os.WriteFile(destPath, content, 0644); err != nil {
 			return err
 		}

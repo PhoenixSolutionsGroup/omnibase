@@ -6,15 +6,23 @@ import (
 )
 
 type Config struct {
-	Port              string
-	S3Config          S3Config
-	Database          DatabaseConfig
-	StripeConfig      StripeConfig
-	AuthConfig        AuthConfig
-	SMTPConfig        SMTPConfig
-	PermissionsConfig PermissionsConfig
-	PostgRESTURL      string
-	JWTSecret         string
+	Port                 string
+	S3Config             S3Config
+	Database             DatabaseConfig
+	StripeConfig         StripeConfig
+	AuthConfig           AuthConfig
+	SMTPConfig           SMTPConfig
+	PermissionsConfig    PermissionsConfig
+	ManagedHostingConfig ManagedHostingConfig
+	PostgRESTURL         string
+	JWTSecret            string
+}
+
+type ManagedHostingConfig struct {
+	IsManaged            bool
+	ManagedHostingAPIURL string
+	InternalServiceToken string
+	TenantID             string
 }
 
 type PermissionsConfig struct {
@@ -39,6 +47,8 @@ type DatabaseConfig struct {
 	User       string
 	SigningKey string
 	Password   string
+	SSLMode    string
+	Name       string
 }
 
 type StripeConfig struct {
@@ -78,6 +88,8 @@ func New() *Config {
 			User:       os.Getenv("DB_USER"),
 			Password:   os.Getenv("DB_PASSWORD"),
 			SigningKey: os.Getenv("JWT_SIGNING_KEY"),
+			SSLMode:    getEnvOrDefault("DB_SSLMODE", "disable"),
+			Name:       getEnvOrDefault("DB_NAME", "db"),
 		},
 		StripeConfig: StripeConfig{
 			SecretKey:          os.Getenv("STRIPE_SECRET_KEY"),
@@ -96,6 +108,12 @@ func New() *Config {
 		PermissionsConfig: PermissionsConfig{
 			ReadURL:  os.Getenv("KETO_READ_URL"),
 			WriteURL: os.Getenv("KETO_WRITE_URL"),
+		},
+		ManagedHostingConfig: ManagedHostingConfig{
+			IsManaged:            os.Getenv("OMNIBASE_MANAGED") == "true",
+			ManagedHostingAPIURL: os.Getenv("MANAGED_HOSTING_API_URL"),
+			InternalServiceToken: os.Getenv("INTERNAL_SERVICE_TOKEN"),
+			TenantID:             getEnvOrDefault("MANAGED_TENANT_ID", "local"),
 		},
 		PostgRESTURL: getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
 		JWTSecret:    os.Getenv("JWT_SECRET"),
