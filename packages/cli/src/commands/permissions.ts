@@ -45,10 +45,10 @@ export class PermissionsCommand {
   }
 
   /**
-   * Push all namespace files to Keto
+   * Push all namespace files to API
    */
-  async push(): Promise<void> {
-    console.log("🚀 Pushing permissions to Keto...");
+  async push(apiUrl: string, token?: string): Promise<void> {
+    console.log("🚀 Pushing permissions...");
 
     const permissionsDir = path.join(process.cwd(), "omnibase", "permissions");
 
@@ -62,54 +62,75 @@ export class PermissionsCommand {
     // Read all .ts files from permissions directory
     const files = fs
       .readdirSync(permissionsDir)
-      .filter((file) => file.endsWith(".ts") && file !== "types.ts")
-      .map((file) => path.join(permissionsDir, file));
+      .filter((file) => file.endsWith(".ts") && file !== "types.ts");
 
     if (files.length === 0) {
-      console.log(
-        "⚠️  No TypeScript namespace files found in omnibase/permissions/"
-      );
+      console.log("⚠️  No namespace files found");
       return;
     }
 
     console.log(`📁 Found ${files.length} namespace file(s):`);
-    files.forEach((file) => console.log(`   • ${path.basename(file)}`));
+    files.forEach((f) => console.log(`   • ${f}`));
 
-    // Find the CLI package's docker directory (where docker-compose.yml lives)
-    const projectRoot = findOmnibaseRoot();
-    const cliDockerDir = path.join(__dirname, "..", "..", "docker");
+    // Create zip archive
+    const AdmZip = require("adm-zip");
+    const zip = new AdmZip();
 
-    const dockerNamespacesDir = path.join(cliDockerDir, "keto", "namespaces");
+    files.forEach((f) => {
+      zip.addLocalFile(path.join(permissionsDir, f));
+    });
 
-    if (!fs.existsSync(dockerNamespacesDir)) {
-      fs.mkdirSync(dockerNamespacesDir, { recursive: true });
-    }
+    const zipBuffer = zip.toBuffer();
 
-    // Copy each file
-    for (const file of files) {
-      const filename = path.basename(file);
-      const targetPath = path.join(dockerNamespacesDir, filename);
-      fs.copyFileSync(file, targetPath);
-      console.log(`✅ Copied ${filename} to CLI docker/keto/namespaces/`);
-    }
+    console.log(`📤 Uploading to ${apiUrl}...`);
 
-    // Restart Keto to pick up the new namespaces
-    console.log("🔄 Restarting Keto to load new namespaces...");
+    const FormData = require("form-data");
+    const axios = require("axios");
+
+    const formData = new FormData();
+    formData.append("namespaces", zipBuffer, {
+      filename: "namespaces.zip",
+      contentType: "application/zip",
+    });
+
     try {
-      execSync("docker compose restart keto", {
-        stdio: "inherit",
-        cwd: cliDockerDir,
-        env: {
-          ...process.env,
-          OMNIBASE_PROJECT_DIR: projectRoot,
-        },
-      });
-      console.log("✅ Keto restarted successfully");
+      const headers: Record<string, string> = {
+        ...formData.getHeaders(),
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await axios.post(
+        `${apiUrl}/api/v1/permissions/deploy`,
+        formData,
+        { headers }
+      );
+
+      const result = response.data;
+
+      console.log("✅ Namespaces deployed successfully!");
+
+      if (result.managed_mode) {
+        console.log("🔄 Managed hosting service is restarting...");
+        console.log("✅ Keto will load new namespaces automatically");
+      } else {
+        console.log("ℹ️  Local mode: Restart docker-compose to apply changes");
+        console.log("   Run: docker compose restart keto");
+      }
+
       console.log("🎉 Permissions pushed successfully!");
     } catch (error) {
-      console.error("❌ Failed to restart Keto:", error);
+      console.error("❌ Failed to deploy namespaces:", error);
       process.exit(1);
     }
+  }
+
+  /**
+   * Get auth token from config or environment
+   */
+  public getToken(): string | undefined {
+    return process.env.OMNIBASE_TOKEN || undefined;
   }
 
   /**
@@ -251,16 +272,15 @@ export function addPermissionsCommands(program: Command): void {
 
   permissions
     .command("push")
-    .description("Deploy namespace files to Keto")
+    .description("Deploy namespace files to API")
     .action(async () => {
       try {
         const options = program.opts();
         const envConfig = resolveEnvironment(options.env);
         const permissionsCmd = new PermissionsCommand(envConfig.apiUrl);
 
-        console.log(envConfig.apiUrl);
         console.log(`Using environment: ${envConfig.name}`);
-        await permissionsCmd.push();
+        await permissionsCmd.push(envConfig.apiUrl, permissionsCmd.getToken());
       } catch (error) {
         console.error("Error:", error instanceof Error ? error.message : error);
         process.exit(1);
