@@ -17,24 +17,30 @@ services:
     restart: unless-stopped
 
   kratos-migrate:
-    image: oryd/kratos:v1.2.0
+    build:
+      context: ../../../docker/auth
+      dockerfile: Dockerfile
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - IDENTITY_SCHEMA_URL=http://rest-api:8080/api/v1/auth/identity-schema
     volumes:
       - type: bind
-        source: ./kratos
+        source: ../../../docker/auth
         target: /etc/config/kratos
-    entrypoint: ["/bin/sh", "/etc/config/kratos/entrypoint.sh"]
     command: migrate sql -e --yes
     restart: on-failure
     networks:
       - app-network
+    depends_on:
+      - postgres
+      - rest-api
 
   kratos:
     depends_on:
       - kratos-migrate
-    image: oryd/kratos:v1.2.0
+    build:
+      context: ../../../docker/auth
+      dockerfile: Dockerfile
     env_file:
       - ${OMNIBASE_PROJECT_DIR}/omnibase/environments/.env.dev
     ports:
@@ -49,6 +55,7 @@ services:
       - WEBSITE_URL=${WEBSITE_URL}
       - COOKIE_SECRET=${COOKIE_SECRET}
       - CIPHER_SECRET=${CIPHER_SECRET}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN:-127.0.0.1}
 
       # Optional with defaults
       - LOG_LEVEL=${AUTH_LOG_LEVEL:-info}
@@ -65,9 +72,8 @@ services:
       - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI:-smtp://mailpit:1025?disable_starttls=true}
     volumes:
       - type: bind
-        source: ./kratos
+        source: ../../../docker/auth
         target: /etc/config/kratos
-    entrypoint: ["/bin/sh", "/etc/config/kratos/entrypoint.sh"]
     command: serve --dev --watch-courier
     networks:
       - app-network
@@ -116,7 +122,8 @@ services:
         sleep 2;
       done;
       /usr/bin/mc mb myminio/dev --ignore-existing;
-      echo 'MinIO bucket \"dev\" created successfully';
+      /usr/bin/mc mb myminio/permission-namespaces --ignore-existing;
+      echo 'MinIO buckets created successfully';
       "
     networks:
       - app-network
@@ -163,7 +170,6 @@ services:
       - ../../../apps/api:/app
     depends_on:
       - postgres
-      - kratos
     networks:
       - app-network
     restart: unless-stopped
@@ -211,24 +217,25 @@ services:
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
 
   keto-migrate:
-    image: oryd/keto:v0.14.0
+    build:
+      context: ../../../docker/permissions
+      dockerfile: Dockerfile
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=keto
-    volumes:
-      - type: bind
-        source: ./keto
-        target: /etc/config/keto
     command: migrate up -c /etc/config/keto/keto.yml --yes
     restart: on-failure
     networks:
       - app-network
     depends_on:
       - postgres
+      - rest-api
 
   keto:
     depends_on:
       - keto-migrate
-    image: oryd/keto:v0.14.0
+    build:
+      context: ../../../docker/permissions
+      dockerfile: Dockerfile
     ports:
       - "4466:4466" # read API
       - "4467:4467" # write API
@@ -236,10 +243,11 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=keto
       - LOG_LEVEL=debug
-    volumes:
-      - type: bind
-        source: ./keto
-        target: /etc/config/keto
+      - NAMESPACE_BUCKET=permission-namespaces
+      - TENANT_ID=local
+      - R2_ENDPOINT=http://minio:9000
+      - R2_ACCESS_KEY=minioadmin
+      - R2_SECRET_KEY=minioadmin123
     command: serve -c /etc/config/keto/keto.yml
     networks:
       - app-network
