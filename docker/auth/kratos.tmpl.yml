@@ -29,11 +29,9 @@ serve:
     base_url: ${AUTH_ADMIN_URL}
 
 selfservice:    
-  default_browser_return_url: ${WEBSITE_AUTH_RETURN_URL}
+  default_browser_return_url: ${WEBSITE_URL}
   allowed_return_urls:
     - ${WEBSITE_URL}
-    - http://localhost:19006/Callback
-    - exp://localhost:8081/--/Callback
 
   methods:
     password:
@@ -51,17 +49,7 @@ selfservice:
     oidc:
       enabled: true
       config:
-        providers:
-          - id: google
-            provider: google
-            client_id: ${GOOGLE_CLIENT_ID}
-            client_secret: ${GOOGLE_CLIENT_SECRET}
-            # client_id: test-client
-            # client_secret: test-secret
-            scope:
-              - profile
-              - email
-            mapper_url: file:///etc/config/kratos/oidc.google.jsonnet
+        providers:{{OIDC_PROVIDERS}}
 
   flows:
     error:
@@ -82,7 +70,7 @@ selfservice:
       ui_url: ${WEBSITE_VERIFICATION_RECOVERY_URL}
       use: code
       after:
-        default_browser_return_url: ${WEBSITE_ONBOARDING_URL}
+        default_browser_return_url: ${WEBSITE_URL}
 
     logout:
       after:
@@ -91,8 +79,6 @@ selfservice:
     login:
       ui_url: ${WEBSITE_LOGIN_URL}
       lifespan: 10m
-      after:
-        default_browser_return_url: ${WEBSITE_AUTH_CALLBACK}
 
     registration:
       lifespan: 10m
@@ -107,7 +93,7 @@ selfservice:
             - hook: session
 
 log:
-  level: info
+  level: ${LOG_LEVEL}
   format: json
 
 secrets:
@@ -115,6 +101,10 @@ secrets:
     - ${COOKIE_SECRET}
   cipher:
     - ${CIPHER_SECRET}
+
+cookies:
+  domain: ${COOKIE_DOMAIN}
+  same_site: Lax
 
 ciphers:
   algorithm: xchacha20-poly1305
@@ -133,3 +123,5 @@ identity:
 courier:
   smtp:
     connection_uri: ${SMTP_CONNECTION_URI}
+    from_address: ${SMTP_FROM_ADDRESS}
+    from_name: ${SMTP_FROM_NAME}

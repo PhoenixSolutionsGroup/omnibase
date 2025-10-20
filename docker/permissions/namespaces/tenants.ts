@@ -4,8 +4,8 @@ class User implements Namespace {}
 
 class Tenant implements Namespace {
   related: {
-    owners: User[];
     admins: User[];
+    owners: User[];
     members: User[];
     can_invite_users: User[];
     can_update_user_role: User[];
