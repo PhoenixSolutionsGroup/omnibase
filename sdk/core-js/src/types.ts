@@ -25,7 +25,7 @@
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  */
 export type ApiResponse<T> = {

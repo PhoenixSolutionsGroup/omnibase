@@ -7,7 +7,7 @@ import type { ApiResponse } from "../types";
  * and UI customization settings. This represents the complete billing
  * configuration loaded from the database.
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Configuration
  */
@@ -42,7 +42,7 @@ export type StripeConfigResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Configuration
  */
@@ -81,7 +81,7 @@ export interface StripeConfiguration {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Configuration
  */
@@ -145,7 +145,7 @@ export interface Product {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Configuration
  */
@@ -220,7 +220,7 @@ export interface Price {
  * ];
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Configuration
  */
@@ -263,7 +263,7 @@ export interface Tier {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group UI Configuration
  */
@@ -313,7 +313,7 @@ export interface ProductUI {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group UI Configuration
  */
@@ -349,7 +349,7 @@ export interface PriceUI {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group UI Configuration
  */
@@ -385,7 +385,7 @@ export interface PriceDisplay {
  * ];
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group UI Configuration
  */
@@ -425,7 +425,7 @@ export interface PriceLimit {
  * });
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group UI Configuration
  */

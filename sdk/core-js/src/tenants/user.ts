@@ -16,7 +16,7 @@ import type { ApiResponse } from "../types";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant User Management
  */
@@ -56,7 +56,7 @@ export type UpdateTenantUserRoleResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant User Management
  */
@@ -86,7 +86,7 @@ export type RemoveUserRequest = {
  * await userManager.remove({ user_id: 'user_123' });
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant User Management
  */
@@ -137,7 +137,7 @@ export class TenantUserManager {
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
    * @group Tenant User Management
    */
@@ -204,7 +204,7 @@ export class TenantUserManager {
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
    * @group Tenant User Management
    */

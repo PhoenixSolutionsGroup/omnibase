@@ -23,20 +23,21 @@
  * const tenantHandler = new TenantHandler(omnibaseClient);
  *
  * // Create a new tenant
- * const tenant = await tenantHandler.tenants.createTenant({
+ * const tenant = await tenantHandler.manage.createTenant({
  *   name: 'My Company',
  *   billing_email: 'billing@company.com',
  *   user_id: 'user_123'
  * });
  *
  * // Invite a user to the tenant
- * const invite = await tenantHandler.invites.create(tenant.data.tenant.id, {
+ * const invite = await tenantHandler.invites.create({
  *   email: 'user@example.com',
- *   role: 'member'
+ *   role: 'member',
+ *   invite_url: 'https://yourapp.com/accept-invite'
  * });
  *
  * // Switch active tenant
- * await tenantHandler.tenants.switchActiveTenant(tenant.data.tenant.id);
+ * await tenantHandler.manage.switchActiveTenant(tenant.data.tenant.id);
  * ```
  *
  * @module Tenants

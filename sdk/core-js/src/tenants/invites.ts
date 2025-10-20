@@ -15,9 +15,9 @@ import type { ApiResponse } from "../types";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
- * @group User Management
+ * @group Tenant Invitations
  */
 export type AcceptTenantInviteRequest = {
   /** Secure invitation token from the email invitation */
@@ -43,9 +43,9 @@ export type AcceptTenantInviteRequest = {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
- * @group User Management
+ * @group Tenant Invitations
  */
 export type AcceptTenantInviteResponse = ApiResponse<{
   /** ID of the tenant the user has joined */
@@ -81,9 +81,9 @@ export type AcceptTenantInviteResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
- * @group User Management
+ * @group Tenant Invitations
  */
 export type CreateTenantUserInviteResponse = ApiResponse<{
   /** The newly created tenant invite */
@@ -114,9 +114,9 @@ export type CreateTenantUserInviteResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
- * @group User Management
+ * @group Tenant Invitations
  */
 export type TenantInvite = {
   /** Unique identifier for the invitation */
@@ -142,28 +142,30 @@ export type TenantInvite = {
 /**
  * Required data for creating a tenant user invitation
  *
- * Specifies the email address of the user to invite and their intended
- * role within the tenant. The role determines what permissions the user
- * will have once they accept the invitation.
+ * Specifies the email address of the user to invite, their intended
+ * role within the tenant, and the invitation URL that will be sent in the email.
+ * The role determines what permissions the user will have once they accept the invitation.
+ * The invite_url will be automatically appended with ?token=XYZ when sent to the user.
  *
  * @example
  * ```typescript
  * const inviteData: CreateTenantUserInviteRequest = {
  *   email: 'developer@company.com',
- *   role: 'admin'
+ *   role: 'admin',
+ *   invite_url: 'https://yourapp.com/accept-invite'
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
- * @group User Management
+ * @group Tenant Invitations
  */
 export type CreateTenantUserInviteRequest = {
   /** Email address of the user to invite */
   email: string;
   /** Role the invited user will have in the tenant */
   role: string;
-  /** Invite URL - the link that will be sent to the users email suffixed automatically w/ ?token=XYZ */
+  /** Invite URL - the link that will be sent to the user's email, automatically suffixed with ?token=XYZ */
   invite_url: string;
 };
 
@@ -190,9 +192,10 @@ export type CreateTenantUserInviteRequest = {
  * const inviteManager = new TenantInviteManager(omnibaseClient);
  *
  * // Create an invitation
- * const invite = await inviteManager.create('tenant_123', {
+ * const invite = await inviteManager.create({
  *   email: 'colleague@company.com',
- *   role: 'member'
+ *   role: 'member',
+ *   invite_url: 'https://yourapp.com/accept-invite'
  * });
  *
  * // Accept an invitation (from the invited user's session)
@@ -200,7 +203,7 @@ export type CreateTenantUserInviteRequest = {
  * console.log(`Joined tenant: ${result.data.tenant_id}`);
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Invitations
  */
@@ -246,17 +249,6 @@ export class TenantInviteManager {
    * @throws {Error} When the server returns an error response (4xx, 5xx status codes)
    *
    * @example
-   * Basic invitation acceptance:
-   * ```typescript
-   * const result = await acceptTenantInvite('inv_secure_token_abc123');
-   *
-   * console.log(`Successfully joined tenant: ${result.data.tenant_id}`);
-   * // User can now access tenant resources
-   * await switchActiveTenant(result.data.tenant_id);
-   * ```
-   *
-   * @example
-   * Handling the invitation flow:
    * ```typescript
    * // Typically called from an invitation link like:
    * // https://app.com/accept-invite?token=inv_secure_token_abc123
@@ -266,21 +258,20 @@ export class TenantInviteManager {
    *
    * if (inviteToken) {
    *   try {
-   *     const result = await acceptTenantInvite(inviteToken);
+   *     const result = await inviteManager.accept(inviteToken);
    *
    *     // Success - redirect to tenant dashboard
+   *     console.log(`Successfully joined tenant: ${result.data.tenant_id}`);
    *     window.location.href = `/dashboard?tenant=${result.data.tenant_id}`;
    *   } catch (error) {
    *     console.error('Failed to accept invitation:', error.message);
-   *     // Show error to user
    *   }
    * }
    * ```
    *
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
-   * @group User Management
+   * @group Tenant Invitations
    */
   async accept(token: string): Promise<AcceptTenantInviteResponse> {
     if (!token) {
@@ -320,69 +311,55 @@ export class TenantInviteManager {
   }
 
   /**
-   * Creates a new user invitation for a specific tenant
+   * Creates a new user invitation for the active tenant
    *
-   * Generates a secure invitation that allows a user to join the specified
-   * tenant with the defined role. The invitation is sent to the provided
-   * email address and includes a time-limited token for security.
+   * Generates a secure invitation that allows a user to join the currently active
+   * tenant with the defined role. The invitation is sent to the provided email address
+   * and includes a time-limited token for security. The invite URL will be automatically
+   * appended with ?token=XYZ when sent to the user.
    *
-   * The function creates the invitation record in the database and can
-   * trigger email notifications (depending on server configuration).
-   * The invitation expires after a predefined time period and can only
+   * The function creates the invitation record in the database and triggers an email
+   * notification to the invited user. The invitation expires after 7 days and can only
    * be used once.
    *
-   * Only existing tenant members with appropriate permissions can create
-   * invitations. The inviter's authentication is validated via HTTP-only
-   * cookies sent with the request.
+   * Only existing tenant members with appropriate permissions (invite_user permission)
+   * can create invitations. The inviter's authentication and tenant context are validated
+   * via HTTP-only cookies sent with the request.
    *
-   * @param tenantId - Unique identifier of the tenant to invite the user to
    * @param inviteData - Configuration object for the invitation
    * @param inviteData.email - Email address of the user to invite
    * @param inviteData.role - Role the user will have after joining (e.g., 'member', 'admin')
+   * @param inviteData.invite_url - Base URL for the invitation link (will be appended with ?token=XYZ)
    *
    * @returns Promise resolving to the created invitation with secure token
    *
-   * @throws {Error} When tenantId parameter is missing or empty
-   * @throws {Error} When required fields (email, role) are missing or empty
+   * @throws {Error} When required fields (email, role, invite_url) are missing or empty
+   * @throws {Error} When the user doesn't have permission to invite users to the tenant
    * @throws {Error} When the API request fails due to network issues
    * @throws {Error} When the server returns an error response (4xx, 5xx status codes)
    *
    * @example
-   * Basic invitation creation:
    * ```typescript
-   * const invite = await createTenantUserInvite('tenant_123', {
+   * const invite = await inviteManager.create({
    *   email: 'colleague@company.com',
-   *   role: 'member'
+   *   role: 'member',
+   *   invite_url: 'https://yourapp.com/accept-invite'
    * });
    *
    * console.log(`Invite sent to: ${invite.data.invite.email}`);
-   * // The invite token can be used to generate invitation links
-   * const inviteLink = `https://app.com/accept-invite?token=${invite.data.invite.token}`;
+   * console.log(`Invite token: ${invite.data.invite.token}`);
    * ```
    *
-   * @example
-   * Creating admin invitation:
-   * ```typescript
-   * const adminInvite = await createTenantUserInvite('tenant_456', {
-   *   email: 'admin@company.com',
-   *   role: 'admin'
-   * });
-   *
-   * // Admin users get elevated permissions
-   * console.log(`Admin invite created with ID: ${adminInvite.data.invite.id}`);
-   * ```
-   *
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
-   * @group User Management
+   * @group Tenant Invitations
    */
   async create(
     inviteData: CreateTenantUserInviteRequest
   ): Promise<CreateTenantUserInviteResponse> {
     if (!inviteData.email || !inviteData.role || !inviteData.invite_url) {
       throw new Error(
-        "Missing data in `create` - email, role, invite_url and tenant_id are required"
+        "Missing data in `create` - email, role, and invite_url are required"
       );
     }
 

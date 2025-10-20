@@ -7,13 +7,14 @@ import { TenantUserManager } from "./user";
  * Main tenant management handler
  *
  * This is the primary entry point for all tenant-related operations in the
- * Omnibase SDK. It provides a unified interface to both tenant management
- * and invitation functionality through dedicated manager instances.
+ * Omnibase SDK. It provides a unified interface to tenant management,
+ * user management, and invitation functionality through dedicated manager instances.
  *
  * The handler follows the composition pattern, combining specialized managers
  * for different aspects of tenant functionality:
- * - `tenants`: Core tenant operations (create, delete, switch)
+ * - `manage`: Core tenant operations (create, delete, switch)
  * - `invites`: User invitation management (create, accept)
+ * - `user`: Tenant user operations (remove, update role)
  *
  * All operations are performed within the context of the authenticated user
  * and respect tenant-level permissions and row-level security policies.
@@ -27,23 +28,24 @@ import { TenantUserManager } from "./user";
  * const tenantHandler = new TenantHandler(client);
  *
  * // Create a new tenant
- * const tenant = await tenantHandler.tenants.createTenant({
+ * const tenant = await tenantHandler.manage.createTenant({
  *   name: 'My Company',
  *   billing_email: 'billing@company.com',
  *   user_id: 'user_123'
  * });
  *
  * // Invite users to the tenant
- * const invite = await tenantHandler.invites.create(tenant.data.tenant.id, {
+ * const invite = await tenantHandler.invites.create({
  *   email: 'colleague@company.com',
- *   role: 'member'
+ *   role: 'member',
+ *   invite_url: 'https://yourapp.com/accept-invite'
  * });
  *
  * // Switch to the new tenant
- * await tenantHandler.tenants.switchActiveTenant(tenant.data.tenant.id);
+ * await tenantHandler.manage.switchActiveTenant(tenant.data.tenant.id);
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -87,7 +89,7 @@ export class TenantHandler {
    * await tenantHandler.user.remove({ user_id: 'user_123' });
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @group Tenant Management
    */
   public readonly user: TenantUserManager;
@@ -102,17 +104,17 @@ export class TenantHandler {
    * @example
    * ```typescript
    * // Create a new tenant
-   * const tenant = await tenantHandler.tenants.createTenant({
+   * const tenant = await tenantHandler.manage.createTenant({
    *   name: 'New Company',
    *   billing_email: 'billing@newcompany.com',
    *   user_id: 'user_456'
    * });
    *
    * // Switch to the tenant
-   * await tenantHandler.tenants.switchActiveTenant(tenant.data.tenant.id);
+   * await tenantHandler.manage.switchActiveTenant(tenant.data.tenant.id);
    *
    * // Delete the tenant (owner only)
-   * await tenantHandler.tenants.deleteTenant(tenant.data.tenant.id);
+   * await tenantHandler.manage.deleteTenant(tenant.data.tenant.id);
    * ```
    */
   public readonly manage: TenantManger;
@@ -127,9 +129,10 @@ export class TenantHandler {
    * @example
    * ```typescript
    * // Create an invitation
-   * const invite = await tenantHandler.invites.create('tenant_123', {
+   * const invite = await tenantHandler.invites.create({
    *   email: 'newuser@company.com',
-   *   role: 'admin'
+   *   role: 'admin',
+   *   invite_url: 'https://yourapp.com/accept-invite'
    * });
    *
    * // Accept an invitation (from the invited user's session)

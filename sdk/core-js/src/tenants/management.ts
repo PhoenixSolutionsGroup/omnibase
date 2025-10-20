@@ -24,7 +24,7 @@ import type { ApiResponse } from "../types";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -52,7 +52,7 @@ export type SwitchActiveTenantResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -85,7 +85,7 @@ export type DeleteTenantResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -117,7 +117,7 @@ export type CreateTenantResponse = ApiResponse<{
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -151,7 +151,7 @@ export type Tenant = {
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -199,7 +199,7 @@ export type CreateTenantRequest = {
  * await tenantManager.deleteTenant(tenant.data.tenant.id);
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Tenant Management
  */
@@ -240,17 +240,17 @@ export class TenantManger {
    * @throws {Error} When the server returns an error response (4xx, 5xx status codes)
    *
    * @example
-   * Basic tenant creation:
    * ```typescript
-   * const newTenant = await createTenant({
+   * const newTenant = await tenantManager.createTenant({
    *   name: 'Acme Corporation',
    *   billing_email: 'billing@acme.com',
    *   user_id: 'user_123'
    * });
+   *
+   * console.log(`Tenant created: ${newTenant.data.tenant.id}`);
    * ```
    *
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
    * @group Tenant Management
    */
@@ -321,7 +321,6 @@ export class TenantManger {
    * @throws {Error} When the server returns an error response (4xx, 5xx status codes)
    *
    * @example
-   * Basic tenant deletion with confirmation:
    * ```typescript
    * const tenantToDelete = 'tenant_abc123';
    *
@@ -332,8 +331,8 @@ export class TenantManger {
    *
    * if (userConfirmed) {
    *   try {
-   *     const result = await deleteTenant(tenantToDelete);
-   *     console.log(result.data.message); // "Tenant deleted successfully"
+   *     const result = await tenantManager.deleteTenant(tenantToDelete);
+   *     console.log(result.data.message);
    *
    *     // Redirect user away from deleted tenant
    *     window.location.href = '/dashboard';
@@ -343,7 +342,7 @@ export class TenantManger {
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
    * @group Tenant Management
    */
@@ -410,46 +409,17 @@ export class TenantManger {
    * @throws {Error} When the server returns an error response (4xx, 5xx status codes)
    *
    * @example
-   * Basic tenant switching:
    * ```typescript
-   * const result = await switchActiveTenant('tenant_xyz789');
+   * const result = await tenantManager.switchActiveTenant('tenant_xyz789');
+   *
+   * // Store the new token for future requests
+   * console.log(`Switched to tenant. New token: ${result.data.token}`);
    *
    * // Now all API calls will be in the context of tenant_xyz789
    * const tenantData = await getCurrentTenantData();
    * ```
    *
-   * @example
-   * Using with tenant-aware data fetching:
-   * ```typescript
-   * // Switch tenant and immediately fetch tenant-specific data
-   * const switchAndLoadTenant = async (tenantId: string) => {
-   *   try {
-   *     // Switch to new tenant context
-   *     const switchResult = await switchActiveTenant(tenantId);
-   *
-   *     // Update authentication token
-   *     setAuthToken(switchResult.data.token);
-   *
-   *     // Fetch data in new tenant context
-   *     const [tenantInfo, userPermissions, tenantSettings] = await Promise.all([
-   *       getTenantInfo(),
-   *       getUserPermissions(),
-   *       getTenantSettings()
-   *     ]);
-   *
-   *     return {
-   *       tenant: tenantInfo,
-   *       permissions: userPermissions,
-   *       settings: tenantSettings
-   *     };
-   *   } catch (error) {
-   *     console.error('Failed to switch tenant and load data:', error);
-   *     throw error;
-   *   }
-   * };
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @public
    * @group Tenant Management
    */

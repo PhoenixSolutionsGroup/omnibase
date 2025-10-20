@@ -18,11 +18,10 @@
  * configuration versions while maintaining full operational safety.
  *
  * @example
- * Setting up payment processing:
  * ```typescript
  * import { PaymentHandler } from '@omnibase/core-js/payments';
  *
- * const paymentHandler = new PaymentHandler('https://api.myapp.com');
+ * const paymentHandler = new PaymentHandler(omnibaseClient);
  *
  * // Get current billing configuration
  * const config = await paymentHandler.config.getStripeConfig();
@@ -36,11 +35,7 @@
  *   success_url: 'https://app.com/success',
  *   cancel_url: 'https://app.com/pricing'
  * });
- * ```
  *
- * @example
- * Customer portal and usage tracking:
- * ```typescript
  * // Create customer portal session
  * const portal = await paymentHandler.portal.create({
  *   return_url: 'https://app.com/billing'

@@ -16,7 +16,7 @@ import type { ApiResponse } from "../types";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Usage
  */
@@ -45,9 +45,8 @@ export type UsageOptions = {
  * transparency to customers about their consumption patterns.
  *
  * @example
- * Recording API usage:
  * ```typescript
- * const usageManager = new UsageManager(paymentHandler);
+ * const usageManager = new UsageManager(omnibaseClient);
  *
  * // Record a single API call
  * await usageManager.recordUsage({
@@ -62,7 +61,7 @@ export type UsageOptions = {
  * });
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Usage
  */
@@ -70,7 +69,7 @@ export class UsageManager {
   /**
    * Initialize the usage manager
    *
-   * @param paymentHandler - Payment handler instance for API communication
+   * @param omnibaseClient - OmnibaseClient instance for API communication
    *
    * @group Usage
    */
@@ -98,7 +97,6 @@ export class UsageManager {
    * @throws {ValidationError} When required parameters are missing or invalid
    *
    * @example
-   * API call tracking:
    * ```typescript
    * // Record each API call
    * await usageManager.recordUsage({
@@ -107,37 +105,7 @@ export class UsageManager {
    * });
    * ```
    *
-   * @example
-   * Batch usage recording:
-   * ```typescript
-   * // Record multiple operations at once
-   * const usageEvents = [
-   *   { meter_event_name: 'compute_hours', value: '0.5' },
-   *   { meter_event_name: 'storage_gb', value: '10' },
-   *   { meter_event_name: 'api_calls', value: '50' }
-   * ];
-   *
-   * for (const event of usageEvents) {
-   *   await usageManager.recordUsage(event);
-   * }
-   * ```
-   *
-   * @example
-   * With error handling:
-   * ```typescript
-   * try {
-   *   await usageManager.recordUsage({
-   *     meter_event_name: 'file_uploads',
-   *     value: String(uploadedFiles.length)
-   *   });
-   * } catch (error) {
-   *   console.error('Failed to record usage:', error);
-   *   // Usage recording failure shouldn't block user operations
-   *   // but should be logged for billing accuracy
-   * }
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @group Usage
    */
   async recordUsage(options: UsageOptions): Promise<ApiResponse<"">> {

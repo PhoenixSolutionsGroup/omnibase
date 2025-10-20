@@ -39,8 +39,91 @@ export class OmnibaseClient {
    */
   public readonly payments = new PaymentHandler(this);
 
+  /**
+   * Main tenant management handler
+   *
+   * This is the primary entry point for all tenant-related operations in the
+   * Omnibase SDK. It provides a unified interface to tenant management,
+   * user management, and invitation functionality through dedicated manager instances.
+   *
+   * The handler follows the composition pattern, combining specialized managers
+   * for different aspects of tenant functionality:
+   * - `manage`: Core tenant operations (create, delete, switch)
+   * - `invites`: User invitation management (create, accept)
+   * - `user`: Tenant user operations (remove, update role)
+   *
+   * All operations are performed within the context of the authenticated user
+   * and respect tenant-level permissions and row-level security policies.
+   *
+   * @example
+   * ```typescript
+   * // Create a new tenant
+   * const tenant = await omnibase.tenants.manage.createTenant({
+   *   name: 'My Company',
+   *   billing_email: 'billing@company.com',
+   *   user_id: 'user_123'
+   * });
+   *
+   * // Invite users to the tenant
+   * const invite = await omnibase.tenants.invites.create({
+   *   email: 'colleague@company.com',
+   *   role: 'member',
+   *   invite_url: 'https://yourapp.com/accept-invite'
+   * });
+   *
+   * // Switch to the new tenant
+   * await omnibase.tenants.manage.switchActiveTenant(tenant.data.tenant.id);
+   * ```
+   *
+   * @since 0.6.0
+   * @public
+   * @group Tenant Management
+   */
   public readonly tenants = new TenantHandler(this);
 
+  /**
+   * Client for managing permissions and relationships using Ory Keto
+   *
+   * This client provides access to Ory Keto's permission system, allowing you to
+   * create, manage, and check relationships between subjects and objects. It handles
+   * both read operations (permission checks) and write operations (relationship management).
+   *
+   * The client automatically configures separate endpoints for read and write operations
+   * to optimize performance and security by following Ory Keto's recommended architecture.
+   *
+   * @example
+   * ```typescript
+   * // Check if a user can view a tenant
+   * const canView = await omnibase.permissions.permissions.checkPermission(
+   *   undefined,
+   *   {
+   *     namespace: 'Tenant',
+   *     object: 'tenant_123',
+   *     relation: 'view',
+   *     subjectId: 'user_456'
+   *   }
+   * );
+   *
+   * if (canView.data.allowed) {
+   *   console.log('User can view the tenant');
+   * }
+   *
+   * // Create a relationship making a user an owner of a tenant
+   * await omnibase.permissions.relationships.createRelationship(
+   *   undefined,
+   *   {
+   *     namespace: 'Tenant',
+   *     object: 'tenant_123',
+   *     relation: 'owners',
+   *     subjectId: 'user_456'
+   *   }
+   * );
+   * ```
+   *
+   * @since 0.6.0
+   * @public
+   * @group Permissions
+   */
   public readonly permissions: PermissionsClient;
 
   /**

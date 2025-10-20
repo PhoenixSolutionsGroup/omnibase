@@ -5,31 +5,31 @@ import type { ApiResponse } from "../types";
  * Configuration options for creating a Stripe checkout session
  *
  * Defines all parameters needed to create a checkout session for either
- * one-time payments or subscription billing. The session will redirect
- * users to Stripe's hosted checkout page.
+ * one-time payments or subscription billing. The checkout mode (payment vs
+ * subscription) is automatically determined by examining the price configuration
+ * - no need to specify it manually.
  *
  * @example
  * ```typescript
  * const options: CheckoutOptions = {
- *   price_id: 'price_1234567890',
- *   mode: 'subscription',
+ *   price_id: 'price_monthly_pro',
  *   success_url: 'https://app.com/success?session_id={CHECKOUT_SESSION_ID}',
  *   cancel_url: 'https://app.com/pricing',
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Checkout
  */
 export type CheckoutOptions = {
   /** Stripe price ID for the product/service being purchased */
   price_id: string;
-
   /**
    * URL to redirect to after successful payment
    * Can include {CHECKOUT_SESSION_ID} placeholder for session tracking
    */
+
   success_url: string;
 
   /** URL to redirect to if the user cancels the checkout */
@@ -42,7 +42,7 @@ export type CheckoutOptions = {
  * Contains the checkout session URL and ID for redirecting users
  * to Stripe's hosted checkout page and tracking the session.
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Checkout
  */
@@ -58,17 +58,18 @@ export type CreateCheckoutResponse = ApiResponse<{
  * Manager for Stripe checkout session operations
  *
  * Handles creation and management of Stripe checkout sessions for both
- * one-time payments and subscription billing. Provides a simple interface
- * for redirecting users to Stripe's hosted checkout experience.
+ * one-time payments and subscription billing. The checkout mode is automatically
+ * determined by examining whether the price has a recurring interval - recurring
+ * prices create subscription checkouts, while non-recurring prices create one-time
+ * payment checkouts.
  *
- * Checkout sessions are the recommended way to accept payments as they
- * provide a secure, PCI-compliant payment flow without requiring
- * sensitive payment data to touch your servers.
+ * Checkout sessions provide a secure, PCI-compliant payment flow without requiring
+ * sensitive payment data to touch your servers. The API automatically fetches the
+ * price details from Stripe to determine the appropriate checkout mode.
  *
  * @example
- * Creating a checkout session (mode auto-detected from price):
  * ```typescript
- * const checkoutManager = new CheckoutManager(paymentHandler);
+ * const checkoutManager = new CheckoutManager(omnibaseClient);
  *
  * const session = await checkoutManager.createSession({
  *   price_id: 'price_monthly_pro',
@@ -80,7 +81,7 @@ export type CreateCheckoutResponse = ApiResponse<{
  * window.location.href = session.data.url;
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Checkout
  */
@@ -114,31 +115,20 @@ export class CheckoutManager {
    * @throws {ValidationError} When required parameters are missing or invalid
    *
    * @example
-   * Creating a checkout session (mode is auto-detected):
    * ```typescript
    * const session = await checkoutManager.createSession({
-   *   price_id: 'price_one_time_product',
+   *   price_id: 'price_monthly_pro',
    *   success_url: 'https://app.com/success',
    *   cancel_url: 'https://app.com/cancel'
    * });
    *
    * // Redirect to Stripe checkout
-   * window.location.href = session.data.url;
+   * if (session.data?.url) {
+   *   window.location.href = session.data.url;
+   * }
    * ```
    *
-   * @example
-   * Checkout with session tracking:
-   * ```typescript
-   * const session = await checkoutManager.createSession({
-   *   price_id: 'price_monthly_plan',
-   *   success_url: 'https://app.com/dashboard?session_id={CHECKOUT_SESSION_ID}',
-   *   cancel_url: 'https://app.com/pricing',
-   * });
-   *
-   * console.log(`Session created: ${session.data.sessionId}`);
-   * ```
-   *
-   * @since 1.0.0
+   * @since 0.6.0
    * @group Checkout
    */
   async createSession(

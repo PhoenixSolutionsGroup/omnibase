@@ -9,19 +9,20 @@ import { UsageManager } from "./usage";
  *
  * This class serves as the central coordinator for all payment functionality,
  * providing access to checkout sessions, billing configuration, customer portals,
- * and usage tracking. It handles the low-level HTTP communication with the
- * payment API and delegates specific operations to specialized managers.
+ * and usage tracking. It delegates specific operations to specialized managers
+ * that handle checkout, configuration, portal, and usage operations.
  *
- * The handler automatically manages authentication, request formatting, and
- * provides a consistent interface across all payment operations.
+ * The handler provides a consistent interface across all payment operations,
+ * with automatic checkout mode detection (subscription vs one-time payment)
+ * based on the price configuration retrieved from Stripe.
  *
  * @example
  * ```typescript
- * const paymentHandler = new PaymentHandler('https://api.example.com');
+ * const paymentHandler = new PaymentHandler(omnibaseClient);
  *
  * // Create a checkout session (mode auto-detected from price)
  * const checkout = await paymentHandler.checkout.createSession({
- *   price_id: 'price_123',
+ *   price_id: 'price_monthly_pro',
  *   success_url: 'https://app.com/success',
  *   cancel_url: 'https://app.com/cancel'
  * });
@@ -30,26 +31,26 @@ import { UsageManager } from "./usage";
  * const products = await paymentHandler.config.getAvailableProducts();
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Client
  */
 export class PaymentHandler {
   /**
-   * Initialize the payment handler with API configuration
+   * Initialize the payment handler with OmnibaseClient
    *
-   * Creates a new payment handler instance that will communicate with
-   * the specified API endpoint. The handler automatically handles
-   * request formatting and authentication headers.
+   * Creates a new payment handler instance with access to all payment
+   * operations including checkout, configuration, portal, and usage tracking.
+   * The handler uses the provided OmnibaseClient for API communication.
    *
-   * @param apiUrl - Base URL for the payment API endpoint
+   * @param omnibaseClient - OmnibaseClient instance for API communication
    *
    * @example
    * ```typescript
-   * const paymentHandler = new PaymentHandler('https://api.myapp.com');
+   * const paymentHandler = new PaymentHandler(omnibaseClient);
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @group Client
    */
   constructor(private omnibaseClient: OmnibaseClient) {
@@ -68,10 +69,14 @@ export class PaymentHandler {
    * @example
    * ```typescript
    * const session = await paymentHandler.checkout.createSession({
-   *   price_id: 'price_monthly',
+   *   price_id: 'price_monthly_pro',
    *   success_url: window.location.origin + '/success',
    *   cancel_url: window.location.origin + '/pricing'
    * });
+   *
+   * if (session.data?.url) {
+   *   window.location.href = session.data.url;
+   * }
    * ```
    */
   public readonly checkout: CheckoutManager;

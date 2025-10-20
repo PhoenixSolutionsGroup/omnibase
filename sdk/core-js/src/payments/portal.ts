@@ -15,7 +15,7 @@ import type { ApiResponse } from "../types";
  * };
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Portal
  */
@@ -31,7 +31,7 @@ export type PortalOptions = {
  * Stripe's hosted customer portal where they can manage their
  * billing and subscription settings.
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Portal
  */
@@ -52,9 +52,8 @@ export type CreateCustomerPortalResponse = ApiResponse<{
  * billing tasks independently.
  *
  * @example
- * Creating a customer portal session:
  * ```typescript
- * const portalManager = new PortalManager(paymentHandler);
+ * const portalManager = new PortalManager(omnibaseClient);
  *
  * const portal = await portalManager.create({
  *   return_url: 'https://app.com/billing'
@@ -64,7 +63,7 @@ export type CreateCustomerPortalResponse = ApiResponse<{
  * window.location.href = portal.data.url;
  * ```
  *
- * @since 1.0.0
+ * @since 0.6.0
  * @public
  * @group Portal
  */
@@ -72,7 +71,7 @@ export class PortalManager {
   /**
    * Initialize the portal manager
    *
-   * @param paymentHandler - Payment handler instance for API communication
+   * @param omnibaseClient - OmnibaseClient instance for API communication
    *
    * @group Portal
    */
@@ -98,32 +97,18 @@ export class PortalManager {
    * @throws {ValidationError} When required parameters are missing or invalid
    *
    * @example
-   * Basic portal creation:
    * ```typescript
    * const portal = await portalManager.create({
    *   return_url: 'https://myapp.com/account/billing'
    * });
    *
    * // Redirect user to portal
-   * window.location.href = portal.data.url;
-   * ```
-   *
-   * @example
-   * With error handling:
-   * ```typescript
-   * try {
-   *   const portal = await portalManager.create({
-   *     return_url: window.location.origin + '/billing'
-   *   });
-   *
+   * if (portal.data?.url) {
    *   window.location.href = portal.data.url;
-   * } catch (error) {
-   *   console.error('Failed to create portal session:', error);
-   *   showErrorMessage('Unable to access billing portal. Please try again.');
    * }
    * ```
    *
-   * @since 1.0.0
+   * @since 0.6.0
    * @group Portal
    */
   async create(options: PortalOptions): Promise<CreateCustomerPortalResponse> {
