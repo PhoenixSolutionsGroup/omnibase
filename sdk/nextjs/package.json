@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/nextjs",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "description": "OmniBase NextJS 13+ SDK",
   "files": [
     "dist/**/*"

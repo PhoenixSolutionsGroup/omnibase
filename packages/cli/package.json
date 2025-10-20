@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/cli",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "OmniBase CLI - Manage Docker Compose services and environment configuration",
   "main": "dist/index.js",
   "bin": {
@@ -17,13 +17,20 @@
     "start": "node dist/index.js",
     "prepare": "npm run build"
   },
-  "keywords": ["cli", "docker", "compose", "omnibase"],
+  "keywords": [
+    "cli",
+    "docker",
+    "compose",
+    "omnibase"
+  ],
   "author": "Phoenix Solutions Group",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
-    "@ory/client": "^1.14.3"
+    "@ory/client": "^1.14.3",
+    "adm-zip": "^0.5.10",
+    "form-data": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
