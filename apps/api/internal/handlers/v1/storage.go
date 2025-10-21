@@ -56,7 +56,7 @@ func NewStorageHandler(cfg *config.Config) *StorageHandler {
 		o.UsePathStyle = cfg.S3Config.ForcePathStyle
 	})
 
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		log.Panicf("Failed to connect to database: %s", err)
 	}

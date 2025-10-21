@@ -26,7 +26,7 @@ type MigrationHandler struct {
 }
 
 func NewMigrationHandler(cfg *config.Config) *MigrationHandler {
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		panic(err)
 	}

@@ -16,7 +16,7 @@ type PaymentsHandler struct {
 }
 
 func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		log.Panicf("Failed to connect to database: %s", err)
 	}

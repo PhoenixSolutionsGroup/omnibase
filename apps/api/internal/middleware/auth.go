@@ -25,7 +25,7 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 		},
 	}
 
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		panic(err)
 	}

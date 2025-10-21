@@ -17,7 +17,7 @@ type EmailHandler struct {
 }
 
 func NewEmailHandler(cfg *config.Config) *EmailHandler {
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		panic(err)
 	}

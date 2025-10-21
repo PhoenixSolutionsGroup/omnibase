@@ -20,7 +20,7 @@ type StripeConfigService struct {
 }
 
 func NewStripeConfigService(cfg *config.Config) *StripeConfigService {
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		panic(err)
 	}

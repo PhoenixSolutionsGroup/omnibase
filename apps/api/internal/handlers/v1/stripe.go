@@ -31,7 +31,7 @@ type StripeHandler struct {
 }
 
 func NewStripeHandler(cfg *config.Config) *StripeHandler {
-	db, err := database.NewConnection(cfg.Database)
+	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
 		log.Panicf("Failed to connect to database: %s", err)
 	}
