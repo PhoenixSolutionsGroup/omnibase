@@ -178,18 +178,22 @@ func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
 
 	driver, err := postgres.WithInstance(sqlDB, &postgres.Config{})
 	if err != nil {
+		fmt.Printf("Migration failed: %v\n", err)
+
 		return err
 	}
 
 	sourceURL := fmt.Sprintf("file://%s", migrationsDir)
 	m, err := migrate.NewWithDatabaseInstance(sourceURL, "postgres", driver)
 	if err != nil {
+		fmt.Printf("Migration failed: %v\n", err)
+
 		return err
 	}
-	defer m.Close()
 
 	// Apply migrations
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		fmt.Printf("Migration failed: %v\n", err)
 		return err
 	}
 
