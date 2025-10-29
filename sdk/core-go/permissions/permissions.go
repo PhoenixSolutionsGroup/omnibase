@@ -1,12 +1,15 @@
 package permissions
 
 import (
+	"net/http"
+
 	keto "github.com/ory/keto-client-go"
 )
 
 // Config holds the configuration needed by the permissions client
 type Config struct {
-	API_URL string
+	API_URL      string
+	SessionToken string
 }
 
 // OmnibasePermissionsClient provides access to Ory Keto permissions and relationships
@@ -70,9 +73,28 @@ func NewClient(cfg *Config) *OmnibasePermissionsClient {
 		},
 	}
 
+	if cfg.SessionToken != "" {
+		writeConfig.HTTPClient = &http.Client{
+			Transport: &sessionTransport{
+				base:         http.DefaultTransport,
+				sessionToken: cfg.SessionToken,
+			},
+		}
+	}
+
 	return &OmnibasePermissionsClient{
 		config:        cfg,
 		Permissions:   keto.NewAPIClient(readConfig).PermissionApi,
 		Relationships: keto.NewAPIClient(writeConfig).RelationshipApi,
 	}
+}
+
+type sessionTransport struct {
+	base         http.RoundTripper
+	sessionToken string
+}
+
+func (t *sessionTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("X-Session-Token", t.sessionToken)
+	return t.base.RoundTrip(req)
 }
