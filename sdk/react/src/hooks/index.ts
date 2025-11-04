@@ -6,8 +6,8 @@
  * authentication patterns in React applications.
  *
  * @example
- * ```typescript
- * import { useSession } from '@omnibase/react/hooks';
+ * ```tsx
+ * import { useSession } from '@omnibase/react';
  *
  * function Dashboard() {
  *   const { session, loading } = useSession();

@@ -10,26 +10,25 @@ import { useAuth } from "@/context/provider";
  * component mount and provides loading states for displaying appropriate UI.
  *
  * The hook must be used within a component that is wrapped by the
- * [`AuthClientProvider`](../context/provider.tsx:49). It handles session retrieval, error cases
- * (setting session to null), and provides a loading state for better UX.
+ * [`AuthClientProvider`](../context/provider.tsx:80). It handles session retrieval, error cases
+ * (setting session to null when unauthenticated), and provides a loading state for better UX.
  *
  * @returns Object containing session data and loading state
  * @returns session - Current user session or null if not authenticated
  * @returns loading - Boolean indicating if session is being fetched
  *
  * @example
- * Basic usage with loading state:
- * ```typescript
+ * ```tsx
  * import { useSession } from '@omnibase/react';
  *
  * function UserProfile() {
  *   const { session, loading } = useSession();
  *
  *   if (loading) {
- *     return <div>Loading session...</div>;
+ *     return <div>Loading...</div>;
  *   }
  *
- *   if (!session) {
+ *   if (!session || !session.active) {
  *     return <div>Please log in to continue</div>;
  *   }
  *
@@ -42,42 +41,7 @@ import { useAuth } from "@/context/provider";
  * }
  * ```
  *
- * @example
- * Conditional rendering based on authentication:
- * ```typescript
- * import { useSession } from '@omnibase/react';
- *
- * function Dashboard() {
- *   const { session, loading } = useSession();
- *
- *   if (loading) return <LoadingSpinner />;
- *
- *   return session ? <AuthenticatedDashboard /> : <LoginPrompt />;
- * }
- * ```
- *
- * @example
- * Accessing user traits and metadata:
- * ```typescript
- * import { useSession } from '@omnibase/react';
- *
- * function UserGreeting() {
- *   const { session, loading } = useSession();
- *
- *   if (loading || !session) return null;
- *
- *   const { traits } = session.identity;
- *
- *   return (
- *     <div>
- *       <h2>Hello, {traits.name || traits.email}!</h2>
- *       <p>Member since: {new Date(session.authenticated_at).toLocaleDateString()}</p>
- *     </div>
- *   );
- * }
- * ```
- *
- * @since 1.0.0
+ * @since 0.2.0
  * @public
  * @group Hooks
  */

@@ -2,16 +2,16 @@
  * Authentication context module
  *
  * This module provides React context and providers for managing authentication
- * state across your React application. It includes the `AuthClientProvider` for
- * wrapping your app and the `useAuth` hook for accessing the authentication client.
+ * state across your React application. It includes the [`AuthClientProvider`](provider.tsx:80) for
+ * wrapping your app and the [`useAuth()`](provider.tsx:144) hook for accessing the authentication client.
  *
  * @example
- * ```typescript
- * import { AuthClientProvider } from '@omnibase/react/context';
+ * ```tsx
+ * import { AuthClientProvider } from '@omnibase/react';
  *
  * function App() {
  *   return (
- *     <AuthClientProvider basePath="https://api.example.com">
+ *     <AuthClientProvider basePath="http://localhost:4000">
  *       <YourApp />
  *     </AuthClientProvider>
  *   );
