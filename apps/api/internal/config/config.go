@@ -60,6 +60,7 @@ type StripeConfig struct {
 type AuthConfig struct {
 	KratosURL      string
 	KratosAdminURL string
+	KratosJWTJWKS  string
 }
 
 type SMTPConfig struct {
@@ -99,6 +100,7 @@ func New() *Config {
 		AuthConfig: AuthConfig{
 			KratosURL:      os.Getenv("KRATOS_URL"),
 			KratosAdminURL: os.Getenv("KRATOS_ADMIN_URL"),
+			KratosJWTJWKS:  os.Getenv("KRATOS_JWT_JWKS"),
 		},
 		SMTPConfig: SMTPConfig{
 			ConnectionURI: os.Getenv("SMTP_CONNECTION_URI"),
