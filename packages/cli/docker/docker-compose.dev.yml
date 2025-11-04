@@ -23,6 +23,10 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - IDENTITY_SCHEMA_URL=http://rest-api:8080/api/v1/auth/identity-schema
+      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS-{}}
+      - WAIT_FOR_API_HEALTH=true
+      - API_URL=http://rest-api:8080
+
     volumes:
       - type: bind
         source: ../../../docker/auth
@@ -38,11 +42,12 @@ services:
   kratos:
     depends_on:
       - kratos-migrate
+      - rest-api
     build:
       context: ../../../docker/auth
       dockerfile: Dockerfile
     env_file:
-      - ${OMNIBASE_PROJECT_DIR}/omnibase/environments/.env.dev
+      - ${OMNIBASE_ENV_FILE}
     ports:
       - "4433:4433" # public
       - "4434:4434" # admin
@@ -70,6 +75,12 @@ services:
       - WEBSITE_REGISTRATION_URL=${WEBSITE_REGISTRATION_URL:-${WEBSITE_URL}/auth/registration}
 
       - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI:-smtp://mailpit:1025?disable_starttls=true}
+      - SMTP_FROM_ADDRESS=${SMTP_FROM_ADDRESS:-no-reply@omnibase.tech}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-"Omnibase Auth"}
+
+      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS-{}}
+      - API_URL=http://rest-api:8080
+      - WAIT_FOR_API_HEALTH=true
     volumes:
       - type: bind
         source: ../../../docker/auth
@@ -162,7 +173,7 @@ services:
   rest-api:
     build:
       context: ../../../apps/api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: restapi
     ports:
       - "8080:8080"
@@ -204,6 +215,7 @@ services:
 
       # JWT Configuration
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
+      - JWT_SECRET=${JWT_SECRET:-VERY_SECRET_KEY}
 
       # Keto Configuration
       - KETO_READ_URL=http://keto:4466
@@ -216,6 +228,11 @@ services:
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
 
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+      - LOG_FORMAT=${LOG_FORMAT:-pretty}
+
+      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS}
+  # Keto Migration
   keto-migrate:
     build:
       context: ../../../docker/permissions
@@ -277,7 +294,7 @@ services:
     volumes:
       - ${OMNIBASE_PROJECT_DIR}/omnibase/edge:/app
     env_file:
-      - ${OMNIBASE_PROJECT_DIR}/omnibase/environments/.env.dev
+      - ${OMNIBASE_ENV_FILE}
     environment:
       - PORT=8787
       - NODE_ENV=development
