@@ -2,6 +2,52 @@ import type { OmnibaseClient } from "../client";
 import type { ApiResponse } from "../types";
 
 /**
+ * Response structure for a tenant user
+ *
+ * Represents a user's information within a tenant, including their
+ * identification details and assigned role.
+ *
+ * @example
+ * ```typescript
+ * const user: TenantUser = {
+ *   user_id: 'user_abc123',
+ *   first_name: 'John',
+ *   last_name: 'Doe',
+ *   email: 'john@example.com',
+ *   role: 'admin'
+ * };
+ * ```
+ *
+ * @since 1.0.0
+ * @public
+ * @group Tenant User Management
+ */
+export type TenantUser = {
+  /** Unique identifier for the user */
+  user_id: string;
+  /** User's first name */
+  first_name: string;
+  /** User's last name */
+  last_name: string;
+  /** User's email address */
+  email: string;
+  /** User's role within the tenant */
+  role: string;
+};
+
+/**
+ * Response from fetching all users in a tenant
+ *
+ * This type represents the API response structure returned when fetching
+ * the list of all users in the active tenant.
+ *
+ * @since 1.0.0
+ * @public
+ * @group Tenant User Management
+ */
+export type GetAllUsersResponse = ApiResponse<TenantUser[]>;
+
+/**
  * Request parameters for updating a user's role within a tenant
  *
  * This interface defines the data required to change a user's role in the active tenant.
@@ -99,6 +145,61 @@ export class TenantUserManager {
    * @group Tenant User Management
    */
   constructor(private omnibaseClient: OmnibaseClient) {}
+
+  /**
+   * Retrieves all users in the active tenant
+   *
+   * This method fetches a list of all users who are members of the current active tenant,
+   * including their basic information (name, email) and assigned role. The operation
+   * requires the requesting user to have appropriate permissions to view tenant users
+   * (typically requires `view_users` permission).
+   *
+   * The returned list includes all tenant members regardless of their role, ordered by
+   * when they joined the tenant (newest first).
+   *
+   * @returns Promise resolving to an array of tenant users with their details
+   *
+   * @throws {Error} When the API request fails (includes status code and error details)
+   * @throws {Error} When the user doesn't have permission to view users
+   * @throws {Error} When the user is not authenticated or no active tenant is set
+   *
+   * @example
+   * ```typescript
+   * // Fetch all users in the active tenant
+   * try {
+   *   const result = await userManager.getAll();
+   *   console.log(`Found ${result.data.length} users`);
+   *
+   *   result.data.forEach(user => {
+   *     console.log(`${user.first_name} ${user.last_name} (${user.email}) - ${user.role}`);
+   *   });
+   * } catch (error) {
+   *   if (error.message.includes('403')) {
+   *     console.error('Insufficient permissions to view users');
+   *   } else {
+   *     console.error('Failed to fetch users:', error);
+   *   }
+   * }
+   * ```
+   *
+   * @since 1.0.0
+   * @public
+   * @group Tenant User Management
+   */
+  async getAll(): Promise<GetAllUsersResponse> {
+    const response = await this.omnibaseClient.fetch("/api/v1/tenants/users", {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(
+        `Failed to fetch tenant users: ${response.status} - ${errorData}`
+      );
+    }
+
+    return (await response.json()) as GetAllUsersResponse;
+  }
 
   /**
    * Removes a user from the active tenant
