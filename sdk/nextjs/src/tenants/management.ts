@@ -217,8 +217,7 @@ export class TenantManagementManager {
    * @param formData - Form data containing the following field:
    *   - tenant_id (required): ID of the tenant to switch to
    *
-   * @returns Promise resolving to { success: true, message: string } on success,
-   *          or { success: false, error: string } on failure
+   * @returns Promise resolving to success/error state object with either a success message or error message
    *
    * @throws {Error} When tenant_id is missing from form data
    * @throws {Error} When tenant switching fails or returns no data
