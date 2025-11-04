@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -64,18 +65,20 @@ type Product struct {
 }
 
 type Price struct {
-	ID            string   `json:"id" validate:"required"`
-	Amount        int64    `json:"amount,omitempty" validate:"min=0"`
-	Currency      string   `json:"currency" validate:"required,len=3"`
-	Interval      string   `json:"interval,omitempty"`       // month, year, week, day
-	IntervalCount int      `json:"interval_count,omitempty"` // default 1
-	UsageType     string   `json:"usage_type,omitempty"`     // licensed, metered
-	Meter         string   `json:"meter,omitempty"`          // meter ID for metered pricing
-	BillingScheme string   `json:"billing_scheme,omitempty"` // per_unit, tiered
-	TiersMode     string   `json:"tiers_mode,omitempty"`     // graduated, volume (required when billing_scheme is tiered)
-	Tiers         []Tier   `json:"tiers,omitempty"`
-	Default       bool     `json:"default,omitempty"` // mark as default price for the product
-	UI            *PriceUI `json:"ui,omitempty"`
+	ID                 string   `json:"id" validate:"required"`
+	Public             *bool    `json:"public,omitempty"`                // nil = true (default), false = hidden from public API
+	TaxIncludedInPrice *bool    `json:"tax_included_in_price,omitempty"` // nil = false (default)
+	Amount             int64    `json:"amount,omitempty" validate:"min=0"`
+	Currency           string   `json:"currency" validate:"required,len=3"`
+	Interval           string   `json:"interval,omitempty"`       // month, year, week, day
+	IntervalCount      int      `json:"interval_count,omitempty"` // default 1
+	UsageType          string   `json:"usage_type,omitempty"`     // licensed, metered
+	Meter              string   `json:"meter,omitempty"`          // meter ID for metered pricing
+	BillingScheme      string   `json:"billing_scheme,omitempty"` // per_unit, tiered
+	TiersMode          string   `json:"tiers_mode,omitempty"`     // graduated, volume (required when billing_scheme is tiered)
+	Tiers              []Tier   `json:"tiers,omitempty"`
+	Default            bool     `json:"default,omitempty"` // mark as default price for the product
+	UI                 *PriceUI `json:"ui,omitempty"`
 }
 
 // PriceWithStripeID extends Price to include the actual Stripe ID for API responses
@@ -196,13 +199,14 @@ type ProductUpdate struct {
 
 // StripeIDMapping stores the relationship between config IDs and actual Stripe IDs
 type StripeIDMapping struct {
-	ID           uuid.UUID `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	ConfigID     uuid.UUID `json:"config_id" gorm:"type:uuid;not null;index"` // References StripeConfig.ID
-	ConfigItemID string    `json:"config_item_id" gorm:"not null;index"`      // Our config ID (e.g., "price_test_basic_monthly")
-	StripeID     string    `json:"stripe_id" gorm:"not null;index"`           // Stripe's generated ID (e.g., "price_1S7p7w...")
-	ItemType     string    `json:"item_type" gorm:"not null"`                 // "product" or "price"
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID              uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	ConfigID        uuid.UUID      `json:"config_id" gorm:"type:uuid;not null;index"`            // References StripeConfig.ID
+	ConfigItemID    string         `json:"config_item_id" gorm:"not null;index"`                 // Our config ID (e.g., "price_test_basic_monthly")
+	StripeID        string         `json:"stripe_id" gorm:"not null;index"`                      // Stripe's generated ID (e.g., "price_1S7p7w...")
+	StripeIDHistory pq.StringArray `json:"stripe_id_history" gorm:"type:text[];default:ARRAY[]"` // Historical Stripe IDs for legacy price tracking
+	ItemType        string         `json:"item_type" gorm:"not null"`                            // "product" or "price"
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
 }
 
 func (StripeIDMapping) TableName() string {
@@ -246,4 +250,19 @@ type MeterCustomerMapping struct {
 // MeterValueSettings defines how to extract usage values from events (optional, has defaults)
 type MeterValueSettings struct {
 	EventPayloadKey string `json:"event_payload_key" validate:"required"`
+}
+
+// SubscriptionResponse represents an active subscription for a tenant
+type SubscriptionResponse struct {
+	SubscriptionID   string `json:"subscription_id"`
+	ConfigPriceID    string `json:"config_price_id"`
+	Status           string `json:"status"`
+	IsLegacyPrice    bool   `json:"is_legacy_price"`
+	CurrentPeriodEnd int64  `json:"current_period_end"`
+}
+
+// BillingStatusResponse represents the billing status of a tenant
+type BillingStatusResponse struct {
+	HasBillingInfo bool `json:"has_billing_info"`
+	IsActive       bool `json:"is_active"`
 }
