@@ -195,6 +195,30 @@ const config: Config = {
         excludePrivate: true,
       },
     ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "react",
+        entryPoints: [
+          "../../sdk/react/src/components/index.ts",
+          "../../sdk/react/src/context/index.ts",
+          "../../sdk/react/src/hooks/index.ts",
+        ],
+        tsconfig: "../../sdk/react/tsconfig.json",
+        readme: "../../sdk/react/README.md",
+        includeVersion: true,
+        categorizeByGroup: false,
+        navigation: {
+          includeGroups: true,
+          includeCategories: false,
+        },
+        mergeReadme: true,
+        hidePageHeader: true,
+        modulesFileName: false,
+        out: "./docs/Framework SDKs/react",
+        excludePrivate: true,
+      },
+    ],
   ],
 };
 
