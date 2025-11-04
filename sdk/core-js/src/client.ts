@@ -10,7 +10,7 @@ export type OmnibaseClientConfig = {
 
 export class OmnibaseClient {
   constructor(private config: OmnibaseClientConfig) {
-    this.permissions = new PermissionsClient(this.config.api_url);
+    this.permissions = new PermissionsClient(this.config.api_url, this);
   }
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/core-js",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "description": "OmniBase core Javascript SDK - framework agnostic",
   "files": [
     "dist/**/*"
