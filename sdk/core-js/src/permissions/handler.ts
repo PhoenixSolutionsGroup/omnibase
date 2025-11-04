@@ -1,99 +1,84 @@
 import { RelationshipApi, PermissionApi } from "@ory/client";
+import type { OmnibaseClient } from "../client";
+import { RolesHandler } from "./roles";
 
 /**
  * Client for managing permissions and relationships using Ory Keto
  *
- * This client provides access to Ory Keto's permission system, allowing you to
- * create, manage, and check relationships between subjects and objects. It handles
- * both read operations (permission checks) and write operations (relationship management).
+ * This client provides access to Ory Keto's permission system through Omnibase's API,
+ * allowing you to create, manage, and check relationships between subjects and objects.
+ * It handles both read operations (permission checks) and write operations (relationship management).
  *
- * The client automatically configures separate endpoints for read and write operations
- * to optimize performance and security by following Ory Keto's recommended architecture.
+ * The client automatically configures separate endpoints for read and write operations:
+ * - Read operations (permission checks): `/api/v1/permissions/read`
+ * - Write operations (relationship management): `/api/v1/permissions/write`
+ *
+ * This separation optimizes performance and security by following Ory Keto's recommended architecture.
  *
  * @example
- * Basic permission checking:
+ * Initialize the permissions client:
  * ```typescript
- * import { PermissionsClient } from '@omnibase/core-js/permissions';
+ * import { OmnibaseClient } from '@omnibase/core-js';
  *
- * const permissionsClient = new PermissionsClient('https://api.example.com');
+ * const omnibase = new OmnibaseClient({
+ *   apiUrl: 'https://api.example.com'
+ * });
  *
+ * // Access permissions client
+ * const permissions = omnibase.permissions;
+ * ```
+ *
+ * @example
+ * Check if a user has permission:
+ * ```typescript
  * // Check if a user can view a tenant
- * const canView = await permissionsClient.permissions.checkPermission(
- *   undefined,
- *   {
- *     namespace: 'Tenant',
- *     object: 'tenant_123',
- *     relation: 'view',
- *     subjectId: 'user_456'
- *   }
- * );
+ * const result = await omnibase.permissions.permissions.checkPermission({
+ *   namespace: 'Tenant',
+ *   object: 'tenant_123',
+ *   relation: 'view',
+ *   subjectId: 'user_456'
+ * });
  *
- * if (canView.data.allowed) {
+ * if (result.data.allowed) {
  *   console.log('User can view the tenant');
  * }
  * ```
  *
  * @example
- * Creating tenant relationships:
+ * Create relationships:
  * ```typescript
- * // Create a relationship making a user an owner of a tenant
- * await permissionsClient.relationships.createRelationship(
- *   undefined,
- *   {
- *     namespace: 'Tenant',
- *     object: 'tenant_123',
- *     relation: 'owners',
- *     subjectId: 'user_456'
- *   }
- * );
- *
- * // Now the user has owner permissions on the tenant
- * console.log('User is now an owner of the tenant');
+ * // Make a user an owner of a tenant
+ * await omnibase.permissions.relationships.createRelationship({
+ *   namespace: 'Tenant',
+ *   object: 'tenant_123',
+ *   relation: 'owners',
+ *   subjectId: 'user_456'
+ * });
  * ```
  *
  * @example
- * Complex tenant permission management:
+ * Query existing relationships:
  * ```typescript
- * const tenantId = 'tenant_123';
- * const userId = 'user_456';
+ * // Get all members of a tenant
+ * const relationships = await omnibase.permissions.relationships.getRelationships({
+ *   namespace: 'Tenant',
+ *   object: 'tenant_123',
+ *   relation: 'members'
+ * });
  *
- * // Grant admin permissions to a user
- * await permissionsClient.relationships.createRelationship(
- *   undefined,
- *   {
- *     namespace: 'Tenant',
- *     object: tenantId,
- *     relation: 'admins',
- *     subjectId: userId
- *   }
- * );
+ * console.log('Tenant members:', relationships.data.relation_tuples);
+ * ```
  *
- * // Check if user can manage members (admins and owners can)
- * const canManageMembers = await permissionsClient.permissions.checkPermission(
- *   undefined,
- *   {
- *     namespace: 'Tenant',
- *     object: tenantId,
- *     relation: 'manage_members',
- *     subjectId: userId
- *   }
- * );
- *
- * if (canManageMembers.data.allowed) {
- *   // User can invite/remove members
- *   console.log('User can manage tenant members');
- * }
- *
- * // Later, remove admin permissions
- * await permissionsClient.relationships.deleteRelationships(
- *   undefined,
- *   {
- *     namespace: 'Tenant',
- *     object: tenantId,
- *     relation: 'admins',
- *     subjectId: userId
- *   }
- * );
+ * @example
+ * Delete relationships:
+ * ```typescript
+ * // Remove a user from tenant admins
+ * await omnibase.permissions.relationships.deleteRelationships({
+ *   namespace: 'Tenant',
+ *   object: 'tenant_123',
+ *   relation: 'admins',
+ *   subjectId: 'user_456'
+ * });
  * ```
  *
  * @since 1.0.0
@@ -140,25 +125,56 @@ export class PermissionsClient {
    * on an object. This API handles read operations and is optimized for fast
    * permission checks in your application logic.
    *
+   * All operations are proxied through Omnibase's API at `/api/v1/permissions/read`.
+   *
    * Key methods:
-   * - `checkPermission()` - Checks if a subject has permission on an object
-   * - `checkPermissionOrError()` - Same as above but throws error if denied
-   * - `expandPermissions()` - Expands relationships to show all granted permissions
+   * - `checkPermission(params)` - Checks if a subject has permission on an object
+   * - `checkPermissionOrError(params)` - Same as above but throws error if denied
+   * - `expandPermissions(namespace, object, relation, maxDepth?)` - Expands relationships to show all granted permissions
+   * - `postCheckPermission(maxDepth?, body)` - POST variant of permission check
    *
    * @example
+   * Check a single permission:
    * ```typescript
-   * // Check permission
-   * const result = await client.permissions.checkPermission(
-   *   undefined,
-   *   {
-   *     namespace: 'Tenant',
-   *     object: 'tenant_123',
-   *     relation: 'view',
-   *     subjectId: 'user_456'
-   *   }
+   * const result = await omnibase.permissions.permissions.checkPermission({
+   *   namespace: 'Tenant',
+   *   object: 'tenant_123',
+   *   relation: 'view',
+   *   subjectId: 'user_456'
+   * });
+   *
+   * if (result.data.allowed) {
+   *   console.log('User has permission');
+   * }
+   * ```
+   *
+   * @example
+   * Expand permission tree:
+   * ```typescript
+   * const tree = await omnibase.permissions.permissions.expandPermissions(
+   *   'Tenant',
+   *   'tenant_123',
+   *   'view'
    * );
    *
-   * console.log('Has permission:', result.data.allowed);
+   * console.log('Permission tree:', tree.data);
+   * ```
+   *
+   * @example
+   * Check permission or throw error:
+   * ```typescript
+   * try {
+   *   await omnibase.permissions.permissions.checkPermissionOrError({
+   *     namespace: 'Tenant',
+   *     object: 'tenant_123',
+   *     relation: 'edit',
+   *     subjectId: 'user_456'
+   *   });
+   *   // Permission granted
+   * } catch (error) {
+   *   // Permission denied
+   *   console.error('Access denied');
+   * }
    * ```
    *
    * @since 1.0.0
@@ -167,31 +183,90 @@ export class PermissionsClient {
   public permissions: PermissionApi;
 
   /**
+   * Handler for managing roles and role-based permissions
+   *
+   * Provides methods for creating custom roles, assigning permissions,
+   * and managing role assignments. Works alongside the Keto-based
+   * permissions system to provide dynamic RBAC capabilities.
+   *
+   * Roles are stored in the database and automatically synchronized with
+   * Ory Keto relationships, providing a higher-level abstraction over
+   * raw relationship tuples.
+   *
+   * @example
+   * Create a custom role:
+   * ```typescript
+   * const role = await omnibase.permissions.roles.create({
+   *   role_name: 'billing_manager',
+   *   permissions: ['tenant#manage_billing', 'tenant#view_invoices']
+   * });
+   * ```
+   *
+   * @example
+   * Assign role to a user:
+   * ```typescript
+   * await omnibase.permissions.roles.assign('user_123', {
+   *   role_id: role.id
+   * });
+   * ```
+   *
+   * @example
+   * List all roles:
+   * ```typescript
+   * const roles = await omnibase.permissions.roles.list();
+   * console.log('Available roles:', roles);
+   * ```
+   *
+   * @since 0.7.0
+   * @group Roles
+   */
+  public roles: RolesHandler;
+
+  /**
    * Creates a new PermissionsClient instance
    *
    * Initializes the client with separate endpoints for read and write operations.
-   * The client automatically appends the appropriate Keto API paths to the base URL
-   * for optimal performance and security separation.
+   * The client automatically configures the Ory Keto client libraries to use
+   * Omnibase's permission proxy endpoints:
+   * - Write endpoint: `${apiBaseUrl}/api/v1/permissions/write`
+   * - Read endpoint: `${apiBaseUrl}/api/v1/permissions/read`
    *
-   * @param apiBaseUrl - The base URL for your Omnibase API instance
+   * This separation follows Ory Keto's recommended architecture for optimal
+   * performance and security.
+   *
+   * @param apiBaseUrl - The base URL for your Omnibase API instance (e.g., 'https://api.example.com')
+   * @param client - The main OmnibaseClient instance (required for roles handler)
    *
    * @throws {Error} When the base URL is invalid or cannot be reached
    *
    * @example
+   * Direct instantiation (not recommended - use OmnibaseClient instead):
    * ```typescript
-   * const client = new PermissionsClient('https://api.example.com');
+   * const client = new PermissionsClient('https://api.example.com', omnibaseClient);
    * ```
    *
    * @example
-   * Local development:
+   * Recommended usage via OmnibaseClient:
    * ```typescript
-   * const client = new PermissionsClient('http://localhost:8080');
+   * import { OmnibaseClient } from '@omnibase/core-js';
+   *
+   * const omnibase = new OmnibaseClient({
+   *   apiUrl: 'https://api.example.com'
+   * });
+   *
+   * // Use the permissions client
+   * await omnibase.permissions.permissions.checkPermission({
+   *   namespace: 'Tenant',
+   *   object: 'tenant_123',
+   *   relation: 'view',
+   *   subjectId: 'user_456'
+   * });
    * ```
    *
    * @since 1.0.0
    * @group Client
    */
-  constructor(apiBaseUrl: string) {
+  constructor(apiBaseUrl: string, client: OmnibaseClient) {
     this.relationships = new RelationshipApi(
       undefined,
       `${apiBaseUrl}/api/v1/permissions/write`
@@ -200,5 +275,6 @@ export class PermissionsClient {
       undefined,
       `${apiBaseUrl}/api/v1/permissions/read`
     );
+    this.roles = new RolesHandler(client);
   }
 }

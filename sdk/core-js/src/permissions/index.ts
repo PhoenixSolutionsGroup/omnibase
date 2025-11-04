@@ -254,3 +254,5 @@
  * @group Client
  */
 export { PermissionsClient } from "./handler";
+export { RolesHandler } from "./roles";
+export type * from "./types";
