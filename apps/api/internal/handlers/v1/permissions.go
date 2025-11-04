@@ -32,26 +32,6 @@ func (h *PermissionsHandler) ProxyRead(ctx *gin.Context) {
 
 // ProxyWrite forwards write requests to Keto write API
 func (h *PermissionsHandler) ProxyWrite(ctx *gin.Context) {
-	UserID := ctx.GetString("user_id")
-	TenantID := ctx.GetString("tenant_id")
-
-	if TenantID == "" || UserID == "" {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to extract tenant_id or user_id from session"))
-		return
-	}
-
-	// Check if user has manage_permissions permit on their active tenant
-	hasPermission, err := h.checkPermission(UserID, TenantID, "manage_permissions")
-	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %s", err))
-		return
-	}
-
-	if !hasPermission {
-		handlers.NewForbiddenResponse(ctx, "Missing 'manage_permissions' permit for active tenant")
-		return
-	}
-
 	h.proxyRequest(ctx, h.writeURL, "write")
 }
 

@@ -34,4 +34,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup) {
 
 	// Namespace deployment endpoint - only register if handler initialized successfully
 	router.POST("/deploy", authMiddleware.RequireJWT(), namespacesHandler.DeployNamespaces)
+
+	// Role management routes
+	SetUpRoleRoutes(router.Group(""))
 }

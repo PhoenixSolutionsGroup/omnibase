@@ -17,6 +17,7 @@ type TenantHandler struct {
 	stripe  *services_v1.StripeService
 	tenants *services_v1.TenantsService
 	keto    *services_v1.KetoService
+	roles   *services_v1.RolesService
 }
 
 func NewTenantHandler(cfg *config.Config) *TenantHandler {
@@ -35,6 +36,7 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 	stripeService := services_v1.NewStripeService(cfg, db)
 	tenantsService := services_v1.NewTenantsService(db, cfg)
 	ketoService := services_v1.NewKetoService(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
+	rolesService := services_v1.NewRolesService(db, ketoService)
 
 	return &TenantHandler{
 		db:      db,
@@ -43,5 +45,6 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 		stripe:  stripeService,
 		tenants: tenantsService,
 		keto:    ketoService,
+		roles:   rolesService,
 	}
 }
