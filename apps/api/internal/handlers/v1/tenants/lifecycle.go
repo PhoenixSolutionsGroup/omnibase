@@ -2,6 +2,7 @@ package tenants
 
 import (
 	"api/internal/handlers"
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 	"time"
@@ -78,9 +79,13 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 		return
 	}
 
-	// Create Keto relation for the owner
-	if err := h.keto.CreateRelationTuple(ctx.Request.Context(), "Tenant", tenant.ID, "owners", req.UserID); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create permission relation: %w", err))
+	// Assign owner role to user with all its permissions
+	logger.Logger.Info("Assigning owner role to tenant creator",
+		"user_id", req.UserID,
+		"tenant_id", tenant.ID)
+
+	if err := h.roles.AssignRoleByName(ctx.Request.Context(), req.UserID, "owner", tenant.ID); err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to assign owner role: %w", err))
 		return
 	}
 

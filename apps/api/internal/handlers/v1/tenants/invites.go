@@ -2,6 +2,7 @@ package tenants
 
 import (
 	"api/internal/handlers"
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 	"time"
@@ -101,10 +102,20 @@ func (h *TenantHandler) AcceptInvite(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.keto.CreateRelationTuple(ctx.Request.Context(), "Tenant", invite.TenantID, invite.Role, userID); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create permission relation: %w", err))
+	logger.Logger.Info("Assigning role to user accepting invite",
+		"user_id", userID,
+		"role_name", invite.Role,
+		"tenant_id", invite.TenantID)
+
+	// Assign the role with all its permissions (supports both system and custom roles)
+	if err := h.roles.AssignRoleByName(ctx.Request.Context(), userID, invite.Role, invite.TenantID); err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to assign role permissions: %w", err))
 		return
 	}
+
+	logger.Logger.Info("Successfully assigned role to user",
+		"user_id", userID,
+		"role_name", invite.Role)
 
 	token, err := h.tenants.SetActiveTenant(userID, invite.TenantID)
 	if err != nil {
