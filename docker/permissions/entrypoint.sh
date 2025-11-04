@@ -16,10 +16,14 @@ if [ -n "$NAMESPACE_BUCKET" ] && [ -n "$TENANT_ID" ]; then
     /tmp/namespaces.zip || echo "⚠️  No custom namespaces found, using defaults"
   
   if [ -f /tmp/namespaces.zip ]; then
-    unzip -o /tmp/namespaces.zip -d /etc/config/keto/namespaces/
+    rm -rf /etc/config/keto/namespaces/*
+    
+    unzip -o /tmp/namespaces.zip '*.ts' -d /etc/config/keto/namespaces/
+    
     echo "✅ Custom namespaces loaded"
   fi
 fi
+
 
 # Execute the command (either migrate or serve)
 exec keto "$@"
