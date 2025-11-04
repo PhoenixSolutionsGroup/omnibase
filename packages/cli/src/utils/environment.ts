@@ -6,9 +6,12 @@ export interface EnvironmentConfig {
   name: string;
   apiUrl: string;
   apiKey?: string;
+  projectId?: string;
+  managedHostingUrl?: string;
   stripeSecretKey?: string;
   stripePublishableKey?: string;
   stripeWebhookSecret?: string;
+  typegenApiUrl?: string;
 }
 
 export interface OmnibaseConfig {
@@ -33,6 +36,15 @@ export function findOmnibaseRoot(): string {
   throw new Error(
     "OmniBase project not found. Run 'omnibase init' to initialize a project."
   );
+}
+
+/**
+ * Get the project name from the parent directory of omnibase folder
+ * Used for Docker Compose project namespacing to isolate different projects
+ */
+export function getProjectName(): string {
+  const projectRoot = findOmnibaseRoot();
+  return path.basename(projectRoot);
 }
 
 /**
@@ -110,7 +122,7 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
   if (!environmentName) {
     // Check stored default
     const config = loadOmnibaseConfig();
-    environmentName = config.defaultEnvironment || "dev";
+    environmentName = config.defaultEnvironment || "local";
   }
 
   // Load the .env file
@@ -138,14 +150,17 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
     name: environmentName,
     apiUrl: env.API_URL,
     apiKey: env.OMNIBASE_API_KEY,
+    projectId: env.OMNIBASE_PROJECT_ID,
+    managedHostingUrl: env.MANAGED_HOSTING_URL,
     stripeSecretKey: env.STRIPE_SECRET_KEY,
     stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY,
     stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
+    typegenApiUrl: env.TYPEGEN_API_URL,
   };
 }
 
 /**
- * Resolve environment with priority: flag > default > dev
+ * Resolve environment with priority: flag > default > local
  */
 export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
   try {
@@ -156,12 +171,12 @@ export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
     const config = loadOmnibaseConfig();
     return loadEnvironment(config.defaultEnvironment);
   } catch (error) {
-    // Fallback to dev
+    // Fallback to local
     try {
-      return loadEnvironment("dev");
+      return loadEnvironment("local");
     } catch (fallbackError) {
       throw new Error(
-        `Could not load any environment. Please ensure you have a .env.dev file in omnibase/environments/`
+        `Could not load any environment. Please ensure you have a .env.local file in omnibase/environments/`
       );
     }
   }

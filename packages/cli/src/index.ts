@@ -8,7 +8,14 @@ import { addPermissionsCommands } from "./commands/permissions";
 import { addEnvironmentCommands } from "./commands/environment";
 import { addStripeCommands } from "./commands/stripe";
 import { addEmailCommands } from "./commands/email";
-import { resolveEnvironment, findOmnibaseRoot } from "./utils/environment";
+import { addDbCommands } from "./commands/db";
+import { addAuthCommands } from "./commands/auth";
+import { addWorkersCommands } from "./commands/workers";
+import {
+  resolveEnvironment,
+  findOmnibaseRoot,
+  getProjectName,
+} from "./utils/environment";
 
 const program = new Command();
 
@@ -21,7 +28,7 @@ program
   .option("--env <environment>", "Override environment for this command")
   .option(
     "--mode <mode>",
-    "Docker compose mode: 'dev' or 'prod' (default: prod)"
+    "Docker compose mode: 'dev' or 'default' (default: default)"
   );
 
 function createTemplateFiles(targetDir: string): void {
@@ -45,7 +52,7 @@ async function runDockerCompose(
   try {
     const projectRoot = findOmnibaseRoot();
 
-    // Resolve environment (flag > default > dev)
+    // Resolve environment (flag > default > local)
     const envConfig = resolveEnvironment(envOverride);
     const envPath = path.join(
       projectRoot,
@@ -74,9 +81,14 @@ async function runDockerCompose(
       );
     }
 
+    // Get project name for Docker Compose namespacing
+    const projectName = getProjectName();
+
     // Prepare docker compose command with env file
     const cmdArgs = [
       "compose",
+      "--project-name",
+      projectName,
       "-f",
       dockerComposePath,
       "--env-file",
@@ -85,16 +97,18 @@ async function runDockerCompose(
     ];
 
     console.log(`Running: docker ${cmdArgs.join(" ")}`);
+    console.log(`Using project name: ${projectName}`);
     console.log(`Using environment: ${envConfig.name} (${envPath})`);
     console.log(`Using compose file: ${composeFileName}`);
 
-    // Execute docker compose command with OMNIBASE_PROJECT_DIR set
+    // Execute docker compose command with OMNIBASE_PROJECT_DIR and OMNIBASE_ENV_FILE set
     execSync(`docker ${cmdArgs.join(" ")}`, {
       stdio: "inherit",
       cwd: projectRoot,
       env: {
         ...process.env,
         OMNIBASE_PROJECT_DIR: projectRoot,
+        OMNIBASE_ENV_FILE: envPath,
       },
     });
   } catch (error) {
@@ -134,10 +148,12 @@ program
 program
   .command("start")
   .description("Start the Docker Compose services")
-  .action(async () => {
+  .option("--build", "Build images before starting containers")
+  .action(async (cmdOptions) => {
     try {
-      const options = program.opts();
-      await runDockerCompose(options.env, options.mode, "up", "-d");
+      const globalOptions = program.opts();
+      const args = cmdOptions.build ? ["up", "-d", "--build"] : ["up", "-d"];
+      await runDockerCompose(globalOptions.env, globalOptions.mode, ...args);
     } catch (error) {
       console.error("Error:", error instanceof Error ? error.message : error);
       process.exit(1);
@@ -163,10 +179,19 @@ addEnvironmentCommands(program);
 // Add permissions commands (now environment-aware)
 addPermissionsCommands(program);
 
+// Add auth commands
+addAuthCommands(program);
+
 // Add stripe commands
 addStripeCommands(program);
 
 // Add email commands
 addEmailCommands(program);
+
+// Add database commands (includes migrations and typegen)
+addDbCommands(program);
+
+// Add workers commands
+addWorkersCommands(program);
 
 program.parse();
