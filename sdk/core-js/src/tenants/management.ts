@@ -309,8 +309,6 @@ export class TenantManger {
    * - Billing subscriptions are cancelled (if applicable)
    * - Audit logs for deletion are maintained for compliance
    *
-   * @param tenantId - The unique identifier of the tenant to delete
-   *
    * @returns Promise resolving to a confirmation message
    *
    * @throws {Error} When the tenantId parameter is missing or empty
@@ -322,8 +320,6 @@ export class TenantManger {
    *
    * @example
    * ```typescript
-   * const tenantToDelete = 'tenant_abc123';
-   *
    * // Always confirm before deleting
    * const userConfirmed = confirm(
    *   'Are you sure you want to delete this tenant? This action cannot be undone.'
@@ -331,7 +327,7 @@ export class TenantManger {
    *
    * if (userConfirmed) {
    *   try {
-   *     const result = await tenantManager.deleteTenant(tenantToDelete);
+   *     const result = await tenantManager.deleteTenant();
    *     console.log(result.data.message);
    *
    *     // Redirect user away from deleted tenant
@@ -346,22 +342,15 @@ export class TenantManger {
    * @public
    * @group Tenant Management
    */
-  async deleteTenant(tenantId: string): Promise<DeleteTenantResponse> {
-    if (!tenantId) {
-      throw new Error("Tenant ID is required");
-    }
-
+  async deleteTenant(): Promise<DeleteTenantResponse> {
     try {
-      const response = await this.omnibaseClient.fetch(
-        `/api/v1/tenants/${tenantId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
+      const response = await this.omnibaseClient.fetch(`/api/v1/tenants`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
       if (!response.ok) {
         const errorData = await response.text();

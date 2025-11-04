@@ -1,6 +1,7 @@
 import type { OmnibaseClient } from "../client";
 import { TenantInviteManager } from "./invites";
 import { TenantManger } from "./management";
+import { TenantSubscriptionManager } from "./subscriptions";
 import { TenantUserManager } from "./user";
 
 /**
@@ -73,6 +74,7 @@ export class TenantHandler {
   constructor(omnibaseClient: OmnibaseClient) {
     this.invites = new TenantInviteManager(omnibaseClient);
     this.manage = new TenantManger(omnibaseClient);
+    this.subscriptions = new TenantSubscriptionManager(omnibaseClient);
     this.user = new TenantUserManager(omnibaseClient);
   }
 
@@ -140,4 +142,29 @@ export class TenantHandler {
    * ```
    */
   public readonly invites: TenantInviteManager;
+
+  /**
+   * Tenant subscription and billing management
+   *
+   * Provides access to subscription data and billing status for the
+   * active tenant, including legacy price detection and payment method
+   * verification. All operations are automatically scoped to the user's
+   * currently active tenant.
+   *
+   * @example
+   * ```typescript
+   * // Get active subscriptions
+   * const subs = await tenantHandler.subscriptions.getActive();
+   *
+   * // Check billing status
+   * const status = await tenantHandler.subscriptions.getBillingStatus();
+   * if (!status.data.has_billing_info) {
+   *   console.log('No payment method configured');
+   * }
+   * ```
+   *
+   * @since 0.6.0
+   * @group Tenant Management
+   */
+  public readonly subscriptions: TenantSubscriptionManager;
 }
