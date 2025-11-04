@@ -28,9 +28,12 @@ func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
 }
 
 type CreateCheckoutRequest struct {
-	PriceID    string `json:"price_id" binding:"required"`
-	SuccessURL string `json:"success_url" binding:"required"`
-	CancelURL  string `json:"cancel_url" binding:"required"`
+	PriceID             string `json:"price_id" binding:"required"`
+	SuccessURL          string `json:"success_url" binding:"required"`
+	CancelURL           string `json:"cancel_url" binding:"required"`
+	TrialPeriodDays     *int64 `json:"trial_period_days,omitempty"`
+	PromotionCode       string `json:"promotion_code,omitempty"`
+	AllowPromotionCodes *bool  `json:"allow_promotion_codes,omitempty"`
 }
 
 type CreateCheckoutResponse struct {
@@ -72,11 +75,20 @@ func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 		customerIDStr = customerID.(string)
 	}
 
+	// Convert promotion_code to pointer for consistency
+	var promotionCode *string
+	if req.PromotionCode != "" {
+		promotionCode = &req.PromotionCode
+	}
+
 	session, err := h.stripe.CreateCheckoutSession(
 		priceID,
 		req.SuccessURL,
 		req.CancelURL,
 		customerIDStr,
+		req.TrialPeriodDays,
+		promotionCode,
+		req.AllowPromotionCodes,
 	)
 
 	if err != nil {
