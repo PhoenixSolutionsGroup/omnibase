@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 
@@ -23,12 +24,18 @@ func NewPriceHandler(idMapper IDMapperInterface, accountID string) *PriceHandler
 }
 
 func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stripeProductID string, configID uuid.UUID) ([]string, error) {
+	logger.Logger.Info("Creating prices for product",
+		"productID", productConfig.ID,
+		"stripeProductID", stripeProductID,
+		"priceCount", len(productConfig.Prices))
+
 	var details []string
 
 	// Create prices for the product
 	for _, priceConfig := range productConfig.Prices {
 		// Skip Stripe API for free prices
 		if priceConfig.ID == "free" {
+			logger.Logger.Debug("Skipping free price (local only)", "priceID", priceConfig.ID)
 			if configID != uuid.Nil {
 				if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, priceConfig.ID, "price"); err != nil {
 					return nil, fmt.Errorf("failed to save free price ID mapping: %w", err)
@@ -140,20 +147,32 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 			priceParams.SetStripeAccount(h.accountID)
 		}
 
+		logger.Logger.Info("Making Stripe API call to create price",
+			"priceID", priceConfig.ID,
+			"productID", productConfig.ID,
+			"amount", priceConfig.Amount,
+			"currency", priceConfig.Currency)
 		stripePrice, err := price.New(priceParams)
 		if err != nil {
+			logger.Logger.Error("Failed to create Stripe price",
+				"error", err,
+				"priceID", priceConfig.ID,
+				"productID", productConfig.ID)
 			return nil, fmt.Errorf("failed to create price %s: %w", priceConfig.ID, err)
 		}
+		logger.Logger.Info("Stripe price created successfully", "configPriceID", priceConfig.ID, "stripeID", stripePrice.ID)
 
 		// Save price ID mapping if we have user and config IDs
 		if configID != uuid.Nil {
 			if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, stripePrice.ID, "price"); err != nil {
+				logger.Logger.Error("Failed to save price ID mapping", "error", err, "priceID", priceConfig.ID)
 				return nil, fmt.Errorf("failed to save price ID mapping: %w", err)
 			}
 		}
 
 		// Set as default price if specified
 		if priceConfig.Default {
+			logger.Logger.Debug("Setting default price", "priceID", stripePrice.ID, "productID", stripeProductID)
 			defaultParams := &stripe.ProductParams{
 				DefaultPrice: stripe.String(stripePrice.ID),
 			}
@@ -162,6 +181,7 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 			}
 			_, err := product.Update(stripeProductID, defaultParams)
 			if err != nil {
+				logger.Logger.Error("Failed to set default price", "error", err, "priceID", priceConfig.ID)
 				return nil, fmt.Errorf("failed to set default price %s: %w", priceConfig.ID, err)
 			}
 			details = append(details, fmt.Sprintf("Set as default price: %s", stripePrice.ID))
@@ -170,12 +190,16 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 		details = append(details, fmt.Sprintf("Created price: %s (config: %s)", stripePrice.ID, priceConfig.ID))
 	}
 
+	logger.Logger.Info("All prices created for product", "productID", productConfig.ID, "priceCount", len(productConfig.Prices))
 	return details, nil
 }
 
 func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, configID uuid.UUID) (string, error) {
+	logger.Logger.Info("Creating price", "priceID", priceConfig.ID, "productID", productID)
+
 	// Skip Stripe API for free prices
 	if priceConfig.ID == "free" {
+		logger.Logger.Debug("Skipping free price (local only)", "priceID", priceConfig.ID)
 		if configID != uuid.Nil {
 			if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, priceConfig.ID, "price"); err != nil {
 				return "", fmt.Errorf("failed to save free price ID mapping: %w", err)
@@ -285,20 +309,25 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 		priceParams.SetStripeAccount(h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to create price", "priceID", priceConfig.ID, "productID", productID)
 	stripePrice, err := price.New(priceParams)
 	if err != nil {
+		logger.Logger.Error("Failed to create Stripe price", "error", err, "priceID", priceConfig.ID)
 		return "", fmt.Errorf("failed to create price: %w", err)
 	}
+	logger.Logger.Info("Stripe price created successfully", "configPriceID", priceConfig.ID, "stripeID", stripePrice.ID)
 
 	// Save the ID mapping for the new price with the current config
 	if configID != uuid.Nil {
 		if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, stripePrice.ID, "price"); err != nil {
+			logger.Logger.Error("Failed to save price ID mapping", "error", err, "priceID", priceConfig.ID)
 			return "", fmt.Errorf("failed to save price ID mapping: %w", err)
 		}
 	}
 
 	// Set as default price if specified
 	if priceConfig.Default {
+		logger.Logger.Debug("Setting default price", "priceID", stripePrice.ID, "productID", productID)
 		defaultParams := &stripe.ProductParams{
 			DefaultPrice: stripe.String(stripePrice.ID),
 		}
@@ -307,6 +336,7 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 		}
 		_, err := product.Update(productID, defaultParams)
 		if err != nil {
+			logger.Logger.Error("Failed to set default price", "error", err, "priceID", priceConfig.ID)
 			return "", fmt.Errorf("failed to set default price %s: %w", priceConfig.ID, err)
 		}
 	}
@@ -315,8 +345,11 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 }
 
 func (h *PriceHandler) ArchivePrice(priceConfigID string) error {
+	logger.Logger.Info("Archiving price", "priceID", priceConfigID)
+
 	// Skip Stripe API for free prices
 	if priceConfigID == "free" {
+		logger.Logger.Debug("Skipping free price archival", "priceID", priceConfigID)
 		return nil // No Stripe archiving needed for free prices
 	}
 
@@ -326,9 +359,11 @@ func (h *PriceHandler) ArchivePrice(priceConfigID string) error {
 	stripeID, err := h.idMapper.GetStripeIDByConfigItemID(priceConfigID, "price")
 	if err == nil && stripeID != "" {
 		actualStripeID = stripeID
+		logger.Logger.Debug("Found Stripe ID mapping", "configPriceID", priceConfigID, "stripeID", actualStripeID)
 	} else {
 		// Fallback to using the config ID (might be an actual Stripe ID)
 		actualStripeID = priceConfigID
+		logger.Logger.Warn("No Stripe ID mapping found, using config ID", "priceID", priceConfigID)
 	}
 
 	archiveParams := &stripe.PriceParams{
@@ -337,10 +372,14 @@ func (h *PriceHandler) ArchivePrice(priceConfigID string) error {
 	if h.accountID != "" {
 		archiveParams.SetStripeAccount(h.accountID)
 	}
+
+	logger.Logger.Info("Making Stripe API call to archive price", "stripeID", actualStripeID)
 	_, err = price.Update(actualStripeID, archiveParams)
 	if err != nil {
+		logger.Logger.Error("Failed to archive Stripe price", "error", err, "priceID", priceConfigID, "stripeID", actualStripeID)
 		return fmt.Errorf("could not archive price %s (config: %s, tried Stripe ID: %s): %w", priceConfigID, priceConfigID, actualStripeID, err)
 	}
 
+	logger.Logger.Info("Price archived successfully", "priceID", priceConfigID, "stripeID", actualStripeID)
 	return nil
 }

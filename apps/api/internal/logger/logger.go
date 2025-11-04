@@ -12,7 +12,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var Logger *slog.Logger
+type CustomLogger struct {
+	*slog.Logger
+}
+
+func (l *CustomLogger) Trace(msg string, args ...any) {
+	l.Log(context.Background(), LevelTrace, msg, args...)
+}
+
+func (l *CustomLogger) TraceContext(ctx context.Context, msg string, args ...any) {
+	l.Log(ctx, LevelTrace, msg, args...)
+}
+
+var Logger *CustomLogger
 
 // Custom level for TRACE (lower than DEBUG)
 const LevelTrace = slog.Level(-8)
@@ -157,9 +169,12 @@ func init() {
 	}
 
 	// Use pretty handler if running in development, JSON only in production
+	var baseLogger *slog.Logger
 	if os.Getenv("LOG_FORMAT") == "pretty" || os.Getenv("ENV") == "development" {
-		Logger = slog.New(NewPrettyHandler(os.Stdout, opts))
+		baseLogger = slog.New(NewPrettyHandler(os.Stdout, opts))
 	} else {
-		Logger = slog.New(slog.NewJSONHandler(os.Stdout, opts))
+		baseLogger = slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	}
+
+	Logger = &CustomLogger{Logger: baseLogger}
 }

@@ -26,18 +26,23 @@ type EmailHandler struct {
 }
 
 func NewEmailHandler(cfg *config.Config) *EmailHandler {
+	logger.Logger.Info("Initializing email handler")
+
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
+		logger.Logger.Error("Failed to get database connection in email handler", "error", err)
 		panic(err)
 	}
 
 	// Initialize S3 client for R2 bucket access
+	logger.Logger.Debug("Loading AWS config for S3 client", "region", cfg.S3Config.Region)
 	awsCfg, err := awsconfig.LoadDefaultConfig(context.TODO(),
 		awsconfig.WithRegion(cfg.S3Config.Region),
 		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
 			cfg.S3Config.AccessKey, cfg.S3Config.SecretKey, "")),
 	)
 	if err != nil {
+		logger.Logger.Error("Failed to load AWS config for S3 client", "error", err)
 		panic(fmt.Sprintf("Failed to load AWS config: %s", err))
 	}
 
@@ -48,6 +53,7 @@ func NewEmailHandler(cfg *config.Config) *EmailHandler {
 		o.UsePathStyle = cfg.S3Config.ForcePathStyle
 	})
 
+	logger.Logger.Info("Email handler initialized successfully")
 	return &EmailHandler{
 		db:       db,
 		cfg:      cfg,
@@ -63,8 +69,11 @@ type CreateEmailTemplateRequest struct {
 
 // POST /api/v1/email/templates - Create or update email template
 func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
+	logger.Logger.Info("Creating or updating email template")
+
 	var req CreateEmailTemplateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request format for email template", "error", err)
 		handlers.NewBadRequestResponse(ctx, "Invalid request format")
 		return
 	}
@@ -75,6 +84,7 @@ func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
 
 	if err == gorm.ErrRecordNotFound {
 		// Create new template
+		logger.Logger.Info("Creating new email template", "type", req.Type)
 		template := models.EmailTemplate{
 			Type:     req.Type,
 			Subject:  req.Subject,
@@ -82,27 +92,33 @@ func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
 		}
 
 		if err := h.db.Create(&template).Error; err != nil {
+			logger.Logger.Error("Failed to create email template", "type", req.Type, "error", err)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create template: %w", err))
 			return
 		}
 
+		logger.Logger.Info("Email template created successfully", "type", req.Type)
 		handlers.NewSuccessResponse(ctx, gin.H{
 			"message":  "Template created successfully",
 			"template": template,
 		})
 	} else if err != nil {
+		logger.Logger.Error("Failed to check existing template", "type", req.Type, "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check existing template: %w", err))
 		return
 	} else {
 		// Update existing template
+		logger.Logger.Info("Updating existing email template", "type", req.Type)
 		existingTemplate.Subject = req.Subject
 		existingTemplate.HTMLBody = req.HTMLBody
 
 		if err := h.db.Save(&existingTemplate).Error; err != nil {
+			logger.Logger.Error("Failed to update email template", "type", req.Type, "error", err)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update template: %w", err))
 			return
 		}
 
+		logger.Logger.Info("Email template updated successfully", "type", req.Type)
 		handlers.NewSuccessResponse(ctx, gin.H{
 			"message":  "Template updated successfully",
 			"template": existingTemplate,
@@ -112,13 +128,17 @@ func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
 
 // GET /api/v1/email/templates - Get all email templates
 func (h *EmailHandler) GetTemplates(ctx *gin.Context) {
+	logger.Logger.Info("Fetching all email templates")
+
 	var templates []models.EmailTemplate
 
 	if err := h.db.Find(&templates).Error; err != nil {
+		logger.Logger.Error("Failed to fetch email templates", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch templates: %w", err))
 		return
 	}
 
+	logger.Logger.Info("Successfully fetched email templates", "count", len(templates))
 	handlers.NewSuccessResponse(ctx, gin.H{
 		"templates": templates,
 		"count":     len(templates),
@@ -128,35 +148,43 @@ func (h *EmailHandler) GetTemplates(ctx *gin.Context) {
 // GET /api/v1/email/templates/:type - Get specific email template
 func (h *EmailHandler) GetTemplateByType(ctx *gin.Context) {
 	templateType := ctx.Param("type")
+	logger.Logger.Debug("Fetching email template by type", "type", templateType)
 
 	var template models.EmailTemplate
 	if err := h.db.Where("type = ?", templateType).First(&template).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
+			logger.Logger.Warn("Email template not found", "type", templateType)
 			handlers.NewNotFoundResponse(ctx, "Template not found")
 			return
 		}
+		logger.Logger.Error("Failed to fetch email template", "type", templateType, "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch template: %w", err))
 		return
 	}
 
+	logger.Logger.Debug("Successfully fetched email template", "type", templateType)
 	handlers.NewSuccessResponse(ctx, template)
 }
 
 // DELETE /api/v1/email/templates/:type - Delete email template
 func (h *EmailHandler) DeleteTemplate(ctx *gin.Context) {
 	templateType := ctx.Param("type")
+	logger.Logger.Info("Deleting email template", "type", templateType)
 
 	result := h.db.Where("type = ?", templateType).Delete(&models.EmailTemplate{})
 	if result.Error != nil {
+		logger.Logger.Error("Failed to delete email template", "type", templateType, "error", result.Error)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to delete template: %w", result.Error))
 		return
 	}
 
 	if result.RowsAffected == 0 {
+		logger.Logger.Warn("Email template not found for deletion", "type", templateType)
 		handlers.NewNotFoundResponse(ctx, "Template not found")
 		return
 	}
 
+	logger.Logger.Info("Email template deleted successfully", "type", templateType)
 	handlers.NewSuccessResponse(ctx, gin.H{
 		"message": "Template deleted successfully",
 	})

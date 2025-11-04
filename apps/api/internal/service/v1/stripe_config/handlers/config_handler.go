@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"api/internal/logger"
 	"api/internal/models"
 	"context"
 	"fmt"
@@ -64,16 +65,21 @@ func NewConfigHandler(
 }
 
 func (h *ConfigHandler) ProcessConfigUpdate(configData models.StripeConfigData) (*models.StripeConfigResponse, error) {
-	fmt.Printf("🔥 METER DEBUG: ProcessConfigUpdate started\n")
+	logger.Logger.Info("ProcessConfigUpdate started")
 
 	// Parse and validate the incoming configuration
 	config, err := h.validator.ParseAndValidateConfig(configData)
 	if err != nil {
-		fmt.Printf("🔥 METER DEBUG: Config validation failed: %v\n", err)
+		logger.Logger.Warn("Config validation failed", "error", err)
 		return &models.StripeConfigResponse{
 			Message: "Configuration validation failed",
 			Errors:  []string{err.Error()},
 		}, nil
+	}
+
+	logger.Logger.Info("Config parsed successfully", "meters_count", len(config.Meters))
+	for i, meter := range config.Meters {
+		logger.Logger.Debug("Meter found in config", "index", i, "id", meter.ID, "display_name", meter.DisplayName)
 	}
 
 	fmt.Printf("�� METER DEBUG: Config parsed successfully, found %d meters\n", len(config.Meters))

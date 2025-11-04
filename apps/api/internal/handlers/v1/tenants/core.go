@@ -3,6 +3,7 @@ package tenants
 import (
 	"api/internal/config"
 	"api/internal/database"
+	"api/internal/logger"
 	services_v1 "api/internal/service/v1"
 	"fmt"
 
@@ -21,23 +22,29 @@ type TenantHandler struct {
 }
 
 func NewTenantHandler(cfg *config.Config) *TenantHandler {
+	logger.Logger.Info("Initializing TenantHandler")
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
+		logger.Logger.Error("Failed to connect to database", "error", err)
 		panic(err)
 	}
 
 	stripe.Key = cfg.StripeConfig.SecretKey
 
+	logger.Logger.Debug("Initializing email service", "from_email", cfg.SMTPConfig.FromEmail)
 	emailService, err := services_v1.NewEmailService(cfg.SMTPConfig.ConnectionURI, cfg.SMTPConfig.FromEmail, db)
 	if err != nil {
+		logger.Logger.Error("Failed to initialize email service", "error", err)
 		panic(fmt.Errorf("failed to initialize email service: %w", err))
 	}
 
+	logger.Logger.Debug("Initializing tenant services")
 	stripeService := services_v1.NewStripeService(cfg, db)
 	tenantsService := services_v1.NewTenantsService(db, cfg)
 	ketoService := services_v1.NewKetoService(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 	rolesService := services_v1.NewRolesService(db, ketoService)
 
+	logger.Logger.Info("TenantHandler initialized successfully")
 	return &TenantHandler{
 		db:      db,
 		cfg:     cfg,

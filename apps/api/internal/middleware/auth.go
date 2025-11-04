@@ -61,6 +61,7 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
+		logger.Logger.Error("Failed to get database connection in auth middleware", "error", err)
 		panic(err)
 	}
 

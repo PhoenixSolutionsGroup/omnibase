@@ -167,9 +167,12 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 	}
 
 	// Handle tenant cleanup for each user that was in this tenant
+	logger.Logger.Info("Cleaning up tenant users after tenant deletion", "user_count", len(tenantUsers))
 	for _, tenantUser := range tenantUsers {
 		if err := h.tenants.HandleUserTenantCleanup(ctx, tenantUser.UserID); err != nil {
-			fmt.Printf("Warning: Failed to cleanup user %s after tenant deletion: %v\n", tenantUser.UserID, err)
+			logger.Logger.Warn("Failed to cleanup user after tenant deletion", "user_id", tenantUser.UserID, "error", err)
+		} else {
+			logger.Logger.Debug("Successfully cleaned up user after tenant deletion", "user_id", tenantUser.UserID)
 		}
 	}
 

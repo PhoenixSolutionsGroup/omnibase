@@ -4,6 +4,7 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/handlers"
+	"api/internal/logger"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -31,12 +32,14 @@ type StorageHandler struct {
 }
 
 func NewStorageHandler(cfg *config.Config) *StorageHandler {
+	logger.Logger.Info("Initializing StorageHandler", "bucket_name", cfg.S3Config.BucketName, "region", cfg.S3Config.Region)
 	awsCfg, err := awsconfig.LoadDefaultConfig(context.TODO(),
 		awsconfig.WithRegion(cfg.S3Config.Region),
 		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
 			cfg.S3Config.AccessKey, cfg.S3Config.SecretKey, "")),
 	)
 	if err != nil {
+		logger.Logger.Error("Failed to load AWS config", "error", err)
 		log.Panicf("Failed to load AWS config: %s", err)
 	}
 
@@ -58,9 +61,11 @@ func NewStorageHandler(cfg *config.Config) *StorageHandler {
 
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
+		logger.Logger.Error("Failed to connect to database", "error", err)
 		log.Panicf("Failed to connect to database: %s", err)
 	}
 
+	logger.Logger.Info("StorageHandler initialized successfully", "postgrest_url", cfg.PostgRESTURL)
 	return &StorageHandler{
 		s3Client:       s3Client,
 		s3PublicClient: s3PublicClient,
@@ -84,12 +89,14 @@ func extractJWTFromCookie(cookieHeader string) string {
 
 // POST /api/v1/storage/upload
 func (h *StorageHandler) Upload(c *gin.Context) {
+	logger.Logger.Info("Upload handler started")
 	var req struct {
 		Path     string                 `json:"path" binding:"required"` // User-controlled path (e.g., "public/images/avatar.png")
 		Metadata map[string]interface{} `json:"metadata"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
 		handlers.NewBadRequestResponse(c, err.Error())
 		return
 	}
@@ -100,22 +107,30 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 	jwt := extractJWTFromCookie(cookieHeader)
 
 	if jwt == "" {
+		logger.Logger.Warn("Missing JWT token")
 		handlers.NewUnauthorizedResponse(c, "Missing JWT token")
 		return
 	}
+
+	logger.Logger.Debug("Processing upload request", "user_id", userID, "tenant_id", tenantID, "path", req.Path)
 
 	// User controls the full path - they define their own directory structure
 	fullPath := req.Path
 
 	// Always check RLS permission via PostgREST
 	// Users define their own policies based on path patterns (e.g., split_part(path, '/', 1) = 'public')
+	logger.Logger.Debug("Checking RLS permission for upload", "bucket", h.bucketName, "path", fullPath)
 	canUpload, err := h.checkRLSPermission(jwt, h.bucketName, fullPath, "INSERT")
 	if err != nil || !canUpload {
+		logger.Logger.Warn("Access denied for upload", "user_id", userID, "path", fullPath, "error", err)
 		handlers.NewUnauthorizedResponse(c, "Access denied")
 		return
 	}
 
+	logger.Logger.Debug("RLS permission check passed")
+
 	// Generate pre-signed upload URL (use public client for browser access)
+	logger.Logger.Debug("Generating presigned upload URL", "bucket", h.bucketName, "key", fullPath)
 	presignClient := s3.NewPresignClient(h.s3PublicClient)
 	presignedReq, err := presignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(h.bucketName),
@@ -123,6 +138,7 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 	}, s3.WithPresignExpires(15*time.Minute))
 
 	if err != nil {
+		logger.Logger.Error("Failed to generate presigned URL", "bucket", h.bucketName, "key", fullPath, "error", err)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to generate presigned URL: %w", err))
 		return
 	}
@@ -136,11 +152,14 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 		"metadata":    req.Metadata,
 	}
 
+	logger.Logger.Debug("Inserting file metadata")
 	if err := h.insertFileMetadata(jwt, metadataRecord); err != nil {
+		logger.Logger.Error("Failed to insert metadata", "path", fullPath, "error", err)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to insert metadata: %w", err))
 		return
 	}
 
+	logger.Logger.Info("Upload URL generated successfully", "user_id", userID, "path", fullPath)
 	handlers.NewSuccessResponse(c, gin.H{
 		"upload_url": presignedReq.URL,
 		"path":       fullPath,
@@ -149,31 +168,39 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 
 // POST /api/v1/storage/download
 func (h *StorageHandler) Download(c *gin.Context) {
+	logger.Logger.Info("Download handler started")
 	var req struct {
 		Path string `json:"path" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
 		handlers.NewBadRequestResponse(c, err.Error())
 		return
 	}
+
+	logger.Logger.Debug("Processing download request", "path", req.Path)
 
 	cookieHeader := c.GetHeader("Cookie")
 	jwt := extractJWTFromCookie(cookieHeader)
 
 	if jwt == "" {
+		logger.Logger.Warn("Missing JWT token")
 		handlers.NewUnauthorizedResponse(c, "Missing JWT token")
 		return
 	}
 
 	// Check RLS via PostgREST SELECT
+	logger.Logger.Debug("Checking RLS permission for download", "bucket", h.bucketName, "path", req.Path)
 	canAccess, err := h.checkRLSPermission(jwt, h.bucketName, req.Path, "SELECT")
 	if err != nil || !canAccess {
+		logger.Logger.Warn("Access denied for download", "path", req.Path, "error", err)
 		handlers.NewUnauthorizedResponse(c, "Access denied")
 		return
 	}
 
 	// Generate pre-signed download URL (use public client for browser access)
+	logger.Logger.Debug("Generating presigned download URL", "bucket", h.bucketName, "key", req.Path)
 	presignClient := s3.NewPresignClient(h.s3PublicClient)
 	presignedReq, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: aws.String(h.bucketName),
@@ -181,10 +208,12 @@ func (h *StorageHandler) Download(c *gin.Context) {
 	}, s3.WithPresignExpires(15*time.Minute))
 
 	if err != nil {
+		logger.Logger.Error("Failed to generate presigned URL", "bucket", h.bucketName, "key", req.Path, "error", err)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to generate presigned URL: %w", err))
 		return
 	}
 
+	logger.Logger.Info("Download URL generated successfully", "path", req.Path)
 	handlers.NewSuccessResponse(c, gin.H{
 		"download_url": presignedReq.URL,
 	})
@@ -192,39 +221,48 @@ func (h *StorageHandler) Download(c *gin.Context) {
 
 // DELETE /api/v1/storage/object
 func (h *StorageHandler) DeleteObject(c *gin.Context) {
+	logger.Logger.Info("DeleteObject handler started")
 	var req struct {
 		Path string `json:"path" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
 		handlers.NewBadRequestResponse(c, err.Error())
 		return
 	}
+
+	logger.Logger.Debug("Processing delete request", "path", req.Path)
 
 	cookieHeader := c.GetHeader("Cookie")
 	jwt := extractJWTFromCookie(cookieHeader)
 
 	if jwt == "" {
+		logger.Logger.Warn("Missing JWT token")
 		handlers.NewUnauthorizedResponse(c, "Missing JWT token")
 		return
 	}
 
 	// Delete metadata via PostgREST (RLS enforced)
+	logger.Logger.Debug("Deleting file metadata", "bucket", h.bucketName, "path", req.Path)
 	if err := h.deleteFileMetadata(jwt, h.bucketName, req.Path); err != nil {
+		logger.Logger.Warn("Failed to delete file metadata", "path", req.Path, "error", err)
 		handlers.NewUnauthorizedResponse(c, "Access denied or not found")
 		return
 	}
 
 	// Delete from S3 (only after metadata deletion succeeds)
+	logger.Logger.Debug("Deleting file from S3", "bucket", h.bucketName, "key", req.Path)
 	_, err := h.s3Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 		Bucket: aws.String(h.bucketName),
 		Key:    aws.String(req.Path),
 	})
 	if err != nil {
 		// Log error but don't fail - metadata already deleted
-		log.Printf("S3 deletion failed: %v", err)
+		logger.Logger.Warn("S3 deletion failed", "bucket", h.bucketName, "key", req.Path, "error", err)
 	}
 
+	logger.Logger.Info("File deleted successfully", "path", req.Path)
 	handlers.NewSuccessResponse(c, gin.H{
 		"message": "file deleted",
 	})
@@ -235,8 +273,10 @@ func (h *StorageHandler) checkRLSPermission(jwt, bucket, path, operation string)
 	url := fmt.Sprintf("%s/objects?bucket_name=eq.%s&path=eq.%s",
 		h.postgrestURL, bucket, path)
 
+	logger.Logger.Trace("Checking RLS permission via PostgREST", "url", url, "operation", operation)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
+		logger.Logger.Error("Failed to create RLS check request", "error", err)
 		return false, err
 	}
 
@@ -244,20 +284,25 @@ func (h *StorageHandler) checkRLSPermission(jwt, bucket, path, operation string)
 	req.Header.Set("Accept-Profile", "storage")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		logger.Logger.Error("Failed to execute RLS check request", "error", err)
 		return false, err
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode == 200, nil
+	allowed := resp.StatusCode == 200
+	logger.Logger.Trace("RLS permission check result", "allowed", allowed, "status", resp.StatusCode)
+	return allowed, nil
 }
 
 // Helper: Insert metadata via PostgREST
 func (h *StorageHandler) insertFileMetadata(jwt string, data map[string]interface{}) error {
 	url := fmt.Sprintf("%s/objects", h.postgrestURL)
 
+	logger.Logger.Trace("Inserting file metadata via PostgREST", "url", url)
 	body, _ := json.Marshal(data)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
+		logger.Logger.Error("Failed to create metadata insert request", "error", err)
 		return err
 	}
 
@@ -268,15 +313,18 @@ func (h *StorageHandler) insertFileMetadata(jwt string, data map[string]interfac
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		logger.Logger.Error("Failed to execute metadata insert request", "error", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 201 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
+		logger.Logger.Error("PostgREST insert failed", "status", resp.StatusCode, "response", string(bodyBytes))
 		return fmt.Errorf("postgrest insert failed: %s", string(bodyBytes))
 	}
 
+	logger.Logger.Trace("File metadata inserted successfully")
 	return nil
 }
 
@@ -285,8 +333,10 @@ func (h *StorageHandler) deleteFileMetadata(jwt, bucket, path string) error {
 	url := fmt.Sprintf("%s/objects?bucket_name=eq.%s&path=eq.%s",
 		h.postgrestURL, bucket, path)
 
+	logger.Logger.Trace("Deleting file metadata via PostgREST", "url", url)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
+		logger.Logger.Error("Failed to create metadata delete request", "error", err)
 		return err
 	}
 
@@ -296,13 +346,16 @@ func (h *StorageHandler) deleteFileMetadata(jwt, bucket, path string) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		logger.Logger.Error("Failed to execute metadata delete request", "error", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 204 {
+		logger.Logger.Error("PostgREST delete failed", "status", resp.StatusCode)
 		return fmt.Errorf("delete failed: status %d", resp.StatusCode)
 	}
 
+	logger.Logger.Trace("File metadata deleted successfully")
 	return nil
 }

@@ -4,8 +4,8 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/handlers"
+	"api/internal/logger"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	kratos "github.com/ory/kratos-client-go"
@@ -18,6 +18,10 @@ type PaymentsMiddleware struct {
 }
 
 func NewPaymentsMiddleware(cfg *config.Config) *PaymentsMiddleware {
+	logger.Logger.Debug("Initializing PaymentsMiddleware",
+		"kratos_url", cfg.AuthConfig.KratosURL,
+	)
+
 	// Public API client for session validation
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
@@ -28,8 +32,13 @@ func NewPaymentsMiddleware(cfg *config.Config) *PaymentsMiddleware {
 
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
+		logger.Logger.Error("Failed to get database connection for PaymentsMiddleware",
+			"error", err,
+		)
 		panic(err)
 	}
+
+	logger.Logger.Debug("PaymentsMiddleware initialized successfully")
 
 	return &PaymentsMiddleware{
 		kratosClient: kratos.NewAPIClient(publicConfig),
@@ -39,9 +48,20 @@ func NewPaymentsMiddleware(cfg *config.Config) *PaymentsMiddleware {
 
 func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		path := ctx.Request.URL.Path
+		method := ctx.Request.Method
+
+		logger.Logger.Debug("GetCustomerIDFromAuthSession middleware executing",
+			"method", method,
+			"path", path,
+		)
+
 		cookieHeader := ctx.GetHeader("Cookie")
 
 		if cookieHeader == "" {
+			logger.Logger.Debug("No cookie header present, skipping customer ID lookup",
+				"path", path,
+			)
 			ctx.Next()
 			return
 		}
@@ -52,6 +72,10 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 			Execute()
 
 		if err != nil {
+			logger.Logger.Debug("Failed to validate session with Kratos, continuing without authentication",
+				"path", path,
+				"error", err,
+			)
 			ctx.Next()
 			return
 		}
@@ -60,9 +84,17 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 
 		// If no user_id, continue to next middleware without failing
 		if user_id == "" {
+			logger.Logger.Debug("No user_id found in session",
+				"path", path,
+			)
 			ctx.Next()
 			return
 		}
+
+		logger.Logger.Debug("User authenticated, querying for stripe customer ID",
+			"user_id", user_id,
+			"path", path,
+		)
 
 		// Query tenant_users joined with tenants in a single DB call
 		var stripe_customer_id *string
@@ -74,17 +106,29 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
+				logger.Logger.Debug("No active tenant found for user",
+					"user_id", user_id,
+					"path", path,
+				)
 				// No active tenant found, continue without setting stripe_customer_id
 				ctx.Next()
 				return
 			}
-			log.Printf("Error querying tenant and stripe_customer_id: %v", err)
+			logger.Logger.Error("Error querying tenant and stripe_customer_id",
+				"user_id", user_id,
+				"path", path,
+				"error", err,
+			)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("database error: %w", err))
 			return
 		}
 
 		// Check if we found a result
 		if stripe_customer_id == nil {
+			logger.Logger.Debug("No stripe_customer_id found for user",
+				"user_id", user_id,
+				"path", path,
+			)
 			// No active tenant found, continue without setting stripe_customer_id
 			ctx.Next()
 			return
@@ -92,11 +136,20 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 
 		// If tenant exists but has no stripe_customer_id, this is an error condition
 		if stripe_customer_id == nil || *stripe_customer_id == "" {
+			logger.Logger.Warn("Tenant exists but has no Stripe customer ID configured",
+				"user_id", user_id,
+				"path", path,
+			)
 			handlers.NewBadRequestResponse(ctx, "Tenant has no Stripe customer ID configured")
 			return
 		}
 
 		// Set the stripe_customer_id in context
+		logger.Logger.Debug("Stripe customer ID set in context",
+			"user_id", user_id,
+			"stripe_customer_id", *stripe_customer_id,
+			"path", path,
+		)
 		ctx.Set("stripe_customer_id", *stripe_customer_id)
 		ctx.Next()
 	}

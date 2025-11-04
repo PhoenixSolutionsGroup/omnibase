@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"api/internal/logger"
 	"api/internal/models"
 
 	"github.com/google/uuid"
@@ -27,6 +28,10 @@ func NewMeterHandler(client *stripe.Client, idMapper IDMapperInterface, accountI
 
 // CreateMeter creates a new meter in Stripe using the official v82 API structure
 func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, meterConfig models.Meter) (string, error) {
+	logger.Logger.Info("Creating Stripe meter",
+		"meterID", meterConfig.ID,
+		"displayName", meterConfig.DisplayName,
+		"eventName", meterConfig.EventName)
 
 	// Use the EXACT structure from official Stripe docs
 	params := &stripe.BillingMeterParams{
@@ -66,16 +71,22 @@ func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, mete
 	// Add Connect account if in managed mode
 	if h.accountID != "" {
 		params.SetStripeAccount(h.accountID)
+		logger.Logger.Debug("Using Stripe Connect account", "accountID", h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to create meter", "meterID", meterConfig.ID)
 	result, err := meter.New(params)
 	if err != nil {
+		logger.Logger.Error("Failed to create Stripe meter", "error", err, "meterID", meterConfig.ID)
 		return "", fmt.Errorf("failed to create meter %s: %w", meterConfig.ID, err)
 	}
+
+	logger.Logger.Info("Stripe meter created successfully", "configMeterID", meterConfig.ID, "stripeID", result.ID)
 
 	// Save meter ID mapping if we have config ID and idMapper
 	if configID != uuid.Nil && h.idMapper != nil {
 		if err := h.idMapper.SaveIDMapping(configID, meterConfig.ID, result.ID, "meter"); err != nil {
+			logger.Logger.Error("Failed to save meter ID mapping", "error", err, "meterID", meterConfig.ID)
 			return "", fmt.Errorf("failed to save meter ID mapping: %w", err)
 		}
 	}
@@ -85,19 +96,28 @@ func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, mete
 
 // GetMeter retrieves a meter from Stripe using v82 API
 func (h *MeterHandler) GetMeter(ctx context.Context, stripeID string) (*stripe.BillingMeter, error) {
+	logger.Logger.Debug("Getting Stripe meter", "stripeID", stripeID)
+
 	params := &stripe.BillingMeterParams{}
 	if h.accountID != "" {
 		params.SetStripeAccount(h.accountID)
 	}
+
+	logger.Logger.Info("Making Stripe API call to get meter", "stripeID", stripeID)
 	result, err := meter.Get(stripeID, params)
 	if err != nil {
+		logger.Logger.Error("Failed to get Stripe meter", "error", err, "stripeID", stripeID)
 		return nil, fmt.Errorf("failed to get meter %s: %w", stripeID, err)
 	}
+
+	logger.Logger.Debug("Stripe meter retrieved successfully", "stripeID", stripeID)
 	return result, nil
 }
 
 // UpdateMeter updates a meter in Stripe using v82 API (meters have limited update capabilities)
 func (h *MeterHandler) UpdateMeter(ctx context.Context, stripeID string, meterConfig models.Meter) error {
+	logger.Logger.Info("Updating Stripe meter", "stripeID", stripeID, "displayName", meterConfig.DisplayName)
+
 	params := &stripe.BillingMeterParams{
 		DisplayName: stripe.String(meterConfig.DisplayName),
 	}
@@ -107,37 +127,49 @@ func (h *MeterHandler) UpdateMeter(ctx context.Context, stripeID string, meterCo
 		params.SetStripeAccount(h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to update meter", "stripeID", stripeID)
 	_, err := meter.Update(stripeID, params)
 	if err != nil {
+		logger.Logger.Error("Failed to update Stripe meter", "error", err, "stripeID", stripeID)
 		return fmt.Errorf("failed to update meter %s: %w", stripeID, err)
 	}
 
+	logger.Logger.Info("Stripe meter updated successfully", "stripeID", stripeID)
 	return nil
 }
 
 // ListMeters lists all meters using v82 API
 func (h *MeterHandler) ListMeters(ctx context.Context) ([]*stripe.BillingMeter, error) {
+	logger.Logger.Debug("Listing Stripe meters")
+
 	params := &stripe.BillingMeterListParams{}
 	if h.accountID != "" {
 		params.SetStripeAccount(h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to list meters")
 	var meters []*stripe.BillingMeter
 	i := meter.List(params)
 	for i.Next() {
 		meters = append(meters, i.BillingMeter())
 	}
 	if err := i.Err(); err != nil {
+		logger.Logger.Error("Failed to list Stripe meters", "error", err)
 		return nil, fmt.Errorf("failed to list meters: %w", err)
 	}
+
+	logger.Logger.Info("Stripe meters listed successfully", "count", len(meters))
 	return meters, nil
 }
 
 // DeactivateMeter deactivates a meter in Stripe and returns a MeterChange for response
 func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*models.MeterChange, error) {
+	logger.Logger.Info("Deactivating Stripe meter", "stripeID", stripeID)
+
 	// Get meter details before deactivating to include in response
 	meterDetails, err := h.GetMeter(ctx, stripeID)
 	if err != nil {
+		logger.Logger.Error("Failed to get meter details before deactivation", "error", err, "stripeID", stripeID)
 		return nil, fmt.Errorf("failed to get meter details before deactivation: %w", err)
 	}
 
@@ -145,10 +177,15 @@ func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*m
 	if h.accountID != "" {
 		params.SetStripeAccount(h.accountID)
 	}
+
+	logger.Logger.Info("Making Stripe API call to deactivate meter", "stripeID", stripeID)
 	_, err = meter.Deactivate(stripeID, params)
 	if err != nil {
+		logger.Logger.Error("Failed to deactivate Stripe meter", "error", err, "stripeID", stripeID)
 		return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
 	}
+
+	logger.Logger.Info("Stripe meter deactivated successfully", "stripeID", stripeID)
 
 	// Find the config meter ID from ID mapping
 	var configMeterID string
@@ -168,6 +205,8 @@ func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*m
 
 // ValidateMetersExist checks that all meter references in prices exist
 func (h *MeterHandler) ValidateMetersExist(ctx context.Context, config models.StripeConfiguration) error {
+	logger.Logger.Debug("Validating meter existence", "meterCount", len(config.Meters))
+
 	// Create a map of defined meters
 	definedMeters := make(map[string]bool)
 	for _, meter := range config.Meters {
@@ -179,11 +218,13 @@ func (h *MeterHandler) ValidateMetersExist(ctx context.Context, config models.St
 		for _, price := range product.Prices {
 			if price.UsageType == "metered" && price.Meter != "" {
 				if !definedMeters[price.Meter] {
+					logger.Logger.Error("Price references undefined meter", "priceID", price.ID, "meterID", price.Meter)
 					return fmt.Errorf("price %s references undefined meter %s", price.ID, price.Meter)
 				}
 			}
 		}
 	}
 
+	logger.Logger.Debug("All meter references validated successfully")
 	return nil
 }

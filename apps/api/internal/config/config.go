@@ -1,6 +1,7 @@
 package config
 
 import (
+	"api/internal/logger"
 	"os"
 	"strconv"
 )
@@ -70,6 +71,7 @@ type SMTPConfig struct {
 }
 
 func New() *Config {
+	logger.Logger.Info("Loading application configuration from environment variables")
 
 	return &Config{
 		Port: getEnvOrDefault("PORT", "8080"),
@@ -124,17 +126,20 @@ func New() *Config {
 
 func getEnvOrDefault(key string, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
+		logger.Logger.Trace("Loaded config from environment", "key", key)
 		return value
 	}
-	print("Using Default Value: %s, for Key: %s", defaultValue, key)
+	logger.Logger.Debug("Using default value for config", "key", key, "default", defaultValue)
 	return defaultValue
 }
 
 func getFloat64Env(key string, defaultValue float64) float64 {
-	value, err := strconv.ParseFloat(os.Getenv(key), 64)
+	envValue := os.Getenv(key)
+	value, err := strconv.ParseFloat(envValue, 64)
 	if err != nil {
+		logger.Logger.Debug("Failed to parse float64 env var, using default", "key", key, "value", envValue, "default", defaultValue, "error", err)
 		return defaultValue
 	}
-
+	logger.Logger.Trace("Loaded float64 config from environment", "key", key, "value", value)
 	return value
 }

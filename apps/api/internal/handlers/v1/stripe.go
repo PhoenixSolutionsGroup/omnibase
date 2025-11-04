@@ -10,7 +10,6 @@ import (
 	stripe_config "api/internal/service/v1/stripe_config"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -31,11 +30,15 @@ type StripeHandler struct {
 }
 
 func NewStripeHandler(cfg *config.Config) *StripeHandler {
+	logger.Logger.Info("Initializing stripe handler")
+
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
-		log.Panicf("Failed to connect to database: %s", err)
+		logger.Logger.Error("Failed to connect to database in stripe handler", "error", err)
+		panic(fmt.Sprintf("Failed to connect to database: %s", err))
 	}
 
+	logger.Logger.Info("Stripe handler initialized successfully")
 	return &StripeHandler{
 		db:      db,
 		service: stripe_config.NewStripeConfigService(cfg),
@@ -45,9 +48,12 @@ func NewStripeHandler(cfg *config.Config) *StripeHandler {
 
 // Servers the JSON schema for the stripe config
 func (h *StripeHandler) GetSchema(ctx *gin.Context) {
+	logger.Logger.Debug("Fetching stripe config schema")
+
 	schemaPath := "./internal/static/stripe-config-schema.json"
 	schemaBytes, err := os.ReadFile(schemaPath)
 	if err != nil {
+		logger.Logger.Error("Failed to load stripe config schema", "path", schemaPath, "error", err)
 		handlers.NewInternalServerErrorResponse(ctx,
 			fmt.Errorf("Failed to load schema: %s", err),
 		)
@@ -56,20 +62,25 @@ func (h *StripeHandler) GetSchema(ctx *gin.Context) {
 
 	var schema interface{}
 	if err := json.Unmarshal(schemaBytes, &schema); err != nil {
+		logger.Logger.Error("Failed to unmarshal stripe config schema", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx,
 			fmt.Errorf("Invalid schema file"),
 		)
 		return
 	}
 
+	logger.Logger.Debug("Successfully loaded stripe config schema")
 	ctx.Header("Content-Type", "application/schema+json")
 	ctx.JSON(http.StatusOK, schema)
 }
 
 func (h *StripeHandler) GetConfig(ctx *gin.Context) {
+	logger.Logger.Info("Fetching public stripe config")
+
 	var config *models.StripeConfig
 	err := h.db.Order("created_at DESC").First(&config).Error
 	if err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
 		return
 	}
@@ -77,6 +88,7 @@ func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 	// Parse the configuration and add Stripe IDs
 	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
 	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
 		return
 	}
@@ -87,6 +99,7 @@ func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 	// Convert to response format with Stripe IDs
 	configWithIDs := h.addStripeIDsToConfig(publicConfig, config.ID)
 
+	logger.Logger.Info("Successfully fetched public stripe config", "version", config.Version)
 	response := gin.H{
 		"id":         config.ID,
 		"config":     configWithIDs,
@@ -100,9 +113,12 @@ func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 
 // GetConfigAdmin returns the full config including enterprise prices (requires admin auth)
 func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
+	logger.Logger.Info("Fetching full stripe config (admin)")
+
 	var config *models.StripeConfig
 	err := h.db.Order("created_at DESC").First(&config).Error
 	if err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
 		return
 	}
@@ -110,6 +126,7 @@ func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
 	// Parse the configuration and add Stripe IDs
 	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
 	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
 		return
 	}
@@ -117,6 +134,7 @@ func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
 	// Convert to response format with Stripe IDs (NO FILTERING)
 	configWithIDs := h.addStripeIDsToConfig(*parsedConfig, config.ID)
 
+	logger.Logger.Info("Successfully fetched full stripe config (admin)", "version", config.Version)
 	response := gin.H{
 		"id":         config.ID,
 		"config":     configWithIDs,
@@ -129,9 +147,10 @@ func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
 }
 
 func (h *StripeHandler) UpdateConfig(ctx *gin.Context) {
+	logger.Logger.Info("Received Stripe config update request")
 	var configData models.StripeConfigData
-	fmt.Printf("Here\n\n")
 	if err := ctx.ShouldBindJSON(&configData); err != nil {
+		logger.Logger.Warn("Invalid JSON format in Stripe config update request", "error", err)
 		handlers.NewBadRequestResponse(ctx,
 			"Invalid JSON format",
 		)
@@ -164,6 +183,8 @@ func (h *StripeHandler) UpdateConfig(ctx *gin.Context) {
 }
 
 func (h *StripeHandler) GetConfigHistory(ctx *gin.Context) {
+	logger.Logger.Info("Fetching stripe config history")
+
 	limit := 10
 	offset := 0
 	if limitStr := ctx.Query("limit"); limitStr != "" {
@@ -178,11 +199,14 @@ func (h *StripeHandler) GetConfigHistory(ctx *gin.Context) {
 		}
 	}
 
+	logger.Logger.Debug("Config history pagination", "limit", limit, "offset", offset)
+
 	var configs []models.StripeConfig
 	var total int64
 
 	// Get total count
 	if err := h.db.Model(&models.StripeConfig{}).Count(&total).Error; err != nil {
+		logger.Logger.Error("Failed to count stripe configs", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to count configs: %s", err))
 		return
 	}
@@ -194,6 +218,7 @@ func (h *StripeHandler) GetConfigHistory(ctx *gin.Context) {
 		Find(&configs).Error
 
 	if err != nil {
+		logger.Logger.Error("Failed to fetch stripe config history", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch config history: %s", err))
 		return
 	}
@@ -228,6 +253,11 @@ func (h *StripeHandler) GetConfigHistory(ctx *gin.Context) {
 	totalPages := (int(total) + limit - 1) / limit
 	currentPage := (offset / limit) + 1
 
+	logger.Logger.Info("Successfully fetched stripe config history",
+		"total", total,
+		"page", currentPage,
+		"configs_returned", len(configsWithIDs))
+
 	response := gin.H{
 		"configs": configsWithIDs,
 		"pagination": gin.H{
@@ -259,23 +289,31 @@ func parsePositiveInt(str string, maxValue int) (int, error) {
 }
 
 func (h *StripeHandler) ValidateConfig(ctx *gin.Context) {
+	logger.Logger.Info("Validating stripe config")
+
 	var configData models.StripeConfigData
 	if err := ctx.ShouldBindJSON(&configData); err != nil {
+		logger.Logger.Warn("Invalid JSON format in validate config request", "error", err)
 		handlers.NewBadRequestResponse(ctx, "Invalid JSON format")
 		return
 	}
 
 	_, err := h.service.ParseAndValidateConfig(configData)
 	if err != nil {
+		logger.Logger.Warn("Stripe config validation failed", "error", err)
 		handlers.NewBadRequestResponse(ctx, []string{err.Error()})
 		return
 	}
 
+	logger.Logger.Info("Stripe config validation successful")
 	handlers.NewSuccessResponse(ctx, "")
 }
 
 func (h *StripeHandler) PullConfig(ctx *gin.Context) {
+	logger.Logger.Info("Pulling stripe config from Stripe API")
+
 	// Fetch meters from Stripe
+	logger.Logger.Debug("Fetching billing meters from Stripe")
 	meterParams := &stripe.BillingMeterListParams{}
 	meterParams.Filters.AddFilter("status", "", "active")
 
@@ -285,10 +323,13 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		stripeMeters = append(stripeMeters, meterIter.BillingMeter())
 	}
 	if err := meterIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch meters from Stripe", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch meters: %s", err))
 		return
 	}
+	logger.Logger.Debug("Fetched meters from Stripe", "count", len(stripeMeters))
 
+	logger.Logger.Debug("Fetching products from Stripe")
 	productParams := &stripe.ProductListParams{}
 	productParams.Filters.AddFilter("active", "", "true")
 
@@ -298,10 +339,13 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		stripeProducts = append(stripeProducts, productIter.Product())
 	}
 	if err := productIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch products from Stripe", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch products: %s", err))
 		return
 	}
+	logger.Logger.Debug("Fetched products from Stripe", "count", len(stripeProducts))
 
+	logger.Logger.Debug("Fetching prices from Stripe")
 	priceParams := &stripe.PriceListParams{}
 	priceParams.Filters.AddFilter("active", "", "true")
 	priceParams.Expand = []*string{stripe.String("data.tiers")}
@@ -312,9 +356,11 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		stripePrices = append(stripePrices, priceIter.Price())
 	}
 	if err := priceIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch prices from Stripe", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch prices: %w", err))
 		return
 	}
+	logger.Logger.Debug("Fetched prices from Stripe", "count", len(stripePrices))
 
 	// Convert meters to config format
 	var configMeters []models.Meter
@@ -370,6 +416,11 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		}
 	}
 
+	logger.Logger.Info("Successfully pulled stripe config from Stripe API",
+		"version", version,
+		"meters_count", len(configMeters),
+		"products_count", len(configProducts))
+
 	handlers.NewSuccessResponse(ctx, models.StripeConfiguration{
 		Version:  version,
 		Meters:   configMeters,
@@ -379,9 +430,12 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 }
 
 func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
+	logger.Logger.Info("Starting archive all stripe config operation")
+
 	// First, fetch all active meters, products, and prices from Stripe (similar to PullConfig)
 
 	// Fetch meters from Stripe
+	logger.Logger.Debug("Fetching active billing meters from Stripe for archival")
 	meterParams := &stripe.BillingMeterListParams{}
 	meterParams.Filters.AddFilter("status", "", "active")
 
@@ -391,11 +445,14 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 		stripeMeters = append(stripeMeters, meterIter.BillingMeter())
 	}
 	if err := meterIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch meters for archival", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch meters: %s", err))
 		return
 	}
+	logger.Logger.Debug("Fetched meters for archival", "count", len(stripeMeters))
 
 	// Fetch products from Stripe
+	logger.Logger.Debug("Fetching active products from Stripe for archival")
 	productParams := &stripe.ProductListParams{}
 	productParams.Filters.AddFilter("active", "", "true")
 
@@ -405,11 +462,14 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 		stripeProducts = append(stripeProducts, productIter.Product())
 	}
 	if err := productIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch products for archival", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch products: %s", err))
 		return
 	}
+	logger.Logger.Debug("Fetched products for archival", "count", len(stripeProducts))
 
 	// Fetch prices from Stripe
+	logger.Logger.Debug("Fetching active prices from Stripe for archival")
 	priceParams := &stripe.PriceListParams{}
 	priceParams.Filters.AddFilter("active", "", "true")
 
@@ -419,37 +479,53 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 		stripePrices = append(stripePrices, priceIter.Price())
 	}
 	if err := priceIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch prices for archival", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch prices: %w", err))
 		return
 	}
+	logger.Logger.Debug("Fetched prices for archival", "count", len(stripePrices))
 
 	// Archive all fetched resources
+	logger.Logger.Info("Beginning archival process",
+		"meters_to_archive", len(stripeMeters),
+		"prices_to_archive", len(stripePrices),
+		"products_to_archive", len(stripeProducts))
+
 	var archivedItems []string
 	var archiveErrors []string
 
 	// Archive meters
+	logger.Logger.Debug("Archiving meters", "count", len(stripeMeters))
 	for _, stripeMeter := range stripeMeters {
 		if err := h.stripe.ArchiveStripeMeter(stripeMeter.ID); err != nil {
+			logger.Logger.Warn("Failed to archive meter", "meter_id", stripeMeter.ID, "error", err)
 			archiveErrors = append(archiveErrors, fmt.Sprintf("meter %s: %v", stripeMeter.ID, err))
 		} else {
+			logger.Logger.Debug("Archived meter", "meter_id", stripeMeter.ID, "display_name", stripeMeter.DisplayName)
 			archivedItems = append(archivedItems, fmt.Sprintf("meter: %s (%s)", stripeMeter.ID, stripeMeter.DisplayName))
 		}
 	}
 
 	// Archive prices (before products since prices depend on products)
+	logger.Logger.Debug("Archiving prices", "count", len(stripePrices))
 	for _, stripePrice := range stripePrices {
 		if err := h.stripe.ArchiveStripePrice(stripePrice.ID); err != nil {
+			logger.Logger.Warn("Failed to archive price", "price_id", stripePrice.ID, "error", err)
 			archiveErrors = append(archiveErrors, fmt.Sprintf("price %s: %v", stripePrice.ID, err))
 		} else {
+			logger.Logger.Debug("Archived price", "price_id", stripePrice.ID)
 			archivedItems = append(archivedItems, fmt.Sprintf("price: %s", stripePrice.ID))
 		}
 	}
 
 	// Archive products
+	logger.Logger.Debug("Archiving products", "count", len(stripeProducts))
 	for _, stripeProduct := range stripeProducts {
 		if err := h.stripe.ArchiveStripeProduct(stripeProduct.ID); err != nil {
+			logger.Logger.Warn("Failed to archive product", "product_id", stripeProduct.ID, "error", err)
 			archiveErrors = append(archiveErrors, fmt.Sprintf("product %s: %v", stripeProduct.ID, err))
 		} else {
+			logger.Logger.Debug("Archived product", "product_id", stripeProduct.ID, "name", stripeProduct.Name)
 			archivedItems = append(archivedItems, fmt.Sprintf("product: %s (%s)", stripeProduct.ID, stripeProduct.Name))
 		}
 	}
@@ -471,13 +547,19 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 	}
 
 	// Process the empty config to store it in the database
+	logger.Logger.Debug("Saving empty config to database after archival")
 	_, err := h.service.ProcessConfigUpdate(emptyConfigData)
 	if err != nil {
+		logger.Logger.Error("Failed to update local config after archival", "error", err)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update local config: %s", err))
 		return
 	}
 
 	// Prepare response
+	logger.Logger.Info("Archive all operation completed",
+		"total_archived", len(archivedItems),
+		"total_errors", len(archiveErrors))
+
 	response := gin.H{
 		"message":        "Successfully archived all Stripe resources and cleared local config",
 		"archived_items": archivedItems,
@@ -487,6 +569,7 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 	}
 
 	if len(archiveErrors) > 0 {
+		logger.Logger.Warn("Some items failed to archive", "error_count", len(archiveErrors))
 		response["warning"] = "Some items failed to archive - see archive_errors for details"
 	}
 

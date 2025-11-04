@@ -1,6 +1,7 @@
 package stripe_config
 
 import (
+	"api/internal/logger"
 	"api/internal/models"
 	"encoding/json"
 	"fmt"
@@ -14,44 +15,58 @@ func NewValidator() *Validator {
 }
 
 func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (*models.StripeConfiguration, error) {
+	logger.Logger.Debug("Starting configuration validation")
+
 	configBytes, err := json.Marshal(configData)
 	if err != nil {
+		logger.Logger.Error("Failed to marshal config data", "error", err)
 		return nil, fmt.Errorf("failed to marshal config data: %w", err)
 	}
 
 	var config models.StripeConfiguration
 	if err := json.Unmarshal(configBytes, &config); err != nil {
+		logger.Logger.Error("Invalid JSON structure", "error", err)
 		return nil, fmt.Errorf("invalid JSON structure: %w", err)
 	}
 
 	// Basic validation
 	if config.Version == "" {
+		logger.Logger.Error("Configuration version is missing")
 		return nil, fmt.Errorf("version is required")
 	}
+	logger.Logger.Debug("Configuration parsed successfully", "version", config.Version, "productCount", len(config.Products), "meterCount", len(config.Meters))
 
 	// Validate meters if present
 	for i, meter := range config.Meters {
 		if err := v.validateMeter(meter); err != nil {
+			logger.Logger.Error("Meter validation failed", "error", err, "meterIndex", i, "meterID", meter.ID)
 			return nil, fmt.Errorf("meter %d validation failed: %w", i, err)
 		}
 	}
+	logger.Logger.Debug("All meters validated successfully", "count", len(config.Meters))
 
 	// Validate each product
 	for i, product := range config.Products {
 		if err := v.validateProduct(product); err != nil {
+			logger.Logger.Error("Product validation failed", "error", err, "productIndex", i, "productID", product.ID)
 			return nil, fmt.Errorf("product %d validation failed: %w", i, err)
 		}
 	}
+	logger.Logger.Debug("All products validated successfully", "count", len(config.Products))
 
 	// Validate meter references in prices
 	if err := v.validateMeterReferences(config); err != nil {
+		logger.Logger.Error("Meter reference validation failed", "error", err)
 		return nil, fmt.Errorf("meter reference validation failed: %w", err)
 	}
 
+	logger.Logger.Info("Configuration validation completed successfully")
 	return &config, nil
 }
 
 func (v *Validator) validateProduct(product models.Product) error {
+	logger.Logger.Trace("Validating product", "productID", product.ID)
+
 	if product.ID == "" {
 		return fmt.Errorf("product ID is required")
 	}
@@ -67,6 +82,7 @@ func (v *Validator) validateProduct(product models.Product) error {
 	// Validate each price
 	for i, price := range product.Prices {
 		if err := v.validatePrice(price, product.Type); err != nil {
+			logger.Logger.Debug("Price validation failed", "productID", product.ID, "priceIndex", i, "priceID", price.ID)
 			return fmt.Errorf("price %d validation failed: %w", i, err)
 		}
 	}
@@ -146,6 +162,8 @@ func (v *Validator) isValidInterval(interval string) bool {
 
 // validateMeter validates a meter configuration
 func (v *Validator) validateMeter(meter models.Meter) error {
+	logger.Logger.Trace("Validating meter", "meterID", meter.ID)
+
 	if meter.ID == "" {
 		return fmt.Errorf("meter ID is required")
 	}
@@ -191,6 +209,8 @@ func (v *Validator) validateMeter(meter models.Meter) error {
 
 // validateMeterReferences ensures all meter references in prices exist
 func (v *Validator) validateMeterReferences(config models.StripeConfiguration) error {
+	logger.Logger.Debug("Validating meter references")
+
 	// Create a map of defined meters
 	definedMeters := make(map[string]bool)
 	for _, meter := range config.Meters {
@@ -202,12 +222,14 @@ func (v *Validator) validateMeterReferences(config models.StripeConfiguration) e
 		for _, price := range product.Prices {
 			if price.UsageType == "metered" && price.Meter != "" {
 				if !definedMeters[price.Meter] {
+					logger.Logger.Error("Price references undefined meter", "priceID", price.ID, "meterID", price.Meter)
 					return fmt.Errorf("price %s references undefined meter %s", price.ID, price.Meter)
 				}
 			}
 		}
 	}
 
+	logger.Logger.Debug("All meter references validated successfully")
 	return nil
 }
 

@@ -2,6 +2,7 @@ package services_v1
 
 import (
 	"api/internal/config"
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 	"time"
@@ -19,6 +20,7 @@ type TenantsService struct {
 }
 
 func NewTenantsService(db *gorm.DB, cfg *config.Config) *TenantsService {
+	logger.Logger.Info("Initializing tenants service", "kratosURL", cfg.AuthConfig.KratosURL)
 
 	kratos := client.NewConfiguration()
 	kratos.Servers = client.ServerConfigurations{{
@@ -27,6 +29,7 @@ func NewTenantsService(db *gorm.DB, cfg *config.Config) *TenantsService {
 
 	kratosClient := client.NewAPIClient(kratos)
 
+	logger.Logger.Info("Tenants service initialized successfully")
 	return &TenantsService{
 		db:         db,
 		SigningKey: cfg.Database.SigningKey,
@@ -42,6 +45,8 @@ type PostgRESTClaims struct {
 }
 
 func (s *TenantsService) CreateJWTToken(userID, tenantID string) (string, error) {
+	logger.Logger.Debug("Creating JWT token", "userID", userID, "tenantID", tenantID)
+
 	claims := PostgRESTClaims{
 		UserID:   userID,
 		TenantID: tenantID,
@@ -56,59 +61,79 @@ func (s *TenantsService) CreateJWTToken(userID, tenantID string) (string, error)
 
 	tokenString, err := token.SignedString([]byte(s.SigningKey))
 	if err != nil {
+		logger.Logger.Error("Failed to sign JWT token", "error", err, "userID", userID)
 		return "", fmt.Errorf("failed to sign JWT token: %w", err)
 	}
 
+	logger.Logger.Info("JWT token created successfully", "userID", userID, "tenantID", tenantID)
 	return tokenString, nil
 }
 
 func (s *TenantsService) SetActiveTenant(userID, tenantID string) (string, error) {
+	logger.Logger.Info("Setting active tenant", "userID", userID, "tenantID", tenantID)
+
 	if err := s.db.Model(&models.TenantUser{}).
 		Where("user_id = ?", userID).
 		Update("is_active", false).Error; err != nil {
+		logger.Logger.Error("Failed to deactivate other tenants", "error", err, "userID", userID)
 		return "", fmt.Errorf("failed to deactivate other tenants: %w", err)
 	}
+	logger.Logger.Debug("Deactivated all tenants for user", "userID", userID)
 
 	if err := s.db.Model(&models.TenantUser{}).
 		Where("user_id = ? AND tenant_id = ?", userID, tenantID).
 		Update("is_active", true).Error; err != nil {
+		logger.Logger.Error("Failed to activate tenant", "error", err, "userID", userID, "tenantID", tenantID)
 		return "", fmt.Errorf("failed to activate tenant: %w", err)
 	}
+	logger.Logger.Debug("Activated tenant for user", "userID", userID, "tenantID", tenantID)
 
 	// Create new JWT with the updated tenant_id
 	token, err := s.CreateJWTToken(userID, tenantID)
 	if err != nil {
+		logger.Logger.Error("Failed to create JWT token", "error", err, "userID", userID)
 		return "", fmt.Errorf("failed to create JWT token: %w", err)
 	}
 
+	logger.Logger.Info("Active tenant set successfully", "userID", userID, "tenantID", tenantID)
 	return token, nil
 }
 
 // handleUserTenantCleanup manages user tenant state after removing them from a tenant
 // If user has other tenants, sets active to first one; if no tenants, sets is_in_tenant to false
 func (s *TenantsService) HandleUserTenantCleanup(ctx *gin.Context, userID string) error {
+	logger.Logger.Info("Handling user tenant cleanup", "userID", userID)
+
 	// Get all remaining tenants for this user
 	var tenantUsers []models.TenantUser
 	if err := s.db.Where("user_id = ?", userID).Find(&tenantUsers).Error; err != nil {
+		logger.Logger.Error("Failed to get user tenants", "error", err, "userID", userID)
 		return fmt.Errorf("failed to get user tenants: %w", err)
 	}
+	logger.Logger.Debug("Found user tenants", "userID", userID, "count", len(tenantUsers))
 
 	// If user has no tenants left, set metadata to is_in_tenant = false
 	if len(tenantUsers) == 0 {
+		logger.Logger.Info("User has no remaining tenants, setting is_in_tenant to false", "userID", userID)
 		return s.UpdateUserMetadata(ctx, userID, false)
 	}
 
 	// If user has tenants, set active tenant to the first one
 	firstTenantID := tenantUsers[0].TenantID
+	logger.Logger.Info("Setting first tenant as active", "userID", userID, "tenantID", firstTenantID)
 	_, err := s.SetActiveTenant(userID, firstTenantID)
 	if err != nil {
+		logger.Logger.Error("Failed to set active tenant", "error", err, "userID", userID, "tenantID", firstTenantID)
 		return fmt.Errorf("failed to set active tenant: %w", err)
 	}
 
+	logger.Logger.Info("User tenant cleanup completed successfully", "userID", userID)
 	return nil
 }
 
 func (s *TenantsService) UpdateUserMetadata(ctx *gin.Context, UserID string, is_in_tenant bool) error {
+	logger.Logger.Info("Updating user metadata", "userID", UserID, "is_in_tenant", is_in_tenant)
+
 	patchDoc := []client.JsonPatch{
 		{
 			Op:    "replace",
@@ -116,12 +141,15 @@ func (s *TenantsService) UpdateUserMetadata(ctx *gin.Context, UserID string, is_
 			Value: is_in_tenant,
 		},
 	}
-	// _, _, err := s.kratos.IdentityAPI.UpdateIdentity(ctx, UserID).UpdateIdentityBody(updateBody).Execute()
+
+	logger.Logger.Info("Making Kratos API call to update user metadata", "userID", UserID)
 	_, _, err := s.kratos.IdentityAPI.PatchIdentity(ctx, UserID).JsonPatch(patchDoc).Execute()
 
 	if err != nil {
+		logger.Logger.Error("Failed to update user metadata", "error", err, "userID", UserID)
 		return fmt.Errorf("failed to update metadata: %w", err)
 	}
 
+	logger.Logger.Info("User metadata updated successfully", "userID", UserID, "is_in_tenant", is_in_tenant)
 	return nil
 }

@@ -193,8 +193,11 @@ func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 
 	// Send email asynchronously to avoid blocking
 	inviteURL := fmt.Sprintf("%s?token=%s", req.InviteURL, invite.Token)
+	logger.Logger.Info("Sending invite email", "email", invite.Email, "tenant", tenant.Name, "role", invite.Role)
 	if err := h.email.SendInviteEmail(invite.Email, tenant.Name, invite.Role, inviteURL); err != nil {
-		fmt.Printf("Failed to send invite email: %v\n", err)
+		logger.Logger.Error("Failed to send invite email", "email", invite.Email, "error", err)
+	} else {
+		logger.Logger.Info("Invite email sent successfully", "email", invite.Email)
 	}
 
 	handlers.NewSuccessResponse(ctx, gin.H{

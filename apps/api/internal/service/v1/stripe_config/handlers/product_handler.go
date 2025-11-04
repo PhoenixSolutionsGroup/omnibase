@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 
@@ -27,8 +28,11 @@ func NewProductHandler(idMapper IDMapperInterface, accountID string) *ProductHan
 }
 
 func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uuid.UUID) (*models.ProductChange, error) {
+	logger.Logger.Info("Creating product", "productID", productConfig.ID, "name", productConfig.Name)
+
 	// Skip Stripe API for free products - store in DB only
 	if productConfig.ID == "free" {
+		logger.Logger.Debug("Skipping free product (local only)", "productID", productConfig.ID)
 		// Still save the ID mapping for consistency
 		if configID != uuid.Nil {
 			if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, productConfig.ID, "product"); err != nil {
@@ -61,28 +65,35 @@ func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uu
 	// Add Connect account if in managed mode
 	if h.accountID != "" {
 		productParams.SetStripeAccount(h.accountID)
+		logger.Logger.Debug("Using Stripe Connect account", "accountID", h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to create product", "productID", productConfig.ID)
 	stripeProduct, err := product.New(productParams)
 	if err != nil {
+		logger.Logger.Warn("Failed to create Stripe product, attempting unarchive", "error", err, "productID", productConfig.ID)
 		// If product creation fails, try to unarchive the existing product
 		unarchiveResult, unarchiveErr := h.unarchiveExistingProduct(productConfig, configID)
 		if unarchiveErr == nil {
 			return unarchiveResult, nil
 		}
 		// If unarchive also fails, return the original creation error
+		logger.Logger.Error("Failed to create or unarchive Stripe product", "error", err, "productID", productConfig.ID)
 		return nil, fmt.Errorf("failed to create Stripe product: %w", err)
 	}
+	logger.Logger.Info("Stripe product created successfully", "configProductID", productConfig.ID, "stripeID", stripeProduct.ID)
 
 	// Save product ID mapping if we have config IDs
 	if configID != uuid.Nil {
 		if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, stripeProduct.ID, "product"); err != nil {
+			logger.Logger.Error("Failed to save product ID mapping", "error", err, "productID", productConfig.ID)
 			return nil, fmt.Errorf("failed to save product ID mapping: %w", err)
 		}
 	}
 
 	details := []string{fmt.Sprintf("Created product: %s (config: %s)", stripeProduct.ID, productConfig.ID)}
 
+	logger.Logger.Info("Product creation completed", "productID", productConfig.ID)
 	return &models.ProductChange{
 		ProductID:   productConfig.ID,
 		ProductName: productConfig.Name,
@@ -92,10 +103,13 @@ func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uu
 }
 
 func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uuid.UUID) (*models.ProductChange, error) {
+	logger.Logger.Info("Updating product", "productID", update.ID, "requiresRecreate", update.RequiresRecreate)
+
 	details := []string{}
 
 	// Skip Stripe API for free products
 	if update.ID == "free" {
+		logger.Logger.Debug("Skipping free product update", "productID", update.ID)
 		return &models.ProductChange{
 			ProductID:   update.ID,
 			ProductName: fmt.Sprintf("Product %s", update.ID),
@@ -105,6 +119,7 @@ func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uui
 	}
 
 	if update.RequiresRecreate {
+		logger.Logger.Warn("Product requires recreation due to type change", "productID", update.ID)
 		// Product type changes require recreation
 		// This is a simplified approach - in production you might want more sophisticated handling
 		details = append(details, "Product recreated due to type change")
@@ -118,6 +133,7 @@ func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uui
 
 	// Update editable fields
 	if len(update.FieldChanges) > 0 {
+		logger.Logger.Debug("Updating product fields", "productID", update.ID, "changes", len(update.FieldChanges))
 		updateParams := &stripe.ProductParams{}
 
 		if name, ok := update.FieldChanges["name"].(string); ok {
@@ -135,10 +151,13 @@ func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uui
 			updateParams.SetStripeAccount(h.accountID)
 		}
 
+		logger.Logger.Info("Making Stripe API call to update product", "productID", update.ID)
 		_, err := product.Update(update.ID, updateParams)
 		if err != nil {
+			logger.Logger.Error("Failed to update Stripe product", "error", err, "productID", update.ID)
 			return nil, fmt.Errorf("failed to update product: %w", err)
 		}
+		logger.Logger.Info("Product updated successfully", "productID", update.ID)
 	}
 
 	return &models.ProductChange{
@@ -150,8 +169,11 @@ func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uui
 }
 
 func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange, error) {
+	logger.Logger.Info("Archiving product", "productID", productID)
+
 	// Skip Stripe API for free products
 	if productID == "free" {
+		logger.Logger.Debug("Skipping free product archival", "productID", productID)
 		return &models.ProductChange{
 			ProductID:   productID,
 			ProductName: fmt.Sprintf("Product %s", productID),
@@ -165,8 +187,10 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 	if h.accountID != "" {
 		getParams.SetStripeAccount(h.accountID)
 	}
+	logger.Logger.Debug("Getting product details before archival", "productID", productID)
 	stripeProduct, err := product.Get(productID, getParams)
 	if err != nil {
+		logger.Logger.Error("Failed to get product for archiving", "error", err, "productID", productID)
 		return nil, fmt.Errorf("failed to get product for archiving: %w", err)
 	}
 
@@ -177,11 +201,15 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 	if h.accountID != "" {
 		archiveParams.SetStripeAccount(h.accountID)
 	}
+
+	logger.Logger.Info("Making Stripe API call to archive product", "productID", productID)
 	_, err = product.Update(productID, archiveParams)
 	if err != nil {
+		logger.Logger.Error("Failed to archive Stripe product", "error", err, "productID", productID)
 		return nil, fmt.Errorf("failed to archive product: %w", err)
 	}
 
+	logger.Logger.Info("Product archived successfully", "productID", productID)
 	return &models.ProductChange{
 		ProductID:   productID,
 		ProductName: stripeProduct.Name,
@@ -191,8 +219,11 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 }
 
 func (h *ProductHandler) unarchiveExistingProduct(productConfig models.Product, configID uuid.UUID) (*models.ProductChange, error) {
+	logger.Logger.Info("Unarchiving existing product", "productID", productConfig.ID)
+
 	// Skip Stripe API for free products
 	if productConfig.ID == "free" {
+		logger.Logger.Debug("Skipping free product unarchival", "productID", productConfig.ID)
 		// Still save the ID mapping for consistency
 		if configID != uuid.Nil {
 			if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, productConfig.ID, "product"); err != nil {
@@ -224,14 +255,18 @@ func (h *ProductHandler) unarchiveExistingProduct(productConfig models.Product, 
 		updateParams.SetStripeAccount(h.accountID)
 	}
 
+	logger.Logger.Info("Making Stripe API call to unarchive product", "productID", productConfig.ID)
 	stripeProduct, err := product.Update(productConfig.ID, updateParams)
 	if err != nil {
+		logger.Logger.Error("Failed to unarchive Stripe product", "error", err, "productID", productConfig.ID)
 		return nil, fmt.Errorf("failed to unarchive Stripe product: %w", err)
 	}
+	logger.Logger.Info("Product unarchived successfully", "productID", productConfig.ID, "stripeID", stripeProduct.ID)
 
 	// Save product ID mapping if we have config IDs
 	if configID != uuid.Nil {
 		if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, stripeProduct.ID, "product"); err != nil {
+			logger.Logger.Error("Failed to save product ID mapping", "error", err, "productID", productConfig.ID)
 			return nil, fmt.Errorf("failed to save product ID mapping: %w", err)
 		}
 	}

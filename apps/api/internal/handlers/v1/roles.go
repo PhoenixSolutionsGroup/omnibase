@@ -26,7 +26,7 @@ func NewRolesHandler(cfg *config.Config) *RolesHandler {
 
 	db, err := database.GetConnection(cfg.Database)
 	if err != nil {
-		logger.Logger.Error("Failed to get database connection", "error", err)
+		logger.Logger.Error("Failed to get database connection in roles handler", "error", err)
 		panic(err)
 	}
 
