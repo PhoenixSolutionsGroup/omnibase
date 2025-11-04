@@ -21,6 +21,7 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 	adminGroup := router.Group("/admin")
 	adminGroup.Use(authMiddleware.RequireJWT())
 
+	adminGroup.GET("/config", stripeHandler.GetConfigAdmin)
 	adminGroup.GET("/config/history", stripeHandler.GetConfigHistory)
 	adminGroup.GET("/config/pull", stripeHandler.PullConfig)
 

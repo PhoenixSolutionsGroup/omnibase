@@ -81,7 +81,40 @@ func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 		return
 	}
 
+	// Filter public prices only
+	publicConfig := h.filterPublicPrices(*parsedConfig)
+
 	// Convert to response format with Stripe IDs
+	configWithIDs := h.addStripeIDsToConfig(publicConfig, config.ID)
+
+	response := gin.H{
+		"id":         config.ID,
+		"config":     configWithIDs,
+		"version":    config.Version,
+		"created_at": config.CreatedAt,
+		"updated_at": config.UpdatedAt,
+	}
+
+	handlers.NewSuccessResponse(ctx, response)
+}
+
+// GetConfigAdmin returns the full config including enterprise prices (requires admin auth)
+func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
+	var config *models.StripeConfig
+	err := h.db.Order("created_at DESC").First(&config).Error
+	if err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
+		return
+	}
+
+	// Parse the configuration and add Stripe IDs
+	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
+	if err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
+		return
+	}
+
+	// Convert to response format with Stripe IDs (NO FILTERING)
 	configWithIDs := h.addStripeIDsToConfig(*parsedConfig, config.ID)
 
 	response := gin.H{
@@ -513,6 +546,13 @@ func (h *StripeHandler) convertStripePriceToConfig(stripePrice *stripe.Price) mo
 		Currency: string(stripePrice.Currency),
 	}
 
+	// Convert tax behavior
+	if stripePrice.TaxBehavior == "inclusive" {
+		inclusive := true
+		configPrice.TaxIncludedInPrice = &inclusive
+	}
+	// If "exclusive" or empty, leave as nil (defaults to false)
+
 	if stripePrice.Recurring != nil {
 		configPrice.Interval = string(stripePrice.Recurring.Interval)
 		configPrice.IntervalCount = int(stripePrice.Recurring.IntervalCount)
@@ -667,4 +707,28 @@ func (h *StripeHandler) addStripeIDsToConfig(config models.StripeConfiguration, 
 		Meters:   metersWithIDs,
 		Products: productsWithIDs,
 	}
+}
+
+// filterPublicPrices filters out prices where public == false and removes products with no public prices
+func (h *StripeHandler) filterPublicPrices(config models.StripeConfiguration) models.StripeConfiguration {
+	filtered := config
+	filtered.Products = []models.Product{}
+
+	for _, product := range config.Products {
+		publicPrices := []models.Price{}
+		for _, price := range product.Prices {
+			// Default to true if public is nil
+			if price.Public == nil || *price.Public {
+				publicPrices = append(publicPrices, price)
+			}
+		}
+
+		// Only include products with public prices
+		if len(publicPrices) > 0 {
+			product.Prices = publicPrices
+			filtered.Products = append(filtered.Products, product)
+		}
+	}
+
+	return filtered
 }
