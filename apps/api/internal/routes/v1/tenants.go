@@ -17,6 +17,9 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	router.Use(authMiddleware.RequireSession())
 
 	router.GET("/jwt", tenantHandler.GetPostgRESTJWTToken)
+	router.GET("/users", tenantHandler.GetTenantUsers)
+	router.GET("/subscriptions", tenantHandler.GetTenantSubscriptions)
+	router.GET("/billing-status", tenantHandler.GetBillingStatus)
 
 	router.POST("", tenantHandler.CreateTenant)
 	router.POST("/invites", tenantHandler.CreateTenantUserInvite)
