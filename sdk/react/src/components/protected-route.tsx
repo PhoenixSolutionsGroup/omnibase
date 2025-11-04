@@ -5,12 +5,12 @@ import React, { type ReactNode } from "react";
  * Client-side route protection component for React applications
  *
  * This component protects routes by checking if the user has an active session.
- * It uses the [`useSession`](../hooks/use-session.ts:84) hook to fetch session data and automatically
+ * It uses the [`useSession()`](../hooks/use-session.ts:84) hook to fetch session data and automatically
  * handles loading states, invalid sessions, and authenticated access. When a session
  * is invalid or missing, it can either render nothing or execute a custom callback
  * (e.g., redirecting to a login page).
  *
- * The component must be used within the authentication provider context to access
+ * The component must be used within the [`AuthClientProvider`](../context/provider.tsx:80) context to access
  * session data. During the loading phase, it renders nothing to prevent flash of
  * unauthorized content.
  *
@@ -22,8 +22,8 @@ import React, { type ReactNode } from "react";
  *
  * @example
  * ```tsx
- * import ProtectedRoute from '@omnibase/react/components/protected-route';
- * import { useRouter } from 'react-router-dom';
+ * import ProtectedRoute from '@omnibase/react';
+ * import { useRouter } from 'next/navigation';
  *
  * function DashboardPage() {
  *   const router = useRouter();
@@ -31,8 +31,8 @@ import React, { type ReactNode } from "react";
  *   return (
  *     <ProtectedRoute
  *       onInvalidSession={() => {
- *         router.push('/login');
- *         return <div>Redirecting to login...</div>;
+ *         router.push('/auth/login');
+ *         return null;
  *       }}
  *     >
  *       <div>
@@ -44,7 +44,7 @@ import React, { type ReactNode } from "react";
  * }
  * ```
  *
- * @since 1.0.0
+ * @since 0.2.0
  * @public
  * @group Components
  */
