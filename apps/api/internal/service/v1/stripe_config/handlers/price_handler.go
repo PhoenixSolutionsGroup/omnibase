@@ -48,6 +48,13 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 			Currency: stripe.String(priceConfig.Currency),
 		}
 
+		// Set tax behavior
+		taxBehavior := "exclusive" // default
+		if priceConfig.TaxIncludedInPrice != nil && *priceConfig.TaxIncludedInPrice {
+			taxBehavior = "inclusive"
+		}
+		priceParams.TaxBehavior = stripe.String(taxBehavior)
+
 		// Set price amount (only for non-tiered pricing)
 		if priceConfig.BillingScheme != "tiered" {
 			priceParams.UnitAmount = stripe.Int64(priceConfig.Amount)
@@ -183,6 +190,13 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 		Product:  stripe.String(productID),
 		Currency: stripe.String(priceConfig.Currency),
 	}
+
+	// Set tax behavior
+	taxBehavior := "exclusive" // default
+	if priceConfig.TaxIncludedInPrice != nil && *priceConfig.TaxIncludedInPrice {
+		taxBehavior = "inclusive"
+	}
+	priceParams.TaxBehavior = stripe.String(taxBehavior)
 
 	// Set price amount (only for non-tiered pricing)
 	if priceConfig.BillingScheme != "tiered" {
