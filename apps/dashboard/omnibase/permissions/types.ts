@@ -5,9 +5,11 @@ export interface Namespace {
   permits?: { [method: string]: (ctx: Context) => boolean };
 }
 
-export interface KetoArray extends Array<Namespace> {
-  includes(element: Namespace): boolean;
-  traverse(iteratorfn: (element: Namespace) => boolean): boolean;
+declare global {
+  interface Array<T> {
+    includes(element: T): boolean;
+    traverse(iteratorfn: (element: T) => boolean): boolean;
+  }
 }
 
 export type SubjectSet<

@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "meters": [
+    {
+      "id": "workers_request_cost",
+      "display_name": "Cloudflare Workers Request Cost (USD)",
+      "event_name": "workers_request_cost",
+      "default_aggregation": {
+        "formula": "last"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "workers_requests",
+      "name": "Cloudflare Workers Requests",
+      "description": "Cloudflare Workers request usage",
+      "type": "service",
+      "prices": [
+        {
+          "id": "workers_requests_free",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_request_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 45,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        },
+        {
+          "id": "workers_requests_starter",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_request_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 180,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        },
+        {
+          "id": "workers_requests_pro",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_request_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 900,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

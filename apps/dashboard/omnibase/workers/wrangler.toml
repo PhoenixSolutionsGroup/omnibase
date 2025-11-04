@@ -1,0 +1,20 @@
+name = "omnibase-workers"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Workers Logs
+[observability]
+enabled = true
+
+# Example: Cron triggers (optional)
+# [triggers]
+# crons = ["0 * * * *"]  # Every hour
+
+# Example: Queue bindings (optional)
+# [[queues.producers]]
+# queue = "usage-events"
+# binding = "USAGE_QUEUE"
+#
+# [[queues.consumers]]
+# queue = "usage-events"
+# max_batch_size = 10

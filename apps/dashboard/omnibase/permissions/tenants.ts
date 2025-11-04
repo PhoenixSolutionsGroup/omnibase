@@ -1,34 +1,46 @@
-import { Context, KetoArray, Namespace, SubjectSet } from "./types";
+import { Context, Namespace, SubjectSet } from "./types";
 
-class User implements Namespace {}
+export class User implements Namespace {}
 
-class Tenant implements Namespace {
+export class Tenant implements Namespace {
   related: {
-    owners: User[];
-    admins: User[];
-    members: User[];
-    can_invite_users: User[];
+    can_delete_tenant: User[];
+    can_invite_user: User[];
     can_update_user_role: User[];
+    can_update_user_role_to_owner: User[];
+    can_remove_owner_role: User[];
     can_remove_user: User[];
+    can_view_users: User[];
+    can_view_db_secret_key: User[];
+    can_rotate_keys: User[];
   };
 
   permits = {
     invite_user: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
-      this.related.can_invite_users.includes(ctx.subject),
+      this.related.can_invite_user.includes(ctx.subject),
 
     delete_tenant: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject),
+      this.related.can_delete_tenant.includes(ctx.subject),
 
     remove_user: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
       this.related.can_remove_user.includes(ctx.subject),
 
     update_user_role: (ctx: Context): boolean =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
       this.related.can_update_user_role.includes(ctx.subject),
+
+    update_user_role_to_owner: (ctx: Context): boolean =>
+      this.related.can_update_user_role_to_owner.includes(ctx.subject),
+
+    remove_owner_role: (ctx: Context): boolean =>
+      this.related.can_remove_owner_role.includes(ctx.subject),
+
+    view_users: (ctx: Context): boolean =>
+      this.related.can_view_users.includes(ctx.subject),
+
+    view_db_secret_key: (ctx: Context): boolean =>
+      this.related.can_view_db_secret_key.includes(ctx.subject),
+
+    rotate_keys: (ctx: Context): boolean =>
+      this.related.can_rotate_keys.includes(ctx.subject),
   };
 }

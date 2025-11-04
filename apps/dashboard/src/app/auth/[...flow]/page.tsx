@@ -8,7 +8,7 @@ import {
   TenantCreator,
   VerificationForm,
 } from "@omnibase/shadcn";
-import { client } from "@/lib/server";
+import { omnibase } from "@/lib/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -27,7 +27,11 @@ export default function page({ params, searchParams }: any) {
             return <RecoveryForm flow={flow} />;
           },
           settings: (flow) => {
-            return <SettingsForm flow={flow} />;
+            return (
+              <div className="-mt-[10vh]">
+                <SettingsForm flow={flow} />
+              </div>
+            );
           },
           verification: (flow) => {
             return <VerificationForm flow={flow} />;
@@ -70,12 +74,26 @@ export default function page({ params, searchParams }: any) {
                       return;
                     }
 
-                    const tenant = await client.tenants.manage.createTenant({
+                    const tenant = await omnibase.tenants.manage.createTenant({
                       billing_email: billingEmail,
                       user_id: session.identity?.id!,
                       name: organizationName,
                     });
 
+                    const c = await cookies();
+                    c.set("omnibase_postgrest_jwt", tenant.data?.token!);
+                    redirect("/");
+                  },
+                  async joinOrganizationAction(formData) {
+                    "use server";
+                    console.log(formData);
+                    const token = formData.get("token") as string | null;
+
+                    if (!token) {
+                      return;
+                    }
+
+                    const tenant = await omnibase.tenants.invites.accept(token);
                     const c = await cookies();
                     c.set("omnibase_postgrest_jwt", tenant.data?.token!);
                     redirect("/");

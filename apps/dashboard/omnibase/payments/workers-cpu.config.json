@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "meters": [
+    {
+      "id": "workers_cpu_cost",
+      "display_name": "Cloudflare Workers CPU Cost (USD)",
+      "event_name": "workers_cpu_cost",
+      "default_aggregation": {
+        "formula": "last"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "workers_cpu",
+      "name": "Cloudflare Workers CPU Time",
+      "description": "Cloudflare Workers CPU time usage",
+      "type": "service",
+      "prices": [
+        {
+          "id": "workers_cpu_free",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_cpu_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 4,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        },
+        {
+          "id": "workers_cpu_starter",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_cpu_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 16,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        },
+        {
+          "id": "workers_cpu_pro",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "workers_cpu_cost",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "public": false,
+          "tiers": [
+            {
+              "up_to": 80,
+              "unit_amount": 0,
+              "flat_amount": null
+            },
+            {
+              "up_to": "inf",
+              "unit_amount": 1,
+              "flat_amount": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

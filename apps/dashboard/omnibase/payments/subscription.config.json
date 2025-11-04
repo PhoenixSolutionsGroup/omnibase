@@ -1,0 +1,409 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "v1.0.0",
+  "products": [
+    {
+      "id": "free",
+      "name": "Free Plan",
+      "description": "Get started with OmniBase - 1 project, 1 team member, community support",
+      "type": "service",
+      "ui": {
+        "display_name": "Free",
+        "tagline": "Perfect for getting started",
+        "features": [
+          "1 project maximum",
+          "1 team member",
+          "1 GB Managed database storage",
+          "Community support"
+        ],
+        "cta_text": "Start Free",
+        "sort_order": 1
+      },
+      "prices": [
+        {
+          "id": "free",
+          "amount": 1,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Forever Free",
+            "billing_period": "Forever",
+            "limits": [
+              {
+                "text": "10 compute hours included",
+                "value": 10,
+                "unit": "hours"
+              },
+              {
+                "text": "5 GB storage included",
+                "value": 5,
+                "unit": "GB"
+              },
+              {
+                "text": "500 emails included",
+                "value": 500,
+                "unit": "emails"
+              },
+              {
+                "text": "500k worker calls included",
+                "value": 500000,
+                "unit": "calls"
+              },
+              {
+                "text": "1,000 CPU worker seconds included",
+                "value": 1000,
+                "unit": "seconds"
+              },
+              {
+                "text": "5K R2 Class A operations included",
+                "value": 5000,
+                "unit": "operations"
+              },
+              {
+                "text": "50K R2 Class B operations included",
+                "value": 50000,
+                "unit": "operations"
+              },
+              {
+                "text": "5 GB R2 storage included",
+                "value": 5,
+                "unit": "GB"
+              }
+            ],
+            "price_display": {
+              "custom_text": "Free"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "starter_plan",
+      "name": "Starter Plan",
+      "description": "Perfect for small teams and growing projects - 10 projects, 5 team members, email support",
+      "type": "service",
+      "ui": {
+        "display_name": "Starter",
+        "tagline": "Perfect for small teams",
+        "features": [
+          "Up to 10 projects",
+          "Up to 5 team members",
+          "3 GB managed database",
+          "Email support (48hr response)"
+        ],
+        "cta_text": "Upgrade to Starter",
+        "sort_order": 2
+      },
+      "prices": [
+        {
+          "id": "starter_monthly",
+          "amount": 1900,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "per month",
+            "limits": [
+              {
+                "text": "30 compute hours included",
+                "value": 30,
+                "unit": "hours"
+              },
+              {
+                "text": "15 GB storage included",
+                "value": 15,
+                "unit": "GB"
+              },
+              {
+                "text": "1,500 emails included",
+                "value": 1500,
+                "unit": "emails"
+              },
+              {
+                "text": "2M worker calls included",
+                "value": 2000000,
+                "unit": "calls"
+              },
+              {
+                "text": "4,000 CPU worker seconds included",
+                "value": 4000,
+                "unit": "seconds"
+              },
+              {
+                "text": "30K R2 Class A operations included",
+                "value": 30000,
+                "unit": "operations"
+              },
+              {
+                "text": "300K R2 Class B operations included",
+                "value": 300000,
+                "unit": "operations"
+              },
+              {
+                "text": "20 GB R2 storage included",
+                "value": 20,
+                "unit": "GB"
+              }
+            ]
+          }
+        },
+        {
+          "id": "starter_yearly",
+          "amount": 19000,
+          "currency": "usd",
+          "interval": "year",
+          "ui": {
+            "display_name": "Yearly",
+            "billing_period": "per year",
+            
+            "limits": [
+              {
+                "text": "360 compute hours included",
+                "value": 360,
+                "unit": "hours"
+              },
+              {
+                "text": "15 GB storage included",
+                "value": 15,
+                "unit": "GB"
+              },
+              {
+                "text": "18,000 emails included",
+                "value": 18000,
+                "unit": "emails"
+              },
+              {
+                "text": "24M worker calls included",
+                "value": 24000000,
+                "unit": "calls"
+              },
+              {
+                "text": "48,000 CPU worker seconds included",
+                "value": 48000,
+                "unit": "seconds"
+              },
+              {
+                "text": "360K R2 Class A operations included",
+                "value": 360000,
+                "unit": "operations"
+              },
+              {
+                "text": "3.6M R2 Class B operations included",
+                "value": 3600000,
+                "unit": "operations"
+              },
+              {
+                "text": "240 GB R2 storage included",
+                "value": 240,
+                "unit": "GB"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pro_plan",
+      "name": "Pro Plan",
+      "description": "For professional teams - 50 projects, unlimited members, priority support, advanced features",
+      "type": "service",
+      "ui": {
+        "display_name": "Pro",
+        "tagline": "For professional teams",
+        "features": [
+          "50 projects maximum",
+          "Unlimited team members",
+          "15 GB Neon database storage",
+          "GitHub PR previews",
+          "30-day logs & analytics",
+          "Priority support + chat (24hr response)"
+        ],
+        "badge": "Most Popular",
+        "cta_text": "Upgrade to Pro",
+        "highlighted": true,
+        "sort_order": 2
+      },
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 7900,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "per month",
+            "limits": [
+              {
+                "text": "100 compute hours included",
+                "value": 100,
+                "unit": "hours"
+              },
+              {
+                "text": "50 GB storage included",
+                "value": 50,
+                "unit": "GB"
+              },
+              {
+                "text": "6,000 emails included",
+                "value": 6000,
+                "unit": "emails"
+              },
+              {
+                "text": "10M worker calls included",
+                "value": 10000000,
+                "unit": "calls"
+              },
+              {
+                "text": "20,000 CPU worker seconds included",
+                "value": 20000,
+                "unit": "seconds"
+              },
+              {
+                "text": "100K R2 Class A operations included",
+                "value": 100000,
+                "unit": "operations"
+              },
+              {
+                "text": "1M R2 Class B operations included",
+                "value": 1000000,
+                "unit": "operations"
+              },
+              {
+                "text": "100 GB R2 storage included",
+                "value": 100,
+                "unit": "GB"
+              }
+            ]
+          }
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 79000,
+          "currency": "usd",
+          "interval": "year",
+          "ui": {
+            "display_name": "Yearly",
+            "billing_period": "per year",
+            
+            "limits": [
+              {
+                "text": "1,200 compute hours included",
+                "value": 1200,
+                "unit": "hours"
+              },
+              {
+                "text": "50 GB storage included",
+                "value": 50,
+                "unit": "GB"
+              },
+              {
+                "text": "72,000 emails included",
+                "value": 72000,
+                "unit": "emails"
+              },
+              {
+                "text": "120M worker calls included",
+                "value": 120000000,
+                "unit": "calls"
+              },
+              {
+                "text": "240,000 CPU worker seconds included",
+                "value": 240000,
+                "unit": "seconds"
+              },
+              {
+                "text": "1.2M R2 Class A operations included",
+                "value": 1200000,
+                "unit": "operations"
+              },
+              {
+                "text": "12M R2 Class B operations included",
+                "value": 12000000,
+                "unit": "operations"
+              },
+              {
+                "text": "1.2 TB R2 storage included",
+                "value": 1200,
+                "unit": "GB"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "enterprise_plan",
+      "name": "Enterprise Plan",
+      "description": "For large organizations - unlimited projects, dedicated support, SLA guarantees, compliance",
+      "type": "service",
+      "ui": {
+        "display_name": "Enterprise",
+        "tagline": "Custom solutions for enterprises",
+        "features": [
+          "Unlimited projects",
+          "Unlimited team members",
+          "99.95% SLA guarantee",
+          "SOC2 & HIPAA compliance",
+          "90+ day logs retention"
+        ],
+        "badge": "Enterprise",
+        "cta_text": "Contact Sales",
+        "highlighted": false,
+        "sort_order": 3
+      },
+      "prices": [
+        {
+          "id": "enterprise_monthly",
+          "amount": 49900,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "Talk to Sales",
+            "limits": [
+              {
+                "text": "Custom compute hours included"
+              },
+              {
+                "text": "Custom storage allocations"
+              },
+              {
+                "text": "Custom email allocations"
+              }
+            ],
+            "price_display": {
+              "custom_text": "Custom"
+            }
+          }
+        },
+        {
+          "id": "enterprise_yearly",
+          "amount": 499000,
+          "currency": "usd",
+          "interval": "year",
+          "ui": {
+            "display_name": "Yearly",
+            "billing_period": "Talk to Sales",
+            "price_display": {
+              "custom_text": "Custom"
+            },
+            "limits": [
+              {
+                "text": "Custom compute hours included"
+              },
+              {
+                "text": "Custom storage allocations"
+              },
+              {
+                "text": "Custom email allocations"
+              },
+              {
+                "text": "Priority onboarding & training"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
