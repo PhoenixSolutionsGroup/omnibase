@@ -2,11 +2,71 @@ package tenants
 
 import (
 	"api/internal/handlers"
+	"api/internal/logger"
 	"api/internal/models"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
+
+// TenantUserResponse represents the user data returned by the API
+type TenantUserResponse struct {
+	UserID    string `json:"user_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+}
+
+// GET api/v1/tenants/users
+func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
+	tenantID := ctx.GetString("tenant_id")
+	userID := ctx.GetString("user_id")
+
+	if tenantID == "" || userID == "" {
+		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
+		return
+	}
+
+	logger.Logger.Debug("Fetching tenant users", "tenant_id", tenantID, "requesting_user_id", userID)
+
+	// Check if current user can view members in this tenant
+	canView, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "view_users", userID)
+	if err != nil {
+		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
+		return
+	}
+	if !canView {
+		logger.Logger.Warn("User lacks permission to view tenant users", "tenant_id", tenantID, "user_id", userID)
+		handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must have `view_users` permission")
+		return
+	}
+
+	// Query to join tenant_users with identities and extract traits
+	var users []TenantUserResponse
+	err = h.db.Raw(`
+		SELECT
+			tu.user_id,
+			COALESCE(i.traits->'name'->>'first', '') as first_name,
+			COALESCE(i.traits->'name'->>'last', '') as last_name,
+			COALESCE(i.traits->>'email', '') as email,
+			tu.role
+		FROM auth.tenant_users tu
+		INNER JOIN auth.identities i ON tu.user_id::uuid = i.id
+		WHERE tu.tenant_id = ?
+		ORDER BY tu.joined_at DESC
+	`, tenantID).Scan(&users).Error
+
+	if err != nil {
+		logger.Logger.Error("Failed to fetch tenant users", "error", err, "tenant_id", tenantID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch tenant users: %w", err))
+		return
+	}
+
+	logger.Logger.Info("Successfully fetched tenant users", "tenant_id", tenantID, "user_count", len(users))
+	handlers.NewSuccessResponse(ctx, users)
+}
 
 // DELETE api/v1/tenants/users - update Keto
 func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
@@ -31,26 +91,92 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 		return
 	}
 
+	logger.Logger.Debug("Attempting to delete tenant user", "tenant_id", tenantID, "target_user_id", req.TargetUserID, "requesting_user_id", currentUserID)
+
+	// Get target user to check their role
+	var targetUser models.TenantUser
+	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).First(&targetUser).Error; err != nil {
+		logger.Logger.Error("Failed to fetch target user", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+		handlers.NewNotFoundResponse(ctx, "User not found in tenant")
+		return
+	}
+
 	// Check if current user can manage members in this tenant
 	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_user", currentUserID)
 	if err != nil {
+		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", currentUserID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return
 	}
 	if !canManage {
+		logger.Logger.Warn("User lacks permission to remove tenant users", "tenant_id", tenantID, "user_id", currentUserID)
 		handlers.NewForbiddenResponse(ctx, "Insufficient permissions")
 		return
 	}
 
-	// Remove from database
-	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).Delete(&models.TenantUser{}).Error; err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to remove user from tenant: %s", err))
+	// If target user is an owner, check for remove_owner_role permission
+	if targetUser.Role == "owner" {
+		canRemoveOwner, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", currentUserID)
+		if err != nil {
+			logger.Logger.Error("Failed to check remove_owner_role permission", "error", err, "tenant_id", tenantID, "user_id", currentUserID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
+			return
+		}
+		if !canRemoveOwner {
+			logger.Logger.Warn("User lacks permission to remove owner users", "tenant_id", tenantID, "user_id", currentUserID)
+			handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must have `remove_owner_role` permission to remove an owner")
+			return
+		}
+
+		// Ensure at least one owner remains
+		var ownerCount int64
+		if err := h.db.Model(&models.TenantUser{}).Where("tenant_id = ? AND role = ?", tenantID, "owner").Count(&ownerCount).Error; err != nil {
+			logger.Logger.Error("Failed to count owners", "error", err, "tenant_id", tenantID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to validate owner count: %w", err))
+			return
+		}
+
+		if ownerCount <= 1 {
+			logger.Logger.Warn("Attempted to remove last owner", "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+			handlers.NewBadRequestResponse(ctx, "Cannot remove the last owner from the tenant")
+			return
+		}
+	}
+
+	logger.Logger.Info("Removing user from tenant",
+		"tenant_id", tenantID,
+		"target_user_id", req.TargetUserID,
+		"target_role", targetUser.Role)
+
+	// Remove all Keto relationships for the user's current role
+	logger.Logger.Debug("Getting role definition to remove permissions", "role_name", targetUser.Role)
+	var role models.Role
+	if err := h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", targetUser.Role, tenantID).First(&role).Error; err != nil {
+		logger.Logger.Error("Failed to find role", "error", err, "role_name", targetUser.Role, "tenant_id", tenantID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to find user's role: %w", err))
 		return
 	}
 
+	// Remove user from role's user_ids array
+	updatedUserIDs := make([]string, 0)
+	for _, uid := range role.UserIDs {
+		if uid != req.TargetUserID {
+			updatedUserIDs = append(updatedUserIDs, uid)
+		}
+	}
+	role.UserIDs = updatedUserIDs
+	if err := h.db.Save(&role).Error; err != nil {
+		logger.Logger.Error("Failed to update role user list", "error", err, "role_id", role.ID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update role: %w", err))
+		return
+	}
+
+	// Delete all Keto relationships for this role's permissions
+	logger.Logger.Debug("Deleting Keto relationships", "permissions_count", len(role.Permissions))
 	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", req.TargetUserID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed ot list all relationship tuples"))
+		logger.Logger.Error("Failed to list relation tuples", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to list all relationship tuples: %w", err))
 		return
 	}
 
@@ -63,16 +189,28 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 			tuple.SubjectID,
 		)
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed when deleting relation tuple"))
+			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation, "subject_id", tuple.SubjectID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed when deleting relation tuple: %w", err))
 			return
 		}
 	}
 
-	if err := h.tenants.HandleUserTenantCleanup(ctx, req.TargetUserID); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to cleanup user tenant state: %s", err))
+	// Remove from database
+	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).Delete(&models.TenantUser{}).Error; err != nil {
+		logger.Logger.Error("Failed to remove user from tenant in database", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to remove user from tenant: %w", err))
 		return
 	}
 
+	logger.Logger.Debug("Keto relations removed, cleaning up user tenant state", "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+
+	if err := h.tenants.HandleUserTenantCleanup(ctx, req.TargetUserID); err != nil {
+		logger.Logger.Error("Failed to cleanup user tenant state", "error", err, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to cleanup user tenant state: %w", err))
+		return
+	}
+
+	logger.Logger.Info("Successfully removed user from tenant", "tenant_id", tenantID, "target_user_id", req.TargetUserID)
 	handlers.NewSuccessResponse(ctx, "")
 }
 
@@ -95,50 +233,140 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 		return
 	}
 
+	logger.Logger.Debug("Attempting to update tenant user role", "tenant_id", tenantID, "target_user_id", req.TargetUserID, "new_role", req.Role, "requesting_user_id", userID)
+
 	// Check if current user can manage members in this tenant
 	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role", userID)
 	if err != nil {
+		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return
 	}
 	if !canManage {
+		logger.Logger.Warn("User lacks permission to update user roles", "tenant_id", tenantID, "user_id", userID)
 		handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must have `update_user_role` permission")
 		return
-	}
-
-	if req.Role == "owner" {
-		var user models.TenantUser
-		if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, userID).First(&user).Error; err != nil {
-			handlers.NewNotFoundResponse(ctx, "User not found in tenant")
-			return
-		}
-		if user.Role != "owner" {
-			handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must be `owner` to update user to `owner` role")
-			return
-		}
 	}
 
 	// Fetch current role from database
 	var tenantUser models.TenantUser
 	if err := h.db.Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).First(&tenantUser).Error; err != nil {
+		logger.Logger.Error("Failed to fetch target user", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
 		handlers.NewNotFoundResponse(ctx, "User not found in tenant")
 		return
 	}
 	previousRole := tenantUser.Role
 
+	// If promoting to owner, check for update_user_role_to_owner permission
+	if req.Role == "owner" {
+		canPromote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role_to_owner", userID)
+		if err != nil {
+			logger.Logger.Error("Failed to check update_user_role_to_owner permission", "error", err, "tenant_id", tenantID, "user_id", userID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
+			return
+		}
+		if !canPromote {
+			logger.Logger.Warn("User lacks permission to promote to owner", "tenant_id", tenantID, "user_id", userID)
+			handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must have `update_user_role_to_owner` permission to promote to owner")
+			return
+		}
+	}
+
+	// If demoting from owner, check for remove_owner_role permission
+	if previousRole == "owner" && req.Role != "owner" {
+		canDemote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", userID)
+		if err != nil {
+			logger.Logger.Error("Failed to check remove_owner_role permission", "error", err, "tenant_id", tenantID, "user_id", userID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
+			return
+		}
+		if !canDemote {
+			logger.Logger.Warn("User lacks permission to demote owner", "tenant_id", tenantID, "user_id", userID)
+			handlers.NewForbiddenResponse(ctx, "Insufficient permissions - must have `remove_owner_role` permission to demote an owner")
+			return
+		}
+
+		// Ensure at least one owner remains
+		var ownerCount int64
+		if err := h.db.Model(&models.TenantUser{}).Where("tenant_id = ? AND role = ?", tenantID, "owner").Count(&ownerCount).Error; err != nil {
+			logger.Logger.Error("Failed to count owners", "error", err, "tenant_id", tenantID)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to validate owner count: %w", err))
+			return
+		}
+
+		if ownerCount <= 1 {
+			logger.Logger.Warn("Attempted to demote last owner", "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+			handlers.NewBadRequestResponse(ctx, "Cannot demote the last owner from the tenant")
+			return
+		}
+	}
+
+	logger.Logger.Info("Updating user role with permission-based assignment",
+		"tenant_id", tenantID,
+		"target_user_id", req.TargetUserID,
+		"previous_role", previousRole,
+		"new_role", req.Role)
+
+	// Get the old role to remove permissions
+	var oldRole models.Role
+	if err := h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", previousRole, tenantID).First(&oldRole).Error; err != nil {
+		logger.Logger.Error("Failed to find old role", "error", err, "role_name", previousRole, "tenant_id", tenantID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to find old role: %w", err))
+		return
+	}
+
+	// Remove user from old role's user_ids array
+	updatedUserIDs := make([]string, 0)
+	for _, uid := range oldRole.UserIDs {
+		if uid != req.TargetUserID {
+			updatedUserIDs = append(updatedUserIDs, uid)
+		}
+	}
+	oldRole.UserIDs = updatedUserIDs
+	if err := h.db.Save(&oldRole).Error; err != nil {
+		logger.Logger.Error("Failed to update old role user list", "error", err, "role_id", oldRole.ID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update old role: %w", err))
+		return
+	}
+
+	// Delete all Keto relationships for the old role
+	logger.Logger.Debug("Removing old role permissions", "role_name", previousRole, "permissions_count", len(oldRole.Permissions))
+	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", req.TargetUserID)
+	if err != nil {
+		logger.Logger.Error("Failed to list relation tuples", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to list relationship tuples: %w", err))
+		return
+	}
+
+	for _, tuple := range tuples {
+		err := h.keto.DeleteRelationTuple(
+			ctx.Request.Context(),
+			tuple.Namespace,
+			tuple.Object,
+			tuple.Relation,
+			tuple.SubjectID,
+		)
+		if err != nil {
+			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation, "subject_id", tuple.SubjectID)
+			// Continue on error to try to clean up as much as possible
+		}
+	}
+
 	// Update database
 	if err := h.db.Model(&models.TenantUser{}).Where("tenant_id = ? AND user_id = ?", tenantID, req.TargetUserID).Update("role", req.Role).Error; err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update user role: %s", err))
+		logger.Logger.Error("Failed to update user role in database", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update user role: %w", err))
 		return
 	}
 
-	// Update Keto relations - remove old relations and add new one
-	h.keto.DeleteRelationTuple(ctx.Request.Context(), "Tenant", tenantID, previousRole, req.TargetUserID)
-
-	if err := h.keto.CreateRelationTuple(ctx.Request.Context(), "Tenant", tenantID, req.Role, req.TargetUserID); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update permissions: %w", err))
+	// Assign new role with all its permissions
+	logger.Logger.Debug("Assigning new role", "role_name", req.Role)
+	if err := h.roles.AssignRoleByName(ctx.Request.Context(), req.TargetUserID, req.Role, tenantID); err != nil {
+		logger.Logger.Error("Failed to assign new role", "error", err, "role_name", req.Role, "target_user_id", req.TargetUserID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to assign new role: %w", err))
 		return
 	}
 
+	logger.Logger.Info("Successfully updated user role", "tenant_id", tenantID, "target_user_id", req.TargetUserID, "previous_role", previousRole, "new_role", req.Role)
 	handlers.NewSuccessResponse(ctx, gin.H{"message": "User role updated successfully"})
 }
