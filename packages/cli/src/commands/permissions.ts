@@ -8,7 +8,11 @@ import {
   CreateRelationshipBody,
   PostCheckPermissionBody,
 } from "@ory/client";
-import { findOmnibaseRoot, resolveEnvironment } from "../utils/environment";
+import {
+  resolveEnvironment,
+  findOmnibaseRoot,
+  getProjectName,
+} from "../utils/environment";
 
 // Helper function to extract meaningful error messages from API responses
 function extractErrorMessage(error: any): string {
@@ -47,7 +51,7 @@ export class PermissionsCommand {
   /**
    * Push all namespace files to API
    */
-  async push(apiUrl: string, token?: string): Promise<void> {
+  async push(apiUrl: string, apiKey?: string): Promise<void> {
     console.log("🚀 Pushing permissions...");
 
     const permissionsDir = path.join(process.cwd(), "omnibase", "permissions");
@@ -59,7 +63,7 @@ export class PermissionsCommand {
       process.exit(1);
     }
 
-    // Read all .ts files from permissions directory
+    // Read all .ts files from permissions directory (excluding types.ts)
     const files = fs
       .readdirSync(permissionsDir)
       .filter((file) => file.endsWith(".ts") && file !== "types.ts");
@@ -69,18 +73,57 @@ export class PermissionsCommand {
       return;
     }
 
-    console.log(`📁 Found ${files.length} namespace file(s):`);
-    files.forEach((f) => console.log(`   • ${f}`));
+    // Merge all namespace files into a single permissions.ts
+    let mergedContent = "";
 
-    // Create zip archive
-    const AdmZip = require("adm-zip");
-    const zip = new AdmZip();
+    files.forEach((file) => {
+      const content = fs.readFileSync(path.join(permissionsDir, file), "utf-8");
+      // Remove import statements and export keywords from class declarations
+      const withoutImports = content
+        .replace(/^import\s+.*?from\s+['"].*?['"];?\s*$/gm, "")
+        .replace(/^export\s+(class\s+)/gm, "$1")
+        .replace(/\r\n/g, "\n"); // ✅ Normalize CRLF → LF
 
-    files.forEach((f) => {
-      zip.addLocalFile(path.join(permissionsDir, f));
+      mergedContent += withoutImports + "\n\n";
     });
 
-    const zipBuffer = zip.toBuffer();
+    // Check for roles.config.json
+    const rolesConfigPath = path.join(permissionsDir, "roles.config.json");
+    const hasRolesConfig = fs.existsSync(rolesConfigPath);
+
+    if (hasRolesConfig) {
+      console.log(`📋 Found roles.config.json`);
+    }
+
+    // Create zip archive with JSZip for better encoding control
+    const JSZip = require("jszip");
+    const zip = new JSZip();
+
+    const timestamp = new Date().toISOString();
+    // Add merged permissions.ts with explicit UTF-8 encoding and Unix line endings
+    zip.file(`${timestamp}-permissions.ts`, mergedContent, {
+      binary: false,
+      createFolders: false,
+      unixPermissions: 0o644,
+    });
+
+    // Add roles.config.json if it exists
+    if (hasRolesConfig) {
+      const rolesConfigContent = fs.readFileSync(rolesConfigPath, "utf-8");
+      zip.file("roles.config.json", rolesConfigContent, {
+        binary: false,
+        createFolders: false,
+        unixPermissions: 0o644,
+      });
+    }
+
+    // Generate zip with explicit settings
+    const zipBuffer = await zip.generateAsync({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+      compressionOptions: { level: 9 },
+      platform: "UNIX", // Force Unix-style zip
+    });
 
     console.log(`📤 Uploading to ${apiUrl}...`);
 
@@ -97,8 +140,10 @@ export class PermissionsCommand {
       const headers: Record<string, string> = {
         ...formData.getHeaders(),
       };
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
+
+      // Add API key for backend authentication
+      if (apiKey) {
+        headers["x-api-key"] = apiKey;
       }
 
       const response = await axios.post(
@@ -111,26 +156,52 @@ export class PermissionsCommand {
 
       console.log("✅ Namespaces deployed successfully!");
 
+      if (result.roles_synced) {
+        console.log(
+          `📋 Synced ${result.roles_synced} system role(s) to database`
+        );
+      }
+
       if (result.managed_mode) {
         console.log("🔄 Managed hosting service is restarting...");
         console.log("✅ Keto will load new namespaces automatically");
       } else {
-        console.log("ℹ️  Local mode: Restart docker-compose to apply changes");
-        console.log("   Run: docker compose restart keto");
+        console.log("🔄 Restarting Keto service...");
+        try {
+          const projectRoot = findOmnibaseRoot();
+          const projectName = getProjectName();
+          const options = (global as any).__program_opts || {};
+          const composeMode = options.mode || "default";
+          const composeFileName =
+            composeMode === "dev"
+              ? "docker-compose.dev.yml"
+              : "docker-compose.yml";
+          const dockerComposePath = path.join(
+            __dirname,
+            "..",
+            "..",
+            "docker",
+            composeFileName
+          );
+
+          execSync(
+            `docker compose --project-name ${projectName} -f ${dockerComposePath} restart keto`,
+            { stdio: "inherit", cwd: projectRoot }
+          );
+          console.log("✅ Keto restarted successfully");
+        } catch (error) {
+          console.error("⚠️  Failed to restart Keto automatically");
+          console.log("   Please run manually: docker compose restart keto");
+        }
       }
 
+      console.log("");
       console.log("🎉 Permissions pushed successfully!");
+      console.log("💡 Use the dashboard to create custom roles");
     } catch (error) {
       console.error("❌ Failed to deploy namespaces:", error);
       process.exit(1);
     }
-  }
-
-  /**
-   * Get auth token from config or environment
-   */
-  public getToken(): string | undefined {
-    return process.env.OMNIBASE_TOKEN || undefined;
   }
 
   /**
@@ -276,11 +347,13 @@ export function addPermissionsCommands(program: Command): void {
     .action(async () => {
       try {
         const options = program.opts();
+        // Store options globally so push() can access mode flag
+        (global as any).__program_opts = options;
         const envConfig = resolveEnvironment(options.env);
         const permissionsCmd = new PermissionsCommand(envConfig.apiUrl);
 
         console.log(`Using environment: ${envConfig.name}`);
-        await permissionsCmd.push(envConfig.apiUrl, permissionsCmd.getToken());
+        await permissionsCmd.push(envConfig.apiUrl, envConfig.apiKey);
       } catch (error) {
         console.error("Error:", error instanceof Error ? error.message : error);
         process.exit(1);

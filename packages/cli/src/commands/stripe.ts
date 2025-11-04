@@ -81,26 +81,84 @@ async function makeApiRequest(
 
 function getStripeConfigPath(): string {
   const projectRoot = findOmnibaseRoot();
-  return path.join(projectRoot, "omnibase", "stripe.config.json");
+  return path.join(projectRoot, "omnibase", "payments");
+}
+
+function findConfigFiles(dir: string): string[] {
+  const files: string[] = [];
+
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      // Recurse into subdirectories
+      files.push(...findConfigFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith(".config.json")) {
+      files.push(fullPath);
+    }
+  }
+
+  return files.sort(); // Deterministic order
+}
+
+function mergeConfigs(paymentsDir: string): any {
+  const merged = {
+    version: "1.0.0",
+    meters: [],
+    products: [],
+  };
+
+  // Recursively find all *.config.json files
+  const configFiles = findConfigFiles(paymentsDir);
+
+  for (const file of configFiles) {
+    const config = JSON.parse(fs.readFileSync(file, "utf8"));
+
+    // Use version from first config file if available
+    if (config.version && merged.version === "1.0.0") {
+      merged.version = config.version;
+    }
+
+    // Merge meters
+    if (config.meters) {
+      (merged.meters as any[]).push(...config.meters);
+    }
+
+    // Merge products (with price merging support)
+    if (config.products) {
+      for (const product of config.products) {
+        const existing = (merged.products as any[]).find(
+          (p: any) => p.id === product.id
+        );
+
+        if (existing) {
+          // Merge prices into existing product
+          existing.prices.push(...product.prices);
+        } else {
+          // Add new product
+          (merged.products as any[]).push(product);
+        }
+      }
+    }
+  }
+
+  return merged;
 }
 
 function loadStripeConfig(): any {
   const configPath = getStripeConfigPath();
 
   if (!fs.existsSync(configPath)) {
-    throw new Error(`Stripe config not found at: ${configPath}`);
+    throw new Error(`Stripe payments directory not found at: ${configPath}`);
   }
 
-  try {
-    const configContent = fs.readFileSync(configPath, "utf8");
-    return JSON.parse(configContent);
-  } catch (error) {
-    throw new Error(
-      `Failed to parse stripe.config.json: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
+  if (!fs.statSync(configPath).isDirectory()) {
+    throw new Error(`Expected directory at: ${configPath}, but found a file`);
   }
+
+  return mergeConfigs(configPath);
 }
 
 export function addStripeCommands(program: Command): void {
@@ -345,7 +403,17 @@ export function addStripeCommands(program: Command): void {
         if (response.success) {
           console.log("✅ Configuration pulled successfully from Stripe!");
 
-          const outputPath = options.output || "stripe.config.json";
+          const projectRoot = findOmnibaseRoot();
+          const outputPath =
+            options.output ||
+            (fs.existsSync(path.join(projectRoot, "omnibase", "payments"))
+              ? path.join(
+                  projectRoot,
+                  "omnibase",
+                  "payments",
+                  "pulled.config.json"
+                )
+              : "stripe.config.json");
           const configData = response.data;
 
           fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
