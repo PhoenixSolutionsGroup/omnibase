@@ -34,6 +34,24 @@ export type CheckoutOptions = {
 
   /** URL to redirect to if the user cancels the checkout */
   cancel_url: string;
+
+  /**
+   * Number of days for the trial period (subscriptions only)
+   * Only applies when the price has a recurring interval
+   */
+  trial_period_days?: number;
+
+  /**
+   * Stripe promotion code ID to apply automatically
+   * Mutually exclusive with allow_promotion_codes
+   */
+  promotion_code?: string;
+
+  /**
+   * Whether to show promotion code input field in checkout
+   * Allows customers to enter their own promo codes
+   */
+  allow_promotion_codes?: boolean;
 };
 
 /**
