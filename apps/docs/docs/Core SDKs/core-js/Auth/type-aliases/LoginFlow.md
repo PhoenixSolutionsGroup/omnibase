@@ -2,7 +2,7 @@
 
 > **LoginFlow** = `Login`
 
-Defined in: auth/types.ts:134
+Defined in: [auth/types.ts:134](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L134)
 
 Login flow for user authentication
 

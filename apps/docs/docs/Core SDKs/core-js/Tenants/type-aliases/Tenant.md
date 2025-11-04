@@ -2,7 +2,7 @@
 
 > **Tenant** = `object`
 
-Defined in: tenants/create-tenant.ts:63
+Defined in: [tenants/management.ts:124](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L124)
 
 Tenant entity structure that maps to the database schema
 
@@ -25,7 +25,7 @@ const tenant: Tenant = {
 
 ## Since
 
-1.0.0
+0.6.0
 
 ## Properties
 
@@ -33,7 +33,7 @@ const tenant: Tenant = {
 
 > **created\_at**: `string`
 
-Defined in: tenants/create-tenant.ts:73
+Defined in: [tenants/management.ts:134](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L134)
 
 ISO 8601 timestamp when the tenant was created
 
@@ -43,7 +43,7 @@ ISO 8601 timestamp when the tenant was created
 
 > **id**: `string`
 
-Defined in: tenants/create-tenant.ts:65
+Defined in: [tenants/management.ts:126](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L126)
 
 Unique identifier for the tenant
 
@@ -53,7 +53,7 @@ Unique identifier for the tenant
 
 > **name**: `string`
 
-Defined in: tenants/create-tenant.ts:67
+Defined in: [tenants/management.ts:128](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L128)
 
 Display name of the tenant organization
 
@@ -63,7 +63,7 @@ Display name of the tenant organization
 
 > **stripe\_customer\_id**: `string`
 
-Defined in: tenants/create-tenant.ts:69
+Defined in: [tenants/management.ts:130](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L130)
 
 Associated Stripe customer ID for billing
 
@@ -73,7 +73,7 @@ Associated Stripe customer ID for billing
 
 > **type**: `string`
 
-Defined in: tenants/create-tenant.ts:71
+Defined in: [tenants/management.ts:132](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L132)
 
 Type of tenant (e.g., 'individual', 'organization')
 
@@ -83,6 +83,6 @@ Type of tenant (e.g., 'individual', 'organization')
 
 > **updated\_at**: `string`
 
-Defined in: tenants/create-tenant.ts:75
+Defined in: [tenants/management.ts:136](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L136)
 
 ISO 8601 timestamp when the tenant was last updated

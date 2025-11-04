@@ -1,8 +1,8 @@
 # Type Alias: AcceptTenantInviteResponse
 
-> **AcceptTenantInviteResponse** = [`ApiResponse`](ApiResponse.md)\<\{ `message`: `string`; `tenant_id`: `string`; `token`: `string`; \}\>
+> **AcceptTenantInviteResponse** = `ApiResponse`\<\{ `message`: `string`; `tenant_id`: `string`; `token`: `string`; \}\>
 
-Defined in: tenants/accept-invite.ts:49
+Defined in: [tenants/invites.ts:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/invites.ts#L50)
 
 Response structure for accepting a tenant invitation
 
@@ -25,4 +25,4 @@ const response: AcceptTenantInviteResponse = {
 
 ## Since
 
-1.0.0
+0.6.0

@@ -1,8 +1,8 @@
 # Type Alias: DeleteTenantResponse
 
-> **DeleteTenantResponse** = [`ApiResponse`](ApiResponse.md)\<\{ `message`: `string`; \}\>
+> **DeleteTenantResponse** = `ApiResponse`\<\{ `message`: `string`; \}\>
 
-Defined in: tenants/delete-tenant.ts:24
+Defined in: [tenants/management.ts:59](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L59)
 
 Response structure for deleting a tenant
 
@@ -23,4 +23,4 @@ const response: DeleteTenantResponse = {
 
 ## Since
 
-1.0.0
+0.6.0

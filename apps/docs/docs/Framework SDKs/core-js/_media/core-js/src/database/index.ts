@@ -31,3 +31,11 @@
  */
 
 export { createClient } from "./client";
+export { EventsClient } from "./events";
+export type {
+  SubscriptionOptions,
+  Subscription,
+  SubscriptionMessage,
+  UpdateMessage,
+  StatusMessage,
+} from "./events";

@@ -2,7 +2,7 @@
 
 > **RegistrationFlow** = `Registration`
 
-Defined in: auth/types.ts:244
+Defined in: [auth/types.ts:244](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L244)
 
 Registration flow for new user account creation
 

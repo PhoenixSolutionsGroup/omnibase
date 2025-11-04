@@ -1,66 +1,62 @@
 # Tenants
 
-Tenant management module
+Tenants module
 
-This module provides comprehensive tenant management functionality for multi-tenant
-applications. It handles tenant creation, user invitations, tenant switching, and
-administrative operations like tenant deletion.
+This module provides comprehensive tenant management functionality using
+an object-oriented approach with dedicated handler classes. The module
+supports multi-tenant applications with user management, invitations,
+and tenant switching capabilities.
 
 Key features:
-- Tenant lifecycle management (create, delete)
-- User invitation system with role-based access
-- Active tenant switching for authenticated users
-- Secure invite token handling with expiration
+- Tenant lifecycle management (create, delete, switch)
+- User invitation system with email workflows
+- Multi-tenant user management and permissions
+- Active tenant switching for user sessions
+- Comprehensive error handling and validation
 - Integration with Stripe for billing management
-- Row-level security (RLS) policy support via JWT tokens
-
-All functions in this module require proper environment configuration with
-`OMNIBASE_AUTH_URL` and handle authentication via HTTP-only cookies for security.
 
 ## Example
 
-Basic tenant operations:
+Basic usage with the main TenantHandler:
 ```typescript
-import { createTenant, createTenantUserInvite, switchActiveTenant } from '@omnibase/sdk-core/tenants';
+import { TenantHandler } from '@omnibase/core-js/tenants';
+
+// Initialize the handler with your client
+const tenantHandler = new TenantHandler(omnibaseClient);
 
 // Create a new tenant
-const newTenant = await createTenant({
+const tenant = await tenantHandler.manage.createTenant({
   name: 'My Company',
   billing_email: 'billing@company.com',
   user_id: 'user_123'
 });
 
 // Invite a user to the tenant
-const invite = await createTenantUserInvite(newTenant.data.tenant.id, {
-  email: 'colleague@company.com',
-  role: 'member'
+const invite = await tenantHandler.invites.create({
+  email: 'user@example.com',
+  role: 'member',
+  invite_url: 'https://yourapp.com/accept-invite'
 });
 
-// Switch to this tenant
-await switchActiveTenant(newTenant.data.tenant.id);
+// Switch active tenant
+await tenantHandler.manage.switchActiveTenant(tenant.data.tenant.id);
 ```
 
 ## Tenant Management
 
+- [TenantHandler](classes/TenantHandler.md)
+- [TenantManger](classes/TenantManger.md)
 - [CreateTenantRequest](type-aliases/CreateTenantRequest.md)
 - [CreateTenantResponse](type-aliases/CreateTenantResponse.md)
 - [DeleteTenantResponse](type-aliases/DeleteTenantResponse.md)
 - [SwitchActiveTenantResponse](type-aliases/SwitchActiveTenantResponse.md)
 - [Tenant](type-aliases/Tenant.md)
-- [createTenant](functions/createTenant.md)
-- [deleteTenant](functions/deleteTenant.md)
-- [switchActiveTenant](functions/switchActiveTenant.md)
 
-## User Management
+## Tenant Invitations
 
-- [TenantInvite](interfaces/TenantInvite.md)
+- [TenantInviteManager](classes/TenantInviteManager.md)
 - [AcceptTenantInviteRequest](type-aliases/AcceptTenantInviteRequest.md)
 - [AcceptTenantInviteResponse](type-aliases/AcceptTenantInviteResponse.md)
 - [CreateTenantUserInviteRequest](type-aliases/CreateTenantUserInviteRequest.md)
 - [CreateTenantUserInviteResponse](type-aliases/CreateTenantUserInviteResponse.md)
-- [acceptTenantInvite](functions/acceptTenantInvite.md)
-- [createTenantUserInvite](functions/createTenantUserInvite.md)
-
-## Type Aliases
-
-- [ApiResponse](type-aliases/ApiResponse.md)
+- [TenantInvite](type-aliases/TenantInvite.md)

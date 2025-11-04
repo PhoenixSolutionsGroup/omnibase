@@ -4,102 +4,99 @@ Authentication module for Next.js
 
 This module provides comprehensive authentication functionality for Next.js applications
 built on top of Ory Kratos. It includes session management, authentication flow routing,
-callback handling, and server-side session retrieval optimized for the Next.js App Router.
+and server-side session retrieval optimized for the Next.js 13+ App Router.
 
-Key features:
-- **Session Management**: Server-side session provider and retrieval functions
-- **Flow Routing**: Dynamic routing for auth flows (login, registration, recovery, etc.)
-- **Callback Handling**: OAuth and authentication callback processing
+## Key Features
+
+- **Session Management**: Server-side session provider and retrieval with [`SessionProvider`](./provider.tsx:55) and [`getServerSession`](./provider.tsx:26)
+- **Flow Routing**: Dynamic routing for authentication flows via [`FlowRouter`](./flow-router.ts:135)
+- **Route Protection**: Server-side route guards with [`protectedRoute`](./protected-route.ts:44)
 - **Server Components**: Built for Next.js 13+ App Router with server components
 - **TypeScript Support**: Full type safety with comprehensive TypeScript definitions
 
-The authentication system supports multiple flows:
-- Login flow for user authentication
-- Registration flow for new user signup
-- Recovery flow for password reset
-- Verification flow for email/phone verification
-- Settings flow for user profile management
-- OAuth flows for social login providers
+## Supported Authentication Flows
 
-## Examples
+- **Login**: User authentication with email/password or OAuth
+- **Registration**: New user signup with customizable identity traits
+- **Recovery**: Password reset and account recovery
+- **Verification**: Email and account verification
+- **Settings**: User profile and account management
+- **Logout**: Secure session termination
 
-Basic authentication setup:
-```typescript
-// In your root layout (app/layout.tsx)
-import { SessionProvider } from '@omnibase/nextjs/auth';
+## Example
 
-export default async function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
-      </body>
-    </html>
-  );
-}
-
-// In your auth page (app/auth/[...flow]/page.tsx)
+Complete authentication setup in a Next.js app:
+```tsx
+// app/auth/[...flow]/page.tsx - Authentication flow router
 import { FlowRouter } from '@omnibase/nextjs/auth';
-import { LoginForm, RegisterForm } from './components';
+import { LoginForm, RegistrationForm, RecoveryForm } from '@omnibase/shadcn';
 
-export default function AuthPage({ params, searchParams }) {
+export default function AuthPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ flow: string[] }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   return (
     <FlowRouter
       params={params}
       searchParams={searchParams}
       url="/auth"
+      returnTo="/"
       flowMap={{
-        login: (flow) => <LoginForm flow={flow} />,
-        registration: (flow) => <RegisterForm flow={flow} />
+        login: (flow) => <LoginForm flow={flow} register_url="/auth/registration" />,
+        registration: (flow) => <RegistrationForm flow={flow} login_url="/auth/login" />,
+        recovery: (flow) => <RecoveryForm flow={flow} />,
       }}
+      onNotFound={<div>Authentication flow not found</div>}
     />
+  );
+}
+
+// app/(dashboard)/page.tsx - Protected route example
+import { protectedRoute } from '@omnibase/nextjs/auth';
+
+export default async function DashboardPage() {
+  const session = await protectedRoute('/auth/login');
+
+  return (
+    <div>
+      <h1>Welcome, {session.identity.traits.email}!</h1>
+      <p>User ID: {session.identity.id}</p>
+    </div>
   );
 }
 ```
 
-Server-side session handling:
-```typescript
-import { getServerSession } from '@omnibase/nextjs/auth';
+## Since
 
-export default async function DashboardPage() {
-  const session = await getServerSession();
+0.5.1
 
-  if (!session) {
-    redirect('/auth/login');
-  }
+## Authentication
 
-  return <div>Welcome {session.identity.traits.email}</div>;
-}
-```
+- [protectedRoute](functions/protectedRoute.md)
 
-## Interfaces
+## Flow Retrieval
 
-- [FlowRouterProps](interfaces/FlowRouterProps.md)
-
-## Type Aliases
-
-- [CallbackFlow](type-aliases/CallbackFlow.md)
-- [FlowMap](type-aliases/FlowMap.md)
-- [FlowObject](type-aliases/FlowObject.md)
-- [FlowRedirects](type-aliases/FlowRedirects.md)
 - [GetFlowProps](type-aliases/GetFlowProps.md)
 - [LogoutFlowReturnType](type-aliases/LogoutFlowReturnType.md)
-
-## Variables
-
-- [getServerSession](variables/getServerSession.md)
-
-## Functions
-
-- [FlowRouter](functions/FlowRouter.md)
-- [getFlow](functions/getFlow.md)
 - [getLoginFlow](functions/getLoginFlow.md)
 - [getLogoutFlow](functions/getLogoutFlow.md)
 - [getRecoveryFlow](functions/getRecoveryFlow.md)
 - [getRegistrationFlow](functions/getRegistrationFlow.md)
 - [getSettingsFlow](functions/getSettingsFlow.md)
 - [getVerificationFlow](functions/getVerificationFlow.md)
-- [handleAuthCallback](functions/handleAuthCallback.md)
+
+## Flow Routing
+
+- [FlowRouterProps](interfaces/FlowRouterProps.md)
+- [FlowMap](type-aliases/FlowMap.md)
+- [FlowObject](type-aliases/FlowObject.md)
+- [FlowRouter](functions/FlowRouter.md)
+- [getFlow](functions/getFlow.md)
+
+## Session Management
+
+- [getServerSession](variables/getServerSession.md)
 - [SessionProvider](functions/SessionProvider.md)

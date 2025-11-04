@@ -105,7 +105,7 @@ export const createClient = <T = any>(
   anonKey: string,
   getCookie: (cookie: string) => string
 ): PostgrestClient<T> => {
-  const jwt = getCookie("postgrest_jwt") || anonKey;
+  const jwt = getCookie("omnibase_postgrest_jwt") || anonKey;
   return new PostgrestClient<T>(url, {
     headers: {
       Authorization: `Bearer ${jwt}`,

@@ -29,6 +29,18 @@ const db = createClient<DatabaseTypes>(
 const { data } = await db.from('users').select('*');
 ```
 
+## Classes
+
+- [EventsClient](classes/EventsClient.md)
+
 ## Functions
 
 - [createClient](functions/createClient.md)
+
+## Interfaces
+
+- [StatusMessage](interfaces/StatusMessage.md)
+- [Subscription](interfaces/Subscription.md)
+- [SubscriptionMessage](interfaces/SubscriptionMessage.md)
+- [SubscriptionOptions](interfaces/SubscriptionOptions.md)
+- [UpdateMessage](interfaces/UpdateMessage.md)

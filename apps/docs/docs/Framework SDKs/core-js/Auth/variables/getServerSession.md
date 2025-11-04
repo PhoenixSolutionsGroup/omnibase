@@ -1,42 +1,49 @@
 # Variable: getServerSession()
 
-> `const` **getServerSession**: () => `Promise`\<`any`\> = `getServerSessionOry`
+> `const` **getServerSession**: () => `Promise`\<`Session`\>
 
-Defined in: src/auth/provider.tsx:22
+Defined in: [src/auth/provider.tsx:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/nextjs/src/auth/provider.tsx#L50)
 
-A helper to fetch the session on the server side. This method works with server-side rendering.
+Fetches the current session on the server side
 
-A helper to fetch the session on the server side. This method works with server-side rendering.
+This helper function retrieves the authenticated user's session from Ory Kratos
+in Next.js Server Components and Server Actions. It works with server-side rendering
+and leverages Next.js's cookie handling to access session data securely.
 
-```ts
-import { getServerSession } from "@ory/nextjs/app"
-
-async function MyComponent() {
- const session = await getServerSession()
-
- if (!session) {
-   return <p>No session found</p>
- }
-
-}
-```
+The session object contains the user's identity, authentication status, and session
+metadata. Use this function to check authentication status, access user data, or
+implement authorization logic in server components.
 
 ## Returns
 
-`Promise`\<`any`\>
+`Promise`\<`Session`\>
 
-The session object or null if no session is found.
+Promise resolving to the Session object, or null if no active session exists
 
 ## Example
 
-````tsx
- import { getServerSession } from "@omnibase/nextjs/auth"
+```tsx
+// Check authentication and access user data
+import { getServerSession } from '@omnibase/nextjs/auth';
+import { redirect } from 'next/navigation';
 
- async function MyComponent() {
-     const session = await getServerSession()
+export default async function ProfilePage() {
+  const session = await getServerSession();
 
-     if (!session) {
-         return <p>No session found</p>
-     }
- }
-````
+  if (!session || !session.active) {
+    redirect('/auth/login');
+  }
+
+  return (
+    <div>
+      <h1>Profile</h1>
+      <p>Email: {session.identity.traits.email}</p>
+      <p>User ID: {session.identity.id}</p>
+    </div>
+  );
+}
+```
+
+## Since
+
+0.5.1

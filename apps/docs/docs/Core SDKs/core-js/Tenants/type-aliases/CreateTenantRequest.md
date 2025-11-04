@@ -2,7 +2,7 @@
 
 > **CreateTenantRequest** = `object`
 
-Defined in: tenants/create-tenant.ts:97
+Defined in: [tenants/management.ts:158](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L158)
 
 Required data for creating a new tenant
 
@@ -21,7 +21,7 @@ const tenantData: CreateTenantRequest = {
 
 ## Since
 
-1.0.0
+0.6.0
 
 ## Properties
 
@@ -29,7 +29,7 @@ const tenantData: CreateTenantRequest = {
 
 > **billing\_email**: `string`
 
-Defined in: tenants/create-tenant.ts:101
+Defined in: [tenants/management.ts:162](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L162)
 
 Email address for billing notifications
 
@@ -39,7 +39,7 @@ Email address for billing notifications
 
 > **name**: `string`
 
-Defined in: tenants/create-tenant.ts:99
+Defined in: [tenants/management.ts:160](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L160)
 
 Name of the tenant organization
 
@@ -49,6 +49,6 @@ Name of the tenant organization
 
 > **user\_id**: `string`
 
-Defined in: tenants/create-tenant.ts:103
+Defined in: [tenants/management.ts:164](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L164)
 
 ID of the user who will own the tenant

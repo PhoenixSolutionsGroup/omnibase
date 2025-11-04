@@ -2,7 +2,7 @@
 
 > **LogoutFlow** = `Logout`
 
-Defined in: auth/types.ts:82
+Defined in: [auth/types.ts:82](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L82)
 
 Logout flow for terminating user sessions
 

@@ -1,8 +1,8 @@
 # Type Alias: CreateTenantUserInviteResponse
 
-> **CreateTenantUserInviteResponse** = [`ApiResponse`](ApiResponse.md)\<\{ `invite`: [`TenantInvite`](../interfaces/TenantInvite.md); `message`: `string`; \}\>
+> **CreateTenantUserInviteResponse** = `ApiResponse`\<\{ `invite`: [`TenantInvite`](TenantInvite.md); `message`: `string`; \}\>
 
-Defined in: tenants/create-invite.ts:32
+Defined in: [tenants/invites.ts:88](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/invites.ts#L88)
 
 Response structure for tenant user invite creation
 
@@ -31,4 +31,4 @@ const response: CreateTenantUserInviteResponse = {
 
 ## Since
 
-1.0.0
+0.6.0

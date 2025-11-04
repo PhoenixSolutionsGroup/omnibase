@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { Product } from "@omnibase/core-js/stripe";
+import type { Product } from "@omnibase/core-js/payments";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,7 +33,7 @@ const getCurrencySymbol = (currency: string): string => {
   return symbols[currency] || currency;
 };
 
-const formatPrice = (price: any) => {
+const formatPrice = (price: any): string => {
   const priceUI = price.ui || {};
   if (priceUI.price_display?.custom_text)
     return priceUI.price_display.custom_text;
@@ -49,7 +49,7 @@ const formatPrice = (price: any) => {
   return formattedPrice;
 };
 
-const formatBillingPeriod = (price: any) => {
+const formatBillingPeriod = (price: any): string => {
   const priceUI = price.ui || {};
   if (priceUI.billing_period) return priceUI.billing_period;
   if (price.interval) {
@@ -226,7 +226,7 @@ export function PricingTable({
   );
 
   const getDisplayedPrice = (product: Product) =>
-    product.prices.find((p) => p.interval === selectedInterval) ||
+    product.prices.find((price) => price.interval === selectedInterval) ||
     product.prices[0];
 
   const renderCard = (product: Product) => {

@@ -1,0 +1,142 @@
+# Advanced UI Configuration
+
+Rich UI metadata for pricing tables:
+
+```json
+{
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "professional_plan",
+      "name": "Professional Plan",
+      "description": "For growing businesses that need advanced features",
+      "type": "service",
+      "ui": {
+        "display_name": "Professional",
+        "tagline": "For growing businesses",
+        "features": [
+          "Unlimited team members",
+          "100GB storage",
+          "Priority support",
+          "Advanced analytics",
+          "API access"
+        ],
+        "badge": "Most Popular",
+        "cta_text": "Upgrade Now",
+        "highlighted": true,
+        "sort_order": 2
+      },
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 2999,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "per month",
+            "features": [
+              "Monthly reports",
+              "Standard SLA"
+            ],
+            "limits": [
+              {
+                "text": "10,000 API calls included",
+                "value": 10000,
+                "unit": "calls"
+              },
+              {
+                "text": "5 integrations",
+                "value": 5,
+                "unit": "integrations"
+              }
+            ]
+          }
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 29999,
+          "currency": "usd",
+          "interval": "year",
+          "ui": {
+            "display_name": "Yearly",
+            "billing_period": "per year",
+            "price_display": {
+              "suffix": "(Save 17%!)",
+              "show_currency": true
+            },
+            "features": [
+              "Annual reports",
+              "Enhanced SLA"
+            ],
+            "limits": [
+              {
+                "text": "120,000 API calls included",
+                "value": 120000,
+                "unit": "calls"
+              },
+              {
+                "text": "10 integrations",
+                "value": 10,
+                "unit": "integrations"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "enterprise_plan",
+      "name": "Enterprise Plan",
+      "description": "Custom solutions for large organizations with dedicated support",
+      "type": "service",
+      "ui": {
+        "display_name": "Enterprise",
+        "tagline": "Custom solutions for enterprises",
+        "features": [
+          "Unlimited everything",
+          "Dedicated account manager",
+          "Custom integrations",
+          "SLA guarantees",
+          "White-label options",
+          "Advanced security"
+        ],
+        "badge": "Enterprise",
+        "cta_text": "Contact Sales",
+        "highlighted": false,
+        "sort_order": 3
+      },
+      "prices": [
+        {
+          "id": "enterprise_custom",
+          "amount": 1,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Custom Pricing",
+            "price_display": {
+              "custom_text": "Contact us",
+              "show_currency": false
+            },
+            "billing_period": "custom terms",
+            "features": [
+              "Custom contract terms",
+              "Dedicated infrastructure"
+            ],
+            "limits": [
+              {
+                "text": "Unlimited API calls"
+              },
+              {
+                "text": "Unlimited integrations"
+              },
+              {
+                "text": "24/7 phone support"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

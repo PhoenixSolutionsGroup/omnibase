@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/shadcn",
-  "version": "0.1.1",
+  "version": "0.4.3",
   "description": "OmniBase ShadCN UI Package",
   "type": "module",
   "exports": {
@@ -9,7 +9,7 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./index.css": "./dist/index.css"
   },
   "files": [
     "dist"
@@ -46,7 +46,7 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@omnibase/core-js": "^0.2.0",
+    "@omnibase/core-js": "workspace:*",
     "@storybook/addon-docs": "^9.1.8",
     "@storybook/react-vite": "^9.1.8",
     "@tailwindcss/vite": "^4.1.13",

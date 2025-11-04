@@ -2,7 +2,7 @@
 
 > **createClient**\<`T`\>(`url`, `anonKey`, `getCookie`): `PostgrestClient`\<`T`\>
 
-Defined in: database/client.ts:103
+Defined in: [database/client.ts:103](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/database/client.ts#L103)
 
 Creates a PostgREST client for database operations
 

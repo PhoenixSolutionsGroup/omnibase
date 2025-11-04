@@ -2,7 +2,7 @@
 
 > **AcceptTenantInviteRequest** = `object`
 
-Defined in: tenants/accept-invite.ts:21
+Defined in: [tenants/invites.ts:22](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/invites.ts#L22)
 
 Request data for accepting a tenant invitation
 
@@ -20,7 +20,7 @@ const acceptData: AcceptTenantInviteRequest = {
 
 ## Since
 
-1.0.0
+0.6.0
 
 ## Properties
 
@@ -28,6 +28,6 @@ const acceptData: AcceptTenantInviteRequest = {
 
 > **token**: `string`
 
-Defined in: tenants/accept-invite.ts:23
+Defined in: [tenants/invites.ts:24](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/invites.ts#L24)
 
 Secure invitation token from the email invitation

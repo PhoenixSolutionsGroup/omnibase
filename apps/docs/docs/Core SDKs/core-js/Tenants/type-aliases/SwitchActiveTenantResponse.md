@@ -1,8 +1,8 @@
 # Type Alias: SwitchActiveTenantResponse
 
-> **SwitchActiveTenantResponse** = [`ApiResponse`](ApiResponse.md)\<\{ `message`: `string`; `token`: `string`; \}\>
+> **SwitchActiveTenantResponse** = `ApiResponse`\<\{ `message`: `string`; `token`: `string`; \}\>
 
-Defined in: tenants/switch-tenant.ts:30
+Defined in: [tenants/management.ts:31](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/tenants/management.ts#L31)
 
 Response structure for switching the active tenant
 
@@ -29,4 +29,4 @@ const response: SwitchActiveTenantResponse = {
 
 ## Since
 
-1.0.0
+0.6.0

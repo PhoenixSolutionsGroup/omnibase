@@ -2,7 +2,7 @@
 
 > **SettingsFlow** = `Settings`
 
-Defined in: auth/types.ts:294
+Defined in: [auth/types.ts:294](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L294)
 
 Settings flow for user profile and account management
 

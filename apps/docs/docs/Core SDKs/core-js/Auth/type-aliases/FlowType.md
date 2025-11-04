@@ -2,7 +2,7 @@
 
 > **FlowType** = [`LoginFlow`](LoginFlow.md) \| [`RecoveryFlow`](RecoveryFlow.md) \| [`VerificationFlow`](VerificationFlow.md) \| [`RegistrationFlow`](RegistrationFlow.md) \| [`SettingsFlow`](SettingsFlow.md)
 
-Defined in: auth/types.ts:51
+Defined in: [auth/types.ts:51](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L51)
 
 Union type representing all possible authentication flow types
 

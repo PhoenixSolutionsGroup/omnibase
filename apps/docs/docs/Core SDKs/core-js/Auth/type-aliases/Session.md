@@ -2,7 +2,7 @@
 
 > **Session** = `object`
 
-Defined in: auth/types.ts:360
+Defined in: [auth/types.ts:360](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L360)
 
 User session object representing an authenticated user's session state
 
@@ -73,7 +73,7 @@ function analyzeSessionSecurity(session: Session) {
 
 > `optional` **active**: `boolean`
 
-Defined in: auth/types.ts:370
+Defined in: [auth/types.ts:370](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L370)
 
 Session active state
 
@@ -93,7 +93,7 @@ true
 
 > `optional` **authenticated\_at**: `Date`
 
-Defined in: auth/types.ts:382
+Defined in: [auth/types.ts:382](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L382)
 
 Session authentication timestamp
 
@@ -110,7 +110,7 @@ recent authentication for sensitive operations.
 
 > `optional` **authentication\_methods**: `SessionAuthenticationMethod`[]
 
-Defined in: auth/types.ts:394
+Defined in: [auth/types.ts:394](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L394)
 
 Authentication methods used for this session
 
@@ -127,7 +127,7 @@ based on authentication strength.
 
 > `optional` **authenticator\_assurance\_level**: `AuthenticatorAssuranceLevel`
 
-Defined in: auth/types.ts:407
+Defined in: [auth/types.ts:407](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L407)
 
 Authenticator assurance level
 
@@ -145,7 +145,7 @@ Common levels:
 
 > `optional` **devices**: `SessionDevice`[]
 
-Defined in: auth/types.ts:420
+Defined in: [auth/types.ts:420](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L420)
 
 Session device history
 
@@ -163,7 +163,7 @@ and timestamp information for comprehensive session tracking.
 
 > `optional` **expires\_at**: `Date`
 
-Defined in: auth/types.ts:432
+Defined in: [auth/types.ts:432](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L432)
 
 Session expiration timestamp
 
@@ -180,7 +180,7 @@ re-authentication flows depending on your application's security policy.
 
 > **id**: `string`
 
-Defined in: auth/types.ts:441
+Defined in: [auth/types.ts:441](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L441)
 
 Unique session identifier
 
@@ -194,7 +194,7 @@ This ID is typically used in session storage and tracking systems.
 
 > `optional` **identity**: `Identity`
 
-Defined in: auth/types.ts:454
+Defined in: [auth/types.ts:454](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L454)
 
 Associated user identity
 
@@ -212,7 +212,7 @@ include custom fields specific to your application's user model.
 
 > `optional` **issued\_at**: `Date`
 
-Defined in: auth/types.ts:467
+Defined in: [auth/types.ts:467](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L467)
 
 Session issuance timestamp
 
@@ -230,7 +230,7 @@ that consider the total session lifetime.
 
 > `optional` **tokenized**: `string`
 
-Defined in: auth/types.ts:490
+Defined in: [auth/types.ts:490](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/core-js/src/auth/types.ts#L490)
 
 Tokenized session representation
 
