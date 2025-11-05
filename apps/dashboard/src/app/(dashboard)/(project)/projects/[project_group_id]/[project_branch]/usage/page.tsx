@@ -1,5 +1,6 @@
 import React from "react";
 import { cookies } from "next/headers";
+import { getProject } from "@/utils/get-project";
 
 export default async function Page({
   params,
@@ -21,10 +22,16 @@ export default async function Page({
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 3);
 
+  const project = await getProject(project_group_id, project_branch);
+
+  if (!project) {
+    return <div>Project not found</div>;
+  }
+
   const response = await fetch(
-    `${
-      process.env.MANAGED_HOSTING_API_URL
-    }/api/v1/usage?project_id=${project_group_id}&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`,
+    `${process.env.MANAGED_HOSTING_API_URL}/api/v1/usage?project_id=${
+      project.id
+    }&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`,
     {
       method: "GET",
       headers: {

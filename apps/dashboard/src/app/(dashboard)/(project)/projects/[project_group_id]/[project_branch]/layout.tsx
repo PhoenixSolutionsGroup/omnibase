@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { ProjectLayoutClient } from "@/components/project-layout-client";
 import { createServerClient } from "@/lib/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getProject } from "@/utils/get-project";
-import { Project } from "./dashboard/project-provisioning-dashboard";
+import { cookies, headers } from "next/headers";
 
 export const metadata: Metadata = {
   title: "OmniBase Dashboard",
@@ -26,15 +26,32 @@ export default async function ProjectLayout({
     notFound();
   }
 
-  const db = (await createServerClient()) as any;
-  const { data: organization } = await db
-    .schema("auth")
-    .from("tenant_users")
-    .select("tenants(*)")
-    .eq("is_active", true)
-    .single();
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto");
+  const currentUrl = `${protocol}://${host}/projects/${project_group_id}/${project_branch}/dashboard`;
+  const returnTo = encodeURIComponent(currentUrl);
+  // Redirect to Stripe onboarding
+  const cookieStore = await cookies();
+  const cookieHeader = Array.from(cookieStore.getAll())
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
 
-  const tenantName = organization.tenants.name;
+  const response = await fetch(
+    `${process.env.MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
+    {
+      headers: {
+        Cookie: cookieHeader,
+      },
+    }
+  );
+  const data = await response.json();
+
+  if (data.onboarding_required && data.url) {
+    redirect(data.url);
+  }
+
+  const db = await createServerClient();
 
   // Fetch all branches for this project group
   const { data: branches } = await db
@@ -43,9 +60,7 @@ export default async function ProjectLayout({
     .eq("project_group_id", project_group_id)
     .order("branch_name");
 
-  const branchNames = branches?.map(
-    (b: Project) => b.branch_name || "main"
-  ) || ["main"];
+  const branchNames = branches?.map((b) => b.branch_name || "main") || ["main"];
 
   // For now, using a placeholder for organization name
   // You can fetch this from the tenants table if needed

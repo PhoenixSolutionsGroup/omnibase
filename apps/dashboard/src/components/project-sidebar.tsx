@@ -4,7 +4,13 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BarChart3, LayoutDashboard, Settings, ScrollText } from "lucide-react";
+import {
+  BarChart3,
+  LayoutDashboard,
+  Settings,
+  ScrollText,
+  CreditCard,
+} from "lucide-react";
 
 interface ProjectSidebarProps {
   projectGroupId: string;
@@ -23,14 +29,19 @@ const getNavigationItems = (projectGroupId: string, projectBranch: string) => [
     icon: ScrollText,
   },
   {
-    title: "Settings",
-    href: `/projects/${projectGroupId}/${projectBranch}/settings`,
-    icon: Settings,
-  },
-  {
     title: "Usage",
     href: `/projects/${projectGroupId}/${projectBranch}/usage`,
     icon: BarChart3,
+  },
+  {
+    title: "Stripe Settings",
+    href: `/projects/${projectGroupId}/${projectBranch}/stripe-settings`,
+    icon: CreditCard,
+  },
+  {
+    title: "Settings",
+    href: `/projects/${projectGroupId}/${projectBranch}/settings`,
+    icon: Settings,
   },
 ];
 
