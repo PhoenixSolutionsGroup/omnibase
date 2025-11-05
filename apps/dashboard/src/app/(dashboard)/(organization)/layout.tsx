@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { protectedRoute } from "@omnibase/nextjs/auth";
-import { DashboardLayoutClient } from "@/components/dashboard-layout-client";
+import { UnifiedLayoutClient } from "@/components/layout-client";
 import { createServerClient } from "@/lib/server";
 import { redirect } from "next/navigation";
 
@@ -27,8 +27,8 @@ export default async function ProjectLayout({ children }: { children: any }) {
   const tenantName = organization.tenants.name;
 
   return (
-    <DashboardLayoutClient tenantName={tenantName}>
+    <UnifiedLayoutClient organizationName={tenantName}>
       {children}
-    </DashboardLayoutClient>
+    </UnifiedLayoutClient>
   );
 }

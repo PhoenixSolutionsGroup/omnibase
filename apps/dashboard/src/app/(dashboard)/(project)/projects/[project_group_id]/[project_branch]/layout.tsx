@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ProjectLayoutClient } from "@/components/project-layout-client";
 import { createServerClient } from "@/lib/server";
 import { notFound, redirect } from "next/navigation";
 import { getProject } from "@/utils/get-project";
 import { cookies, headers } from "next/headers";
+import { UnifiedLayoutClient } from "@/components/layout-client";
 
 export const metadata: Metadata = {
   title: "OmniBase Dashboard",
@@ -62,20 +62,28 @@ export default async function ProjectLayout({
 
   const branchNames = branches?.map((b) => b.branch_name || "main") || ["main"];
 
-  // For now, using a placeholder for organization name
-  // You can fetch this from the tenants table if needed
-  const organizationName = "My Organization";
+  // Fetch organization name from tenants table
+  const { data: tenantData } = await (db as any)
+    .schema("auth")
+    .from("tenant_users")
+    .select("tenants(*)")
+    .eq("is_active", true)
+    .single();
+
+  const organizationName = tenantData?.tenants?.name || "My Organization";
 
   return (
-    <ProjectLayoutClient
-      projectId={project.id}
-      projectName={project.name}
-      projectBranch={project.branch_name || "main"}
-      projectGroupId={project_group_id}
+    <UnifiedLayoutClient
       organizationName={organizationName}
-      branches={branchNames}
+      projectData={{
+        projectId: project.id,
+        projectGroupId: project_group_id,
+        projectBranch: project.branch_name || "main",
+        projectName: project.name,
+        branches: branchNames,
+      }}
     >
       {children}
-    </ProjectLayoutClient>
+    </UnifiedLayoutClient>
   );
 }

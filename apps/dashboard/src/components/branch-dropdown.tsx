@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronDown, Plus, GitBranch } from "lucide-react";
+import { Plus, GitBranch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -13,14 +13,12 @@ import {
 } from "@/components/ui/select";
 
 interface BranchDropdownProps {
-  projectGroupId: string;
   currentBranch: string;
   branches: string[];
   onCreateBranch?: () => void;
 }
 
 export function BranchDropdown({
-  projectGroupId,
   currentBranch,
   branches,
   onCreateBranch,
@@ -51,14 +49,13 @@ export function BranchDropdown({
     <Select value={currentBranch} onValueChange={handleBranchChange}>
       <SelectTrigger
         className={cn(
-          "h-auto w-auto border-0 bg-transparent px-2 py-1 text-sm font-medium shadow-none",
+          "h-auto w-full border-0 bg-transparent px-3 py-2 text-sm font-medium shadow-none",
           "hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0"
         )}
       >
-        <div className="flex items-center gap-1.5">
-          <GitBranch className="h-3.5 w-3.5 text-muted-foreground" />
-          <SelectValue>{currentBranch}</SelectValue>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        <div className="flex items-center gap-2 w-full">
+          <GitBranch className="h-4 w-4 text-muted-foreground shrink-0" />
+          <SelectValue className="truncate">{currentBranch}</SelectValue>
         </div>
       </SelectTrigger>
       <SelectContent>

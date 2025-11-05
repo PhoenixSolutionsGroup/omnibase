@@ -4,26 +4,15 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { OrganizationDropdown } from "./organization-dropdown";
-import { BranchDropdown } from "./branch-dropdown";
 
 interface ProjectBreadcrumbProps {
   organizationName: string;
-  projectName: string;
   className?: string;
-  projectBranch: string;
-  projectGroupId: string;
-  branches: string[];
-  onCreateBranch?: () => void;
 }
 
-export function ProjectBreadcrumb({
+export function Breadcrumb({
   organizationName,
-  projectName,
   className,
-  projectBranch,
-  projectGroupId,
-  branches,
-  onCreateBranch,
 }: ProjectBreadcrumbProps) {
   return (
     <nav
@@ -44,19 +33,6 @@ export function ProjectBreadcrumb({
       {/* Organization Dropdown */}
       <span className="text-muted-foreground">/</span>
       <OrganizationDropdown currentOrganization={organizationName} />
-
-      {/* Project Name */}
-      <span className="text-muted-foreground">/</span>
-      <span className="text-foreground font-medium">{projectName}</span>
-
-      {/* Branch Dropdown */}
-      <span className="text-muted-foreground">/</span>
-      <BranchDropdown
-        projectGroupId={projectGroupId}
-        currentBranch={projectBranch}
-        branches={branches}
-        onCreateBranch={onCreateBranch}
-      />
     </nav>
   );
 }

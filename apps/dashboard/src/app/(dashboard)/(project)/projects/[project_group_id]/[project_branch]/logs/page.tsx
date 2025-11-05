@@ -1,4 +1,3 @@
-import { createServerClient } from "@/lib/server";
 import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { LogViewer } from "./log-viewer";
@@ -136,7 +135,7 @@ export default async function LogsPage({
         {services.map((service) => (
           <a
             key={service!.key}
-            href={`/projects/${project.id}/logs?logs=${
+            href={`/projects/${project_group_id}/${project_branch}/logs?logs=${
               service!.key
             }&limit=${limit}`}
             className={`px-4 py-2 rounded border ${
@@ -150,7 +149,8 @@ export default async function LogsPage({
         ))}
 
         <LimitSelector
-          projectId={project.id}
+          project_branch={project_branch}
+          project_group_id={project_group_id}
           activeService={activeService}
           currentLimit={limit}
         />

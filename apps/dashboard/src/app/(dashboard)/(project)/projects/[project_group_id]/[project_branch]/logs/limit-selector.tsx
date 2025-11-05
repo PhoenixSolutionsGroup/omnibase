@@ -9,13 +9,15 @@ import {
 } from "@/components/ui/select";
 
 interface LimitSelectorProps {
-  projectId: string;
+  project_group_id: string;
+  project_branch: string;
   activeService: string;
   currentLimit: number;
 }
 
 export function LimitSelector({
-  projectId,
+  project_branch,
+  project_group_id,
   activeService,
   currentLimit,
 }: LimitSelectorProps) {
@@ -25,7 +27,7 @@ export function LimitSelector({
       <Select
         value={currentLimit.toString()}
         onValueChange={(value) => {
-          window.location.href = `/projects/${projectId}/logs?logs=${activeService}&limit=${value}`;
+          window.location.href = `/projects/${project_group_id}/${project_branch}/logs?logs=${activeService}&limit=${value}`;
         }}
       >
         <SelectTrigger className="w-[100px]">
