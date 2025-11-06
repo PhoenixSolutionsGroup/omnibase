@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -269,11 +268,4 @@ model_v1_stripe_config_response.go
 model_v1_subject_set_request.go
 model_who_am_i_200_response.go
 response.go
-test/api_v1_auth_test.go
-test/api_v1_database_test.go
-test/api_v1_payments_test.go
-test/api_v1_permissions_test.go
-test/api_v1_storage_test.go
-test/api_v1_stripe_test.go
-test/api_v1_tenants_test.go
 utils.go
