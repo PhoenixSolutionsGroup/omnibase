@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
-**TenantId** | Pointer to **string** | Tenant ID the user joined | [optional] 
-**Token** | Pointer to **string** | New JWT token with tenant context | [optional] 
+**Message** | **string** | Success message | 
+**TenantId** | **string** | Tenant ID the user joined | 
+**Token** | **string** | New JWT token with tenant context | 
 
 ## Methods
 
 ### NewTenantsAcceptInviteResponse
 
-`func NewTenantsAcceptInviteResponse() *TenantsAcceptInviteResponse`
+`func NewTenantsAcceptInviteResponse(message string, tenantId string, token string, ) *TenantsAcceptInviteResponse`
 
 NewTenantsAcceptInviteResponse instantiates a new TenantsAcceptInviteResponse object
 This constructor will assign default values to properties that have it defined,
@@ -46,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *TenantsAcceptInviteResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetTenantId
 
@@ -71,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-### HasTenantId
-
-`func (o *TenantsAcceptInviteResponse) HasTenantId() bool`
-
-HasTenantId returns a boolean if a field has been set.
 
 ### GetToken
 
@@ -96,11 +86,6 @@ and a boolean to check if the value has been set.
 
 SetToken sets Token field to given value.
 
-### HasToken
-
-`func (o *TenantsAcceptInviteResponse) HasToken() bool`
-
-HasToken returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

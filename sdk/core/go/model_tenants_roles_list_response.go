@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsRolesListResponse type satisfies the MappedNullable interface at compile time
@@ -21,15 +23,18 @@ var _ MappedNullable = &TenantsRolesListResponse{}
 // TenantsRolesListResponse struct for TenantsRolesListResponse
 type TenantsRolesListResponse struct {
 	// List of roles (including system roles)
-	Roles []ModelsRole `json:"roles,omitempty"`
+	Roles []ModelsRole `json:"roles"`
 }
+
+type _TenantsRolesListResponse TenantsRolesListResponse
 
 // NewTenantsRolesListResponse instantiates a new TenantsRolesListResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsRolesListResponse() *TenantsRolesListResponse {
+func NewTenantsRolesListResponse(roles []ModelsRole) *TenantsRolesListResponse {
 	this := TenantsRolesListResponse{}
+	this.Roles = roles
 	return &this
 }
 
@@ -41,34 +46,26 @@ func NewTenantsRolesListResponseWithDefaults() *TenantsRolesListResponse {
 	return &this
 }
 
-// GetRoles returns the Roles field value if set, zero value otherwise.
+// GetRoles returns the Roles field value
 func (o *TenantsRolesListResponse) GetRoles() []ModelsRole {
-	if o == nil || IsNil(o.Roles) {
+	if o == nil {
 		var ret []ModelsRole
 		return ret
 	}
+
 	return o.Roles
 }
 
-// GetRolesOk returns a tuple with the Roles field value if set, nil otherwise
+// GetRolesOk returns a tuple with the Roles field value
 // and a boolean to check if the value has been set.
 func (o *TenantsRolesListResponse) GetRolesOk() ([]ModelsRole, bool) {
-	if o == nil || IsNil(o.Roles) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Roles, true
 }
 
-// HasRoles returns a boolean if a field has been set.
-func (o *TenantsRolesListResponse) HasRoles() bool {
-	if o != nil && !IsNil(o.Roles) {
-		return true
-	}
-
-	return false
-}
-
-// SetRoles gets a reference to the given []ModelsRole and assigns it to the Roles field.
+// SetRoles sets field value
 func (o *TenantsRolesListResponse) SetRoles(v []ModelsRole) {
 	o.Roles = v
 }
@@ -83,10 +80,45 @@ func (o TenantsRolesListResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsRolesListResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Roles) {
-		toSerialize["roles"] = o.Roles
-	}
+	toSerialize["roles"] = o.Roles
 	return toSerialize, nil
+}
+
+func (o *TenantsRolesListResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"roles",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsRolesListResponse := _TenantsRolesListResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsRolesListResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsRolesListResponse(varTenantsRolesListResponse)
+
+	return err
 }
 
 type NullableTenantsRolesListResponse struct {

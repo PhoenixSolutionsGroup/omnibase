@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1ConfigHistoryPagination type satisfies the MappedNullable interface at compile time
@@ -21,25 +23,33 @@ var _ MappedNullable = &V1ConfigHistoryPagination{}
 // V1ConfigHistoryPagination struct for V1ConfigHistoryPagination
 type V1ConfigHistoryPagination struct {
 	// Whether there is a next page
-	HasNext *bool `json:"has_next,omitempty"`
+	HasNext bool `json:"has_next"`
 	// Whether there is a previous page
-	HasPrev *bool `json:"has_prev,omitempty"`
+	HasPrev bool `json:"has_prev"`
 	// Current page number
-	Page *int32 `json:"page,omitempty"`
+	Page int32 `json:"page"`
 	// Items per page
-	PerPage *int32 `json:"per_page,omitempty"`
+	PerPage int32 `json:"per_page"`
 	// Total number of configurations
-	Total *int32 `json:"total,omitempty"`
+	Total int32 `json:"total"`
 	// Total pages
-	TotalPages *int32 `json:"total_pages,omitempty"`
+	TotalPages int32 `json:"total_pages"`
 }
+
+type _V1ConfigHistoryPagination V1ConfigHistoryPagination
 
 // NewV1ConfigHistoryPagination instantiates a new V1ConfigHistoryPagination object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1ConfigHistoryPagination() *V1ConfigHistoryPagination {
+func NewV1ConfigHistoryPagination(hasNext bool, hasPrev bool, page int32, perPage int32, total int32, totalPages int32) *V1ConfigHistoryPagination {
 	this := V1ConfigHistoryPagination{}
+	this.HasNext = hasNext
+	this.HasPrev = hasPrev
+	this.Page = page
+	this.PerPage = perPage
+	this.Total = total
+	this.TotalPages = totalPages
 	return &this
 }
 
@@ -51,196 +61,148 @@ func NewV1ConfigHistoryPaginationWithDefaults() *V1ConfigHistoryPagination {
 	return &this
 }
 
-// GetHasNext returns the HasNext field value if set, zero value otherwise.
+// GetHasNext returns the HasNext field value
 func (o *V1ConfigHistoryPagination) GetHasNext() bool {
-	if o == nil || IsNil(o.HasNext) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.HasNext
+
+	return o.HasNext
 }
 
-// GetHasNextOk returns a tuple with the HasNext field value if set, nil otherwise
+// GetHasNextOk returns a tuple with the HasNext field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetHasNextOk() (*bool, bool) {
-	if o == nil || IsNil(o.HasNext) {
+	if o == nil {
 		return nil, false
 	}
-	return o.HasNext, true
+	return &o.HasNext, true
 }
 
-// HasHasNext returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasHasNext() bool {
-	if o != nil && !IsNil(o.HasNext) {
-		return true
-	}
-
-	return false
-}
-
-// SetHasNext gets a reference to the given bool and assigns it to the HasNext field.
+// SetHasNext sets field value
 func (o *V1ConfigHistoryPagination) SetHasNext(v bool) {
-	o.HasNext = &v
+	o.HasNext = v
 }
 
-// GetHasPrev returns the HasPrev field value if set, zero value otherwise.
+// GetHasPrev returns the HasPrev field value
 func (o *V1ConfigHistoryPagination) GetHasPrev() bool {
-	if o == nil || IsNil(o.HasPrev) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.HasPrev
+
+	return o.HasPrev
 }
 
-// GetHasPrevOk returns a tuple with the HasPrev field value if set, nil otherwise
+// GetHasPrevOk returns a tuple with the HasPrev field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetHasPrevOk() (*bool, bool) {
-	if o == nil || IsNil(o.HasPrev) {
+	if o == nil {
 		return nil, false
 	}
-	return o.HasPrev, true
+	return &o.HasPrev, true
 }
 
-// HasHasPrev returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasHasPrev() bool {
-	if o != nil && !IsNil(o.HasPrev) {
-		return true
-	}
-
-	return false
-}
-
-// SetHasPrev gets a reference to the given bool and assigns it to the HasPrev field.
+// SetHasPrev sets field value
 func (o *V1ConfigHistoryPagination) SetHasPrev(v bool) {
-	o.HasPrev = &v
+	o.HasPrev = v
 }
 
-// GetPage returns the Page field value if set, zero value otherwise.
+// GetPage returns the Page field value
 func (o *V1ConfigHistoryPagination) GetPage() int32 {
-	if o == nil || IsNil(o.Page) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Page
+
+	return o.Page
 }
 
-// GetPageOk returns a tuple with the Page field value if set, nil otherwise
+// GetPageOk returns a tuple with the Page field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetPageOk() (*int32, bool) {
-	if o == nil || IsNil(o.Page) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Page, true
+	return &o.Page, true
 }
 
-// HasPage returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasPage() bool {
-	if o != nil && !IsNil(o.Page) {
-		return true
-	}
-
-	return false
-}
-
-// SetPage gets a reference to the given int32 and assigns it to the Page field.
+// SetPage sets field value
 func (o *V1ConfigHistoryPagination) SetPage(v int32) {
-	o.Page = &v
+	o.Page = v
 }
 
-// GetPerPage returns the PerPage field value if set, zero value otherwise.
+// GetPerPage returns the PerPage field value
 func (o *V1ConfigHistoryPagination) GetPerPage() int32 {
-	if o == nil || IsNil(o.PerPage) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.PerPage
+
+	return o.PerPage
 }
 
-// GetPerPageOk returns a tuple with the PerPage field value if set, nil otherwise
+// GetPerPageOk returns a tuple with the PerPage field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetPerPageOk() (*int32, bool) {
-	if o == nil || IsNil(o.PerPage) {
+	if o == nil {
 		return nil, false
 	}
-	return o.PerPage, true
+	return &o.PerPage, true
 }
 
-// HasPerPage returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasPerPage() bool {
-	if o != nil && !IsNil(o.PerPage) {
-		return true
-	}
-
-	return false
-}
-
-// SetPerPage gets a reference to the given int32 and assigns it to the PerPage field.
+// SetPerPage sets field value
 func (o *V1ConfigHistoryPagination) SetPerPage(v int32) {
-	o.PerPage = &v
+	o.PerPage = v
 }
 
-// GetTotal returns the Total field value if set, zero value otherwise.
+// GetTotal returns the Total field value
 func (o *V1ConfigHistoryPagination) GetTotal() int32 {
-	if o == nil || IsNil(o.Total) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Total
+
+	return o.Total
 }
 
-// GetTotalOk returns a tuple with the Total field value if set, nil otherwise
+// GetTotalOk returns a tuple with the Total field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetTotalOk() (*int32, bool) {
-	if o == nil || IsNil(o.Total) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Total, true
+	return &o.Total, true
 }
 
-// HasTotal returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasTotal() bool {
-	if o != nil && !IsNil(o.Total) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotal gets a reference to the given int32 and assigns it to the Total field.
+// SetTotal sets field value
 func (o *V1ConfigHistoryPagination) SetTotal(v int32) {
-	o.Total = &v
+	o.Total = v
 }
 
-// GetTotalPages returns the TotalPages field value if set, zero value otherwise.
+// GetTotalPages returns the TotalPages field value
 func (o *V1ConfigHistoryPagination) GetTotalPages() int32 {
-	if o == nil || IsNil(o.TotalPages) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.TotalPages
+
+	return o.TotalPages
 }
 
-// GetTotalPagesOk returns a tuple with the TotalPages field value if set, nil otherwise
+// GetTotalPagesOk returns a tuple with the TotalPages field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryPagination) GetTotalPagesOk() (*int32, bool) {
-	if o == nil || IsNil(o.TotalPages) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TotalPages, true
+	return &o.TotalPages, true
 }
 
-// HasTotalPages returns a boolean if a field has been set.
-func (o *V1ConfigHistoryPagination) HasTotalPages() bool {
-	if o != nil && !IsNil(o.TotalPages) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalPages gets a reference to the given int32 and assigns it to the TotalPages field.
+// SetTotalPages sets field value
 func (o *V1ConfigHistoryPagination) SetTotalPages(v int32) {
-	o.TotalPages = &v
+	o.TotalPages = v
 }
 
 func (o V1ConfigHistoryPagination) MarshalJSON() ([]byte, error) {
@@ -253,25 +215,55 @@ func (o V1ConfigHistoryPagination) MarshalJSON() ([]byte, error) {
 
 func (o V1ConfigHistoryPagination) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.HasNext) {
-		toSerialize["has_next"] = o.HasNext
-	}
-	if !IsNil(o.HasPrev) {
-		toSerialize["has_prev"] = o.HasPrev
-	}
-	if !IsNil(o.Page) {
-		toSerialize["page"] = o.Page
-	}
-	if !IsNil(o.PerPage) {
-		toSerialize["per_page"] = o.PerPage
-	}
-	if !IsNil(o.Total) {
-		toSerialize["total"] = o.Total
-	}
-	if !IsNil(o.TotalPages) {
-		toSerialize["total_pages"] = o.TotalPages
-	}
+	toSerialize["has_next"] = o.HasNext
+	toSerialize["has_prev"] = o.HasPrev
+	toSerialize["page"] = o.Page
+	toSerialize["per_page"] = o.PerPage
+	toSerialize["total"] = o.Total
+	toSerialize["total_pages"] = o.TotalPages
 	return toSerialize, nil
+}
+
+func (o *V1ConfigHistoryPagination) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"has_next",
+		"has_prev",
+		"page",
+		"per_page",
+		"total",
+		"total_pages",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1ConfigHistoryPagination := _V1ConfigHistoryPagination{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1ConfigHistoryPagination)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1ConfigHistoryPagination(varV1ConfigHistoryPagination)
+
+	return err
 }
 
 type NullableV1ConfigHistoryPagination struct {

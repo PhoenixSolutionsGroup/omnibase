@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1ConfigHistoryResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &V1ConfigHistoryResponse{}
 // V1ConfigHistoryResponse struct for V1ConfigHistoryResponse
 type V1ConfigHistoryResponse struct {
 	// List of configuration entries
-	Configs []V1ConfigHistoryItem `json:"configs,omitempty"`
+	Configs []V1ConfigHistoryItem `json:"configs"`
 	// Pagination information
-	Pagination *V1ConfigHistoryPagination `json:"pagination,omitempty"`
+	Pagination V1ConfigHistoryPagination `json:"pagination"`
 }
+
+type _V1ConfigHistoryResponse V1ConfigHistoryResponse
 
 // NewV1ConfigHistoryResponse instantiates a new V1ConfigHistoryResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1ConfigHistoryResponse() *V1ConfigHistoryResponse {
+func NewV1ConfigHistoryResponse(configs []V1ConfigHistoryItem, pagination V1ConfigHistoryPagination) *V1ConfigHistoryResponse {
 	this := V1ConfigHistoryResponse{}
+	this.Configs = configs
+	this.Pagination = pagination
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewV1ConfigHistoryResponseWithDefaults() *V1ConfigHistoryResponse {
 	return &this
 }
 
-// GetConfigs returns the Configs field value if set, zero value otherwise.
+// GetConfigs returns the Configs field value
 func (o *V1ConfigHistoryResponse) GetConfigs() []V1ConfigHistoryItem {
-	if o == nil || IsNil(o.Configs) {
+	if o == nil {
 		var ret []V1ConfigHistoryItem
 		return ret
 	}
+
 	return o.Configs
 }
 
-// GetConfigsOk returns a tuple with the Configs field value if set, nil otherwise
+// GetConfigsOk returns a tuple with the Configs field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryResponse) GetConfigsOk() ([]V1ConfigHistoryItem, bool) {
-	if o == nil || IsNil(o.Configs) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Configs, true
 }
 
-// HasConfigs returns a boolean if a field has been set.
-func (o *V1ConfigHistoryResponse) HasConfigs() bool {
-	if o != nil && !IsNil(o.Configs) {
-		return true
-	}
-
-	return false
-}
-
-// SetConfigs gets a reference to the given []V1ConfigHistoryItem and assigns it to the Configs field.
+// SetConfigs sets field value
 func (o *V1ConfigHistoryResponse) SetConfigs(v []V1ConfigHistoryItem) {
 	o.Configs = v
 }
 
-// GetPagination returns the Pagination field value if set, zero value otherwise.
+// GetPagination returns the Pagination field value
 func (o *V1ConfigHistoryResponse) GetPagination() V1ConfigHistoryPagination {
-	if o == nil || IsNil(o.Pagination) {
+	if o == nil {
 		var ret V1ConfigHistoryPagination
 		return ret
 	}
-	return *o.Pagination
+
+	return o.Pagination
 }
 
-// GetPaginationOk returns a tuple with the Pagination field value if set, nil otherwise
+// GetPaginationOk returns a tuple with the Pagination field value
 // and a boolean to check if the value has been set.
 func (o *V1ConfigHistoryResponse) GetPaginationOk() (*V1ConfigHistoryPagination, bool) {
-	if o == nil || IsNil(o.Pagination) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Pagination, true
+	return &o.Pagination, true
 }
 
-// HasPagination returns a boolean if a field has been set.
-func (o *V1ConfigHistoryResponse) HasPagination() bool {
-	if o != nil && !IsNil(o.Pagination) {
-		return true
-	}
-
-	return false
-}
-
-// SetPagination gets a reference to the given V1ConfigHistoryPagination and assigns it to the Pagination field.
+// SetPagination sets field value
 func (o *V1ConfigHistoryResponse) SetPagination(v V1ConfigHistoryPagination) {
-	o.Pagination = &v
+	o.Pagination = v
 }
 
 func (o V1ConfigHistoryResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o V1ConfigHistoryResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1ConfigHistoryResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Configs) {
-		toSerialize["configs"] = o.Configs
-	}
-	if !IsNil(o.Pagination) {
-		toSerialize["pagination"] = o.Pagination
-	}
+	toSerialize["configs"] = o.Configs
+	toSerialize["pagination"] = o.Pagination
 	return toSerialize, nil
+}
+
+func (o *V1ConfigHistoryResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"configs",
+		"pagination",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1ConfigHistoryResponse := _V1ConfigHistoryResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1ConfigHistoryResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1ConfigHistoryResponse(varV1ConfigHistoryResponse)
+
+	return err
 }
 
 type NullableV1ConfigHistoryResponse struct {

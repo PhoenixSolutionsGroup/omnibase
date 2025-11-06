@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1ArchiveAllResponse type satisfies the MappedNullable interface at compile time
@@ -21,25 +23,32 @@ var _ MappedNullable = &V1ArchiveAllResponse{}
 // V1ArchiveAllResponse struct for V1ArchiveAllResponse
 type V1ArchiveAllResponse struct {
 	// List of items that failed to archive
-	ArchiveErrors []string `json:"archive_errors,omitempty"`
+	ArchiveErrors []string `json:"archive_errors"`
 	// List of successfully archived items
-	ArchivedItems []string `json:"archived_items,omitempty"`
+	ArchivedItems []string `json:"archived_items"`
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 	// Total number of archived items
-	TotalArchived *int32 `json:"total_archived,omitempty"`
+	TotalArchived int32 `json:"total_archived"`
 	// Total number of errors
-	TotalErrors *int32 `json:"total_errors,omitempty"`
+	TotalErrors int32 `json:"total_errors"`
 	// Warning message if there were errors
 	Warning *string `json:"warning,omitempty"`
 }
+
+type _V1ArchiveAllResponse V1ArchiveAllResponse
 
 // NewV1ArchiveAllResponse instantiates a new V1ArchiveAllResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1ArchiveAllResponse() *V1ArchiveAllResponse {
+func NewV1ArchiveAllResponse(archiveErrors []string, archivedItems []string, message string, totalArchived int32, totalErrors int32) *V1ArchiveAllResponse {
 	this := V1ArchiveAllResponse{}
+	this.ArchiveErrors = archiveErrors
+	this.ArchivedItems = archivedItems
+	this.Message = message
+	this.TotalArchived = totalArchived
+	this.TotalErrors = totalErrors
 	return &this
 }
 
@@ -51,164 +60,124 @@ func NewV1ArchiveAllResponseWithDefaults() *V1ArchiveAllResponse {
 	return &this
 }
 
-// GetArchiveErrors returns the ArchiveErrors field value if set, zero value otherwise.
+// GetArchiveErrors returns the ArchiveErrors field value
 func (o *V1ArchiveAllResponse) GetArchiveErrors() []string {
-	if o == nil || IsNil(o.ArchiveErrors) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.ArchiveErrors
 }
 
-// GetArchiveErrorsOk returns a tuple with the ArchiveErrors field value if set, nil otherwise
+// GetArchiveErrorsOk returns a tuple with the ArchiveErrors field value
 // and a boolean to check if the value has been set.
 func (o *V1ArchiveAllResponse) GetArchiveErrorsOk() ([]string, bool) {
-	if o == nil || IsNil(o.ArchiveErrors) {
+	if o == nil {
 		return nil, false
 	}
 	return o.ArchiveErrors, true
 }
 
-// HasArchiveErrors returns a boolean if a field has been set.
-func (o *V1ArchiveAllResponse) HasArchiveErrors() bool {
-	if o != nil && !IsNil(o.ArchiveErrors) {
-		return true
-	}
-
-	return false
-}
-
-// SetArchiveErrors gets a reference to the given []string and assigns it to the ArchiveErrors field.
+// SetArchiveErrors sets field value
 func (o *V1ArchiveAllResponse) SetArchiveErrors(v []string) {
 	o.ArchiveErrors = v
 }
 
-// GetArchivedItems returns the ArchivedItems field value if set, zero value otherwise.
+// GetArchivedItems returns the ArchivedItems field value
 func (o *V1ArchiveAllResponse) GetArchivedItems() []string {
-	if o == nil || IsNil(o.ArchivedItems) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.ArchivedItems
 }
 
-// GetArchivedItemsOk returns a tuple with the ArchivedItems field value if set, nil otherwise
+// GetArchivedItemsOk returns a tuple with the ArchivedItems field value
 // and a boolean to check if the value has been set.
 func (o *V1ArchiveAllResponse) GetArchivedItemsOk() ([]string, bool) {
-	if o == nil || IsNil(o.ArchivedItems) {
+	if o == nil {
 		return nil, false
 	}
 	return o.ArchivedItems, true
 }
 
-// HasArchivedItems returns a boolean if a field has been set.
-func (o *V1ArchiveAllResponse) HasArchivedItems() bool {
-	if o != nil && !IsNil(o.ArchivedItems) {
-		return true
-	}
-
-	return false
-}
-
-// SetArchivedItems gets a reference to the given []string and assigns it to the ArchivedItems field.
+// SetArchivedItems sets field value
 func (o *V1ArchiveAllResponse) SetArchivedItems(v []string) {
 	o.ArchivedItems = v
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *V1ArchiveAllResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *V1ArchiveAllResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *V1ArchiveAllResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *V1ArchiveAllResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
-// GetTotalArchived returns the TotalArchived field value if set, zero value otherwise.
+// GetTotalArchived returns the TotalArchived field value
 func (o *V1ArchiveAllResponse) GetTotalArchived() int32 {
-	if o == nil || IsNil(o.TotalArchived) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.TotalArchived
+
+	return o.TotalArchived
 }
 
-// GetTotalArchivedOk returns a tuple with the TotalArchived field value if set, nil otherwise
+// GetTotalArchivedOk returns a tuple with the TotalArchived field value
 // and a boolean to check if the value has been set.
 func (o *V1ArchiveAllResponse) GetTotalArchivedOk() (*int32, bool) {
-	if o == nil || IsNil(o.TotalArchived) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TotalArchived, true
+	return &o.TotalArchived, true
 }
 
-// HasTotalArchived returns a boolean if a field has been set.
-func (o *V1ArchiveAllResponse) HasTotalArchived() bool {
-	if o != nil && !IsNil(o.TotalArchived) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalArchived gets a reference to the given int32 and assigns it to the TotalArchived field.
+// SetTotalArchived sets field value
 func (o *V1ArchiveAllResponse) SetTotalArchived(v int32) {
-	o.TotalArchived = &v
+	o.TotalArchived = v
 }
 
-// GetTotalErrors returns the TotalErrors field value if set, zero value otherwise.
+// GetTotalErrors returns the TotalErrors field value
 func (o *V1ArchiveAllResponse) GetTotalErrors() int32 {
-	if o == nil || IsNil(o.TotalErrors) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.TotalErrors
+
+	return o.TotalErrors
 }
 
-// GetTotalErrorsOk returns a tuple with the TotalErrors field value if set, nil otherwise
+// GetTotalErrorsOk returns a tuple with the TotalErrors field value
 // and a boolean to check if the value has been set.
 func (o *V1ArchiveAllResponse) GetTotalErrorsOk() (*int32, bool) {
-	if o == nil || IsNil(o.TotalErrors) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TotalErrors, true
+	return &o.TotalErrors, true
 }
 
-// HasTotalErrors returns a boolean if a field has been set.
-func (o *V1ArchiveAllResponse) HasTotalErrors() bool {
-	if o != nil && !IsNil(o.TotalErrors) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalErrors gets a reference to the given int32 and assigns it to the TotalErrors field.
+// SetTotalErrors sets field value
 func (o *V1ArchiveAllResponse) SetTotalErrors(v int32) {
-	o.TotalErrors = &v
+	o.TotalErrors = v
 }
 
 // GetWarning returns the Warning field value if set, zero value otherwise.
@@ -253,25 +222,56 @@ func (o V1ArchiveAllResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1ArchiveAllResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ArchiveErrors) {
-		toSerialize["archive_errors"] = o.ArchiveErrors
-	}
-	if !IsNil(o.ArchivedItems) {
-		toSerialize["archived_items"] = o.ArchivedItems
-	}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
-	if !IsNil(o.TotalArchived) {
-		toSerialize["total_archived"] = o.TotalArchived
-	}
-	if !IsNil(o.TotalErrors) {
-		toSerialize["total_errors"] = o.TotalErrors
-	}
+	toSerialize["archive_errors"] = o.ArchiveErrors
+	toSerialize["archived_items"] = o.ArchivedItems
+	toSerialize["message"] = o.Message
+	toSerialize["total_archived"] = o.TotalArchived
+	toSerialize["total_errors"] = o.TotalErrors
 	if !IsNil(o.Warning) {
 		toSerialize["warning"] = o.Warning
 	}
 	return toSerialize, nil
+}
+
+func (o *V1ArchiveAllResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"archive_errors",
+		"archived_items",
+		"message",
+		"total_archived",
+		"total_errors",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1ArchiveAllResponse := _V1ArchiveAllResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1ArchiveAllResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1ArchiveAllResponse(varV1ArchiveAllResponse)
+
+	return err
 }
 
 type NullableV1ArchiveAllResponse struct {

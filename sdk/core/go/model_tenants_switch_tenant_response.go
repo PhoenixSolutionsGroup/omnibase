@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsSwitchTenantResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &TenantsSwitchTenantResponse{}
 // TenantsSwitchTenantResponse struct for TenantsSwitchTenantResponse
 type TenantsSwitchTenantResponse struct {
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 	// New JWT token with updated tenant context
-	Token *string `json:"token,omitempty"`
+	Token string `json:"token"`
 }
+
+type _TenantsSwitchTenantResponse TenantsSwitchTenantResponse
 
 // NewTenantsSwitchTenantResponse instantiates a new TenantsSwitchTenantResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsSwitchTenantResponse() *TenantsSwitchTenantResponse {
+func NewTenantsSwitchTenantResponse(message string, token string) *TenantsSwitchTenantResponse {
 	this := TenantsSwitchTenantResponse{}
+	this.Message = message
+	this.Token = token
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewTenantsSwitchTenantResponseWithDefaults() *TenantsSwitchTenantResponse {
 	return &this
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *TenantsSwitchTenantResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *TenantsSwitchTenantResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *TenantsSwitchTenantResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *TenantsSwitchTenantResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
-// GetToken returns the Token field value if set, zero value otherwise.
+// GetToken returns the Token field value
 func (o *TenantsSwitchTenantResponse) GetToken() string {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Token
+
+	return o.Token
 }
 
-// GetTokenOk returns a tuple with the Token field value if set, nil otherwise
+// GetTokenOk returns a tuple with the Token field value
 // and a boolean to check if the value has been set.
 func (o *TenantsSwitchTenantResponse) GetTokenOk() (*string, bool) {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Token, true
+	return &o.Token, true
 }
 
-// HasToken returns a boolean if a field has been set.
-func (o *TenantsSwitchTenantResponse) HasToken() bool {
-	if o != nil && !IsNil(o.Token) {
-		return true
-	}
-
-	return false
-}
-
-// SetToken gets a reference to the given string and assigns it to the Token field.
+// SetToken sets field value
 func (o *TenantsSwitchTenantResponse) SetToken(v string) {
-	o.Token = &v
+	o.Token = v
 }
 
 func (o TenantsSwitchTenantResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o TenantsSwitchTenantResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsSwitchTenantResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
-	if !IsNil(o.Token) {
-		toSerialize["token"] = o.Token
-	}
+	toSerialize["message"] = o.Message
+	toSerialize["token"] = o.Token
 	return toSerialize, nil
+}
+
+func (o *TenantsSwitchTenantResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"message",
+		"token",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsSwitchTenantResponse := _TenantsSwitchTenantResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsSwitchTenantResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsSwitchTenantResponse(varTenantsSwitchTenantResponse)
+
+	return err
 }
 
 type NullableTenantsSwitchTenantResponse struct {

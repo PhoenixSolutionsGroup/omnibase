@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Definitions** | Pointer to [**[]ModelsNamespaceDefinition**](ModelsNamespaceDefinition.md) | List of namespace definitions | [optional] 
+**Definitions** | [**[]ModelsNamespaceDefinition**](ModelsNamespaceDefinition.md) | List of namespace definitions | 
 
 ## Methods
 
 ### NewTenantsNamespaceDefinitionsResponse
 
-`func NewTenantsNamespaceDefinitionsResponse() *TenantsNamespaceDefinitionsResponse`
+`func NewTenantsNamespaceDefinitionsResponse(definitions []ModelsNamespaceDefinition, ) *TenantsNamespaceDefinitionsResponse`
 
 NewTenantsNamespaceDefinitionsResponse instantiates a new TenantsNamespaceDefinitionsResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetDefinitions sets Definitions field to given value.
 
-### HasDefinitions
-
-`func (o *TenantsNamespaceDefinitionsResponse) HasDefinitions() bool`
-
-HasDefinitions returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

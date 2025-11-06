@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.2
+  version: 0.9.3
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -2844,6 +2844,10 @@ components:
           description: New JWT token with tenant context
           example: eyJhbGciOiJIUzI1NiIs...
           type: string
+      required:
+      - message
+      - tenant_id
+      - token
       type: object
     tenants.AssignRoleRequest:
       properties:
@@ -2866,6 +2870,8 @@ components:
           description: Success message
           example: Role assigned successfully
           type: string
+      required:
+      - message
       type: object
     tenants.CreateRoleRequest:
       properties:
@@ -2960,6 +2966,9 @@ components:
           description: Success message
           example: Invite sent successfully
           type: string
+      required:
+      - invite
+      - message
       type: object
     tenants.DeleteRoleResponse:
       example:
@@ -2969,6 +2978,8 @@ components:
           description: Success message
           example: Role deleted successfully
           type: string
+      required:
+      - message
       type: object
     tenants.DeleteTenantResponse:
       example:
@@ -2978,6 +2989,8 @@ components:
           description: Success message
           example: Tenant deleted successfully
           type: string
+      required:
+      - message
       type: object
     tenants.DeleteTenantUserRequest:
       properties:
@@ -2996,6 +3009,8 @@ components:
           description: PostgREST JWT token
           example: eyJhbGciOiJIUzI1NiIs...
           type: string
+      required:
+      - token
       type: object
     tenants.NamespaceDefinitionsResponse:
       example:
@@ -3018,6 +3033,8 @@ components:
           items:
             $ref: "#/components/schemas/models.NamespaceDefinition"
           type: array
+      required:
+      - definitions
       type: object
     tenants.RolesListResponse:
       example:
@@ -3050,6 +3067,8 @@ components:
           items:
             $ref: "#/components/schemas/models.Role"
           type: array
+      required:
+      - roles
       type: object
     tenants.SwitchTenantRequest:
       properties:
@@ -3073,6 +3092,9 @@ components:
           description: New JWT token with updated tenant context
           example: eyJhbGciOiJIUzI1NiIs...
           type: string
+      required:
+      - message
+      - token
       type: object
     tenants.TenantUserResponse:
       example:
@@ -3102,6 +3124,12 @@ components:
           description: User ID
           example: 550e8400-e29b-41d4-a716-446655440000
           type: string
+      required:
+      - email
+      - first_name
+      - last_name
+      - role
+      - user_id
       type: object
     tenants.UpdateRoleRequest:
       properties:
@@ -3138,6 +3166,8 @@ components:
           description: Success message
           example: User role updated successfully
           type: string
+      required:
+      - message
       type: object
     v1.ArchiveAllResponse:
       example:
@@ -3178,6 +3208,12 @@ components:
           description: Warning message if there were errors
           example: Some items failed to archive - see archive_errors for details
           type: string
+      required:
+      - archive_errors
+      - archived_items
+      - message
+      - total_archived
+      - total_errors
       type: object
     v1.CheckPermissionRequest:
       properties:
@@ -3215,6 +3251,8 @@ components:
           description: Whether the permission check passed
           example: true
           type: boolean
+      required:
+      - allowed
       type: object
     v1.ConfigHistoryItem:
       example:
@@ -3245,6 +3283,11 @@ components:
         version:
           description: Configuration version
           type: string
+      required:
+      - created_at
+      - id
+      - updated_at
+      - version
       type: object
     v1.ConfigHistoryPagination:
       properties:
@@ -3272,6 +3315,13 @@ components:
           description: Total pages
           example: 5
           type: integer
+      required:
+      - has_next
+      - has_prev
+      - page
+      - per_page
+      - total
+      - total_pages
       type: object
     v1.ConfigHistoryResponse:
       example:
@@ -3300,6 +3350,9 @@ components:
           - $ref: "#/components/schemas/v1.ConfigHistoryPagination"
           description: Pagination information
           type: object
+      required:
+      - configs
+      - pagination
       type: object
     v1.CreateCheckoutRequest:
       properties:
@@ -3345,6 +3398,9 @@ components:
           description: Stripe Checkout Session URL
           example: https://checkout.stripe.com/pay/cs_test_...
           type: string
+      required:
+      - session_id
+      - url
       type: object
     v1.CreatePortalRequest:
       properties:
@@ -3408,6 +3464,9 @@ components:
           - $ref: "#/components/schemas/client.Relationship"
           description: The created relationship
           type: object
+      required:
+      - message
+      - relationship
       type: object
     v1.MigrationErrorResponse:
       example:
@@ -3422,6 +3481,9 @@ components:
           description: HTTP status code
           example: 400
           type: integer
+      required:
+      - message
+      - status
       type: object
     v1.MigrationSuccessResponse:
       example:
@@ -3436,6 +3498,9 @@ components:
           description: HTTP status code
           example: 200
           type: integer
+      required:
+      - message
+      - status
       type: object
     v1.NamespaceDeploymentResponse:
       example:
@@ -3465,6 +3530,11 @@ components:
           description: Tenant ID
           example: tenant-123
           type: string
+      required:
+      - managed_mode
+      - message
+      - path
+      - tenant_id
       type: object
     v1.RecordUsageRequest:
       properties:
@@ -3509,6 +3579,12 @@ components:
           description: Configuration version
           example: 1.0.0
           type: string
+      required:
+      - config
+      - created_at
+      - id
+      - updated_at
+      - version
       type: object
     v1.SubjectSetRequest:
       properties:

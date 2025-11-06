@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1NamespaceDeploymentResponse type satisfies the MappedNullable interface at compile time
@@ -21,23 +23,29 @@ var _ MappedNullable = &V1NamespaceDeploymentResponse{}
 // V1NamespaceDeploymentResponse struct for V1NamespaceDeploymentResponse
 type V1NamespaceDeploymentResponse struct {
 	// Whether managed mode is enabled
-	ManagedMode *bool `json:"managed_mode,omitempty"`
+	ManagedMode bool `json:"managed_mode"`
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 	// S3 storage path
-	Path *string `json:"path,omitempty"`
+	Path string `json:"path"`
 	// Number of system roles synced (optional)
 	RolesSynced *int32 `json:"roles_synced,omitempty"`
 	// Tenant ID
-	TenantId *string `json:"tenant_id,omitempty"`
+	TenantId string `json:"tenant_id"`
 }
+
+type _V1NamespaceDeploymentResponse V1NamespaceDeploymentResponse
 
 // NewV1NamespaceDeploymentResponse instantiates a new V1NamespaceDeploymentResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1NamespaceDeploymentResponse() *V1NamespaceDeploymentResponse {
+func NewV1NamespaceDeploymentResponse(managedMode bool, message string, path string, tenantId string) *V1NamespaceDeploymentResponse {
 	this := V1NamespaceDeploymentResponse{}
+	this.ManagedMode = managedMode
+	this.Message = message
+	this.Path = path
+	this.TenantId = tenantId
 	return &this
 }
 
@@ -49,100 +57,76 @@ func NewV1NamespaceDeploymentResponseWithDefaults() *V1NamespaceDeploymentRespon
 	return &this
 }
 
-// GetManagedMode returns the ManagedMode field value if set, zero value otherwise.
+// GetManagedMode returns the ManagedMode field value
 func (o *V1NamespaceDeploymentResponse) GetManagedMode() bool {
-	if o == nil || IsNil(o.ManagedMode) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.ManagedMode
+
+	return o.ManagedMode
 }
 
-// GetManagedModeOk returns a tuple with the ManagedMode field value if set, nil otherwise
+// GetManagedModeOk returns a tuple with the ManagedMode field value
 // and a boolean to check if the value has been set.
 func (o *V1NamespaceDeploymentResponse) GetManagedModeOk() (*bool, bool) {
-	if o == nil || IsNil(o.ManagedMode) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ManagedMode, true
+	return &o.ManagedMode, true
 }
 
-// HasManagedMode returns a boolean if a field has been set.
-func (o *V1NamespaceDeploymentResponse) HasManagedMode() bool {
-	if o != nil && !IsNil(o.ManagedMode) {
-		return true
-	}
-
-	return false
-}
-
-// SetManagedMode gets a reference to the given bool and assigns it to the ManagedMode field.
+// SetManagedMode sets field value
 func (o *V1NamespaceDeploymentResponse) SetManagedMode(v bool) {
-	o.ManagedMode = &v
+	o.ManagedMode = v
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *V1NamespaceDeploymentResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *V1NamespaceDeploymentResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *V1NamespaceDeploymentResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *V1NamespaceDeploymentResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
-// GetPath returns the Path field value if set, zero value otherwise.
+// GetPath returns the Path field value
 func (o *V1NamespaceDeploymentResponse) GetPath() string {
-	if o == nil || IsNil(o.Path) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Path
+
+	return o.Path
 }
 
-// GetPathOk returns a tuple with the Path field value if set, nil otherwise
+// GetPathOk returns a tuple with the Path field value
 // and a boolean to check if the value has been set.
 func (o *V1NamespaceDeploymentResponse) GetPathOk() (*string, bool) {
-	if o == nil || IsNil(o.Path) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Path, true
+	return &o.Path, true
 }
 
-// HasPath returns a boolean if a field has been set.
-func (o *V1NamespaceDeploymentResponse) HasPath() bool {
-	if o != nil && !IsNil(o.Path) {
-		return true
-	}
-
-	return false
-}
-
-// SetPath gets a reference to the given string and assigns it to the Path field.
+// SetPath sets field value
 func (o *V1NamespaceDeploymentResponse) SetPath(v string) {
-	o.Path = &v
+	o.Path = v
 }
 
 // GetRolesSynced returns the RolesSynced field value if set, zero value otherwise.
@@ -177,36 +161,28 @@ func (o *V1NamespaceDeploymentResponse) SetRolesSynced(v int32) {
 	o.RolesSynced = &v
 }
 
-// GetTenantId returns the TenantId field value if set, zero value otherwise.
+// GetTenantId returns the TenantId field value
 func (o *V1NamespaceDeploymentResponse) GetTenantId() string {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.TenantId
+
+	return o.TenantId
 }
 
-// GetTenantIdOk returns a tuple with the TenantId field value if set, nil otherwise
+// GetTenantIdOk returns a tuple with the TenantId field value
 // and a boolean to check if the value has been set.
 func (o *V1NamespaceDeploymentResponse) GetTenantIdOk() (*string, bool) {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TenantId, true
+	return &o.TenantId, true
 }
 
-// HasTenantId returns a boolean if a field has been set.
-func (o *V1NamespaceDeploymentResponse) HasTenantId() bool {
-	if o != nil && !IsNil(o.TenantId) {
-		return true
-	}
-
-	return false
-}
-
-// SetTenantId gets a reference to the given string and assigns it to the TenantId field.
+// SetTenantId sets field value
 func (o *V1NamespaceDeploymentResponse) SetTenantId(v string) {
-	o.TenantId = &v
+	o.TenantId = v
 }
 
 func (o V1NamespaceDeploymentResponse) MarshalJSON() ([]byte, error) {
@@ -219,22 +195,54 @@ func (o V1NamespaceDeploymentResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1NamespaceDeploymentResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ManagedMode) {
-		toSerialize["managed_mode"] = o.ManagedMode
-	}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
-	if !IsNil(o.Path) {
-		toSerialize["path"] = o.Path
-	}
+	toSerialize["managed_mode"] = o.ManagedMode
+	toSerialize["message"] = o.Message
+	toSerialize["path"] = o.Path
 	if !IsNil(o.RolesSynced) {
 		toSerialize["roles_synced"] = o.RolesSynced
 	}
-	if !IsNil(o.TenantId) {
-		toSerialize["tenant_id"] = o.TenantId
-	}
+	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
+}
+
+func (o *V1NamespaceDeploymentResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"managed_mode",
+		"message",
+		"path",
+		"tenant_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1NamespaceDeploymentResponse := _V1NamespaceDeploymentResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1NamespaceDeploymentResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1NamespaceDeploymentResponse(varV1NamespaceDeploymentResponse)
+
+	return err
 }
 
 type NullableV1NamespaceDeploymentResponse struct {

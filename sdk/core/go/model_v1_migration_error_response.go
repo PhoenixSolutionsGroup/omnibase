@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1MigrationErrorResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &V1MigrationErrorResponse{}
 // V1MigrationErrorResponse struct for V1MigrationErrorResponse
 type V1MigrationErrorResponse struct {
 	// Error message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 	// HTTP status code
-	Status *int32 `json:"status,omitempty"`
+	Status int32 `json:"status"`
 }
+
+type _V1MigrationErrorResponse V1MigrationErrorResponse
 
 // NewV1MigrationErrorResponse instantiates a new V1MigrationErrorResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1MigrationErrorResponse() *V1MigrationErrorResponse {
+func NewV1MigrationErrorResponse(message string, status int32) *V1MigrationErrorResponse {
 	this := V1MigrationErrorResponse{}
+	this.Message = message
+	this.Status = status
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewV1MigrationErrorResponseWithDefaults() *V1MigrationErrorResponse {
 	return &this
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *V1MigrationErrorResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *V1MigrationErrorResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *V1MigrationErrorResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *V1MigrationErrorResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
-// GetStatus returns the Status field value if set, zero value otherwise.
+// GetStatus returns the Status field value
 func (o *V1MigrationErrorResponse) GetStatus() int32 {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Status
+
+	return o.Status
 }
 
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
 func (o *V1MigrationErrorResponse) GetStatusOk() (*int32, bool) {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Status, true
+	return &o.Status, true
 }
 
-// HasStatus returns a boolean if a field has been set.
-func (o *V1MigrationErrorResponse) HasStatus() bool {
-	if o != nil && !IsNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given int32 and assigns it to the Status field.
+// SetStatus sets field value
 func (o *V1MigrationErrorResponse) SetStatus(v int32) {
-	o.Status = &v
+	o.Status = v
 }
 
 func (o V1MigrationErrorResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o V1MigrationErrorResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1MigrationErrorResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
-	if !IsNil(o.Status) {
-		toSerialize["status"] = o.Status
-	}
+	toSerialize["message"] = o.Message
+	toSerialize["status"] = o.Status
 	return toSerialize, nil
+}
+
+func (o *V1MigrationErrorResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"message",
+		"status",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1MigrationErrorResponse := _V1MigrationErrorResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1MigrationErrorResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1MigrationErrorResponse(varV1MigrationErrorResponse)
+
+	return err
 }
 
 type NullableV1MigrationErrorResponse struct {

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsCreateTenantUserInviteResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &TenantsCreateTenantUserInviteResponse{}
 // TenantsCreateTenantUserInviteResponse struct for TenantsCreateTenantUserInviteResponse
 type TenantsCreateTenantUserInviteResponse struct {
 	// Created invite
-	Invite *ModelsTenantInvite `json:"invite,omitempty"`
+	Invite ModelsTenantInvite `json:"invite"`
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 }
+
+type _TenantsCreateTenantUserInviteResponse TenantsCreateTenantUserInviteResponse
 
 // NewTenantsCreateTenantUserInviteResponse instantiates a new TenantsCreateTenantUserInviteResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsCreateTenantUserInviteResponse() *TenantsCreateTenantUserInviteResponse {
+func NewTenantsCreateTenantUserInviteResponse(invite ModelsTenantInvite, message string) *TenantsCreateTenantUserInviteResponse {
 	this := TenantsCreateTenantUserInviteResponse{}
+	this.Invite = invite
+	this.Message = message
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewTenantsCreateTenantUserInviteResponseWithDefaults() *TenantsCreateTenant
 	return &this
 }
 
-// GetInvite returns the Invite field value if set, zero value otherwise.
+// GetInvite returns the Invite field value
 func (o *TenantsCreateTenantUserInviteResponse) GetInvite() ModelsTenantInvite {
-	if o == nil || IsNil(o.Invite) {
+	if o == nil {
 		var ret ModelsTenantInvite
 		return ret
 	}
-	return *o.Invite
+
+	return o.Invite
 }
 
-// GetInviteOk returns a tuple with the Invite field value if set, nil otherwise
+// GetInviteOk returns a tuple with the Invite field value
 // and a boolean to check if the value has been set.
 func (o *TenantsCreateTenantUserInviteResponse) GetInviteOk() (*ModelsTenantInvite, bool) {
-	if o == nil || IsNil(o.Invite) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Invite, true
+	return &o.Invite, true
 }
 
-// HasInvite returns a boolean if a field has been set.
-func (o *TenantsCreateTenantUserInviteResponse) HasInvite() bool {
-	if o != nil && !IsNil(o.Invite) {
-		return true
-	}
-
-	return false
-}
-
-// SetInvite gets a reference to the given ModelsTenantInvite and assigns it to the Invite field.
+// SetInvite sets field value
 func (o *TenantsCreateTenantUserInviteResponse) SetInvite(v ModelsTenantInvite) {
-	o.Invite = &v
+	o.Invite = v
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *TenantsCreateTenantUserInviteResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *TenantsCreateTenantUserInviteResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *TenantsCreateTenantUserInviteResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *TenantsCreateTenantUserInviteResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
 func (o TenantsCreateTenantUserInviteResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o TenantsCreateTenantUserInviteResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsCreateTenantUserInviteResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Invite) {
-		toSerialize["invite"] = o.Invite
-	}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
+	toSerialize["invite"] = o.Invite
+	toSerialize["message"] = o.Message
 	return toSerialize, nil
+}
+
+func (o *TenantsCreateTenantUserInviteResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"invite",
+		"message",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsCreateTenantUserInviteResponse := _TenantsCreateTenantUserInviteResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsCreateTenantUserInviteResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsCreateTenantUserInviteResponse(varTenantsCreateTenantUserInviteResponse)
+
+	return err
 }
 
 type NullableTenantsCreateTenantUserInviteResponse struct {

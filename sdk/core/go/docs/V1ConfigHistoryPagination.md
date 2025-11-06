@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**HasNext** | Pointer to **bool** | Whether there is a next page | [optional] 
-**HasPrev** | Pointer to **bool** | Whether there is a previous page | [optional] 
-**Page** | Pointer to **int32** | Current page number | [optional] 
-**PerPage** | Pointer to **int32** | Items per page | [optional] 
-**Total** | Pointer to **int32** | Total number of configurations | [optional] 
-**TotalPages** | Pointer to **int32** | Total pages | [optional] 
+**HasNext** | **bool** | Whether there is a next page | 
+**HasPrev** | **bool** | Whether there is a previous page | 
+**Page** | **int32** | Current page number | 
+**PerPage** | **int32** | Items per page | 
+**Total** | **int32** | Total number of configurations | 
+**TotalPages** | **int32** | Total pages | 
 
 ## Methods
 
 ### NewV1ConfigHistoryPagination
 
-`func NewV1ConfigHistoryPagination() *V1ConfigHistoryPagination`
+`func NewV1ConfigHistoryPagination(hasNext bool, hasPrev bool, page int32, perPage int32, total int32, totalPages int32, ) *V1ConfigHistoryPagination`
 
 NewV1ConfigHistoryPagination instantiates a new V1ConfigHistoryPagination object
 This constructor will assign default values to properties that have it defined,
@@ -49,11 +49,6 @@ and a boolean to check if the value has been set.
 
 SetHasNext sets HasNext field to given value.
 
-### HasHasNext
-
-`func (o *V1ConfigHistoryPagination) HasHasNext() bool`
-
-HasHasNext returns a boolean if a field has been set.
 
 ### GetHasPrev
 
@@ -74,11 +69,6 @@ and a boolean to check if the value has been set.
 
 SetHasPrev sets HasPrev field to given value.
 
-### HasHasPrev
-
-`func (o *V1ConfigHistoryPagination) HasHasPrev() bool`
-
-HasHasPrev returns a boolean if a field has been set.
 
 ### GetPage
 
@@ -99,11 +89,6 @@ and a boolean to check if the value has been set.
 
 SetPage sets Page field to given value.
 
-### HasPage
-
-`func (o *V1ConfigHistoryPagination) HasPage() bool`
-
-HasPage returns a boolean if a field has been set.
 
 ### GetPerPage
 
@@ -124,11 +109,6 @@ and a boolean to check if the value has been set.
 
 SetPerPage sets PerPage field to given value.
 
-### HasPerPage
-
-`func (o *V1ConfigHistoryPagination) HasPerPage() bool`
-
-HasPerPage returns a boolean if a field has been set.
 
 ### GetTotal
 
@@ -149,11 +129,6 @@ and a boolean to check if the value has been set.
 
 SetTotal sets Total field to given value.
 
-### HasTotal
-
-`func (o *V1ConfigHistoryPagination) HasTotal() bool`
-
-HasTotal returns a boolean if a field has been set.
 
 ### GetTotalPages
 
@@ -174,11 +149,6 @@ and a boolean to check if the value has been set.
 
 SetTotalPages sets TotalPages field to given value.
 
-### HasTotalPages
-
-`func (o *V1ConfigHistoryPagination) HasTotalPages() bool`
-
-HasTotalPages returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

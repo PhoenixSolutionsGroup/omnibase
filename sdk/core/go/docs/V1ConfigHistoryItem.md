@@ -5,17 +5,17 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Config** | Pointer to [**ModelsStripeConfigurationWithIDs**](ModelsStripeConfigurationWithIDs.md) | Configuration data | [optional] 
-**CreatedAt** | Pointer to **string** | Creation timestamp | [optional] 
-**Id** | Pointer to **string** | Configuration ID | [optional] 
+**CreatedAt** | **string** | Creation timestamp | 
+**Id** | **string** | Configuration ID | 
 **ParseError** | Pointer to **string** | Parse error if configuration is invalid | [optional] 
-**UpdatedAt** | Pointer to **string** | Update timestamp | [optional] 
-**Version** | Pointer to **string** | Configuration version | [optional] 
+**UpdatedAt** | **string** | Update timestamp | 
+**Version** | **string** | Configuration version | 
 
 ## Methods
 
 ### NewV1ConfigHistoryItem
 
-`func NewV1ConfigHistoryItem() *V1ConfigHistoryItem`
+`func NewV1ConfigHistoryItem(createdAt string, id string, updatedAt string, version string, ) *V1ConfigHistoryItem`
 
 NewV1ConfigHistoryItem instantiates a new V1ConfigHistoryItem object
 This constructor will assign default values to properties that have it defined,
@@ -74,11 +74,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *V1ConfigHistoryItem) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetId
 
@@ -99,11 +94,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *V1ConfigHistoryItem) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetParseError
 
@@ -149,11 +139,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *V1ConfigHistoryItem) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 ### GetVersion
 
@@ -174,11 +159,6 @@ and a boolean to check if the value has been set.
 
 SetVersion sets Version field to given value.
 
-### HasVersion
-
-`func (o *V1ConfigHistoryItem) HasVersion() bool`
-
-HasVersion returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

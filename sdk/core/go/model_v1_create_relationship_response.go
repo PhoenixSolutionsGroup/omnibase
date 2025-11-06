@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1CreateRelationshipResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &V1CreateRelationshipResponse{}
 // V1CreateRelationshipResponse struct for V1CreateRelationshipResponse
 type V1CreateRelationshipResponse struct {
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 	// The created relationship
-	Relationship *ClientRelationship `json:"relationship,omitempty"`
+	Relationship ClientRelationship `json:"relationship"`
 }
+
+type _V1CreateRelationshipResponse V1CreateRelationshipResponse
 
 // NewV1CreateRelationshipResponse instantiates a new V1CreateRelationshipResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1CreateRelationshipResponse() *V1CreateRelationshipResponse {
+func NewV1CreateRelationshipResponse(message string, relationship ClientRelationship) *V1CreateRelationshipResponse {
 	this := V1CreateRelationshipResponse{}
+	this.Message = message
+	this.Relationship = relationship
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewV1CreateRelationshipResponseWithDefaults() *V1CreateRelationshipResponse
 	return &this
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *V1CreateRelationshipResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *V1CreateRelationshipResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *V1CreateRelationshipResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *V1CreateRelationshipResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
-// GetRelationship returns the Relationship field value if set, zero value otherwise.
+// GetRelationship returns the Relationship field value
 func (o *V1CreateRelationshipResponse) GetRelationship() ClientRelationship {
-	if o == nil || IsNil(o.Relationship) {
+	if o == nil {
 		var ret ClientRelationship
 		return ret
 	}
-	return *o.Relationship
+
+	return o.Relationship
 }
 
-// GetRelationshipOk returns a tuple with the Relationship field value if set, nil otherwise
+// GetRelationshipOk returns a tuple with the Relationship field value
 // and a boolean to check if the value has been set.
 func (o *V1CreateRelationshipResponse) GetRelationshipOk() (*ClientRelationship, bool) {
-	if o == nil || IsNil(o.Relationship) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Relationship, true
+	return &o.Relationship, true
 }
 
-// HasRelationship returns a boolean if a field has been set.
-func (o *V1CreateRelationshipResponse) HasRelationship() bool {
-	if o != nil && !IsNil(o.Relationship) {
-		return true
-	}
-
-	return false
-}
-
-// SetRelationship gets a reference to the given ClientRelationship and assigns it to the Relationship field.
+// SetRelationship sets field value
 func (o *V1CreateRelationshipResponse) SetRelationship(v ClientRelationship) {
-	o.Relationship = &v
+	o.Relationship = v
 }
 
 func (o V1CreateRelationshipResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o V1CreateRelationshipResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1CreateRelationshipResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
-	if !IsNil(o.Relationship) {
-		toSerialize["relationship"] = o.Relationship
-	}
+	toSerialize["message"] = o.Message
+	toSerialize["relationship"] = o.Relationship
 	return toSerialize, nil
+}
+
+func (o *V1CreateRelationshipResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"message",
+		"relationship",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1CreateRelationshipResponse := _V1CreateRelationshipResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1CreateRelationshipResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1CreateRelationshipResponse(varV1CreateRelationshipResponse)
+
+	return err
 }
 
 type NullableV1CreateRelationshipResponse struct {

@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
-**Relationship** | Pointer to [**ClientRelationship**](ClientRelationship.md) | The created relationship | [optional] 
+**Message** | **string** | Success message | 
+**Relationship** | [**ClientRelationship**](ClientRelationship.md) | The created relationship | 
 
 ## Methods
 
 ### NewV1CreateRelationshipResponse
 
-`func NewV1CreateRelationshipResponse() *V1CreateRelationshipResponse`
+`func NewV1CreateRelationshipResponse(message string, relationship ClientRelationship, ) *V1CreateRelationshipResponse`
 
 NewV1CreateRelationshipResponse instantiates a new V1CreateRelationshipResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *V1CreateRelationshipResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetRelationship
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetRelationship sets Relationship field to given value.
 
-### HasRelationship
-
-`func (o *V1CreateRelationshipResponse) HasRelationship() bool`
-
-HasRelationship returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

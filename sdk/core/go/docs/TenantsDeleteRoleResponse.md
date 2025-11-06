@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
+**Message** | **string** | Success message | 
 
 ## Methods
 
 ### NewTenantsDeleteRoleResponse
 
-`func NewTenantsDeleteRoleResponse() *TenantsDeleteRoleResponse`
+`func NewTenantsDeleteRoleResponse(message string, ) *TenantsDeleteRoleResponse`
 
 NewTenantsDeleteRoleResponse instantiates a new TenantsDeleteRoleResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *TenantsDeleteRoleResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

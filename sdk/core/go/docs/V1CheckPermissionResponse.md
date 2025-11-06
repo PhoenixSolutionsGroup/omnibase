@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Allowed** | Pointer to **bool** | Whether the permission check passed | [optional] 
+**Allowed** | **bool** | Whether the permission check passed | 
 
 ## Methods
 
 ### NewV1CheckPermissionResponse
 
-`func NewV1CheckPermissionResponse() *V1CheckPermissionResponse`
+`func NewV1CheckPermissionResponse(allowed bool, ) *V1CheckPermissionResponse`
 
 NewV1CheckPermissionResponse instantiates a new V1CheckPermissionResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetAllowed sets Allowed field to given value.
 
-### HasAllowed
-
-`func (o *V1CheckPermissionResponse) HasAllowed() bool`
-
-HasAllowed returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

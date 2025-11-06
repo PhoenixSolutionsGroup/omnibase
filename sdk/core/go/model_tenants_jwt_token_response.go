@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsJWTTokenResponse type satisfies the MappedNullable interface at compile time
@@ -21,15 +23,18 @@ var _ MappedNullable = &TenantsJWTTokenResponse{}
 // TenantsJWTTokenResponse struct for TenantsJWTTokenResponse
 type TenantsJWTTokenResponse struct {
 	// PostgREST JWT token
-	Token *string `json:"token,omitempty"`
+	Token string `json:"token"`
 }
+
+type _TenantsJWTTokenResponse TenantsJWTTokenResponse
 
 // NewTenantsJWTTokenResponse instantiates a new TenantsJWTTokenResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsJWTTokenResponse() *TenantsJWTTokenResponse {
+func NewTenantsJWTTokenResponse(token string) *TenantsJWTTokenResponse {
 	this := TenantsJWTTokenResponse{}
+	this.Token = token
 	return &this
 }
 
@@ -41,36 +46,28 @@ func NewTenantsJWTTokenResponseWithDefaults() *TenantsJWTTokenResponse {
 	return &this
 }
 
-// GetToken returns the Token field value if set, zero value otherwise.
+// GetToken returns the Token field value
 func (o *TenantsJWTTokenResponse) GetToken() string {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Token
+
+	return o.Token
 }
 
-// GetTokenOk returns a tuple with the Token field value if set, nil otherwise
+// GetTokenOk returns a tuple with the Token field value
 // and a boolean to check if the value has been set.
 func (o *TenantsJWTTokenResponse) GetTokenOk() (*string, bool) {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Token, true
+	return &o.Token, true
 }
 
-// HasToken returns a boolean if a field has been set.
-func (o *TenantsJWTTokenResponse) HasToken() bool {
-	if o != nil && !IsNil(o.Token) {
-		return true
-	}
-
-	return false
-}
-
-// SetToken gets a reference to the given string and assigns it to the Token field.
+// SetToken sets field value
 func (o *TenantsJWTTokenResponse) SetToken(v string) {
-	o.Token = &v
+	o.Token = v
 }
 
 func (o TenantsJWTTokenResponse) MarshalJSON() ([]byte, error) {
@@ -83,10 +80,45 @@ func (o TenantsJWTTokenResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsJWTTokenResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Token) {
-		toSerialize["token"] = o.Token
-	}
+	toSerialize["token"] = o.Token
 	return toSerialize, nil
+}
+
+func (o *TenantsJWTTokenResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"token",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsJWTTokenResponse := _TenantsJWTTokenResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsJWTTokenResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsJWTTokenResponse(varTenantsJWTTokenResponse)
+
+	return err
 }
 
 type NullableTenantsJWTTokenResponse struct {

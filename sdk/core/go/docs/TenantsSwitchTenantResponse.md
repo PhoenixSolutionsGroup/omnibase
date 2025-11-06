@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
-**Token** | Pointer to **string** | New JWT token with updated tenant context | [optional] 
+**Message** | **string** | Success message | 
+**Token** | **string** | New JWT token with updated tenant context | 
 
 ## Methods
 
 ### NewTenantsSwitchTenantResponse
 
-`func NewTenantsSwitchTenantResponse() *TenantsSwitchTenantResponse`
+`func NewTenantsSwitchTenantResponse(message string, token string, ) *TenantsSwitchTenantResponse`
 
 NewTenantsSwitchTenantResponse instantiates a new TenantsSwitchTenantResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *TenantsSwitchTenantResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetToken
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetToken sets Token field to given value.
 
-### HasToken
-
-`func (o *TenantsSwitchTenantResponse) HasToken() bool`
-
-HasToken returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsNamespaceDefinitionsResponse type satisfies the MappedNullable interface at compile time
@@ -21,15 +23,18 @@ var _ MappedNullable = &TenantsNamespaceDefinitionsResponse{}
 // TenantsNamespaceDefinitionsResponse struct for TenantsNamespaceDefinitionsResponse
 type TenantsNamespaceDefinitionsResponse struct {
 	// List of namespace definitions
-	Definitions []ModelsNamespaceDefinition `json:"definitions,omitempty"`
+	Definitions []ModelsNamespaceDefinition `json:"definitions"`
 }
+
+type _TenantsNamespaceDefinitionsResponse TenantsNamespaceDefinitionsResponse
 
 // NewTenantsNamespaceDefinitionsResponse instantiates a new TenantsNamespaceDefinitionsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsNamespaceDefinitionsResponse() *TenantsNamespaceDefinitionsResponse {
+func NewTenantsNamespaceDefinitionsResponse(definitions []ModelsNamespaceDefinition) *TenantsNamespaceDefinitionsResponse {
 	this := TenantsNamespaceDefinitionsResponse{}
+	this.Definitions = definitions
 	return &this
 }
 
@@ -41,34 +46,26 @@ func NewTenantsNamespaceDefinitionsResponseWithDefaults() *TenantsNamespaceDefin
 	return &this
 }
 
-// GetDefinitions returns the Definitions field value if set, zero value otherwise.
+// GetDefinitions returns the Definitions field value
 func (o *TenantsNamespaceDefinitionsResponse) GetDefinitions() []ModelsNamespaceDefinition {
-	if o == nil || IsNil(o.Definitions) {
+	if o == nil {
 		var ret []ModelsNamespaceDefinition
 		return ret
 	}
+
 	return o.Definitions
 }
 
-// GetDefinitionsOk returns a tuple with the Definitions field value if set, nil otherwise
+// GetDefinitionsOk returns a tuple with the Definitions field value
 // and a boolean to check if the value has been set.
 func (o *TenantsNamespaceDefinitionsResponse) GetDefinitionsOk() ([]ModelsNamespaceDefinition, bool) {
-	if o == nil || IsNil(o.Definitions) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Definitions, true
 }
 
-// HasDefinitions returns a boolean if a field has been set.
-func (o *TenantsNamespaceDefinitionsResponse) HasDefinitions() bool {
-	if o != nil && !IsNil(o.Definitions) {
-		return true
-	}
-
-	return false
-}
-
-// SetDefinitions gets a reference to the given []ModelsNamespaceDefinition and assigns it to the Definitions field.
+// SetDefinitions sets field value
 func (o *TenantsNamespaceDefinitionsResponse) SetDefinitions(v []ModelsNamespaceDefinition) {
 	o.Definitions = v
 }
@@ -83,10 +80,45 @@ func (o TenantsNamespaceDefinitionsResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsNamespaceDefinitionsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Definitions) {
-		toSerialize["definitions"] = o.Definitions
-	}
+	toSerialize["definitions"] = o.Definitions
 	return toSerialize, nil
+}
+
+func (o *TenantsNamespaceDefinitionsResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"definitions",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsNamespaceDefinitionsResponse := _TenantsNamespaceDefinitionsResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsNamespaceDefinitionsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsNamespaceDefinitionsResponse(varTenantsNamespaceDefinitionsResponse)
+
+	return err
 }
 
 type NullableTenantsNamespaceDefinitionsResponse struct {

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1CheckPermissionResponse type satisfies the MappedNullable interface at compile time
@@ -21,15 +23,18 @@ var _ MappedNullable = &V1CheckPermissionResponse{}
 // V1CheckPermissionResponse struct for V1CheckPermissionResponse
 type V1CheckPermissionResponse struct {
 	// Whether the permission check passed
-	Allowed *bool `json:"allowed,omitempty"`
+	Allowed bool `json:"allowed"`
 }
+
+type _V1CheckPermissionResponse V1CheckPermissionResponse
 
 // NewV1CheckPermissionResponse instantiates a new V1CheckPermissionResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1CheckPermissionResponse() *V1CheckPermissionResponse {
+func NewV1CheckPermissionResponse(allowed bool) *V1CheckPermissionResponse {
 	this := V1CheckPermissionResponse{}
+	this.Allowed = allowed
 	return &this
 }
 
@@ -41,36 +46,28 @@ func NewV1CheckPermissionResponseWithDefaults() *V1CheckPermissionResponse {
 	return &this
 }
 
-// GetAllowed returns the Allowed field value if set, zero value otherwise.
+// GetAllowed returns the Allowed field value
 func (o *V1CheckPermissionResponse) GetAllowed() bool {
-	if o == nil || IsNil(o.Allowed) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.Allowed
+
+	return o.Allowed
 }
 
-// GetAllowedOk returns a tuple with the Allowed field value if set, nil otherwise
+// GetAllowedOk returns a tuple with the Allowed field value
 // and a boolean to check if the value has been set.
 func (o *V1CheckPermissionResponse) GetAllowedOk() (*bool, bool) {
-	if o == nil || IsNil(o.Allowed) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Allowed, true
+	return &o.Allowed, true
 }
 
-// HasAllowed returns a boolean if a field has been set.
-func (o *V1CheckPermissionResponse) HasAllowed() bool {
-	if o != nil && !IsNil(o.Allowed) {
-		return true
-	}
-
-	return false
-}
-
-// SetAllowed gets a reference to the given bool and assigns it to the Allowed field.
+// SetAllowed sets field value
 func (o *V1CheckPermissionResponse) SetAllowed(v bool) {
-	o.Allowed = &v
+	o.Allowed = v
 }
 
 func (o V1CheckPermissionResponse) MarshalJSON() ([]byte, error) {
@@ -83,10 +80,45 @@ func (o V1CheckPermissionResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1CheckPermissionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Allowed) {
-		toSerialize["allowed"] = o.Allowed
-	}
+	toSerialize["allowed"] = o.Allowed
 	return toSerialize, nil
+}
+
+func (o *V1CheckPermissionResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"allowed",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1CheckPermissionResponse := _V1CheckPermissionResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1CheckPermissionResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1CheckPermissionResponse(varV1CheckPermissionResponse)
+
+	return err
 }
 
 type NullableV1CheckPermissionResponse struct {

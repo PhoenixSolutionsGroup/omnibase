@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ArchiveErrors** | Pointer to **[]string** | List of items that failed to archive | [optional] 
-**ArchivedItems** | Pointer to **[]string** | List of successfully archived items | [optional] 
-**Message** | Pointer to **string** | Success message | [optional] 
-**TotalArchived** | Pointer to **int32** | Total number of archived items | [optional] 
-**TotalErrors** | Pointer to **int32** | Total number of errors | [optional] 
+**ArchiveErrors** | **[]string** | List of items that failed to archive | 
+**ArchivedItems** | **[]string** | List of successfully archived items | 
+**Message** | **string** | Success message | 
+**TotalArchived** | **int32** | Total number of archived items | 
+**TotalErrors** | **int32** | Total number of errors | 
 **Warning** | Pointer to **string** | Warning message if there were errors | [optional] 
 
 ## Methods
 
 ### NewV1ArchiveAllResponse
 
-`func NewV1ArchiveAllResponse() *V1ArchiveAllResponse`
+`func NewV1ArchiveAllResponse(archiveErrors []string, archivedItems []string, message string, totalArchived int32, totalErrors int32, ) *V1ArchiveAllResponse`
 
 NewV1ArchiveAllResponse instantiates a new V1ArchiveAllResponse object
 This constructor will assign default values to properties that have it defined,
@@ -49,11 +49,6 @@ and a boolean to check if the value has been set.
 
 SetArchiveErrors sets ArchiveErrors field to given value.
 
-### HasArchiveErrors
-
-`func (o *V1ArchiveAllResponse) HasArchiveErrors() bool`
-
-HasArchiveErrors returns a boolean if a field has been set.
 
 ### GetArchivedItems
 
@@ -74,11 +69,6 @@ and a boolean to check if the value has been set.
 
 SetArchivedItems sets ArchivedItems field to given value.
 
-### HasArchivedItems
-
-`func (o *V1ArchiveAllResponse) HasArchivedItems() bool`
-
-HasArchivedItems returns a boolean if a field has been set.
 
 ### GetMessage
 
@@ -99,11 +89,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *V1ArchiveAllResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetTotalArchived
 
@@ -124,11 +109,6 @@ and a boolean to check if the value has been set.
 
 SetTotalArchived sets TotalArchived field to given value.
 
-### HasTotalArchived
-
-`func (o *V1ArchiveAllResponse) HasTotalArchived() bool`
-
-HasTotalArchived returns a boolean if a field has been set.
 
 ### GetTotalErrors
 
@@ -149,11 +129,6 @@ and a boolean to check if the value has been set.
 
 SetTotalErrors sets TotalErrors field to given value.
 
-### HasTotalErrors
-
-`func (o *V1ArchiveAllResponse) HasTotalErrors() bool`
-
-HasTotalErrors returns a boolean if a field has been set.
 
 ### GetWarning
 

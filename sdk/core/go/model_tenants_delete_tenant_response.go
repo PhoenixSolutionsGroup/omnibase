@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the TenantsDeleteTenantResponse type satisfies the MappedNullable interface at compile time
@@ -21,15 +23,18 @@ var _ MappedNullable = &TenantsDeleteTenantResponse{}
 // TenantsDeleteTenantResponse struct for TenantsDeleteTenantResponse
 type TenantsDeleteTenantResponse struct {
 	// Success message
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 }
+
+type _TenantsDeleteTenantResponse TenantsDeleteTenantResponse
 
 // NewTenantsDeleteTenantResponse instantiates a new TenantsDeleteTenantResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsDeleteTenantResponse() *TenantsDeleteTenantResponse {
+func NewTenantsDeleteTenantResponse(message string) *TenantsDeleteTenantResponse {
 	this := TenantsDeleteTenantResponse{}
+	this.Message = message
 	return &this
 }
 
@@ -41,36 +46,28 @@ func NewTenantsDeleteTenantResponseWithDefaults() *TenantsDeleteTenantResponse {
 	return &this
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *TenantsDeleteTenantResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *TenantsDeleteTenantResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *TenantsDeleteTenantResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *TenantsDeleteTenantResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
 func (o TenantsDeleteTenantResponse) MarshalJSON() ([]byte, error) {
@@ -83,10 +80,45 @@ func (o TenantsDeleteTenantResponse) MarshalJSON() ([]byte, error) {
 
 func (o TenantsDeleteTenantResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
+	toSerialize["message"] = o.Message
 	return toSerialize, nil
+}
+
+func (o *TenantsDeleteTenantResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"message",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTenantsDeleteTenantResponse := _TenantsDeleteTenantResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTenantsDeleteTenantResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TenantsDeleteTenantResponse(varTenantsDeleteTenantResponse)
+
+	return err
 }
 
 type NullableTenantsDeleteTenantResponse struct {

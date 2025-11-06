@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Roles** | Pointer to [**[]ModelsRole**](ModelsRole.md) | List of roles (including system roles) | [optional] 
+**Roles** | [**[]ModelsRole**](ModelsRole.md) | List of roles (including system roles) | 
 
 ## Methods
 
 ### NewTenantsRolesListResponse
 
-`func NewTenantsRolesListResponse() *TenantsRolesListResponse`
+`func NewTenantsRolesListResponse(roles []ModelsRole, ) *TenantsRolesListResponse`
 
 NewTenantsRolesListResponse instantiates a new TenantsRolesListResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetRoles sets Roles field to given value.
 
-### HasRoles
-
-`func (o *TenantsRolesListResponse) HasRoles() bool`
-
-HasRoles returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

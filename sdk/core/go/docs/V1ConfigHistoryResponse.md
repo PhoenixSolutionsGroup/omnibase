@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Configs** | Pointer to [**[]V1ConfigHistoryItem**](V1ConfigHistoryItem.md) | List of configuration entries | [optional] 
-**Pagination** | Pointer to [**V1ConfigHistoryPagination**](V1ConfigHistoryPagination.md) | Pagination information | [optional] 
+**Configs** | [**[]V1ConfigHistoryItem**](V1ConfigHistoryItem.md) | List of configuration entries | 
+**Pagination** | [**V1ConfigHistoryPagination**](V1ConfigHistoryPagination.md) | Pagination information | 
 
 ## Methods
 
 ### NewV1ConfigHistoryResponse
 
-`func NewV1ConfigHistoryResponse() *V1ConfigHistoryResponse`
+`func NewV1ConfigHistoryResponse(configs []V1ConfigHistoryItem, pagination V1ConfigHistoryPagination, ) *V1ConfigHistoryResponse`
 
 NewV1ConfigHistoryResponse instantiates a new V1ConfigHistoryResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetConfigs sets Configs field to given value.
 
-### HasConfigs
-
-`func (o *V1ConfigHistoryResponse) HasConfigs() bool`
-
-HasConfigs returns a boolean if a field has been set.
 
 ### GetPagination
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetPagination sets Pagination field to given value.
 
-### HasPagination
-
-`func (o *V1ConfigHistoryResponse) HasPagination() bool`
-
-HasPagination returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

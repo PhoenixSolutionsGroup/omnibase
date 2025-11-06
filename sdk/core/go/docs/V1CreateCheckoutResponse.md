@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**SessionId** | Pointer to **string** | Stripe Checkout Session ID | [optional] 
-**Url** | Pointer to **string** | Stripe Checkout Session URL | [optional] 
+**SessionId** | **string** | Stripe Checkout Session ID | 
+**Url** | **string** | Stripe Checkout Session URL | 
 
 ## Methods
 
 ### NewV1CreateCheckoutResponse
 
-`func NewV1CreateCheckoutResponse() *V1CreateCheckoutResponse`
+`func NewV1CreateCheckoutResponse(sessionId string, url string, ) *V1CreateCheckoutResponse`
 
 NewV1CreateCheckoutResponse instantiates a new V1CreateCheckoutResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetSessionId sets SessionId field to given value.
 
-### HasSessionId
-
-`func (o *V1CreateCheckoutResponse) HasSessionId() bool`
-
-HasSessionId returns a boolean if a field has been set.
 
 ### GetUrl
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-### HasUrl
-
-`func (o *V1CreateCheckoutResponse) HasUrl() bool`
-
-HasUrl returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

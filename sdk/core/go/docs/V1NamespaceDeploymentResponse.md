@@ -4,17 +4,17 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ManagedMode** | Pointer to **bool** | Whether managed mode is enabled | [optional] 
-**Message** | Pointer to **string** | Success message | [optional] 
-**Path** | Pointer to **string** | S3 storage path | [optional] 
+**ManagedMode** | **bool** | Whether managed mode is enabled | 
+**Message** | **string** | Success message | 
+**Path** | **string** | S3 storage path | 
 **RolesSynced** | Pointer to **int32** | Number of system roles synced (optional) | [optional] 
-**TenantId** | Pointer to **string** | Tenant ID | [optional] 
+**TenantId** | **string** | Tenant ID | 
 
 ## Methods
 
 ### NewV1NamespaceDeploymentResponse
 
-`func NewV1NamespaceDeploymentResponse() *V1NamespaceDeploymentResponse`
+`func NewV1NamespaceDeploymentResponse(managedMode bool, message string, path string, tenantId string, ) *V1NamespaceDeploymentResponse`
 
 NewV1NamespaceDeploymentResponse instantiates a new V1NamespaceDeploymentResponse object
 This constructor will assign default values to properties that have it defined,
@@ -48,11 +48,6 @@ and a boolean to check if the value has been set.
 
 SetManagedMode sets ManagedMode field to given value.
 
-### HasManagedMode
-
-`func (o *V1NamespaceDeploymentResponse) HasManagedMode() bool`
-
-HasManagedMode returns a boolean if a field has been set.
 
 ### GetMessage
 
@@ -73,11 +68,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *V1NamespaceDeploymentResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetPath
 
@@ -98,11 +88,6 @@ and a boolean to check if the value has been set.
 
 SetPath sets Path field to given value.
 
-### HasPath
-
-`func (o *V1NamespaceDeploymentResponse) HasPath() bool`
-
-HasPath returns a boolean if a field has been set.
 
 ### GetRolesSynced
 
@@ -148,11 +133,6 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-### HasTenantId
-
-`func (o *V1NamespaceDeploymentResponse) HasTenantId() bool`
-
-HasTenantId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

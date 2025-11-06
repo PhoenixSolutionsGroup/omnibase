@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.2
+API version: 0.9.3
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the V1CreateCheckoutResponse type satisfies the MappedNullable interface at compile time
@@ -21,17 +23,21 @@ var _ MappedNullable = &V1CreateCheckoutResponse{}
 // V1CreateCheckoutResponse struct for V1CreateCheckoutResponse
 type V1CreateCheckoutResponse struct {
 	// Stripe Checkout Session ID
-	SessionId *string `json:"session_id,omitempty"`
+	SessionId string `json:"session_id"`
 	// Stripe Checkout Session URL
-	Url *string `json:"url,omitempty"`
+	Url string `json:"url"`
 }
+
+type _V1CreateCheckoutResponse V1CreateCheckoutResponse
 
 // NewV1CreateCheckoutResponse instantiates a new V1CreateCheckoutResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1CreateCheckoutResponse() *V1CreateCheckoutResponse {
+func NewV1CreateCheckoutResponse(sessionId string, url string) *V1CreateCheckoutResponse {
 	this := V1CreateCheckoutResponse{}
+	this.SessionId = sessionId
+	this.Url = url
 	return &this
 }
 
@@ -43,68 +49,52 @@ func NewV1CreateCheckoutResponseWithDefaults() *V1CreateCheckoutResponse {
 	return &this
 }
 
-// GetSessionId returns the SessionId field value if set, zero value otherwise.
+// GetSessionId returns the SessionId field value
 func (o *V1CreateCheckoutResponse) GetSessionId() string {
-	if o == nil || IsNil(o.SessionId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.SessionId
+
+	return o.SessionId
 }
 
-// GetSessionIdOk returns a tuple with the SessionId field value if set, nil otherwise
+// GetSessionIdOk returns a tuple with the SessionId field value
 // and a boolean to check if the value has been set.
 func (o *V1CreateCheckoutResponse) GetSessionIdOk() (*string, bool) {
-	if o == nil || IsNil(o.SessionId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.SessionId, true
+	return &o.SessionId, true
 }
 
-// HasSessionId returns a boolean if a field has been set.
-func (o *V1CreateCheckoutResponse) HasSessionId() bool {
-	if o != nil && !IsNil(o.SessionId) {
-		return true
-	}
-
-	return false
-}
-
-// SetSessionId gets a reference to the given string and assigns it to the SessionId field.
+// SetSessionId sets field value
 func (o *V1CreateCheckoutResponse) SetSessionId(v string) {
-	o.SessionId = &v
+	o.SessionId = v
 }
 
-// GetUrl returns the Url field value if set, zero value otherwise.
+// GetUrl returns the Url field value
 func (o *V1CreateCheckoutResponse) GetUrl() string {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Url
+
+	return o.Url
 }
 
-// GetUrlOk returns a tuple with the Url field value if set, nil otherwise
+// GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
 func (o *V1CreateCheckoutResponse) GetUrlOk() (*string, bool) {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Url, true
+	return &o.Url, true
 }
 
-// HasUrl returns a boolean if a field has been set.
-func (o *V1CreateCheckoutResponse) HasUrl() bool {
-	if o != nil && !IsNil(o.Url) {
-		return true
-	}
-
-	return false
-}
-
-// SetUrl gets a reference to the given string and assigns it to the Url field.
+// SetUrl sets field value
 func (o *V1CreateCheckoutResponse) SetUrl(v string) {
-	o.Url = &v
+	o.Url = v
 }
 
 func (o V1CreateCheckoutResponse) MarshalJSON() ([]byte, error) {
@@ -117,13 +107,47 @@ func (o V1CreateCheckoutResponse) MarshalJSON() ([]byte, error) {
 
 func (o V1CreateCheckoutResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.SessionId) {
-		toSerialize["session_id"] = o.SessionId
-	}
-	if !IsNil(o.Url) {
-		toSerialize["url"] = o.Url
-	}
+	toSerialize["session_id"] = o.SessionId
+	toSerialize["url"] = o.Url
 	return toSerialize, nil
+}
+
+func (o *V1CreateCheckoutResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"session_id",
+		"url",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1CreateCheckoutResponse := _V1CreateCheckoutResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varV1CreateCheckoutResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1CreateCheckoutResponse(varV1CreateCheckoutResponse)
+
+	return err
 }
 
 type NullableV1CreateCheckoutResponse struct {

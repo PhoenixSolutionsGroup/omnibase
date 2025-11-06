@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Invite** | Pointer to [**ModelsTenantInvite**](ModelsTenantInvite.md) | Created invite | [optional] 
-**Message** | Pointer to **string** | Success message | [optional] 
+**Invite** | [**ModelsTenantInvite**](ModelsTenantInvite.md) | Created invite | 
+**Message** | **string** | Success message | 
 
 ## Methods
 
 ### NewTenantsCreateTenantUserInviteResponse
 
-`func NewTenantsCreateTenantUserInviteResponse() *TenantsCreateTenantUserInviteResponse`
+`func NewTenantsCreateTenantUserInviteResponse(invite ModelsTenantInvite, message string, ) *TenantsCreateTenantUserInviteResponse`
 
 NewTenantsCreateTenantUserInviteResponse instantiates a new TenantsCreateTenantUserInviteResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetInvite sets Invite field to given value.
 
-### HasInvite
-
-`func (o *TenantsCreateTenantUserInviteResponse) HasInvite() bool`
-
-HasInvite returns a boolean if a field has been set.
 
 ### GetMessage
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *TenantsCreateTenantUserInviteResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

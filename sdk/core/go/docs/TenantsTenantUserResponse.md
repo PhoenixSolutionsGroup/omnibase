@@ -4,17 +4,17 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | Pointer to **string** | User&#39;s email | [optional] 
-**FirstName** | Pointer to **string** | User&#39;s first name | [optional] 
-**LastName** | Pointer to **string** | User&#39;s last name | [optional] 
-**Role** | Pointer to **string** | User&#39;s role in the tenant | [optional] 
-**UserId** | Pointer to **string** | User ID | [optional] 
+**Email** | **string** | User&#39;s email | 
+**FirstName** | **string** | User&#39;s first name | 
+**LastName** | **string** | User&#39;s last name | 
+**Role** | **string** | User&#39;s role in the tenant | 
+**UserId** | **string** | User ID | 
 
 ## Methods
 
 ### NewTenantsTenantUserResponse
 
-`func NewTenantsTenantUserResponse() *TenantsTenantUserResponse`
+`func NewTenantsTenantUserResponse(email string, firstName string, lastName string, role string, userId string, ) *TenantsTenantUserResponse`
 
 NewTenantsTenantUserResponse instantiates a new TenantsTenantUserResponse object
 This constructor will assign default values to properties that have it defined,
@@ -48,11 +48,6 @@ and a boolean to check if the value has been set.
 
 SetEmail sets Email field to given value.
 
-### HasEmail
-
-`func (o *TenantsTenantUserResponse) HasEmail() bool`
-
-HasEmail returns a boolean if a field has been set.
 
 ### GetFirstName
 
@@ -73,11 +68,6 @@ and a boolean to check if the value has been set.
 
 SetFirstName sets FirstName field to given value.
 
-### HasFirstName
-
-`func (o *TenantsTenantUserResponse) HasFirstName() bool`
-
-HasFirstName returns a boolean if a field has been set.
 
 ### GetLastName
 
@@ -98,11 +88,6 @@ and a boolean to check if the value has been set.
 
 SetLastName sets LastName field to given value.
 
-### HasLastName
-
-`func (o *TenantsTenantUserResponse) HasLastName() bool`
-
-HasLastName returns a boolean if a field has been set.
 
 ### GetRole
 
@@ -123,11 +108,6 @@ and a boolean to check if the value has been set.
 
 SetRole sets Role field to given value.
 
-### HasRole
-
-`func (o *TenantsTenantUserResponse) HasRole() bool`
-
-HasRole returns a boolean if a field has been set.
 
 ### GetUserId
 
@@ -148,11 +128,6 @@ and a boolean to check if the value has been set.
 
 SetUserId sets UserId field to given value.
 
-### HasUserId
-
-`func (o *TenantsTenantUserResponse) HasUserId() bool`
-
-HasUserId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
+**Message** | **string** | Success message | 
+**Status** | **int32** | HTTP status code | 
 
 ## Methods
 
 ### NewV1MigrationSuccessResponse
 
-`func NewV1MigrationSuccessResponse() *V1MigrationSuccessResponse`
+`func NewV1MigrationSuccessResponse(message string, status int32, ) *V1MigrationSuccessResponse`
 
 NewV1MigrationSuccessResponse instantiates a new V1MigrationSuccessResponse object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *V1MigrationSuccessResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
-
-`func (o *V1MigrationSuccessResponse) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
