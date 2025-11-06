@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.5
+API version: 0.9.7
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsSubscriptionResponse type satisfies the MappedNullable interface at compile time
@@ -20,19 +22,33 @@ var _ MappedNullable = &ModelsSubscriptionResponse{}
 
 // ModelsSubscriptionResponse struct for ModelsSubscriptionResponse
 type ModelsSubscriptionResponse struct {
-	ConfigPriceId *string `json:"config_price_id,omitempty"`
-	CurrentPeriodEnd *int32 `json:"current_period_end,omitempty"`
-	IsLegacyPrice *bool `json:"is_legacy_price,omitempty"`
-	Status *string `json:"status,omitempty"`
-	SubscriptionId *string `json:"subscription_id,omitempty"`
+	CancelAtPeriodEnd bool `json:"cancel_at_period_end"`
+	CanceledAt *int32 `json:"canceled_at,omitempty"`
+	ConfigPriceId string `json:"config_price_id"`
+	CurrentPeriodEnd int32 `json:"current_period_end"`
+	CurrentPeriodStart int32 `json:"current_period_start"`
+	IsLegacyPrice bool `json:"is_legacy_price"`
+	Status string `json:"status"`
+	SubscriptionId string `json:"subscription_id"`
+	TrialEnd *int32 `json:"trial_end,omitempty"`
+	TrialStart *int32 `json:"trial_start,omitempty"`
 }
+
+type _ModelsSubscriptionResponse ModelsSubscriptionResponse
 
 // NewModelsSubscriptionResponse instantiates a new ModelsSubscriptionResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsSubscriptionResponse() *ModelsSubscriptionResponse {
+func NewModelsSubscriptionResponse(cancelAtPeriodEnd bool, configPriceId string, currentPeriodEnd int32, currentPeriodStart int32, isLegacyPrice bool, status string, subscriptionId string) *ModelsSubscriptionResponse {
 	this := ModelsSubscriptionResponse{}
+	this.CancelAtPeriodEnd = cancelAtPeriodEnd
+	this.ConfigPriceId = configPriceId
+	this.CurrentPeriodEnd = currentPeriodEnd
+	this.CurrentPeriodStart = currentPeriodStart
+	this.IsLegacyPrice = isLegacyPrice
+	this.Status = status
+	this.SubscriptionId = subscriptionId
 	return &this
 }
 
@@ -44,164 +60,268 @@ func NewModelsSubscriptionResponseWithDefaults() *ModelsSubscriptionResponse {
 	return &this
 }
 
-// GetConfigPriceId returns the ConfigPriceId field value if set, zero value otherwise.
-func (o *ModelsSubscriptionResponse) GetConfigPriceId() string {
-	if o == nil || IsNil(o.ConfigPriceId) {
-		var ret string
-		return ret
-	}
-	return *o.ConfigPriceId
-}
-
-// GetConfigPriceIdOk returns a tuple with the ConfigPriceId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsSubscriptionResponse) GetConfigPriceIdOk() (*string, bool) {
-	if o == nil || IsNil(o.ConfigPriceId) {
-		return nil, false
-	}
-	return o.ConfigPriceId, true
-}
-
-// HasConfigPriceId returns a boolean if a field has been set.
-func (o *ModelsSubscriptionResponse) HasConfigPriceId() bool {
-	if o != nil && !IsNil(o.ConfigPriceId) {
-		return true
-	}
-
-	return false
-}
-
-// SetConfigPriceId gets a reference to the given string and assigns it to the ConfigPriceId field.
-func (o *ModelsSubscriptionResponse) SetConfigPriceId(v string) {
-	o.ConfigPriceId = &v
-}
-
-// GetCurrentPeriodEnd returns the CurrentPeriodEnd field value if set, zero value otherwise.
-func (o *ModelsSubscriptionResponse) GetCurrentPeriodEnd() int32 {
-	if o == nil || IsNil(o.CurrentPeriodEnd) {
-		var ret int32
-		return ret
-	}
-	return *o.CurrentPeriodEnd
-}
-
-// GetCurrentPeriodEndOk returns a tuple with the CurrentPeriodEnd field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsSubscriptionResponse) GetCurrentPeriodEndOk() (*int32, bool) {
-	if o == nil || IsNil(o.CurrentPeriodEnd) {
-		return nil, false
-	}
-	return o.CurrentPeriodEnd, true
-}
-
-// HasCurrentPeriodEnd returns a boolean if a field has been set.
-func (o *ModelsSubscriptionResponse) HasCurrentPeriodEnd() bool {
-	if o != nil && !IsNil(o.CurrentPeriodEnd) {
-		return true
-	}
-
-	return false
-}
-
-// SetCurrentPeriodEnd gets a reference to the given int32 and assigns it to the CurrentPeriodEnd field.
-func (o *ModelsSubscriptionResponse) SetCurrentPeriodEnd(v int32) {
-	o.CurrentPeriodEnd = &v
-}
-
-// GetIsLegacyPrice returns the IsLegacyPrice field value if set, zero value otherwise.
-func (o *ModelsSubscriptionResponse) GetIsLegacyPrice() bool {
-	if o == nil || IsNil(o.IsLegacyPrice) {
+// GetCancelAtPeriodEnd returns the CancelAtPeriodEnd field value
+func (o *ModelsSubscriptionResponse) GetCancelAtPeriodEnd() bool {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.IsLegacyPrice
+
+	return o.CancelAtPeriodEnd
 }
 
-// GetIsLegacyPriceOk returns a tuple with the IsLegacyPrice field value if set, nil otherwise
+// GetCancelAtPeriodEndOk returns a tuple with the CancelAtPeriodEnd field value
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetCancelAtPeriodEndOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CancelAtPeriodEnd, true
+}
+
+// SetCancelAtPeriodEnd sets field value
+func (o *ModelsSubscriptionResponse) SetCancelAtPeriodEnd(v bool) {
+	o.CancelAtPeriodEnd = v
+}
+
+// GetCanceledAt returns the CanceledAt field value if set, zero value otherwise.
+func (o *ModelsSubscriptionResponse) GetCanceledAt() int32 {
+	if o == nil || IsNil(o.CanceledAt) {
+		var ret int32
+		return ret
+	}
+	return *o.CanceledAt
+}
+
+// GetCanceledAtOk returns a tuple with the CanceledAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetCanceledAtOk() (*int32, bool) {
+	if o == nil || IsNil(o.CanceledAt) {
+		return nil, false
+	}
+	return o.CanceledAt, true
+}
+
+// HasCanceledAt returns a boolean if a field has been set.
+func (o *ModelsSubscriptionResponse) HasCanceledAt() bool {
+	if o != nil && !IsNil(o.CanceledAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetCanceledAt gets a reference to the given int32 and assigns it to the CanceledAt field.
+func (o *ModelsSubscriptionResponse) SetCanceledAt(v int32) {
+	o.CanceledAt = &v
+}
+
+// GetConfigPriceId returns the ConfigPriceId field value
+func (o *ModelsSubscriptionResponse) GetConfigPriceId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.ConfigPriceId
+}
+
+// GetConfigPriceIdOk returns a tuple with the ConfigPriceId field value
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetConfigPriceIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.ConfigPriceId, true
+}
+
+// SetConfigPriceId sets field value
+func (o *ModelsSubscriptionResponse) SetConfigPriceId(v string) {
+	o.ConfigPriceId = v
+}
+
+// GetCurrentPeriodEnd returns the CurrentPeriodEnd field value
+func (o *ModelsSubscriptionResponse) GetCurrentPeriodEnd() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.CurrentPeriodEnd
+}
+
+// GetCurrentPeriodEndOk returns a tuple with the CurrentPeriodEnd field value
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetCurrentPeriodEndOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CurrentPeriodEnd, true
+}
+
+// SetCurrentPeriodEnd sets field value
+func (o *ModelsSubscriptionResponse) SetCurrentPeriodEnd(v int32) {
+	o.CurrentPeriodEnd = v
+}
+
+// GetCurrentPeriodStart returns the CurrentPeriodStart field value
+func (o *ModelsSubscriptionResponse) GetCurrentPeriodStart() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.CurrentPeriodStart
+}
+
+// GetCurrentPeriodStartOk returns a tuple with the CurrentPeriodStart field value
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetCurrentPeriodStartOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CurrentPeriodStart, true
+}
+
+// SetCurrentPeriodStart sets field value
+func (o *ModelsSubscriptionResponse) SetCurrentPeriodStart(v int32) {
+	o.CurrentPeriodStart = v
+}
+
+// GetIsLegacyPrice returns the IsLegacyPrice field value
+func (o *ModelsSubscriptionResponse) GetIsLegacyPrice() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.IsLegacyPrice
+}
+
+// GetIsLegacyPriceOk returns a tuple with the IsLegacyPrice field value
 // and a boolean to check if the value has been set.
 func (o *ModelsSubscriptionResponse) GetIsLegacyPriceOk() (*bool, bool) {
-	if o == nil || IsNil(o.IsLegacyPrice) {
+	if o == nil {
 		return nil, false
 	}
-	return o.IsLegacyPrice, true
+	return &o.IsLegacyPrice, true
 }
 
-// HasIsLegacyPrice returns a boolean if a field has been set.
-func (o *ModelsSubscriptionResponse) HasIsLegacyPrice() bool {
-	if o != nil && !IsNil(o.IsLegacyPrice) {
-		return true
-	}
-
-	return false
-}
-
-// SetIsLegacyPrice gets a reference to the given bool and assigns it to the IsLegacyPrice field.
+// SetIsLegacyPrice sets field value
 func (o *ModelsSubscriptionResponse) SetIsLegacyPrice(v bool) {
-	o.IsLegacyPrice = &v
+	o.IsLegacyPrice = v
 }
 
-// GetStatus returns the Status field value if set, zero value otherwise.
+// GetStatus returns the Status field value
 func (o *ModelsSubscriptionResponse) GetStatus() string {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Status
+
+	return o.Status
 }
 
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
 func (o *ModelsSubscriptionResponse) GetStatusOk() (*string, bool) {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Status, true
+	return &o.Status, true
 }
 
-// HasStatus returns a boolean if a field has been set.
-func (o *ModelsSubscriptionResponse) HasStatus() bool {
-	if o != nil && !IsNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given string and assigns it to the Status field.
+// SetStatus sets field value
 func (o *ModelsSubscriptionResponse) SetStatus(v string) {
-	o.Status = &v
+	o.Status = v
 }
 
-// GetSubscriptionId returns the SubscriptionId field value if set, zero value otherwise.
+// GetSubscriptionId returns the SubscriptionId field value
 func (o *ModelsSubscriptionResponse) GetSubscriptionId() string {
-	if o == nil || IsNil(o.SubscriptionId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.SubscriptionId
+
+	return o.SubscriptionId
 }
 
-// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value if set, nil otherwise
+// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value
 // and a boolean to check if the value has been set.
 func (o *ModelsSubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
-	if o == nil || IsNil(o.SubscriptionId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.SubscriptionId, true
+	return &o.SubscriptionId, true
 }
 
-// HasSubscriptionId returns a boolean if a field has been set.
-func (o *ModelsSubscriptionResponse) HasSubscriptionId() bool {
-	if o != nil && !IsNil(o.SubscriptionId) {
+// SetSubscriptionId sets field value
+func (o *ModelsSubscriptionResponse) SetSubscriptionId(v string) {
+	o.SubscriptionId = v
+}
+
+// GetTrialEnd returns the TrialEnd field value if set, zero value otherwise.
+func (o *ModelsSubscriptionResponse) GetTrialEnd() int32 {
+	if o == nil || IsNil(o.TrialEnd) {
+		var ret int32
+		return ret
+	}
+	return *o.TrialEnd
+}
+
+// GetTrialEndOk returns a tuple with the TrialEnd field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetTrialEndOk() (*int32, bool) {
+	if o == nil || IsNil(o.TrialEnd) {
+		return nil, false
+	}
+	return o.TrialEnd, true
+}
+
+// HasTrialEnd returns a boolean if a field has been set.
+func (o *ModelsSubscriptionResponse) HasTrialEnd() bool {
+	if o != nil && !IsNil(o.TrialEnd) {
 		return true
 	}
 
 	return false
 }
 
-// SetSubscriptionId gets a reference to the given string and assigns it to the SubscriptionId field.
-func (o *ModelsSubscriptionResponse) SetSubscriptionId(v string) {
-	o.SubscriptionId = &v
+// SetTrialEnd gets a reference to the given int32 and assigns it to the TrialEnd field.
+func (o *ModelsSubscriptionResponse) SetTrialEnd(v int32) {
+	o.TrialEnd = &v
+}
+
+// GetTrialStart returns the TrialStart field value if set, zero value otherwise.
+func (o *ModelsSubscriptionResponse) GetTrialStart() int32 {
+	if o == nil || IsNil(o.TrialStart) {
+		var ret int32
+		return ret
+	}
+	return *o.TrialStart
+}
+
+// GetTrialStartOk returns a tuple with the TrialStart field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ModelsSubscriptionResponse) GetTrialStartOk() (*int32, bool) {
+	if o == nil || IsNil(o.TrialStart) {
+		return nil, false
+	}
+	return o.TrialStart, true
+}
+
+// HasTrialStart returns a boolean if a field has been set.
+func (o *ModelsSubscriptionResponse) HasTrialStart() bool {
+	if o != nil && !IsNil(o.TrialStart) {
+		return true
+	}
+
+	return false
+}
+
+// SetTrialStart gets a reference to the given int32 and assigns it to the TrialStart field.
+func (o *ModelsSubscriptionResponse) SetTrialStart(v int32) {
+	o.TrialStart = &v
 }
 
 func (o ModelsSubscriptionResponse) MarshalJSON() ([]byte, error) {
@@ -214,22 +334,66 @@ func (o ModelsSubscriptionResponse) MarshalJSON() ([]byte, error) {
 
 func (o ModelsSubscriptionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ConfigPriceId) {
-		toSerialize["config_price_id"] = o.ConfigPriceId
+	toSerialize["cancel_at_period_end"] = o.CancelAtPeriodEnd
+	if !IsNil(o.CanceledAt) {
+		toSerialize["canceled_at"] = o.CanceledAt
 	}
-	if !IsNil(o.CurrentPeriodEnd) {
-		toSerialize["current_period_end"] = o.CurrentPeriodEnd
+	toSerialize["config_price_id"] = o.ConfigPriceId
+	toSerialize["current_period_end"] = o.CurrentPeriodEnd
+	toSerialize["current_period_start"] = o.CurrentPeriodStart
+	toSerialize["is_legacy_price"] = o.IsLegacyPrice
+	toSerialize["status"] = o.Status
+	toSerialize["subscription_id"] = o.SubscriptionId
+	if !IsNil(o.TrialEnd) {
+		toSerialize["trial_end"] = o.TrialEnd
 	}
-	if !IsNil(o.IsLegacyPrice) {
-		toSerialize["is_legacy_price"] = o.IsLegacyPrice
-	}
-	if !IsNil(o.Status) {
-		toSerialize["status"] = o.Status
-	}
-	if !IsNil(o.SubscriptionId) {
-		toSerialize["subscription_id"] = o.SubscriptionId
+	if !IsNil(o.TrialStart) {
+		toSerialize["trial_start"] = o.TrialStart
 	}
 	return toSerialize, nil
+}
+
+func (o *ModelsSubscriptionResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"cancel_at_period_end",
+		"config_price_id",
+		"current_period_end",
+		"current_period_start",
+		"is_legacy_price",
+		"status",
+		"subscription_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsSubscriptionResponse := _ModelsSubscriptionResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsSubscriptionResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsSubscriptionResponse(varModelsSubscriptionResponse)
+
+	return err
 }
 
 type NullableModelsSubscriptionResponse struct {

@@ -4,17 +4,18 @@ All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ApiV1AuthActiveTenantGet**](V1AuthAPI.md#ApiV1AuthActiveTenantGet) | **Get** /api/v1/auth/active-tenant | Get active tenant
-[**ApiV1AuthIdentityGet**](V1AuthAPI.md#ApiV1AuthIdentityGet) | **Get** /api/v1/auth/identity | Get current identity
-[**ApiV1AuthLogoutPost**](V1AuthAPI.md#ApiV1AuthLogoutPost) | **Post** /api/v1/auth/logout | Logout user
-[**ApiV1AuthSessionGet**](V1AuthAPI.md#ApiV1AuthSessionGet) | **Get** /api/v1/auth/session | Get current session
-[**ApiV1AuthWhoamiGet**](V1AuthAPI.md#ApiV1AuthWhoamiGet) | **Get** /api/v1/auth/whoami | Check authentication status
+[**GetActiveTenant**](V1AuthAPI.md#GetActiveTenant) | **Get** /api/v1/auth/active-tenant | Get active tenant
+[**GetIdentity**](V1AuthAPI.md#GetIdentity) | **Get** /api/v1/auth/identity | Get current identity
+[**GetSession**](V1AuthAPI.md#GetSession) | **Get** /api/v1/auth/session | Get current session
+[**ListTenants**](V1AuthAPI.md#ListTenants) | **Get** /api/v1/auth/tenants | List user&#39;s tenants
+[**Logout**](V1AuthAPI.md#Logout) | **Post** /api/v1/auth/logout | Logout user
+[**WhoAmI**](V1AuthAPI.md#WhoAmI) | **Get** /api/v1/auth/whoami | Check authentication status
 
 
 
-## ApiV1AuthActiveTenantGet
+## GetActiveTenant
 
-> ApiV1AuthActiveTenantGet200Response ApiV1AuthActiveTenantGet(ctx).Execute()
+> GetActiveTenant200Response GetActiveTenant(ctx).Execute()
 
 Get active tenant
 
@@ -36,13 +37,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ApiV1AuthActiveTenantGet(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ApiV1AuthActiveTenantGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1AuthActiveTenantGet`: ApiV1AuthActiveTenantGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ApiV1AuthActiveTenantGet`: %v\n", resp)
+	// response from `GetActiveTenant`: GetActiveTenant200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetActiveTenant`: %v\n", resp)
 }
 ```
 
@@ -52,12 +53,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1AuthActiveTenantGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetActiveTenantRequest struct via the builder pattern
 
 
 ### Return type
 
-[**ApiV1AuthActiveTenantGet200Response**](ApiV1AuthActiveTenantGet200Response.md)
+[**GetActiveTenant200Response**](GetActiveTenant200Response.md)
 
 ### Authorization
 
@@ -73,9 +74,9 @@ Other parameters are passed through a pointer to a apiApiV1AuthActiveTenantGetRe
 [[Back to README]](../README.md)
 
 
-## ApiV1AuthIdentityGet
+## GetIdentity
 
-> ApiV1AuthIdentityGet200Response ApiV1AuthIdentityGet(ctx).Execute()
+> GetIdentity200Response GetIdentity(ctx).Execute()
 
 Get current identity
 
@@ -97,13 +98,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ApiV1AuthIdentityGet(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.GetIdentity(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ApiV1AuthIdentityGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetIdentity``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1AuthIdentityGet`: ApiV1AuthIdentityGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ApiV1AuthIdentityGet`: %v\n", resp)
+	// response from `GetIdentity`: GetIdentity200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetIdentity`: %v\n", resp)
 }
 ```
 
@@ -113,12 +114,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1AuthIdentityGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetIdentityRequest struct via the builder pattern
 
 
 ### Return type
 
-[**ApiV1AuthIdentityGet200Response**](ApiV1AuthIdentityGet200Response.md)
+[**GetIdentity200Response**](GetIdentity200Response.md)
 
 ### Authorization
 
@@ -134,70 +135,9 @@ Other parameters are passed through a pointer to a apiApiV1AuthIdentityGetReques
 [[Back to README]](../README.md)
 
 
-## ApiV1AuthLogoutPost
+## GetSession
 
-> ApiV1AuthLogoutPost200Response ApiV1AuthLogoutPost(ctx).Execute()
-
-Logout user
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ApiV1AuthLogoutPost(context.Background()).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ApiV1AuthLogoutPost``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `ApiV1AuthLogoutPost`: ApiV1AuthLogoutPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ApiV1AuthLogoutPost`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiApiV1AuthLogoutPostRequest struct via the builder pattern
-
-
-### Return type
-
-[**ApiV1AuthLogoutPost200Response**](ApiV1AuthLogoutPost200Response.md)
-
-### Authorization
-
-[SessionAuth](../README.md#SessionAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## ApiV1AuthSessionGet
-
-> ApiV1AuthSessionGet200Response ApiV1AuthSessionGet(ctx).Execute()
+> GetSession200Response GetSession(ctx).Execute()
 
 Get current session
 
@@ -219,13 +159,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ApiV1AuthSessionGet(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.GetSession(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ApiV1AuthSessionGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetSession``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1AuthSessionGet`: ApiV1AuthSessionGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ApiV1AuthSessionGet`: %v\n", resp)
+	// response from `GetSession`: GetSession200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetSession`: %v\n", resp)
 }
 ```
 
@@ -235,12 +175,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1AuthSessionGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetSessionRequest struct via the builder pattern
 
 
 ### Return type
 
-[**ApiV1AuthSessionGet200Response**](ApiV1AuthSessionGet200Response.md)
+[**GetSession200Response**](GetSession200Response.md)
 
 ### Authorization
 
@@ -256,9 +196,131 @@ Other parameters are passed through a pointer to a apiApiV1AuthSessionGetRequest
 [[Back to README]](../README.md)
 
 
-## ApiV1AuthWhoamiGet
+## ListTenants
 
-> ApiV1AuthWhoamiGet200Response ApiV1AuthWhoamiGet(ctx).Execute()
+> ListTenants200Response ListTenants(ctx).Execute()
+
+List user's tenants
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1AuthAPI.ListTenants(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ListTenants``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ListTenants`: ListTenants200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ListTenants`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListTenantsRequest struct via the builder pattern
+
+
+### Return type
+
+[**ListTenants200Response**](ListTenants200Response.md)
+
+### Authorization
+
+[SessionAuth](../README.md#SessionAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## Logout
+
+> Logout200Response Logout(ctx).Execute()
+
+Logout user
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1AuthAPI.Logout(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.Logout``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `Logout`: Logout200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.Logout`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiLogoutRequest struct via the builder pattern
+
+
+### Return type
+
+[**Logout200Response**](Logout200Response.md)
+
+### Authorization
+
+[SessionAuth](../README.md#SessionAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## WhoAmI
+
+> WhoAmI200Response WhoAmI(ctx).Execute()
 
 Check authentication status
 
@@ -280,13 +342,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ApiV1AuthWhoamiGet(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.WhoAmI(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ApiV1AuthWhoamiGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.WhoAmI``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1AuthWhoamiGet`: ApiV1AuthWhoamiGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ApiV1AuthWhoamiGet`: %v\n", resp)
+	// response from `WhoAmI`: WhoAmI200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.WhoAmI`: %v\n", resp)
 }
 ```
 
@@ -296,12 +358,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1AuthWhoamiGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiWhoAmIRequest struct via the builder pattern
 
 
 ### Return type
 
-[**ApiV1AuthWhoamiGet200Response**](ApiV1AuthWhoamiGet200Response.md)
+[**WhoAmI200Response**](WhoAmI200Response.md)
 
 ### Authorization
 

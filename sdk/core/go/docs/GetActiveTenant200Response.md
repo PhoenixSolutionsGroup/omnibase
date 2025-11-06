@@ -1,78 +1,78 @@
-# ApiV1AuthIdentityGet200Response
+# GetActiveTenant200Response
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to **map[string]interface{}** |  | [optional] 
+**Data** | Pointer to [**ModelsActiveTenantResponse**](ModelsActiveTenantResponse.md) |  | [optional] 
 **Status** | Pointer to **int32** |  | [optional] 
 
 ## Methods
 
-### NewApiV1AuthIdentityGet200Response
+### NewGetActiveTenant200Response
 
-`func NewApiV1AuthIdentityGet200Response() *ApiV1AuthIdentityGet200Response`
+`func NewGetActiveTenant200Response() *GetActiveTenant200Response`
 
-NewApiV1AuthIdentityGet200Response instantiates a new ApiV1AuthIdentityGet200Response object
+NewGetActiveTenant200Response instantiates a new GetActiveTenant200Response object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewApiV1AuthIdentityGet200ResponseWithDefaults
+### NewGetActiveTenant200ResponseWithDefaults
 
-`func NewApiV1AuthIdentityGet200ResponseWithDefaults() *ApiV1AuthIdentityGet200Response`
+`func NewGetActiveTenant200ResponseWithDefaults() *GetActiveTenant200Response`
 
-NewApiV1AuthIdentityGet200ResponseWithDefaults instantiates a new ApiV1AuthIdentityGet200Response object
+NewGetActiveTenant200ResponseWithDefaults instantiates a new GetActiveTenant200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ApiV1AuthIdentityGet200Response) GetData() map[string]interface{}`
+`func (o *GetActiveTenant200Response) GetData() ModelsActiveTenantResponse`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ApiV1AuthIdentityGet200Response) GetDataOk() (*map[string]interface{}, bool)`
+`func (o *GetActiveTenant200Response) GetDataOk() (*ModelsActiveTenantResponse, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ApiV1AuthIdentityGet200Response) SetData(v map[string]interface{})`
+`func (o *GetActiveTenant200Response) SetData(v ModelsActiveTenantResponse)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *ApiV1AuthIdentityGet200Response) HasData() bool`
+`func (o *GetActiveTenant200Response) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
-`func (o *ApiV1AuthIdentityGet200Response) GetStatus() int32`
+`func (o *GetActiveTenant200Response) GetStatus() int32`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *ApiV1AuthIdentityGet200Response) GetStatusOk() (*int32, bool)`
+`func (o *GetActiveTenant200Response) GetStatusOk() (*int32, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *ApiV1AuthIdentityGet200Response) SetStatus(v int32)`
+`func (o *GetActiveTenant200Response) SetStatus(v int32)`
 
 SetStatus sets Status field to given value.
 
 ### HasStatus
 
-`func (o *ApiV1AuthIdentityGet200Response) HasStatus() bool`
+`func (o *GetActiveTenant200Response) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
 

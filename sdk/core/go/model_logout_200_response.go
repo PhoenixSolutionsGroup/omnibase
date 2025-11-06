@@ -15,37 +15,36 @@ import (
 	"encoding/json"
 )
 
-// checks if the GetTenantBillingStatus200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &GetTenantBillingStatus200Response{}
+// checks if the Logout200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Logout200Response{}
 
-// GetTenantBillingStatus200Response struct for GetTenantBillingStatus200Response
-type GetTenantBillingStatus200Response struct {
-	Data *ModelsBillingStatusResponse `json:"data,omitempty"`
-	// HTTP status code
+// Logout200Response struct for Logout200Response
+type Logout200Response struct {
+	Data *ModelsLogoutResponse `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewGetTenantBillingStatus200Response instantiates a new GetTenantBillingStatus200Response object
+// NewLogout200Response instantiates a new Logout200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetTenantBillingStatus200Response() *GetTenantBillingStatus200Response {
-	this := GetTenantBillingStatus200Response{}
+func NewLogout200Response() *Logout200Response {
+	this := Logout200Response{}
 	return &this
 }
 
-// NewGetTenantBillingStatus200ResponseWithDefaults instantiates a new GetTenantBillingStatus200Response object
+// NewLogout200ResponseWithDefaults instantiates a new Logout200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewGetTenantBillingStatus200ResponseWithDefaults() *GetTenantBillingStatus200Response {
-	this := GetTenantBillingStatus200Response{}
+func NewLogout200ResponseWithDefaults() *Logout200Response {
+	this := Logout200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *GetTenantBillingStatus200Response) GetData() ModelsBillingStatusResponse {
+func (o *Logout200Response) GetData() ModelsLogoutResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsBillingStatusResponse
+		var ret ModelsLogoutResponse
 		return ret
 	}
 	return *o.Data
@@ -53,7 +52,7 @@ func (o *GetTenantBillingStatus200Response) GetData() ModelsBillingStatusRespons
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *GetTenantBillingStatus200Response) GetDataOk() (*ModelsBillingStatusResponse, bool) {
+func (o *Logout200Response) GetDataOk() (*ModelsLogoutResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -61,7 +60,7 @@ func (o *GetTenantBillingStatus200Response) GetDataOk() (*ModelsBillingStatusRes
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *GetTenantBillingStatus200Response) HasData() bool {
+func (o *Logout200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -69,13 +68,13 @@ func (o *GetTenantBillingStatus200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsBillingStatusResponse and assigns it to the Data field.
-func (o *GetTenantBillingStatus200Response) SetData(v ModelsBillingStatusResponse) {
+// SetData gets a reference to the given ModelsLogoutResponse and assigns it to the Data field.
+func (o *Logout200Response) SetData(v ModelsLogoutResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *GetTenantBillingStatus200Response) GetStatus() int32 {
+func (o *Logout200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -85,7 +84,7 @@ func (o *GetTenantBillingStatus200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *GetTenantBillingStatus200Response) GetStatusOk() (*int32, bool) {
+func (o *Logout200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -93,7 +92,7 @@ func (o *GetTenantBillingStatus200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *GetTenantBillingStatus200Response) HasStatus() bool {
+func (o *Logout200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -102,11 +101,11 @@ func (o *GetTenantBillingStatus200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *GetTenantBillingStatus200Response) SetStatus(v int32) {
+func (o *Logout200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o GetTenantBillingStatus200Response) MarshalJSON() ([]byte, error) {
+func (o Logout200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -114,7 +113,7 @@ func (o GetTenantBillingStatus200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o GetTenantBillingStatus200Response) ToMap() (map[string]interface{}, error) {
+func (o Logout200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -125,38 +124,38 @@ func (o GetTenantBillingStatus200Response) ToMap() (map[string]interface{}, erro
 	return toSerialize, nil
 }
 
-type NullableGetTenantBillingStatus200Response struct {
-	value *GetTenantBillingStatus200Response
+type NullableLogout200Response struct {
+	value *Logout200Response
 	isSet bool
 }
 
-func (v NullableGetTenantBillingStatus200Response) Get() *GetTenantBillingStatus200Response {
+func (v NullableLogout200Response) Get() *Logout200Response {
 	return v.value
 }
 
-func (v *NullableGetTenantBillingStatus200Response) Set(val *GetTenantBillingStatus200Response) {
+func (v *NullableLogout200Response) Set(val *Logout200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableGetTenantBillingStatus200Response) IsSet() bool {
+func (v NullableLogout200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableGetTenantBillingStatus200Response) Unset() {
+func (v *NullableLogout200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableGetTenantBillingStatus200Response(val *GetTenantBillingStatus200Response) *NullableGetTenantBillingStatus200Response {
-	return &NullableGetTenantBillingStatus200Response{value: val, isSet: true}
+func NewNullableLogout200Response(val *Logout200Response) *NullableLogout200Response {
+	return &NullableLogout200Response{value: val, isSet: true}
 }
 
-func (v NullableGetTenantBillingStatus200Response) MarshalJSON() ([]byte, error) {
+func (v NullableLogout200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableGetTenantBillingStatus200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableLogout200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

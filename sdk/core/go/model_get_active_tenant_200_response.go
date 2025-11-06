@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.5
+API version: 0.9.7
 Contact: support@omnibase.dev
 */
 
@@ -15,52 +15,52 @@ import (
 	"encoding/json"
 )
 
-// checks if the ApiV1AuthIdentityGet200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ApiV1AuthIdentityGet200Response{}
+// checks if the GetActiveTenant200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetActiveTenant200Response{}
 
-// ApiV1AuthIdentityGet200Response struct for ApiV1AuthIdentityGet200Response
-type ApiV1AuthIdentityGet200Response struct {
-	Data map[string]interface{} `json:"data,omitempty"`
+// GetActiveTenant200Response struct for GetActiveTenant200Response
+type GetActiveTenant200Response struct {
+	Data *ModelsActiveTenantResponse `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewApiV1AuthIdentityGet200Response instantiates a new ApiV1AuthIdentityGet200Response object
+// NewGetActiveTenant200Response instantiates a new GetActiveTenant200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApiV1AuthIdentityGet200Response() *ApiV1AuthIdentityGet200Response {
-	this := ApiV1AuthIdentityGet200Response{}
+func NewGetActiveTenant200Response() *GetActiveTenant200Response {
+	this := GetActiveTenant200Response{}
 	return &this
 }
 
-// NewApiV1AuthIdentityGet200ResponseWithDefaults instantiates a new ApiV1AuthIdentityGet200Response object
+// NewGetActiveTenant200ResponseWithDefaults instantiates a new GetActiveTenant200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewApiV1AuthIdentityGet200ResponseWithDefaults() *ApiV1AuthIdentityGet200Response {
-	this := ApiV1AuthIdentityGet200Response{}
+func NewGetActiveTenant200ResponseWithDefaults() *GetActiveTenant200Response {
+	this := GetActiveTenant200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ApiV1AuthIdentityGet200Response) GetData() map[string]interface{} {
+func (o *GetActiveTenant200Response) GetData() ModelsActiveTenantResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret map[string]interface{}
+		var ret ModelsActiveTenantResponse
 		return ret
 	}
-	return o.Data
+	return *o.Data
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthIdentityGet200Response) GetDataOk() (map[string]interface{}, bool) {
+func (o *GetActiveTenant200Response) GetDataOk() (*ModelsActiveTenantResponse, bool) {
 	if o == nil || IsNil(o.Data) {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
 	return o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *ApiV1AuthIdentityGet200Response) HasData() bool {
+func (o *GetActiveTenant200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +68,13 @@ func (o *ApiV1AuthIdentityGet200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given map[string]interface{} and assigns it to the Data field.
-func (o *ApiV1AuthIdentityGet200Response) SetData(v map[string]interface{}) {
-	o.Data = v
+// SetData gets a reference to the given ModelsActiveTenantResponse and assigns it to the Data field.
+func (o *GetActiveTenant200Response) SetData(v ModelsActiveTenantResponse) {
+	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ApiV1AuthIdentityGet200Response) GetStatus() int32 {
+func (o *GetActiveTenant200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +84,7 @@ func (o *ApiV1AuthIdentityGet200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthIdentityGet200Response) GetStatusOk() (*int32, bool) {
+func (o *GetActiveTenant200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *ApiV1AuthIdentityGet200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *ApiV1AuthIdentityGet200Response) HasStatus() bool {
+func (o *GetActiveTenant200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +101,11 @@ func (o *ApiV1AuthIdentityGet200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ApiV1AuthIdentityGet200Response) SetStatus(v int32) {
+func (o *GetActiveTenant200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o ApiV1AuthIdentityGet200Response) MarshalJSON() ([]byte, error) {
+func (o GetActiveTenant200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +113,7 @@ func (o ApiV1AuthIdentityGet200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ApiV1AuthIdentityGet200Response) ToMap() (map[string]interface{}, error) {
+func (o GetActiveTenant200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +124,38 @@ func (o ApiV1AuthIdentityGet200Response) ToMap() (map[string]interface{}, error)
 	return toSerialize, nil
 }
 
-type NullableApiV1AuthIdentityGet200Response struct {
-	value *ApiV1AuthIdentityGet200Response
+type NullableGetActiveTenant200Response struct {
+	value *GetActiveTenant200Response
 	isSet bool
 }
 
-func (v NullableApiV1AuthIdentityGet200Response) Get() *ApiV1AuthIdentityGet200Response {
+func (v NullableGetActiveTenant200Response) Get() *GetActiveTenant200Response {
 	return v.value
 }
 
-func (v *NullableApiV1AuthIdentityGet200Response) Set(val *ApiV1AuthIdentityGet200Response) {
+func (v *NullableGetActiveTenant200Response) Set(val *GetActiveTenant200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableApiV1AuthIdentityGet200Response) IsSet() bool {
+func (v NullableGetActiveTenant200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableApiV1AuthIdentityGet200Response) Unset() {
+func (v *NullableGetActiveTenant200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableApiV1AuthIdentityGet200Response(val *ApiV1AuthIdentityGet200Response) *NullableApiV1AuthIdentityGet200Response {
-	return &NullableApiV1AuthIdentityGet200Response{value: val, isSet: true}
+func NewNullableGetActiveTenant200Response(val *GetActiveTenant200Response) *NullableGetActiveTenant200Response {
+	return &NullableGetActiveTenant200Response{value: val, isSet: true}
 }
 
-func (v NullableApiV1AuthIdentityGet200Response) MarshalJSON() ([]byte, error) {
+func (v NullableGetActiveTenant200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableApiV1AuthIdentityGet200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableGetActiveTenant200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

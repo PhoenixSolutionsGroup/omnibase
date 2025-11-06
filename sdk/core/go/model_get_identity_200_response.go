@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.5
+API version: 0.9.7
 Contact: support@omnibase.dev
 */
 
@@ -15,52 +15,52 @@ import (
 	"encoding/json"
 )
 
-// checks if the ApiV1AuthLogoutPost200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ApiV1AuthLogoutPost200Response{}
+// checks if the GetIdentity200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetIdentity200Response{}
 
-// ApiV1AuthLogoutPost200Response struct for ApiV1AuthLogoutPost200Response
-type ApiV1AuthLogoutPost200Response struct {
-	Data *ModelsLogoutResponse `json:"data,omitempty"`
+// GetIdentity200Response struct for GetIdentity200Response
+type GetIdentity200Response struct {
+	Data map[string]interface{} `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewApiV1AuthLogoutPost200Response instantiates a new ApiV1AuthLogoutPost200Response object
+// NewGetIdentity200Response instantiates a new GetIdentity200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApiV1AuthLogoutPost200Response() *ApiV1AuthLogoutPost200Response {
-	this := ApiV1AuthLogoutPost200Response{}
+func NewGetIdentity200Response() *GetIdentity200Response {
+	this := GetIdentity200Response{}
 	return &this
 }
 
-// NewApiV1AuthLogoutPost200ResponseWithDefaults instantiates a new ApiV1AuthLogoutPost200Response object
+// NewGetIdentity200ResponseWithDefaults instantiates a new GetIdentity200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewApiV1AuthLogoutPost200ResponseWithDefaults() *ApiV1AuthLogoutPost200Response {
-	this := ApiV1AuthLogoutPost200Response{}
+func NewGetIdentity200ResponseWithDefaults() *GetIdentity200Response {
+	this := GetIdentity200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ApiV1AuthLogoutPost200Response) GetData() ModelsLogoutResponse {
+func (o *GetIdentity200Response) GetData() map[string]interface{} {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsLogoutResponse
+		var ret map[string]interface{}
 		return ret
 	}
-	return *o.Data
+	return o.Data
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthLogoutPost200Response) GetDataOk() (*ModelsLogoutResponse, bool) {
+func (o *GetIdentity200Response) GetDataOk() (map[string]interface{}, bool) {
 	if o == nil || IsNil(o.Data) {
-		return nil, false
+		return map[string]interface{}{}, false
 	}
 	return o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *ApiV1AuthLogoutPost200Response) HasData() bool {
+func (o *GetIdentity200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +68,13 @@ func (o *ApiV1AuthLogoutPost200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsLogoutResponse and assigns it to the Data field.
-func (o *ApiV1AuthLogoutPost200Response) SetData(v ModelsLogoutResponse) {
-	o.Data = &v
+// SetData gets a reference to the given map[string]interface{} and assigns it to the Data field.
+func (o *GetIdentity200Response) SetData(v map[string]interface{}) {
+	o.Data = v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ApiV1AuthLogoutPost200Response) GetStatus() int32 {
+func (o *GetIdentity200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +84,7 @@ func (o *ApiV1AuthLogoutPost200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthLogoutPost200Response) GetStatusOk() (*int32, bool) {
+func (o *GetIdentity200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *ApiV1AuthLogoutPost200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *ApiV1AuthLogoutPost200Response) HasStatus() bool {
+func (o *GetIdentity200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +101,11 @@ func (o *ApiV1AuthLogoutPost200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ApiV1AuthLogoutPost200Response) SetStatus(v int32) {
+func (o *GetIdentity200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o ApiV1AuthLogoutPost200Response) MarshalJSON() ([]byte, error) {
+func (o GetIdentity200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +113,7 @@ func (o ApiV1AuthLogoutPost200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ApiV1AuthLogoutPost200Response) ToMap() (map[string]interface{}, error) {
+func (o GetIdentity200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +124,38 @@ func (o ApiV1AuthLogoutPost200Response) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-type NullableApiV1AuthLogoutPost200Response struct {
-	value *ApiV1AuthLogoutPost200Response
+type NullableGetIdentity200Response struct {
+	value *GetIdentity200Response
 	isSet bool
 }
 
-func (v NullableApiV1AuthLogoutPost200Response) Get() *ApiV1AuthLogoutPost200Response {
+func (v NullableGetIdentity200Response) Get() *GetIdentity200Response {
 	return v.value
 }
 
-func (v *NullableApiV1AuthLogoutPost200Response) Set(val *ApiV1AuthLogoutPost200Response) {
+func (v *NullableGetIdentity200Response) Set(val *GetIdentity200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableApiV1AuthLogoutPost200Response) IsSet() bool {
+func (v NullableGetIdentity200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableApiV1AuthLogoutPost200Response) Unset() {
+func (v *NullableGetIdentity200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableApiV1AuthLogoutPost200Response(val *ApiV1AuthLogoutPost200Response) *NullableApiV1AuthLogoutPost200Response {
-	return &NullableApiV1AuthLogoutPost200Response{value: val, isSet: true}
+func NewNullableGetIdentity200Response(val *GetIdentity200Response) *NullableGetIdentity200Response {
+	return &NullableGetIdentity200Response{value: val, isSet: true}
 }
 
-func (v NullableApiV1AuthLogoutPost200Response) MarshalJSON() ([]byte, error) {
+func (v NullableGetIdentity200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableApiV1AuthLogoutPost200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableGetIdentity200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

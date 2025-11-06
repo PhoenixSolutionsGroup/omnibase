@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.5
+API version: 0.9.7
 Contact: support@omnibase.dev
 */
 
@@ -23,17 +23,17 @@ import (
 // V1AuthAPIService V1AuthAPI service
 type V1AuthAPIService service
 
-type ApiApiV1AuthActiveTenantGetRequest struct {
+type ApiGetActiveTenantRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiApiV1AuthActiveTenantGetRequest) Execute() (*ApiV1AuthActiveTenantGet200Response, *http.Response, error) {
-	return r.ApiService.ApiV1AuthActiveTenantGetExecute(r)
+func (r ApiGetActiveTenantRequest) Execute() (*GetActiveTenant200Response, *http.Response, error) {
+	return r.ApiService.GetActiveTenantExecute(r)
 }
 
 /*
-ApiV1AuthActiveTenantGet Get active tenant
+GetActiveTenant Get active tenant
 
 Returns the full tenant object for the user's currently active tenant.
 
@@ -45,26 +45,26 @@ The active tenant determines which resources and data the user can access.
 Determine which tenant context to use for API calls and data filtering.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1AuthActiveTenantGetRequest
+ @return ApiGetActiveTenantRequest
 */
-func (a *V1AuthAPIService) ApiV1AuthActiveTenantGet(ctx context.Context) ApiApiV1AuthActiveTenantGetRequest {
-	return ApiApiV1AuthActiveTenantGetRequest{
+func (a *V1AuthAPIService) GetActiveTenant(ctx context.Context) ApiGetActiveTenantRequest {
+	return ApiGetActiveTenantRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1AuthActiveTenantGet200Response
-func (a *V1AuthAPIService) ApiV1AuthActiveTenantGetExecute(r ApiApiV1AuthActiveTenantGetRequest) (*ApiV1AuthActiveTenantGet200Response, *http.Response, error) {
+//  @return GetActiveTenant200Response
+func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (*GetActiveTenant200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1AuthActiveTenantGet200Response
+		localVarReturnValue  *GetActiveTenant200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ApiV1AuthActiveTenantGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetActiveTenant")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -153,17 +153,17 @@ func (a *V1AuthAPIService) ApiV1AuthActiveTenantGetExecute(r ApiApiV1AuthActiveT
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiApiV1AuthIdentityGetRequest struct {
+type ApiGetIdentityRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiApiV1AuthIdentityGetRequest) Execute() (*ApiV1AuthIdentityGet200Response, *http.Response, error) {
-	return r.ApiService.ApiV1AuthIdentityGetExecute(r)
+func (r ApiGetIdentityRequest) Execute() (*GetIdentity200Response, *http.Response, error) {
+	return r.ApiService.GetIdentityExecute(r)
 }
 
 /*
-ApiV1AuthIdentityGet Get current identity
+GetIdentity Get current identity
 
 Returns the current authenticated user's identity information (traits like email, name).
 
@@ -177,26 +177,26 @@ Returns the current authenticated user's identity information (traits like email
 Lighter alternative to full session when you only need user profile data.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1AuthIdentityGetRequest
+ @return ApiGetIdentityRequest
 */
-func (a *V1AuthAPIService) ApiV1AuthIdentityGet(ctx context.Context) ApiApiV1AuthIdentityGetRequest {
-	return ApiApiV1AuthIdentityGetRequest{
+func (a *V1AuthAPIService) GetIdentity(ctx context.Context) ApiGetIdentityRequest {
+	return ApiGetIdentityRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1AuthIdentityGet200Response
-func (a *V1AuthAPIService) ApiV1AuthIdentityGetExecute(r ApiApiV1AuthIdentityGetRequest) (*ApiV1AuthIdentityGet200Response, *http.Response, error) {
+//  @return GetIdentity200Response
+func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*GetIdentity200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1AuthIdentityGet200Response
+		localVarReturnValue  *GetIdentity200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ApiV1AuthIdentityGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetIdentity")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -285,17 +285,290 @@ func (a *V1AuthAPIService) ApiV1AuthIdentityGetExecute(r ApiApiV1AuthIdentityGet
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiApiV1AuthLogoutPostRequest struct {
+type ApiGetSessionRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiApiV1AuthLogoutPostRequest) Execute() (*ApiV1AuthLogoutPost200Response, *http.Response, error) {
-	return r.ApiService.ApiV1AuthLogoutPostExecute(r)
+func (r ApiGetSessionRequest) Execute() (*GetSession200Response, *http.Response, error) {
+	return r.ApiService.GetSessionExecute(r)
 }
 
 /*
-ApiV1AuthLogoutPost Logout user
+GetSession Get current session
+
+Returns the current authenticated user's session including identity and tenant information.
+
+## Session Data
+- Session metadata (ID, expiry, authentication methods)
+- Identity information (user ID, traits like email, name)
+- Active tenant context (if user has tenant membership)
+
+## Authentication
+Requires valid session via Cookie or X-Session-Token header.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetSessionRequest
+*/
+func (a *V1AuthAPIService) GetSession(ctx context.Context) ApiGetSessionRequest {
+	return ApiGetSessionRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return GetSession200Response
+func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*GetSession200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetSession200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetSession")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/auth/session"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Cookie"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HandlersUnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiListTenantsRequest struct {
+	ctx context.Context
+	ApiService *V1AuthAPIService
+}
+
+func (r ApiListTenantsRequest) Execute() (*ListTenants200Response, *http.Response, error) {
+	return r.ApiService.ListTenantsExecute(r)
+}
+
+/*
+ListTenants List user's tenants
+
+Returns all tenants the user is a member of with their active status.
+
+## Tenant Memberships
+Users can be members of multiple tenants. Each membership has:
+- Active status (only one tenant can be active at a time)
+- Full tenant information (ID, name, type, etc.)
+
+## Use Case
+Display tenant switcher UI or list all organizations the user belongs to.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListTenantsRequest
+*/
+func (a *V1AuthAPIService) ListTenants(ctx context.Context) ApiListTenantsRequest {
+	return ApiListTenantsRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return ListTenants200Response
+func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTenants200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListTenants200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ListTenants")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/auth/tenants"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Cookie"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HandlersUnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v HandlersInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiLogoutRequest struct {
+	ctx context.Context
+	ApiService *V1AuthAPIService
+}
+
+func (r ApiLogoutRequest) Execute() (*Logout200Response, *http.Response, error) {
+	return r.ApiService.LogoutExecute(r)
+}
+
+/*
+Logout Logout user
 
 Creates a Kratos logout flow and returns the logout URL for browser redirect.
 
@@ -308,26 +581,26 @@ Creates a Kratos logout flow and returns the logout URL for browser redirect.
 The logout URL handles clearing session cookies automatically.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1AuthLogoutPostRequest
+ @return ApiLogoutRequest
 */
-func (a *V1AuthAPIService) ApiV1AuthLogoutPost(ctx context.Context) ApiApiV1AuthLogoutPostRequest {
-	return ApiApiV1AuthLogoutPostRequest{
+func (a *V1AuthAPIService) Logout(ctx context.Context) ApiLogoutRequest {
+	return ApiLogoutRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1AuthLogoutPost200Response
-func (a *V1AuthAPIService) ApiV1AuthLogoutPostExecute(r ApiApiV1AuthLogoutPostRequest) (*ApiV1AuthLogoutPost200Response, *http.Response, error) {
+//  @return Logout200Response
+func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*Logout200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1AuthLogoutPost200Response
+		localVarReturnValue  *Logout200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ApiV1AuthLogoutPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.Logout")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -427,148 +700,17 @@ func (a *V1AuthAPIService) ApiV1AuthLogoutPostExecute(r ApiApiV1AuthLogoutPostRe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiApiV1AuthSessionGetRequest struct {
+type ApiWhoAmIRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiApiV1AuthSessionGetRequest) Execute() (*ApiV1AuthSessionGet200Response, *http.Response, error) {
-	return r.ApiService.ApiV1AuthSessionGetExecute(r)
+func (r ApiWhoAmIRequest) Execute() (*WhoAmI200Response, *http.Response, error) {
+	return r.ApiService.WhoAmIExecute(r)
 }
 
 /*
-ApiV1AuthSessionGet Get current session
-
-Returns the current authenticated user's session including identity and tenant information.
-
-## Session Data
-- Session metadata (ID, expiry, authentication methods)
-- Identity information (user ID, traits like email, name)
-- Active tenant context (if user has tenant membership)
-
-## Authentication
-Requires valid session via Cookie or X-Session-Token header.
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1AuthSessionGetRequest
-*/
-func (a *V1AuthAPIService) ApiV1AuthSessionGet(ctx context.Context) ApiApiV1AuthSessionGetRequest {
-	return ApiApiV1AuthSessionGetRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return ApiV1AuthSessionGet200Response
-func (a *V1AuthAPIService) ApiV1AuthSessionGetExecute(r ApiApiV1AuthSessionGetRequest) (*ApiV1AuthSessionGet200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiV1AuthSessionGet200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ApiV1AuthSessionGet")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/auth/session"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Cookie"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiApiV1AuthWhoamiGetRequest struct {
-	ctx context.Context
-	ApiService *V1AuthAPIService
-}
-
-func (r ApiApiV1AuthWhoamiGetRequest) Execute() (*ApiV1AuthWhoamiGet200Response, *http.Response, error) {
-	return r.ApiService.ApiV1AuthWhoamiGetExecute(r)
-}
-
-/*
-ApiV1AuthWhoamiGet Check authentication status
+WhoAmI Check authentication status
 
 Lightweight endpoint to check if the user is authenticated.
 
@@ -579,26 +721,26 @@ Returns boolean authentication status and user ID if authenticated.
 Quick auth checks for route guards without fetching full session data.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1AuthWhoamiGetRequest
+ @return ApiWhoAmIRequest
 */
-func (a *V1AuthAPIService) ApiV1AuthWhoamiGet(ctx context.Context) ApiApiV1AuthWhoamiGetRequest {
-	return ApiApiV1AuthWhoamiGetRequest{
+func (a *V1AuthAPIService) WhoAmI(ctx context.Context) ApiWhoAmIRequest {
+	return ApiWhoAmIRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1AuthWhoamiGet200Response
-func (a *V1AuthAPIService) ApiV1AuthWhoamiGetExecute(r ApiApiV1AuthWhoamiGetRequest) (*ApiV1AuthWhoamiGet200Response, *http.Response, error) {
+//  @return WhoAmI200Response
+func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmI200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1AuthWhoamiGet200Response
+		localVarReturnValue  *WhoAmI200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ApiV1AuthWhoamiGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.WhoAmI")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

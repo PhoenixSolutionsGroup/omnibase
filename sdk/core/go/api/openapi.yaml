@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.5
+  version: 0.9.7
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -41,12 +41,13 @@ paths:
 
         ## Use Case
         Determine which tenant context to use for API calls and data filtering.
+      operationId: getActiveTenant
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_api_v1_auth_active_tenant_get_200_response"
+                $ref: "#/components/schemas/getActiveTenant_200_response"
           description: Active tenant retrieved
         "401":
           content:
@@ -72,12 +73,13 @@ paths:
 
         ## Use Case
         Lighter alternative to full session when you only need user profile data.
+      operationId: getIdentity
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_api_v1_auth_identity_get_200_response"
+                $ref: "#/components/schemas/getIdentity_200_response"
           description: Identity retrieved successfully
         "401":
           content:
@@ -102,12 +104,13 @@ paths:
 
         ## Cookie Cleanup
         The logout URL handles clearing session cookies automatically.
+      operationId: logout
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_api_v1_auth_logout_post_200_response"
+                $ref: "#/components/schemas/logout_200_response"
           description: Logout flow created successfully
         "401":
           content:
@@ -138,12 +141,13 @@ paths:
 
         ## Authentication
         Requires valid session via Cookie or X-Session-Token header.
+      operationId: getSession
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_api_v1_auth_session_get_200_response"
+                $ref: "#/components/schemas/getSession_200_response"
           description: Session retrieved successfully
         "401":
           content:
@@ -156,6 +160,43 @@ paths:
       summary: Get current session
       tags:
       - V1 Auth
+  /api/v1/auth/tenants:
+    get:
+      description: |-
+        Returns all tenants the user is a member of with their active status.
+
+        ## Tenant Memberships
+        Users can be members of multiple tenants. Each membership has:
+        - Active status (only one tenant can be active at a time)
+        - Full tenant information (ID, name, type, etc.)
+
+        ## Use Case
+        Display tenant switcher UI or list all organizations the user belongs to.
+      operationId: listTenants
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listTenants_200_response"
+          description: Tenants retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch tenants
+      security:
+      - SessionAuth: []
+      summary: List user's tenants
+      tags:
+      - V1 Auth
   /api/v1/auth/whoami:
     get:
       description: |-
@@ -166,12 +207,13 @@ paths:
 
         ## Use Case
         Quick auth checks for route guards without fetching full session data.
+      operationId: whoAmI
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_api_v1_auth_whoami_get_200_response"
+                $ref: "#/components/schemas/whoAmI_200_response"
           description: Authentication status checked
         "401":
           content:
@@ -2583,6 +2625,35 @@ components:
           example: https://storage.omnibase.dev/bucket/path?signature=...
           type: string
       type: object
+    models.ListTenantsResponse:
+      example:
+        tenants:
+        - is_active: true
+          tenant:
+            settings: "{}"
+            stripe_customer_id: stripe_customer_id
+            updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: id
+            type: type
+        - is_active: true
+          tenant:
+            settings: "{}"
+            stripe_customer_id: stripe_customer_id
+            updated_at: updated_at
+            name: name
+            created_at: created_at
+            id: id
+            type: type
+      properties:
+        tenants:
+          items:
+            $ref: "#/components/schemas/models.UserTenantListItem"
+          type: array
+      required:
+      - tenants
+      type: object
     models.LogoutResponse:
       example:
         logout_url: http://auth.example.com/self-service/logout?token=abc123
@@ -3542,13 +3613,24 @@ components:
       example:
         is_legacy_price: true
         subscription_id: subscription_id
-        current_period_end: 0
+        cancel_at_period_end: true
+        canceled_at: 0
+        trial_start: 5
+        trial_end: 5
+        current_period_end: 6
+        current_period_start: 1
         config_price_id: config_price_id
         status: status
       properties:
+        cancel_at_period_end:
+          type: boolean
+        canceled_at:
+          type: integer
         config_price_id:
           type: string
         current_period_end:
+          type: integer
+        current_period_start:
           type: integer
         is_legacy_price:
           type: boolean
@@ -3556,6 +3638,18 @@ components:
           type: string
         subscription_id:
           type: string
+        trial_end:
+          type: integer
+        trial_start:
+          type: integer
+      required:
+      - cancel_at_period_end
+      - config_price_id
+      - current_period_end
+      - current_period_start
+      - is_legacy_price
+      - status
+      - subscription_id
       type: object
     models.Tenant:
       example:
@@ -3682,6 +3776,27 @@ components:
           description: Presigned URL for uploading the file (valid for 15 minutes)
           example: https://storage.omnibase.dev/bucket/path?signature=...
           type: string
+      type: object
+    models.UserTenantListItem:
+      example:
+        is_active: true
+        tenant:
+          settings: "{}"
+          stripe_customer_id: stripe_customer_id
+          updated_at: updated_at
+          name: name
+          created_at: created_at
+          id: id
+          type: type
+      properties:
+        is_active:
+          example: true
+          type: boolean
+        tenant:
+          $ref: "#/components/schemas/models.Tenant"
+      required:
+      - is_active
+      - tenant
       type: object
     models.WhoAmIResponse:
       example:
@@ -4485,7 +4600,7 @@ components:
       - namespace
       - object
       type: object
-    _api_v1_auth_active_tenant_get_200_response:
+    getActiveTenant_200_response:
       example:
         data:
           tenant:
@@ -4504,7 +4619,7 @@ components:
         status:
           type: integer
       type: object
-    _api_v1_auth_identity_get_200_response:
+    getIdentity_200_response:
       example:
         data: "{}"
         status: 0
@@ -4515,7 +4630,7 @@ components:
         status:
           type: integer
       type: object
-    _api_v1_auth_logout_post_200_response:
+    logout_200_response:
       example:
         data:
           logout_url: http://auth.example.com/self-service/logout?token=abc123
@@ -4527,7 +4642,7 @@ components:
         status:
           type: integer
       type: object
-    _api_v1_auth_session_get_200_response:
+    getSession_200_response:
       example:
         data:
           identity:
@@ -4709,7 +4824,36 @@ components:
         status:
           type: integer
       type: object
-    _api_v1_auth_whoami_get_200_response:
+    listTenants_200_response:
+      example:
+        data:
+          tenants:
+          - is_active: true
+            tenant:
+              settings: "{}"
+              stripe_customer_id: stripe_customer_id
+              updated_at: updated_at
+              name: name
+              created_at: created_at
+              id: id
+              type: type
+          - is_active: true
+            tenant:
+              settings: "{}"
+              stripe_customer_id: stripe_customer_id
+              updated_at: updated_at
+              name: name
+              created_at: created_at
+              id: id
+              type: type
+        status: 0
+      properties:
+        data:
+          $ref: "#/components/schemas/models.ListTenantsResponse"
+        status:
+          type: integer
+      type: object
+    whoAmI_200_response:
       example:
         data:
           authenticated: true
@@ -5284,12 +5428,22 @@ components:
         data:
         - is_legacy_price: true
           subscription_id: subscription_id
-          current_period_end: 0
+          cancel_at_period_end: true
+          canceled_at: 0
+          trial_start: 5
+          trial_end: 5
+          current_period_end: 6
+          current_period_start: 1
           config_price_id: config_price_id
           status: status
         - is_legacy_price: true
           subscription_id: subscription_id
-          current_period_end: 0
+          cancel_at_period_end: true
+          canceled_at: 0
+          trial_start: 5
+          trial_end: 5
+          current_period_end: 6
+          current_period_start: 1
           config_price_id: config_price_id
           status: status
         status: 200

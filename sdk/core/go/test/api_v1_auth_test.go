@@ -22,11 +22,11 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test V1AuthAPIService ApiV1AuthActiveTenantGet", func(t *testing.T) {
+	t.Run("Test V1AuthAPIService GetActiveTenant", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1AuthAPI.ApiV1AuthActiveTenantGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,11 +34,11 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1AuthAPIService ApiV1AuthIdentityGet", func(t *testing.T) {
+	t.Run("Test V1AuthAPIService GetIdentity", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1AuthAPI.ApiV1AuthIdentityGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1AuthAPI.GetIdentity(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -46,11 +46,11 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1AuthAPIService ApiV1AuthLogoutPost", func(t *testing.T) {
+	t.Run("Test V1AuthAPIService GetSession", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1AuthAPI.ApiV1AuthLogoutPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1AuthAPI.GetSession(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -58,11 +58,11 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1AuthAPIService ApiV1AuthSessionGet", func(t *testing.T) {
+	t.Run("Test V1AuthAPIService ListTenants", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1AuthAPI.ApiV1AuthSessionGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1AuthAPI.ListTenants(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -70,11 +70,23 @@ func Test_omnibase_V1AuthAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1AuthAPIService ApiV1AuthWhoamiGet", func(t *testing.T) {
+	t.Run("Test V1AuthAPIService Logout", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1AuthAPI.ApiV1AuthWhoamiGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1AuthAPI.Logout(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1AuthAPIService WhoAmI", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1AuthAPI.WhoAmI(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

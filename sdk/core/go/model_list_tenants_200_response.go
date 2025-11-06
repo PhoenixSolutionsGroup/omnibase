@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.5
+API version: 0.9.7
 Contact: support@omnibase.dev
 */
 
@@ -15,36 +15,36 @@ import (
 	"encoding/json"
 )
 
-// checks if the ApiV1AuthSessionGet200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ApiV1AuthSessionGet200Response{}
+// checks if the ListTenants200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListTenants200Response{}
 
-// ApiV1AuthSessionGet200Response struct for ApiV1AuthSessionGet200Response
-type ApiV1AuthSessionGet200Response struct {
-	Data *ModelsSessionResponse `json:"data,omitempty"`
+// ListTenants200Response struct for ListTenants200Response
+type ListTenants200Response struct {
+	Data *ModelsListTenantsResponse `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewApiV1AuthSessionGet200Response instantiates a new ApiV1AuthSessionGet200Response object
+// NewListTenants200Response instantiates a new ListTenants200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApiV1AuthSessionGet200Response() *ApiV1AuthSessionGet200Response {
-	this := ApiV1AuthSessionGet200Response{}
+func NewListTenants200Response() *ListTenants200Response {
+	this := ListTenants200Response{}
 	return &this
 }
 
-// NewApiV1AuthSessionGet200ResponseWithDefaults instantiates a new ApiV1AuthSessionGet200Response object
+// NewListTenants200ResponseWithDefaults instantiates a new ListTenants200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewApiV1AuthSessionGet200ResponseWithDefaults() *ApiV1AuthSessionGet200Response {
-	this := ApiV1AuthSessionGet200Response{}
+func NewListTenants200ResponseWithDefaults() *ListTenants200Response {
+	this := ListTenants200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ApiV1AuthSessionGet200Response) GetData() ModelsSessionResponse {
+func (o *ListTenants200Response) GetData() ModelsListTenantsResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsSessionResponse
+		var ret ModelsListTenantsResponse
 		return ret
 	}
 	return *o.Data
@@ -52,7 +52,7 @@ func (o *ApiV1AuthSessionGet200Response) GetData() ModelsSessionResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthSessionGet200Response) GetDataOk() (*ModelsSessionResponse, bool) {
+func (o *ListTenants200Response) GetDataOk() (*ModelsListTenantsResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -60,7 +60,7 @@ func (o *ApiV1AuthSessionGet200Response) GetDataOk() (*ModelsSessionResponse, bo
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *ApiV1AuthSessionGet200Response) HasData() bool {
+func (o *ListTenants200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +68,13 @@ func (o *ApiV1AuthSessionGet200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsSessionResponse and assigns it to the Data field.
-func (o *ApiV1AuthSessionGet200Response) SetData(v ModelsSessionResponse) {
+// SetData gets a reference to the given ModelsListTenantsResponse and assigns it to the Data field.
+func (o *ListTenants200Response) SetData(v ModelsListTenantsResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ApiV1AuthSessionGet200Response) GetStatus() int32 {
+func (o *ListTenants200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +84,7 @@ func (o *ApiV1AuthSessionGet200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1AuthSessionGet200Response) GetStatusOk() (*int32, bool) {
+func (o *ListTenants200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *ApiV1AuthSessionGet200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *ApiV1AuthSessionGet200Response) HasStatus() bool {
+func (o *ListTenants200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +101,11 @@ func (o *ApiV1AuthSessionGet200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ApiV1AuthSessionGet200Response) SetStatus(v int32) {
+func (o *ListTenants200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o ApiV1AuthSessionGet200Response) MarshalJSON() ([]byte, error) {
+func (o ListTenants200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +113,7 @@ func (o ApiV1AuthSessionGet200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ApiV1AuthSessionGet200Response) ToMap() (map[string]interface{}, error) {
+func (o ListTenants200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +124,38 @@ func (o ApiV1AuthSessionGet200Response) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-type NullableApiV1AuthSessionGet200Response struct {
-	value *ApiV1AuthSessionGet200Response
+type NullableListTenants200Response struct {
+	value *ListTenants200Response
 	isSet bool
 }
 
-func (v NullableApiV1AuthSessionGet200Response) Get() *ApiV1AuthSessionGet200Response {
+func (v NullableListTenants200Response) Get() *ListTenants200Response {
 	return v.value
 }
 
-func (v *NullableApiV1AuthSessionGet200Response) Set(val *ApiV1AuthSessionGet200Response) {
+func (v *NullableListTenants200Response) Set(val *ListTenants200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableApiV1AuthSessionGet200Response) IsSet() bool {
+func (v NullableListTenants200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableApiV1AuthSessionGet200Response) Unset() {
+func (v *NullableListTenants200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableApiV1AuthSessionGet200Response(val *ApiV1AuthSessionGet200Response) *NullableApiV1AuthSessionGet200Response {
-	return &NullableApiV1AuthSessionGet200Response{value: val, isSet: true}
+func NewNullableListTenants200Response(val *ListTenants200Response) *NullableListTenants200Response {
+	return &NullableListTenants200Response{value: val, isSet: true}
 }
 
-func (v NullableApiV1AuthSessionGet200Response) MarshalJSON() ([]byte, error) {
+func (v NullableListTenants200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableApiV1AuthSessionGet200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableListTenants200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

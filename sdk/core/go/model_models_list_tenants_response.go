@@ -17,60 +17,59 @@ import (
 	"fmt"
 )
 
-// checks if the TenantsAcceptInviteRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TenantsAcceptInviteRequest{}
+// checks if the ModelsListTenantsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ModelsListTenantsResponse{}
 
-// TenantsAcceptInviteRequest struct for TenantsAcceptInviteRequest
-type TenantsAcceptInviteRequest struct {
-	// Invite token from email
-	Token string `json:"token"`
+// ModelsListTenantsResponse struct for ModelsListTenantsResponse
+type ModelsListTenantsResponse struct {
+	Tenants []ModelsUserTenantListItem `json:"tenants"`
 }
 
-type _TenantsAcceptInviteRequest TenantsAcceptInviteRequest
+type _ModelsListTenantsResponse ModelsListTenantsResponse
 
-// NewTenantsAcceptInviteRequest instantiates a new TenantsAcceptInviteRequest object
+// NewModelsListTenantsResponse instantiates a new ModelsListTenantsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsAcceptInviteRequest(token string) *TenantsAcceptInviteRequest {
-	this := TenantsAcceptInviteRequest{}
-	this.Token = token
+func NewModelsListTenantsResponse(tenants []ModelsUserTenantListItem) *ModelsListTenantsResponse {
+	this := ModelsListTenantsResponse{}
+	this.Tenants = tenants
 	return &this
 }
 
-// NewTenantsAcceptInviteRequestWithDefaults instantiates a new TenantsAcceptInviteRequest object
+// NewModelsListTenantsResponseWithDefaults instantiates a new ModelsListTenantsResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTenantsAcceptInviteRequestWithDefaults() *TenantsAcceptInviteRequest {
-	this := TenantsAcceptInviteRequest{}
+func NewModelsListTenantsResponseWithDefaults() *ModelsListTenantsResponse {
+	this := ModelsListTenantsResponse{}
 	return &this
 }
 
-// GetToken returns the Token field value
-func (o *TenantsAcceptInviteRequest) GetToken() string {
+// GetTenants returns the Tenants field value
+func (o *ModelsListTenantsResponse) GetTenants() []ModelsUserTenantListItem {
 	if o == nil {
-		var ret string
+		var ret []ModelsUserTenantListItem
 		return ret
 	}
 
-	return o.Token
+	return o.Tenants
 }
 
-// GetTokenOk returns a tuple with the Token field value
+// GetTenantsOk returns a tuple with the Tenants field value
 // and a boolean to check if the value has been set.
-func (o *TenantsAcceptInviteRequest) GetTokenOk() (*string, bool) {
+func (o *ModelsListTenantsResponse) GetTenantsOk() ([]ModelsUserTenantListItem, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Token, true
+	return o.Tenants, true
 }
 
-// SetToken sets field value
-func (o *TenantsAcceptInviteRequest) SetToken(v string) {
-	o.Token = v
+// SetTenants sets field value
+func (o *ModelsListTenantsResponse) SetTenants(v []ModelsUserTenantListItem) {
+	o.Tenants = v
 }
 
-func (o TenantsAcceptInviteRequest) MarshalJSON() ([]byte, error) {
+func (o ModelsListTenantsResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -78,18 +77,18 @@ func (o TenantsAcceptInviteRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TenantsAcceptInviteRequest) ToMap() (map[string]interface{}, error) {
+func (o ModelsListTenantsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["token"] = o.Token
+	toSerialize["tenants"] = o.Tenants
 	return toSerialize, nil
 }
 
-func (o *TenantsAcceptInviteRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *ModelsListTenantsResponse) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"token",
+		"tenants",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -106,53 +105,53 @@ func (o *TenantsAcceptInviteRequest) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varTenantsAcceptInviteRequest := _TenantsAcceptInviteRequest{}
+	varModelsListTenantsResponse := _ModelsListTenantsResponse{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTenantsAcceptInviteRequest)
+	err = decoder.Decode(&varModelsListTenantsResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TenantsAcceptInviteRequest(varTenantsAcceptInviteRequest)
+	*o = ModelsListTenantsResponse(varModelsListTenantsResponse)
 
 	return err
 }
 
-type NullableTenantsAcceptInviteRequest struct {
-	value *TenantsAcceptInviteRequest
+type NullableModelsListTenantsResponse struct {
+	value *ModelsListTenantsResponse
 	isSet bool
 }
 
-func (v NullableTenantsAcceptInviteRequest) Get() *TenantsAcceptInviteRequest {
+func (v NullableModelsListTenantsResponse) Get() *ModelsListTenantsResponse {
 	return v.value
 }
 
-func (v *NullableTenantsAcceptInviteRequest) Set(val *TenantsAcceptInviteRequest) {
+func (v *NullableModelsListTenantsResponse) Set(val *ModelsListTenantsResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTenantsAcceptInviteRequest) IsSet() bool {
+func (v NullableModelsListTenantsResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTenantsAcceptInviteRequest) Unset() {
+func (v *NullableModelsListTenantsResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTenantsAcceptInviteRequest(val *TenantsAcceptInviteRequest) *NullableTenantsAcceptInviteRequest {
-	return &NullableTenantsAcceptInviteRequest{value: val, isSet: true}
+func NewNullableModelsListTenantsResponse(val *ModelsListTenantsResponse) *NullableModelsListTenantsResponse {
+	return &NullableModelsListTenantsResponse{value: val, isSet: true}
 }
 
-func (v NullableTenantsAcceptInviteRequest) MarshalJSON() ([]byte, error) {
+func (v NullableModelsListTenantsResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTenantsAcceptInviteRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableModelsListTenantsResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
