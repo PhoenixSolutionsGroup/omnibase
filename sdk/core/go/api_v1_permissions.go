@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -21,12 +21,12 @@ import (
 )
 
 
-// PermissionsAPIService PermissionsAPI service
-type PermissionsAPIService service
+// V1PermissionsAPIService V1PermissionsAPI service
+type V1PermissionsAPIService service
 
 type ApiCheckPermissionRequest struct {
 	ctx context.Context
-	ApiService *PermissionsAPIService
+	ApiService *V1PermissionsAPIService
 	body *V1CheckPermissionRequest
 }
 
@@ -59,7 +59,7 @@ Provide either `subject_id` or `subject_set` (not both).
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCheckPermissionRequest
 */
-func (a *PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckPermissionRequest {
+func (a *V1PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckPermissionRequest {
 	return ApiCheckPermissionRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -68,7 +68,7 @@ func (a *PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckPer
 
 // Execute executes the request
 //  @return CheckPermission200Response
-func (a *PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckPermission200Response, *http.Response, error) {
+func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckPermission200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -76,12 +76,12 @@ func (a *PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReque
 		localVarReturnValue  *CheckPermission200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PermissionsAPIService.CheckPermission")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CheckPermission")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/permissions/check"
+	localVarPath := localBasePath + "/api/v1/permissions/check"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -194,7 +194,7 @@ func (a *PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReque
 
 type ApiCreateRelationshipRequest struct {
 	ctx context.Context
-	ApiService *PermissionsAPIService
+	ApiService *V1PermissionsAPIService
 	body *V1CreateRelationshipRequest
 }
 
@@ -227,7 +227,7 @@ Provide either `subject_id` or `subject_set` (not both).
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRelationshipRequest
 */
-func (a *PermissionsAPIService) CreateRelationship(ctx context.Context) ApiCreateRelationshipRequest {
+func (a *V1PermissionsAPIService) CreateRelationship(ctx context.Context) ApiCreateRelationshipRequest {
 	return ApiCreateRelationshipRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -236,7 +236,7 @@ func (a *PermissionsAPIService) CreateRelationship(ctx context.Context) ApiCreat
 
 // Execute executes the request
 //  @return CreateRelationship200Response
-func (a *PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshipRequest) (*CreateRelationship200Response, *http.Response, error) {
+func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshipRequest) (*CreateRelationship200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -244,12 +244,12 @@ func (a *PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshi
 		localVarReturnValue  *CreateRelationship200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PermissionsAPIService.CreateRelationship")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CreateRelationship")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/permissions/relationships"
+	localVarPath := localBasePath + "/api/v1/permissions/relationships"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -362,7 +362,7 @@ func (a *PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshi
 
 type ApiDeployPermissionNamespacesRequest struct {
 	ctx context.Context
-	ApiService *PermissionsAPIService
+	ApiService *V1PermissionsAPIService
 	namespaces *os.File
 }
 
@@ -399,7 +399,7 @@ If managed hosting is enabled, this endpoint will also trigger a restart of the 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeployPermissionNamespacesRequest
 */
-func (a *PermissionsAPIService) DeployPermissionNamespaces(ctx context.Context) ApiDeployPermissionNamespacesRequest {
+func (a *V1PermissionsAPIService) DeployPermissionNamespaces(ctx context.Context) ApiDeployPermissionNamespacesRequest {
 	return ApiDeployPermissionNamespacesRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -408,7 +408,7 @@ func (a *PermissionsAPIService) DeployPermissionNamespaces(ctx context.Context) 
 
 // Execute executes the request
 //  @return DeployPermissionNamespaces200Response
-func (a *PermissionsAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*DeployPermissionNamespaces200Response, *http.Response, error) {
+func (a *V1PermissionsAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*DeployPermissionNamespaces200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -416,12 +416,12 @@ func (a *PermissionsAPIService) DeployPermissionNamespacesExecute(r ApiDeployPer
 		localVarReturnValue  *DeployPermissionNamespaces200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PermissionsAPIService.DeployPermissionNamespaces")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.DeployPermissionNamespaces")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/permissions/namespaces"
+	localVarPath := localBasePath + "/api/v1/permissions/namespaces"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

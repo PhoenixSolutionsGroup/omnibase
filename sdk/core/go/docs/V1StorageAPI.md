@@ -1,18 +1,18 @@
-# \StorageAPI
+# \V1StorageAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**StorageDownloadPost**](StorageAPI.md#StorageDownloadPost) | **Post** /storage/download | Download file from storage
-[**StorageObjectDelete**](StorageAPI.md#StorageObjectDelete) | **Delete** /storage/object | Delete file from storage
-[**StorageUploadPost**](StorageAPI.md#StorageUploadPost) | **Post** /storage/upload | Upload file to storage
+[**ApiV1StorageDownloadPost**](V1StorageAPI.md#ApiV1StorageDownloadPost) | **Post** /api/v1/storage/download | Download file from storage
+[**ApiV1StorageObjectDelete**](V1StorageAPI.md#ApiV1StorageObjectDelete) | **Delete** /api/v1/storage/object | Delete file from storage
+[**ApiV1StorageUploadPost**](V1StorageAPI.md#ApiV1StorageUploadPost) | **Post** /api/v1/storage/upload | Upload file to storage
 
 
 
-## StorageDownloadPost
+## ApiV1StorageDownloadPost
 
-> StorageDownloadPost200Response StorageDownloadPost(ctx).Request(request).Execute()
+> ApiV1StorageDownloadPost200Response ApiV1StorageDownloadPost(ctx).Request(request).Execute()
 
 Download file from storage
 
@@ -35,13 +35,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StorageAPI.StorageDownloadPost(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageDownloadPost(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StorageAPI.StorageDownloadPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageDownloadPost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StorageDownloadPost`: StorageDownloadPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `StorageAPI.StorageDownloadPost`: %v\n", resp)
+	// response from `ApiV1StorageDownloadPost`: ApiV1StorageDownloadPost200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageDownloadPost`: %v\n", resp)
 }
 ```
 
@@ -51,7 +51,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStorageDownloadPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiApiV1StorageDownloadPostRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -60,7 +60,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**StorageDownloadPost200Response**](StorageDownloadPost200Response.md)
+[**ApiV1StorageDownloadPost200Response**](ApiV1StorageDownloadPost200Response.md)
 
 ### Authorization
 
@@ -76,9 +76,9 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## StorageObjectDelete
+## ApiV1StorageObjectDelete
 
-> StorageObjectDelete200Response StorageObjectDelete(ctx).Request(request).Execute()
+> ApiV1StorageObjectDelete200Response ApiV1StorageObjectDelete(ctx).Request(request).Execute()
 
 Delete file from storage
 
@@ -101,13 +101,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StorageAPI.StorageObjectDelete(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageObjectDelete(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StorageAPI.StorageObjectDelete``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageObjectDelete``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StorageObjectDelete`: StorageObjectDelete200Response
-	fmt.Fprintf(os.Stdout, "Response from `StorageAPI.StorageObjectDelete`: %v\n", resp)
+	// response from `ApiV1StorageObjectDelete`: ApiV1StorageObjectDelete200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageObjectDelete`: %v\n", resp)
 }
 ```
 
@@ -117,7 +117,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStorageObjectDeleteRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiApiV1StorageObjectDeleteRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -126,7 +126,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**StorageObjectDelete200Response**](StorageObjectDelete200Response.md)
+[**ApiV1StorageObjectDelete200Response**](ApiV1StorageObjectDelete200Response.md)
 
 ### Authorization
 
@@ -142,9 +142,9 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## StorageUploadPost
+## ApiV1StorageUploadPost
 
-> StorageUploadPost200Response StorageUploadPost(ctx).Request(request).Execute()
+> ApiV1StorageUploadPost200Response ApiV1StorageUploadPost(ctx).Request(request).Execute()
 
 Upload file to storage
 
@@ -167,13 +167,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StorageAPI.StorageUploadPost(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageUploadPost(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StorageAPI.StorageUploadPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageUploadPost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StorageUploadPost`: StorageUploadPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `StorageAPI.StorageUploadPost`: %v\n", resp)
+	// response from `ApiV1StorageUploadPost`: ApiV1StorageUploadPost200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageUploadPost`: %v\n", resp)
 }
 ```
 
@@ -183,7 +183,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStorageUploadPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiApiV1StorageUploadPostRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -192,7 +192,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**StorageUploadPost200Response**](StorageUploadPost200Response.md)
+[**ApiV1StorageUploadPost200Response**](ApiV1StorageUploadPost200Response.md)
 
 ### Authorization
 

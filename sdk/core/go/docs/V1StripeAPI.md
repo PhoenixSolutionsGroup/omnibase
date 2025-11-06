@@ -1,17 +1,17 @@
-# \StripeAPI
+# \V1StripeAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ArchiveAllStripeConfig**](StripeAPI.md#ArchiveAllStripeConfig) | **Post** /stripe/config/archive-all | Archive all Stripe config
-[**GetStripeConfig**](StripeAPI.md#GetStripeConfig) | **Get** /stripe/config | Get public Stripe config
-[**GetStripeConfigAdmin**](StripeAPI.md#GetStripeConfigAdmin) | **Get** /stripe/config/admin | Get full Stripe config (admin)
-[**GetStripeConfigHistory**](StripeAPI.md#GetStripeConfigHistory) | **Get** /stripe/config/history | Get config history
-[**GetStripeConfigSchema**](StripeAPI.md#GetStripeConfigSchema) | **Get** /stripe/schema | Get Stripe config schema
-[**PullStripeConfig**](StripeAPI.md#PullStripeConfig) | **Get** /stripe/config/pull | Pull config from Stripe
-[**UpdateStripeConfig**](StripeAPI.md#UpdateStripeConfig) | **Post** /stripe/config | Update Stripe config
-[**ValidateStripeConfig**](StripeAPI.md#ValidateStripeConfig) | **Post** /stripe/config/validate | Validate Stripe config
+[**ArchiveAllStripeConfig**](V1StripeAPI.md#ArchiveAllStripeConfig) | **Post** /api/v1/stripe/config/archive-all | Archive all Stripe config
+[**GetStripeConfig**](V1StripeAPI.md#GetStripeConfig) | **Get** /api/v1/stripe/config | Get public Stripe config
+[**GetStripeConfigAdmin**](V1StripeAPI.md#GetStripeConfigAdmin) | **Get** /api/v1/stripe/config/admin | Get full Stripe config (admin)
+[**GetStripeConfigHistory**](V1StripeAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/config/history | Get config history
+[**GetStripeConfigSchema**](V1StripeAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
+[**PullStripeConfig**](V1StripeAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/config/pull | Pull config from Stripe
+[**UpdateStripeConfig**](V1StripeAPI.md#UpdateStripeConfig) | **Post** /api/v1/stripe/config | Update Stripe config
+[**ValidateStripeConfig**](V1StripeAPI.md#ValidateStripeConfig) | **Post** /api/v1/stripe/config/validate | Validate Stripe config
 
 
 
@@ -39,13 +39,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.ArchiveAllStripeConfig(context.Background()).Execute()
+	resp, r, err := apiClient.V1StripeAPI.ArchiveAllStripeConfig(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.ArchiveAllStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ArchiveAllStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ArchiveAllStripeConfig`: ArchiveAllStripeConfig200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.ArchiveAllStripeConfig`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ArchiveAllStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -100,13 +100,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.GetStripeConfig(context.Background()).Execute()
+	resp, r, err := apiClient.V1StripeAPI.GetStripeConfig(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetStripeConfig`: GetStripeConfig200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfig`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -161,13 +161,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
+	resp, r, err := apiClient.V1StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigAdmin``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfigAdmin``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetStripeConfigAdmin`: GetStripeConfig200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigAdmin`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfigAdmin`: %v\n", resp)
 }
 ```
 
@@ -224,13 +224,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.GetStripeConfigHistory(context.Background()).Limit(limit).Offset(offset).Execute()
+	resp, r, err := apiClient.V1StripeAPI.GetStripeConfigHistory(context.Background()).Limit(limit).Offset(offset).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigHistory``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfigHistory``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetStripeConfigHistory`: GetStripeConfigHistory200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigHistory`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfigHistory`: %v\n", resp)
 }
 ```
 
@@ -290,13 +290,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.GetStripeConfigSchema(context.Background()).Execute()
+	resp, r, err := apiClient.V1StripeAPI.GetStripeConfigSchema(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigSchema``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfigSchema``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetStripeConfigSchema`: map[string]interface{}
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigSchema`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfigSchema`: %v\n", resp)
 }
 ```
 
@@ -351,13 +351,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.PullStripeConfig(context.Background()).Execute()
+	resp, r, err := apiClient.V1StripeAPI.PullStripeConfig(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.PullStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.PullStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `PullStripeConfig`: PullStripeConfig200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.PullStripeConfig`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.PullStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -413,13 +413,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.UpdateStripeConfig(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.V1StripeAPI.UpdateStripeConfig(context.Background()).Config(config).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.UpdateStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.UpdateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `UpdateStripeConfig`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.UpdateStripeConfig`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.UpdateStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -479,13 +479,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.ValidateStripeConfig(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.V1StripeAPI.ValidateStripeConfig(context.Background()).Config(config).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.ValidateStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ValidateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ValidateStripeConfig`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.ValidateStripeConfig`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ValidateStripeConfig`: %v\n", resp)
 }
 ```
 

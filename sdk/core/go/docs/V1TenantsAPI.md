@@ -1,26 +1,26 @@
-# \TenantsAPI
+# \V1TenantsAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**AcceptInvite**](TenantsAPI.md#AcceptInvite) | **Put** /tenants/invites/accept | Accept tenant invite
-[**AssignRole**](TenantsAPI.md#AssignRole) | **Post** /tenants/roles/assign/{user_id} | Assign role to user
-[**CreateInvite**](TenantsAPI.md#CreateInvite) | **Post** /tenants/invites | Create tenant invite
-[**CreateRole**](TenantsAPI.md#CreateRole) | **Post** /tenants/roles | Create role
-[**CreateTenant**](TenantsAPI.md#CreateTenant) | **Post** /tenants | Create tenant
-[**DeleteRole**](TenantsAPI.md#DeleteRole) | **Delete** /tenants/roles/{role_id} | Delete role
-[**DeleteTenant**](TenantsAPI.md#DeleteTenant) | **Delete** /tenants | Delete tenant
-[**GetRoleDefinitions**](TenantsAPI.md#GetRoleDefinitions) | **Get** /tenants/roles/definitions | Get namespace definitions
-[**GetTenantBillingStatus**](TenantsAPI.md#GetTenantBillingStatus) | **Get** /tenants/billing-status | Get billing status
-[**GetTenantJWT**](TenantsAPI.md#GetTenantJWT) | **Get** /tenants/jwt | Get PostgREST JWT token
-[**ListRoles**](TenantsAPI.md#ListRoles) | **Get** /tenants/roles | List roles
-[**ListTenantSubscriptions**](TenantsAPI.md#ListTenantSubscriptions) | **Get** /tenants/subscriptions | Get tenant subscriptions
-[**ListTenantUsers**](TenantsAPI.md#ListTenantUsers) | **Get** /tenants/users | Get tenant users
-[**RemoveTenantUser**](TenantsAPI.md#RemoveTenantUser) | **Delete** /tenants/users | Remove tenant user
-[**SwitchActiveTenant**](TenantsAPI.md#SwitchActiveTenant) | **Put** /tenants/switch-active | Switch active tenant
-[**UpdateRole**](TenantsAPI.md#UpdateRole) | **Put** /tenants/roles/{role_id} | Update role
-[**UpdateTenantUserRole**](TenantsAPI.md#UpdateTenantUserRole) | **Put** /tenants/users/role | Update user role
+[**AcceptInvite**](V1TenantsAPI.md#AcceptInvite) | **Put** /api/v1/tenants/invites/accept | Accept tenant invite
+[**AssignRole**](V1TenantsAPI.md#AssignRole) | **Post** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
+[**CreateInvite**](V1TenantsAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites | Create tenant invite
+[**CreateRole**](V1TenantsAPI.md#CreateRole) | **Post** /api/v1/tenants/roles | Create role
+[**CreateTenant**](V1TenantsAPI.md#CreateTenant) | **Post** /api/v1/tenants | Create tenant
+[**DeleteRole**](V1TenantsAPI.md#DeleteRole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete role
+[**DeleteTenant**](V1TenantsAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete tenant
+[**GetRoleDefinitions**](V1TenantsAPI.md#GetRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions | Get namespace definitions
+[**GetTenantBillingStatus**](V1TenantsAPI.md#GetTenantBillingStatus) | **Get** /api/v1/tenants/billing-status | Get billing status
+[**GetTenantJWT**](V1TenantsAPI.md#GetTenantJWT) | **Get** /api/v1/tenants/jwt | Get PostgREST JWT token
+[**ListRoles**](V1TenantsAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles
+[**ListTenantSubscriptions**](V1TenantsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions | Get tenant subscriptions
+[**ListTenantUsers**](V1TenantsAPI.md#ListTenantUsers) | **Get** /api/v1/tenants/users | Get tenant users
+[**RemoveTenantUser**](V1TenantsAPI.md#RemoveTenantUser) | **Delete** /api/v1/tenants/users | Remove tenant user
+[**SwitchActiveTenant**](V1TenantsAPI.md#SwitchActiveTenant) | **Put** /api/v1/tenants/switch-active | Switch active tenant
+[**UpdateRole**](V1TenantsAPI.md#UpdateRole) | **Put** /api/v1/tenants/roles/{role_id} | Update role
+[**UpdateTenantUserRole**](V1TenantsAPI.md#UpdateTenantUserRole) | **Put** /api/v1/tenants/users/role | Update user role
 
 
 
@@ -49,13 +49,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.AcceptInvite(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AcceptInvite(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.AcceptInvite``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AcceptInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `AcceptInvite`: AcceptInvite200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.AcceptInvite`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.AcceptInvite`: %v\n", resp)
 }
 ```
 
@@ -116,13 +116,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.AssignRole(context.Background(), userId).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AssignRole(context.Background(), userId).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.AssignRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AssignRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `AssignRole`: AssignRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.AssignRole`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.AssignRole`: %v\n", resp)
 }
 ```
 
@@ -187,13 +187,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.CreateInvite(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateInvite(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateInvite``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateInvite`: CreateInvite200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateInvite`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateInvite`: %v\n", resp)
 }
 ```
 
@@ -253,13 +253,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.CreateRole(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateRole(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateRole`: CreateRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateRole`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateRole`: %v\n", resp)
 }
 ```
 
@@ -319,13 +319,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.CreateTenant(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateTenant(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateTenant`: CreateTenant200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateTenant`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateTenant`: %v\n", resp)
 }
 ```
 
@@ -385,13 +385,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.DeleteRole(context.Background(), roleId).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.DeleteRole(context.Background(), roleId).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.DeleteRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.DeleteRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `DeleteRole`: DeleteRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.DeleteRole`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.DeleteRole`: %v\n", resp)
 }
 ```
 
@@ -454,13 +454,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.DeleteTenant(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.DeleteTenant(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.DeleteTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.DeleteTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `DeleteTenant`: DeleteTenant200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.DeleteTenant`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.DeleteTenant`: %v\n", resp)
 }
 ```
 
@@ -515,13 +515,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.GetRoleDefinitions(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetRoleDefinitions(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetRoleDefinitions``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetRoleDefinitions``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetRoleDefinitions`: GetRoleDefinitions200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetRoleDefinitions`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetRoleDefinitions`: %v\n", resp)
 }
 ```
 
@@ -576,13 +576,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetTenantBillingStatus``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantBillingStatus``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetTenantBillingStatus`: GetTenantBillingStatus200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetTenantBillingStatus`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantBillingStatus`: %v\n", resp)
 }
 ```
 
@@ -637,13 +637,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.GetTenantJWT(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantJWT(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetTenantJWT``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantJWT``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetTenantJWT`: GetTenantJWT200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetTenantJWT`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantJWT`: %v\n", resp)
 }
 ```
 
@@ -698,13 +698,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.ListRoles(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.ListRoles(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListRoles``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListRoles``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ListRoles`: ListRoles200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListRoles`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListRoles`: %v\n", resp)
 }
 ```
 
@@ -759,13 +759,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.ListTenantSubscriptions(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.ListTenantSubscriptions(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListTenantSubscriptions``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListTenantSubscriptions``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ListTenantSubscriptions`: ListTenantSubscriptions200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListTenantSubscriptions`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListTenantSubscriptions`: %v\n", resp)
 }
 ```
 
@@ -820,13 +820,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.ListTenantUsers(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.ListTenantUsers(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListTenantUsers``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListTenantUsers``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ListTenantUsers`: ListTenantUsers200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListTenantUsers`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListTenantUsers`: %v\n", resp)
 }
 ```
 
@@ -882,13 +882,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.RemoveTenantUser(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.RemoveTenantUser``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveTenantUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `RemoveTenantUser`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.RemoveTenantUser`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.RemoveTenantUser`: %v\n", resp)
 }
 ```
 
@@ -948,13 +948,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.SwitchActiveTenant(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.SwitchActiveTenant(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.SwitchActiveTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.SwitchActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `SwitchActiveTenant`: SwitchActiveTenant200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.SwitchActiveTenant`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.SwitchActiveTenant`: %v\n", resp)
 }
 ```
 
@@ -1015,13 +1015,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.UpdateRole(context.Background(), roleId).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.UpdateRole(context.Background(), roleId).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.UpdateRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `UpdateRole`: CreateRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.UpdateRole`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.UpdateRole`: %v\n", resp)
 }
 ```
 
@@ -1086,13 +1086,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.TenantsAPI.UpdateTenantUserRole(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.UpdateTenantUserRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateTenantUserRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `UpdateTenantUserRole`: UpdateTenantUserRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.UpdateTenantUserRole`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.UpdateTenantUserRole`: %v\n", resp)
 }
 ```
 

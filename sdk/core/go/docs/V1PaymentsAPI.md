@@ -1,12 +1,12 @@
-# \PaymentsAPI
+# \V1PaymentsAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateCheckout**](PaymentsAPI.md#CreateCheckout) | **Post** /payments/checkout | Create checkout session
-[**CreateCustomerPortal**](PaymentsAPI.md#CreateCustomerPortal) | **Post** /payments/portal | Create customer portal session
-[**RecordUsage**](PaymentsAPI.md#RecordUsage) | **Post** /payments/usage | Record metered usage
+[**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create checkout session
+[**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create customer portal session
+[**RecordUsage**](V1PaymentsAPI.md#RecordUsage) | **Post** /api/v1/payments/usage | Record metered usage
 
 
 
@@ -35,13 +35,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PaymentsAPI.CreateCheckout(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.CreateCheckout(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PaymentsAPI.CreateCheckout``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCheckout``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateCheckout`: CreateCheckout200Response
-	fmt.Fprintf(os.Stdout, "Response from `PaymentsAPI.CreateCheckout`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateCheckout`: %v\n", resp)
 }
 ```
 
@@ -101,13 +101,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PaymentsAPI.CreateCustomerPortal(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.CreateCustomerPortal(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PaymentsAPI.CreateCustomerPortal``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCustomerPortal``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateCustomerPortal`: CreateCustomerPortal200Response
-	fmt.Fprintf(os.Stdout, "Response from `PaymentsAPI.CreateCustomerPortal`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateCustomerPortal`: %v\n", resp)
 }
 ```
 
@@ -167,13 +167,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PaymentsAPI.RecordUsage(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PaymentsAPI.RecordUsage``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.RecordUsage``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `RecordUsage`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `PaymentsAPI.RecordUsage`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.RecordUsage`: %v\n", resp)
 }
 ```
 

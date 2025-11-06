@@ -1,7 +1,7 @@
 /*
 Omnibase REST API
 
-Testing StorageAPIService
+Testing V1StorageAPIService
 
 */
 
@@ -17,16 +17,16 @@ import (
 	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
-func Test_omnibase_StorageAPIService(t *testing.T) {
+func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test StorageAPIService StorageDownloadPost", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService ApiV1StorageDownloadPost", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StorageAPI.StorageDownloadPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageDownloadPost(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,11 +34,11 @@ func Test_omnibase_StorageAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StorageAPIService StorageObjectDelete", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService ApiV1StorageObjectDelete", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StorageAPI.StorageObjectDelete(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageObjectDelete(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -46,11 +46,11 @@ func Test_omnibase_StorageAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StorageAPIService StorageUploadPost", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService ApiV1StorageUploadPost", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StorageAPI.StorageUploadPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageUploadPost(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

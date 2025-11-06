@@ -1,10 +1,10 @@
-# \DatabaseAPI
+# \V1DatabaseAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**UploadDatabaseMigrations**](DatabaseAPI.md#UploadDatabaseMigrations) | **Post** /database/migrations | Upload database migrations
+[**UploadDatabaseMigrations**](V1DatabaseAPI.md#UploadDatabaseMigrations) | **Post** /api/v1/database/migrations | Upload database migrations
 
 
 
@@ -33,13 +33,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.DatabaseAPI.UploadDatabaseMigrations(context.Background()).Migrations(migrations).Execute()
+	resp, r, err := apiClient.V1DatabaseAPI.UploadDatabaseMigrations(context.Background()).Migrations(migrations).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `DatabaseAPI.UploadDatabaseMigrations``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1DatabaseAPI.UploadDatabaseMigrations``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `UploadDatabaseMigrations`: V1MigrationSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `DatabaseAPI.UploadDatabaseMigrations`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1DatabaseAPI.UploadDatabaseMigrations`: %v\n", resp)
 }
 ```
 

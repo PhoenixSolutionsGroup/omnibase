@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -15,36 +15,36 @@ import (
 	"encoding/json"
 )
 
-// checks if the StorageDownloadPost200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &StorageDownloadPost200Response{}
+// checks if the ApiV1StorageUploadPost200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ApiV1StorageUploadPost200Response{}
 
-// StorageDownloadPost200Response struct for StorageDownloadPost200Response
-type StorageDownloadPost200Response struct {
-	Data *ModelsDownloadResponse `json:"data,omitempty"`
+// ApiV1StorageUploadPost200Response struct for ApiV1StorageUploadPost200Response
+type ApiV1StorageUploadPost200Response struct {
+	Data *ModelsUploadResponse `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewStorageDownloadPost200Response instantiates a new StorageDownloadPost200Response object
+// NewApiV1StorageUploadPost200Response instantiates a new ApiV1StorageUploadPost200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStorageDownloadPost200Response() *StorageDownloadPost200Response {
-	this := StorageDownloadPost200Response{}
+func NewApiV1StorageUploadPost200Response() *ApiV1StorageUploadPost200Response {
+	this := ApiV1StorageUploadPost200Response{}
 	return &this
 }
 
-// NewStorageDownloadPost200ResponseWithDefaults instantiates a new StorageDownloadPost200Response object
+// NewApiV1StorageUploadPost200ResponseWithDefaults instantiates a new ApiV1StorageUploadPost200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewStorageDownloadPost200ResponseWithDefaults() *StorageDownloadPost200Response {
-	this := StorageDownloadPost200Response{}
+func NewApiV1StorageUploadPost200ResponseWithDefaults() *ApiV1StorageUploadPost200Response {
+	this := ApiV1StorageUploadPost200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *StorageDownloadPost200Response) GetData() ModelsDownloadResponse {
+func (o *ApiV1StorageUploadPost200Response) GetData() ModelsUploadResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsDownloadResponse
+		var ret ModelsUploadResponse
 		return ret
 	}
 	return *o.Data
@@ -52,7 +52,7 @@ func (o *StorageDownloadPost200Response) GetData() ModelsDownloadResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StorageDownloadPost200Response) GetDataOk() (*ModelsDownloadResponse, bool) {
+func (o *ApiV1StorageUploadPost200Response) GetDataOk() (*ModelsUploadResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -60,7 +60,7 @@ func (o *StorageDownloadPost200Response) GetDataOk() (*ModelsDownloadResponse, b
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *StorageDownloadPost200Response) HasData() bool {
+func (o *ApiV1StorageUploadPost200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +68,13 @@ func (o *StorageDownloadPost200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsDownloadResponse and assigns it to the Data field.
-func (o *StorageDownloadPost200Response) SetData(v ModelsDownloadResponse) {
+// SetData gets a reference to the given ModelsUploadResponse and assigns it to the Data field.
+func (o *ApiV1StorageUploadPost200Response) SetData(v ModelsUploadResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *StorageDownloadPost200Response) GetStatus() int32 {
+func (o *ApiV1StorageUploadPost200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +84,7 @@ func (o *StorageDownloadPost200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StorageDownloadPost200Response) GetStatusOk() (*int32, bool) {
+func (o *ApiV1StorageUploadPost200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *StorageDownloadPost200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *StorageDownloadPost200Response) HasStatus() bool {
+func (o *ApiV1StorageUploadPost200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +101,11 @@ func (o *StorageDownloadPost200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *StorageDownloadPost200Response) SetStatus(v int32) {
+func (o *ApiV1StorageUploadPost200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
+func (o ApiV1StorageUploadPost200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +113,7 @@ func (o StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o StorageDownloadPost200Response) ToMap() (map[string]interface{}, error) {
+func (o ApiV1StorageUploadPost200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +124,38 @@ func (o StorageDownloadPost200Response) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-type NullableStorageDownloadPost200Response struct {
-	value *StorageDownloadPost200Response
+type NullableApiV1StorageUploadPost200Response struct {
+	value *ApiV1StorageUploadPost200Response
 	isSet bool
 }
 
-func (v NullableStorageDownloadPost200Response) Get() *StorageDownloadPost200Response {
+func (v NullableApiV1StorageUploadPost200Response) Get() *ApiV1StorageUploadPost200Response {
 	return v.value
 }
 
-func (v *NullableStorageDownloadPost200Response) Set(val *StorageDownloadPost200Response) {
+func (v *NullableApiV1StorageUploadPost200Response) Set(val *ApiV1StorageUploadPost200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStorageDownloadPost200Response) IsSet() bool {
+func (v NullableApiV1StorageUploadPost200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStorageDownloadPost200Response) Unset() {
+func (v *NullableApiV1StorageUploadPost200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStorageDownloadPost200Response(val *StorageDownloadPost200Response) *NullableStorageDownloadPost200Response {
-	return &NullableStorageDownloadPost200Response{value: val, isSet: true}
+func NewNullableApiV1StorageUploadPost200Response(val *ApiV1StorageUploadPost200Response) *NullableApiV1StorageUploadPost200Response {
+	return &NullableApiV1StorageUploadPost200Response{value: val, isSet: true}
 }
 
-func (v NullableStorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
+func (v NullableApiV1StorageUploadPost200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStorageDownloadPost200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableApiV1StorageUploadPost200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -20,12 +20,12 @@ import (
 )
 
 
-// PaymentsAPIService PaymentsAPI service
-type PaymentsAPIService service
+// V1PaymentsAPIService V1PaymentsAPI service
+type V1PaymentsAPIService service
 
 type ApiCreateCheckoutRequest struct {
 	ctx context.Context
-	ApiService *PaymentsAPIService
+	ApiService *V1PaymentsAPIService
 	request *V1CreateCheckoutRequest
 }
 
@@ -56,7 +56,7 @@ Requires JWT token. If the user has an existing Stripe customer ID, it will be u
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCheckoutRequest
 */
-func (a *PaymentsAPIService) CreateCheckout(ctx context.Context) ApiCreateCheckoutRequest {
+func (a *V1PaymentsAPIService) CreateCheckout(ctx context.Context) ApiCreateCheckoutRequest {
 	return ApiCreateCheckoutRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -65,7 +65,7 @@ func (a *PaymentsAPIService) CreateCheckout(ctx context.Context) ApiCreateChecko
 
 // Execute executes the request
 //  @return CreateCheckout200Response
-func (a *PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (*CreateCheckout200Response, *http.Response, error) {
+func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (*CreateCheckout200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -73,12 +73,12 @@ func (a *PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (
 		localVarReturnValue  *CreateCheckout200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsAPIService.CreateCheckout")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateCheckout")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/payments/checkout"
+	localVarPath := localBasePath + "/api/v1/payments/checkout"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -191,7 +191,7 @@ func (a *PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (
 
 type ApiCreateCustomerPortalRequest struct {
 	ctx context.Context
-	ApiService *PaymentsAPIService
+	ApiService *V1PaymentsAPIService
 	request *V1CreatePortalRequest
 }
 
@@ -221,7 +221,7 @@ Requires JWT token and an associated Stripe customer ID.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCustomerPortalRequest
 */
-func (a *PaymentsAPIService) CreateCustomerPortal(ctx context.Context) ApiCreateCustomerPortalRequest {
+func (a *V1PaymentsAPIService) CreateCustomerPortal(ctx context.Context) ApiCreateCustomerPortalRequest {
 	return ApiCreateCustomerPortalRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -230,7 +230,7 @@ func (a *PaymentsAPIService) CreateCustomerPortal(ctx context.Context) ApiCreate
 
 // Execute executes the request
 //  @return CreateCustomerPortal200Response
-func (a *PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPortalRequest) (*CreateCustomerPortal200Response, *http.Response, error) {
+func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPortalRequest) (*CreateCustomerPortal200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -238,12 +238,12 @@ func (a *PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPort
 		localVarReturnValue  *CreateCustomerPortal200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsAPIService.CreateCustomerPortal")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateCustomerPortal")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/payments/portal"
+	localVarPath := localBasePath + "/api/v1/payments/portal"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -356,7 +356,7 @@ func (a *PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPort
 
 type ApiRecordUsageRequest struct {
 	ctx context.Context
-	ApiService *PaymentsAPIService
+	ApiService *V1PaymentsAPIService
 	request *V1RecordUsageRequest
 }
 
@@ -387,7 +387,7 @@ Requires JWT token and an associated Stripe customer ID.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRecordUsageRequest
 */
-func (a *PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRequest {
+func (a *V1PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRequest {
 	return ApiRecordUsageRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -396,7 +396,7 @@ func (a *PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRequ
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -404,12 +404,12 @@ func (a *PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Handl
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsAPIService.RecordUsage")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.RecordUsage")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/payments/usage"
+	localVarPath := localBasePath + "/api/v1/payments/usage"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -20,27 +20,27 @@ import (
 )
 
 
-// StorageAPIService StorageAPI service
-type StorageAPIService service
+// V1StorageAPIService V1StorageAPI service
+type V1StorageAPIService service
 
-type ApiStorageDownloadPostRequest struct {
+type ApiApiV1StorageDownloadPostRequest struct {
 	ctx context.Context
-	ApiService *StorageAPIService
+	ApiService *V1StorageAPIService
 	request *ModelsDownloadRequest
 }
 
 // Path of file to download
-func (r ApiStorageDownloadPostRequest) Request(request ModelsDownloadRequest) ApiStorageDownloadPostRequest {
+func (r ApiApiV1StorageDownloadPostRequest) Request(request ModelsDownloadRequest) ApiApiV1StorageDownloadPostRequest {
 	r.request = &request
 	return r
 }
 
-func (r ApiStorageDownloadPostRequest) Execute() (*StorageDownloadPost200Response, *http.Response, error) {
-	return r.ApiService.StorageDownloadPostExecute(r)
+func (r ApiApiV1StorageDownloadPostRequest) Execute() (*ApiV1StorageDownloadPost200Response, *http.Response, error) {
+	return r.ApiService.ApiV1StorageDownloadPostExecute(r)
 }
 
 /*
-StorageDownloadPost Download file from storage
+ApiV1StorageDownloadPost Download file from storage
 
 Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
 
@@ -56,31 +56,31 @@ Users must have SELECT permission based on their custom RLS policies.
 Presigned URLs are valid for 15 minutes after generation.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStorageDownloadPostRequest
+ @return ApiApiV1StorageDownloadPostRequest
 */
-func (a *StorageAPIService) StorageDownloadPost(ctx context.Context) ApiStorageDownloadPostRequest {
-	return ApiStorageDownloadPostRequest{
+func (a *V1StorageAPIService) ApiV1StorageDownloadPost(ctx context.Context) ApiApiV1StorageDownloadPostRequest {
+	return ApiApiV1StorageDownloadPostRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StorageDownloadPost200Response
-func (a *StorageAPIService) StorageDownloadPostExecute(r ApiStorageDownloadPostRequest) (*StorageDownloadPost200Response, *http.Response, error) {
+//  @return ApiV1StorageDownloadPost200Response
+func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageDownloadPostRequest) (*ApiV1StorageDownloadPost200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StorageDownloadPost200Response
+		localVarReturnValue  *ApiV1StorageDownloadPost200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StorageAPIService.StorageDownloadPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageDownloadPost")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/storage/download"
+	localVarPath := localBasePath + "/api/v1/storage/download"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -213,24 +213,24 @@ func (a *StorageAPIService) StorageDownloadPostExecute(r ApiStorageDownloadPostR
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStorageObjectDeleteRequest struct {
+type ApiApiV1StorageObjectDeleteRequest struct {
 	ctx context.Context
-	ApiService *StorageAPIService
+	ApiService *V1StorageAPIService
 	request *ModelsDeleteObjectRequest
 }
 
 // Path of file to delete
-func (r ApiStorageObjectDeleteRequest) Request(request ModelsDeleteObjectRequest) ApiStorageObjectDeleteRequest {
+func (r ApiApiV1StorageObjectDeleteRequest) Request(request ModelsDeleteObjectRequest) ApiApiV1StorageObjectDeleteRequest {
 	r.request = &request
 	return r
 }
 
-func (r ApiStorageObjectDeleteRequest) Execute() (*StorageObjectDelete200Response, *http.Response, error) {
-	return r.ApiService.StorageObjectDeleteExecute(r)
+func (r ApiApiV1StorageObjectDeleteRequest) Execute() (*ApiV1StorageObjectDelete200Response, *http.Response, error) {
+	return r.ApiService.ApiV1StorageObjectDeleteExecute(r)
 }
 
 /*
-StorageObjectDelete Delete file from storage
+ApiV1StorageObjectDelete Delete file from storage
 
 Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
 
@@ -244,31 +244,31 @@ Users must have DELETE permission based on their custom RLS policies.
 3. If S3 deletion fails, metadata is already removed (eventual consistency)
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStorageObjectDeleteRequest
+ @return ApiApiV1StorageObjectDeleteRequest
 */
-func (a *StorageAPIService) StorageObjectDelete(ctx context.Context) ApiStorageObjectDeleteRequest {
-	return ApiStorageObjectDeleteRequest{
+func (a *V1StorageAPIService) ApiV1StorageObjectDelete(ctx context.Context) ApiApiV1StorageObjectDeleteRequest {
+	return ApiApiV1StorageObjectDeleteRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StorageObjectDelete200Response
-func (a *StorageAPIService) StorageObjectDeleteExecute(r ApiStorageObjectDeleteRequest) (*StorageObjectDelete200Response, *http.Response, error) {
+//  @return ApiV1StorageObjectDelete200Response
+func (a *V1StorageAPIService) ApiV1StorageObjectDeleteExecute(r ApiApiV1StorageObjectDeleteRequest) (*ApiV1StorageObjectDelete200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StorageObjectDelete200Response
+		localVarReturnValue  *ApiV1StorageObjectDelete200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StorageAPIService.StorageObjectDelete")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageObjectDelete")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/storage/object"
+	localVarPath := localBasePath + "/api/v1/storage/object"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -390,24 +390,24 @@ func (a *StorageAPIService) StorageObjectDeleteExecute(r ApiStorageObjectDeleteR
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStorageUploadPostRequest struct {
+type ApiApiV1StorageUploadPostRequest struct {
 	ctx context.Context
-	ApiService *StorageAPIService
+	ApiService *V1StorageAPIService
 	request *ModelsUploadRequest
 }
 
 // Upload configuration with path and optional metadata
-func (r ApiStorageUploadPostRequest) Request(request ModelsUploadRequest) ApiStorageUploadPostRequest {
+func (r ApiApiV1StorageUploadPostRequest) Request(request ModelsUploadRequest) ApiApiV1StorageUploadPostRequest {
 	r.request = &request
 	return r
 }
 
-func (r ApiStorageUploadPostRequest) Execute() (*StorageUploadPost200Response, *http.Response, error) {
-	return r.ApiService.StorageUploadPostExecute(r)
+func (r ApiApiV1StorageUploadPostRequest) Execute() (*ApiV1StorageUploadPost200Response, *http.Response, error) {
+	return r.ApiService.ApiV1StorageUploadPostExecute(r)
 }
 
 /*
-StorageUploadPost Upload file to storage
+ApiV1StorageUploadPost Upload file to storage
 
 Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
@@ -424,31 +424,31 @@ Users must have INSERT permission based on their custom RLS policies.
 Presigned URLs are valid for 15 minutes after generation.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStorageUploadPostRequest
+ @return ApiApiV1StorageUploadPostRequest
 */
-func (a *StorageAPIService) StorageUploadPost(ctx context.Context) ApiStorageUploadPostRequest {
-	return ApiStorageUploadPostRequest{
+func (a *V1StorageAPIService) ApiV1StorageUploadPost(ctx context.Context) ApiApiV1StorageUploadPostRequest {
+	return ApiApiV1StorageUploadPostRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StorageUploadPost200Response
-func (a *StorageAPIService) StorageUploadPostExecute(r ApiStorageUploadPostRequest) (*StorageUploadPost200Response, *http.Response, error) {
+//  @return ApiV1StorageUploadPost200Response
+func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUploadPostRequest) (*ApiV1StorageUploadPost200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StorageUploadPost200Response
+		localVarReturnValue  *ApiV1StorageUploadPost200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StorageAPIService.StorageUploadPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageUploadPost")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/storage/upload"
+	localVarPath := localBasePath + "/api/v1/storage/upload"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

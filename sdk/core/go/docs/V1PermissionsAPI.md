@@ -1,12 +1,12 @@
-# \PermissionsAPI
+# \V1PermissionsAPI
 
-All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+All URIs are relative to *http://https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CheckPermission**](PermissionsAPI.md#CheckPermission) | **Post** /permissions/check | Check permission
-[**CreateRelationship**](PermissionsAPI.md#CreateRelationship) | **Post** /permissions/relationships | Create relationship
-[**DeployPermissionNamespaces**](PermissionsAPI.md#DeployPermissionNamespaces) | **Post** /permissions/namespaces | Deploy Keto namespace configurations
+[**CheckPermission**](V1PermissionsAPI.md#CheckPermission) | **Post** /api/v1/permissions/check | Check permission
+[**CreateRelationship**](V1PermissionsAPI.md#CreateRelationship) | **Post** /api/v1/permissions/relationships | Create relationship
+[**DeployPermissionNamespaces**](V1PermissionsAPI.md#DeployPermissionNamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 
 
 
@@ -35,13 +35,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PermissionsAPI.CheckPermission(context.Background()).Body(body).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).Body(body).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PermissionsAPI.CheckPermission``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CheckPermission``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CheckPermission`: CheckPermission200Response
-	fmt.Fprintf(os.Stdout, "Response from `PermissionsAPI.CheckPermission`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CheckPermission`: %v\n", resp)
 }
 ```
 
@@ -101,13 +101,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PermissionsAPI.CreateRelationship(context.Background()).Body(body).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.CreateRelationship(context.Background()).Body(body).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PermissionsAPI.CreateRelationship``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CreateRelationship``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateRelationship`: CreateRelationship200Response
-	fmt.Fprintf(os.Stdout, "Response from `PermissionsAPI.CreateRelationship`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CreateRelationship`: %v\n", resp)
 }
 ```
 
@@ -167,13 +167,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.PermissionsAPI.DeployPermissionNamespaces(context.Background()).Namespaces(namespaces).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.DeployPermissionNamespaces(context.Background()).Namespaces(namespaces).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `PermissionsAPI.DeployPermissionNamespaces``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.DeployPermissionNamespaces``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `DeployPermissionNamespaces`: DeployPermissionNamespaces200Response
-	fmt.Fprintf(os.Stdout, "Response from `PermissionsAPI.DeployPermissionNamespaces`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.DeployPermissionNamespaces`: %v\n", resp)
 }
 ```
 

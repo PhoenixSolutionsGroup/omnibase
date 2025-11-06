@@ -1,7 +1,7 @@
 /*
 Omnibase REST API
 
-Testing StripeAPIService
+Testing V1StripeAPIService
 
 */
 
@@ -17,16 +17,16 @@ import (
 	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
-func Test_omnibase_StripeAPIService(t *testing.T) {
+func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test StripeAPIService StripeConfigAdminGet", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService ArchiveAllStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigAdminGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.ArchiveAllStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,11 +34,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigArchiveAllPost", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService GetStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigArchiveAllPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -46,11 +46,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigGet", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService GetStripeConfigAdmin", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -58,11 +58,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigHistoryGet", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService GetStripeConfigHistory", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigHistoryGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigHistory(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -70,11 +70,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigPost", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService GetStripeConfigSchema", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigSchema(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -82,11 +82,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigPullGet", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService PullStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigPullGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.PullStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -94,11 +94,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeConfigValidatePost", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService UpdateStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeConfigValidatePost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.UpdateStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -106,11 +106,11 @@ func Test_omnibase_StripeAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test StripeAPIService StripeSchemaGet", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService ValidateStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.StripeAPI.StripeSchemaGet(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StripeAPI.ValidateStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

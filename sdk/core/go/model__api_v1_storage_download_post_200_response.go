@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.0
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -15,37 +15,36 @@ import (
 	"encoding/json"
 )
 
-// checks if the StripeConfigPullGet200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &StripeConfigPullGet200Response{}
+// checks if the ApiV1StorageDownloadPost200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ApiV1StorageDownloadPost200Response{}
 
-// StripeConfigPullGet200Response struct for StripeConfigPullGet200Response
-type StripeConfigPullGet200Response struct {
-	Data *ModelsStripeConfiguration `json:"data,omitempty"`
-	// HTTP status code
+// ApiV1StorageDownloadPost200Response struct for ApiV1StorageDownloadPost200Response
+type ApiV1StorageDownloadPost200Response struct {
+	Data *ModelsDownloadResponse `json:"data,omitempty"`
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewStripeConfigPullGet200Response instantiates a new StripeConfigPullGet200Response object
+// NewApiV1StorageDownloadPost200Response instantiates a new ApiV1StorageDownloadPost200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStripeConfigPullGet200Response() *StripeConfigPullGet200Response {
-	this := StripeConfigPullGet200Response{}
+func NewApiV1StorageDownloadPost200Response() *ApiV1StorageDownloadPost200Response {
+	this := ApiV1StorageDownloadPost200Response{}
 	return &this
 }
 
-// NewStripeConfigPullGet200ResponseWithDefaults instantiates a new StripeConfigPullGet200Response object
+// NewApiV1StorageDownloadPost200ResponseWithDefaults instantiates a new ApiV1StorageDownloadPost200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewStripeConfigPullGet200ResponseWithDefaults() *StripeConfigPullGet200Response {
-	this := StripeConfigPullGet200Response{}
+func NewApiV1StorageDownloadPost200ResponseWithDefaults() *ApiV1StorageDownloadPost200Response {
+	this := ApiV1StorageDownloadPost200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *StripeConfigPullGet200Response) GetData() ModelsStripeConfiguration {
+func (o *ApiV1StorageDownloadPost200Response) GetData() ModelsDownloadResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsStripeConfiguration
+		var ret ModelsDownloadResponse
 		return ret
 	}
 	return *o.Data
@@ -53,7 +52,7 @@ func (o *StripeConfigPullGet200Response) GetData() ModelsStripeConfiguration {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StripeConfigPullGet200Response) GetDataOk() (*ModelsStripeConfiguration, bool) {
+func (o *ApiV1StorageDownloadPost200Response) GetDataOk() (*ModelsDownloadResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -61,7 +60,7 @@ func (o *StripeConfigPullGet200Response) GetDataOk() (*ModelsStripeConfiguration
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *StripeConfigPullGet200Response) HasData() bool {
+func (o *ApiV1StorageDownloadPost200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -69,13 +68,13 @@ func (o *StripeConfigPullGet200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsStripeConfiguration and assigns it to the Data field.
-func (o *StripeConfigPullGet200Response) SetData(v ModelsStripeConfiguration) {
+// SetData gets a reference to the given ModelsDownloadResponse and assigns it to the Data field.
+func (o *ApiV1StorageDownloadPost200Response) SetData(v ModelsDownloadResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *StripeConfigPullGet200Response) GetStatus() int32 {
+func (o *ApiV1StorageDownloadPost200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -85,7 +84,7 @@ func (o *StripeConfigPullGet200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StripeConfigPullGet200Response) GetStatusOk() (*int32, bool) {
+func (o *ApiV1StorageDownloadPost200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -93,7 +92,7 @@ func (o *StripeConfigPullGet200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *StripeConfigPullGet200Response) HasStatus() bool {
+func (o *ApiV1StorageDownloadPost200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -102,11 +101,11 @@ func (o *StripeConfigPullGet200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *StripeConfigPullGet200Response) SetStatus(v int32) {
+func (o *ApiV1StorageDownloadPost200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o StripeConfigPullGet200Response) MarshalJSON() ([]byte, error) {
+func (o ApiV1StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -114,7 +113,7 @@ func (o StripeConfigPullGet200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o StripeConfigPullGet200Response) ToMap() (map[string]interface{}, error) {
+func (o ApiV1StorageDownloadPost200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -125,38 +124,38 @@ func (o StripeConfigPullGet200Response) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-type NullableStripeConfigPullGet200Response struct {
-	value *StripeConfigPullGet200Response
+type NullableApiV1StorageDownloadPost200Response struct {
+	value *ApiV1StorageDownloadPost200Response
 	isSet bool
 }
 
-func (v NullableStripeConfigPullGet200Response) Get() *StripeConfigPullGet200Response {
+func (v NullableApiV1StorageDownloadPost200Response) Get() *ApiV1StorageDownloadPost200Response {
 	return v.value
 }
 
-func (v *NullableStripeConfigPullGet200Response) Set(val *StripeConfigPullGet200Response) {
+func (v *NullableApiV1StorageDownloadPost200Response) Set(val *ApiV1StorageDownloadPost200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStripeConfigPullGet200Response) IsSet() bool {
+func (v NullableApiV1StorageDownloadPost200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStripeConfigPullGet200Response) Unset() {
+func (v *NullableApiV1StorageDownloadPost200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStripeConfigPullGet200Response(val *StripeConfigPullGet200Response) *NullableStripeConfigPullGet200Response {
-	return &NullableStripeConfigPullGet200Response{value: val, isSet: true}
+func NewNullableApiV1StorageDownloadPost200Response(val *ApiV1StorageDownloadPost200Response) *NullableApiV1StorageDownloadPost200Response {
+	return &NullableApiV1StorageDownloadPost200Response{value: val, isSet: true}
 }
 
-func (v NullableStripeConfigPullGet200Response) MarshalJSON() ([]byte, error) {
+func (v NullableApiV1StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStripeConfigPullGet200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableApiV1StorageDownloadPost200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

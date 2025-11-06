@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -21,12 +21,12 @@ import (
 )
 
 
-// TenantsAPIService TenantsAPI service
-type TenantsAPIService service
+// V1TenantsAPIService V1TenantsAPI service
+type V1TenantsAPIService service
 
 type ApiAcceptInviteRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsAcceptInviteRequest
 }
 
@@ -59,7 +59,7 @@ Requires JWT token. User's email must match the invite email.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiAcceptInviteRequest
 */
-func (a *TenantsAPIService) AcceptInvite(ctx context.Context) ApiAcceptInviteRequest {
+func (a *V1TenantsAPIService) AcceptInvite(ctx context.Context) ApiAcceptInviteRequest {
 	return ApiAcceptInviteRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -68,7 +68,7 @@ func (a *TenantsAPIService) AcceptInvite(ctx context.Context) ApiAcceptInviteReq
 
 // Execute executes the request
 //  @return AcceptInvite200Response
-func (a *TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*AcceptInvite200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*AcceptInvite200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -76,12 +76,12 @@ func (a *TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Acce
 		localVarReturnValue  *AcceptInvite200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.AcceptInvite")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.AcceptInvite")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/invites/accept"
+	localVarPath := localBasePath + "/api/v1/tenants/invites/accept"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -205,7 +205,7 @@ func (a *TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Acce
 
 type ApiAssignRoleRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	userId string
 	request *TenantsAssignRoleRequest
 }
@@ -240,7 +240,7 @@ Provide either `role_id` or `role_name` (not both).
  @param userId User ID
  @return ApiAssignRoleRequest
 */
-func (a *TenantsAPIService) AssignRole(ctx context.Context, userId string) ApiAssignRoleRequest {
+func (a *V1TenantsAPIService) AssignRole(ctx context.Context, userId string) ApiAssignRoleRequest {
 	return ApiAssignRoleRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -250,7 +250,7 @@ func (a *TenantsAPIService) AssignRole(ctx context.Context, userId string) ApiAs
 
 // Execute executes the request
 //  @return AssignRole200Response
-func (a *TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*AssignRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*AssignRole200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -258,12 +258,12 @@ func (a *TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*AssignRo
 		localVarReturnValue  *AssignRole200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.AssignRole")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.AssignRole")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles/assign/{user_id}"
+	localVarPath := localBasePath + "/api/v1/tenants/roles/assign/{user_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"user_id"+"}", url.PathEscape(parameterValueToString(r.userId, "userId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -388,7 +388,7 @@ func (a *TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*AssignRo
 
 type ApiCreateInviteRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsCreateTenantUserInviteRequest
 }
 
@@ -422,7 +422,7 @@ Requires JWT token with `invite_user` permission.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateInviteRequest
 */
-func (a *TenantsAPIService) CreateInvite(ctx context.Context) ApiCreateInviteRequest {
+func (a *V1TenantsAPIService) CreateInvite(ctx context.Context) ApiCreateInviteRequest {
 	return ApiCreateInviteRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -431,7 +431,7 @@ func (a *TenantsAPIService) CreateInvite(ctx context.Context) ApiCreateInviteReq
 
 // Execute executes the request
 //  @return CreateInvite200Response
-func (a *TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*CreateInvite200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*CreateInvite200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -439,12 +439,12 @@ func (a *TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Crea
 		localVarReturnValue  *CreateInvite200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.CreateInvite")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateInvite")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/invites"
+	localVarPath := localBasePath + "/api/v1/tenants/invites"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -579,7 +579,7 @@ func (a *TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Crea
 
 type ApiCreateRoleRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsCreateRoleRequest
 }
 
@@ -614,7 +614,7 @@ Permissions should be in the format: `namespace:resource#relation`
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRoleRequest
 */
-func (a *TenantsAPIService) CreateRole(ctx context.Context) ApiCreateRoleRequest {
+func (a *V1TenantsAPIService) CreateRole(ctx context.Context) ApiCreateRoleRequest {
 	return ApiCreateRoleRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -623,7 +623,7 @@ func (a *TenantsAPIService) CreateRole(ctx context.Context) ApiCreateRoleRequest
 
 // Execute executes the request
 //  @return CreateRole200Response
-func (a *TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRole200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -631,12 +631,12 @@ func (a *TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRo
 		localVarReturnValue  *CreateRole200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.CreateRole")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateRole")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles"
+	localVarPath := localBasePath + "/api/v1/tenants/roles"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -749,7 +749,7 @@ func (a *TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRo
 
 type ApiCreateTenantRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsCreateTenantRequest
 }
 
@@ -782,7 +782,7 @@ Requires JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateTenantRequest
 */
-func (a *TenantsAPIService) CreateTenant(ctx context.Context) ApiCreateTenantRequest {
+func (a *V1TenantsAPIService) CreateTenant(ctx context.Context) ApiCreateTenantRequest {
 	return ApiCreateTenantRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -791,7 +791,7 @@ func (a *TenantsAPIService) CreateTenant(ctx context.Context) ApiCreateTenantReq
 
 // Execute executes the request
 //  @return CreateTenant200Response
-func (a *TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*CreateTenant200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*CreateTenant200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -799,12 +799,12 @@ func (a *TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Crea
 		localVarReturnValue  *CreateTenant200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.CreateTenant")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateTenant")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants"
+	localVarPath := localBasePath + "/api/v1/tenants"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -917,7 +917,7 @@ func (a *TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Crea
 
 type ApiDeleteRoleRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	roleId string
 }
 
@@ -942,7 +942,7 @@ Requires JWT token with tenant context and appropriate permissions.
  @param roleId Role ID
  @return ApiDeleteRoleRequest
 */
-func (a *TenantsAPIService) DeleteRole(ctx context.Context, roleId string) ApiDeleteRoleRequest {
+func (a *V1TenantsAPIService) DeleteRole(ctx context.Context, roleId string) ApiDeleteRoleRequest {
 	return ApiDeleteRoleRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -952,7 +952,7 @@ func (a *TenantsAPIService) DeleteRole(ctx context.Context, roleId string) ApiDe
 
 // Execute executes the request
 //  @return DeleteRole200Response
-func (a *TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*DeleteRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*DeleteRole200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
@@ -960,12 +960,12 @@ func (a *TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*DeleteRo
 		localVarReturnValue  *DeleteRole200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.DeleteRole")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.DeleteRole")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles/{role_id}"
+	localVarPath := localBasePath + "/api/v1/tenants/roles/{role_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"role_id"+"}", url.PathEscape(parameterValueToString(r.roleId, "roleId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1074,7 +1074,7 @@ func (a *TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*DeleteRo
 
 type ApiDeleteTenantRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiDeleteTenantRequest) Execute() (*DeleteTenant200Response, *http.Response, error) {
@@ -1098,7 +1098,7 @@ Requires JWT token with `delete_tenant` permission.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeleteTenantRequest
 */
-func (a *TenantsAPIService) DeleteTenant(ctx context.Context) ApiDeleteTenantRequest {
+func (a *V1TenantsAPIService) DeleteTenant(ctx context.Context) ApiDeleteTenantRequest {
 	return ApiDeleteTenantRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1107,7 +1107,7 @@ func (a *TenantsAPIService) DeleteTenant(ctx context.Context) ApiDeleteTenantReq
 
 // Execute executes the request
 //  @return DeleteTenant200Response
-func (a *TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*DeleteTenant200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*DeleteTenant200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
@@ -1115,12 +1115,12 @@ func (a *TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*Dele
 		localVarReturnValue  *DeleteTenant200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.DeleteTenant")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.DeleteTenant")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants"
+	localVarPath := localBasePath + "/api/v1/tenants"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1250,7 +1250,7 @@ func (a *TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*Dele
 
 type ApiGetRoleDefinitionsRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiGetRoleDefinitionsRequest) Execute() (*GetRoleDefinitions200Response, *http.Response, error) {
@@ -1273,7 +1273,7 @@ Requires JWT token with appropriate permissions.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetRoleDefinitionsRequest
 */
-func (a *TenantsAPIService) GetRoleDefinitions(ctx context.Context) ApiGetRoleDefinitionsRequest {
+func (a *V1TenantsAPIService) GetRoleDefinitions(ctx context.Context) ApiGetRoleDefinitionsRequest {
 	return ApiGetRoleDefinitionsRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1282,7 +1282,7 @@ func (a *TenantsAPIService) GetRoleDefinitions(ctx context.Context) ApiGetRoleDe
 
 // Execute executes the request
 //  @return GetRoleDefinitions200Response
-func (a *TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsRequest) (*GetRoleDefinitions200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsRequest) (*GetRoleDefinitions200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1290,12 +1290,12 @@ func (a *TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsReq
 		localVarReturnValue  *GetRoleDefinitions200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.GetRoleDefinitions")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetRoleDefinitions")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles/definitions"
+	localVarPath := localBasePath + "/api/v1/tenants/roles/definitions"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1392,7 +1392,7 @@ func (a *TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsReq
 
 type ApiGetTenantBillingStatusRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiGetTenantBillingStatusRequest) Execute() (*GetTenantBillingStatus200Response, *http.Response, error) {
@@ -1415,7 +1415,7 @@ Requires JWT token with tenant context.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetTenantBillingStatusRequest
 */
-func (a *TenantsAPIService) GetTenantBillingStatus(ctx context.Context) ApiGetTenantBillingStatusRequest {
+func (a *V1TenantsAPIService) GetTenantBillingStatus(ctx context.Context) ApiGetTenantBillingStatusRequest {
 	return ApiGetTenantBillingStatusRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1424,7 +1424,7 @@ func (a *TenantsAPIService) GetTenantBillingStatus(ctx context.Context) ApiGetTe
 
 // Execute executes the request
 //  @return GetTenantBillingStatus200Response
-func (a *TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillingStatusRequest) (*GetTenantBillingStatus200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillingStatusRequest) (*GetTenantBillingStatus200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1432,12 +1432,12 @@ func (a *TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillingS
 		localVarReturnValue  *GetTenantBillingStatus200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.GetTenantBillingStatus")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetTenantBillingStatus")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/billing-status"
+	localVarPath := localBasePath + "/api/v1/tenants/billing-status"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1545,7 +1545,7 @@ func (a *TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillingS
 
 type ApiGetTenantJWTRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiGetTenantJWTRequest) Execute() (*GetTenantJWT200Response, *http.Response, error) {
@@ -1568,7 +1568,7 @@ Requires JWT token and active tenant.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetTenantJWTRequest
 */
-func (a *TenantsAPIService) GetTenantJWT(ctx context.Context) ApiGetTenantJWTRequest {
+func (a *V1TenantsAPIService) GetTenantJWT(ctx context.Context) ApiGetTenantJWTRequest {
 	return ApiGetTenantJWTRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1577,7 +1577,7 @@ func (a *TenantsAPIService) GetTenantJWT(ctx context.Context) ApiGetTenantJWTReq
 
 // Execute executes the request
 //  @return GetTenantJWT200Response
-func (a *TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*GetTenantJWT200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*GetTenantJWT200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1585,12 +1585,12 @@ func (a *TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*GetT
 		localVarReturnValue  *GetTenantJWT200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.GetTenantJWT")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetTenantJWT")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/jwt"
+	localVarPath := localBasePath + "/api/v1/tenants/jwt"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1698,7 +1698,7 @@ func (a *TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*GetT
 
 type ApiListRolesRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiListRolesRequest) Execute() (*ListRoles200Response, *http.Response, error) {
@@ -1721,7 +1721,7 @@ Requires JWT token with tenant context.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListRolesRequest
 */
-func (a *TenantsAPIService) ListRoles(ctx context.Context) ApiListRolesRequest {
+func (a *V1TenantsAPIService) ListRoles(ctx context.Context) ApiListRolesRequest {
 	return ApiListRolesRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1730,7 +1730,7 @@ func (a *TenantsAPIService) ListRoles(ctx context.Context) ApiListRolesRequest {
 
 // Execute executes the request
 //  @return ListRoles200Response
-func (a *TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRoles200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRoles200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1738,12 +1738,12 @@ func (a *TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRoles2
 		localVarReturnValue  *ListRoles200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.ListRoles")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListRoles")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles"
+	localVarPath := localBasePath + "/api/v1/tenants/roles"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1851,7 +1851,7 @@ func (a *TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRoles2
 
 type ApiListTenantSubscriptionsRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiListTenantSubscriptionsRequest) Execute() (*ListTenantSubscriptions200Response, *http.Response, error) {
@@ -1874,7 +1874,7 @@ Requires JWT token with tenant context.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListTenantSubscriptionsRequest
 */
-func (a *TenantsAPIService) ListTenantSubscriptions(ctx context.Context) ApiListTenantSubscriptionsRequest {
+func (a *V1TenantsAPIService) ListTenantSubscriptions(ctx context.Context) ApiListTenantSubscriptionsRequest {
 	return ApiListTenantSubscriptionsRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1883,7 +1883,7 @@ func (a *TenantsAPIService) ListTenantSubscriptions(ctx context.Context) ApiList
 
 // Execute executes the request
 //  @return ListTenantSubscriptions200Response
-func (a *TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscriptionsRequest) (*ListTenantSubscriptions200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscriptionsRequest) (*ListTenantSubscriptions200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -1891,12 +1891,12 @@ func (a *TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscr
 		localVarReturnValue  *ListTenantSubscriptions200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.ListTenantSubscriptions")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListTenantSubscriptions")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/subscriptions"
+	localVarPath := localBasePath + "/api/v1/tenants/subscriptions"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -2004,7 +2004,7 @@ func (a *TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscr
 
 type ApiListTenantUsersRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 }
 
 func (r ApiListTenantUsersRequest) Execute() (*ListTenantUsers200Response, *http.Response, error) {
@@ -2027,7 +2027,7 @@ Requires JWT token with `view_users` permission.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListTenantUsersRequest
 */
-func (a *TenantsAPIService) ListTenantUsers(ctx context.Context) ApiListTenantUsersRequest {
+func (a *V1TenantsAPIService) ListTenantUsers(ctx context.Context) ApiListTenantUsersRequest {
 	return ApiListTenantUsersRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -2036,7 +2036,7 @@ func (a *TenantsAPIService) ListTenantUsers(ctx context.Context) ApiListTenantUs
 
 // Execute executes the request
 //  @return ListTenantUsers200Response
-func (a *TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) (*ListTenantUsers200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) (*ListTenantUsers200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -2044,12 +2044,12 @@ func (a *TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) 
 		localVarReturnValue  *ListTenantUsers200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.ListTenantUsers")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListTenantUsers")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/users"
+	localVarPath := localBasePath + "/api/v1/tenants/users"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -2157,7 +2157,7 @@ func (a *TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) 
 
 type ApiRemoveTenantUserRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsDeleteTenantUserRequest
 }
 
@@ -2193,7 +2193,7 @@ Requires JWT token with `remove_user` permission.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRemoveTenantUserRequest
 */
-func (a *TenantsAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTenantUserRequest {
+func (a *V1TenantsAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTenantUserRequest {
 	return ApiRemoveTenantUserRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -2202,7 +2202,7 @@ func (a *TenantsAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTenan
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
@@ -2210,12 +2210,12 @@ func (a *TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.RemoveTenantUser")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.RemoveTenantUser")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/users"
+	localVarPath := localBasePath + "/api/v1/tenants/users"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -2350,7 +2350,7 @@ func (a *TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest
 
 type ApiSwitchActiveTenantRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsSwitchTenantRequest
 }
 
@@ -2379,7 +2379,7 @@ Requires JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiSwitchActiveTenantRequest
 */
-func (a *TenantsAPIService) SwitchActiveTenant(ctx context.Context) ApiSwitchActiveTenantRequest {
+func (a *V1TenantsAPIService) SwitchActiveTenant(ctx context.Context) ApiSwitchActiveTenantRequest {
 	return ApiSwitchActiveTenantRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -2388,7 +2388,7 @@ func (a *TenantsAPIService) SwitchActiveTenant(ctx context.Context) ApiSwitchAct
 
 // Execute executes the request
 //  @return SwitchActiveTenant200Response
-func (a *TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantRequest) (*SwitchActiveTenant200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantRequest) (*SwitchActiveTenant200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -2396,12 +2396,12 @@ func (a *TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantReq
 		localVarReturnValue  *SwitchActiveTenant200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.SwitchActiveTenant")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.SwitchActiveTenant")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/switch-active"
+	localVarPath := localBasePath + "/api/v1/tenants/switch-active"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -2514,7 +2514,7 @@ func (a *TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantReq
 
 type ApiUpdateRoleRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	roleId string
 	request *TenantsUpdateRoleRequest
 }
@@ -2549,7 +2549,7 @@ Permissions should be in the format: `namespace:resource#relation`
  @param roleId Role ID
  @return ApiUpdateRoleRequest
 */
-func (a *TenantsAPIService) UpdateRole(ctx context.Context, roleId string) ApiUpdateRoleRequest {
+func (a *V1TenantsAPIService) UpdateRole(ctx context.Context, roleId string) ApiUpdateRoleRequest {
 	return ApiUpdateRoleRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -2559,7 +2559,7 @@ func (a *TenantsAPIService) UpdateRole(ctx context.Context, roleId string) ApiUp
 
 // Execute executes the request
 //  @return CreateRole200Response
-func (a *TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRole200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -2567,12 +2567,12 @@ func (a *TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRo
 		localVarReturnValue  *CreateRole200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.UpdateRole")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateRole")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/roles/{role_id}"
+	localVarPath := localBasePath + "/api/v1/tenants/roles/{role_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"role_id"+"}", url.PathEscape(parameterValueToString(r.roleId, "roleId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2697,7 +2697,7 @@ func (a *TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRo
 
 type ApiUpdateTenantUserRoleRequest struct {
 	ctx context.Context
-	ApiService *TenantsAPIService
+	ApiService *V1TenantsAPIService
 	request *TenantsUpdateTenantUserRoleRequest
 }
 
@@ -2733,7 +2733,7 @@ Requires JWT token with `update_user_role` permission.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUpdateTenantUserRoleRequest
 */
-func (a *TenantsAPIService) UpdateTenantUserRole(ctx context.Context) ApiUpdateTenantUserRoleRequest {
+func (a *V1TenantsAPIService) UpdateTenantUserRole(ctx context.Context) ApiUpdateTenantUserRoleRequest {
 	return ApiUpdateTenantUserRoleRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -2742,7 +2742,7 @@ func (a *TenantsAPIService) UpdateTenantUserRole(ctx context.Context) ApiUpdateT
 
 // Execute executes the request
 //  @return UpdateTenantUserRole200Response
-func (a *TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRoleRequest) (*UpdateTenantUserRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRoleRequest) (*UpdateTenantUserRole200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -2750,12 +2750,12 @@ func (a *TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRol
 		localVarReturnValue  *UpdateTenantUserRole200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TenantsAPIService.UpdateTenantUserRole")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateTenantUserRole")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/tenants/users/role"
+	localVarPath := localBasePath + "/api/v1/tenants/users/role"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

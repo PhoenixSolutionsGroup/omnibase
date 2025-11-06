@@ -1,78 +1,78 @@
-# StripeConfigHistoryGet200Response
+# ApiV1StorageObjectDelete200Response
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**V1ConfigHistoryResponse**](V1ConfigHistoryResponse.md) |  | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
+**Data** | Pointer to [**ModelsMessageResponse**](ModelsMessageResponse.md) |  | [optional] 
+**Status** | Pointer to **int32** |  | [optional] 
 
 ## Methods
 
-### NewStripeConfigHistoryGet200Response
+### NewApiV1StorageObjectDelete200Response
 
-`func NewStripeConfigHistoryGet200Response() *StripeConfigHistoryGet200Response`
+`func NewApiV1StorageObjectDelete200Response() *ApiV1StorageObjectDelete200Response`
 
-NewStripeConfigHistoryGet200Response instantiates a new StripeConfigHistoryGet200Response object
+NewApiV1StorageObjectDelete200Response instantiates a new ApiV1StorageObjectDelete200Response object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewStripeConfigHistoryGet200ResponseWithDefaults
+### NewApiV1StorageObjectDelete200ResponseWithDefaults
 
-`func NewStripeConfigHistoryGet200ResponseWithDefaults() *StripeConfigHistoryGet200Response`
+`func NewApiV1StorageObjectDelete200ResponseWithDefaults() *ApiV1StorageObjectDelete200Response`
 
-NewStripeConfigHistoryGet200ResponseWithDefaults instantiates a new StripeConfigHistoryGet200Response object
+NewApiV1StorageObjectDelete200ResponseWithDefaults instantiates a new ApiV1StorageObjectDelete200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *StripeConfigHistoryGet200Response) GetData() V1ConfigHistoryResponse`
+`func (o *ApiV1StorageObjectDelete200Response) GetData() ModelsMessageResponse`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *StripeConfigHistoryGet200Response) GetDataOk() (*V1ConfigHistoryResponse, bool)`
+`func (o *ApiV1StorageObjectDelete200Response) GetDataOk() (*ModelsMessageResponse, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *StripeConfigHistoryGet200Response) SetData(v V1ConfigHistoryResponse)`
+`func (o *ApiV1StorageObjectDelete200Response) SetData(v ModelsMessageResponse)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *StripeConfigHistoryGet200Response) HasData() bool`
+`func (o *ApiV1StorageObjectDelete200Response) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
-`func (o *StripeConfigHistoryGet200Response) GetStatus() int32`
+`func (o *ApiV1StorageObjectDelete200Response) GetStatus() int32`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *StripeConfigHistoryGet200Response) GetStatusOk() (*int32, bool)`
+`func (o *ApiV1StorageObjectDelete200Response) GetStatusOk() (*int32, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *StripeConfigHistoryGet200Response) SetStatus(v int32)`
+`func (o *ApiV1StorageObjectDelete200Response) SetStatus(v int32)`
 
 SetStatus sets Status field to given value.
 
 ### HasStatus
 
-`func (o *StripeConfigHistoryGet200Response) HasStatus() bool`
+`func (o *ApiV1StorageObjectDelete200Response) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
 

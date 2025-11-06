@@ -1,7 +1,7 @@
 /*
 Omnibase REST API
 
-Testing PermissionsAPIService
+Testing V1PaymentsAPIService
 
 */
 
@@ -17,16 +17,16 @@ import (
 	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
-func Test_omnibase_PermissionsAPIService(t *testing.T) {
+func Test_omnibase_V1PaymentsAPIService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test PermissionsAPIService CheckPermission", func(t *testing.T) {
+	t.Run("Test V1PaymentsAPIService CreateCheckout", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.PermissionsAPI.CheckPermission(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1PaymentsAPI.CreateCheckout(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,11 +34,11 @@ func Test_omnibase_PermissionsAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test PermissionsAPIService CreateRelationship", func(t *testing.T) {
+	t.Run("Test V1PaymentsAPIService CreateCustomerPortal", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.PermissionsAPI.CreateRelationship(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1PaymentsAPI.CreateCustomerPortal(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -46,11 +46,11 @@ func Test_omnibase_PermissionsAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test PermissionsAPIService DeployPermissionNamespaces", func(t *testing.T) {
+	t.Run("Test V1PaymentsAPIService RecordUsage", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.PermissionsAPI.DeployPermissionNamespaces(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

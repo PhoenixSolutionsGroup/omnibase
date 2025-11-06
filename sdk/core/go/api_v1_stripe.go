@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -20,12 +20,12 @@ import (
 )
 
 
-// StripeAPIService StripeAPI service
-type StripeAPIService service
+// V1StripeAPIService V1StripeAPI service
+type V1StripeAPIService service
 
 type ApiArchiveAllStripeConfigRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 }
 
 func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllStripeConfig200Response, *http.Response, error) {
@@ -51,7 +51,7 @@ This is a destructive operation that will archive ALL active Stripe resources.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiArchiveAllStripeConfigRequest
 */
-func (a *StripeAPIService) ArchiveAllStripeConfig(ctx context.Context) ApiArchiveAllStripeConfigRequest {
+func (a *V1StripeAPIService) ArchiveAllStripeConfig(ctx context.Context) ApiArchiveAllStripeConfigRequest {
 	return ApiArchiveAllStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -60,7 +60,7 @@ func (a *StripeAPIService) ArchiveAllStripeConfig(ctx context.Context) ApiArchiv
 
 // Execute executes the request
 //  @return ArchiveAllStripeConfig200Response
-func (a *StripeAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllStripeConfig200Response, *http.Response, error) {
+func (a *V1StripeAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -68,12 +68,12 @@ func (a *StripeAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeCo
 		localVarReturnValue  *ArchiveAllStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.ArchiveAllStripeConfig")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ArchiveAllStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config/archive-all"
+	localVarPath := localBasePath + "/api/v1/stripe/config/archive-all"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -170,7 +170,7 @@ func (a *StripeAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeCo
 
 type ApiGetStripeConfigRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 }
 
 func (r ApiGetStripeConfigRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
@@ -193,7 +193,7 @@ No authentication required for public endpoint.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigRequest
 */
-func (a *StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeConfigRequest {
+func (a *V1StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeConfigRequest {
 	return ApiGetStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -202,7 +202,7 @@ func (a *StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeConf
 
 // Execute executes the request
 //  @return GetStripeConfig200Response
-func (a *StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*GetStripeConfig200Response, *http.Response, error) {
+func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*GetStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -210,12 +210,12 @@ func (a *StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (
 		localVarReturnValue  *GetStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfig")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config"
+	localVarPath := localBasePath + "/api/v1/stripe/config"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -287,7 +287,7 @@ func (a *StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (
 
 type ApiGetStripeConfigAdminRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 }
 
 func (r ApiGetStripeConfigAdminRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
@@ -310,7 +310,7 @@ Requires admin JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigAdminRequest
 */
-func (a *StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStripeConfigAdminRequest {
+func (a *V1StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStripeConfigAdminRequest {
 	return ApiGetStripeConfigAdminRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -319,7 +319,7 @@ func (a *StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStrip
 
 // Execute executes the request
 //  @return GetStripeConfig200Response
-func (a *StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*GetStripeConfig200Response, *http.Response, error) {
+func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*GetStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -327,12 +327,12 @@ func (a *StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdmin
 		localVarReturnValue  *GetStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigAdmin")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfigAdmin")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config/admin"
+	localVarPath := localBasePath + "/api/v1/stripe/config/admin"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -429,7 +429,7 @@ func (a *StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdmin
 
 type ApiGetStripeConfigHistoryRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 	limit *int32
 	offset *int32
 }
@@ -465,7 +465,7 @@ Requires admin JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigHistoryRequest
 */
-func (a *StripeAPIService) GetStripeConfigHistory(ctx context.Context) ApiGetStripeConfigHistoryRequest {
+func (a *V1StripeAPIService) GetStripeConfigHistory(ctx context.Context) ApiGetStripeConfigHistoryRequest {
 	return ApiGetStripeConfigHistoryRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -474,7 +474,7 @@ func (a *StripeAPIService) GetStripeConfigHistory(ctx context.Context) ApiGetStr
 
 // Execute executes the request
 //  @return GetStripeConfigHistory200Response
-func (a *StripeAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*GetStripeConfigHistory200Response, *http.Response, error) {
+func (a *V1StripeAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*GetStripeConfigHistory200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -482,12 +482,12 @@ func (a *StripeAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHis
 		localVarReturnValue  *GetStripeConfigHistory200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigHistory")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfigHistory")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config/history"
+	localVarPath := localBasePath + "/api/v1/stripe/config/history"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -598,7 +598,7 @@ func (a *StripeAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHis
 
 type ApiGetStripeConfigSchemaRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 }
 
 func (r ApiGetStripeConfigSchemaRequest) Execute() (map[string]interface{}, *http.Response, error) {
@@ -618,7 +618,7 @@ Returns the JSON schema definition for validating Stripe configuration files.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigSchemaRequest
 */
-func (a *StripeAPIService) GetStripeConfigSchema(ctx context.Context) ApiGetStripeConfigSchemaRequest {
+func (a *V1StripeAPIService) GetStripeConfigSchema(ctx context.Context) ApiGetStripeConfigSchemaRequest {
 	return ApiGetStripeConfigSchemaRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -627,7 +627,7 @@ func (a *StripeAPIService) GetStripeConfigSchema(ctx context.Context) ApiGetStri
 
 // Execute executes the request
 //  @return map[string]interface{}
-func (a *StripeAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (map[string]interface{}, *http.Response, error) {
+func (a *V1StripeAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -635,12 +635,12 @@ func (a *StripeAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSche
 		localVarReturnValue  map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigSchema")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfigSchema")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/schema"
+	localVarPath := localBasePath + "/api/v1/stripe/schema"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -712,7 +712,7 @@ func (a *StripeAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSche
 
 type ApiPullStripeConfigRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 }
 
 func (r ApiPullStripeConfigRequest) Execute() (*PullStripeConfig200Response, *http.Response, error) {
@@ -735,7 +735,7 @@ Requires admin JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiPullStripeConfigRequest
 */
-func (a *StripeAPIService) PullStripeConfig(ctx context.Context) ApiPullStripeConfigRequest {
+func (a *V1StripeAPIService) PullStripeConfig(ctx context.Context) ApiPullStripeConfigRequest {
 	return ApiPullStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -744,7 +744,7 @@ func (a *StripeAPIService) PullStripeConfig(ctx context.Context) ApiPullStripeCo
 
 // Execute executes the request
 //  @return PullStripeConfig200Response
-func (a *StripeAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*PullStripeConfig200Response, *http.Response, error) {
+func (a *V1StripeAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*PullStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -752,12 +752,12 @@ func (a *StripeAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest)
 		localVarReturnValue  *PullStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.PullStripeConfig")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.PullStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config/pull"
+	localVarPath := localBasePath + "/api/v1/stripe/config/pull"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -854,7 +854,7 @@ func (a *StripeAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest)
 
 type ApiUpdateStripeConfigRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 	config *map[string]interface{}
 }
 
@@ -884,7 +884,7 @@ Requires admin JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUpdateStripeConfigRequest
 */
-func (a *StripeAPIService) UpdateStripeConfig(ctx context.Context) ApiUpdateStripeConfigRequest {
+func (a *V1StripeAPIService) UpdateStripeConfig(ctx context.Context) ApiUpdateStripeConfigRequest {
 	return ApiUpdateStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -893,7 +893,7 @@ func (a *StripeAPIService) UpdateStripeConfig(ctx context.Context) ApiUpdateStri
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *StripeAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *V1StripeAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -901,12 +901,12 @@ func (a *StripeAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequ
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.UpdateStripeConfig")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.UpdateStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config"
+	localVarPath := localBasePath + "/api/v1/stripe/config"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1008,7 +1008,7 @@ func (a *StripeAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequ
 
 type ApiValidateStripeConfigRequest struct {
 	ctx context.Context
-	ApiService *StripeAPIService
+	ApiService *V1StripeAPIService
 	config *map[string]interface{}
 }
 
@@ -1038,7 +1038,7 @@ Requires admin JWT token.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiValidateStripeConfigRequest
 */
-func (a *StripeAPIService) ValidateStripeConfig(ctx context.Context) ApiValidateStripeConfigRequest {
+func (a *V1StripeAPIService) ValidateStripeConfig(ctx context.Context) ApiValidateStripeConfigRequest {
 	return ApiValidateStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -1047,7 +1047,7 @@ func (a *StripeAPIService) ValidateStripeConfig(ctx context.Context) ApiValidate
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *StripeAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *V1StripeAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -1055,12 +1055,12 @@ func (a *StripeAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfig
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.ValidateStripeConfig")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ValidateStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/stripe/config/validate"
+	localVarPath := localBasePath + "/api/v1/stripe/config/validate"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

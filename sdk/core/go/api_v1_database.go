@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.1
+API version: 0.9.2
 Contact: support@omnibase.dev
 */
 
@@ -21,12 +21,12 @@ import (
 )
 
 
-// DatabaseAPIService DatabaseAPI service
-type DatabaseAPIService service
+// V1DatabaseAPIService V1DatabaseAPI service
+type V1DatabaseAPIService service
 
 type ApiUploadDatabaseMigrationsRequest struct {
 	ctx context.Context
-	ApiService *DatabaseAPIService
+	ApiService *V1DatabaseAPIService
 	migrations *os.File
 }
 
@@ -60,7 +60,7 @@ Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `00
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUploadDatabaseMigrationsRequest
 */
-func (a *DatabaseAPIService) UploadDatabaseMigrations(ctx context.Context) ApiUploadDatabaseMigrationsRequest {
+func (a *V1DatabaseAPIService) UploadDatabaseMigrations(ctx context.Context) ApiUploadDatabaseMigrationsRequest {
 	return ApiUploadDatabaseMigrationsRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -69,7 +69,7 @@ func (a *DatabaseAPIService) UploadDatabaseMigrations(ctx context.Context) ApiUp
 
 // Execute executes the request
 //  @return V1MigrationSuccessResponse
-func (a *DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (*V1MigrationSuccessResponse, *http.Response, error) {
+func (a *V1DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (*V1MigrationSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -77,12 +77,12 @@ func (a *DatabaseAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabase
 		localVarReturnValue  *V1MigrationSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAPIService.UploadDatabaseMigrations")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1DatabaseAPIService.UploadDatabaseMigrations")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/database/migrations"
+	localVarPath := localBasePath + "/api/v1/database/migrations"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
