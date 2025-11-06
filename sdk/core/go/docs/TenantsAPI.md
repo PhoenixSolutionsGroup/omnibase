@@ -1,0 +1,1128 @@
+# \TenantsAPI
+
+All URIs are relative to *http://https://api.omnibase.tech/api/v1*
+
+Method | HTTP request | Description
+------------- | ------------- | -------------
+[**AcceptInvite**](TenantsAPI.md#AcceptInvite) | **Put** /tenants/invites/accept | Accept tenant invite
+[**AssignRole**](TenantsAPI.md#AssignRole) | **Post** /tenants/roles/assign/{user_id} | Assign role to user
+[**CreateInvite**](TenantsAPI.md#CreateInvite) | **Post** /tenants/invites | Create tenant invite
+[**CreateRole**](TenantsAPI.md#CreateRole) | **Post** /tenants/roles | Create role
+[**CreateTenant**](TenantsAPI.md#CreateTenant) | **Post** /tenants | Create tenant
+[**DeleteRole**](TenantsAPI.md#DeleteRole) | **Delete** /tenants/roles/{role_id} | Delete role
+[**DeleteTenant**](TenantsAPI.md#DeleteTenant) | **Delete** /tenants | Delete tenant
+[**GetRoleDefinitions**](TenantsAPI.md#GetRoleDefinitions) | **Get** /tenants/roles/definitions | Get namespace definitions
+[**GetTenantBillingStatus**](TenantsAPI.md#GetTenantBillingStatus) | **Get** /tenants/billing-status | Get billing status
+[**GetTenantJWT**](TenantsAPI.md#GetTenantJWT) | **Get** /tenants/jwt | Get PostgREST JWT token
+[**ListRoles**](TenantsAPI.md#ListRoles) | **Get** /tenants/roles | List roles
+[**ListTenantSubscriptions**](TenantsAPI.md#ListTenantSubscriptions) | **Get** /tenants/subscriptions | Get tenant subscriptions
+[**ListTenantUsers**](TenantsAPI.md#ListTenantUsers) | **Get** /tenants/users | Get tenant users
+[**RemoveTenantUser**](TenantsAPI.md#RemoveTenantUser) | **Delete** /tenants/users | Remove tenant user
+[**SwitchActiveTenant**](TenantsAPI.md#SwitchActiveTenant) | **Put** /tenants/switch-active | Switch active tenant
+[**UpdateRole**](TenantsAPI.md#UpdateRole) | **Put** /tenants/roles/{role_id} | Update role
+[**UpdateTenantUserRole**](TenantsAPI.md#UpdateTenantUserRole) | **Put** /tenants/users/role | Update user role
+
+
+
+## AcceptInvite
+
+> AcceptInvite200Response AcceptInvite(ctx).Request(request).Execute()
+
+Accept tenant invite
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsAcceptInviteRequest("550e8400-e29b-41d4-a716-446655440000") // TenantsAcceptInviteRequest | Invite acceptance parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.AcceptInvite(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.AcceptInvite``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `AcceptInvite`: AcceptInvite200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.AcceptInvite`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiAcceptInviteRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsAcceptInviteRequest**](TenantsAcceptInviteRequest.md) | Invite acceptance parameters | 
+
+### Return type
+
+[**AcceptInvite200Response**](AcceptInvite200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## AssignRole
+
+> AssignRole200Response AssignRole(ctx, userId).Request(request).Execute()
+
+Assign role to user
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	userId := "userId_example" // string | User ID
+	request := *openapiclient.NewTenantsAssignRoleRequest() // TenantsAssignRoleRequest | Role assignment parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.AssignRole(context.Background(), userId).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.AssignRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `AssignRole`: AssignRole200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.AssignRole`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**userId** | **string** | User ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiAssignRoleRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **request** | [**TenantsAssignRoleRequest**](TenantsAssignRoleRequest.md) | Role assignment parameters | 
+
+### Return type
+
+[**AssignRole200Response**](AssignRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateInvite
+
+> CreateInvite200Response CreateInvite(ctx).Request(request).Execute()
+
+Create tenant invite
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsCreateTenantUserInviteRequest("user@example.com", "https://app.example.com/accept-invite", "member") // TenantsCreateTenantUserInviteRequest | Invite creation parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.CreateInvite(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateInvite``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateInvite`: CreateInvite200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateInvite`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateInviteRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsCreateTenantUserInviteRequest**](TenantsCreateTenantUserInviteRequest.md) | Invite creation parameters | 
+
+### Return type
+
+[**CreateInvite200Response**](CreateInvite200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateRole
+
+> CreateRole200Response CreateRole(ctx).Request(request).Execute()
+
+Create role
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsCreateRoleRequest([]string{"Permissions_example"}, "project_viewer") // TenantsCreateRoleRequest | Role creation parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.CreateRole(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateRole`: CreateRole200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateRole`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateRoleRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsCreateRoleRequest**](TenantsCreateRoleRequest.md) | Role creation parameters | 
+
+### Return type
+
+[**CreateRole200Response**](CreateRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateTenant
+
+> CreateTenant200Response CreateTenant(ctx).Request(request).Execute()
+
+Create tenant
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsCreateTenantRequest("Acme Corp", "550e8400-e29b-41d4-a716-446655440000") // TenantsCreateTenantRequest | Tenant creation parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.CreateTenant(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.CreateTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateTenant`: CreateTenant200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.CreateTenant`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateTenantRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsCreateTenantRequest**](TenantsCreateTenantRequest.md) | Tenant creation parameters | 
+
+### Return type
+
+[**CreateTenant200Response**](CreateTenant200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteRole
+
+> DeleteRole200Response DeleteRole(ctx, roleId).Execute()
+
+Delete role
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	roleId := "roleId_example" // string | Role ID
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.DeleteRole(context.Background(), roleId).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.DeleteRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `DeleteRole`: DeleteRole200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.DeleteRole`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**roleId** | **string** | Role ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteRoleRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**DeleteRole200Response**](DeleteRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteTenant
+
+> DeleteTenant200Response DeleteTenant(ctx).Execute()
+
+Delete tenant
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.DeleteTenant(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.DeleteTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `DeleteTenant`: DeleteTenant200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.DeleteTenant`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteTenantRequest struct via the builder pattern
+
+
+### Return type
+
+[**DeleteTenant200Response**](DeleteTenant200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetRoleDefinitions
+
+> GetRoleDefinitions200Response GetRoleDefinitions(ctx).Execute()
+
+Get namespace definitions
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.GetRoleDefinitions(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetRoleDefinitions``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetRoleDefinitions`: GetRoleDefinitions200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetRoleDefinitions`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetRoleDefinitionsRequest struct via the builder pattern
+
+
+### Return type
+
+[**GetRoleDefinitions200Response**](GetRoleDefinitions200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetTenantBillingStatus
+
+> GetTenantBillingStatus200Response GetTenantBillingStatus(ctx).Execute()
+
+Get billing status
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetTenantBillingStatus``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetTenantBillingStatus`: GetTenantBillingStatus200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetTenantBillingStatus`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequest struct via the builder pattern
+
+
+### Return type
+
+[**GetTenantBillingStatus200Response**](GetTenantBillingStatus200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetTenantJWT
+
+> GetTenantJWT200Response GetTenantJWT(ctx).Execute()
+
+Get PostgREST JWT token
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.GetTenantJWT(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.GetTenantJWT``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetTenantJWT`: GetTenantJWT200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.GetTenantJWT`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetTenantJWTRequest struct via the builder pattern
+
+
+### Return type
+
+[**GetTenantJWT200Response**](GetTenantJWT200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListRoles
+
+> ListRoles200Response ListRoles(ctx).Execute()
+
+List roles
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.ListRoles(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListRoles``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ListRoles`: ListRoles200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListRoles`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListRolesRequest struct via the builder pattern
+
+
+### Return type
+
+[**ListRoles200Response**](ListRoles200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListTenantSubscriptions
+
+> ListTenantSubscriptions200Response ListTenantSubscriptions(ctx).Execute()
+
+Get tenant subscriptions
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.ListTenantSubscriptions(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListTenantSubscriptions``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ListTenantSubscriptions`: ListTenantSubscriptions200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListTenantSubscriptions`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListTenantSubscriptionsRequest struct via the builder pattern
+
+
+### Return type
+
+[**ListTenantSubscriptions200Response**](ListTenantSubscriptions200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListTenantUsers
+
+> ListTenantUsers200Response ListTenantUsers(ctx).Execute()
+
+Get tenant users
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.ListTenantUsers(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.ListTenantUsers``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ListTenantUsers`: ListTenantUsers200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.ListTenantUsers`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListTenantUsersRequest struct via the builder pattern
+
+
+### Return type
+
+[**ListTenantUsers200Response**](ListTenantUsers200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## RemoveTenantUser
+
+> HandlersSuccessResponse RemoveTenantUser(ctx).Request(request).Execute()
+
+Remove tenant user
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsDeleteTenantUserRequest("550e8400-e29b-41d4-a716-446655440000") // TenantsDeleteTenantUserRequest | User removal parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.RemoveTenantUser(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.RemoveTenantUser``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `RemoveTenantUser`: HandlersSuccessResponse
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.RemoveTenantUser`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiRemoveTenantUserRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsDeleteTenantUserRequest**](TenantsDeleteTenantUserRequest.md) | User removal parameters | 
+
+### Return type
+
+[**HandlersSuccessResponse**](HandlersSuccessResponse.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## SwitchActiveTenant
+
+> SwitchActiveTenant200Response SwitchActiveTenant(ctx).Request(request).Execute()
+
+Switch active tenant
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsSwitchTenantRequest("tenant-123") // TenantsSwitchTenantRequest | Tenant switch parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.SwitchActiveTenant(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.SwitchActiveTenant``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `SwitchActiveTenant`: SwitchActiveTenant200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.SwitchActiveTenant`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiSwitchActiveTenantRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsSwitchTenantRequest**](TenantsSwitchTenantRequest.md) | Tenant switch parameters | 
+
+### Return type
+
+[**SwitchActiveTenant200Response**](SwitchActiveTenant200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateRole
+
+> CreateRole200Response UpdateRole(ctx, roleId).Request(request).Execute()
+
+Update role
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	roleId := "roleId_example" // string | Role ID
+	request := *openapiclient.NewTenantsUpdateRoleRequest([]string{"Permissions_example"}) // TenantsUpdateRoleRequest | Role update parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.UpdateRole(context.Background(), roleId).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.UpdateRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateRole`: CreateRole200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.UpdateRole`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**roleId** | **string** | Role ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateRoleRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **request** | [**TenantsUpdateRoleRequest**](TenantsUpdateRoleRequest.md) | Role update parameters | 
+
+### Return type
+
+[**CreateRole200Response**](CreateRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateTenantUserRole
+
+> UpdateTenantUserRole200Response UpdateTenantUserRole(ctx).Request(request).Execute()
+
+Update user role
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsUpdateTenantUserRoleRequest("admin", "550e8400-e29b-41d4-a716-446655440000") // TenantsUpdateTenantUserRoleRequest | Role update parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.TenantsAPI.UpdateTenantUserRole(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `TenantsAPI.UpdateTenantUserRole``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateTenantUserRole`: UpdateTenantUserRole200Response
+	fmt.Fprintf(os.Stdout, "Response from `TenantsAPI.UpdateTenantUserRole`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateTenantUserRoleRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsUpdateTenantUserRoleRequest**](TenantsUpdateTenantUserRoleRequest.md) | Role update parameters | 
+
+### Return type
+
+[**UpdateTenantUserRole200Response**](UpdateTenantUserRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+

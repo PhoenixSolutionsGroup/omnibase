@@ -1,0 +1,4147 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: support@omnibase.dev
+    name: Omnibase Support
+    url: https://omnibase.dev/support
+  description: |-
+    Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
+
+    ## Features
+    - **Database**: PostgreSQL with RLS and migrations
+    - **Authentication**: Ory Kratos integration with session management
+    - **Payments**: Stripe integration with version-controlled billing configs
+    - **Storage**: S3-compatible object storage with RLS
+    - **Email**: Transactional email service
+    - **Permissions**: Fine-grained access control via Ory Keto
+
+    ## Authentication
+    Most endpoints require authentication via session cookies or JWT tokens.
+    Use the appropriate security scheme based on the endpoint requirements.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://omnibase.dev/terms
+  title: Omnibase REST API
+  version: 0.9.0
+externalDocs:
+  description: OpenAPI Specification
+  url: https://swagger.io/specification/
+servers:
+- url: //https://api.omnibase.tech/api/v1
+paths:
+  /database/migrations:
+    post:
+      description: |-
+        Uploads SQL migration files and applies them to the user's PostgreSQL database.
+
+        ## Authentication
+        Requires JWT token (typically used by CLI tools, not browser sessions).
+
+        ## Migration Format
+        Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
+        Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
+
+        ## Use Cases
+        - CLI migration uploads via `omnibase db migration push`
+        - CI/CD pipeline integrations
+        - Programmatic schema management
+      operationId: uploadDatabaseMigrations
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/uploadDatabaseMigrations_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1.MigrationSuccessResponse"
+          description: Migrations applied successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1.MigrationErrorResponse"
+          description: No migrations zip file provided
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Migration execution failed
+      security:
+      - BearerAuth: []
+      summary: Upload database migrations
+      tags:
+      - Database
+  /payments/checkout:
+    post:
+      description: |-
+        Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
+
+        ## Authentication
+        Requires JWT token. If the user has an existing Stripe customer ID, it will be used; otherwise, a new customer will be created.
+
+        ## Use Cases
+        - Subscription sign-ups
+        - One-time purchases
+        - Trial period checkouts
+        - Promotional code redemption
+      operationId: createCheckout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CreateCheckoutRequest"
+        description: Checkout session parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createCheckout_200_response"
+          description: Checkout session created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request payload
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create checkout session
+      security:
+      - BearerAuth: []
+      summary: Create checkout session
+      tags:
+      - Payments
+      x-codegen-request-body-name: request
+  /payments/portal:
+    post:
+      description: |-
+        Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
+
+        ## Authentication
+        Requires JWT token and an associated Stripe customer ID.
+
+        ## Use Cases
+        - Subscription management
+        - Payment method updates
+        - Invoice history viewing
+      operationId: createCustomerPortal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CreatePortalRequest"
+        description: Portal session parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createCustomerPortal_200_response"
+          description: Portal session created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or missing customer ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create portal session
+      security:
+      - BearerAuth: []
+      summary: Create customer portal session
+      tags:
+      - Payments
+      x-codegen-request-body-name: request
+  /payments/usage:
+    post:
+      description: |-
+        Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
+
+        ## Authentication
+        Requires JWT token and an associated Stripe customer ID.
+
+        ## Use Cases
+        - API request metering
+        - Compute time tracking
+        - Storage usage recording
+        - Any metered billing scenario
+      operationId: recordUsage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.RecordUsageRequest"
+        description: Usage event parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.SuccessResponse"
+          description: Usage recorded successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or missing customer ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to record usage
+      security:
+      - BearerAuth: []
+      summary: Record metered usage
+      tags:
+      - Payments
+      x-codegen-request-body-name: request
+  /permissions/check:
+    post:
+      description: |-
+        Checks if a subject has a specific permission on an object using Ory Keto.
+
+        ## Authentication
+        Requires session authentication.
+
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both).
+
+        ## Use Cases
+        - Verify user permissions before performing actions
+        - Implement fine-grained access control
+        - Check role-based permissions
+      operationId: checkPermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CheckPermissionRequest"
+        description: Permission check request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/checkPermission_200_response"
+          description: Permission check result
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to check permission
+      security:
+      - SessionAuth: []
+      summary: Check permission
+      tags:
+      - Permissions
+      x-codegen-request-body-name: body
+  /permissions/namespaces:
+    post:
+      description: |-
+        Uploads and deploys permission namespace configurations as a zip file.
+
+        ## Authentication
+        Requires JWT token with appropriate permissions.
+
+        ## File Format
+        Upload a zip file containing namespace definition files and optionally a roles.config.json file.
+        The namespace files are stored in S3 and parsed to extract permission definitions.
+
+        ## Managed Mode
+        If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.
+
+        ## Use Cases
+        - CLI namespace deployment via `omnibase permissions push`
+        - CI/CD pipeline integrations
+        - Programmatic permission management
+      operationId: deployPermissionNamespaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/deployPermissionNamespaces_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deployPermissionNamespaces_200_response"
+          description: Namespaces deployed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid file or missing tenant ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to deploy namespaces
+      security:
+      - BearerAuth: []
+      summary: Deploy Keto namespace configurations
+      tags:
+      - Permissions
+  /permissions/relationships:
+    post:
+      description: |-
+        Creates a new relationship tuple in Ory Keto.
+
+        ## Authentication
+        Requires session authentication.
+
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both).
+
+        ## Use Cases
+        - Link resources to tenants
+        - Assign users to projects
+        - Create permission relationships
+      operationId: createRelationship
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CreateRelationshipRequest"
+        description: Relationship creation request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRelationship_200_response"
+          description: Relationship created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create relationship
+      security:
+      - SessionAuth: []
+      summary: Create relationship
+      tags:
+      - Permissions
+      x-codegen-request-body-name: body
+  /storage/download:
+    post:
+      description: |-
+        Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
+
+        ## RLS Policy
+        Download permission is checked via PostgREST against the `storage.objects` table.
+        Users must have SELECT permission based on their custom RLS policies.
+
+        ## Download Process
+        1. Request presigned URL from this endpoint
+        2. Download file directly from S3 using returned URL (GET request)
+
+        ## URL Expiration
+        Presigned URLs are valid for 15 minutes after generation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.DownloadRequest"
+        description: Path of file to download
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_storage_download_post_200_response"
+          description: Download URL generated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body or missing path
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Missing authentication session
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: RLS policy denied download access for this path
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: File not found in storage
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to generate presigned URL
+      security:
+      - SessionAuth: []
+      summary: Download file from storage
+      tags:
+      - Storage
+      x-codegen-request-body-name: request
+  /storage/object:
+    delete:
+      description: |-
+        Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
+
+        ## RLS Policy
+        Delete permission is checked via PostgREST against the `storage.objects` table.
+        Users must have DELETE permission based on their custom RLS policies.
+
+        ## Deletion Process
+        1. Metadata is deleted from database (with RLS check)
+        2. File is deleted from S3 storage
+        3. If S3 deletion fails, metadata is already removed (eventual consistency)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.DeleteObjectRequest"
+        description: Path of file to delete
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_storage_object_delete_200_response"
+          description: File deleted successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body or missing path
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Missing authentication session
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: RLS policy denied delete access for this path
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: File not found or already deleted
+      security:
+      - SessionAuth: []
+      summary: Delete file from storage
+      tags:
+      - Storage
+      x-codegen-request-body-name: request
+  /storage/upload:
+    post:
+      description: |-
+        Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
+
+        ## RLS Policy
+        Upload permission is checked via PostgREST against the `storage.objects` table.
+        Users must have INSERT permission based on their custom RLS policies.
+
+        ## Upload Process
+        1. Request presigned URL from this endpoint
+        2. Upload file directly to S3 using returned URL (PUT request)
+        3. File metadata is automatically stored in database
+
+        ## URL Expiration
+        Presigned URLs are valid for 15 minutes after generation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.UploadRequest"
+        description: Upload configuration with path and optional metadata
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_storage_upload_post_200_response"
+          description: Upload URL generated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body or missing required fields
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Missing authentication session
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: RLS policy denied upload access for this path
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to generate presigned URL or store metadata
+      security:
+      - SessionAuth: []
+      summary: Upload file to storage
+      tags:
+      - Storage
+      x-codegen-request-body-name: request
+  /stripe/config:
+    get:
+      description: |-
+        Returns the current Stripe configuration with public prices only (filters out enterprise prices).
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Display pricing to users
+        - Build subscription selection UI
+        - Public pricing pages
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_stripe_config_get_200_response"
+          description: Stripe configuration retrieved successfully
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to retrieve configuration
+      summary: Get public Stripe config
+      tags:
+      - Stripe
+    post:
+      description: |-
+        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Use Cases
+        - Deploy new pricing
+        - Update product definitions
+        - Modify metered billing settings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.StripeConfigData"
+        description: Stripe configuration data
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.SuccessResponse"
+          description: Configuration updated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid configuration or validation errors
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+      security:
+      - BearerAuth: []
+      summary: Update Stripe config
+      tags:
+      - Stripe
+      x-codegen-request-body-name: config
+  /stripe/config/admin:
+    get:
+      description: |-
+        Returns the complete Stripe configuration including all prices (both public and enterprise).
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Use Cases
+        - Admin configuration management
+        - Enterprise pricing display
+        - Configuration auditing
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_stripe_config_get_200_response"
+          description: Full Stripe configuration retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to retrieve configuration
+      security:
+      - BearerAuth: []
+      summary: Get full Stripe config (admin)
+      tags:
+      - Stripe
+  /stripe/config/archive-all:
+    post:
+      description: |-
+        Archives all active products, prices, and meters in Stripe and clears the local configuration.
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Warning
+        This is a destructive operation that will archive ALL active Stripe resources.
+
+        ## Use Cases
+        - Clean slate for new configuration
+        - Remove all test data
+        - Reset Stripe account
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_stripe_config_archive_all_post_200_response"
+          description: Archive operation completed
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to archive resources
+      security:
+      - BearerAuth: []
+      summary: Archive all Stripe config
+      tags:
+      - Stripe
+  /stripe/config/history:
+    get:
+      description: |-
+        Returns paginated history of all Stripe configurations.
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Query Parameters
+        - limit: Items per page (default: 10, max: 100)
+        - offset: Number of items to skip (default: 0)
+      parameters:
+      - description: Items per page
+        in: query
+        name: limit
+        schema:
+          default: 10
+          type: integer
+      - description: Items to skip
+        in: query
+        name: offset
+        schema:
+          default: 0
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_stripe_config_history_get_200_response"
+          description: Configuration history retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to retrieve history
+      security:
+      - BearerAuth: []
+      summary: Get config history
+      tags:
+      - Stripe
+  /stripe/config/pull:
+    get:
+      description: |-
+        Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Use Cases
+        - Sync remote Stripe config to local
+        - Import existing Stripe setup
+        - Configuration backup
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/_stripe_config_pull_get_200_response"
+          description: Stripe configuration pulled successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to pull configuration from Stripe
+      security:
+      - BearerAuth: []
+      summary: Pull config from Stripe
+      tags:
+      - Stripe
+  /stripe/config/validate:
+    post:
+      description: |-
+        Validates a Stripe configuration against the schema without saving or deploying it.
+
+        ## Authentication
+        Requires admin JWT token.
+
+        ## Use Cases
+        - Pre-deployment validation
+        - Configuration testing
+        - Schema compliance checking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.StripeConfigData"
+        description: Stripe configuration to validate
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.SuccessResponse"
+          description: Configuration is valid
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Configuration validation failed
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing admin token
+      security:
+      - BearerAuth: []
+      summary: Validate Stripe config
+      tags:
+      - Stripe
+      x-codegen-request-body-name: config
+  /stripe/schema:
+    get:
+      description: |-
+        Returns the JSON schema definition for validating Stripe configuration files.
+
+        ## Use Cases
+        - Validate configuration before upload
+        - IDE autocomplete support
+        - Generate configuration templates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: JSON schema for Stripe configuration
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to load schema
+      summary: Get Stripe config schema
+      tags:
+      - Stripe
+  /tenants:
+    delete:
+      description: |-
+        Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.
+
+        ## Authentication
+        Requires JWT token with `delete_tenant` permission.
+
+        ## Process
+        1. Verifies user has delete permission
+        2. Archives Stripe customer
+        3. Deletes tenant (cascades to users, settings, invites)
+        4. Cleans up all affected users' tenant state
+      operationId: deleteTenant
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteTenant_200_response"
+          description: Tenant deleted successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Missing tenant ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Insufficient permissions to delete tenant
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to delete tenant
+      security:
+      - BearerAuth: []
+      summary: Delete tenant
+      tags:
+      - Tenants
+    post:
+      description: |-
+        Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.
+
+        ## Authentication
+        Requires JWT token.
+
+        ## Process
+        1. Creates Stripe customer (if billing_email provided)
+        2. Creates tenant in database
+        3. Sets up default tenant settings
+        4. Adds creator as owner
+        5. Assigns owner role with all permissions
+        6. Sets as active tenant and returns JWT token
+      operationId: createTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.CreateTenantRequest"
+        description: Tenant creation parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTenant_200_response"
+          description: Tenant created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request format
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create tenant
+      security:
+      - BearerAuth: []
+      summary: Create tenant
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/billing-status:
+    get:
+      description: |-
+        Checks whether the tenant has billing information configured in Stripe and if it's active.
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Check if billing setup is required
+        - Conditional feature access
+        - Payment method verification
+      operationId: getTenantBillingStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTenantBillingStatus_200_response"
+          description: Billing status retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to check billing status
+      security:
+      - BearerAuth: []
+      summary: Get billing status
+      tags:
+      - Tenants
+  /tenants/invites:
+    post:
+      description: |-
+        Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.
+
+        ## Authentication
+        Requires JWT token with `invite_user` permission.
+
+        ## Process
+        1. Verifies user has invite permission
+        2. Creates invite with unique token (7-day expiry)
+        3. Sends invitation email asynchronously
+
+        ## Use Cases
+        - Add team members to organization
+        - Invite collaborators with specific roles
+      operationId: createInvite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.CreateTenantUserInviteRequest"
+        description: Invite creation parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createInvite_200_response"
+          description: Invite sent successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request format
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Insufficient permissions to invite users
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create invite
+      security:
+      - BearerAuth: []
+      summary: Create tenant invite
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/invites/accept:
+    put:
+      description: |-
+        Accepts a tenant invitation using the token from the invite email and adds the user to the organization.
+
+        ## Authentication
+        Requires JWT token. User's email must match the invite email.
+
+        ## Process
+        1. Validates invite token and expiry
+        2. Verifies user's email matches invite email
+        3. Marks invite as used
+        4. Adds user to tenant
+        5. Assigns role with permissions
+        6. Sets as active tenant and returns JWT token
+      operationId: acceptInvite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.AcceptInviteRequest"
+        description: Invite acceptance parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/acceptInvite_200_response"
+          description: Successfully joined organization
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid or expired invite token
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Email mismatch - invite sent to different address
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to accept invite
+      security:
+      - BearerAuth: []
+      summary: Accept tenant invite
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/jwt:
+    get:
+      description: |-
+        Generates a JWT token for direct PostgREST database access with the user's active tenant context.
+
+        ## Authentication
+        Requires JWT token and active tenant.
+
+        ## Use Cases
+        - Client-side database queries
+        - Real-time subscriptions
+        - Direct PostgREST API access
+      operationId: getTenantJWT
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTenantJWT_200_response"
+          description: JWT token generated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: No active tenant found
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create JWT token
+      security:
+      - BearerAuth: []
+      summary: Get PostgREST JWT token
+      tags:
+      - Tenants
+  /tenants/roles:
+    get:
+      description: |-
+        Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Display available roles to assign
+        - Role management UI
+        - Permission auditing
+      operationId: listRoles
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listRoles_200_response"
+          description: Roles retrieved successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Missing tenant ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to list roles
+      security:
+      - BearerAuth: []
+      summary: List roles
+      tags:
+      - Tenants
+    post:
+      description: |-
+        Creates a new custom role for the tenant with specified permissions.
+
+        ## Authentication
+        Requires JWT token with tenant context and appropriate permissions.
+
+        ## Permission Format
+        Permissions should be in the format: `namespace:resource#relation`
+        - Tenant-wide: `tenant#relation`
+        - Resource-specific: `project:uuid#relation`
+
+        ## Use Cases
+        - Create custom roles for specific workflows
+        - Define project-specific permissions
+        - Build granular access control
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.CreateRoleRequest"
+        description: Role creation parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRole_200_response"
+          description: Role created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or missing tenant ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create role
+      security:
+      - BearerAuth: []
+      summary: Create role
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/roles/assign/{user_id}:
+    post:
+      description: |-
+        Assigns a role to a user and creates all associated Keto relationships for the role's permissions.
+
+        ## Authentication
+        Requires JWT token with tenant context and appropriate permissions.
+
+        ## Request Format
+        Provide either `role_id` or `role_name` (not both).
+
+        ## Use Cases
+        - Grant role to user
+        - Assign permissions via role
+        - User onboarding
+      operationId: assignRole
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.AssignRoleRequest"
+        description: Role assignment parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/assignRole_200_response"
+          description: Role assigned successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or missing tenant ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Role not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to assign role
+      security:
+      - BearerAuth: []
+      summary: Assign role to user
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/roles/definitions:
+    get:
+      description: |-
+        Returns all available permission namespaces and their relations from the database.
+
+        ## Authentication
+        Requires JWT token with appropriate permissions.
+
+        ## Use Cases
+        - Discover available permission namespaces
+        - List relations for each namespace
+        - Build dynamic permission UIs
+      operationId: getRoleDefinitions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRoleDefinitions_200_response"
+          description: Namespace definitions retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch definitions
+      security:
+      - BearerAuth: []
+      summary: Get namespace definitions
+      tags:
+      - Tenants
+  /tenants/roles/{role_id}:
+    delete:
+      description: |-
+        Deletes a role and removes all associated Keto relationships for users who had this role assigned.
+
+        ## Authentication
+        Requires JWT token with tenant context and appropriate permissions.
+
+        ## Use Cases
+        - Remove obsolete roles
+        - Clean up role definitions
+        - Revoke all permissions from role users
+      operationId: deleteRole
+      parameters:
+      - description: Role ID
+        in: path
+        name: role_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteRole_200_response"
+          description: Role deleted successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Role not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to delete role
+      security:
+      - BearerAuth: []
+      summary: Delete role
+      tags:
+      - Tenants
+    put:
+      description: |-
+        Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.
+
+        ## Authentication
+        Requires JWT token with tenant context and appropriate permissions.
+
+        ## Permission Format
+        Permissions should be in the format: `namespace:resource#relation`
+
+        ## Use Cases
+        - Modify role permissions
+        - Grant or revoke access
+        - Update role capabilities
+      operationId: updateRole
+      parameters:
+      - description: Role ID
+        in: path
+        name: role_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.UpdateRoleRequest"
+        description: Role update parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createRole_200_response"
+          description: Role updated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Invalid or missing JWT token
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Role not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to update role
+      security:
+      - BearerAuth: []
+      summary: Update role
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/subscriptions:
+    get:
+      description: |-
+        Returns all active Stripe subscriptions associated with the tenant's Stripe customer.
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Display current subscriptions
+        - Billing overview
+        - Subscription management UI
+      operationId: listTenantSubscriptions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listTenantSubscriptions_200_response"
+          description: Tenant subscriptions retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch subscriptions
+      security:
+      - BearerAuth: []
+      summary: Get tenant subscriptions
+      tags:
+      - Tenants
+  /tenants/switch-active:
+    put:
+      description: |-
+        Updates the user's active tenant in Kratos identity and returns a new JWT token with updated tenant context.
+
+        ## Authentication
+        Requires JWT token.
+
+        ## Use Cases
+        - Switch between organizations
+        - Change context for multi-tenant users
+      operationId: switchActiveTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.SwitchTenantRequest"
+        description: Tenant switch parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/switchActiveTenant_200_response"
+          description: Successfully switched tenants
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request format
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to switch tenant
+      security:
+      - BearerAuth: []
+      summary: Switch active tenant
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+  /tenants/users:
+    delete:
+      description: |-
+        Removes a user from the tenant and cleans up all associated permissions and Keto relationships.
+
+        ## Authentication
+        Requires JWT token with `remove_user` permission.
+
+        ## Restrictions
+        - Cannot remove the last owner (must have at least one owner)
+        - Removing an owner requires `remove_owner_role` permission
+
+        ## Process
+        1. Verifies permissions
+        2. Removes from role's user list
+        3. Deletes all Keto relationships
+        4. Removes from database
+        5. Cleans up user's tenant state
+      operationId: removeTenantUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.DeleteTenantUserRequest"
+        description: User removal parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.SuccessResponse"
+          description: User removed successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or cannot remove last owner
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Insufficient permissions
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: User not found in tenant
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to remove user
+      security:
+      - BearerAuth: []
+      summary: Remove tenant user
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+    get:
+      description: |-
+        Returns all users who are members of the tenant with their profile information and roles.
+
+        ## Authentication
+        Requires JWT token with `view_users` permission.
+
+        ## Use Cases
+        - Display team members list
+        - User management UI
+        - Member directory
+      operationId: listTenantUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listTenantUsers_200_response"
+          description: Tenant users retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Insufficient permissions - must have view_users permission
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch tenant users
+      security:
+      - BearerAuth: []
+      summary: Get tenant users
+      tags:
+      - Tenants
+  /tenants/users/role:
+    put:
+      description: |-
+        Updates a user's role in the tenant and updates all associated Keto permissions.
+
+        ## Authentication
+        Requires JWT token with `update_user_role` permission.
+
+        ## Restrictions
+        - Promoting to owner requires `update_user_role_to_owner` permission
+        - Demoting from owner requires `remove_owner_role` permission
+        - Cannot demote the last owner (must have at least one owner)
+
+        ## Process
+        1. Verifies permissions
+        2. Removes old role permissions
+        3. Updates database
+        4. Assigns new role permissions
+      operationId: updateTenantUserRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.UpdateTenantUserRoleRequest"
+        description: Role update parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/updateTenantUserRole_200_response"
+          description: User role updated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request or cannot demote last owner
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ForbiddenResponse"
+          description: Insufficient permissions
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: User not found in tenant
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to update role
+      security:
+      - BearerAuth: []
+      summary: Update user role
+      tags:
+      - Tenants
+      x-codegen-request-body-name: request
+components:
+  schemas:
+    client.Relationship:
+      properties:
+        namespace:
+          description: Namespace of the Relation Tuple
+          type: string
+        object:
+          description: Object of the Relation Tuple
+          type: string
+        relation:
+          description: Relation of the Relation Tuple
+          type: string
+        subject_id:
+          description: SubjectID of the Relation Tuple  Either SubjectSet or SubjectID
+            can be provided.
+          type: string
+        subject_set:
+          $ref: "#/components/schemas/client.SubjectSet"
+      type: object
+    client.SubjectSet:
+      properties:
+        namespace:
+          description: Namespace of the Subject Set
+          type: string
+        object:
+          description: Object of the Subject Set
+          type: string
+        relation:
+          description: Relation of the Subject Set
+          type: string
+      type: object
+    handlers.BadRequestResponse:
+      example:
+        error: Invalid request parameters
+        status: 400
+      properties:
+        error:
+          description: Error message or details
+          example: Invalid request parameters
+          type: string
+        status:
+          description: HTTP status code
+          example: 400
+          type: integer
+      type: object
+    handlers.ForbiddenResponse:
+      example:
+        error: Forbidden
+        status: 403
+      properties:
+        error:
+          description: Error message
+          example: Forbidden
+          type: string
+        status:
+          description: HTTP status code
+          example: 403
+          type: integer
+      type: object
+    handlers.InternalServerErrorResponse:
+      example:
+        error: Internal Server Error
+        status: 500
+      properties:
+        error:
+          description: Error message
+          example: Internal Server Error
+          type: string
+        status:
+          description: HTTP status code
+          example: 500
+          type: integer
+      type: object
+    handlers.NotFoundErrorResponse:
+      example:
+        error: Not Found
+        status: 404
+      properties:
+        error:
+          description: Error message
+          example: Not Found
+          type: string
+        status:
+          description: HTTP status code
+          example: 404
+          type: integer
+      type: object
+    handlers.SuccessResponse:
+      example:
+        data: "{}"
+        status: 200
+      properties:
+        data:
+          description: Response data payload
+          type: object
+        status:
+          description: HTTP status code
+          example: 200
+          type: integer
+      type: object
+    handlers.UnauthorizedResponse:
+      example:
+        error: Unauthorized
+        status: 401
+      properties:
+        error:
+          description: Error message
+          example: Unauthorized
+          type: string
+        status:
+          description: HTTP status code
+          example: 401
+          type: integer
+      type: object
+    models.BillingStatusResponse:
+      example:
+        has_billing_info: true
+        is_active: true
+      properties:
+        has_billing_info:
+          type: boolean
+        is_active:
+          type: boolean
+      type: object
+    models.DeleteObjectRequest:
+      properties:
+        path:
+          description: Path of the file to delete
+          example: public/avatars/user-123.png
+          type: string
+      required:
+      - path
+      type: object
+    models.DownloadRequest:
+      properties:
+        path:
+          description: Path of the file to download
+          example: public/avatars/user-123.png
+          type: string
+      required:
+      - path
+      type: object
+    models.DownloadResponse:
+      example:
+        download_url: https://storage.omnibase.dev/bucket/path?signature=...
+      properties:
+        download_url:
+          description: Presigned URL for downloading the file (valid for 15 minutes)
+          example: https://storage.omnibase.dev/bucket/path?signature=...
+          type: string
+      type: object
+    models.MessageResponse:
+      example:
+        message: file deleted
+      properties:
+        message:
+          description: Status message
+          example: file deleted
+          type: string
+      type: object
+    models.Meter:
+      example:
+        default_aggregation:
+          formula: sum
+        value_settings:
+          event_payload_key: event_payload_key
+        event_name: event_name
+        customer_mapping:
+          event_payload_key: event_payload_key
+          type: by_id
+        id: id
+        display_name: display_name
+      properties:
+        customer_mapping:
+          $ref: "#/components/schemas/models.MeterCustomerMapping"
+        default_aggregation:
+          $ref: "#/components/schemas/models.MeterDefaultAggregation"
+        display_name:
+          type: string
+        event_name:
+          type: string
+        id:
+          type: string
+        value_settings:
+          $ref: "#/components/schemas/models.MeterValueSettings"
+      required:
+      - default_aggregation
+      - display_name
+      - event_name
+      - id
+      type: object
+    models.MeterCustomerMapping:
+      example:
+        event_payload_key: event_payload_key
+        type: by_id
+      properties:
+        event_payload_key:
+          type: string
+        type:
+          enum:
+          - by_id
+          type: string
+      required:
+      - event_payload_key
+      - type
+      type: object
+    models.MeterDefaultAggregation:
+      example:
+        formula: sum
+      properties:
+        formula:
+          enum:
+          - sum
+          - count
+          - last
+          type: string
+      required:
+      - formula
+      type: object
+    models.MeterValueSettings:
+      example:
+        event_payload_key: event_payload_key
+      properties:
+        event_payload_key:
+          type: string
+      required:
+      - event_payload_key
+      type: object
+    models.MeterWithStripeID:
+      properties:
+        customer_mapping:
+          $ref: "#/components/schemas/models.MeterCustomerMapping"
+        default_aggregation:
+          $ref: "#/components/schemas/models.MeterDefaultAggregation"
+        display_name:
+          type: string
+        event_name:
+          type: string
+        id:
+          type: string
+        stripe_id:
+          description: actual Stripe meter ID
+          type: string
+        value_settings:
+          $ref: "#/components/schemas/models.MeterValueSettings"
+      required:
+      - default_aggregation
+      - display_name
+      - event_name
+      - id
+      type: object
+    models.NamespaceDefinition:
+      example:
+        updated_at: updated_at
+        namespace: namespace
+        id: id
+        relations:
+        - relations
+        - relations
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        relations:
+          items:
+            type: string
+          type: array
+        updated_at:
+          type: string
+      type: object
+    models.Price:
+      example:
+        interval_count: 6
+        amount: 0
+        tiers:
+        - flat_amount: 1
+          up_to: "{}"
+          unit_amount: 5
+        - flat_amount: 1
+          up_to: "{}"
+          unit_amount: 5
+        meter: meter
+        billing_scheme: billing_scheme
+        tiers_mode: tiers_mode
+        default: true
+        public: true
+        ui:
+          billing_period: billing_period
+          features:
+          - features
+          - features
+          price_display:
+            show_currency: true
+            custom_text: custom_text
+            suffix: suffix
+          display_name: display_name
+          limits:
+          - unit: unit
+            text: text
+            value: 5.637376656633329
+          - unit: unit
+            text: text
+            value: 5.637376656633329
+        usage_type: usage_type
+        currency: currency
+        interval: interval
+        id: id
+        tax_included_in_price: true
+      properties:
+        amount:
+          minimum: 0
+          type: integer
+        billing_scheme:
+          description: "per_unit, tiered"
+          type: string
+        currency:
+          type: string
+        default:
+          description: mark as default price for the product
+          type: boolean
+        id:
+          type: string
+        interval:
+          description: "month, year, week, day"
+          type: string
+        interval_count:
+          description: default 1
+          type: integer
+        meter:
+          description: meter ID for metered pricing
+          type: string
+        public:
+          description: "nil = true (default), false = hidden from public API"
+          type: boolean
+        tax_included_in_price:
+          description: nil = false (default)
+          type: boolean
+        tiers:
+          items:
+            $ref: "#/components/schemas/models.Tier"
+          type: array
+        tiers_mode:
+          description: "graduated, volume (required when billing_scheme is tiered)"
+          type: string
+        ui:
+          $ref: "#/components/schemas/models.PriceUI"
+        usage_type:
+          description: "licensed, metered"
+          type: string
+      required:
+      - currency
+      - id
+      type: object
+    models.PriceDisplay:
+      example:
+        show_currency: true
+        custom_text: custom_text
+        suffix: suffix
+      properties:
+        custom_text:
+          type: string
+        show_currency:
+          type: boolean
+        suffix:
+          type: string
+      type: object
+    models.PriceLimit:
+      example:
+        unit: unit
+        text: text
+        value: 5.637376656633329
+      properties:
+        text:
+          type: string
+        unit:
+          type: string
+        value:
+          type: number
+      type: object
+    models.PriceUI:
+      example:
+        billing_period: billing_period
+        features:
+        - features
+        - features
+        price_display:
+          show_currency: true
+          custom_text: custom_text
+          suffix: suffix
+        display_name: display_name
+        limits:
+        - unit: unit
+          text: text
+          value: 5.637376656633329
+        - unit: unit
+          text: text
+          value: 5.637376656633329
+      properties:
+        billing_period:
+          type: string
+        display_name:
+          type: string
+        features:
+          items:
+            type: string
+          type: array
+        limits:
+          items:
+            $ref: "#/components/schemas/models.PriceLimit"
+          type: array
+        price_display:
+          $ref: "#/components/schemas/models.PriceDisplay"
+      type: object
+    models.PriceWithStripeID:
+      properties:
+        amount:
+          minimum: 0
+          type: integer
+        billing_scheme:
+          description: "per_unit, tiered"
+          type: string
+        currency:
+          type: string
+        default:
+          description: mark as default price for the product
+          type: boolean
+        id:
+          type: string
+        interval:
+          description: "month, year, week, day"
+          type: string
+        interval_count:
+          description: default 1
+          type: integer
+        meter:
+          description: meter ID for metered pricing
+          type: string
+        public:
+          description: "nil = true (default), false = hidden from public API"
+          type: boolean
+        stripe_id:
+          description: actual Stripe price ID (null for free prices)
+          type: string
+        tax_included_in_price:
+          description: nil = false (default)
+          type: boolean
+        tiers:
+          items:
+            $ref: "#/components/schemas/models.Tier"
+          type: array
+        tiers_mode:
+          description: "graduated, volume (required when billing_scheme is tiered)"
+          type: string
+        ui:
+          $ref: "#/components/schemas/models.PriceUI"
+        usage_type:
+          description: "licensed, metered"
+          type: string
+      required:
+      - currency
+      - id
+      type: object
+    models.Product:
+      example:
+        ui:
+          badge: badge
+          features:
+          - features
+          - features
+          cta_text: cta_text
+          highlighted: true
+          tagline: tagline
+          display_name: display_name
+          sort_order: 2
+        name: name
+        description: description
+        id: id
+        prices:
+        - interval_count: 6
+          amount: 0
+          tiers:
+          - flat_amount: 1
+            up_to: "{}"
+            unit_amount: 5
+          - flat_amount: 1
+            up_to: "{}"
+            unit_amount: 5
+          meter: meter
+          billing_scheme: billing_scheme
+          tiers_mode: tiers_mode
+          default: true
+          public: true
+          ui:
+            billing_period: billing_period
+            features:
+            - features
+            - features
+            price_display:
+              show_currency: true
+              custom_text: custom_text
+              suffix: suffix
+            display_name: display_name
+            limits:
+            - unit: unit
+              text: text
+              value: 5.637376656633329
+            - unit: unit
+              text: text
+              value: 5.637376656633329
+          usage_type: usage_type
+          currency: currency
+          interval: interval
+          id: id
+          tax_included_in_price: true
+        - interval_count: 6
+          amount: 0
+          tiers:
+          - flat_amount: 1
+            up_to: "{}"
+            unit_amount: 5
+          - flat_amount: 1
+            up_to: "{}"
+            unit_amount: 5
+          meter: meter
+          billing_scheme: billing_scheme
+          tiers_mode: tiers_mode
+          default: true
+          public: true
+          ui:
+            billing_period: billing_period
+            features:
+            - features
+            - features
+            price_display:
+              show_currency: true
+              custom_text: custom_text
+              suffix: suffix
+            display_name: display_name
+            limits:
+            - unit: unit
+              text: text
+              value: 5.637376656633329
+            - unit: unit
+              text: text
+              value: 5.637376656633329
+          usage_type: usage_type
+          currency: currency
+          interval: interval
+          id: id
+          tax_included_in_price: true
+        type: type
+      properties:
+        description:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        prices:
+          items:
+            $ref: "#/components/schemas/models.Price"
+          type: array
+        type:
+          description: "service, good, metered"
+          type: string
+        ui:
+          $ref: "#/components/schemas/models.ProductUI"
+      required:
+      - id
+      - name
+      - prices
+      type: object
+    models.ProductUI:
+      example:
+        badge: badge
+        features:
+        - features
+        - features
+        cta_text: cta_text
+        highlighted: true
+        tagline: tagline
+        display_name: display_name
+        sort_order: 2
+      properties:
+        badge:
+          type: string
+        cta_text:
+          type: string
+        display_name:
+          type: string
+        features:
+          items:
+            type: string
+          type: array
+        highlighted:
+          type: boolean
+        sort_order:
+          type: integer
+        tagline:
+          type: string
+      type: object
+    models.ProductWithStripeIDs:
+      properties:
+        description:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        prices:
+          items:
+            $ref: "#/components/schemas/models.PriceWithStripeID"
+          type: array
+        stripe_id:
+          description: actual Stripe product ID (null for free products)
+          type: string
+        type:
+          description: "service, good, metered"
+          type: string
+        ui:
+          $ref: "#/components/schemas/models.ProductUI"
+      required:
+      - id
+      - name
+      - prices
+      type: object
+    models.Role:
+      example:
+        role_name: role_name
+        tenant_id: tenant_id
+        updated_at: updated_at
+        permissions:
+        - permissions
+        - permissions
+        user_ids:
+        - user_ids
+        - user_ids
+        created_at: created_at
+        id: id
+      properties:
+        created_at:
+          type: string
+        id:
+          type: string
+        permissions:
+          items:
+            type: string
+          type: array
+        role_name:
+          type: string
+        tenant_id:
+          description: NULL for system roles
+          type: string
+        updated_at:
+          type: string
+        user_ids:
+          items:
+            type: string
+          type: array
+      type: object
+    models.StripeConfigData:
+      additionalProperties: true
+      type: object
+    models.StripeConfiguration:
+      example:
+        version: version
+        meters:
+        - default_aggregation:
+            formula: sum
+          value_settings:
+            event_payload_key: event_payload_key
+          event_name: event_name
+          customer_mapping:
+            event_payload_key: event_payload_key
+            type: by_id
+          id: id
+          display_name: display_name
+        - default_aggregation:
+            formula: sum
+          value_settings:
+            event_payload_key: event_payload_key
+          event_name: event_name
+          customer_mapping:
+            event_payload_key: event_payload_key
+            type: by_id
+          id: id
+          display_name: display_name
+        products:
+        - ui:
+            badge: badge
+            features:
+            - features
+            - features
+            cta_text: cta_text
+            highlighted: true
+            tagline: tagline
+            display_name: display_name
+            sort_order: 2
+          name: name
+          description: description
+          id: id
+          prices:
+          - interval_count: 6
+            amount: 0
+            tiers:
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            meter: meter
+            billing_scheme: billing_scheme
+            tiers_mode: tiers_mode
+            default: true
+            public: true
+            ui:
+              billing_period: billing_period
+              features:
+              - features
+              - features
+              price_display:
+                show_currency: true
+                custom_text: custom_text
+                suffix: suffix
+              display_name: display_name
+              limits:
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+            usage_type: usage_type
+            currency: currency
+            interval: interval
+            id: id
+            tax_included_in_price: true
+          - interval_count: 6
+            amount: 0
+            tiers:
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            meter: meter
+            billing_scheme: billing_scheme
+            tiers_mode: tiers_mode
+            default: true
+            public: true
+            ui:
+              billing_period: billing_period
+              features:
+              - features
+              - features
+              price_display:
+                show_currency: true
+                custom_text: custom_text
+                suffix: suffix
+              display_name: display_name
+              limits:
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+            usage_type: usage_type
+            currency: currency
+            interval: interval
+            id: id
+            tax_included_in_price: true
+          type: type
+        - ui:
+            badge: badge
+            features:
+            - features
+            - features
+            cta_text: cta_text
+            highlighted: true
+            tagline: tagline
+            display_name: display_name
+            sort_order: 2
+          name: name
+          description: description
+          id: id
+          prices:
+          - interval_count: 6
+            amount: 0
+            tiers:
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            meter: meter
+            billing_scheme: billing_scheme
+            tiers_mode: tiers_mode
+            default: true
+            public: true
+            ui:
+              billing_period: billing_period
+              features:
+              - features
+              - features
+              price_display:
+                show_currency: true
+                custom_text: custom_text
+                suffix: suffix
+              display_name: display_name
+              limits:
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+            usage_type: usage_type
+            currency: currency
+            interval: interval
+            id: id
+            tax_included_in_price: true
+          - interval_count: 6
+            amount: 0
+            tiers:
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            - flat_amount: 1
+              up_to: "{}"
+              unit_amount: 5
+            meter: meter
+            billing_scheme: billing_scheme
+            tiers_mode: tiers_mode
+            default: true
+            public: true
+            ui:
+              billing_period: billing_period
+              features:
+              - features
+              - features
+              price_display:
+                show_currency: true
+                custom_text: custom_text
+                suffix: suffix
+              display_name: display_name
+              limits:
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+              - unit: unit
+                text: text
+                value: 5.637376656633329
+            usage_type: usage_type
+            currency: currency
+            interval: interval
+            id: id
+            tax_included_in_price: true
+          type: type
+      properties:
+        meters:
+          items:
+            $ref: "#/components/schemas/models.Meter"
+          type: array
+        products:
+          items:
+            $ref: "#/components/schemas/models.Product"
+          type: array
+        version:
+          type: string
+      required:
+      - products
+      - version
+      type: object
+    models.StripeConfigurationWithIDs:
+      properties:
+        meters:
+          items:
+            $ref: "#/components/schemas/models.MeterWithStripeID"
+          type: array
+        products:
+          items:
+            $ref: "#/components/schemas/models.ProductWithStripeIDs"
+          type: array
+        version:
+          type: string
+      required:
+      - products
+      - version
+      type: object
+    models.SubscriptionResponse:
+      example:
+        is_legacy_price: true
+        subscription_id: subscription_id
+        current_period_end: 0
+        config_price_id: config_price_id
+        status: status
+      properties:
+        config_price_id:
+          type: string
+        current_period_end:
+          type: integer
+        is_legacy_price:
+          type: boolean
+        status:
+          type: string
+        subscription_id:
+          type: string
+      type: object
+    models.Tenant:
+      properties:
+        created_at:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        settings:
+          allOf:
+          - $ref: "#/components/schemas/models.TenantSettings"
+          description: Optional joined fields
+          type: object
+        stripe_customer_id:
+          description: Nullable initially
+          type: string
+        type:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    models.TenantInvite:
+      properties:
+        created_at:
+          type: string
+        email:
+          type: string
+        expires_at:
+          type: string
+        id:
+          type: string
+        inviter_id:
+          description: References auth.identities.id
+          type: string
+        role:
+          type: string
+        tenant:
+          allOf:
+          - $ref: "#/components/schemas/models.Tenant"
+          description: Optional joined fields
+          type: object
+        tenant_id:
+          type: string
+        token:
+          type: string
+        used_at:
+          type: string
+      type: object
+    models.TenantSettings:
+      properties:
+        allow_user_invites:
+          type: boolean
+        max_members:
+          type: integer
+        tenant_id:
+          type: string
+      type: object
+    models.Tier:
+      example:
+        flat_amount: 1
+        up_to: "{}"
+        unit_amount: 5
+      properties:
+        flat_amount:
+          type: integer
+        unit_amount:
+          type: integer
+        up_to:
+          description: integer or "inf"
+          type: object
+      type: object
+    models.UploadRequest:
+      properties:
+        metadata:
+          additionalProperties: true
+          description: Optional metadata to attach to the file
+          type: object
+        path:
+          description: "Path where file will be stored (e.g., \"public/images/avatar.png\"\
+            )"
+          example: public/avatars/user-123.png
+          type: string
+      required:
+      - path
+      type: object
+    models.UploadResponse:
+      example:
+        path: public/avatars/user-123.png
+        upload_url: https://storage.omnibase.dev/bucket/path?signature=...
+      properties:
+        path:
+          description: Confirmed storage path
+          example: public/avatars/user-123.png
+          type: string
+        upload_url:
+          description: Presigned URL for uploading the file (valid for 15 minutes)
+          example: https://storage.omnibase.dev/bucket/path?signature=...
+          type: string
+      type: object
+    tenants.AcceptInviteRequest:
+      properties:
+        token:
+          description: Invite token from email
+          example: 550e8400-e29b-41d4-a716-446655440000
+          type: string
+      required:
+      - token
+      type: object
+    tenants.AcceptInviteResponse:
+      example:
+        tenant_id: tenant-123
+        message: Successfully joined organization
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        message:
+          description: Success message
+          example: Successfully joined organization
+          type: string
+        tenant_id:
+          description: Tenant ID the user joined
+          example: tenant-123
+          type: string
+        token:
+          description: New JWT token with tenant context
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      type: object
+    tenants.AssignRoleRequest:
+      properties:
+        role_id:
+          description: "Role ID to assign (provide either role_id or role_name, not\
+            \ both)"
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        role_name:
+          description: "Role name to assign (provide either role_id or role_name,\
+            \ not both)"
+          example: admin
+          type: string
+      type: object
+    tenants.AssignRoleResponse:
+      example:
+        message: Role assigned successfully
+      properties:
+        message:
+          description: Success message
+          example: Role assigned successfully
+          type: string
+      type: object
+    tenants.CreateRoleRequest:
+      properties:
+        permissions:
+          description: List of permissions in namespace:resource#relation format
+          example:
+          - project:*#view
+          - tenant#read
+          items:
+            type: string
+          type: array
+        role_name:
+          description: Name of the role
+          example: project_viewer
+          type: string
+      required:
+      - permissions
+      - role_name
+      type: object
+    tenants.CreateTenantRequest:
+      properties:
+        billing_email:
+          description: Billing email for Stripe customer
+          example: billing@acme.com
+          type: string
+        name:
+          description: Organization name
+          example: Acme Corp
+          type: string
+        user_id:
+          description: User ID of the tenant creator
+          example: 550e8400-e29b-41d4-a716-446655440000
+          type: string
+      required:
+      - name
+      - user_id
+      type: object
+    tenants.CreateTenantResponse:
+      example:
+        message: Tenant created successfully
+        tenant: "{}"
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        message:
+          description: Success message
+          example: Tenant created successfully
+          type: string
+        tenant:
+          allOf:
+          - $ref: "#/components/schemas/models.Tenant"
+          description: Created tenant
+          type: object
+        token:
+          description: JWT token with tenant context
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      type: object
+    tenants.CreateTenantUserInviteRequest:
+      properties:
+        email:
+          description: Email address of the user to invite
+          example: user@example.com
+          type: string
+        invite_url:
+          description: Base URL for the invite acceptance page
+          example: https://app.example.com/accept-invite
+          type: string
+        role:
+          description: Role to assign to the invited user
+          example: member
+          type: string
+      required:
+      - email
+      - invite_url
+      - role
+      type: object
+    tenants.CreateTenantUserInviteResponse:
+      example:
+        invite: "{}"
+        message: Invite sent successfully
+      properties:
+        invite:
+          allOf:
+          - $ref: "#/components/schemas/models.TenantInvite"
+          description: Created invite
+          type: object
+        message:
+          description: Success message
+          example: Invite sent successfully
+          type: string
+      type: object
+    tenants.DeleteRoleResponse:
+      example:
+        message: Role deleted successfully
+      properties:
+        message:
+          description: Success message
+          example: Role deleted successfully
+          type: string
+      type: object
+    tenants.DeleteTenantResponse:
+      example:
+        message: Tenant deleted successfully
+      properties:
+        message:
+          description: Success message
+          example: Tenant deleted successfully
+          type: string
+      type: object
+    tenants.DeleteTenantUserRequest:
+      properties:
+        user_id:
+          description: Target user ID to remove
+          example: 550e8400-e29b-41d4-a716-446655440000
+          type: string
+      required:
+      - user_id
+      type: object
+    tenants.JWTTokenResponse:
+      example:
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        token:
+          description: PostgREST JWT token
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      type: object
+    tenants.NamespaceDefinitionsResponse:
+      example:
+        definitions:
+        - updated_at: updated_at
+          namespace: namespace
+          id: id
+          relations:
+          - relations
+          - relations
+        - updated_at: updated_at
+          namespace: namespace
+          id: id
+          relations:
+          - relations
+          - relations
+      properties:
+        definitions:
+          description: List of namespace definitions
+          items:
+            $ref: "#/components/schemas/models.NamespaceDefinition"
+          type: array
+      type: object
+    tenants.RolesListResponse:
+      example:
+        roles:
+        - role_name: role_name
+          tenant_id: tenant_id
+          updated_at: updated_at
+          permissions:
+          - permissions
+          - permissions
+          user_ids:
+          - user_ids
+          - user_ids
+          created_at: created_at
+          id: id
+        - role_name: role_name
+          tenant_id: tenant_id
+          updated_at: updated_at
+          permissions:
+          - permissions
+          - permissions
+          user_ids:
+          - user_ids
+          - user_ids
+          created_at: created_at
+          id: id
+      properties:
+        roles:
+          description: List of roles (including system roles)
+          items:
+            $ref: "#/components/schemas/models.Role"
+          type: array
+      type: object
+    tenants.SwitchTenantRequest:
+      properties:
+        tenant_id:
+          description: Target tenant ID
+          example: tenant-123
+          type: string
+      required:
+      - tenant_id
+      type: object
+    tenants.SwitchTenantResponse:
+      example:
+        message: Successfully switched tenants
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        message:
+          description: Success message
+          example: Successfully switched tenants
+          type: string
+        token:
+          description: New JWT token with updated tenant context
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      type: object
+    tenants.TenantUserResponse:
+      example:
+        role: member
+        user_id: 550e8400-e29b-41d4-a716-446655440000
+        last_name: Doe
+        first_name: John
+        email: john.doe@example.com
+      properties:
+        email:
+          description: User's email
+          example: john.doe@example.com
+          type: string
+        first_name:
+          description: User's first name
+          example: John
+          type: string
+        last_name:
+          description: User's last name
+          example: Doe
+          type: string
+        role:
+          description: User's role in the tenant
+          example: member
+          type: string
+        user_id:
+          description: User ID
+          example: 550e8400-e29b-41d4-a716-446655440000
+          type: string
+      type: object
+    tenants.UpdateRoleRequest:
+      properties:
+        permissions:
+          description: Updated list of permissions
+          example:
+          - project:*#view
+          - project:*#edit
+          items:
+            type: string
+          type: array
+      required:
+      - permissions
+      type: object
+    tenants.UpdateTenantUserRoleRequest:
+      properties:
+        role:
+          description: New role to assign
+          example: admin
+          type: string
+        user_id:
+          description: Target user ID
+          example: 550e8400-e29b-41d4-a716-446655440000
+          type: string
+      required:
+      - role
+      - user_id
+      type: object
+    tenants.UpdateTenantUserRoleResponse:
+      example:
+        message: User role updated successfully
+      properties:
+        message:
+          description: Success message
+          example: User role updated successfully
+          type: string
+      type: object
+    v1.ArchiveAllResponse:
+      example:
+        total_archived: 15
+        total_errors: 0
+        warning: Some items failed to archive - see archive_errors for details
+        archived_items:
+        - archived_items
+        - archived_items
+        archive_errors:
+        - archive_errors
+        - archive_errors
+        message: Successfully archived all Stripe resources and cleared local config
+      properties:
+        archive_errors:
+          description: List of items that failed to archive
+          items:
+            type: string
+          type: array
+        archived_items:
+          description: List of successfully archived items
+          items:
+            type: string
+          type: array
+        message:
+          description: Success message
+          example: Successfully archived all Stripe resources and cleared local config
+          type: string
+        total_archived:
+          description: Total number of archived items
+          example: 15
+          type: integer
+        total_errors:
+          description: Total number of errors
+          example: 0
+          type: integer
+        warning:
+          description: Warning message if there were errors
+          example: Some items failed to archive - see archive_errors for details
+          type: string
+      type: object
+    v1.CheckPermissionRequest:
+      properties:
+        namespace:
+          description: Namespace of the relationship
+          example: Tenant
+          type: string
+        object:
+          description: Object ID to check permission on
+          example: tenant-123
+          type: string
+        relation:
+          description: Relation to check
+          example: view_db_secret_key
+          type: string
+        subject_id:
+          description: Subject ID (user ID) to check permission for
+          example: user-456
+          type: string
+        subject_set:
+          allOf:
+          - $ref: "#/components/schemas/v1.SubjectSetRequest"
+          description: Subject set (alternative to subject_id)
+          type: object
+      required:
+      - namespace
+      - object
+      - relation
+      type: object
+    v1.CheckPermissionResponse:
+      example:
+        allowed: true
+      properties:
+        allowed:
+          description: Whether the permission check passed
+          example: true
+          type: boolean
+      type: object
+    v1.ConfigHistoryItem:
+      example:
+        updated_at: updated_at
+        parse_error: parse_error
+        created_at: created_at
+        id: id
+        config: "{}"
+        version: version
+      properties:
+        config:
+          allOf:
+          - $ref: "#/components/schemas/models.StripeConfigurationWithIDs"
+          description: Configuration data
+          type: object
+        created_at:
+          description: Creation timestamp
+          type: string
+        id:
+          description: Configuration ID
+          type: string
+        parse_error:
+          description: Parse error if configuration is invalid
+          type: string
+        updated_at:
+          description: Update timestamp
+          type: string
+        version:
+          description: Configuration version
+          type: string
+      type: object
+    v1.ConfigHistoryPagination:
+      properties:
+        has_next:
+          description: Whether there is a next page
+          example: true
+          type: boolean
+        has_prev:
+          description: Whether there is a previous page
+          example: false
+          type: boolean
+        page:
+          description: Current page number
+          example: 1
+          type: integer
+        per_page:
+          description: Items per page
+          example: 10
+          type: integer
+        total:
+          description: Total number of configurations
+          example: 50
+          type: integer
+        total_pages:
+          description: Total pages
+          example: 5
+          type: integer
+      type: object
+    v1.ConfigHistoryResponse:
+      example:
+        configs:
+        - updated_at: updated_at
+          parse_error: parse_error
+          created_at: created_at
+          id: id
+          config: "{}"
+          version: version
+        - updated_at: updated_at
+          parse_error: parse_error
+          created_at: created_at
+          id: id
+          config: "{}"
+          version: version
+        pagination: "{}"
+      properties:
+        configs:
+          description: List of configuration entries
+          items:
+            $ref: "#/components/schemas/v1.ConfigHistoryItem"
+          type: array
+        pagination:
+          allOf:
+          - $ref: "#/components/schemas/v1.ConfigHistoryPagination"
+          description: Pagination information
+          type: object
+      type: object
+    v1.CreateCheckoutRequest:
+      properties:
+        allow_promotion_codes:
+          description: Whether to allow promotion codes to be entered
+          example: true
+          type: boolean
+        cancel_url:
+          description: URL to redirect to if checkout is cancelled
+          example: https://example.com/cancel
+          type: string
+        price_id:
+          description: The price ID from your Stripe configuration
+          example: price_basic_monthly
+          type: string
+        promotion_code:
+          description: Optional promotion code to apply
+          example: SUMMER2024
+          type: string
+        success_url:
+          description: URL to redirect to after successful checkout
+          example: https://example.com/success
+          type: string
+        trial_period_days:
+          description: Optional trial period in days
+          example: 14
+          type: integer
+      required:
+      - cancel_url
+      - price_id
+      - success_url
+      type: object
+    v1.CreateCheckoutResponse:
+      example:
+        session_id: cs_test_a1b2c3d4e5f6
+        url: https://checkout.stripe.com/pay/cs_test_...
+      properties:
+        session_id:
+          description: Stripe Checkout Session ID
+          example: cs_test_a1b2c3d4e5f6
+          type: string
+        url:
+          description: Stripe Checkout Session URL
+          example: https://checkout.stripe.com/pay/cs_test_...
+          type: string
+      type: object
+    v1.CreatePortalRequest:
+      properties:
+        return_url:
+          description: URL to redirect to after leaving the portal
+          example: https://example.com/dashboard
+          type: string
+      required:
+      - return_url
+      type: object
+    v1.CreatePortalResponse:
+      example:
+        url: https://billing.stripe.com/session/live_...
+      properties:
+        url:
+          description: Stripe Customer Portal URL
+          example: https://billing.stripe.com/session/live_...
+          type: string
+      required:
+      - url
+      type: object
+    v1.CreateRelationshipRequest:
+      properties:
+        namespace:
+          description: Namespace of the relationship
+          example: Project
+          type: string
+        object:
+          description: Object ID in the relationship
+          example: project-123
+          type: string
+        relation:
+          description: Relation type
+          example: tenant
+          type: string
+        subject_id:
+          description: Subject ID (user ID) - use this OR subject_set
+          example: user-456
+          type: string
+        subject_set:
+          allOf:
+          - $ref: "#/components/schemas/v1.SubjectSetRequest"
+          description: Subject set - use this OR subject_id
+          type: object
+      required:
+      - namespace
+      - object
+      - relation
+      type: object
+    v1.CreateRelationshipResponse:
+      example:
+        message: Relationship created successfully
+        relationship: "{}"
+      properties:
+        message:
+          description: Success message
+          example: Relationship created successfully
+          type: string
+        relationship:
+          allOf:
+          - $ref: "#/components/schemas/client.Relationship"
+          description: The created relationship
+          type: object
+      type: object
+    v1.MigrationErrorResponse:
+      example:
+        message: No migrations zip file provided
+        status: 400
+      properties:
+        message:
+          description: Error message
+          example: No migrations zip file provided
+          type: string
+        status:
+          description: HTTP status code
+          example: 400
+          type: integer
+      type: object
+    v1.MigrationSuccessResponse:
+      example:
+        message: Migrations applied successfully
+        status: 200
+      properties:
+        message:
+          description: Success message
+          example: Migrations applied successfully
+          type: string
+        status:
+          description: HTTP status code
+          example: 200
+          type: integer
+      type: object
+    v1.NamespaceDeploymentResponse:
+      example:
+        tenant_id: tenant-123
+        path: tenant-123/latest.zip
+        managed_mode: true
+        message: Namespaces deployed successfully
+        roles_synced: 5
+      properties:
+        managed_mode:
+          description: Whether managed mode is enabled
+          example: true
+          type: boolean
+        message:
+          description: Success message
+          example: Namespaces deployed successfully
+          type: string
+        path:
+          description: S3 storage path
+          example: tenant-123/latest.zip
+          type: string
+        roles_synced:
+          description: Number of system roles synced (optional)
+          example: 5
+          type: integer
+        tenant_id:
+          description: Tenant ID
+          example: tenant-123
+          type: string
+      type: object
+    v1.RecordUsageRequest:
+      properties:
+        meter_event_name:
+          description: The meter event name as defined in your Stripe configuration
+          example: api_requests
+          type: string
+        value:
+          description: The usage value to record
+          example: "100"
+          type: string
+      required:
+      - meter_event_name
+      - value
+      type: object
+    v1.StripeConfigResponse:
+      example:
+        updated_at: 2024-01-01T00:00:00Z
+        created_at: 2024-01-01T00:00:00Z
+        id: 123e4567-e89b-12d3-a456-426614174000
+        config: "{}"
+        version: 1.0.0
+      properties:
+        config:
+          allOf:
+          - $ref: "#/components/schemas/models.StripeConfigurationWithIDs"
+          description: Configuration data with Stripe IDs
+          type: object
+        created_at:
+          description: Creation timestamp
+          example: 2024-01-01T00:00:00Z
+          type: string
+        id:
+          description: Configuration ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        updated_at:
+          description: Last update timestamp
+          example: 2024-01-01T00:00:00Z
+          type: string
+        version:
+          description: Configuration version
+          example: 1.0.0
+          type: string
+      type: object
+    v1.SubjectSetRequest:
+      properties:
+        namespace:
+          description: Namespace of the subject set
+          example: Tenant
+          type: string
+        object:
+          description: Object of the subject set
+          example: tenant-123
+          type: string
+        relation:
+          description: Relation of the subject set
+          example: member
+          type: string
+      required:
+      - namespace
+      - object
+      type: object
+    uploadDatabaseMigrations_request:
+      properties:
+        migrations:
+          description: Zip file containing SQL migration files
+          format: binary
+          type: string
+      required:
+      - migrations
+      type: object
+    createCheckout_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.CreateCheckoutResponse"
+        type: object
+      example:
+        data:
+          session_id: cs_test_a1b2c3d4e5f6
+          url: https://checkout.stripe.com/pay/cs_test_...
+        status: 200
+    createCustomerPortal_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.CreatePortalResponse"
+        type: object
+      example:
+        data:
+          url: https://billing.stripe.com/session/live_...
+        status: 200
+    checkPermission_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.CheckPermissionResponse"
+        type: object
+      example:
+        data:
+          allowed: true
+        status: 200
+    deployPermissionNamespaces_request:
+      properties:
+        namespaces:
+          description: Zip file containing namespace configuration files
+          format: binary
+          type: string
+      required:
+      - namespaces
+      type: object
+    deployPermissionNamespaces_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.NamespaceDeploymentResponse"
+        type: object
+      example:
+        data:
+          tenant_id: tenant-123
+          path: tenant-123/latest.zip
+          managed_mode: true
+          message: Namespaces deployed successfully
+          roles_synced: 5
+        status: 200
+    createRelationship_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.CreateRelationshipResponse"
+        type: object
+      example:
+        data:
+          message: Relationship created successfully
+          relationship: "{}"
+        status: 200
+    _storage_download_post_200_response:
+      example:
+        data:
+          download_url: https://storage.omnibase.dev/bucket/path?signature=...
+        status: 0
+      properties:
+        data:
+          $ref: "#/components/schemas/models.DownloadResponse"
+        status:
+          type: integer
+      type: object
+    _storage_object_delete_200_response:
+      example:
+        data:
+          message: file deleted
+        status: 0
+      properties:
+        data:
+          $ref: "#/components/schemas/models.MessageResponse"
+        status:
+          type: integer
+      type: object
+    _storage_upload_post_200_response:
+      example:
+        data:
+          path: public/avatars/user-123.png
+          upload_url: https://storage.omnibase.dev/bucket/path?signature=...
+        status: 0
+      properties:
+        data:
+          $ref: "#/components/schemas/models.UploadResponse"
+        status:
+          type: integer
+      type: object
+    _stripe_config_get_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.StripeConfigResponse"
+        type: object
+      example:
+        data:
+          updated_at: 2024-01-01T00:00:00Z
+          created_at: 2024-01-01T00:00:00Z
+          id: 123e4567-e89b-12d3-a456-426614174000
+          config: "{}"
+          version: 1.0.0
+        status: 200
+    _stripe_config_archive_all_post_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.ArchiveAllResponse"
+        type: object
+      example:
+        data:
+          total_archived: 15
+          total_errors: 0
+          warning: Some items failed to archive - see archive_errors for details
+          archived_items:
+          - archived_items
+          - archived_items
+          archive_errors:
+          - archive_errors
+          - archive_errors
+          message: Successfully archived all Stripe resources and cleared local config
+        status: 200
+    _stripe_config_history_get_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.ConfigHistoryResponse"
+        type: object
+      example:
+        data:
+          configs:
+          - updated_at: updated_at
+            parse_error: parse_error
+            created_at: created_at
+            id: id
+            config: "{}"
+            version: version
+          - updated_at: updated_at
+            parse_error: parse_error
+            created_at: created_at
+            id: id
+            config: "{}"
+            version: version
+          pagination: "{}"
+        status: 200
+    _stripe_config_pull_get_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/models.StripeConfiguration"
+        type: object
+      example:
+        data:
+          version: version
+          meters:
+          - default_aggregation:
+              formula: sum
+            value_settings:
+              event_payload_key: event_payload_key
+            event_name: event_name
+            customer_mapping:
+              event_payload_key: event_payload_key
+              type: by_id
+            id: id
+            display_name: display_name
+          - default_aggregation:
+              formula: sum
+            value_settings:
+              event_payload_key: event_payload_key
+            event_name: event_name
+            customer_mapping:
+              event_payload_key: event_payload_key
+              type: by_id
+            id: id
+            display_name: display_name
+          products:
+          - ui:
+              badge: badge
+              features:
+              - features
+              - features
+              cta_text: cta_text
+              highlighted: true
+              tagline: tagline
+              display_name: display_name
+              sort_order: 2
+            name: name
+            description: description
+            id: id
+            prices:
+            - interval_count: 6
+              amount: 0
+              tiers:
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              meter: meter
+              billing_scheme: billing_scheme
+              tiers_mode: tiers_mode
+              default: true
+              public: true
+              ui:
+                billing_period: billing_period
+                features:
+                - features
+                - features
+                price_display:
+                  show_currency: true
+                  custom_text: custom_text
+                  suffix: suffix
+                display_name: display_name
+                limits:
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+              usage_type: usage_type
+              currency: currency
+              interval: interval
+              id: id
+              tax_included_in_price: true
+            - interval_count: 6
+              amount: 0
+              tiers:
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              meter: meter
+              billing_scheme: billing_scheme
+              tiers_mode: tiers_mode
+              default: true
+              public: true
+              ui:
+                billing_period: billing_period
+                features:
+                - features
+                - features
+                price_display:
+                  show_currency: true
+                  custom_text: custom_text
+                  suffix: suffix
+                display_name: display_name
+                limits:
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+              usage_type: usage_type
+              currency: currency
+              interval: interval
+              id: id
+              tax_included_in_price: true
+            type: type
+          - ui:
+              badge: badge
+              features:
+              - features
+              - features
+              cta_text: cta_text
+              highlighted: true
+              tagline: tagline
+              display_name: display_name
+              sort_order: 2
+            name: name
+            description: description
+            id: id
+            prices:
+            - interval_count: 6
+              amount: 0
+              tiers:
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              meter: meter
+              billing_scheme: billing_scheme
+              tiers_mode: tiers_mode
+              default: true
+              public: true
+              ui:
+                billing_period: billing_period
+                features:
+                - features
+                - features
+                price_display:
+                  show_currency: true
+                  custom_text: custom_text
+                  suffix: suffix
+                display_name: display_name
+                limits:
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+              usage_type: usage_type
+              currency: currency
+              interval: interval
+              id: id
+              tax_included_in_price: true
+            - interval_count: 6
+              amount: 0
+              tiers:
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              - flat_amount: 1
+                up_to: "{}"
+                unit_amount: 5
+              meter: meter
+              billing_scheme: billing_scheme
+              tiers_mode: tiers_mode
+              default: true
+              public: true
+              ui:
+                billing_period: billing_period
+                features:
+                - features
+                - features
+                price_display:
+                  show_currency: true
+                  custom_text: custom_text
+                  suffix: suffix
+                display_name: display_name
+                limits:
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+                - unit: unit
+                  text: text
+                  value: 5.637376656633329
+              usage_type: usage_type
+              currency: currency
+              interval: interval
+              id: id
+              tax_included_in_price: true
+            type: type
+        status: 200
+    createTenant_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.CreateTenantResponse"
+        type: object
+      example:
+        data:
+          message: Tenant created successfully
+          tenant: "{}"
+          token: eyJhbGciOiJIUzI1NiIs...
+        status: 200
+    deleteTenant_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.DeleteTenantResponse"
+        type: object
+      example:
+        data:
+          message: Tenant deleted successfully
+        status: 200
+    getTenantBillingStatus_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/models.BillingStatusResponse"
+        type: object
+      example:
+        data:
+          has_billing_info: true
+          is_active: true
+        status: 200
+    createInvite_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.CreateTenantUserInviteResponse"
+        type: object
+      example:
+        data:
+          invite: "{}"
+          message: Invite sent successfully
+        status: 200
+    acceptInvite_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.AcceptInviteResponse"
+        type: object
+      example:
+        data:
+          tenant_id: tenant-123
+          message: Successfully joined organization
+          token: eyJhbGciOiJIUzI1NiIs...
+        status: 200
+    getTenantJWT_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.JWTTokenResponse"
+        type: object
+      example:
+        data:
+          token: eyJhbGciOiJIUzI1NiIs...
+        status: 200
+    listRoles_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.RolesListResponse"
+        type: object
+      example:
+        data:
+          roles:
+          - role_name: role_name
+            tenant_id: tenant_id
+            updated_at: updated_at
+            permissions:
+            - permissions
+            - permissions
+            user_ids:
+            - user_ids
+            - user_ids
+            created_at: created_at
+            id: id
+          - role_name: role_name
+            tenant_id: tenant_id
+            updated_at: updated_at
+            permissions:
+            - permissions
+            - permissions
+            user_ids:
+            - user_ids
+            - user_ids
+            created_at: created_at
+            id: id
+        status: 200
+    createRole_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/models.Role"
+        type: object
+      example:
+        data:
+          role_name: role_name
+          tenant_id: tenant_id
+          updated_at: updated_at
+          permissions:
+          - permissions
+          - permissions
+          user_ids:
+          - user_ids
+          - user_ids
+          created_at: created_at
+          id: id
+        status: 200
+    assignRole_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.AssignRoleResponse"
+        type: object
+      example:
+        data:
+          message: Role assigned successfully
+        status: 200
+    getRoleDefinitions_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.NamespaceDefinitionsResponse"
+        type: object
+      example:
+        data:
+          definitions:
+          - updated_at: updated_at
+            namespace: namespace
+            id: id
+            relations:
+            - relations
+            - relations
+          - updated_at: updated_at
+            namespace: namespace
+            id: id
+            relations:
+            - relations
+            - relations
+        status: 200
+    deleteRole_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.DeleteRoleResponse"
+        type: object
+      example:
+        data:
+          message: Role deleted successfully
+        status: 200
+    listTenantSubscriptions_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/models.SubscriptionResponse"
+            type: array
+        type: object
+      example:
+        data:
+        - is_legacy_price: true
+          subscription_id: subscription_id
+          current_period_end: 0
+          config_price_id: config_price_id
+          status: status
+        - is_legacy_price: true
+          subscription_id: subscription_id
+          current_period_end: 0
+          config_price_id: config_price_id
+          status: status
+        status: 200
+    switchActiveTenant_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.SwitchTenantResponse"
+        type: object
+      example:
+        data:
+          message: Successfully switched tenants
+          token: eyJhbGciOiJIUzI1NiIs...
+        status: 200
+    listTenantUsers_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/tenants.TenantUserResponse"
+            type: array
+        type: object
+      example:
+        data:
+        - role: member
+          user_id: 550e8400-e29b-41d4-a716-446655440000
+          last_name: Doe
+          first_name: John
+          email: john.doe@example.com
+        - role: member
+          user_id: 550e8400-e29b-41d4-a716-446655440000
+          last_name: Doe
+          first_name: John
+          email: john.doe@example.com
+        status: 200
+    updateTenantUserRole_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.UpdateTenantUserRoleResponse"
+        type: object
+      example:
+        data:
+          message: User role updated successfully
+        status: 200
+  securitySchemes:
+    BearerAuth:
+      description: "JWT Bearer token authentication. Format: `Bearer <token>`"
+      in: header
+      name: Authorization
+      type: apiKey
+    SessionAuth:
+      description: "Session cookie authentication. Cookie name: `ory_kratos_session`"
+      in: header
+      name: Cookie
+      type: apiKey
+x-original-swagger-version: "2.0"
