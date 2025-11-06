@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | Pointer to **string** | Success message | [optional] 
-**Tenant** | Pointer to [**ModelsTenant**](ModelsTenant.md) | Created tenant | [optional] 
-**Token** | Pointer to **string** | JWT token with tenant context | [optional] 
+**Message** | **string** | Success message | 
+**Tenant** | [**ModelsTenant**](ModelsTenant.md) | Created tenant | 
+**Token** | **string** | JWT token with tenant context | 
 
 ## Methods
 
 ### NewTenantsCreateTenantResponse
 
-`func NewTenantsCreateTenantResponse() *TenantsCreateTenantResponse`
+`func NewTenantsCreateTenantResponse(message string, tenant ModelsTenant, token string, ) *TenantsCreateTenantResponse`
 
 NewTenantsCreateTenantResponse instantiates a new TenantsCreateTenantResponse object
 This constructor will assign default values to properties that have it defined,
@@ -46,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *TenantsCreateTenantResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 ### GetTenant
 
@@ -71,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetTenant sets Tenant field to given value.
 
-### HasTenant
-
-`func (o *TenantsCreateTenantResponse) HasTenant() bool`
-
-HasTenant returns a boolean if a field has been set.
 
 ### GetToken
 
@@ -96,11 +86,6 @@ and a boolean to check if the value has been set.
 
 SetToken sets Token field to given value.
 
-### HasToken
-
-`func (o *TenantsCreateTenantResponse) HasToken() bool`
-
-HasToken returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

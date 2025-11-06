@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.0
+API version: 0.9.1
 Contact: support@omnibase.dev
 */
 
@@ -23,159 +23,17 @@ import (
 // StripeAPIService StripeAPI service
 type StripeAPIService service
 
-type ApiStripeConfigAdminGetRequest struct {
+type ApiArchiveAllStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *StripeAPIService
 }
 
-func (r ApiStripeConfigAdminGetRequest) Execute() (*StripeConfigGet200Response, *http.Response, error) {
-	return r.ApiService.StripeConfigAdminGetExecute(r)
+func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllStripeConfig200Response, *http.Response, error) {
+	return r.ApiService.ArchiveAllStripeConfigExecute(r)
 }
 
 /*
-StripeConfigAdminGet Get full Stripe config (admin)
-
-Returns the complete Stripe configuration including all prices (both public and enterprise).
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Admin configuration management
-- Enterprise pricing display
-- Configuration auditing
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigAdminGetRequest
-*/
-func (a *StripeAPIService) StripeConfigAdminGet(ctx context.Context) ApiStripeConfigAdminGetRequest {
-	return ApiStripeConfigAdminGetRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return StripeConfigGet200Response
-func (a *StripeAPIService) StripeConfigAdminGetExecute(r ApiStripeConfigAdminGetRequest) (*StripeConfigGet200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StripeConfigGet200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigAdminGet")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/stripe/config/admin"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiStripeConfigArchiveAllPostRequest struct {
-	ctx context.Context
-	ApiService *StripeAPIService
-}
-
-func (r ApiStripeConfigArchiveAllPostRequest) Execute() (*StripeConfigArchiveAllPost200Response, *http.Response, error) {
-	return r.ApiService.StripeConfigArchiveAllPostExecute(r)
-}
-
-/*
-StripeConfigArchiveAllPost Archive all Stripe config
+ArchiveAllStripeConfig Archive all Stripe config
 
 Archives all active products, prices, and meters in Stripe and clears the local configuration.
 
@@ -191,26 +49,26 @@ This is a destructive operation that will archive ALL active Stripe resources.
 - Reset Stripe account
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigArchiveAllPostRequest
+ @return ApiArchiveAllStripeConfigRequest
 */
-func (a *StripeAPIService) StripeConfigArchiveAllPost(ctx context.Context) ApiStripeConfigArchiveAllPostRequest {
-	return ApiStripeConfigArchiveAllPostRequest{
+func (a *StripeAPIService) ArchiveAllStripeConfig(ctx context.Context) ApiArchiveAllStripeConfigRequest {
+	return ApiArchiveAllStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfigArchiveAllPost200Response
-func (a *StripeAPIService) StripeConfigArchiveAllPostExecute(r ApiStripeConfigArchiveAllPostRequest) (*StripeConfigArchiveAllPost200Response, *http.Response, error) {
+//  @return ArchiveAllStripeConfig200Response
+func (a *StripeAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeConfigArchiveAllPost200Response
+		localVarReturnValue  *ArchiveAllStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigArchiveAllPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.ArchiveAllStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -310,17 +168,17 @@ func (a *StripeAPIService) StripeConfigArchiveAllPostExecute(r ApiStripeConfigAr
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStripeConfigGetRequest struct {
+type ApiGetStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *StripeAPIService
 }
 
-func (r ApiStripeConfigGetRequest) Execute() (*StripeConfigGet200Response, *http.Response, error) {
-	return r.ApiService.StripeConfigGetExecute(r)
+func (r ApiGetStripeConfigRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
+	return r.ApiService.GetStripeConfigExecute(r)
 }
 
 /*
-StripeConfigGet Get public Stripe config
+GetStripeConfig Get public Stripe config
 
 Returns the current Stripe configuration with public prices only (filters out enterprise prices).
 
@@ -333,26 +191,26 @@ No authentication required for public endpoint.
 - Public pricing pages
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigGetRequest
+ @return ApiGetStripeConfigRequest
 */
-func (a *StripeAPIService) StripeConfigGet(ctx context.Context) ApiStripeConfigGetRequest {
-	return ApiStripeConfigGetRequest{
+func (a *StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeConfigRequest {
+	return ApiGetStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfigGet200Response
-func (a *StripeAPIService) StripeConfigGetExecute(r ApiStripeConfigGetRequest) (*StripeConfigGet200Response, *http.Response, error) {
+//  @return GetStripeConfig200Response
+func (a *StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*GetStripeConfig200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeConfigGet200Response
+		localVarReturnValue  *GetStripeConfig200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -427,7 +285,149 @@ func (a *StripeAPIService) StripeConfigGetExecute(r ApiStripeConfigGetRequest) (
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStripeConfigHistoryGetRequest struct {
+type ApiGetStripeConfigAdminRequest struct {
+	ctx context.Context
+	ApiService *StripeAPIService
+}
+
+func (r ApiGetStripeConfigAdminRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
+	return r.ApiService.GetStripeConfigAdminExecute(r)
+}
+
+/*
+GetStripeConfigAdmin Get full Stripe config (admin)
+
+Returns the complete Stripe configuration including all prices (both public and enterprise).
+
+## Authentication
+Requires admin JWT token.
+
+## Use Cases
+- Admin configuration management
+- Enterprise pricing display
+- Configuration auditing
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetStripeConfigAdminRequest
+*/
+func (a *StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStripeConfigAdminRequest {
+	return ApiGetStripeConfigAdminRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return GetStripeConfig200Response
+func (a *StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*GetStripeConfig200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetStripeConfig200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigAdmin")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/stripe/config/admin"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["BearerAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HandlersUnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v HandlersInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetStripeConfigHistoryRequest struct {
 	ctx context.Context
 	ApiService *StripeAPIService
 	limit *int32
@@ -435,23 +435,23 @@ type ApiStripeConfigHistoryGetRequest struct {
 }
 
 // Items per page
-func (r ApiStripeConfigHistoryGetRequest) Limit(limit int32) ApiStripeConfigHistoryGetRequest {
+func (r ApiGetStripeConfigHistoryRequest) Limit(limit int32) ApiGetStripeConfigHistoryRequest {
 	r.limit = &limit
 	return r
 }
 
 // Items to skip
-func (r ApiStripeConfigHistoryGetRequest) Offset(offset int32) ApiStripeConfigHistoryGetRequest {
+func (r ApiGetStripeConfigHistoryRequest) Offset(offset int32) ApiGetStripeConfigHistoryRequest {
 	r.offset = &offset
 	return r
 }
 
-func (r ApiStripeConfigHistoryGetRequest) Execute() (*StripeConfigHistoryGet200Response, *http.Response, error) {
-	return r.ApiService.StripeConfigHistoryGetExecute(r)
+func (r ApiGetStripeConfigHistoryRequest) Execute() (*GetStripeConfigHistory200Response, *http.Response, error) {
+	return r.ApiService.GetStripeConfigHistoryExecute(r)
 }
 
 /*
-StripeConfigHistoryGet Get config history
+GetStripeConfigHistory Get config history
 
 Returns paginated history of all Stripe configurations.
 
@@ -463,26 +463,26 @@ Requires admin JWT token.
 - offset: Number of items to skip (default: 0)
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigHistoryGetRequest
+ @return ApiGetStripeConfigHistoryRequest
 */
-func (a *StripeAPIService) StripeConfigHistoryGet(ctx context.Context) ApiStripeConfigHistoryGetRequest {
-	return ApiStripeConfigHistoryGetRequest{
+func (a *StripeAPIService) GetStripeConfigHistory(ctx context.Context) ApiGetStripeConfigHistoryRequest {
+	return ApiGetStripeConfigHistoryRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return StripeConfigHistoryGet200Response
-func (a *StripeAPIService) StripeConfigHistoryGetExecute(r ApiStripeConfigHistoryGetRequest) (*StripeConfigHistoryGet200Response, *http.Response, error) {
+//  @return GetStripeConfigHistory200Response
+func (a *StripeAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*GetStripeConfigHistory200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeConfigHistoryGet200Response
+		localVarReturnValue  *GetStripeConfigHistory200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigHistoryGet")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigHistory")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -596,24 +596,280 @@ func (a *StripeAPIService) StripeConfigHistoryGetExecute(r ApiStripeConfigHistor
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStripeConfigPostRequest struct {
+type ApiGetStripeConfigSchemaRequest struct {
+	ctx context.Context
+	ApiService *StripeAPIService
+}
+
+func (r ApiGetStripeConfigSchemaRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.GetStripeConfigSchemaExecute(r)
+}
+
+/*
+GetStripeConfigSchema Get Stripe config schema
+
+Returns the JSON schema definition for validating Stripe configuration files.
+
+## Use Cases
+- Validate configuration before upload
+- IDE autocomplete support
+- Generate configuration templates
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetStripeConfigSchemaRequest
+*/
+func (a *StripeAPIService) GetStripeConfigSchema(ctx context.Context) ApiGetStripeConfigSchemaRequest {
+	return ApiGetStripeConfigSchemaRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return map[string]interface{}
+func (a *StripeAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (map[string]interface{}, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  map[string]interface{}
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.GetStripeConfigSchema")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/stripe/schema"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v HandlersInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiPullStripeConfigRequest struct {
+	ctx context.Context
+	ApiService *StripeAPIService
+}
+
+func (r ApiPullStripeConfigRequest) Execute() (*PullStripeConfig200Response, *http.Response, error) {
+	return r.ApiService.PullStripeConfigExecute(r)
+}
+
+/*
+PullStripeConfig Pull config from Stripe
+
+Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
+
+## Authentication
+Requires admin JWT token.
+
+## Use Cases
+- Sync remote Stripe config to local
+- Import existing Stripe setup
+- Configuration backup
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiPullStripeConfigRequest
+*/
+func (a *StripeAPIService) PullStripeConfig(ctx context.Context) ApiPullStripeConfigRequest {
+	return ApiPullStripeConfigRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return PullStripeConfig200Response
+func (a *StripeAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*PullStripeConfig200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *PullStripeConfig200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.PullStripeConfig")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/stripe/config/pull"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["BearerAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v HandlersUnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v HandlersInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiUpdateStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *StripeAPIService
 	config *map[string]interface{}
 }
 
 // Stripe configuration data
-func (r ApiStripeConfigPostRequest) Config(config map[string]interface{}) ApiStripeConfigPostRequest {
+func (r ApiUpdateStripeConfigRequest) Config(config map[string]interface{}) ApiUpdateStripeConfigRequest {
 	r.config = &config
 	return r
 }
 
-func (r ApiStripeConfigPostRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
-	return r.ApiService.StripeConfigPostExecute(r)
+func (r ApiUpdateStripeConfigRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
+	return r.ApiService.UpdateStripeConfigExecute(r)
 }
 
 /*
-StripeConfigPost Update Stripe config
+UpdateStripeConfig Update Stripe config
 
 Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
 
@@ -626,10 +882,10 @@ Requires admin JWT token.
 - Modify metered billing settings
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigPostRequest
+ @return ApiUpdateStripeConfigRequest
 */
-func (a *StripeAPIService) StripeConfigPost(ctx context.Context) ApiStripeConfigPostRequest {
-	return ApiStripeConfigPostRequest{
+func (a *StripeAPIService) UpdateStripeConfig(ctx context.Context) ApiUpdateStripeConfigRequest {
+	return ApiUpdateStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -637,7 +893,7 @@ func (a *StripeAPIService) StripeConfigPost(ctx context.Context) ApiStripeConfig
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *StripeAPIService) StripeConfigPostExecute(r ApiStripeConfigPostRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *StripeAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -645,7 +901,7 @@ func (a *StripeAPIService) StripeConfigPostExecute(r ApiStripeConfigPostRequest)
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.UpdateStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -750,166 +1006,24 @@ func (a *StripeAPIService) StripeConfigPostExecute(r ApiStripeConfigPostRequest)
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiStripeConfigPullGetRequest struct {
-	ctx context.Context
-	ApiService *StripeAPIService
-}
-
-func (r ApiStripeConfigPullGetRequest) Execute() (*StripeConfigPullGet200Response, *http.Response, error) {
-	return r.ApiService.StripeConfigPullGetExecute(r)
-}
-
-/*
-StripeConfigPullGet Pull config from Stripe
-
-Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Sync remote Stripe config to local
-- Import existing Stripe setup
-- Configuration backup
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigPullGetRequest
-*/
-func (a *StripeAPIService) StripeConfigPullGet(ctx context.Context) ApiStripeConfigPullGetRequest {
-	return ApiStripeConfigPullGetRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return StripeConfigPullGet200Response
-func (a *StripeAPIService) StripeConfigPullGetExecute(r ApiStripeConfigPullGetRequest) (*StripeConfigPullGet200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *StripeConfigPullGet200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigPullGet")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/stripe/config/pull"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiStripeConfigValidatePostRequest struct {
+type ApiValidateStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *StripeAPIService
 	config *map[string]interface{}
 }
 
 // Stripe configuration to validate
-func (r ApiStripeConfigValidatePostRequest) Config(config map[string]interface{}) ApiStripeConfigValidatePostRequest {
+func (r ApiValidateStripeConfigRequest) Config(config map[string]interface{}) ApiValidateStripeConfigRequest {
 	r.config = &config
 	return r
 }
 
-func (r ApiStripeConfigValidatePostRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
-	return r.ApiService.StripeConfigValidatePostExecute(r)
+func (r ApiValidateStripeConfigRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
+	return r.ApiService.ValidateStripeConfigExecute(r)
 }
 
 /*
-StripeConfigValidatePost Validate Stripe config
+ValidateStripeConfig Validate Stripe config
 
 Validates a Stripe configuration against the schema without saving or deploying it.
 
@@ -922,10 +1036,10 @@ Requires admin JWT token.
 - Schema compliance checking
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeConfigValidatePostRequest
+ @return ApiValidateStripeConfigRequest
 */
-func (a *StripeAPIService) StripeConfigValidatePost(ctx context.Context) ApiStripeConfigValidatePostRequest {
-	return ApiStripeConfigValidatePostRequest{
+func (a *StripeAPIService) ValidateStripeConfig(ctx context.Context) ApiValidateStripeConfigRequest {
+	return ApiValidateStripeConfigRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -933,7 +1047,7 @@ func (a *StripeAPIService) StripeConfigValidatePost(ctx context.Context) ApiStri
 
 // Execute executes the request
 //  @return HandlersSuccessResponse
-func (a *StripeAPIService) StripeConfigValidatePostExecute(r ApiStripeConfigValidatePostRequest) (*HandlersSuccessResponse, *http.Response, error) {
+func (a *StripeAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (*HandlersSuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -941,7 +1055,7 @@ func (a *StripeAPIService) StripeConfigValidatePostExecute(r ApiStripeConfigVali
 		localVarReturnValue  *HandlersSuccessResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeConfigValidatePost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.ValidateStripeConfig")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -1023,120 +1137,6 @@ func (a *StripeAPIService) StripeConfigValidatePostExecute(r ApiStripeConfigVali
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiStripeSchemaGetRequest struct {
-	ctx context.Context
-	ApiService *StripeAPIService
-}
-
-func (r ApiStripeSchemaGetRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.StripeSchemaGetExecute(r)
-}
-
-/*
-StripeSchemaGet Get Stripe config schema
-
-Returns the JSON schema definition for validating Stripe configuration files.
-
-## Use Cases
-- Validate configuration before upload
-- IDE autocomplete support
-- Generate configuration templates
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiStripeSchemaGetRequest
-*/
-func (a *StripeAPIService) StripeSchemaGet(ctx context.Context) ApiStripeSchemaGetRequest {
-	return ApiStripeSchemaGetRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return map[string]interface{}
-func (a *StripeAPIService) StripeSchemaGetExecute(r ApiStripeSchemaGetRequest) (map[string]interface{}, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "StripeAPIService.StripeSchemaGet")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/stripe/schema"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

@@ -4,81 +4,20 @@ All URIs are relative to *http://https://api.omnibase.tech/api/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**StripeConfigAdminGet**](StripeAPI.md#StripeConfigAdminGet) | **Get** /stripe/config/admin | Get full Stripe config (admin)
-[**StripeConfigArchiveAllPost**](StripeAPI.md#StripeConfigArchiveAllPost) | **Post** /stripe/config/archive-all | Archive all Stripe config
-[**StripeConfigGet**](StripeAPI.md#StripeConfigGet) | **Get** /stripe/config | Get public Stripe config
-[**StripeConfigHistoryGet**](StripeAPI.md#StripeConfigHistoryGet) | **Get** /stripe/config/history | Get config history
-[**StripeConfigPost**](StripeAPI.md#StripeConfigPost) | **Post** /stripe/config | Update Stripe config
-[**StripeConfigPullGet**](StripeAPI.md#StripeConfigPullGet) | **Get** /stripe/config/pull | Pull config from Stripe
-[**StripeConfigValidatePost**](StripeAPI.md#StripeConfigValidatePost) | **Post** /stripe/config/validate | Validate Stripe config
-[**StripeSchemaGet**](StripeAPI.md#StripeSchemaGet) | **Get** /stripe/schema | Get Stripe config schema
+[**ArchiveAllStripeConfig**](StripeAPI.md#ArchiveAllStripeConfig) | **Post** /stripe/config/archive-all | Archive all Stripe config
+[**GetStripeConfig**](StripeAPI.md#GetStripeConfig) | **Get** /stripe/config | Get public Stripe config
+[**GetStripeConfigAdmin**](StripeAPI.md#GetStripeConfigAdmin) | **Get** /stripe/config/admin | Get full Stripe config (admin)
+[**GetStripeConfigHistory**](StripeAPI.md#GetStripeConfigHistory) | **Get** /stripe/config/history | Get config history
+[**GetStripeConfigSchema**](StripeAPI.md#GetStripeConfigSchema) | **Get** /stripe/schema | Get Stripe config schema
+[**PullStripeConfig**](StripeAPI.md#PullStripeConfig) | **Get** /stripe/config/pull | Pull config from Stripe
+[**UpdateStripeConfig**](StripeAPI.md#UpdateStripeConfig) | **Post** /stripe/config | Update Stripe config
+[**ValidateStripeConfig**](StripeAPI.md#ValidateStripeConfig) | **Post** /stripe/config/validate | Validate Stripe config
 
 
 
-## StripeConfigAdminGet
+## ArchiveAllStripeConfig
 
-> StripeConfigGet200Response StripeConfigAdminGet(ctx).Execute()
-
-Get full Stripe config (admin)
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigAdminGet(context.Background()).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigAdminGet``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `StripeConfigAdminGet`: StripeConfigGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigAdminGet`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiStripeConfigAdminGetRequest struct via the builder pattern
-
-
-### Return type
-
-[**StripeConfigGet200Response**](StripeConfigGet200Response.md)
-
-### Authorization
-
-[BearerAuth](../README.md#BearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## StripeConfigArchiveAllPost
-
-> StripeConfigArchiveAllPost200Response StripeConfigArchiveAllPost(ctx).Execute()
+> ArchiveAllStripeConfig200Response ArchiveAllStripeConfig(ctx).Execute()
 
 Archive all Stripe config
 
@@ -100,13 +39,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigArchiveAllPost(context.Background()).Execute()
+	resp, r, err := apiClient.StripeAPI.ArchiveAllStripeConfig(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigArchiveAllPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.ArchiveAllStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StripeConfigArchiveAllPost`: StripeConfigArchiveAllPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigArchiveAllPost`: %v\n", resp)
+	// response from `ArchiveAllStripeConfig`: ArchiveAllStripeConfig200Response
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.ArchiveAllStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -116,12 +55,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStripeConfigArchiveAllPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequest struct via the builder pattern
 
 
 ### Return type
 
-[**StripeConfigArchiveAllPost200Response**](StripeConfigArchiveAllPost200Response.md)
+[**ArchiveAllStripeConfig200Response**](ArchiveAllStripeConfig200Response.md)
 
 ### Authorization
 
@@ -137,9 +76,9 @@ Other parameters are passed through a pointer to a apiStripeConfigArchiveAllPost
 [[Back to README]](../README.md)
 
 
-## StripeConfigGet
+## GetStripeConfig
 
-> StripeConfigGet200Response StripeConfigGet(ctx).Execute()
+> GetStripeConfig200Response GetStripeConfig(ctx).Execute()
 
 Get public Stripe config
 
@@ -161,13 +100,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigGet(context.Background()).Execute()
+	resp, r, err := apiClient.StripeAPI.GetStripeConfig(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StripeConfigGet`: StripeConfigGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigGet`: %v\n", resp)
+	// response from `GetStripeConfig`: GetStripeConfig200Response
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -177,12 +116,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStripeConfigGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetStripeConfigRequest struct via the builder pattern
 
 
 ### Return type
 
-[**StripeConfigGet200Response**](StripeConfigGet200Response.md)
+[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
 
 ### Authorization
 
@@ -198,9 +137,70 @@ No authorization required
 [[Back to README]](../README.md)
 
 
-## StripeConfigHistoryGet
+## GetStripeConfigAdmin
 
-> StripeConfigHistoryGet200Response StripeConfigHistoryGet(ctx).Limit(limit).Offset(offset).Execute()
+> GetStripeConfig200Response GetStripeConfigAdmin(ctx).Execute()
+
+Get full Stripe config (admin)
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigAdmin``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetStripeConfigAdmin`: GetStripeConfig200Response
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigAdmin`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetStripeConfigAdminRequest struct via the builder pattern
+
+
+### Return type
+
+[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetStripeConfigHistory
+
+> GetStripeConfigHistory200Response GetStripeConfigHistory(ctx).Limit(limit).Offset(offset).Execute()
 
 Get config history
 
@@ -224,13 +224,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigHistoryGet(context.Background()).Limit(limit).Offset(offset).Execute()
+	resp, r, err := apiClient.StripeAPI.GetStripeConfigHistory(context.Background()).Limit(limit).Offset(offset).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigHistoryGet``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigHistory``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StripeConfigHistoryGet`: StripeConfigHistoryGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigHistoryGet`: %v\n", resp)
+	// response from `GetStripeConfigHistory`: GetStripeConfigHistory200Response
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigHistory`: %v\n", resp)
 }
 ```
 
@@ -240,7 +240,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStripeConfigHistoryGetRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetStripeConfigHistoryRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -250,7 +250,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**StripeConfigHistoryGet200Response**](StripeConfigHistoryGet200Response.md)
+[**GetStripeConfigHistory200Response**](GetStripeConfigHistory200Response.md)
 
 ### Authorization
 
@@ -266,9 +266,131 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## StripeConfigPost
+## GetStripeConfigSchema
 
-> HandlersSuccessResponse StripeConfigPost(ctx).Config(config).Execute()
+> map[string]interface{} GetStripeConfigSchema(ctx).Execute()
+
+Get Stripe config schema
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.StripeAPI.GetStripeConfigSchema(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.GetStripeConfigSchema``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetStripeConfigSchema`: map[string]interface{}
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.GetStripeConfigSchema`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetStripeConfigSchemaRequest struct via the builder pattern
+
+
+### Return type
+
+**map[string]interface{}**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## PullStripeConfig
+
+> PullStripeConfig200Response PullStripeConfig(ctx).Execute()
+
+Pull config from Stripe
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.StripeAPI.PullStripeConfig(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.PullStripeConfig``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `PullStripeConfig`: PullStripeConfig200Response
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.PullStripeConfig`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiPullStripeConfigRequest struct via the builder pattern
+
+
+### Return type
+
+[**PullStripeConfig200Response**](PullStripeConfig200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateStripeConfig
+
+> HandlersSuccessResponse UpdateStripeConfig(ctx).Config(config).Execute()
 
 Update Stripe config
 
@@ -291,13 +413,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigPost(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.StripeAPI.UpdateStripeConfig(context.Background()).Config(config).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.UpdateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StripeConfigPost`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigPost`: %v\n", resp)
+	// response from `UpdateStripeConfig`: HandlersSuccessResponse
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.UpdateStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -307,7 +429,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStripeConfigPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiUpdateStripeConfigRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -332,70 +454,9 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## StripeConfigPullGet
+## ValidateStripeConfig
 
-> StripeConfigPullGet200Response StripeConfigPullGet(ctx).Execute()
-
-Pull config from Stripe
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigPullGet(context.Background()).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigPullGet``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `StripeConfigPullGet`: StripeConfigPullGet200Response
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigPullGet`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiStripeConfigPullGetRequest struct via the builder pattern
-
-
-### Return type
-
-[**StripeConfigPullGet200Response**](StripeConfigPullGet200Response.md)
-
-### Authorization
-
-[BearerAuth](../README.md#BearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## StripeConfigValidatePost
-
-> HandlersSuccessResponse StripeConfigValidatePost(ctx).Config(config).Execute()
+> HandlersSuccessResponse ValidateStripeConfig(ctx).Config(config).Execute()
 
 Validate Stripe config
 
@@ -418,13 +479,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeConfigValidatePost(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.StripeAPI.ValidateStripeConfig(context.Background()).Config(config).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeConfigValidatePost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.ValidateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `StripeConfigValidatePost`: HandlersSuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeConfigValidatePost`: %v\n", resp)
+	// response from `ValidateStripeConfig`: HandlersSuccessResponse
+	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.ValidateStripeConfig`: %v\n", resp)
 }
 ```
 
@@ -434,7 +495,7 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiStripeConfigValidatePostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiValidateStripeConfigRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -452,67 +513,6 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## StripeSchemaGet
-
-> map[string]interface{} StripeSchemaGet(ctx).Execute()
-
-Get Stripe config schema
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
-)
-
-func main() {
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.StripeAPI.StripeSchemaGet(context.Background()).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `StripeAPI.StripeSchemaGet``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `StripeSchemaGet`: map[string]interface{}
-	fmt.Fprintf(os.Stdout, "Response from `StripeAPI.StripeSchemaGet`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiStripeSchemaGetRequest struct via the builder pattern
-
-
-### Return type
-
-**map[string]interface{}**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

@@ -15,45 +15,45 @@ import (
 	"encoding/json"
 )
 
-// checks if the ListTenantSubscriptions200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ListTenantSubscriptions200Response{}
+// checks if the PullStripeConfig200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PullStripeConfig200Response{}
 
-// ListTenantSubscriptions200Response struct for ListTenantSubscriptions200Response
-type ListTenantSubscriptions200Response struct {
-	Data []ModelsSubscriptionResponse `json:"data,omitempty"`
+// PullStripeConfig200Response struct for PullStripeConfig200Response
+type PullStripeConfig200Response struct {
+	Data *ModelsStripeConfiguration `json:"data,omitempty"`
 	// HTTP status code
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewListTenantSubscriptions200Response instantiates a new ListTenantSubscriptions200Response object
+// NewPullStripeConfig200Response instantiates a new PullStripeConfig200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListTenantSubscriptions200Response() *ListTenantSubscriptions200Response {
-	this := ListTenantSubscriptions200Response{}
+func NewPullStripeConfig200Response() *PullStripeConfig200Response {
+	this := PullStripeConfig200Response{}
 	return &this
 }
 
-// NewListTenantSubscriptions200ResponseWithDefaults instantiates a new ListTenantSubscriptions200Response object
+// NewPullStripeConfig200ResponseWithDefaults instantiates a new PullStripeConfig200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListTenantSubscriptions200ResponseWithDefaults() *ListTenantSubscriptions200Response {
-	this := ListTenantSubscriptions200Response{}
+func NewPullStripeConfig200ResponseWithDefaults() *PullStripeConfig200Response {
+	this := PullStripeConfig200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ListTenantSubscriptions200Response) GetData() []ModelsSubscriptionResponse {
+func (o *PullStripeConfig200Response) GetData() ModelsStripeConfiguration {
 	if o == nil || IsNil(o.Data) {
-		var ret []ModelsSubscriptionResponse
+		var ret ModelsStripeConfiguration
 		return ret
 	}
-	return o.Data
+	return *o.Data
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListTenantSubscriptions200Response) GetDataOk() ([]ModelsSubscriptionResponse, bool) {
+func (o *PullStripeConfig200Response) GetDataOk() (*ModelsStripeConfiguration, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *ListTenantSubscriptions200Response) GetDataOk() ([]ModelsSubscriptionRe
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *ListTenantSubscriptions200Response) HasData() bool {
+func (o *PullStripeConfig200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -69,13 +69,13 @@ func (o *ListTenantSubscriptions200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given []ModelsSubscriptionResponse and assigns it to the Data field.
-func (o *ListTenantSubscriptions200Response) SetData(v []ModelsSubscriptionResponse) {
-	o.Data = v
+// SetData gets a reference to the given ModelsStripeConfiguration and assigns it to the Data field.
+func (o *PullStripeConfig200Response) SetData(v ModelsStripeConfiguration) {
+	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ListTenantSubscriptions200Response) GetStatus() int32 {
+func (o *PullStripeConfig200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -85,7 +85,7 @@ func (o *ListTenantSubscriptions200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListTenantSubscriptions200Response) GetStatusOk() (*int32, bool) {
+func (o *PullStripeConfig200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -93,7 +93,7 @@ func (o *ListTenantSubscriptions200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *ListTenantSubscriptions200Response) HasStatus() bool {
+func (o *PullStripeConfig200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -102,11 +102,11 @@ func (o *ListTenantSubscriptions200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ListTenantSubscriptions200Response) SetStatus(v int32) {
+func (o *PullStripeConfig200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o ListTenantSubscriptions200Response) MarshalJSON() ([]byte, error) {
+func (o PullStripeConfig200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -114,7 +114,7 @@ func (o ListTenantSubscriptions200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ListTenantSubscriptions200Response) ToMap() (map[string]interface{}, error) {
+func (o PullStripeConfig200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -125,38 +125,38 @@ func (o ListTenantSubscriptions200Response) ToMap() (map[string]interface{}, err
 	return toSerialize, nil
 }
 
-type NullableListTenantSubscriptions200Response struct {
-	value *ListTenantSubscriptions200Response
+type NullablePullStripeConfig200Response struct {
+	value *PullStripeConfig200Response
 	isSet bool
 }
 
-func (v NullableListTenantSubscriptions200Response) Get() *ListTenantSubscriptions200Response {
+func (v NullablePullStripeConfig200Response) Get() *PullStripeConfig200Response {
 	return v.value
 }
 
-func (v *NullableListTenantSubscriptions200Response) Set(val *ListTenantSubscriptions200Response) {
+func (v *NullablePullStripeConfig200Response) Set(val *PullStripeConfig200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListTenantSubscriptions200Response) IsSet() bool {
+func (v NullablePullStripeConfig200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListTenantSubscriptions200Response) Unset() {
+func (v *NullablePullStripeConfig200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListTenantSubscriptions200Response(val *ListTenantSubscriptions200Response) *NullableListTenantSubscriptions200Response {
-	return &NullableListTenantSubscriptions200Response{value: val, isSet: true}
+func NewNullablePullStripeConfig200Response(val *PullStripeConfig200Response) *NullablePullStripeConfig200Response {
+	return &NullablePullStripeConfig200Response{value: val, isSet: true}
 }
 
-func (v NullableListTenantSubscriptions200Response) MarshalJSON() ([]byte, error) {
+func (v NullablePullStripeConfig200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListTenantSubscriptions200Response) UnmarshalJSON(src []byte) error {
+func (v *NullablePullStripeConfig200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

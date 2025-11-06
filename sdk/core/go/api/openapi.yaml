@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.0
+  version: 0.9.1
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -596,12 +596,13 @@ paths:
         - Display pricing to users
         - Build subscription selection UI
         - Public pricing pages
+      operationId: getStripeConfig
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_stripe_config_get_200_response"
+                $ref: "#/components/schemas/getStripeConfig_200_response"
           description: Stripe configuration retrieved successfully
         "500":
           content:
@@ -623,6 +624,7 @@ paths:
         - Deploy new pricing
         - Update product definitions
         - Modify metered billing settings
+      operationId: updateStripeConfig
       requestBody:
         content:
           application/json:
@@ -667,12 +669,13 @@ paths:
         - Admin configuration management
         - Enterprise pricing display
         - Configuration auditing
+      operationId: getStripeConfigAdmin
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_stripe_config_get_200_response"
+                $ref: "#/components/schemas/getStripeConfig_200_response"
           description: Full Stripe configuration retrieved successfully
         "401":
           content:
@@ -706,12 +709,13 @@ paths:
         - Clean slate for new configuration
         - Remove all test data
         - Reset Stripe account
+      operationId: archiveAllStripeConfig
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_stripe_config_archive_all_post_200_response"
+                $ref: "#/components/schemas/archiveAllStripeConfig_200_response"
           description: Archive operation completed
         "401":
           content:
@@ -741,6 +745,7 @@ paths:
         ## Query Parameters
         - limit: Items per page (default: 10, max: 100)
         - offset: Number of items to skip (default: 0)
+      operationId: getStripeConfigHistory
       parameters:
       - description: Items per page
         in: query
@@ -759,7 +764,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_stripe_config_history_get_200_response"
+                $ref: "#/components/schemas/getStripeConfigHistory_200_response"
           description: Configuration history retrieved successfully
         "401":
           content:
@@ -790,12 +795,13 @@ paths:
         - Sync remote Stripe config to local
         - Import existing Stripe setup
         - Configuration backup
+      operationId: pullStripeConfig
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/_stripe_config_pull_get_200_response"
+                $ref: "#/components/schemas/pullStripeConfig_200_response"
           description: Stripe configuration pulled successfully
         "401":
           content:
@@ -826,6 +832,7 @@ paths:
         - Pre-deployment validation
         - Configuration testing
         - Schema compliance checking
+      operationId: validateStripeConfig
       requestBody:
         content:
           application/json:
@@ -867,6 +874,7 @@ paths:
         - Validate configuration before upload
         - IDE autocomplete support
         - Generate configuration templates
+      operationId: getStripeConfigSchema
       responses:
         "200":
           content:
@@ -2914,6 +2922,10 @@ components:
           description: JWT token with tenant context
           example: eyJhbGciOiJIUzI1NiIs...
           type: string
+      required:
+      - message
+      - tenant
+      - token
       type: object
     tenants.CreateTenantUserInviteRequest:
       properties:
@@ -3629,7 +3641,7 @@ components:
         status:
           type: integer
       type: object
-    _stripe_config_get_200_response:
+    getStripeConfig_200_response:
       allOf:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
       - properties:
@@ -3644,7 +3656,7 @@ components:
           config: "{}"
           version: 1.0.0
         status: 200
-    _stripe_config_archive_all_post_200_response:
+    archiveAllStripeConfig_200_response:
       allOf:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
       - properties:
@@ -3664,7 +3676,7 @@ components:
           - archive_errors
           message: Successfully archived all Stripe resources and cleared local config
         status: 200
-    _stripe_config_history_get_200_response:
+    getStripeConfigHistory_200_response:
       allOf:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
       - properties:
@@ -3688,7 +3700,7 @@ components:
             version: version
           pagination: "{}"
         status: 200
-    _stripe_config_pull_get_200_response:
+    pullStripeConfig_200_response:
       allOf:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
       - properties:
