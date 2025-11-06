@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**AllowUserInvites** | Pointer to **bool** |  | [optional] 
-**MaxMembers** | Pointer to **int32** |  | [optional] 
-**TenantId** | Pointer to **string** |  | [optional] 
+**AllowUserInvites** | **bool** |  | 
+**MaxMembers** | **int32** |  | 
+**TenantId** | **string** |  | 
 
 ## Methods
 
 ### NewModelsTenantSettings
 
-`func NewModelsTenantSettings() *ModelsTenantSettings`
+`func NewModelsTenantSettings(allowUserInvites bool, maxMembers int32, tenantId string, ) *ModelsTenantSettings`
 
 NewModelsTenantSettings instantiates a new ModelsTenantSettings object
 This constructor will assign default values to properties that have it defined,
@@ -46,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetAllowUserInvites sets AllowUserInvites field to given value.
 
-### HasAllowUserInvites
-
-`func (o *ModelsTenantSettings) HasAllowUserInvites() bool`
-
-HasAllowUserInvites returns a boolean if a field has been set.
 
 ### GetMaxMembers
 
@@ -71,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetMaxMembers sets MaxMembers field to given value.
 
-### HasMaxMembers
-
-`func (o *ModelsTenantSettings) HasMaxMembers() bool`
-
-HasMaxMembers returns a boolean if a field has been set.
 
 ### GetTenantId
 
@@ -96,11 +86,6 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-### HasTenantId
-
-`func (o *ModelsTenantSettings) HasTenantId() bool`
-
-HasTenantId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

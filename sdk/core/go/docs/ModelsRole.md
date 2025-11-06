@@ -4,19 +4,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**CreatedAt** | Pointer to **string** |  | [optional] 
-**Id** | Pointer to **string** |  | [optional] 
-**Permissions** | Pointer to **[]string** |  | [optional] 
-**RoleName** | Pointer to **string** |  | [optional] 
+**CreatedAt** | **string** |  | 
+**Id** | **string** |  | 
+**Permissions** | **[]string** |  | 
+**RoleName** | **string** |  | 
 **TenantId** | Pointer to **string** | NULL for system roles | [optional] 
-**UpdatedAt** | Pointer to **string** |  | [optional] 
-**UserIds** | Pointer to **[]string** |  | [optional] 
+**UpdatedAt** | **string** |  | 
+**UserIds** | **[]string** |  | 
 
 ## Methods
 
 ### NewModelsRole
 
-`func NewModelsRole() *ModelsRole`
+`func NewModelsRole(createdAt string, id string, permissions []string, roleName string, updatedAt string, userIds []string, ) *ModelsRole`
 
 NewModelsRole instantiates a new ModelsRole object
 This constructor will assign default values to properties that have it defined,
@@ -50,11 +50,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *ModelsRole) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetId
 
@@ -75,11 +70,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsRole) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetPermissions
 
@@ -100,11 +90,6 @@ and a boolean to check if the value has been set.
 
 SetPermissions sets Permissions field to given value.
 
-### HasPermissions
-
-`func (o *ModelsRole) HasPermissions() bool`
-
-HasPermissions returns a boolean if a field has been set.
 
 ### GetRoleName
 
@@ -125,11 +110,6 @@ and a boolean to check if the value has been set.
 
 SetRoleName sets RoleName field to given value.
 
-### HasRoleName
-
-`func (o *ModelsRole) HasRoleName() bool`
-
-HasRoleName returns a boolean if a field has been set.
 
 ### GetTenantId
 
@@ -175,11 +155,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *ModelsRole) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 ### GetUserIds
 
@@ -200,11 +175,6 @@ and a boolean to check if the value has been set.
 
 SetUserIds sets UserIds field to given value.
 
-### HasUserIds
-
-`func (o *ModelsRole) HasUserIds() bool`
-
-HasUserIds returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

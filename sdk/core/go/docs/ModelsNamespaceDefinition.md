@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
-**Namespace** | Pointer to **string** |  | [optional] 
-**Relations** | Pointer to **[]string** |  | [optional] 
-**UpdatedAt** | Pointer to **string** |  | [optional] 
+**Id** | **string** |  | 
+**Namespace** | **string** |  | 
+**Relations** | **[]string** |  | 
+**UpdatedAt** | **string** |  | 
 
 ## Methods
 
 ### NewModelsNamespaceDefinition
 
-`func NewModelsNamespaceDefinition() *ModelsNamespaceDefinition`
+`func NewModelsNamespaceDefinition(id string, namespace string, relations []string, updatedAt string, ) *ModelsNamespaceDefinition`
 
 NewModelsNamespaceDefinition instantiates a new ModelsNamespaceDefinition object
 This constructor will assign default values to properties that have it defined,
@@ -47,11 +47,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsNamespaceDefinition) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetNamespace
 
@@ -72,11 +67,6 @@ and a boolean to check if the value has been set.
 
 SetNamespace sets Namespace field to given value.
 
-### HasNamespace
-
-`func (o *ModelsNamespaceDefinition) HasNamespace() bool`
-
-HasNamespace returns a boolean if a field has been set.
 
 ### GetRelations
 
@@ -97,11 +87,6 @@ and a boolean to check if the value has been set.
 
 SetRelations sets Relations field to given value.
 
-### HasRelations
-
-`func (o *ModelsNamespaceDefinition) HasRelations() bool`
-
-HasRelations returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
@@ -122,11 +107,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *ModelsNamespaceDefinition) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

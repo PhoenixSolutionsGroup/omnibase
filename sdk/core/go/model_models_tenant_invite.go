@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.3
+API version: 0.9.4
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsTenantInvite type satisfies the MappedNullable interface at compile time
@@ -20,26 +22,36 @@ var _ MappedNullable = &ModelsTenantInvite{}
 
 // ModelsTenantInvite struct for ModelsTenantInvite
 type ModelsTenantInvite struct {
-	CreatedAt *string `json:"created_at,omitempty"`
-	Email *string `json:"email,omitempty"`
-	ExpiresAt *string `json:"expires_at,omitempty"`
-	Id *string `json:"id,omitempty"`
+	CreatedAt string `json:"created_at"`
+	Email string `json:"email"`
+	ExpiresAt string `json:"expires_at"`
+	Id string `json:"id"`
 	// References auth.identities.id
-	InviterId *string `json:"inviter_id,omitempty"`
-	Role *string `json:"role,omitempty"`
+	InviterId string `json:"inviter_id"`
+	Role string `json:"role"`
 	// Optional joined fields
 	Tenant *ModelsTenant `json:"tenant,omitempty"`
-	TenantId *string `json:"tenant_id,omitempty"`
-	Token *string `json:"token,omitempty"`
+	TenantId string `json:"tenant_id"`
+	Token string `json:"token"`
 	UsedAt *string `json:"used_at,omitempty"`
 }
+
+type _ModelsTenantInvite ModelsTenantInvite
 
 // NewModelsTenantInvite instantiates a new ModelsTenantInvite object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsTenantInvite() *ModelsTenantInvite {
+func NewModelsTenantInvite(createdAt string, email string, expiresAt string, id string, inviterId string, role string, tenantId string, token string) *ModelsTenantInvite {
 	this := ModelsTenantInvite{}
+	this.CreatedAt = createdAt
+	this.Email = email
+	this.ExpiresAt = expiresAt
+	this.Id = id
+	this.InviterId = inviterId
+	this.Role = role
+	this.TenantId = tenantId
+	this.Token = token
 	return &this
 }
 
@@ -51,196 +63,148 @@ func NewModelsTenantInviteWithDefaults() *ModelsTenantInvite {
 	return &this
 }
 
-// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+// GetCreatedAt returns the CreatedAt field value
 func (o *ModelsTenantInvite) GetCreatedAt() string {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.CreatedAt
+
+	return o.CreatedAt
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetCreatedAtOk() (*string, bool) {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.CreatedAt, true
+	return &o.CreatedAt, true
 }
 
-// HasCreatedAt returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasCreatedAt() bool {
-	if o != nil && !IsNil(o.CreatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreatedAt gets a reference to the given string and assigns it to the CreatedAt field.
+// SetCreatedAt sets field value
 func (o *ModelsTenantInvite) SetCreatedAt(v string) {
-	o.CreatedAt = &v
+	o.CreatedAt = v
 }
 
-// GetEmail returns the Email field value if set, zero value otherwise.
+// GetEmail returns the Email field value
 func (o *ModelsTenantInvite) GetEmail() string {
-	if o == nil || IsNil(o.Email) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Email
+
+	return o.Email
 }
 
-// GetEmailOk returns a tuple with the Email field value if set, nil otherwise
+// GetEmailOk returns a tuple with the Email field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetEmailOk() (*string, bool) {
-	if o == nil || IsNil(o.Email) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Email, true
+	return &o.Email, true
 }
 
-// HasEmail returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasEmail() bool {
-	if o != nil && !IsNil(o.Email) {
-		return true
-	}
-
-	return false
-}
-
-// SetEmail gets a reference to the given string and assigns it to the Email field.
+// SetEmail sets field value
 func (o *ModelsTenantInvite) SetEmail(v string) {
-	o.Email = &v
+	o.Email = v
 }
 
-// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
+// GetExpiresAt returns the ExpiresAt field value
 func (o *ModelsTenantInvite) GetExpiresAt() string {
-	if o == nil || IsNil(o.ExpiresAt) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ExpiresAt
+
+	return o.ExpiresAt
 }
 
-// GetExpiresAtOk returns a tuple with the ExpiresAt field value if set, nil otherwise
+// GetExpiresAtOk returns a tuple with the ExpiresAt field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetExpiresAtOk() (*string, bool) {
-	if o == nil || IsNil(o.ExpiresAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ExpiresAt, true
+	return &o.ExpiresAt, true
 }
 
-// HasExpiresAt returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasExpiresAt() bool {
-	if o != nil && !IsNil(o.ExpiresAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetExpiresAt gets a reference to the given string and assigns it to the ExpiresAt field.
+// SetExpiresAt sets field value
 func (o *ModelsTenantInvite) SetExpiresAt(v string) {
-	o.ExpiresAt = &v
+	o.ExpiresAt = v
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *ModelsTenantInvite) GetId() string {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *ModelsTenantInvite) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
-// GetInviterId returns the InviterId field value if set, zero value otherwise.
+// GetInviterId returns the InviterId field value
 func (o *ModelsTenantInvite) GetInviterId() string {
-	if o == nil || IsNil(o.InviterId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.InviterId
+
+	return o.InviterId
 }
 
-// GetInviterIdOk returns a tuple with the InviterId field value if set, nil otherwise
+// GetInviterIdOk returns a tuple with the InviterId field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetInviterIdOk() (*string, bool) {
-	if o == nil || IsNil(o.InviterId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.InviterId, true
+	return &o.InviterId, true
 }
 
-// HasInviterId returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasInviterId() bool {
-	if o != nil && !IsNil(o.InviterId) {
-		return true
-	}
-
-	return false
-}
-
-// SetInviterId gets a reference to the given string and assigns it to the InviterId field.
+// SetInviterId sets field value
 func (o *ModelsTenantInvite) SetInviterId(v string) {
-	o.InviterId = &v
+	o.InviterId = v
 }
 
-// GetRole returns the Role field value if set, zero value otherwise.
+// GetRole returns the Role field value
 func (o *ModelsTenantInvite) GetRole() string {
-	if o == nil || IsNil(o.Role) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Role
+
+	return o.Role
 }
 
-// GetRoleOk returns a tuple with the Role field value if set, nil otherwise
+// GetRoleOk returns a tuple with the Role field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetRoleOk() (*string, bool) {
-	if o == nil || IsNil(o.Role) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Role, true
+	return &o.Role, true
 }
 
-// HasRole returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasRole() bool {
-	if o != nil && !IsNil(o.Role) {
-		return true
-	}
-
-	return false
-}
-
-// SetRole gets a reference to the given string and assigns it to the Role field.
+// SetRole sets field value
 func (o *ModelsTenantInvite) SetRole(v string) {
-	o.Role = &v
+	o.Role = v
 }
 
 // GetTenant returns the Tenant field value if set, zero value otherwise.
@@ -275,68 +239,52 @@ func (o *ModelsTenantInvite) SetTenant(v ModelsTenant) {
 	o.Tenant = &v
 }
 
-// GetTenantId returns the TenantId field value if set, zero value otherwise.
+// GetTenantId returns the TenantId field value
 func (o *ModelsTenantInvite) GetTenantId() string {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.TenantId
+
+	return o.TenantId
 }
 
-// GetTenantIdOk returns a tuple with the TenantId field value if set, nil otherwise
+// GetTenantIdOk returns a tuple with the TenantId field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetTenantIdOk() (*string, bool) {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TenantId, true
+	return &o.TenantId, true
 }
 
-// HasTenantId returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasTenantId() bool {
-	if o != nil && !IsNil(o.TenantId) {
-		return true
-	}
-
-	return false
-}
-
-// SetTenantId gets a reference to the given string and assigns it to the TenantId field.
+// SetTenantId sets field value
 func (o *ModelsTenantInvite) SetTenantId(v string) {
-	o.TenantId = &v
+	o.TenantId = v
 }
 
-// GetToken returns the Token field value if set, zero value otherwise.
+// GetToken returns the Token field value
 func (o *ModelsTenantInvite) GetToken() string {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Token
+
+	return o.Token
 }
 
-// GetTokenOk returns a tuple with the Token field value if set, nil otherwise
+// GetTokenOk returns a tuple with the Token field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantInvite) GetTokenOk() (*string, bool) {
-	if o == nil || IsNil(o.Token) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Token, true
+	return &o.Token, true
 }
 
-// HasToken returns a boolean if a field has been set.
-func (o *ModelsTenantInvite) HasToken() bool {
-	if o != nil && !IsNil(o.Token) {
-		return true
-	}
-
-	return false
-}
-
-// SetToken gets a reference to the given string and assigns it to the Token field.
+// SetToken sets field value
 func (o *ModelsTenantInvite) SetToken(v string) {
-	o.Token = &v
+	o.Token = v
 }
 
 // GetUsedAt returns the UsedAt field value if set, zero value otherwise.
@@ -381,37 +329,65 @@ func (o ModelsTenantInvite) MarshalJSON() ([]byte, error) {
 
 func (o ModelsTenantInvite) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.CreatedAt) {
-		toSerialize["created_at"] = o.CreatedAt
-	}
-	if !IsNil(o.Email) {
-		toSerialize["email"] = o.Email
-	}
-	if !IsNil(o.ExpiresAt) {
-		toSerialize["expires_at"] = o.ExpiresAt
-	}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsNil(o.InviterId) {
-		toSerialize["inviter_id"] = o.InviterId
-	}
-	if !IsNil(o.Role) {
-		toSerialize["role"] = o.Role
-	}
+	toSerialize["created_at"] = o.CreatedAt
+	toSerialize["email"] = o.Email
+	toSerialize["expires_at"] = o.ExpiresAt
+	toSerialize["id"] = o.Id
+	toSerialize["inviter_id"] = o.InviterId
+	toSerialize["role"] = o.Role
 	if !IsNil(o.Tenant) {
 		toSerialize["tenant"] = o.Tenant
 	}
-	if !IsNil(o.TenantId) {
-		toSerialize["tenant_id"] = o.TenantId
-	}
-	if !IsNil(o.Token) {
-		toSerialize["token"] = o.Token
-	}
+	toSerialize["tenant_id"] = o.TenantId
+	toSerialize["token"] = o.Token
 	if !IsNil(o.UsedAt) {
 		toSerialize["used_at"] = o.UsedAt
 	}
 	return toSerialize, nil
+}
+
+func (o *ModelsTenantInvite) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"created_at",
+		"email",
+		"expires_at",
+		"id",
+		"inviter_id",
+		"role",
+		"tenant_id",
+		"token",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsTenantInvite := _ModelsTenantInvite{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsTenantInvite)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsTenantInvite(varModelsTenantInvite)
+
+	return err
 }
 
 type NullableModelsTenantInvite struct {

@@ -4,22 +4,22 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**CreatedAt** | Pointer to **string** |  | [optional] 
-**Email** | Pointer to **string** |  | [optional] 
-**ExpiresAt** | Pointer to **string** |  | [optional] 
-**Id** | Pointer to **string** |  | [optional] 
-**InviterId** | Pointer to **string** | References auth.identities.id | [optional] 
-**Role** | Pointer to **string** |  | [optional] 
+**CreatedAt** | **string** |  | 
+**Email** | **string** |  | 
+**ExpiresAt** | **string** |  | 
+**Id** | **string** |  | 
+**InviterId** | **string** | References auth.identities.id | 
+**Role** | **string** |  | 
 **Tenant** | Pointer to [**ModelsTenant**](ModelsTenant.md) | Optional joined fields | [optional] 
-**TenantId** | Pointer to **string** |  | [optional] 
-**Token** | Pointer to **string** |  | [optional] 
+**TenantId** | **string** |  | 
+**Token** | **string** |  | 
 **UsedAt** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewModelsTenantInvite
 
-`func NewModelsTenantInvite() *ModelsTenantInvite`
+`func NewModelsTenantInvite(createdAt string, email string, expiresAt string, id string, inviterId string, role string, tenantId string, token string, ) *ModelsTenantInvite`
 
 NewModelsTenantInvite instantiates a new ModelsTenantInvite object
 This constructor will assign default values to properties that have it defined,
@@ -53,11 +53,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *ModelsTenantInvite) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetEmail
 
@@ -78,11 +73,6 @@ and a boolean to check if the value has been set.
 
 SetEmail sets Email field to given value.
 
-### HasEmail
-
-`func (o *ModelsTenantInvite) HasEmail() bool`
-
-HasEmail returns a boolean if a field has been set.
 
 ### GetExpiresAt
 
@@ -103,11 +93,6 @@ and a boolean to check if the value has been set.
 
 SetExpiresAt sets ExpiresAt field to given value.
 
-### HasExpiresAt
-
-`func (o *ModelsTenantInvite) HasExpiresAt() bool`
-
-HasExpiresAt returns a boolean if a field has been set.
 
 ### GetId
 
@@ -128,11 +113,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsTenantInvite) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetInviterId
 
@@ -153,11 +133,6 @@ and a boolean to check if the value has been set.
 
 SetInviterId sets InviterId field to given value.
 
-### HasInviterId
-
-`func (o *ModelsTenantInvite) HasInviterId() bool`
-
-HasInviterId returns a boolean if a field has been set.
 
 ### GetRole
 
@@ -178,11 +153,6 @@ and a boolean to check if the value has been set.
 
 SetRole sets Role field to given value.
 
-### HasRole
-
-`func (o *ModelsTenantInvite) HasRole() bool`
-
-HasRole returns a boolean if a field has been set.
 
 ### GetTenant
 
@@ -228,11 +198,6 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
-### HasTenantId
-
-`func (o *ModelsTenantInvite) HasTenantId() bool`
-
-HasTenantId returns a boolean if a field has been set.
 
 ### GetToken
 
@@ -253,11 +218,6 @@ and a boolean to check if the value has been set.
 
 SetToken sets Token field to given value.
 
-### HasToken
-
-`func (o *ModelsTenantInvite) HasToken() bool`
-
-HasToken returns a boolean if a field has been set.
 
 ### GetUsedAt
 

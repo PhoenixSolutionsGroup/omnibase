@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.3
+API version: 0.9.4
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsTenantSettings type satisfies the MappedNullable interface at compile time
@@ -20,17 +22,22 @@ var _ MappedNullable = &ModelsTenantSettings{}
 
 // ModelsTenantSettings struct for ModelsTenantSettings
 type ModelsTenantSettings struct {
-	AllowUserInvites *bool `json:"allow_user_invites,omitempty"`
-	MaxMembers *int32 `json:"max_members,omitempty"`
-	TenantId *string `json:"tenant_id,omitempty"`
+	AllowUserInvites bool `json:"allow_user_invites"`
+	MaxMembers int32 `json:"max_members"`
+	TenantId string `json:"tenant_id"`
 }
+
+type _ModelsTenantSettings ModelsTenantSettings
 
 // NewModelsTenantSettings instantiates a new ModelsTenantSettings object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsTenantSettings() *ModelsTenantSettings {
+func NewModelsTenantSettings(allowUserInvites bool, maxMembers int32, tenantId string) *ModelsTenantSettings {
 	this := ModelsTenantSettings{}
+	this.AllowUserInvites = allowUserInvites
+	this.MaxMembers = maxMembers
+	this.TenantId = tenantId
 	return &this
 }
 
@@ -42,100 +49,76 @@ func NewModelsTenantSettingsWithDefaults() *ModelsTenantSettings {
 	return &this
 }
 
-// GetAllowUserInvites returns the AllowUserInvites field value if set, zero value otherwise.
+// GetAllowUserInvites returns the AllowUserInvites field value
 func (o *ModelsTenantSettings) GetAllowUserInvites() bool {
-	if o == nil || IsNil(o.AllowUserInvites) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.AllowUserInvites
+
+	return o.AllowUserInvites
 }
 
-// GetAllowUserInvitesOk returns a tuple with the AllowUserInvites field value if set, nil otherwise
+// GetAllowUserInvitesOk returns a tuple with the AllowUserInvites field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantSettings) GetAllowUserInvitesOk() (*bool, bool) {
-	if o == nil || IsNil(o.AllowUserInvites) {
+	if o == nil {
 		return nil, false
 	}
-	return o.AllowUserInvites, true
+	return &o.AllowUserInvites, true
 }
 
-// HasAllowUserInvites returns a boolean if a field has been set.
-func (o *ModelsTenantSettings) HasAllowUserInvites() bool {
-	if o != nil && !IsNil(o.AllowUserInvites) {
-		return true
-	}
-
-	return false
-}
-
-// SetAllowUserInvites gets a reference to the given bool and assigns it to the AllowUserInvites field.
+// SetAllowUserInvites sets field value
 func (o *ModelsTenantSettings) SetAllowUserInvites(v bool) {
-	o.AllowUserInvites = &v
+	o.AllowUserInvites = v
 }
 
-// GetMaxMembers returns the MaxMembers field value if set, zero value otherwise.
+// GetMaxMembers returns the MaxMembers field value
 func (o *ModelsTenantSettings) GetMaxMembers() int32 {
-	if o == nil || IsNil(o.MaxMembers) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.MaxMembers
+
+	return o.MaxMembers
 }
 
-// GetMaxMembersOk returns a tuple with the MaxMembers field value if set, nil otherwise
+// GetMaxMembersOk returns a tuple with the MaxMembers field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantSettings) GetMaxMembersOk() (*int32, bool) {
-	if o == nil || IsNil(o.MaxMembers) {
+	if o == nil {
 		return nil, false
 	}
-	return o.MaxMembers, true
+	return &o.MaxMembers, true
 }
 
-// HasMaxMembers returns a boolean if a field has been set.
-func (o *ModelsTenantSettings) HasMaxMembers() bool {
-	if o != nil && !IsNil(o.MaxMembers) {
-		return true
-	}
-
-	return false
-}
-
-// SetMaxMembers gets a reference to the given int32 and assigns it to the MaxMembers field.
+// SetMaxMembers sets field value
 func (o *ModelsTenantSettings) SetMaxMembers(v int32) {
-	o.MaxMembers = &v
+	o.MaxMembers = v
 }
 
-// GetTenantId returns the TenantId field value if set, zero value otherwise.
+// GetTenantId returns the TenantId field value
 func (o *ModelsTenantSettings) GetTenantId() string {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.TenantId
+
+	return o.TenantId
 }
 
-// GetTenantIdOk returns a tuple with the TenantId field value if set, nil otherwise
+// GetTenantIdOk returns a tuple with the TenantId field value
 // and a boolean to check if the value has been set.
 func (o *ModelsTenantSettings) GetTenantIdOk() (*string, bool) {
-	if o == nil || IsNil(o.TenantId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TenantId, true
+	return &o.TenantId, true
 }
 
-// HasTenantId returns a boolean if a field has been set.
-func (o *ModelsTenantSettings) HasTenantId() bool {
-	if o != nil && !IsNil(o.TenantId) {
-		return true
-	}
-
-	return false
-}
-
-// SetTenantId gets a reference to the given string and assigns it to the TenantId field.
+// SetTenantId sets field value
 func (o *ModelsTenantSettings) SetTenantId(v string) {
-	o.TenantId = &v
+	o.TenantId = v
 }
 
 func (o ModelsTenantSettings) MarshalJSON() ([]byte, error) {
@@ -148,16 +131,49 @@ func (o ModelsTenantSettings) MarshalJSON() ([]byte, error) {
 
 func (o ModelsTenantSettings) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.AllowUserInvites) {
-		toSerialize["allow_user_invites"] = o.AllowUserInvites
-	}
-	if !IsNil(o.MaxMembers) {
-		toSerialize["max_members"] = o.MaxMembers
-	}
-	if !IsNil(o.TenantId) {
-		toSerialize["tenant_id"] = o.TenantId
-	}
+	toSerialize["allow_user_invites"] = o.AllowUserInvites
+	toSerialize["max_members"] = o.MaxMembers
+	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
+}
+
+func (o *ModelsTenantSettings) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"allow_user_invites",
+		"max_members",
+		"tenant_id",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsTenantSettings := _ModelsTenantSettings{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsTenantSettings)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsTenantSettings(varModelsTenantSettings)
+
+	return err
 }
 
 type NullableModelsTenantSettings struct {

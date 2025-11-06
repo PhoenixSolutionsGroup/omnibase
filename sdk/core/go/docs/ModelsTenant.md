@@ -4,19 +4,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**CreatedAt** | Pointer to **string** |  | [optional] 
-**Id** | Pointer to **string** |  | [optional] 
-**Name** | Pointer to **string** |  | [optional] 
+**CreatedAt** | **string** |  | 
+**Id** | **string** |  | 
+**Name** | **string** |  | 
 **Settings** | Pointer to [**ModelsTenantSettings**](ModelsTenantSettings.md) | Optional joined fields | [optional] 
 **StripeCustomerId** | Pointer to **string** | Nullable initially | [optional] 
-**Type** | Pointer to **string** |  | [optional] 
-**UpdatedAt** | Pointer to **string** |  | [optional] 
+**Type** | **string** |  | 
+**UpdatedAt** | **string** |  | 
 
 ## Methods
 
 ### NewModelsTenant
 
-`func NewModelsTenant() *ModelsTenant`
+`func NewModelsTenant(createdAt string, id string, name string, type_ string, updatedAt string, ) *ModelsTenant`
 
 NewModelsTenant instantiates a new ModelsTenant object
 This constructor will assign default values to properties that have it defined,
@@ -50,11 +50,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *ModelsTenant) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetId
 
@@ -75,11 +70,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsTenant) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetName
 
@@ -100,11 +90,6 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
-### HasName
-
-`func (o *ModelsTenant) HasName() bool`
-
-HasName returns a boolean if a field has been set.
 
 ### GetSettings
 
@@ -175,11 +160,6 @@ and a boolean to check if the value has been set.
 
 SetType sets Type field to given value.
 
-### HasType
-
-`func (o *ModelsTenant) HasType() bool`
-
-HasType returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
@@ -200,11 +180,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *ModelsTenant) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

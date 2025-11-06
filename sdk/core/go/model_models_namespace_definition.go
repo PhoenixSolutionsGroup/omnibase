@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.3
+API version: 0.9.4
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsNamespaceDefinition type satisfies the MappedNullable interface at compile time
@@ -20,18 +22,24 @@ var _ MappedNullable = &ModelsNamespaceDefinition{}
 
 // ModelsNamespaceDefinition struct for ModelsNamespaceDefinition
 type ModelsNamespaceDefinition struct {
-	Id *string `json:"id,omitempty"`
-	Namespace *string `json:"namespace,omitempty"`
-	Relations []string `json:"relations,omitempty"`
-	UpdatedAt *string `json:"updated_at,omitempty"`
+	Id string `json:"id"`
+	Namespace string `json:"namespace"`
+	Relations []string `json:"relations"`
+	UpdatedAt string `json:"updated_at"`
 }
+
+type _ModelsNamespaceDefinition ModelsNamespaceDefinition
 
 // NewModelsNamespaceDefinition instantiates a new ModelsNamespaceDefinition object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsNamespaceDefinition() *ModelsNamespaceDefinition {
+func NewModelsNamespaceDefinition(id string, namespace string, relations []string, updatedAt string) *ModelsNamespaceDefinition {
 	this := ModelsNamespaceDefinition{}
+	this.Id = id
+	this.Namespace = namespace
+	this.Relations = relations
+	this.UpdatedAt = updatedAt
 	return &this
 }
 
@@ -43,132 +51,100 @@ func NewModelsNamespaceDefinitionWithDefaults() *ModelsNamespaceDefinition {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *ModelsNamespaceDefinition) GetId() string {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *ModelsNamespaceDefinition) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *ModelsNamespaceDefinition) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *ModelsNamespaceDefinition) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
-// GetNamespace returns the Namespace field value if set, zero value otherwise.
+// GetNamespace returns the Namespace field value
 func (o *ModelsNamespaceDefinition) GetNamespace() string {
-	if o == nil || IsNil(o.Namespace) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Namespace
+
+	return o.Namespace
 }
 
-// GetNamespaceOk returns a tuple with the Namespace field value if set, nil otherwise
+// GetNamespaceOk returns a tuple with the Namespace field value
 // and a boolean to check if the value has been set.
 func (o *ModelsNamespaceDefinition) GetNamespaceOk() (*string, bool) {
-	if o == nil || IsNil(o.Namespace) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Namespace, true
+	return &o.Namespace, true
 }
 
-// HasNamespace returns a boolean if a field has been set.
-func (o *ModelsNamespaceDefinition) HasNamespace() bool {
-	if o != nil && !IsNil(o.Namespace) {
-		return true
-	}
-
-	return false
-}
-
-// SetNamespace gets a reference to the given string and assigns it to the Namespace field.
+// SetNamespace sets field value
 func (o *ModelsNamespaceDefinition) SetNamespace(v string) {
-	o.Namespace = &v
+	o.Namespace = v
 }
 
-// GetRelations returns the Relations field value if set, zero value otherwise.
+// GetRelations returns the Relations field value
 func (o *ModelsNamespaceDefinition) GetRelations() []string {
-	if o == nil || IsNil(o.Relations) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.Relations
 }
 
-// GetRelationsOk returns a tuple with the Relations field value if set, nil otherwise
+// GetRelationsOk returns a tuple with the Relations field value
 // and a boolean to check if the value has been set.
 func (o *ModelsNamespaceDefinition) GetRelationsOk() ([]string, bool) {
-	if o == nil || IsNil(o.Relations) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Relations, true
 }
 
-// HasRelations returns a boolean if a field has been set.
-func (o *ModelsNamespaceDefinition) HasRelations() bool {
-	if o != nil && !IsNil(o.Relations) {
-		return true
-	}
-
-	return false
-}
-
-// SetRelations gets a reference to the given []string and assigns it to the Relations field.
+// SetRelations sets field value
 func (o *ModelsNamespaceDefinition) SetRelations(v []string) {
 	o.Relations = v
 }
 
-// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+// GetUpdatedAt returns the UpdatedAt field value
 func (o *ModelsNamespaceDefinition) GetUpdatedAt() string {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.UpdatedAt
+
+	return o.UpdatedAt
 }
 
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
 // and a boolean to check if the value has been set.
 func (o *ModelsNamespaceDefinition) GetUpdatedAtOk() (*string, bool) {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.UpdatedAt, true
+	return &o.UpdatedAt, true
 }
 
-// HasUpdatedAt returns a boolean if a field has been set.
-func (o *ModelsNamespaceDefinition) HasUpdatedAt() bool {
-	if o != nil && !IsNil(o.UpdatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdatedAt gets a reference to the given string and assigns it to the UpdatedAt field.
+// SetUpdatedAt sets field value
 func (o *ModelsNamespaceDefinition) SetUpdatedAt(v string) {
-	o.UpdatedAt = &v
+	o.UpdatedAt = v
 }
 
 func (o ModelsNamespaceDefinition) MarshalJSON() ([]byte, error) {
@@ -181,19 +157,51 @@ func (o ModelsNamespaceDefinition) MarshalJSON() ([]byte, error) {
 
 func (o ModelsNamespaceDefinition) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsNil(o.Namespace) {
-		toSerialize["namespace"] = o.Namespace
-	}
-	if !IsNil(o.Relations) {
-		toSerialize["relations"] = o.Relations
-	}
-	if !IsNil(o.UpdatedAt) {
-		toSerialize["updated_at"] = o.UpdatedAt
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["namespace"] = o.Namespace
+	toSerialize["relations"] = o.Relations
+	toSerialize["updated_at"] = o.UpdatedAt
 	return toSerialize, nil
+}
+
+func (o *ModelsNamespaceDefinition) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"id",
+		"namespace",
+		"relations",
+		"updated_at",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsNamespaceDefinition := _ModelsNamespaceDefinition{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsNamespaceDefinition)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsNamespaceDefinition(varModelsNamespaceDefinition)
+
+	return err
 }
 
 type NullableModelsNamespaceDefinition struct {

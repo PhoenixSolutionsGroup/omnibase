@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.3
+API version: 0.9.4
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsRole type satisfies the MappedNullable interface at compile time
@@ -20,22 +22,30 @@ var _ MappedNullable = &ModelsRole{}
 
 // ModelsRole struct for ModelsRole
 type ModelsRole struct {
-	CreatedAt *string `json:"created_at,omitempty"`
-	Id *string `json:"id,omitempty"`
-	Permissions []string `json:"permissions,omitempty"`
-	RoleName *string `json:"role_name,omitempty"`
+	CreatedAt string `json:"created_at"`
+	Id string `json:"id"`
+	Permissions []string `json:"permissions"`
+	RoleName string `json:"role_name"`
 	// NULL for system roles
 	TenantId *string `json:"tenant_id,omitempty"`
-	UpdatedAt *string `json:"updated_at,omitempty"`
-	UserIds []string `json:"user_ids,omitempty"`
+	UpdatedAt string `json:"updated_at"`
+	UserIds []string `json:"user_ids"`
 }
+
+type _ModelsRole ModelsRole
 
 // NewModelsRole instantiates a new ModelsRole object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsRole() *ModelsRole {
+func NewModelsRole(createdAt string, id string, permissions []string, roleName string, updatedAt string, userIds []string) *ModelsRole {
 	this := ModelsRole{}
+	this.CreatedAt = createdAt
+	this.Id = id
+	this.Permissions = permissions
+	this.RoleName = roleName
+	this.UpdatedAt = updatedAt
+	this.UserIds = userIds
 	return &this
 }
 
@@ -47,132 +57,100 @@ func NewModelsRoleWithDefaults() *ModelsRole {
 	return &this
 }
 
-// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+// GetCreatedAt returns the CreatedAt field value
 func (o *ModelsRole) GetCreatedAt() string {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.CreatedAt
+
+	return o.CreatedAt
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetCreatedAtOk() (*string, bool) {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.CreatedAt, true
+	return &o.CreatedAt, true
 }
 
-// HasCreatedAt returns a boolean if a field has been set.
-func (o *ModelsRole) HasCreatedAt() bool {
-	if o != nil && !IsNil(o.CreatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreatedAt gets a reference to the given string and assigns it to the CreatedAt field.
+// SetCreatedAt sets field value
 func (o *ModelsRole) SetCreatedAt(v string) {
-	o.CreatedAt = &v
+	o.CreatedAt = v
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *ModelsRole) GetId() string {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *ModelsRole) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *ModelsRole) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
-// GetPermissions returns the Permissions field value if set, zero value otherwise.
+// GetPermissions returns the Permissions field value
 func (o *ModelsRole) GetPermissions() []string {
-	if o == nil || IsNil(o.Permissions) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.Permissions
 }
 
-// GetPermissionsOk returns a tuple with the Permissions field value if set, nil otherwise
+// GetPermissionsOk returns a tuple with the Permissions field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetPermissionsOk() ([]string, bool) {
-	if o == nil || IsNil(o.Permissions) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Permissions, true
 }
 
-// HasPermissions returns a boolean if a field has been set.
-func (o *ModelsRole) HasPermissions() bool {
-	if o != nil && !IsNil(o.Permissions) {
-		return true
-	}
-
-	return false
-}
-
-// SetPermissions gets a reference to the given []string and assigns it to the Permissions field.
+// SetPermissions sets field value
 func (o *ModelsRole) SetPermissions(v []string) {
 	o.Permissions = v
 }
 
-// GetRoleName returns the RoleName field value if set, zero value otherwise.
+// GetRoleName returns the RoleName field value
 func (o *ModelsRole) GetRoleName() string {
-	if o == nil || IsNil(o.RoleName) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.RoleName
+
+	return o.RoleName
 }
 
-// GetRoleNameOk returns a tuple with the RoleName field value if set, nil otherwise
+// GetRoleNameOk returns a tuple with the RoleName field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetRoleNameOk() (*string, bool) {
-	if o == nil || IsNil(o.RoleName) {
+	if o == nil {
 		return nil, false
 	}
-	return o.RoleName, true
+	return &o.RoleName, true
 }
 
-// HasRoleName returns a boolean if a field has been set.
-func (o *ModelsRole) HasRoleName() bool {
-	if o != nil && !IsNil(o.RoleName) {
-		return true
-	}
-
-	return false
-}
-
-// SetRoleName gets a reference to the given string and assigns it to the RoleName field.
+// SetRoleName sets field value
 func (o *ModelsRole) SetRoleName(v string) {
-	o.RoleName = &v
+	o.RoleName = v
 }
 
 // GetTenantId returns the TenantId field value if set, zero value otherwise.
@@ -207,66 +185,50 @@ func (o *ModelsRole) SetTenantId(v string) {
 	o.TenantId = &v
 }
 
-// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+// GetUpdatedAt returns the UpdatedAt field value
 func (o *ModelsRole) GetUpdatedAt() string {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.UpdatedAt
+
+	return o.UpdatedAt
 }
 
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetUpdatedAtOk() (*string, bool) {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.UpdatedAt, true
+	return &o.UpdatedAt, true
 }
 
-// HasUpdatedAt returns a boolean if a field has been set.
-func (o *ModelsRole) HasUpdatedAt() bool {
-	if o != nil && !IsNil(o.UpdatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdatedAt gets a reference to the given string and assigns it to the UpdatedAt field.
+// SetUpdatedAt sets field value
 func (o *ModelsRole) SetUpdatedAt(v string) {
-	o.UpdatedAt = &v
+	o.UpdatedAt = v
 }
 
-// GetUserIds returns the UserIds field value if set, zero value otherwise.
+// GetUserIds returns the UserIds field value
 func (o *ModelsRole) GetUserIds() []string {
-	if o == nil || IsNil(o.UserIds) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.UserIds
 }
 
-// GetUserIdsOk returns a tuple with the UserIds field value if set, nil otherwise
+// GetUserIdsOk returns a tuple with the UserIds field value
 // and a boolean to check if the value has been set.
 func (o *ModelsRole) GetUserIdsOk() ([]string, bool) {
-	if o == nil || IsNil(o.UserIds) {
+	if o == nil {
 		return nil, false
 	}
 	return o.UserIds, true
 }
 
-// HasUserIds returns a boolean if a field has been set.
-func (o *ModelsRole) HasUserIds() bool {
-	if o != nil && !IsNil(o.UserIds) {
-		return true
-	}
-
-	return false
-}
-
-// SetUserIds gets a reference to the given []string and assigns it to the UserIds field.
+// SetUserIds sets field value
 func (o *ModelsRole) SetUserIds(v []string) {
 	o.UserIds = v
 }
@@ -281,28 +243,58 @@ func (o ModelsRole) MarshalJSON() ([]byte, error) {
 
 func (o ModelsRole) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.CreatedAt) {
-		toSerialize["created_at"] = o.CreatedAt
-	}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsNil(o.Permissions) {
-		toSerialize["permissions"] = o.Permissions
-	}
-	if !IsNil(o.RoleName) {
-		toSerialize["role_name"] = o.RoleName
-	}
+	toSerialize["created_at"] = o.CreatedAt
+	toSerialize["id"] = o.Id
+	toSerialize["permissions"] = o.Permissions
+	toSerialize["role_name"] = o.RoleName
 	if !IsNil(o.TenantId) {
 		toSerialize["tenant_id"] = o.TenantId
 	}
-	if !IsNil(o.UpdatedAt) {
-		toSerialize["updated_at"] = o.UpdatedAt
-	}
-	if !IsNil(o.UserIds) {
-		toSerialize["user_ids"] = o.UserIds
-	}
+	toSerialize["updated_at"] = o.UpdatedAt
+	toSerialize["user_ids"] = o.UserIds
 	return toSerialize, nil
+}
+
+func (o *ModelsRole) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"created_at",
+		"id",
+		"permissions",
+		"role_name",
+		"updated_at",
+		"user_ids",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsRole := _ModelsRole{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsRole)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsRole(varModelsRole)
+
+	return err
 }
 
 type NullableModelsRole struct {

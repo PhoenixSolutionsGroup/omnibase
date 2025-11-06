@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.3
+  version: 0.9.4
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -2075,6 +2075,11 @@ components:
           type: array
         updated_at:
           type: string
+      required:
+      - id
+      - namespace
+      - relations
+      - updated_at
       type: object
     models.Price:
       example:
@@ -2465,6 +2470,13 @@ components:
           items:
             type: string
           type: array
+      required:
+      - created_at
+      - id
+      - permissions
+      - role_name
+      - updated_at
+      - user_ids
       type: object
     models.StripeConfigData:
       additionalProperties: true
@@ -2738,6 +2750,12 @@ components:
           type: string
         updated_at:
           type: string
+      required:
+      - created_at
+      - id
+      - name
+      - type
+      - updated_at
       type: object
     models.TenantInvite:
       properties:
@@ -2765,6 +2783,15 @@ components:
           type: string
         used_at:
           type: string
+      required:
+      - created_at
+      - email
+      - expires_at
+      - id
+      - inviter_id
+      - role
+      - tenant_id
+      - token
       type: object
     models.TenantSettings:
       properties:
@@ -2774,6 +2801,10 @@ components:
           type: integer
         tenant_id:
           type: string
+      required:
+      - allow_user_invites
+      - max_members
+      - tenant_id
       type: object
     models.Tier:
       example:
