@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.12
+  version: 0.9.13
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -383,29 +383,105 @@ paths:
       - V1 Payments
       x-codegen-request-body-name: request
   /api/v1/payments/subscription:
-    post:
+    delete:
       description: |-
-        Creates a Stripe subscription for a customer. Provide either tenant_id (to lookup customer from database) OR stripe_customer_id (to use directly).
+        Cancels a Stripe subscription immediately for the authenticated tenant based on the plan ID.
 
         ## Authentication
-        Requires valid API authentication.
+        Requires JWT token with tenant context.
 
-        ## Customer Identification
-        - If stripe_customer_id is provided, it will be used directly
-        - If tenant_id is provided, the tenant's stripe_customer_id will be looked up from auth.tenants table
-        - At least one of tenant_id or stripe_customer_id must be provided
+        ## Request Parameters
+        - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") to identify which subscription to cancel
+        - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
+
+        ## Process Flow
+        1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
+        2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
+        3. Finds the active subscription matching the price_id for the customer
+        4. Cancels the subscription immediately in Stripe
+        5. Returns the cancellation confirmation
+
+        ## Notes
+        - The subscription is canceled immediately, not at the end of the billing period
+        - If no matching subscription is found, returns a 404 error
+        - Only active, trialing, or past_due subscriptions can be canceled
 
         ## Use Cases
-        - Subscribe tenant to metered pricing plans
-        - Upgrade/downgrade tenant plans
+        - Remove specific service subscriptions from tenant
+        - Downgrade by removing premium features
+        - Stop billing for unused resources
+      operationId: removeSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.RemoveSubscriptionRequest"
+        description: Subscription removal parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/removeSubscription_200_response"
+          description: Subscription canceled successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request payload or tenant missing Stripe customer ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: No matching subscription found for the plan
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to cancel subscription or map plan_id
+      security:
+      - BearerAuth: []
+      summary: Remove subscription
+      tags:
+      - V1 Tenants
+      x-codegen-request-body-name: request
+    post:
+      description: |-
+        Creates a Stripe subscription for the authenticated tenant using the provided plan ID.
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Request Parameters
+        - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") that maps to a Stripe price
+        - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
+
+        ## Process Flow
+        1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
+        2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
+        3. Creates the subscription in Stripe with the specified price
+        4. Returns the subscription ID and status
+
+        ## Use Cases
+        - Subscribe tenant to metered pricing plans (compute, storage, workers)
         - Enable usage-based billing for resources
-        - Direct subscription creation with Stripe customer ID
+        - Add additional services to tenant's billing
       operationId: createSubscription
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/v1.CreateSubscriptionRequest"
+              $ref: "#/components/schemas/tenants.CreateSubscriptionRequest"
         description: Subscription creation parameters
         required: true
       responses:
@@ -420,17 +496,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.BadRequestResponse"
-          description: "Invalid request payload, missing both tenant_id and stripe_customer_id,\
-            \ or tenant missing stripe_customer_id"
+          description: Invalid request payload or tenant missing Stripe customer ID
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
         "500":
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
-          description: Failed to create subscription
+          description: Failed to create subscription or map plan_id
+      security:
+      - BearerAuth: []
       summary: Create subscription
       tags:
-      - V1 Payments
+      - V1 Tenants
       x-codegen-request-body-name: request
   /api/v1/payments/usage:
     post:
@@ -3930,6 +4013,34 @@ components:
       - permissions
       - role_name
       type: object
+    tenants.CreateSubscriptionRequest:
+      properties:
+        plan_id:
+          description: The plan ID from your Stripe configuration (config item ID)
+          example: neon_compute_starter
+          type: string
+        stripe_customer_id:
+          description: Optional Stripe customer ID to use directly (provide either
+            tenant_id OR stripe_customer_id)
+          example: cus_1234567890
+          type: string
+      required:
+      - plan_id
+      type: object
+    tenants.CreateSubscriptionResponse:
+      example:
+        subscription_id: sub_1234567890
+        status: active
+      properties:
+        status:
+          description: "Subscription status (active, trialing, etc.)"
+          example: active
+          type: string
+        subscription_id:
+          description: Stripe Subscription ID
+          example: sub_1234567890
+          type: string
+      type: object
     tenants.CreateTenantRequest:
       properties:
         billing_email:
@@ -4074,6 +4185,39 @@ components:
           type: array
       required:
       - definitions
+      type: object
+    tenants.RemoveSubscriptionRequest:
+      properties:
+        plan_id:
+          description: The plan ID from your Stripe configuration (config item ID)
+          example: neon_compute_starter
+          type: string
+        stripe_customer_id:
+          description: Optional Stripe customer ID to use directly (provide either
+            tenant_id OR stripe_customer_id)
+          example: cus_1234567890
+          type: string
+      required:
+      - plan_id
+      type: object
+    tenants.RemoveSubscriptionResponse:
+      example:
+        subscription_id: sub_1234567890
+        message: Subscription canceled successfully
+        status: canceled
+      properties:
+        message:
+          description: Message confirming the cancellation
+          example: Subscription canceled successfully
+          type: string
+        status:
+          description: Subscription status after cancellation
+          example: canceled
+          type: string
+        subscription_id:
+          description: Stripe Subscription ID that was canceled
+          example: sub_1234567890
+          type: string
       type: object
     tenants.RolesListResponse:
       example:
@@ -4506,39 +4650,6 @@ components:
       required:
       - message
       - relationship
-      type: object
-    v1.CreateSubscriptionRequest:
-      properties:
-        plan_id:
-          description: The plan ID from your Stripe configuration (config item ID)
-          example: neon_compute_starter
-          type: string
-        stripe_customer_id:
-          description: Optional Stripe customer ID to use directly (provide either
-            tenant_id OR stripe_customer_id)
-          example: cus_1234567890
-          type: string
-        tenant_id:
-          description: Optional tenant ID to lookup Stripe customer ID (provide either
-            tenant_id OR stripe_customer_id)
-          example: tenant_123
-          type: string
-      required:
-      - plan_id
-      type: object
-    v1.CreateSubscriptionResponse:
-      example:
-        subscription_id: sub_1234567890
-        status: active
-      properties:
-        status:
-          description: "Subscription status (active, trialing, etc.)"
-          example: active
-          type: string
-        subscription_id:
-          description: Stripe Subscription ID
-          example: sub_1234567890
-          type: string
       type: object
     v1.MigrationErrorResponse:
       example:
@@ -4977,12 +5088,25 @@ components:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
       - properties:
           data:
-            $ref: "#/components/schemas/v1.CreateSubscriptionResponse"
+            $ref: "#/components/schemas/tenants.CreateSubscriptionResponse"
         type: object
       example:
         data:
           subscription_id: sub_1234567890
           status: active
+        status: 200
+    removeSubscription_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.RemoveSubscriptionResponse"
+        type: object
+      example:
+        data:
+          subscription_id: sub_1234567890
+          message: Subscription canceled successfully
+          status: canceled
         status: 200
     checkPermission_200_response:
       allOf:

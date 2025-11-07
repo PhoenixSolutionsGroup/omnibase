@@ -93,12 +93,15 @@ docs/ModelsUploadResponse.md
 docs/ModelsUserTenantListItem.md
 docs/ModelsWhoAmIResponse.md
 docs/PullStripeConfig200Response.md
+docs/RemoveSubscription200Response.md
 docs/SwitchActiveTenant200Response.md
 docs/TenantsAcceptInviteRequest.md
 docs/TenantsAcceptInviteResponse.md
 docs/TenantsAssignRoleRequest.md
 docs/TenantsAssignRoleResponse.md
 docs/TenantsCreateRoleRequest.md
+docs/TenantsCreateSubscriptionRequest.md
+docs/TenantsCreateSubscriptionResponse.md
 docs/TenantsCreateTenantRequest.md
 docs/TenantsCreateTenantResponse.md
 docs/TenantsCreateTenantUserInviteRequest.md
@@ -108,6 +111,8 @@ docs/TenantsDeleteTenantResponse.md
 docs/TenantsDeleteTenantUserRequest.md
 docs/TenantsJWTTokenResponse.md
 docs/TenantsNamespaceDefinitionsResponse.md
+docs/TenantsRemoveSubscriptionRequest.md
+docs/TenantsRemoveSubscriptionResponse.md
 docs/TenantsRolesListResponse.md
 docs/TenantsSwitchTenantRequest.md
 docs/TenantsSwitchTenantResponse.md
@@ -129,8 +134,6 @@ docs/V1CreatePortalRequest.md
 docs/V1CreatePortalResponse.md
 docs/V1CreateRelationshipRequest.md
 docs/V1CreateRelationshipResponse.md
-docs/V1CreateSubscriptionRequest.md
-docs/V1CreateSubscriptionResponse.md
 docs/V1DatabaseAPI.md
 docs/V1MigrationErrorResponse.md
 docs/V1MigrationSuccessResponse.md
@@ -229,12 +232,15 @@ model_models_upload_response.go
 model_models_user_tenant_list_item.go
 model_models_who_am_i_response.go
 model_pull_stripe_config_200_response.go
+model_remove_subscription_200_response.go
 model_switch_active_tenant_200_response.go
 model_tenants_accept_invite_request.go
 model_tenants_accept_invite_response.go
 model_tenants_assign_role_request.go
 model_tenants_assign_role_response.go
 model_tenants_create_role_request.go
+model_tenants_create_subscription_request.go
+model_tenants_create_subscription_response.go
 model_tenants_create_tenant_request.go
 model_tenants_create_tenant_response.go
 model_tenants_create_tenant_user_invite_request.go
@@ -244,6 +250,8 @@ model_tenants_delete_tenant_response.go
 model_tenants_delete_tenant_user_request.go
 model_tenants_jwt_token_response.go
 model_tenants_namespace_definitions_response.go
+model_tenants_remove_subscription_request.go
+model_tenants_remove_subscription_response.go
 model_tenants_roles_list_response.go
 model_tenants_switch_tenant_request.go
 model_tenants_switch_tenant_response.go
@@ -264,8 +272,6 @@ model_v1_create_portal_request.go
 model_v1_create_portal_response.go
 model_v1_create_relationship_request.go
 model_v1_create_relationship_response.go
-model_v1_create_subscription_request.go
-model_v1_create_subscription_response.go
 model_v1_migration_error_response.go
 model_v1_migration_success_response.go
 model_v1_namespace_deployment_response.go

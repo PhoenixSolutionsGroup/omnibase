@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.12
+API version: 0.9.13
 Contact: support@omnibase.dev
 */
 
@@ -20,7 +20,7 @@ var _ MappedNullable = &CreateSubscription200Response{}
 
 // CreateSubscription200Response struct for CreateSubscription200Response
 type CreateSubscription200Response struct {
-	Data *V1CreateSubscriptionResponse `json:"data,omitempty"`
+	Data *TenantsCreateSubscriptionResponse `json:"data,omitempty"`
 	// HTTP status code
 	Status *int32 `json:"status,omitempty"`
 }
@@ -43,9 +43,9 @@ func NewCreateSubscription200ResponseWithDefaults() *CreateSubscription200Respon
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateSubscription200Response) GetData() V1CreateSubscriptionResponse {
+func (o *CreateSubscription200Response) GetData() TenantsCreateSubscriptionResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret V1CreateSubscriptionResponse
+		var ret TenantsCreateSubscriptionResponse
 		return ret
 	}
 	return *o.Data
@@ -53,7 +53,7 @@ func (o *CreateSubscription200Response) GetData() V1CreateSubscriptionResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateSubscription200Response) GetDataOk() (*V1CreateSubscriptionResponse, bool) {
+func (o *CreateSubscription200Response) GetDataOk() (*TenantsCreateSubscriptionResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -69,8 +69,8 @@ func (o *CreateSubscription200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given V1CreateSubscriptionResponse and assigns it to the Data field.
-func (o *CreateSubscription200Response) SetData(v V1CreateSubscriptionResponse) {
+// SetData gets a reference to the given TenantsCreateSubscriptionResponse and assigns it to the Data field.
+func (o *CreateSubscription200Response) SetData(v TenantsCreateSubscriptionResponse) {
 	o.Data = &v
 }
 

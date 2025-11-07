@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**V1CreateSubscriptionResponse**](V1CreateSubscriptionResponse.md) |  | [optional] 
+**Data** | Pointer to [**TenantsCreateSubscriptionResponse**](TenantsCreateSubscriptionResponse.md) |  | [optional] 
 **Status** | Pointer to **int32** | HTTP status code | [optional] 
 
 ## Methods
@@ -28,20 +28,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *CreateSubscription200Response) GetData() V1CreateSubscriptionResponse`
+`func (o *CreateSubscription200Response) GetData() TenantsCreateSubscriptionResponse`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *CreateSubscription200Response) GetDataOk() (*V1CreateSubscriptionResponse, bool)`
+`func (o *CreateSubscription200Response) GetDataOk() (*TenantsCreateSubscriptionResponse, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *CreateSubscription200Response) SetData(v V1CreateSubscriptionResponse)`
+`func (o *CreateSubscription200Response) SetData(v TenantsCreateSubscriptionResponse)`
 
 SetData sets Data field to given value.
 

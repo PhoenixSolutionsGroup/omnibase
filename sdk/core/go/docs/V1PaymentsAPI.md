@@ -6,7 +6,6 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create checkout session
 [**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create customer portal session
-[**CreateSubscription**](V1PaymentsAPI.md#CreateSubscription) | **Post** /api/v1/payments/subscription | Create subscription
 [**RecordUsage**](V1PaymentsAPI.md#RecordUsage) | **Post** /api/v1/payments/usage | Record metered usage
 
 
@@ -132,72 +131,6 @@ Name | Type | Description  | Notes
 ### Authorization
 
 [BearerAuth](../README.md#BearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## CreateSubscription
-
-> CreateSubscription200Response CreateSubscription(ctx).Request(request).Execute()
-
-Create subscription
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-	request := *openapiclient.NewV1CreateSubscriptionRequest("neon_compute_starter") // V1CreateSubscriptionRequest | Subscription creation parameters
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.CreateSubscription(context.Background()).Request(request).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateSubscription``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `CreateSubscription`: CreateSubscription200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateSubscription`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiCreateSubscriptionRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **request** | [**V1CreateSubscriptionRequest**](V1CreateSubscriptionRequest.md) | Subscription creation parameters | 
-
-### Return type
-
-[**CreateSubscription200Response**](CreateSubscription200Response.md)
-
-### Authorization
-
-No authorization required
 
 ### HTTP request headers
 

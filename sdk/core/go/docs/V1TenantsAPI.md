@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**AssignRole**](V1TenantsAPI.md#AssignRole) | **Post** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
 [**CreateInvite**](V1TenantsAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites | Create tenant invite
 [**CreateRole**](V1TenantsAPI.md#CreateRole) | **Post** /api/v1/tenants/roles | Create role
+[**CreateSubscription**](V1TenantsAPI.md#CreateSubscription) | **Post** /api/v1/payments/subscription | Create subscription
 [**CreateTenant**](V1TenantsAPI.md#CreateTenant) | **Post** /api/v1/tenants | Create tenant
 [**DeleteRole**](V1TenantsAPI.md#DeleteRole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete role
 [**DeleteTenant**](V1TenantsAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete tenant
@@ -17,6 +18,7 @@ Method | HTTP request | Description
 [**ListRoles**](V1TenantsAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles
 [**ListTenantSubscriptions**](V1TenantsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions | Get tenant subscriptions
 [**ListTenantUsers**](V1TenantsAPI.md#ListTenantUsers) | **Get** /api/v1/tenants/users | Get tenant users
+[**RemoveSubscription**](V1TenantsAPI.md#RemoveSubscription) | **Delete** /api/v1/payments/subscription | Remove subscription
 [**RemoveTenantUser**](V1TenantsAPI.md#RemoveTenantUser) | **Delete** /api/v1/tenants/users | Remove tenant user
 [**SwitchActiveTenant**](V1TenantsAPI.md#SwitchActiveTenant) | **Put** /api/v1/tenants/switch-active | Switch active tenant
 [**UpdateRole**](V1TenantsAPI.md#UpdateRole) | **Put** /api/v1/tenants/roles/{role_id} | Update role
@@ -279,6 +281,72 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**CreateRole200Response**](CreateRole200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateSubscription
+
+> CreateSubscription200Response CreateSubscription(ctx).Request(request).Execute()
+
+Create subscription
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsCreateSubscriptionRequest("neon_compute_starter") // TenantsCreateSubscriptionRequest | Subscription creation parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.CreateSubscription(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateSubscription``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateSubscription`: CreateSubscription200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateSubscription`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateSubscriptionRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsCreateSubscriptionRequest**](TenantsCreateSubscriptionRequest.md) | Subscription creation parameters | 
+
+### Return type
+
+[**CreateSubscription200Response**](CreateSubscription200Response.md)
 
 ### Authorization
 
@@ -850,6 +918,72 @@ Other parameters are passed through a pointer to a apiListTenantUsersRequest str
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## RemoveSubscription
+
+> RemoveSubscription200Response RemoveSubscription(ctx).Request(request).Execute()
+
+Remove subscription
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsRemoveSubscriptionRequest("neon_compute_starter") // TenantsRemoveSubscriptionRequest | Subscription removal parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveSubscription``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `RemoveSubscription`: RemoveSubscription200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.RemoveSubscription`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiRemoveSubscriptionRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsRemoveSubscriptionRequest**](TenantsRemoveSubscriptionRequest.md) | Subscription removal parameters | 
+
+### Return type
+
+[**RemoveSubscription200Response**](RemoveSubscription200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
