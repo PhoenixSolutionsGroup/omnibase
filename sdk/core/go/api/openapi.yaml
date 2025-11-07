@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.10
+  version: 0.9.11
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -379,6 +379,49 @@ paths:
       security:
       - BearerAuth: []
       summary: Create customer portal session
+      tags:
+      - V1 Payments
+      x-codegen-request-body-name: request
+  /api/v1/payments/subscription:
+    post:
+      description: |-
+        Creates a Stripe subscription for a tenant. The tenant must have a valid stripe_customer_id in the database.
+
+        ## Authentication
+        Requires valid API authentication.
+
+        ## Use Cases
+        - Subscribe tenant to metered pricing plans
+        - Upgrade/downgrade tenant plans
+        - Enable usage-based billing for resources
+      operationId: createSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CreateSubscriptionRequest"
+        description: Subscription creation parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createSubscription_200_response"
+          description: Subscription created successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request payload or tenant missing stripe_customer_id
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create subscription
+      summary: Create subscription
       tags:
       - V1 Payments
       x-codegen-request-body-name: request
@@ -4457,6 +4500,34 @@ components:
       - message
       - relationship
       type: object
+    v1.CreateSubscriptionRequest:
+      properties:
+        plan_id:
+          description: The plan ID from your Stripe configuration (config item ID)
+          example: neon_compute_starter
+          type: string
+        tenant_id:
+          description: The tenant ID to create subscription for
+          example: tenant_123
+          type: string
+      required:
+      - plan_id
+      - tenant_id
+      type: object
+    v1.CreateSubscriptionResponse:
+      example:
+        subscription_id: sub_1234567890
+        status: active
+      properties:
+        status:
+          description: "Subscription status (active, trialing, etc.)"
+          example: active
+          type: string
+        subscription_id:
+          description: Stripe Subscription ID
+          example: sub_1234567890
+          type: string
+      type: object
     v1.MigrationErrorResponse:
       example:
         message: No migrations zip file provided
@@ -4888,6 +4959,18 @@ components:
       example:
         data:
           url: https://billing.stripe.com/session/live_...
+        status: 200
+    createSubscription_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.CreateSubscriptionResponse"
+        type: object
+      example:
+        data:
+          subscription_id: sub_1234567890
+          status: active
         status: 200
     checkPermission_200_response:
       allOf:

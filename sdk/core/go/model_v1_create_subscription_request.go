@@ -17,37 +17,64 @@ import (
 	"fmt"
 )
 
-// checks if the TenantsSwitchTenantRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TenantsSwitchTenantRequest{}
+// checks if the V1CreateSubscriptionRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &V1CreateSubscriptionRequest{}
 
-// TenantsSwitchTenantRequest struct for TenantsSwitchTenantRequest
-type TenantsSwitchTenantRequest struct {
-	// Target tenant ID
+// V1CreateSubscriptionRequest struct for V1CreateSubscriptionRequest
+type V1CreateSubscriptionRequest struct {
+	// The plan ID from your Stripe configuration (config item ID)
+	PlanId string `json:"plan_id"`
+	// The tenant ID to create subscription for
 	TenantId string `json:"tenant_id"`
 }
 
-type _TenantsSwitchTenantRequest TenantsSwitchTenantRequest
+type _V1CreateSubscriptionRequest V1CreateSubscriptionRequest
 
-// NewTenantsSwitchTenantRequest instantiates a new TenantsSwitchTenantRequest object
+// NewV1CreateSubscriptionRequest instantiates a new V1CreateSubscriptionRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsSwitchTenantRequest(tenantId string) *TenantsSwitchTenantRequest {
-	this := TenantsSwitchTenantRequest{}
+func NewV1CreateSubscriptionRequest(planId string, tenantId string) *V1CreateSubscriptionRequest {
+	this := V1CreateSubscriptionRequest{}
+	this.PlanId = planId
 	this.TenantId = tenantId
 	return &this
 }
 
-// NewTenantsSwitchTenantRequestWithDefaults instantiates a new TenantsSwitchTenantRequest object
+// NewV1CreateSubscriptionRequestWithDefaults instantiates a new V1CreateSubscriptionRequest object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTenantsSwitchTenantRequestWithDefaults() *TenantsSwitchTenantRequest {
-	this := TenantsSwitchTenantRequest{}
+func NewV1CreateSubscriptionRequestWithDefaults() *V1CreateSubscriptionRequest {
+	this := V1CreateSubscriptionRequest{}
 	return &this
 }
 
+// GetPlanId returns the PlanId field value
+func (o *V1CreateSubscriptionRequest) GetPlanId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.PlanId
+}
+
+// GetPlanIdOk returns a tuple with the PlanId field value
+// and a boolean to check if the value has been set.
+func (o *V1CreateSubscriptionRequest) GetPlanIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.PlanId, true
+}
+
+// SetPlanId sets field value
+func (o *V1CreateSubscriptionRequest) SetPlanId(v string) {
+	o.PlanId = v
+}
+
 // GetTenantId returns the TenantId field value
-func (o *TenantsSwitchTenantRequest) GetTenantId() string {
+func (o *V1CreateSubscriptionRequest) GetTenantId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -58,7 +85,7 @@ func (o *TenantsSwitchTenantRequest) GetTenantId() string {
 
 // GetTenantIdOk returns a tuple with the TenantId field value
 // and a boolean to check if the value has been set.
-func (o *TenantsSwitchTenantRequest) GetTenantIdOk() (*string, bool) {
+func (o *V1CreateSubscriptionRequest) GetTenantIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -66,11 +93,11 @@ func (o *TenantsSwitchTenantRequest) GetTenantIdOk() (*string, bool) {
 }
 
 // SetTenantId sets field value
-func (o *TenantsSwitchTenantRequest) SetTenantId(v string) {
+func (o *V1CreateSubscriptionRequest) SetTenantId(v string) {
 	o.TenantId = v
 }
 
-func (o TenantsSwitchTenantRequest) MarshalJSON() ([]byte, error) {
+func (o V1CreateSubscriptionRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -78,17 +105,19 @@ func (o TenantsSwitchTenantRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TenantsSwitchTenantRequest) ToMap() (map[string]interface{}, error) {
+func (o V1CreateSubscriptionRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["plan_id"] = o.PlanId
 	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
 }
 
-func (o *TenantsSwitchTenantRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *V1CreateSubscriptionRequest) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"plan_id",
 		"tenant_id",
 	}
 
@@ -106,53 +135,53 @@ func (o *TenantsSwitchTenantRequest) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varTenantsSwitchTenantRequest := _TenantsSwitchTenantRequest{}
+	varV1CreateSubscriptionRequest := _V1CreateSubscriptionRequest{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTenantsSwitchTenantRequest)
+	err = decoder.Decode(&varV1CreateSubscriptionRequest)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TenantsSwitchTenantRequest(varTenantsSwitchTenantRequest)
+	*o = V1CreateSubscriptionRequest(varV1CreateSubscriptionRequest)
 
 	return err
 }
 
-type NullableTenantsSwitchTenantRequest struct {
-	value *TenantsSwitchTenantRequest
+type NullableV1CreateSubscriptionRequest struct {
+	value *V1CreateSubscriptionRequest
 	isSet bool
 }
 
-func (v NullableTenantsSwitchTenantRequest) Get() *TenantsSwitchTenantRequest {
+func (v NullableV1CreateSubscriptionRequest) Get() *V1CreateSubscriptionRequest {
 	return v.value
 }
 
-func (v *NullableTenantsSwitchTenantRequest) Set(val *TenantsSwitchTenantRequest) {
+func (v *NullableV1CreateSubscriptionRequest) Set(val *V1CreateSubscriptionRequest) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTenantsSwitchTenantRequest) IsSet() bool {
+func (v NullableV1CreateSubscriptionRequest) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTenantsSwitchTenantRequest) Unset() {
+func (v *NullableV1CreateSubscriptionRequest) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTenantsSwitchTenantRequest(val *TenantsSwitchTenantRequest) *NullableTenantsSwitchTenantRequest {
-	return &NullableTenantsSwitchTenantRequest{value: val, isSet: true}
+func NewNullableV1CreateSubscriptionRequest(val *V1CreateSubscriptionRequest) *NullableV1CreateSubscriptionRequest {
+	return &NullableV1CreateSubscriptionRequest{value: val, isSet: true}
 }
 
-func (v NullableTenantsSwitchTenantRequest) MarshalJSON() ([]byte, error) {
+func (v NullableV1CreateSubscriptionRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTenantsSwitchTenantRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableV1CreateSubscriptionRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

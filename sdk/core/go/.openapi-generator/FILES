@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -34,6 +33,7 @@ docs/CreateCustomerPortal200Response.md
 docs/CreateInvite200Response.md
 docs/CreateRelationship200Response.md
 docs/CreateRole200Response.md
+docs/CreateSubscription200Response.md
 docs/CreateTenant200Response.md
 docs/DeleteRole200Response.md
 docs/DeleteTenant200Response.md
@@ -129,6 +129,8 @@ docs/V1CreatePortalRequest.md
 docs/V1CreatePortalResponse.md
 docs/V1CreateRelationshipRequest.md
 docs/V1CreateRelationshipResponse.md
+docs/V1CreateSubscriptionRequest.md
+docs/V1CreateSubscriptionResponse.md
 docs/V1DatabaseAPI.md
 docs/V1MigrationErrorResponse.md
 docs/V1MigrationSuccessResponse.md
@@ -167,6 +169,7 @@ model_create_customer_portal_200_response.go
 model_create_invite_200_response.go
 model_create_relationship_200_response.go
 model_create_role_200_response.go
+model_create_subscription_200_response.go
 model_create_tenant_200_response.go
 model_delete_role_200_response.go
 model_delete_tenant_200_response.go
@@ -261,6 +264,8 @@ model_v1_create_portal_request.go
 model_v1_create_portal_response.go
 model_v1_create_relationship_request.go
 model_v1_create_relationship_response.go
+model_v1_create_subscription_request.go
+model_v1_create_subscription_response.go
 model_v1_migration_error_response.go
 model_v1_migration_success_response.go
 model_v1_namespace_deployment_response.go
@@ -269,11 +274,4 @@ model_v1_stripe_config_response.go
 model_v1_subject_set_request.go
 model_who_am_i_200_response.go
 response.go
-test/api_v1_auth_test.go
-test/api_v1_database_test.go
-test/api_v1_payments_test.go
-test/api_v1_permissions_test.go
-test/api_v1_storage_test.go
-test/api_v1_stripe_test.go
-test/api_v1_tenants_test.go
 utils.go

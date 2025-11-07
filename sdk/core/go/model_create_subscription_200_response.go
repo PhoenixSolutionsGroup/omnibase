@@ -15,36 +15,37 @@ import (
 	"encoding/json"
 )
 
-// checks if the Logout200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Logout200Response{}
+// checks if the CreateSubscription200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateSubscription200Response{}
 
-// Logout200Response struct for Logout200Response
-type Logout200Response struct {
-	Data *ModelsLogoutResponse `json:"data,omitempty"`
+// CreateSubscription200Response struct for CreateSubscription200Response
+type CreateSubscription200Response struct {
+	Data *V1CreateSubscriptionResponse `json:"data,omitempty"`
+	// HTTP status code
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewLogout200Response instantiates a new Logout200Response object
+// NewCreateSubscription200Response instantiates a new CreateSubscription200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewLogout200Response() *Logout200Response {
-	this := Logout200Response{}
+func NewCreateSubscription200Response() *CreateSubscription200Response {
+	this := CreateSubscription200Response{}
 	return &this
 }
 
-// NewLogout200ResponseWithDefaults instantiates a new Logout200Response object
+// NewCreateSubscription200ResponseWithDefaults instantiates a new CreateSubscription200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewLogout200ResponseWithDefaults() *Logout200Response {
-	this := Logout200Response{}
+func NewCreateSubscription200ResponseWithDefaults() *CreateSubscription200Response {
+	this := CreateSubscription200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *Logout200Response) GetData() ModelsLogoutResponse {
+func (o *CreateSubscription200Response) GetData() V1CreateSubscriptionResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsLogoutResponse
+		var ret V1CreateSubscriptionResponse
 		return ret
 	}
 	return *o.Data
@@ -52,7 +53,7 @@ func (o *Logout200Response) GetData() ModelsLogoutResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Logout200Response) GetDataOk() (*ModelsLogoutResponse, bool) {
+func (o *CreateSubscription200Response) GetDataOk() (*V1CreateSubscriptionResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -60,7 +61,7 @@ func (o *Logout200Response) GetDataOk() (*ModelsLogoutResponse, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *Logout200Response) HasData() bool {
+func (o *CreateSubscription200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +69,13 @@ func (o *Logout200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsLogoutResponse and assigns it to the Data field.
-func (o *Logout200Response) SetData(v ModelsLogoutResponse) {
+// SetData gets a reference to the given V1CreateSubscriptionResponse and assigns it to the Data field.
+func (o *CreateSubscription200Response) SetData(v V1CreateSubscriptionResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *Logout200Response) GetStatus() int32 {
+func (o *CreateSubscription200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +85,7 @@ func (o *Logout200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Logout200Response) GetStatusOk() (*int32, bool) {
+func (o *CreateSubscription200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +93,7 @@ func (o *Logout200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *Logout200Response) HasStatus() bool {
+func (o *CreateSubscription200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +102,11 @@ func (o *Logout200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *Logout200Response) SetStatus(v int32) {
+func (o *CreateSubscription200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o Logout200Response) MarshalJSON() ([]byte, error) {
+func (o CreateSubscription200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +114,7 @@ func (o Logout200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Logout200Response) ToMap() (map[string]interface{}, error) {
+func (o CreateSubscription200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +125,38 @@ func (o Logout200Response) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableLogout200Response struct {
-	value *Logout200Response
+type NullableCreateSubscription200Response struct {
+	value *CreateSubscription200Response
 	isSet bool
 }
 
-func (v NullableLogout200Response) Get() *Logout200Response {
+func (v NullableCreateSubscription200Response) Get() *CreateSubscription200Response {
 	return v.value
 }
 
-func (v *NullableLogout200Response) Set(val *Logout200Response) {
+func (v *NullableCreateSubscription200Response) Set(val *CreateSubscription200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableLogout200Response) IsSet() bool {
+func (v NullableCreateSubscription200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableLogout200Response) Unset() {
+func (v *NullableCreateSubscription200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableLogout200Response(val *Logout200Response) *NullableLogout200Response {
-	return &NullableLogout200Response{value: val, isSet: true}
+func NewNullableCreateSubscription200Response(val *CreateSubscription200Response) *NullableCreateSubscription200Response {
+	return &NullableCreateSubscription200Response{value: val, isSet: true}
 }
 
-func (v NullableLogout200Response) MarshalJSON() ([]byte, error) {
+func (v NullableCreateSubscription200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableLogout200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableCreateSubscription200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
