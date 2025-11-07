@@ -1,6 +1,6 @@
 # \V1TenantsAPI
 
-All URIs are relative to *http://https://api.omnibase.tech*
+All URIs are relative to *http://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

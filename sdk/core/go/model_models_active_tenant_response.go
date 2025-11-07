@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.8
+API version: 0.9.9
 Contact: support@omnibase.dev
 */
 
@@ -13,8 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
-	"fmt"
 )
 
 // checks if the ModelsActiveTenantResponse type satisfies the MappedNullable interface at compile time
@@ -22,19 +20,15 @@ var _ MappedNullable = &ModelsActiveTenantResponse{}
 
 // ModelsActiveTenantResponse struct for ModelsActiveTenantResponse
 type ModelsActiveTenantResponse struct {
-	HasTenant bool `json:"has_tenant"`
 	Tenant *ModelsTenant `json:"tenant,omitempty"`
 }
-
-type _ModelsActiveTenantResponse ModelsActiveTenantResponse
 
 // NewModelsActiveTenantResponse instantiates a new ModelsActiveTenantResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsActiveTenantResponse(hasTenant bool) *ModelsActiveTenantResponse {
+func NewModelsActiveTenantResponse() *ModelsActiveTenantResponse {
 	this := ModelsActiveTenantResponse{}
-	this.HasTenant = hasTenant
 	return &this
 }
 
@@ -44,30 +38,6 @@ func NewModelsActiveTenantResponse(hasTenant bool) *ModelsActiveTenantResponse {
 func NewModelsActiveTenantResponseWithDefaults() *ModelsActiveTenantResponse {
 	this := ModelsActiveTenantResponse{}
 	return &this
-}
-
-// GetHasTenant returns the HasTenant field value
-func (o *ModelsActiveTenantResponse) GetHasTenant() bool {
-	if o == nil {
-		var ret bool
-		return ret
-	}
-
-	return o.HasTenant
-}
-
-// GetHasTenantOk returns a tuple with the HasTenant field value
-// and a boolean to check if the value has been set.
-func (o *ModelsActiveTenantResponse) GetHasTenantOk() (*bool, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.HasTenant, true
-}
-
-// SetHasTenant sets field value
-func (o *ModelsActiveTenantResponse) SetHasTenant(v bool) {
-	o.HasTenant = v
 }
 
 // GetTenant returns the Tenant field value if set, zero value otherwise.
@@ -112,48 +82,10 @@ func (o ModelsActiveTenantResponse) MarshalJSON() ([]byte, error) {
 
 func (o ModelsActiveTenantResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["has_tenant"] = o.HasTenant
 	if !IsNil(o.Tenant) {
 		toSerialize["tenant"] = o.Tenant
 	}
 	return toSerialize, nil
-}
-
-func (o *ModelsActiveTenantResponse) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"has_tenant",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varModelsActiveTenantResponse := _ModelsActiveTenantResponse{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varModelsActiveTenantResponse)
-
-	if err != nil {
-		return err
-	}
-
-	*o = ModelsActiveTenantResponse(varModelsActiveTenantResponse)
-
-	return err
 }
 
 type NullableModelsActiveTenantResponse struct {

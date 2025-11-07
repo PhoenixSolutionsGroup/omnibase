@@ -23,12 +23,12 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.8
+  version: 0.9.9
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
 servers:
-- url: //https://api.omnibase.tech/
+- url: //api.omnibase.tech/
 paths:
   /api/v1/auth/active-tenant:
     get:
@@ -2578,15 +2578,9 @@ components:
           created_at: created_at
           id: id
           type: type
-        has_tenant: true
       properties:
-        has_tenant:
-          example: true
-          type: boolean
         tenant:
           $ref: "#/components/schemas/models.Tenant"
-      required:
-      - has_tenant
       type: object
     models.BillingStatusResponse:
       example:
@@ -4611,7 +4605,6 @@ components:
             created_at: created_at
             id: id
             type: type
-          has_tenant: true
         status: 0
       properties:
         data:

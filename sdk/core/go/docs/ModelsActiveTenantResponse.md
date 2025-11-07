@@ -4,14 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**HasTenant** | **bool** |  | 
 **Tenant** | Pointer to [**ModelsTenant**](ModelsTenant.md) |  | [optional] 
 
 ## Methods
 
 ### NewModelsActiveTenantResponse
 
-`func NewModelsActiveTenantResponse(hasTenant bool, ) *ModelsActiveTenantResponse`
+`func NewModelsActiveTenantResponse() *ModelsActiveTenantResponse`
 
 NewModelsActiveTenantResponse instantiates a new ModelsActiveTenantResponse object
 This constructor will assign default values to properties that have it defined,
@@ -25,26 +24,6 @@ will change when the set of required properties is changed
 NewModelsActiveTenantResponseWithDefaults instantiates a new ModelsActiveTenantResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetHasTenant
-
-`func (o *ModelsActiveTenantResponse) GetHasTenant() bool`
-
-GetHasTenant returns the HasTenant field if non-nil, zero value otherwise.
-
-### GetHasTenantOk
-
-`func (o *ModelsActiveTenantResponse) GetHasTenantOk() (*bool, bool)`
-
-GetHasTenantOk returns a tuple with the HasTenant field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetHasTenant
-
-`func (o *ModelsActiveTenantResponse) SetHasTenant(v bool)`
-
-SetHasTenant sets HasTenant field to given value.
-
 
 ### GetTenant
 
