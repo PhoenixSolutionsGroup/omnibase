@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.11
+API version: 0.9.12
 Contact: support@omnibase.dev
 */
 
@@ -24,8 +24,10 @@ var _ MappedNullable = &V1CreateSubscriptionRequest{}
 type V1CreateSubscriptionRequest struct {
 	// The plan ID from your Stripe configuration (config item ID)
 	PlanId string `json:"plan_id"`
-	// The tenant ID to create subscription for
-	TenantId string `json:"tenant_id"`
+	// Optional Stripe customer ID to use directly (provide either tenant_id OR stripe_customer_id)
+	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
+	// Optional tenant ID to lookup Stripe customer ID (provide either tenant_id OR stripe_customer_id)
+	TenantId *string `json:"tenant_id,omitempty"`
 }
 
 type _V1CreateSubscriptionRequest V1CreateSubscriptionRequest
@@ -34,10 +36,9 @@ type _V1CreateSubscriptionRequest V1CreateSubscriptionRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1CreateSubscriptionRequest(planId string, tenantId string) *V1CreateSubscriptionRequest {
+func NewV1CreateSubscriptionRequest(planId string) *V1CreateSubscriptionRequest {
 	this := V1CreateSubscriptionRequest{}
 	this.PlanId = planId
-	this.TenantId = tenantId
 	return &this
 }
 
@@ -73,28 +74,68 @@ func (o *V1CreateSubscriptionRequest) SetPlanId(v string) {
 	o.PlanId = v
 }
 
-// GetTenantId returns the TenantId field value
-func (o *V1CreateSubscriptionRequest) GetTenantId() string {
-	if o == nil {
+// GetStripeCustomerId returns the StripeCustomerId field value if set, zero value otherwise.
+func (o *V1CreateSubscriptionRequest) GetStripeCustomerId() string {
+	if o == nil || IsNil(o.StripeCustomerId) {
 		var ret string
 		return ret
 	}
-
-	return o.TenantId
+	return *o.StripeCustomerId
 }
 
-// GetTenantIdOk returns a tuple with the TenantId field value
+// GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1CreateSubscriptionRequest) GetTenantIdOk() (*string, bool) {
-	if o == nil {
+func (o *V1CreateSubscriptionRequest) GetStripeCustomerIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeCustomerId) {
 		return nil, false
 	}
-	return &o.TenantId, true
+	return o.StripeCustomerId, true
 }
 
-// SetTenantId sets field value
+// HasStripeCustomerId returns a boolean if a field has been set.
+func (o *V1CreateSubscriptionRequest) HasStripeCustomerId() bool {
+	if o != nil && !IsNil(o.StripeCustomerId) {
+		return true
+	}
+
+	return false
+}
+
+// SetStripeCustomerId gets a reference to the given string and assigns it to the StripeCustomerId field.
+func (o *V1CreateSubscriptionRequest) SetStripeCustomerId(v string) {
+	o.StripeCustomerId = &v
+}
+
+// GetTenantId returns the TenantId field value if set, zero value otherwise.
+func (o *V1CreateSubscriptionRequest) GetTenantId() string {
+	if o == nil || IsNil(o.TenantId) {
+		var ret string
+		return ret
+	}
+	return *o.TenantId
+}
+
+// GetTenantIdOk returns a tuple with the TenantId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1CreateSubscriptionRequest) GetTenantIdOk() (*string, bool) {
+	if o == nil || IsNil(o.TenantId) {
+		return nil, false
+	}
+	return o.TenantId, true
+}
+
+// HasTenantId returns a boolean if a field has been set.
+func (o *V1CreateSubscriptionRequest) HasTenantId() bool {
+	if o != nil && !IsNil(o.TenantId) {
+		return true
+	}
+
+	return false
+}
+
+// SetTenantId gets a reference to the given string and assigns it to the TenantId field.
 func (o *V1CreateSubscriptionRequest) SetTenantId(v string) {
-	o.TenantId = v
+	o.TenantId = &v
 }
 
 func (o V1CreateSubscriptionRequest) MarshalJSON() ([]byte, error) {
@@ -108,7 +149,12 @@ func (o V1CreateSubscriptionRequest) MarshalJSON() ([]byte, error) {
 func (o V1CreateSubscriptionRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["plan_id"] = o.PlanId
-	toSerialize["tenant_id"] = o.TenantId
+	if !IsNil(o.StripeCustomerId) {
+		toSerialize["stripe_customer_id"] = o.StripeCustomerId
+	}
+	if !IsNil(o.TenantId) {
+		toSerialize["tenant_id"] = o.TenantId
+	}
 	return toSerialize, nil
 }
 
@@ -118,7 +164,6 @@ func (o *V1CreateSubscriptionRequest) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"plan_id",
-		"tenant_id",
 	}
 
 	allProperties := make(map[string]interface{})

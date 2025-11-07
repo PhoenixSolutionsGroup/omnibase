@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.11
+  version: 0.9.12
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -385,15 +385,21 @@ paths:
   /api/v1/payments/subscription:
     post:
       description: |-
-        Creates a Stripe subscription for a tenant. The tenant must have a valid stripe_customer_id in the database.
+        Creates a Stripe subscription for a customer. Provide either tenant_id (to lookup customer from database) OR stripe_customer_id (to use directly).
 
         ## Authentication
         Requires valid API authentication.
+
+        ## Customer Identification
+        - If stripe_customer_id is provided, it will be used directly
+        - If tenant_id is provided, the tenant's stripe_customer_id will be looked up from auth.tenants table
+        - At least one of tenant_id or stripe_customer_id must be provided
 
         ## Use Cases
         - Subscribe tenant to metered pricing plans
         - Upgrade/downgrade tenant plans
         - Enable usage-based billing for resources
+        - Direct subscription creation with Stripe customer ID
       operationId: createSubscription
       requestBody:
         content:
@@ -414,7 +420,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.BadRequestResponse"
-          description: Invalid request payload or tenant missing stripe_customer_id
+          description: "Invalid request payload, missing both tenant_id and stripe_customer_id,\
+            \ or tenant missing stripe_customer_id"
         "500":
           content:
             application/json:
@@ -4506,13 +4513,18 @@ components:
           description: The plan ID from your Stripe configuration (config item ID)
           example: neon_compute_starter
           type: string
+        stripe_customer_id:
+          description: Optional Stripe customer ID to use directly (provide either
+            tenant_id OR stripe_customer_id)
+          example: cus_1234567890
+          type: string
         tenant_id:
-          description: The tenant ID to create subscription for
+          description: Optional tenant ID to lookup Stripe customer ID (provide either
+            tenant_id OR stripe_customer_id)
           example: tenant_123
           type: string
       required:
       - plan_id
-      - tenant_id
       type: object
     v1.CreateSubscriptionResponse:
       example:

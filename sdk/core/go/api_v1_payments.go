@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.11
+API version: 0.9.12
 Contact: support@omnibase.dev
 */
 
@@ -373,15 +373,21 @@ func (r ApiCreateSubscriptionRequest) Execute() (*CreateSubscription200Response,
 /*
 CreateSubscription Create subscription
 
-Creates a Stripe subscription for a tenant. The tenant must have a valid stripe_customer_id in the database.
+Creates a Stripe subscription for a customer. Provide either tenant_id (to lookup customer from database) OR stripe_customer_id (to use directly).
 
 ## Authentication
 Requires valid API authentication.
+
+## Customer Identification
+- If stripe_customer_id is provided, it will be used directly
+- If tenant_id is provided, the tenant's stripe_customer_id will be looked up from auth.tenants table
+- At least one of tenant_id or stripe_customer_id must be provided
 
 ## Use Cases
 - Subscribe tenant to metered pricing plans
 - Upgrade/downgrade tenant plans
 - Enable usage-based billing for resources
+- Direct subscription creation with Stripe customer ID
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateSubscriptionRequest

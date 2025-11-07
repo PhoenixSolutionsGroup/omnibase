@@ -164,7 +164,7 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewV1CreateSubscriptionRequest("neon_compute_starter", "tenant_123") // V1CreateSubscriptionRequest | Subscription creation parameters
+	request := *openapiclient.NewV1CreateSubscriptionRequest("neon_compute_starter") // V1CreateSubscriptionRequest | Subscription creation parameters
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)

@@ -5,13 +5,14 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **PlanId** | **string** | The plan ID from your Stripe configuration (config item ID) | 
-**TenantId** | **string** | The tenant ID to create subscription for | 
+**StripeCustomerId** | Pointer to **string** | Optional Stripe customer ID to use directly (provide either tenant_id OR stripe_customer_id) | [optional] 
+**TenantId** | Pointer to **string** | Optional tenant ID to lookup Stripe customer ID (provide either tenant_id OR stripe_customer_id) | [optional] 
 
 ## Methods
 
 ### NewV1CreateSubscriptionRequest
 
-`func NewV1CreateSubscriptionRequest(planId string, tenantId string, ) *V1CreateSubscriptionRequest`
+`func NewV1CreateSubscriptionRequest(planId string, ) *V1CreateSubscriptionRequest`
 
 NewV1CreateSubscriptionRequest instantiates a new V1CreateSubscriptionRequest object
 This constructor will assign default values to properties that have it defined,
@@ -46,6 +47,31 @@ and a boolean to check if the value has been set.
 SetPlanId sets PlanId field to given value.
 
 
+### GetStripeCustomerId
+
+`func (o *V1CreateSubscriptionRequest) GetStripeCustomerId() string`
+
+GetStripeCustomerId returns the StripeCustomerId field if non-nil, zero value otherwise.
+
+### GetStripeCustomerIdOk
+
+`func (o *V1CreateSubscriptionRequest) GetStripeCustomerIdOk() (*string, bool)`
+
+GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStripeCustomerId
+
+`func (o *V1CreateSubscriptionRequest) SetStripeCustomerId(v string)`
+
+SetStripeCustomerId sets StripeCustomerId field to given value.
+
+### HasStripeCustomerId
+
+`func (o *V1CreateSubscriptionRequest) HasStripeCustomerId() bool`
+
+HasStripeCustomerId returns a boolean if a field has been set.
+
 ### GetTenantId
 
 `func (o *V1CreateSubscriptionRequest) GetTenantId() string`
@@ -65,6 +91,11 @@ and a boolean to check if the value has been set.
 
 SetTenantId sets TenantId field to given value.
 
+### HasTenantId
+
+`func (o *V1CreateSubscriptionRequest) HasTenantId() bool`
+
+HasTenantId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
