@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.9
+API version: 0.9.10
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsBillingStatusResponse type satisfies the MappedNullable interface at compile time
@@ -20,16 +22,18 @@ var _ MappedNullable = &ModelsBillingStatusResponse{}
 
 // ModelsBillingStatusResponse struct for ModelsBillingStatusResponse
 type ModelsBillingStatusResponse struct {
-	HasBillingInfo *bool `json:"has_billing_info,omitempty"`
-	IsActive *bool `json:"is_active,omitempty"`
+	IsActive bool `json:"is_active"`
 }
+
+type _ModelsBillingStatusResponse ModelsBillingStatusResponse
 
 // NewModelsBillingStatusResponse instantiates a new ModelsBillingStatusResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsBillingStatusResponse() *ModelsBillingStatusResponse {
+func NewModelsBillingStatusResponse(isActive bool) *ModelsBillingStatusResponse {
 	this := ModelsBillingStatusResponse{}
+	this.IsActive = isActive
 	return &this
 }
 
@@ -41,68 +45,28 @@ func NewModelsBillingStatusResponseWithDefaults() *ModelsBillingStatusResponse {
 	return &this
 }
 
-// GetHasBillingInfo returns the HasBillingInfo field value if set, zero value otherwise.
-func (o *ModelsBillingStatusResponse) GetHasBillingInfo() bool {
-	if o == nil || IsNil(o.HasBillingInfo) {
-		var ret bool
-		return ret
-	}
-	return *o.HasBillingInfo
-}
-
-// GetHasBillingInfoOk returns a tuple with the HasBillingInfo field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsBillingStatusResponse) GetHasBillingInfoOk() (*bool, bool) {
-	if o == nil || IsNil(o.HasBillingInfo) {
-		return nil, false
-	}
-	return o.HasBillingInfo, true
-}
-
-// HasHasBillingInfo returns a boolean if a field has been set.
-func (o *ModelsBillingStatusResponse) HasHasBillingInfo() bool {
-	if o != nil && !IsNil(o.HasBillingInfo) {
-		return true
-	}
-
-	return false
-}
-
-// SetHasBillingInfo gets a reference to the given bool and assigns it to the HasBillingInfo field.
-func (o *ModelsBillingStatusResponse) SetHasBillingInfo(v bool) {
-	o.HasBillingInfo = &v
-}
-
-// GetIsActive returns the IsActive field value if set, zero value otherwise.
+// GetIsActive returns the IsActive field value
 func (o *ModelsBillingStatusResponse) GetIsActive() bool {
-	if o == nil || IsNil(o.IsActive) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.IsActive
+
+	return o.IsActive
 }
 
-// GetIsActiveOk returns a tuple with the IsActive field value if set, nil otherwise
+// GetIsActiveOk returns a tuple with the IsActive field value
 // and a boolean to check if the value has been set.
 func (o *ModelsBillingStatusResponse) GetIsActiveOk() (*bool, bool) {
-	if o == nil || IsNil(o.IsActive) {
+	if o == nil {
 		return nil, false
 	}
-	return o.IsActive, true
+	return &o.IsActive, true
 }
 
-// HasIsActive returns a boolean if a field has been set.
-func (o *ModelsBillingStatusResponse) HasIsActive() bool {
-	if o != nil && !IsNil(o.IsActive) {
-		return true
-	}
-
-	return false
-}
-
-// SetIsActive gets a reference to the given bool and assigns it to the IsActive field.
+// SetIsActive sets field value
 func (o *ModelsBillingStatusResponse) SetIsActive(v bool) {
-	o.IsActive = &v
+	o.IsActive = v
 }
 
 func (o ModelsBillingStatusResponse) MarshalJSON() ([]byte, error) {
@@ -115,13 +79,45 @@ func (o ModelsBillingStatusResponse) MarshalJSON() ([]byte, error) {
 
 func (o ModelsBillingStatusResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.HasBillingInfo) {
-		toSerialize["has_billing_info"] = o.HasBillingInfo
-	}
-	if !IsNil(o.IsActive) {
-		toSerialize["is_active"] = o.IsActive
-	}
+	toSerialize["is_active"] = o.IsActive
 	return toSerialize, nil
+}
+
+func (o *ModelsBillingStatusResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"is_active",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsBillingStatusResponse := _ModelsBillingStatusResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsBillingStatusResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsBillingStatusResponse(varModelsBillingStatusResponse)
+
+	return err
 }
 
 type NullableModelsBillingStatusResponse struct {

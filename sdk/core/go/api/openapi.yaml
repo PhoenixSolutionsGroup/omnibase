@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.9
+  version: 0.9.10
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -2584,13 +2584,12 @@ components:
       type: object
     models.BillingStatusResponse:
       example:
-        has_billing_info: true
         is_active: true
       properties:
-        has_billing_info:
-          type: boolean
         is_active:
           type: boolean
+      required:
+      - is_active
       type: object
     models.DeleteObjectRequest:
       properties:
@@ -5270,7 +5269,6 @@ components:
         type: object
       example:
         data:
-          has_billing_info: true
           is_active: true
         status: 200
     createInvite_200_response:
