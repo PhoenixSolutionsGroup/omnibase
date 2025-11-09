@@ -15,36 +15,37 @@ import (
 	"encoding/json"
 )
 
-// checks if the ApiV1StorageDownloadPost200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ApiV1StorageDownloadPost200Response{}
+// checks if the AddSubscription200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AddSubscription200Response{}
 
-// ApiV1StorageDownloadPost200Response struct for ApiV1StorageDownloadPost200Response
-type ApiV1StorageDownloadPost200Response struct {
-	Data *ModelsDownloadResponse `json:"data,omitempty"`
+// AddSubscription200Response struct for AddSubscription200Response
+type AddSubscription200Response struct {
+	Data *TenantsAddSubscriptionResponse `json:"data,omitempty"`
+	// HTTP status code
 	Status *int32 `json:"status,omitempty"`
 }
 
-// NewApiV1StorageDownloadPost200Response instantiates a new ApiV1StorageDownloadPost200Response object
+// NewAddSubscription200Response instantiates a new AddSubscription200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApiV1StorageDownloadPost200Response() *ApiV1StorageDownloadPost200Response {
-	this := ApiV1StorageDownloadPost200Response{}
+func NewAddSubscription200Response() *AddSubscription200Response {
+	this := AddSubscription200Response{}
 	return &this
 }
 
-// NewApiV1StorageDownloadPost200ResponseWithDefaults instantiates a new ApiV1StorageDownloadPost200Response object
+// NewAddSubscription200ResponseWithDefaults instantiates a new AddSubscription200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewApiV1StorageDownloadPost200ResponseWithDefaults() *ApiV1StorageDownloadPost200Response {
-	this := ApiV1StorageDownloadPost200Response{}
+func NewAddSubscription200ResponseWithDefaults() *AddSubscription200Response {
+	this := AddSubscription200Response{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ApiV1StorageDownloadPost200Response) GetData() ModelsDownloadResponse {
+func (o *AddSubscription200Response) GetData() TenantsAddSubscriptionResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsDownloadResponse
+		var ret TenantsAddSubscriptionResponse
 		return ret
 	}
 	return *o.Data
@@ -52,7 +53,7 @@ func (o *ApiV1StorageDownloadPost200Response) GetData() ModelsDownloadResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1StorageDownloadPost200Response) GetDataOk() (*ModelsDownloadResponse, bool) {
+func (o *AddSubscription200Response) GetDataOk() (*TenantsAddSubscriptionResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -60,7 +61,7 @@ func (o *ApiV1StorageDownloadPost200Response) GetDataOk() (*ModelsDownloadRespon
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *ApiV1StorageDownloadPost200Response) HasData() bool {
+func (o *AddSubscription200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -68,13 +69,13 @@ func (o *ApiV1StorageDownloadPost200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsDownloadResponse and assigns it to the Data field.
-func (o *ApiV1StorageDownloadPost200Response) SetData(v ModelsDownloadResponse) {
+// SetData gets a reference to the given TenantsAddSubscriptionResponse and assigns it to the Data field.
+func (o *AddSubscription200Response) SetData(v TenantsAddSubscriptionResponse) {
 	o.Data = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ApiV1StorageDownloadPost200Response) GetStatus() int32 {
+func (o *AddSubscription200Response) GetStatus() int32 {
 	if o == nil || IsNil(o.Status) {
 		var ret int32
 		return ret
@@ -84,7 +85,7 @@ func (o *ApiV1StorageDownloadPost200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ApiV1StorageDownloadPost200Response) GetStatusOk() (*int32, bool) {
+func (o *AddSubscription200Response) GetStatusOk() (*int32, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -92,7 +93,7 @@ func (o *ApiV1StorageDownloadPost200Response) GetStatusOk() (*int32, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *ApiV1StorageDownloadPost200Response) HasStatus() bool {
+func (o *AddSubscription200Response) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -101,11 +102,11 @@ func (o *ApiV1StorageDownloadPost200Response) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ApiV1StorageDownloadPost200Response) SetStatus(v int32) {
+func (o *AddSubscription200Response) SetStatus(v int32) {
 	o.Status = &v
 }
 
-func (o ApiV1StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
+func (o AddSubscription200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -113,7 +114,7 @@ func (o ApiV1StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ApiV1StorageDownloadPost200Response) ToMap() (map[string]interface{}, error) {
+func (o AddSubscription200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -124,38 +125,38 @@ func (o ApiV1StorageDownloadPost200Response) ToMap() (map[string]interface{}, er
 	return toSerialize, nil
 }
 
-type NullableApiV1StorageDownloadPost200Response struct {
-	value *ApiV1StorageDownloadPost200Response
+type NullableAddSubscription200Response struct {
+	value *AddSubscription200Response
 	isSet bool
 }
 
-func (v NullableApiV1StorageDownloadPost200Response) Get() *ApiV1StorageDownloadPost200Response {
+func (v NullableAddSubscription200Response) Get() *AddSubscription200Response {
 	return v.value
 }
 
-func (v *NullableApiV1StorageDownloadPost200Response) Set(val *ApiV1StorageDownloadPost200Response) {
+func (v *NullableAddSubscription200Response) Set(val *AddSubscription200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableApiV1StorageDownloadPost200Response) IsSet() bool {
+func (v NullableAddSubscription200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableApiV1StorageDownloadPost200Response) Unset() {
+func (v *NullableAddSubscription200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableApiV1StorageDownloadPost200Response(val *ApiV1StorageDownloadPost200Response) *NullableApiV1StorageDownloadPost200Response {
-	return &NullableApiV1StorageDownloadPost200Response{value: val, isSet: true}
+func NewNullableAddSubscription200Response(val *AddSubscription200Response) *NullableAddSubscription200Response {
+	return &NullableAddSubscription200Response{value: val, isSet: true}
 }
 
-func (v NullableApiV1StorageDownloadPost200Response) MarshalJSON() ([]byte, error) {
+func (v NullableAddSubscription200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableApiV1StorageDownloadPost200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableAddSubscription200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.14
+  version: 0.9.15
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -704,6 +704,73 @@ paths:
       security:
       - BearerAuth: []
       summary: Create subscription
+      tags:
+      - V1 Tenants
+      x-codegen-request-body-name: request
+  /api/v1/payments/subscription/add:
+    post:
+      description: |-
+        Adds a Stripe subscription for the authenticated tenant using the provided plan ID.
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Request Parameters
+        - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") that maps to a Stripe price
+        - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
+
+        ## Process Flow
+        1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
+        2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
+        3. Checks if subscription already exists for this plan to prevent duplicates
+        4. Creates the subscription in Stripe with the specified price
+        5. Returns the subscription ID and status
+
+        ## Notes
+        - If a subscription for this plan already exists, returns a 400 error
+        - The subscription is created immediately and begins billing
+
+        ## Use Cases
+        - Subscribe tenant to metered pricing plans (compute, storage, workers)
+        - Enable usage-based billing for resources
+        - Add additional services to tenant's billing
+      operationId: addSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tenants.AddSubscriptionRequest"
+        description: Subscription addition parameters
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addSubscription_200_response"
+          description: Subscription added successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: "Invalid request payload, tenant missing Stripe customer ID,\
+            \ or subscription already exists"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: User not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create subscription or map plan_id
+      security:
+      - BearerAuth: []
+      summary: Add subscription
       tags:
       - V1 Tenants
       x-codegen-request-body-name: request
@@ -4240,6 +4307,39 @@ components:
       - tenant_id
       - token
       type: object
+    tenants.AddSubscriptionRequest:
+      properties:
+        plan_id:
+          description: The plan ID from your Stripe configuration (config item ID)
+          example: neon_compute_starter
+          type: string
+        stripe_customer_id:
+          description: Optional Stripe customer ID to use directly (provide either
+            tenant_id OR stripe_customer_id)
+          example: cus_1234567890
+          type: string
+      required:
+      - plan_id
+      type: object
+    tenants.AddSubscriptionResponse:
+      example:
+        subscription_id: sub_1234567890
+        message: Subscription added successfully
+        status: active
+      properties:
+        message:
+          description: Message confirming the addition
+          example: Subscription added successfully
+          type: string
+        status:
+          description: "Subscription status (active, trialing, etc.)"
+          example: active
+          type: string
+        subscription_id:
+          description: Stripe Subscription ID
+          example: sub_1234567890
+          type: string
+      type: object
     tenants.AssignRoleRequest:
       properties:
         role_id:
@@ -5547,6 +5647,19 @@ components:
           subscription_id: sub_1234567890
           message: Subscription canceled successfully
           status: canceled
+        status: 200
+    addSubscription_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/tenants.AddSubscriptionResponse"
+        type: object
+      example:
+        data:
+          subscription_id: sub_1234567890
+          message: Subscription added successfully
+          status: active
         status: 200
     checkPermission_200_response:
       allOf:

@@ -17,39 +17,39 @@ import (
 	"fmt"
 )
 
-// checks if the TenantsRemoveSubscriptionRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TenantsRemoveSubscriptionRequest{}
+// checks if the TenantsAddSubscriptionRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TenantsAddSubscriptionRequest{}
 
-// TenantsRemoveSubscriptionRequest struct for TenantsRemoveSubscriptionRequest
-type TenantsRemoveSubscriptionRequest struct {
+// TenantsAddSubscriptionRequest struct for TenantsAddSubscriptionRequest
+type TenantsAddSubscriptionRequest struct {
 	// The plan ID from your Stripe configuration (config item ID)
 	PlanId string `json:"plan_id"`
 	// Optional Stripe customer ID to use directly (provide either tenant_id OR stripe_customer_id)
 	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
 }
 
-type _TenantsRemoveSubscriptionRequest TenantsRemoveSubscriptionRequest
+type _TenantsAddSubscriptionRequest TenantsAddSubscriptionRequest
 
-// NewTenantsRemoveSubscriptionRequest instantiates a new TenantsRemoveSubscriptionRequest object
+// NewTenantsAddSubscriptionRequest instantiates a new TenantsAddSubscriptionRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsRemoveSubscriptionRequest(planId string) *TenantsRemoveSubscriptionRequest {
-	this := TenantsRemoveSubscriptionRequest{}
+func NewTenantsAddSubscriptionRequest(planId string) *TenantsAddSubscriptionRequest {
+	this := TenantsAddSubscriptionRequest{}
 	this.PlanId = planId
 	return &this
 }
 
-// NewTenantsRemoveSubscriptionRequestWithDefaults instantiates a new TenantsRemoveSubscriptionRequest object
+// NewTenantsAddSubscriptionRequestWithDefaults instantiates a new TenantsAddSubscriptionRequest object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTenantsRemoveSubscriptionRequestWithDefaults() *TenantsRemoveSubscriptionRequest {
-	this := TenantsRemoveSubscriptionRequest{}
+func NewTenantsAddSubscriptionRequestWithDefaults() *TenantsAddSubscriptionRequest {
+	this := TenantsAddSubscriptionRequest{}
 	return &this
 }
 
 // GetPlanId returns the PlanId field value
-func (o *TenantsRemoveSubscriptionRequest) GetPlanId() string {
+func (o *TenantsAddSubscriptionRequest) GetPlanId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -60,7 +60,7 @@ func (o *TenantsRemoveSubscriptionRequest) GetPlanId() string {
 
 // GetPlanIdOk returns a tuple with the PlanId field value
 // and a boolean to check if the value has been set.
-func (o *TenantsRemoveSubscriptionRequest) GetPlanIdOk() (*string, bool) {
+func (o *TenantsAddSubscriptionRequest) GetPlanIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -68,12 +68,12 @@ func (o *TenantsRemoveSubscriptionRequest) GetPlanIdOk() (*string, bool) {
 }
 
 // SetPlanId sets field value
-func (o *TenantsRemoveSubscriptionRequest) SetPlanId(v string) {
+func (o *TenantsAddSubscriptionRequest) SetPlanId(v string) {
 	o.PlanId = v
 }
 
 // GetStripeCustomerId returns the StripeCustomerId field value if set, zero value otherwise.
-func (o *TenantsRemoveSubscriptionRequest) GetStripeCustomerId() string {
+func (o *TenantsAddSubscriptionRequest) GetStripeCustomerId() string {
 	if o == nil || IsNil(o.StripeCustomerId) {
 		var ret string
 		return ret
@@ -83,7 +83,7 @@ func (o *TenantsRemoveSubscriptionRequest) GetStripeCustomerId() string {
 
 // GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TenantsRemoveSubscriptionRequest) GetStripeCustomerIdOk() (*string, bool) {
+func (o *TenantsAddSubscriptionRequest) GetStripeCustomerIdOk() (*string, bool) {
 	if o == nil || IsNil(o.StripeCustomerId) {
 		return nil, false
 	}
@@ -91,7 +91,7 @@ func (o *TenantsRemoveSubscriptionRequest) GetStripeCustomerIdOk() (*string, boo
 }
 
 // HasStripeCustomerId returns a boolean if a field has been set.
-func (o *TenantsRemoveSubscriptionRequest) HasStripeCustomerId() bool {
+func (o *TenantsAddSubscriptionRequest) HasStripeCustomerId() bool {
 	if o != nil && !IsNil(o.StripeCustomerId) {
 		return true
 	}
@@ -100,11 +100,11 @@ func (o *TenantsRemoveSubscriptionRequest) HasStripeCustomerId() bool {
 }
 
 // SetStripeCustomerId gets a reference to the given string and assigns it to the StripeCustomerId field.
-func (o *TenantsRemoveSubscriptionRequest) SetStripeCustomerId(v string) {
+func (o *TenantsAddSubscriptionRequest) SetStripeCustomerId(v string) {
 	o.StripeCustomerId = &v
 }
 
-func (o TenantsRemoveSubscriptionRequest) MarshalJSON() ([]byte, error) {
+func (o TenantsAddSubscriptionRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -112,7 +112,7 @@ func (o TenantsRemoveSubscriptionRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TenantsRemoveSubscriptionRequest) ToMap() (map[string]interface{}, error) {
+func (o TenantsAddSubscriptionRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["plan_id"] = o.PlanId
 	if !IsNil(o.StripeCustomerId) {
@@ -121,7 +121,7 @@ func (o TenantsRemoveSubscriptionRequest) ToMap() (map[string]interface{}, error
 	return toSerialize, nil
 }
 
-func (o *TenantsRemoveSubscriptionRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *TenantsAddSubscriptionRequest) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -143,53 +143,53 @@ func (o *TenantsRemoveSubscriptionRequest) UnmarshalJSON(data []byte) (err error
 		}
 	}
 
-	varTenantsRemoveSubscriptionRequest := _TenantsRemoveSubscriptionRequest{}
+	varTenantsAddSubscriptionRequest := _TenantsAddSubscriptionRequest{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTenantsRemoveSubscriptionRequest)
+	err = decoder.Decode(&varTenantsAddSubscriptionRequest)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TenantsRemoveSubscriptionRequest(varTenantsRemoveSubscriptionRequest)
+	*o = TenantsAddSubscriptionRequest(varTenantsAddSubscriptionRequest)
 
 	return err
 }
 
-type NullableTenantsRemoveSubscriptionRequest struct {
-	value *TenantsRemoveSubscriptionRequest
+type NullableTenantsAddSubscriptionRequest struct {
+	value *TenantsAddSubscriptionRequest
 	isSet bool
 }
 
-func (v NullableTenantsRemoveSubscriptionRequest) Get() *TenantsRemoveSubscriptionRequest {
+func (v NullableTenantsAddSubscriptionRequest) Get() *TenantsAddSubscriptionRequest {
 	return v.value
 }
 
-func (v *NullableTenantsRemoveSubscriptionRequest) Set(val *TenantsRemoveSubscriptionRequest) {
+func (v *NullableTenantsAddSubscriptionRequest) Set(val *TenantsAddSubscriptionRequest) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTenantsRemoveSubscriptionRequest) IsSet() bool {
+func (v NullableTenantsAddSubscriptionRequest) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTenantsRemoveSubscriptionRequest) Unset() {
+func (v *NullableTenantsAddSubscriptionRequest) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTenantsRemoveSubscriptionRequest(val *TenantsRemoveSubscriptionRequest) *NullableTenantsRemoveSubscriptionRequest {
-	return &NullableTenantsRemoveSubscriptionRequest{value: val, isSet: true}
+func NewNullableTenantsAddSubscriptionRequest(val *TenantsAddSubscriptionRequest) *NullableTenantsAddSubscriptionRequest {
+	return &NullableTenantsAddSubscriptionRequest{value: val, isSet: true}
 }
 
-func (v NullableTenantsRemoveSubscriptionRequest) MarshalJSON() ([]byte, error) {
+func (v NullableTenantsAddSubscriptionRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTenantsRemoveSubscriptionRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableTenantsAddSubscriptionRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

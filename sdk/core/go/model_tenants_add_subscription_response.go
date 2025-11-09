@@ -15,38 +15,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the TenantsRemoveSubscriptionResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TenantsRemoveSubscriptionResponse{}
+// checks if the TenantsAddSubscriptionResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TenantsAddSubscriptionResponse{}
 
-// TenantsRemoveSubscriptionResponse struct for TenantsRemoveSubscriptionResponse
-type TenantsRemoveSubscriptionResponse struct {
-	// Message confirming the cancellation
+// TenantsAddSubscriptionResponse struct for TenantsAddSubscriptionResponse
+type TenantsAddSubscriptionResponse struct {
+	// Message confirming the addition
 	Message *string `json:"message,omitempty"`
-	// Subscription status after cancellation
+	// Subscription status (active, trialing, etc.)
 	Status *string `json:"status,omitempty"`
-	// Stripe Subscription ID that was canceled
+	// Stripe Subscription ID
 	SubscriptionId *string `json:"subscription_id,omitempty"`
 }
 
-// NewTenantsRemoveSubscriptionResponse instantiates a new TenantsRemoveSubscriptionResponse object
+// NewTenantsAddSubscriptionResponse instantiates a new TenantsAddSubscriptionResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTenantsRemoveSubscriptionResponse() *TenantsRemoveSubscriptionResponse {
-	this := TenantsRemoveSubscriptionResponse{}
+func NewTenantsAddSubscriptionResponse() *TenantsAddSubscriptionResponse {
+	this := TenantsAddSubscriptionResponse{}
 	return &this
 }
 
-// NewTenantsRemoveSubscriptionResponseWithDefaults instantiates a new TenantsRemoveSubscriptionResponse object
+// NewTenantsAddSubscriptionResponseWithDefaults instantiates a new TenantsAddSubscriptionResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTenantsRemoveSubscriptionResponseWithDefaults() *TenantsRemoveSubscriptionResponse {
-	this := TenantsRemoveSubscriptionResponse{}
+func NewTenantsAddSubscriptionResponseWithDefaults() *TenantsAddSubscriptionResponse {
+	this := TenantsAddSubscriptionResponse{}
 	return &this
 }
 
 // GetMessage returns the Message field value if set, zero value otherwise.
-func (o *TenantsRemoveSubscriptionResponse) GetMessage() string {
+func (o *TenantsAddSubscriptionResponse) GetMessage() string {
 	if o == nil || IsNil(o.Message) {
 		var ret string
 		return ret
@@ -56,7 +56,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetMessage() string {
 
 // GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TenantsRemoveSubscriptionResponse) GetMessageOk() (*string, bool) {
+func (o *TenantsAddSubscriptionResponse) GetMessageOk() (*string, bool) {
 	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
@@ -64,7 +64,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetMessageOk() (*string, bool) {
 }
 
 // HasMessage returns a boolean if a field has been set.
-func (o *TenantsRemoveSubscriptionResponse) HasMessage() bool {
+func (o *TenantsAddSubscriptionResponse) HasMessage() bool {
 	if o != nil && !IsNil(o.Message) {
 		return true
 	}
@@ -73,12 +73,12 @@ func (o *TenantsRemoveSubscriptionResponse) HasMessage() bool {
 }
 
 // SetMessage gets a reference to the given string and assigns it to the Message field.
-func (o *TenantsRemoveSubscriptionResponse) SetMessage(v string) {
+func (o *TenantsAddSubscriptionResponse) SetMessage(v string) {
 	o.Message = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *TenantsRemoveSubscriptionResponse) GetStatus() string {
+func (o *TenantsAddSubscriptionResponse) GetStatus() string {
 	if o == nil || IsNil(o.Status) {
 		var ret string
 		return ret
@@ -88,7 +88,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetStatus() string {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TenantsRemoveSubscriptionResponse) GetStatusOk() (*string, bool) {
+func (o *TenantsAddSubscriptionResponse) GetStatusOk() (*string, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -96,7 +96,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetStatusOk() (*string, bool) {
 }
 
 // HasStatus returns a boolean if a field has been set.
-func (o *TenantsRemoveSubscriptionResponse) HasStatus() bool {
+func (o *TenantsAddSubscriptionResponse) HasStatus() bool {
 	if o != nil && !IsNil(o.Status) {
 		return true
 	}
@@ -105,12 +105,12 @@ func (o *TenantsRemoveSubscriptionResponse) HasStatus() bool {
 }
 
 // SetStatus gets a reference to the given string and assigns it to the Status field.
-func (o *TenantsRemoveSubscriptionResponse) SetStatus(v string) {
+func (o *TenantsAddSubscriptionResponse) SetStatus(v string) {
 	o.Status = &v
 }
 
 // GetSubscriptionId returns the SubscriptionId field value if set, zero value otherwise.
-func (o *TenantsRemoveSubscriptionResponse) GetSubscriptionId() string {
+func (o *TenantsAddSubscriptionResponse) GetSubscriptionId() string {
 	if o == nil || IsNil(o.SubscriptionId) {
 		var ret string
 		return ret
@@ -120,7 +120,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetSubscriptionId() string {
 
 // GetSubscriptionIdOk returns a tuple with the SubscriptionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TenantsRemoveSubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
+func (o *TenantsAddSubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
 	if o == nil || IsNil(o.SubscriptionId) {
 		return nil, false
 	}
@@ -128,7 +128,7 @@ func (o *TenantsRemoveSubscriptionResponse) GetSubscriptionIdOk() (*string, bool
 }
 
 // HasSubscriptionId returns a boolean if a field has been set.
-func (o *TenantsRemoveSubscriptionResponse) HasSubscriptionId() bool {
+func (o *TenantsAddSubscriptionResponse) HasSubscriptionId() bool {
 	if o != nil && !IsNil(o.SubscriptionId) {
 		return true
 	}
@@ -137,11 +137,11 @@ func (o *TenantsRemoveSubscriptionResponse) HasSubscriptionId() bool {
 }
 
 // SetSubscriptionId gets a reference to the given string and assigns it to the SubscriptionId field.
-func (o *TenantsRemoveSubscriptionResponse) SetSubscriptionId(v string) {
+func (o *TenantsAddSubscriptionResponse) SetSubscriptionId(v string) {
 	o.SubscriptionId = &v
 }
 
-func (o TenantsRemoveSubscriptionResponse) MarshalJSON() ([]byte, error) {
+func (o TenantsAddSubscriptionResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -149,7 +149,7 @@ func (o TenantsRemoveSubscriptionResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TenantsRemoveSubscriptionResponse) ToMap() (map[string]interface{}, error) {
+func (o TenantsAddSubscriptionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Message) {
 		toSerialize["message"] = o.Message
@@ -163,38 +163,38 @@ func (o TenantsRemoveSubscriptionResponse) ToMap() (map[string]interface{}, erro
 	return toSerialize, nil
 }
 
-type NullableTenantsRemoveSubscriptionResponse struct {
-	value *TenantsRemoveSubscriptionResponse
+type NullableTenantsAddSubscriptionResponse struct {
+	value *TenantsAddSubscriptionResponse
 	isSet bool
 }
 
-func (v NullableTenantsRemoveSubscriptionResponse) Get() *TenantsRemoveSubscriptionResponse {
+func (v NullableTenantsAddSubscriptionResponse) Get() *TenantsAddSubscriptionResponse {
 	return v.value
 }
 
-func (v *NullableTenantsRemoveSubscriptionResponse) Set(val *TenantsRemoveSubscriptionResponse) {
+func (v *NullableTenantsAddSubscriptionResponse) Set(val *TenantsAddSubscriptionResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTenantsRemoveSubscriptionResponse) IsSet() bool {
+func (v NullableTenantsAddSubscriptionResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTenantsRemoveSubscriptionResponse) Unset() {
+func (v *NullableTenantsAddSubscriptionResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTenantsRemoveSubscriptionResponse(val *TenantsRemoveSubscriptionResponse) *NullableTenantsRemoveSubscriptionResponse {
-	return &NullableTenantsRemoveSubscriptionResponse{value: val, isSet: true}
+func NewNullableTenantsAddSubscriptionResponse(val *TenantsAddSubscriptionResponse) *NullableTenantsAddSubscriptionResponse {
+	return &NullableTenantsAddSubscriptionResponse{value: val, isSet: true}
 }
 
-func (v NullableTenantsRemoveSubscriptionResponse) MarshalJSON() ([]byte, error) {
+func (v NullableTenantsAddSubscriptionResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTenantsRemoveSubscriptionResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableTenantsAddSubscriptionResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

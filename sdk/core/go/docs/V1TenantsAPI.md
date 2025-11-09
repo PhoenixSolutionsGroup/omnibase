@@ -5,6 +5,7 @@ All URIs are relative to *http://api.omnibase.tech*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AcceptInvite**](V1TenantsAPI.md#AcceptInvite) | **Put** /api/v1/tenants/invites/accept | Accept tenant invite
+[**AddSubscription**](V1TenantsAPI.md#AddSubscription) | **Post** /api/v1/payments/subscription/add | Add subscription
 [**AssignRole**](V1TenantsAPI.md#AssignRole) | **Post** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
 [**CreateInvite**](V1TenantsAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites | Create tenant invite
 [**CreateRole**](V1TenantsAPI.md#CreateRole) | **Post** /api/v1/tenants/roles | Create role
@@ -77,6 +78,72 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**AcceptInvite200Response**](AcceptInvite200Response.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## AddSubscription
+
+> AddSubscription200Response AddSubscription(ctx).Request(request).Execute()
+
+Add subscription
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	request := *openapiclient.NewTenantsAddSubscriptionRequest("neon_compute_starter") // TenantsAddSubscriptionRequest | Subscription addition parameters
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).Request(request).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AddSubscription``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `AddSubscription`: AddSubscription200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.AddSubscription`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiAddSubscriptionRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**TenantsAddSubscriptionRequest**](TenantsAddSubscriptionRequest.md) | Subscription addition parameters | 
+
+### Return type
+
+[**AddSubscription200Response**](AddSubscription200Response.md)
 
 ### Authorization
 
