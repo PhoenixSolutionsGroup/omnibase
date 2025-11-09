@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.13
+  version: 0.9.14
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -278,7 +278,199 @@ paths:
       - BearerAuth: []
       summary: Upload database migrations
       tags:
-      - V1 Database
+      - V1 Configuration
+  /api/v1/email/templates:
+    get:
+      description: |-
+        Retrieves all email templates stored in the database.
+
+        ## Response
+        Returns array of all templates with their type, subject, and HTML body.
+
+        ## Use Cases
+        - List available email templates
+        - Display template management interface
+        - Audit email template inventory
+      operationId: getEmailTemplates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getEmailTemplates_200_response"
+          description: Templates retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch templates
+      security:
+      - SessionAuth: []
+      summary: Get all email templates
+      tags:
+      - V1 Configuration
+    post:
+      description: |-
+        Creates a new email template or updates an existing one based on template type.
+
+        ## Template Management
+        - If template type exists: updates subject and HTML body
+        - If template type is new: creates new template entry
+
+        ## Template Types
+        Template types are user-defined identifiers (e.g., "welcome", "password-reset", "invoice").
+
+        ## Use Cases
+        - Store custom email templates for transactional emails
+        - Update email content without code deployments
+        - Maintain versioned email templates
+      operationId: createOrUpdateEmailTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/v1.CreateEmailTemplateRequest"
+        description: Email template data
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createOrUpdateEmailTemplate_200_response"
+          description: Template created/updated successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Invalid request body
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to create/update template
+      security:
+      - SessionAuth: []
+      summary: Create or update email template
+      tags:
+      - V1 Configuration
+      x-codegen-request-body-name: body
+  /api/v1/email/templates/{type}:
+    delete:
+      description: |-
+        Deletes an email template by its type identifier.
+
+        ## Deletion Process
+        - Searches for template by type
+        - Removes template from database if found
+        - Returns 404 if template doesn't exist
+
+        ## Use Cases
+        - Remove deprecated email templates
+        - Clean up test templates
+        - Template lifecycle management
+      operationId: deleteEmailTemplate
+      parameters:
+      - description: Template type identifier
+        in: path
+        name: type
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteEmailTemplate_200_response"
+          description: Template deleted successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Template not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to delete template
+      security:
+      - SessionAuth: []
+      summary: Delete email template
+      tags:
+      - V1 Configuration
+    get:
+      description: |-
+        Retrieves a specific email template by its type identifier.
+
+        ## Template Lookup
+        Searches for template matching the provided type parameter.
+
+        ## Use Cases
+        - Fetch template for editing
+        - Preview specific email template
+        - Retrieve template before sending email
+      operationId: getEmailTemplateByType
+      parameters:
+      - description: Template type identifier
+        in: path
+        name: type
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getEmailTemplateByType_200_response"
+          description: Template retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.UnauthorizedResponse"
+          description: Not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Template not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to fetch template
+      security:
+      - SessionAuth: []
+      summary: Get email template by type
+      tags:
+      - V1 Configuration
   /api/v1/payments/checkout:
     post:
       description: |-
@@ -676,7 +868,7 @@ paths:
       - BearerAuth: []
       summary: Deploy Keto namespace configurations
       tags:
-      - V1 Permissions
+      - V1 Configuration
   /api/v1/permissions/relationships:
     post:
       description: |-
@@ -984,7 +1176,7 @@ paths:
       - BearerAuth: []
       summary: Update Stripe config
       tags:
-      - V1 Stripe
+      - V1 Configuration
       x-codegen-request-body-name: config
   /api/v1/stripe/config/admin:
     get:
@@ -1062,7 +1254,7 @@ paths:
       - BearerAuth: []
       summary: Archive all Stripe config
       tags:
-      - V1 Stripe
+      - V1 Configuration
   /api/v1/stripe/config/history:
     get:
       description: |-
@@ -1111,7 +1303,7 @@ paths:
       - BearerAuth: []
       summary: Get config history
       tags:
-      - V1 Stripe
+      - V1 Configuration
   /api/v1/stripe/config/pull:
     get:
       description: |-
@@ -1148,7 +1340,7 @@ paths:
       - BearerAuth: []
       summary: Pull config from Stripe
       tags:
-      - V1 Stripe
+      - V1 Configuration
   /api/v1/stripe/config/validate:
     post:
       description: |-
@@ -1192,8 +1384,56 @@ paths:
       - BearerAuth: []
       summary: Validate Stripe config
       tags:
-      - V1 Stripe
+      - V1 Configuration
       x-codegen-request-body-name: config
+  /api/v1/stripe/convert/stripe-id/{stripe_id}:
+    get:
+      description: |-
+        Converts a Stripe ID (product, price, or meter) to the corresponding config ID.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Webhook processing
+        - Subscription mapping
+        - Price lookups
+      operationId: convertStripeIDToConfigID
+      parameters:
+      - description: Stripe ID to convert
+        in: path
+        name: stripe_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/convertStripeIDToConfigID_200_response"
+          description: Config ID found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.BadRequestResponse"
+          description: Missing Stripe ID
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.NotFoundErrorResponse"
+          description: Mapping not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.InternalServerErrorResponse"
+          description: Failed to retrieve mapping
+      summary: Convert Stripe ID to config ID
+      tags:
+      - V1 Stripe
   /api/v1/stripe/schema:
     get:
       description: |-
@@ -1219,7 +1459,7 @@ paths:
           description: Failed to load schema
       summary: Get Stripe config schema
       tags:
-      - V1 Stripe
+      - V1 Configuration
   /api/v1/tenants:
     delete:
       description: |-
@@ -2750,6 +2990,35 @@ components:
           description: Presigned URL for downloading the file (valid for 15 minutes)
           example: https://storage.omnibase.dev/bucket/path?signature=...
           type: string
+      type: object
+    models.EmailTemplate:
+      example:
+        updated_at: updated_at
+        html_body: html_body
+        subject: subject
+        created_at: created_at
+        id: id
+        type: type
+      properties:
+        created_at:
+          type: string
+        html_body:
+          type: string
+        id:
+          type: string
+        subject:
+          type: string
+        type:
+          type: string
+        updated_at:
+          type: string
+      required:
+      - created_at
+      - html_body
+      - id
+      - subject
+      - type
+      - updated_at
       type: object
     models.ListTenantsResponse:
       example:
@@ -4585,6 +4854,26 @@ components:
       - session_id
       - url
       type: object
+    v1.CreateEmailTemplateRequest:
+      properties:
+        html_body:
+          description: HTML email body content
+          example: <h1>Welcome!</h1>
+          type: string
+        subject:
+          description: Email subject line
+          example: Welcome to Our Platform
+          type: string
+        type:
+          description: "Template type identifier (e.g., \"welcome\", \"password-reset\"\
+            )"
+          example: welcome
+          type: string
+      required:
+      - html_body
+      - subject
+      - type
+      type: object
     v1.CreatePortalRequest:
       properties:
         return_url:
@@ -4768,6 +5057,41 @@ components:
       - id
       - updated_at
       - version
+      type: object
+    v1.StripeIDConversionResponse:
+      example:
+        config_uuid: 123e4567-e89b-12d3-a456-426614174000
+        config_id: price_basic_monthly
+        history_count: 2
+        item_type: price
+        stripe_id: price_1S7p7wABC123
+      properties:
+        config_id:
+          description: Config ID
+          example: price_basic_monthly
+          type: string
+        config_uuid:
+          description: Configuration UUID that this mapping belongs to
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        history_count:
+          description: Number of historical Stripe IDs for this config item
+          example: 2
+          type: integer
+        item_type:
+          description: "Item type (product, price, or meter)"
+          example: price
+          type: string
+        stripe_id:
+          description: Stripe ID
+          example: price_1S7p7wABC123
+          type: string
+      required:
+      - config_id
+      - config_uuid
+      - history_count
+      - item_type
+      - stripe_id
       type: object
     v1.SubjectSetRequest:
       properties:
@@ -5060,6 +5384,122 @@ components:
       required:
       - migrations
       type: object
+    getEmailTemplates_200_response_allOf_data:
+      example:
+        templates:
+        - updated_at: updated_at
+          html_body: html_body
+          subject: subject
+          created_at: created_at
+          id: id
+          type: type
+        - updated_at: updated_at
+          html_body: html_body
+          subject: subject
+          created_at: created_at
+          id: id
+          type: type
+        count: 0
+      properties:
+        count:
+          type: integer
+        templates:
+          items:
+            $ref: "#/components/schemas/models.EmailTemplate"
+          type: array
+      type: object
+    getEmailTemplates_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/getEmailTemplates_200_response_allOf_data"
+        type: object
+      example:
+        data:
+          templates:
+          - updated_at: updated_at
+            html_body: html_body
+            subject: subject
+            created_at: created_at
+            id: id
+            type: type
+          - updated_at: updated_at
+            html_body: html_body
+            subject: subject
+            created_at: created_at
+            id: id
+            type: type
+          count: 0
+        status: 200
+    createOrUpdateEmailTemplate_200_response_allOf_data:
+      example:
+        template:
+          updated_at: updated_at
+          html_body: html_body
+          subject: subject
+          created_at: created_at
+          id: id
+          type: type
+        message: message
+      properties:
+        message:
+          type: string
+        template:
+          $ref: "#/components/schemas/models.EmailTemplate"
+      type: object
+    createOrUpdateEmailTemplate_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/createOrUpdateEmailTemplate_200_response_allOf_data"
+        type: object
+      example:
+        data:
+          template:
+            updated_at: updated_at
+            html_body: html_body
+            subject: subject
+            created_at: created_at
+            id: id
+            type: type
+          message: message
+        status: 200
+    getEmailTemplateByType_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/models.EmailTemplate"
+        type: object
+      example:
+        data:
+          updated_at: updated_at
+          html_body: html_body
+          subject: subject
+          created_at: created_at
+          id: id
+          type: type
+        status: 200
+    deleteEmailTemplate_200_response_allOf_data:
+      example:
+        message: message
+      properties:
+        message:
+          type: string
+      type: object
+    deleteEmailTemplate_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/deleteEmailTemplate_200_response_allOf_data"
+        type: object
+      example:
+        data:
+          message: message
+        status: 200
     createCheckout_200_response:
       allOf:
       - $ref: "#/components/schemas/handlers.SuccessResponse"
@@ -5454,6 +5894,21 @@ components:
               id: id
               tax_included_in_price: true
             type: type
+        status: 200
+    convertStripeIDToConfigID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/handlers.SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/v1.StripeIDConversionResponse"
+        type: object
+      example:
+        data:
+          config_uuid: 123e4567-e89b-12d3-a456-426614174000
+          config_id: price_basic_monthly
+          history_count: 2
+          item_type: price
+          stripe_id: price_1S7p7wABC123
         status: 200
     createTenant_200_response:
       allOf:

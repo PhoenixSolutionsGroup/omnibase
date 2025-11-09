@@ -72,6 +72,18 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1TenantsAPIService CreateSubscription", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.CreateSubscription(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1TenantsAPIService CreateTenant", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -175,6 +187,18 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsAPI.ListTenantUsers(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1TenantsAPIService RemoveSubscription", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

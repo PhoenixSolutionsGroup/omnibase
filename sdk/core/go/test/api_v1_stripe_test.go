@@ -22,11 +22,13 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test V1StripeAPIService ArchiveAllStripeConfig", func(t *testing.T) {
+	t.Run("Test V1StripeAPIService ConvertStripeIDToConfigID", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1StripeAPI.ArchiveAllStripeConfig(context.Background()).Execute()
+		var stripeId string
+
+		resp, httpRes, err := apiClient.V1StripeAPI.ConvertStripeIDToConfigID(context.Background(), stripeId).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -51,66 +53,6 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigAdmin(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService GetStripeConfigHistory", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigHistory(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService GetStripeConfigSchema", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.GetStripeConfigSchema(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService PullStripeConfig", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.PullStripeConfig(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService UpdateStripeConfig", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.UpdateStripeConfig(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1StripeAPIService ValidateStripeConfig", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1StripeAPI.ValidateStripeConfig(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

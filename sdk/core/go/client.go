@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
 
-API version: 0.9.13
+API version: 0.9.14
 Contact: support@omnibase.dev
 */
 
@@ -42,7 +42,7 @@ var (
 	queryDescape    = strings.NewReplacer( "%5B", "[", "%5D", "]" )
 )
 
-// APIClient manages communication with the Omnibase REST API API v0.9.13
+// APIClient manages communication with the Omnibase REST API API v0.9.14
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration
@@ -52,7 +52,7 @@ type APIClient struct {
 
 	V1AuthAPI *V1AuthAPIService
 
-	V1DatabaseAPI *V1DatabaseAPIService
+	V1ConfigurationAPI *V1ConfigurationAPIService
 
 	V1PaymentsAPI *V1PaymentsAPIService
 
@@ -82,7 +82,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 
 	// API Services
 	c.V1AuthAPI = (*V1AuthAPIService)(&c.common)
-	c.V1DatabaseAPI = (*V1DatabaseAPIService)(&c.common)
+	c.V1ConfigurationAPI = (*V1ConfigurationAPIService)(&c.common)
 	c.V1PaymentsAPI = (*V1PaymentsAPIService)(&c.common)
 	c.V1PermissionsAPI = (*V1PermissionsAPIService)(&c.common)
 	c.V1StorageAPI = (*V1StorageAPIService)(&c.common)
