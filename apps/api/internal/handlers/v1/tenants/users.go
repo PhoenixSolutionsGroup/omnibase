@@ -167,7 +167,7 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	// Remove all Keto relationships for the user's current role
 	logger.Logger.Debug("Getting role definition to remove permissions", "role_name", targetUser.Role)
 	var role models.Role
-	if err := h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", targetUser.Role, tenantID).First(&role).Error; err != nil {
+	if err := h.db.Where("role_name = ? AND tenant_id = ?", targetUser.Role, tenantID).First(&role).Error; err != nil {
 		logger.Logger.Error("Failed to find role", "error", err, "role_name", targetUser.Role, "tenant_id", tenantID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to find user's role: %w", err))
 		return
@@ -321,7 +321,7 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 
 	// Get the old role to remove permissions
 	var oldRole models.Role
-	if err := h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", previousRole, tenantID).First(&oldRole).Error; err != nil {
+	if err := h.db.Where("role_name = ? AND tenant_id = ?", previousRole, tenantID).First(&oldRole).Error; err != nil {
 		logger.Logger.Error("Failed to find old role", "error", err, "role_name", previousRole, "tenant_id", tenantID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to find old role: %w", err))
 		return

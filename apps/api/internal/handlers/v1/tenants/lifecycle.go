@@ -123,6 +123,13 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 		return
 	}
 
+	// Clone role templates for this tenant
+	logger.Logger.Info("Cloning role templates for tenant", "tenant_id", tenant.ID)
+	if err := h.cloneRoleTemplates(tenant.ID); err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to clone role templates: %w", err))
+		return
+	}
+
 	// Assign owner role to user with all its permissions
 	logger.Logger.Info("Assigning owner role to tenant creator",
 		"user_id", userID,
@@ -274,4 +281,47 @@ func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, JWTTokenResponse{
 		Token: token,
 	})
+}
+
+// cloneRoleTemplates creates tenant-specific copies of all role templates
+func (h *TenantHandler) cloneRoleTemplates(tenantID string) error {
+	logger.Logger.Debug("Fetching role templates", "tenant_id", tenantID)
+
+	var templates []models.RoleTemplate
+	if err := h.db.Find(&templates).Error; err != nil {
+		logger.Logger.Error("Failed to fetch role templates", "error", err)
+		return err
+	}
+
+	logger.Logger.Info("Cloning role templates to tenant",
+		"tenant_id", tenantID,
+		"template_count", len(templates))
+
+	for _, template := range templates {
+		role := models.Role{
+			TenantID:    tenantID,
+			RoleName:    template.RoleName,
+			Permissions: template.Permissions,
+			TemplateID:  &template.ID,
+			UserIDs:     []string{},
+		}
+
+		if err := h.db.Create(&role).Error; err != nil {
+			logger.Logger.Error("Failed to create tenant role from template",
+				"template_id", template.ID,
+				"role_name", template.RoleName,
+				"error", err)
+			return err
+		}
+
+		logger.Logger.Debug("Cloned role template",
+			"template_id", template.ID,
+			"role_name", template.RoleName,
+			"tenant_id", tenantID)
+	}
+
+	logger.Logger.Info("Successfully cloned all role templates",
+		"tenant_id", tenantID,
+		"count", len(templates))
+	return nil
 }

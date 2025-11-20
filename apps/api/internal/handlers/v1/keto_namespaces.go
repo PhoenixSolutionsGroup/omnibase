@@ -345,9 +345,9 @@ func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.Parse
 	return nil
 }
 
-// storeRolesConfig stores system roles from roles.config.json
+// storeRolesConfig stores role templates from roles.config.json
 func (h *KetoNamespacesHandler) storeRolesConfig(config *services_v1.RolesConfig) (int, error) {
-	logger.Logger.Debug("Storing roles config", "roles_count", len(config.Roles))
+	logger.Logger.Debug("Storing role templates", "count", len(config.Roles))
 	db, err := database.GetConnection(h.config.Database)
 	if err != nil {
 		logger.Logger.Error("Failed to get database connection", "error", err)
@@ -356,36 +356,35 @@ func (h *KetoNamespacesHandler) storeRolesConfig(config *services_v1.RolesConfig
 
 	count := 0
 	for _, roleConfig := range config.Roles {
-		logger.Logger.Trace("Processing system role", "role_name", roleConfig.Role, "permissions_count", len(roleConfig.Permissions))
-		role := models.Role{
-			TenantID:    nil, // System roles have NULL tenant_id
+		logger.Logger.Trace("Processing role template", "role_name", roleConfig.Role, "permissions_count", len(roleConfig.Permissions))
+		template := models.RoleTemplate{
 			RoleName:    roleConfig.Role,
 			Permissions: pq.StringArray(roleConfig.Permissions),
-			UserIDs:     pq.StringArray{},
+			Description: "System role template",
 		}
 
-		// Upsert system role
-		result := db.Where("tenant_id IS NULL AND role_name = ?", roleConfig.Role).FirstOrCreate(&role)
+		// Upsert template
+		result := db.Where("role_name = ?", roleConfig.Role).FirstOrCreate(&template)
 		if result.Error != nil {
-			logger.Logger.Error("Failed to upsert system role", "role_name", roleConfig.Role, "error", result.Error)
+			logger.Logger.Error("Failed to upsert role template", "role_name", roleConfig.Role, "error", result.Error)
 			return count, result.Error
 		}
 
-		// Update permissions if role already exists
+		// Update permissions if template already exists
 		if result.RowsAffected == 0 {
-			logger.Logger.Debug("Updating existing system role", "role_name", roleConfig.Role)
-			role.Permissions = pq.StringArray(roleConfig.Permissions)
-			if err := db.Save(&role).Error; err != nil {
-				logger.Logger.Error("Failed to update system role", "role_name", roleConfig.Role, "error", err)
+			logger.Logger.Debug("Updating existing role template", "role_name", roleConfig.Role)
+			template.Permissions = pq.StringArray(roleConfig.Permissions)
+			if err := db.Save(&template).Error; err != nil {
+				logger.Logger.Error("Failed to update role template", "role_name", roleConfig.Role, "error", err)
 				return count, err
 			}
 		} else {
-			logger.Logger.Debug("Created new system role", "role_name", roleConfig.Role)
+			logger.Logger.Debug("Created new role template", "role_name", roleConfig.Role)
 		}
 
 		count++
 	}
 
-	logger.Logger.Debug("All system roles stored successfully", "count", count)
+	logger.Logger.Debug("All role templates stored successfully", "count", count)
 	return count, nil
 }

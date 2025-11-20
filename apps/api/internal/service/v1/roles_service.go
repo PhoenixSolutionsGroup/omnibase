@@ -24,17 +24,19 @@ func NewRolesService(db *gorm.DB, keto *KetoService) *RolesService {
 }
 
 // AssignRoleByName assigns a role to a user by role name
-// Supports both system roles (tenant_id IS NULL) and custom roles (tenant_id = X)
 func (s *RolesService) AssignRoleByName(ctx context.Context, userID, roleName, tenantID string) error {
 	logger.Logger.Info("Assigning role by name to user",
 		"user_id", userID,
 		"role_name", roleName,
 		"tenant_id", tenantID)
 
-	// Get role by name (supports both system and custom roles)
 	var role models.Role
-	if err := s.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", roleName, tenantID).First(&role).Error; err != nil {
-		logger.Logger.Warn("Role not found for assignment",
+	err := s.db.Preload("Template").
+		Where("role_name = ? AND tenant_id = ?", roleName, tenantID).
+		First(&role).Error
+
+	if err != nil {
+		logger.Logger.Warn("Role not found for tenant",
 			"role_name", roleName,
 			"tenant_id", tenantID,
 			"error", err)
@@ -47,14 +49,18 @@ func (s *RolesService) AssignRoleByName(ctx context.Context, userID, roleName, t
 // assignRoleToUser is an internal helper that assigns a role to a user
 // Creates all Keto relationships for the role's permissions
 func (s *RolesService) assignRoleToUser(ctx context.Context, userID string, role *models.Role, tenantID string) error {
+	// Get effective permissions (from template or custom)
+	permissions := role.GetEffectivePermissions()
+
 	logger.Logger.Info("Creating Keto relationships for role assignment",
 		"role_id", role.ID,
 		"role_name", role.RoleName,
 		"user_id", userID,
-		"permissions_count", len(role.Permissions))
+		"is_template_based", role.TemplateID != nil,
+		"permissions_count", len(permissions))
 
 	// Create Keto relationships for all permissions
-	for _, permission := range role.Permissions {
+	for _, permission := range permissions {
 		logger.Logger.Debug("Creating Keto relationship for permission",
 			"user_id", userID,
 			"permission", permission)

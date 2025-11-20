@@ -116,7 +116,7 @@ func (h *RolesHandler) ListRoles(c *gin.Context) {
 	logger.Logger.Info("Listing roles for tenant", "tenant_id", tenantID)
 
 	var roles []models.Role
-	if err := h.db.Where("tenant_id = ? OR tenant_id IS NULL", tenantID).Find(&roles).Error; err != nil {
+	if err := h.db.Where("tenant_id = ?", tenantID).Find(&roles).Error; err != nil {
 		logger.Logger.Error("Failed to list roles", "tenant_id", tenantID, "error", err)
 		handlers.NewInternalServerErrorResponse(c, err)
 		return
@@ -212,9 +212,10 @@ func (h *RolesHandler) CreateRole(c *gin.Context) {
 	logger.Logger.Debug("Role permissions", "permissions", req.Permissions)
 
 	role := models.Role{
-		TenantID:    &tenantID,
+		TenantID:    tenantID,
 		RoleName:    req.RoleName,
 		Permissions: pq.StringArray(req.Permissions),
+		TemplateID:  nil, // Custom role, no template
 		UserIDs:     pq.StringArray{},
 	}
 
@@ -453,13 +454,13 @@ func (h *RolesHandler) AssignRole(c *gin.Context) {
 
 	logger.Logger.Debug("Looking up role", "role_id", req.RoleID, "role_name", req.RoleName)
 
-	// Get role by either ID or name
+	// Get role by either ID or name (always tenant-specific)
 	var role models.Role
 	var err error
 	if req.RoleID != nil {
-		err = h.db.Where("id = ? AND (tenant_id = ? OR tenant_id IS NULL)", *req.RoleID, tenantID).First(&role).Error
+		err = h.db.Preload("Template").Where("id = ? AND tenant_id = ?", *req.RoleID, tenantID).First(&role).Error
 	} else {
-		err = h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", *req.RoleName, tenantID).First(&role).Error
+		err = h.db.Preload("Template").Where("role_name = ? AND tenant_id = ?", *req.RoleName, tenantID).First(&role).Error
 	}
 
 	if err != nil {
@@ -564,14 +565,17 @@ func (h *RolesHandler) deleteKetoRelationship(ctx context.Context, permission, u
 // assignRoleToUser is an internal helper that assigns a role to a user
 // This is extracted for reuse in both HTTP and internal contexts
 func (h *RolesHandler) assignRoleToUser(ctx context.Context, userID string, role *models.Role, tenantID string) error {
+	permissions := role.GetEffectivePermissions()
+
 	logger.Logger.Info("Creating Keto relationships for role assignment",
 		"role_id", role.ID,
 		"role_name", role.RoleName,
 		"user_id", userID,
-		"permissions_count", len(role.Permissions))
+		"is_template_based", role.TemplateID != nil,
+		"permissions_count", len(permissions))
 
 	// Create Keto relationships for all permissions
-	for _, permission := range role.Permissions {
+	for _, permission := range permissions {
 		logger.Logger.Debug("Creating Keto relationship for permission",
 			"user_id", userID,
 			"permission", permission)
@@ -611,10 +615,9 @@ func (h *RolesHandler) AssignRoleByName(ctx context.Context, userID, roleName, t
 		"role_name", roleName,
 		"tenant_id", tenantID)
 
-	// Get role by name (supports both system and custom roles)
 	var role models.Role
-	if err := h.db.Where("role_name = ? AND (tenant_id = ? OR tenant_id IS NULL)", roleName, tenantID).First(&role).Error; err != nil {
-		logger.Logger.Warn("Role not found for assignment",
+	if err := h.db.Preload("Template").Where("role_name = ? AND tenant_id = ?", roleName, tenantID).First(&role).Error; err != nil {
+		logger.Logger.Warn("Role not found for tenant",
 			"role_name", roleName,
 			"tenant_id", tenantID,
 			"error", err)
