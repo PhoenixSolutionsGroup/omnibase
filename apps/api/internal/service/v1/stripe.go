@@ -14,6 +14,7 @@ import (
 	portalsession "github.com/stripe/stripe-go/v82/billingportal/session"
 	checkoutsession "github.com/stripe/stripe-go/v82/checkout/session"
 	"github.com/stripe/stripe-go/v82/customer"
+	"github.com/stripe/stripe-go/v82/paymentmethod"
 	"github.com/stripe/stripe-go/v82/price"
 	"github.com/stripe/stripe-go/v82/product"
 	"github.com/stripe/stripe-go/v82/subscription"
@@ -252,6 +253,7 @@ func (s *StripeService) ArchiveStripePrice(priceID string) error {
 }
 
 // ArchiveStripeMeter deactivates a Stripe billing meter by ID
+// Idempotent: returns success if meter is already deactivated
 func (s *StripeService) ArchiveStripeMeter(meterID string) error {
 	params := &stripe.BillingMeterDeactivateParams{}
 
@@ -261,6 +263,34 @@ func (s *StripeService) ArchiveStripeMeter(meterID string) error {
 
 	_, err := meter.Deactivate(meterID, params)
 	if err != nil {
+		// Check if meter is already deactivated - treat as success (idempotent)
+		if stripeErr, ok := err.(*stripe.Error); ok {
+			logger.Logger.Debug("Stripe error detected",
+				"meter_id", meterID,
+				"code", stripeErr.Code,
+				"msg", stripeErr.Msg,
+				"type", stripeErr.Type)
+
+			// Check Code, Msg, and Type fields for meter_already_deactivated
+			if stripeErr.Code == "meter_already_deactivated" ||
+				stripeErr.Msg == "meter_already_deactivated" ||
+				stripeErr.Type == stripe.ErrorTypeInvalidRequest {
+				// For invalid_request_error type, also check the message content
+				errStr := err.Error()
+				if stripeErr.Type == stripe.ErrorTypeInvalidRequest &&
+					(stripeErr.Msg == "meter_already_deactivated" ||
+						stripeErr.Code == "meter_already_deactivated") {
+					logger.Logger.Debug("Meter already deactivated, treating as success", "meter_id", meterID)
+					return nil
+				}
+				// Also check error string contains the message
+				if len(errStr) > 0 && (stripeErr.Code == "meter_already_deactivated" || stripeErr.Msg == "meter_already_deactivated") {
+					logger.Logger.Debug("Meter already deactivated (via error check), treating as success", "meter_id", meterID)
+					return nil
+				}
+			}
+		}
+		logger.Logger.Error("Failed to deactivate Stripe meter", "error", err, "stripeID", meterID)
 		return fmt.Errorf("failed to deactivate Stripe meter %s: %w", meterID, err)
 	}
 
@@ -331,10 +361,16 @@ func (s *StripeService) GetTenantActiveSubscriptions(stripeCustomerID string) ([
 				"status", sub.Status)
 
 			results = append(results, models.SubscriptionResponse{
-				SubscriptionID: sub.ID,
-				ConfigPriceID:  configPriceID,
-				Status:         string(sub.Status),
-				IsLegacyPrice:  isLegacy,
+				SubscriptionID:     sub.ID,
+				ConfigPriceID:      configPriceID,
+				Status:             string(sub.Status),
+				IsLegacyPrice:      isLegacy,
+				CurrentPeriodStart: item.CurrentPeriodStart,
+				CurrentPeriodEnd:   item.CurrentPeriodEnd,
+				CancelAtPeriodEnd:  sub.CancelAtPeriodEnd,
+				CanceledAt:         getInt64Pointer(sub.CanceledAt),
+				TrialStart:         getInt64Pointer(sub.TrialStart),
+				TrialEnd:           getInt64Pointer(sub.TrialEnd),
 			})
 		}
 	}
@@ -381,19 +417,92 @@ func (s *StripeService) GetConfigIDByStripeID(stripeID string) (string, bool, er
 
 // CheckBillingStatus checks if customer has valid payment method attached
 func (s *StripeService) CheckBillingStatus(stripeCustomerID string) (bool, error) {
-	params := &stripe.CustomerParams{}
+	params := &stripe.PaymentMethodListParams{
+		Customer: stripe.String(stripeCustomerID),
+		Type:     stripe.String("card"),
+	}
+
 	if s.accountID != "" {
 		params.SetStripeAccount(s.accountID)
 	}
 
-	cust, err := customer.Get(stripeCustomerID, params)
-	if err != nil {
-		return false, fmt.Errorf("failed to retrieve customer: %w", err)
+	iter := paymentmethod.List(params)
+	hasCard := iter.Next() // Returns true if at least one card exists
+
+	if err := iter.Err(); err != nil {
+		return false, fmt.Errorf("failed to list payment methods: %w", err)
+	}
+	return hasCard, nil
+}
+
+// getInt64Pointer converts an int64 to *int64, returning nil if the value is 0
+func getInt64Pointer(val int64) *int64 {
+	if val == 0 {
+		return nil
+	}
+	return &val
+}
+
+// CreateSubscription creates a Stripe subscription for a customer with a given price
+func (s *StripeService) CreateSubscription(customerID string, priceID string) (*stripe.Subscription, error) {
+	params := &stripe.SubscriptionParams{
+		Customer: stripe.String(customerID),
+		Items: []*stripe.SubscriptionItemsParams{
+			{
+				Price: stripe.String(priceID),
+			},
+		},
 	}
 
-	// Check if default payment method or invoice settings exist
-	hasPaymentMethod := cust.DefaultSource != nil ||
-		(cust.InvoiceSettings != nil && cust.InvoiceSettings.DefaultPaymentMethod != nil)
+	if s.accountID != "" {
+		params.SetStripeAccount(s.accountID)
+	}
 
-	return hasPaymentMethod, nil
+	logger.Logger.Debug("Creating Stripe subscription",
+		"customer_id", customerID,
+		"price_id", priceID,
+		"account_id", s.accountID)
+
+	sub, err := subscription.New(params)
+	if err != nil {
+		logger.Logger.Error("Failed to create Stripe subscription",
+			"customer_id", customerID,
+			"price_id", priceID,
+			"error", err)
+		return nil, fmt.Errorf("failed to create subscription: %w", err)
+	}
+
+	logger.Logger.Info("Stripe subscription created successfully",
+		"subscription_id", sub.ID,
+		"customer_id", customerID,
+		"status", sub.Status)
+
+	return sub, nil
+}
+
+// CancelSubscription cancels a Stripe subscription immediately
+func (s *StripeService) CancelSubscription(subscriptionID string) (*stripe.Subscription, error) {
+	params := &stripe.SubscriptionCancelParams{}
+
+	if s.accountID != "" {
+		params.SetStripeAccount(s.accountID)
+	}
+
+	logger.Logger.Debug("Canceling Stripe subscription immediately",
+		"subscription_id", subscriptionID,
+		"account_id", s.accountID)
+
+	sub, err := subscription.Cancel(subscriptionID, params)
+	if err != nil {
+		logger.Logger.Error("Failed to cancel Stripe subscription",
+			"subscription_id", subscriptionID,
+			"error", err)
+		return nil, fmt.Errorf("failed to cancel subscription: %w", err)
+	}
+
+	logger.Logger.Info("Stripe subscription canceled successfully",
+		"subscription_id", subscriptionID,
+		"status", sub.Status)
+
+	return sub, nil
 }
