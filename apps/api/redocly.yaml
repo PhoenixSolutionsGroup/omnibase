@@ -1,0 +1,41 @@
+# Redocly configuration for OpenAPI bundling and linting
+# https://redocly.com/docs/cli/configuration/
+
+apis:
+  omnibase@v1:
+    root: docs/openapi.yaml
+
+# Linting rules
+rules:
+  # Enforce operation IDs
+  operation-operationId: error
+  
+  # Require descriptions
+  operation-description: warn
+  operation-summary: error
+  info-description: error
+  
+  # Security
+  operation-security-defined: error
+  
+  # Best practices
+  no-invalid-media-type-examples: error
+  no-ambiguous-paths: error
+  no-path-trailing-slash: error
+  
+  # Allow $ref siblings (needed for allOf patterns)
+  no-$ref-siblings: off
+  
+  # Tag requirements
+  operation-tag-defined: error
+  tag-description: warn
+  
+  # Response requirements
+  operation-2xx-response: error
+  operation-4xx-response: warn
+
+# Theme configuration
+theme:
+  openapi:
+    schemaExpansionLevel: 2
+    jsonSampleExpandLevel: 2
