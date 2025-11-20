@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -21,7 +21,7 @@ var _ MappedNullable = &CreateOrUpdateEmailTemplate200ResponseAllOfData{}
 // CreateOrUpdateEmailTemplate200ResponseAllOfData struct for CreateOrUpdateEmailTemplate200ResponseAllOfData
 type CreateOrUpdateEmailTemplate200ResponseAllOfData struct {
 	Message *string `json:"message,omitempty"`
-	Template *ModelsEmailTemplate `json:"template,omitempty"`
+	Template *EmailTemplate `json:"template,omitempty"`
 }
 
 // NewCreateOrUpdateEmailTemplate200ResponseAllOfData instantiates a new CreateOrUpdateEmailTemplate200ResponseAllOfData object
@@ -74,9 +74,9 @@ func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) SetMessage(v string) {
 }
 
 // GetTemplate returns the Template field value if set, zero value otherwise.
-func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplate() ModelsEmailTemplate {
+func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplate() EmailTemplate {
 	if o == nil || IsNil(o.Template) {
-		var ret ModelsEmailTemplate
+		var ret EmailTemplate
 		return ret
 	}
 	return *o.Template
@@ -84,7 +84,7 @@ func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplate() ModelsEm
 
 // GetTemplateOk returns a tuple with the Template field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplateOk() (*ModelsEmailTemplate, bool) {
+func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplateOk() (*EmailTemplate, bool) {
 	if o == nil || IsNil(o.Template) {
 		return nil, false
 	}
@@ -100,8 +100,8 @@ func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) HasTemplate() bool {
 	return false
 }
 
-// SetTemplate gets a reference to the given ModelsEmailTemplate and assigns it to the Template field.
-func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) SetTemplate(v ModelsEmailTemplate) {
+// SetTemplate gets a reference to the given EmailTemplate and assigns it to the Template field.
+func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) SetTemplate(v EmailTemplate) {
 	o.Template = &v
 }
 

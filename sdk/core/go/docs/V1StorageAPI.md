@@ -1,84 +1,18 @@
 # \V1StorageAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ApiV1StorageDownloadPost**](V1StorageAPI.md#ApiV1StorageDownloadPost) | **Post** /api/v1/storage/download | Download file from storage
-[**ApiV1StorageObjectDelete**](V1StorageAPI.md#ApiV1StorageObjectDelete) | **Delete** /api/v1/storage/object | Delete file from storage
-[**ApiV1StorageUploadPost**](V1StorageAPI.md#ApiV1StorageUploadPost) | **Post** /api/v1/storage/upload | Upload file to storage
+[**DeleteObject**](V1StorageAPI.md#DeleteObject) | **Delete** /api/v1/storage/object | Delete file from storage
+[**DownloadFile**](V1StorageAPI.md#DownloadFile) | **Post** /api/v1/storage/download | Download file from storage
+[**UploadFile**](V1StorageAPI.md#UploadFile) | **Post** /api/v1/storage/upload | Upload file to storage
 
 
 
-## ApiV1StorageDownloadPost
+## DeleteObject
 
-> ApiV1StorageDownloadPost200Response ApiV1StorageDownloadPost(ctx).Request(request).Execute()
-
-Download file from storage
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-	request := *openapiclient.NewModelsDownloadRequest("public/avatars/user-123.png") // ModelsDownloadRequest | Path of file to download
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageDownloadPost(context.Background()).Request(request).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageDownloadPost``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `ApiV1StorageDownloadPost`: ApiV1StorageDownloadPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageDownloadPost`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiApiV1StorageDownloadPostRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **request** | [**ModelsDownloadRequest**](ModelsDownloadRequest.md) | Path of file to download | 
-
-### Return type
-
-[**ApiV1StorageDownloadPost200Response**](ApiV1StorageDownloadPost200Response.md)
-
-### Authorization
-
-[SessionAuth](../README.md#SessionAuth)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## ApiV1StorageObjectDelete
-
-> ApiV1StorageObjectDelete200Response ApiV1StorageObjectDelete(ctx).Request(request).Execute()
+> DeleteObject200Response DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).Execute()
 
 Delete file from storage
 
@@ -97,17 +31,17 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewModelsDeleteObjectRequest("public/avatars/user-123.png") // ModelsDeleteObjectRequest | Path of file to delete
+	deleteObjectRequest := *openapiclient.NewDeleteObjectRequest("avatars/user-123.png") // DeleteObjectRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageObjectDelete(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1StorageAPI.DeleteObject(context.Background()).DeleteObjectRequest(deleteObjectRequest).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageObjectDelete``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DeleteObject``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1StorageObjectDelete`: ApiV1StorageObjectDelete200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageObjectDelete`: %v\n", resp)
+	// response from `DeleteObject`: DeleteObject200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.DeleteObject`: %v\n", resp)
 }
 ```
 
@@ -117,34 +51,100 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1StorageObjectDeleteRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiDeleteObjectRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**ModelsDeleteObjectRequest**](ModelsDeleteObjectRequest.md) | Path of file to delete | 
+ **deleteObjectRequest** | [**DeleteObjectRequest**](DeleteObjectRequest.md) |  | 
 
 ### Return type
 
-[**ApiV1StorageObjectDelete200Response**](ApiV1StorageObjectDelete200Response.md)
+[**DeleteObject200Response**](DeleteObject200Response.md)
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
 
 
-## ApiV1StorageUploadPost
+## DownloadFile
 
-> ApiV1StorageUploadPost200Response ApiV1StorageUploadPost(ctx).Request(request).Execute()
+> DownloadFile200Response DownloadFile(ctx).DownloadRequest(downloadRequest).Execute()
+
+Download file from storage
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	downloadRequest := *openapiclient.NewDownloadRequest("avatars/user-123.png") // DownloadRequest | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1StorageAPI.DownloadFile(context.Background()).DownloadRequest(downloadRequest).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DownloadFile``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `DownloadFile`: DownloadFile200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.DownloadFile`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDownloadFileRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **downloadRequest** | [**DownloadRequest**](DownloadRequest.md) |  | 
+
+### Return type
+
+[**DownloadFile200Response**](DownloadFile200Response.md)
+
+### Authorization
+
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json, text/plain
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UploadFile
+
+> UploadFile200Response UploadFile(ctx).UploadRequest(uploadRequest).Execute()
 
 Upload file to storage
 
@@ -163,17 +163,17 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewModelsUploadRequest("public/avatars/user-123.png") // ModelsUploadRequest | Upload configuration with path and optional metadata
+	uploadRequest := *openapiclient.NewUploadRequest("avatars/user-123.png") // UploadRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.ApiV1StorageUploadPost(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1StorageAPI.UploadFile(context.Background()).UploadRequest(uploadRequest).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.ApiV1StorageUploadPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.UploadFile``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApiV1StorageUploadPost`: ApiV1StorageUploadPost200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.ApiV1StorageUploadPost`: %v\n", resp)
+	// response from `UploadFile`: UploadFile200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.UploadFile`: %v\n", resp)
 }
 ```
 
@@ -183,25 +183,25 @@ func main() {
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiApiV1StorageUploadPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiUploadFileRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**ModelsUploadRequest**](ModelsUploadRequest.md) | Upload configuration with path and optional metadata | 
+ **uploadRequest** | [**UploadRequest**](UploadRequest.md) |  | 
 
 ### Return type
 
-[**ApiV1StorageUploadPost200Response**](ApiV1StorageUploadPost200Response.md)
+[**UploadFile200Response**](UploadFile200Response.md)
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

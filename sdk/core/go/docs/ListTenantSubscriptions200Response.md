@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**[]ModelsSubscriptionResponse**](ModelsSubscriptionResponse.md) |  | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
+**Status** | **int32** | HTTP status code | 
+**Data** | Pointer to [**[]SubscriptionResponse**](SubscriptionResponse.md) |  | [optional] 
 
 ## Methods
 
 ### NewListTenantSubscriptions200Response
 
-`func NewListTenantSubscriptions200Response() *ListTenantSubscriptions200Response`
+`func NewListTenantSubscriptions200Response(status int32, ) *ListTenantSubscriptions200Response`
 
 NewListTenantSubscriptions200Response instantiates a new ListTenantSubscriptions200Response object
 This constructor will assign default values to properties that have it defined,
@@ -25,31 +25,6 @@ will change when the set of required properties is changed
 NewListTenantSubscriptions200ResponseWithDefaults instantiates a new ListTenantSubscriptions200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetData
-
-`func (o *ListTenantSubscriptions200Response) GetData() []ModelsSubscriptionResponse`
-
-GetData returns the Data field if non-nil, zero value otherwise.
-
-### GetDataOk
-
-`func (o *ListTenantSubscriptions200Response) GetDataOk() (*[]ModelsSubscriptionResponse, bool)`
-
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetData
-
-`func (o *ListTenantSubscriptions200Response) SetData(v []ModelsSubscriptionResponse)`
-
-SetData sets Data field to given value.
-
-### HasData
-
-`func (o *ListTenantSubscriptions200Response) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -70,11 +45,31 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
 
-`func (o *ListTenantSubscriptions200Response) HasStatus() bool`
+### GetData
 
-HasStatus returns a boolean if a field has been set.
+`func (o *ListTenantSubscriptions200Response) GetData() []SubscriptionResponse`
+
+GetData returns the Data field if non-nil, zero value otherwise.
+
+### GetDataOk
+
+`func (o *ListTenantSubscriptions200Response) GetDataOk() (*[]SubscriptionResponse, bool)`
+
+GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetData
+
+`func (o *ListTenantSubscriptions200Response) SetData(v []SubscriptionResponse)`
+
+SetData sets Data field to given value.
+
+### HasData
+
+`func (o *ListTenantSubscriptions200Response) HasData() bool`
+
+HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

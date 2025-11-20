@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**V1CreatePortalResponse**](V1CreatePortalResponse.md) |  | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
+**Status** | **int32** | HTTP status code | 
+**Data** | Pointer to [**CreatePortalResponse**](CreatePortalResponse.md) |  | [optional] 
 
 ## Methods
 
 ### NewCreateCustomerPortal200Response
 
-`func NewCreateCustomerPortal200Response() *CreateCustomerPortal200Response`
+`func NewCreateCustomerPortal200Response(status int32, ) *CreateCustomerPortal200Response`
 
 NewCreateCustomerPortal200Response instantiates a new CreateCustomerPortal200Response object
 This constructor will assign default values to properties that have it defined,
@@ -25,31 +25,6 @@ will change when the set of required properties is changed
 NewCreateCustomerPortal200ResponseWithDefaults instantiates a new CreateCustomerPortal200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetData
-
-`func (o *CreateCustomerPortal200Response) GetData() V1CreatePortalResponse`
-
-GetData returns the Data field if non-nil, zero value otherwise.
-
-### GetDataOk
-
-`func (o *CreateCustomerPortal200Response) GetDataOk() (*V1CreatePortalResponse, bool)`
-
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetData
-
-`func (o *CreateCustomerPortal200Response) SetData(v V1CreatePortalResponse)`
-
-SetData sets Data field to given value.
-
-### HasData
-
-`func (o *CreateCustomerPortal200Response) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -70,11 +45,31 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
 
-`func (o *CreateCustomerPortal200Response) HasStatus() bool`
+### GetData
 
-HasStatus returns a boolean if a field has been set.
+`func (o *CreateCustomerPortal200Response) GetData() CreatePortalResponse`
+
+GetData returns the Data field if non-nil, zero value otherwise.
+
+### GetDataOk
+
+`func (o *CreateCustomerPortal200Response) GetDataOk() (*CreatePortalResponse, bool)`
+
+GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetData
+
+`func (o *CreateCustomerPortal200Response) SetData(v CreatePortalResponse)`
+
+SetData sets Data field to given value.
+
+### HasData
+
+`func (o *CreateCustomerPortal200Response) HasData() bool`
+
+HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

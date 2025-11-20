@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the GetSession200Response type satisfies the MappedNullable interface at compile time
@@ -20,16 +22,20 @@ var _ MappedNullable = &GetSession200Response{}
 
 // GetSession200Response struct for GetSession200Response
 type GetSession200Response struct {
-	Data *ModelsSessionResponse `json:"data,omitempty"`
-	Status *int32 `json:"status,omitempty"`
+	// HTTP status code
+	Status int32 `json:"status"`
+	Data *SessionResponse `json:"data,omitempty"`
 }
+
+type _GetSession200Response GetSession200Response
 
 // NewGetSession200Response instantiates a new GetSession200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetSession200Response() *GetSession200Response {
+func NewGetSession200Response(status int32) *GetSession200Response {
 	this := GetSession200Response{}
+	this.Status = status
 	return &this
 }
 
@@ -41,10 +47,34 @@ func NewGetSession200ResponseWithDefaults() *GetSession200Response {
 	return &this
 }
 
+// GetStatus returns the Status field value
+func (o *GetSession200Response) GetStatus() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *GetSession200Response) GetStatusOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *GetSession200Response) SetStatus(v int32) {
+	o.Status = v
+}
+
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *GetSession200Response) GetData() ModelsSessionResponse {
+func (o *GetSession200Response) GetData() SessionResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret ModelsSessionResponse
+		var ret SessionResponse
 		return ret
 	}
 	return *o.Data
@@ -52,7 +82,7 @@ func (o *GetSession200Response) GetData() ModelsSessionResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *GetSession200Response) GetDataOk() (*ModelsSessionResponse, bool) {
+func (o *GetSession200Response) GetDataOk() (*SessionResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -68,41 +98,9 @@ func (o *GetSession200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given ModelsSessionResponse and assigns it to the Data field.
-func (o *GetSession200Response) SetData(v ModelsSessionResponse) {
+// SetData gets a reference to the given SessionResponse and assigns it to the Data field.
+func (o *GetSession200Response) SetData(v SessionResponse) {
 	o.Data = &v
-}
-
-// GetStatus returns the Status field value if set, zero value otherwise.
-func (o *GetSession200Response) GetStatus() int32 {
-	if o == nil || IsNil(o.Status) {
-		var ret int32
-		return ret
-	}
-	return *o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *GetSession200Response) GetStatusOk() (*int32, bool) {
-	if o == nil || IsNil(o.Status) {
-		return nil, false
-	}
-	return o.Status, true
-}
-
-// HasStatus returns a boolean if a field has been set.
-func (o *GetSession200Response) HasStatus() bool {
-	if o != nil && !IsNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *GetSession200Response) SetStatus(v int32) {
-	o.Status = &v
 }
 
 func (o GetSession200Response) MarshalJSON() ([]byte, error) {
@@ -115,13 +113,48 @@ func (o GetSession200Response) MarshalJSON() ([]byte, error) {
 
 func (o GetSession200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["status"] = o.Status
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	if !IsNil(o.Status) {
-		toSerialize["status"] = o.Status
-	}
 	return toSerialize, nil
+}
+
+func (o *GetSession200Response) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"status",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varGetSession200Response := _GetSession200Response{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varGetSession200Response)
+
+	if err != nil {
+		return err
+	}
+
+	*o = GetSession200Response(varGetSession200Response)
+
+	return err
 }
 
 type NullableGetSession200Response struct {

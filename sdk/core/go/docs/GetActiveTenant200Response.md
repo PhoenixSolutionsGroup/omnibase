@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**ModelsActiveTenantResponse**](ModelsActiveTenantResponse.md) |  | [optional] 
-**Status** | Pointer to **int32** |  | [optional] 
+**Status** | **int32** | HTTP status code | 
+**Data** | Pointer to [**ActiveTenantResponse**](ActiveTenantResponse.md) |  | [optional] 
 
 ## Methods
 
 ### NewGetActiveTenant200Response
 
-`func NewGetActiveTenant200Response() *GetActiveTenant200Response`
+`func NewGetActiveTenant200Response(status int32, ) *GetActiveTenant200Response`
 
 NewGetActiveTenant200Response instantiates a new GetActiveTenant200Response object
 This constructor will assign default values to properties that have it defined,
@@ -25,31 +25,6 @@ will change when the set of required properties is changed
 NewGetActiveTenant200ResponseWithDefaults instantiates a new GetActiveTenant200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetData
-
-`func (o *GetActiveTenant200Response) GetData() ModelsActiveTenantResponse`
-
-GetData returns the Data field if non-nil, zero value otherwise.
-
-### GetDataOk
-
-`func (o *GetActiveTenant200Response) GetDataOk() (*ModelsActiveTenantResponse, bool)`
-
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetData
-
-`func (o *GetActiveTenant200Response) SetData(v ModelsActiveTenantResponse)`
-
-SetData sets Data field to given value.
-
-### HasData
-
-`func (o *GetActiveTenant200Response) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -70,11 +45,31 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
 
-`func (o *GetActiveTenant200Response) HasStatus() bool`
+### GetData
 
-HasStatus returns a boolean if a field has been set.
+`func (o *GetActiveTenant200Response) GetData() ActiveTenantResponse`
+
+GetData returns the Data field if non-nil, zero value otherwise.
+
+### GetDataOk
+
+`func (o *GetActiveTenant200Response) GetDataOk() (*ActiveTenantResponse, bool)`
+
+GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetData
+
+`func (o *GetActiveTenant200Response) SetData(v ActiveTenantResponse)`
+
+SetData sets Data field to given value.
+
+### HasData
+
+`func (o *GetActiveTenant200Response) HasData() bool`
+
+HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

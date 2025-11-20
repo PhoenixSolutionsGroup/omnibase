@@ -72,20 +72,6 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1ConfigurationAPIService GetEmailTemplateByType", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		var type_ string
-
-		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetEmailTemplateByType(context.Background(), type_).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
 	t.Run("Test V1ConfigurationAPIService GetEmailTemplates", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test

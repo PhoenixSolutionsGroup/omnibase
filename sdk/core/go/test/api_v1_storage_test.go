@@ -22,11 +22,11 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test V1StorageAPIService ApiV1StorageDownloadPost", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService DeleteObject", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageDownloadPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.DeleteObject(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,11 +34,11 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1StorageAPIService ApiV1StorageObjectDelete", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService DownloadFile", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageObjectDelete(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.DownloadFile(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -46,11 +46,11 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test V1StorageAPIService ApiV1StorageUploadPost", func(t *testing.T) {
+	t.Run("Test V1StorageAPIService UploadFile", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1StorageAPI.ApiV1StorageUploadPost(context.Background()).Execute()
+		resp, httpRes, err := apiClient.V1StorageAPI.UploadFile(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -26,12 +26,11 @@ type V1PaymentsAPIService service
 type ApiCreateCheckoutRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	request *V1CreateCheckoutRequest
+	createCheckoutRequest *CreateCheckoutRequest
 }
 
-// Checkout session parameters
-func (r ApiCreateCheckoutRequest) Request(request V1CreateCheckoutRequest) ApiCreateCheckoutRequest {
-	r.request = &request
+func (r ApiCreateCheckoutRequest) CreateCheckoutRequest(createCheckoutRequest CreateCheckoutRequest) ApiCreateCheckoutRequest {
+	r.createCheckoutRequest = &createCheckoutRequest
 	return r
 }
 
@@ -45,13 +44,14 @@ CreateCheckout Create checkout session
 Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
 
 ## Authentication
-Requires JWT token. If the user has an existing Stripe customer ID, it will be used; otherwise, a new customer will be created.
+Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.
 
 ## Use Cases
 - Subscription sign-ups
 - One-time purchases
 - Trial period checkouts
 - Promotional code redemption
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCheckoutRequest
@@ -83,8 +83,8 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.createCheckoutRequest == nil {
+		return localVarReturnValue, nil, reportError("createCheckoutRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -105,21 +105,7 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
+	localVarPostBody = r.createCheckoutRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -143,7 +129,7 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -154,7 +140,18 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v NotFoundResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -165,7 +162,7 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -192,12 +189,11 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 type ApiCreateCustomerPortalRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	request *V1CreatePortalRequest
+	createPortalRequest *CreatePortalRequest
 }
 
-// Portal session parameters
-func (r ApiCreateCustomerPortalRequest) Request(request V1CreatePortalRequest) ApiCreateCustomerPortalRequest {
-	r.request = &request
+func (r ApiCreateCustomerPortalRequest) CreatePortalRequest(createPortalRequest CreatePortalRequest) ApiCreateCustomerPortalRequest {
+	r.createPortalRequest = &createPortalRequest
 	return r
 }
 
@@ -211,12 +207,19 @@ CreateCustomerPortal Create customer portal session
 Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
 
 ## Authentication
-Requires JWT token and an associated Stripe customer ID.
+Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+
+## Prerequisites
+- User must be authenticated
+- Tenant must have a Stripe customer ID configured
+- If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
 
 ## Use Cases
 - Subscription management
 - Payment method updates
 - Invoice history viewing
+- Subscription cancellation
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCustomerPortalRequest
@@ -248,8 +251,8 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.createPortalRequest == nil {
+		return localVarReturnValue, nil, reportError("createPortalRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -270,21 +273,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
+	localVarPostBody = r.createPortalRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -308,7 +297,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -319,7 +308,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -330,7 +319,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -357,16 +346,15 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 type ApiRecordUsageRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	request *V1RecordUsageRequest
+	recordUsageRequest *RecordUsageRequest
 }
 
-// Usage event parameters
-func (r ApiRecordUsageRequest) Request(request V1RecordUsageRequest) ApiRecordUsageRequest {
-	r.request = &request
+func (r ApiRecordUsageRequest) RecordUsageRequest(recordUsageRequest RecordUsageRequest) ApiRecordUsageRequest {
+	r.recordUsageRequest = &recordUsageRequest
 	return r
 }
 
-func (r ApiRecordUsageRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
+func (r ApiRecordUsageRequest) Execute() (*SuccessResponse, *http.Response, error) {
 	return r.ApiService.RecordUsageExecute(r)
 }
 
@@ -376,13 +364,19 @@ RecordUsage Record metered usage
 Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
 
 ## Authentication
-Requires JWT token and an associated Stripe customer ID.
+Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+
+## Prerequisites
+- User must be authenticated
+- Tenant must have a Stripe customer ID configured
+- If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
 
 ## Use Cases
 - API request metering
 - Compute time tracking
 - Storage usage recording
 - Any metered billing scenario
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRecordUsageRequest
@@ -395,13 +389,13 @@ func (a *V1PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRe
 }
 
 // Execute executes the request
-//  @return HandlersSuccessResponse
-func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*HandlersSuccessResponse, *http.Response, error) {
+//  @return SuccessResponse
+func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*SuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *HandlersSuccessResponse
+		localVarReturnValue  *SuccessResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.RecordUsage")
@@ -414,8 +408,8 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Han
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.recordUsageRequest == nil {
+		return localVarReturnValue, nil, reportError("recordUsageRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -436,21 +430,7 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Han
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
+	localVarPostBody = r.recordUsageRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -474,7 +454,7 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Han
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -485,7 +465,7 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Han
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -496,7 +476,7 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Han
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

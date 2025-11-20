@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Message** | Pointer to **string** |  | [optional] 
-**Template** | Pointer to [**ModelsEmailTemplate**](ModelsEmailTemplate.md) |  | [optional] 
+**Template** | Pointer to [**EmailTemplate**](EmailTemplate.md) |  | [optional] 
 
 ## Methods
 
@@ -53,20 +53,20 @@ HasMessage returns a boolean if a field has been set.
 
 ### GetTemplate
 
-`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplate() ModelsEmailTemplate`
+`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplate() EmailTemplate`
 
 GetTemplate returns the Template field if non-nil, zero value otherwise.
 
 ### GetTemplateOk
 
-`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplateOk() (*ModelsEmailTemplate, bool)`
+`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) GetTemplateOk() (*EmailTemplate, bool)`
 
 GetTemplateOk returns a tuple with the Template field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTemplate
 
-`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) SetTemplate(v ModelsEmailTemplate)`
+`func (o *CreateOrUpdateEmailTemplate200ResponseAllOfData) SetTemplate(v EmailTemplate)`
 
 SetTemplate sets Template field to given value.
 

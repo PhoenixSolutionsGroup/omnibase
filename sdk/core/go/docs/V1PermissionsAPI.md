@@ -1,6 +1,6 @@
 # \V1PermissionsAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## CheckPermission
 
-> CheckPermission200Response CheckPermission(ctx).Body(body).Execute()
+> CheckPermission200Response CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
 
 Check permission
 
@@ -30,11 +30,11 @@ import (
 )
 
 func main() {
-	body := *openapiclient.NewV1CheckPermissionRequest("Tenant", "tenant-123", "view_db_secret_key") // V1CheckPermissionRequest | Permission check request
+	checkPermissionRequest := openapiclient.CheckPermissionRequest{CheckPermissionRequestOneOf: openapiclient.NewCheckPermissionRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CheckPermissionRequest | Permission check request with either subject_id or subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).Body(body).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).CheckPermissionRequest(checkPermissionRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CheckPermission``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -55,7 +55,7 @@ Other parameters are passed through a pointer to a apiCheckPermissionRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**V1CheckPermissionRequest**](V1CheckPermissionRequest.md) | Permission check request | 
+ **checkPermissionRequest** | [**CheckPermissionRequest**](CheckPermissionRequest.md) | Permission check request with either subject_id or subject_set | 
 
 ### Return type
 
@@ -63,7 +63,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -77,7 +77,7 @@ Name | Type | Description  | Notes
 
 ## CreateRelationship
 
-> CreateRelationship200Response CreateRelationship(ctx).Body(body).Execute()
+> CreateRelationship200Response CreateRelationship(ctx).CreateRelationshipRequest(createRelationshipRequest).Execute()
 
 Create relationship
 
@@ -96,11 +96,11 @@ import (
 )
 
 func main() {
-	body := *openapiclient.NewV1CreateRelationshipRequest("Project", "project-123", "tenant") // V1CreateRelationshipRequest | Relationship creation request
+	createRelationshipRequest := openapiclient.CreateRelationshipRequest{CreateRelationshipRequestOneOf: openapiclient.NewCreateRelationshipRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CreateRelationshipRequest | Relationship creation request with either subject_id or subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PermissionsAPI.CreateRelationship(context.Background()).Body(body).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.CreateRelationship(context.Background()).CreateRelationshipRequest(createRelationshipRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CreateRelationship``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -121,7 +121,7 @@ Other parameters are passed through a pointer to a apiCreateRelationshipRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**V1CreateRelationshipRequest**](V1CreateRelationshipRequest.md) | Relationship creation request | 
+ **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) | Relationship creation request with either subject_id or subject_set | 
 
 ### Return type
 
@@ -129,7 +129,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

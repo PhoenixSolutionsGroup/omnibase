@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ListTenantUsers200Response type satisfies the MappedNullable interface at compile time
@@ -20,17 +22,20 @@ var _ MappedNullable = &ListTenantUsers200Response{}
 
 // ListTenantUsers200Response struct for ListTenantUsers200Response
 type ListTenantUsers200Response struct {
-	Data []TenantsTenantUserResponse `json:"data,omitempty"`
 	// HTTP status code
-	Status *int32 `json:"status,omitempty"`
+	Status int32 `json:"status"`
+	Data []TenantUserResponse `json:"data,omitempty"`
 }
+
+type _ListTenantUsers200Response ListTenantUsers200Response
 
 // NewListTenantUsers200Response instantiates a new ListTenantUsers200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListTenantUsers200Response() *ListTenantUsers200Response {
+func NewListTenantUsers200Response(status int32) *ListTenantUsers200Response {
 	this := ListTenantUsers200Response{}
+	this.Status = status
 	return &this
 }
 
@@ -42,10 +47,34 @@ func NewListTenantUsers200ResponseWithDefaults() *ListTenantUsers200Response {
 	return &this
 }
 
+// GetStatus returns the Status field value
+func (o *ListTenantUsers200Response) GetStatus() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *ListTenantUsers200Response) GetStatusOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *ListTenantUsers200Response) SetStatus(v int32) {
+	o.Status = v
+}
+
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *ListTenantUsers200Response) GetData() []TenantsTenantUserResponse {
+func (o *ListTenantUsers200Response) GetData() []TenantUserResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret []TenantsTenantUserResponse
+		var ret []TenantUserResponse
 		return ret
 	}
 	return o.Data
@@ -53,7 +82,7 @@ func (o *ListTenantUsers200Response) GetData() []TenantsTenantUserResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListTenantUsers200Response) GetDataOk() ([]TenantsTenantUserResponse, bool) {
+func (o *ListTenantUsers200Response) GetDataOk() ([]TenantUserResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -69,41 +98,9 @@ func (o *ListTenantUsers200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given []TenantsTenantUserResponse and assigns it to the Data field.
-func (o *ListTenantUsers200Response) SetData(v []TenantsTenantUserResponse) {
+// SetData gets a reference to the given []TenantUserResponse and assigns it to the Data field.
+func (o *ListTenantUsers200Response) SetData(v []TenantUserResponse) {
 	o.Data = v
-}
-
-// GetStatus returns the Status field value if set, zero value otherwise.
-func (o *ListTenantUsers200Response) GetStatus() int32 {
-	if o == nil || IsNil(o.Status) {
-		var ret int32
-		return ret
-	}
-	return *o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ListTenantUsers200Response) GetStatusOk() (*int32, bool) {
-	if o == nil || IsNil(o.Status) {
-		return nil, false
-	}
-	return o.Status, true
-}
-
-// HasStatus returns a boolean if a field has been set.
-func (o *ListTenantUsers200Response) HasStatus() bool {
-	if o != nil && !IsNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given int32 and assigns it to the Status field.
-func (o *ListTenantUsers200Response) SetStatus(v int32) {
-	o.Status = &v
 }
 
 func (o ListTenantUsers200Response) MarshalJSON() ([]byte, error) {
@@ -116,13 +113,48 @@ func (o ListTenantUsers200Response) MarshalJSON() ([]byte, error) {
 
 func (o ListTenantUsers200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["status"] = o.Status
 	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	if !IsNil(o.Status) {
-		toSerialize["status"] = o.Status
-	}
 	return toSerialize, nil
+}
+
+func (o *ListTenantUsers200Response) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"status",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varListTenantUsers200Response := _ListTenantUsers200Response{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varListTenantUsers200Response)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ListTenantUsers200Response(varListTenantUsers200Response)
+
+	return err
 }
 
 type NullableListTenantUsers200Response struct {

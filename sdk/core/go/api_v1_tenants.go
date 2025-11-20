@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -27,12 +27,11 @@ type V1TenantsAPIService service
 type ApiAcceptInviteRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsAcceptInviteRequest
+	acceptInviteRequest *AcceptInviteRequest
 }
 
-// Invite acceptance parameters
-func (r ApiAcceptInviteRequest) Request(request TenantsAcceptInviteRequest) ApiAcceptInviteRequest {
-	r.request = &request
+func (r ApiAcceptInviteRequest) AcceptInviteRequest(acceptInviteRequest AcceptInviteRequest) ApiAcceptInviteRequest {
+	r.acceptInviteRequest = &acceptInviteRequest
 	return r
 }
 
@@ -55,6 +54,7 @@ Requires JWT token. User's email must match the invite email.
 4. Adds user to tenant
 5. Assigns role with permissions
 6. Sets as active tenant and returns JWT token
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiAcceptInviteRequest
@@ -86,8 +86,8 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.acceptInviteRequest == nil {
+		return localVarReturnValue, nil, reportError("acceptInviteRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -108,18 +108,32 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.acceptInviteRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -146,7 +160,7 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -157,7 +171,7 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -168,7 +182,7 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -179,7 +193,7 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -206,12 +220,11 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 type ApiAddSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsAddSubscriptionRequest
+	addSubscriptionRequest *AddSubscriptionRequest
 }
 
-// Subscription addition parameters
-func (r ApiAddSubscriptionRequest) Request(request TenantsAddSubscriptionRequest) ApiAddSubscriptionRequest {
-	r.request = &request
+func (r ApiAddSubscriptionRequest) AddSubscriptionRequest(addSubscriptionRequest AddSubscriptionRequest) ApiAddSubscriptionRequest {
+	r.addSubscriptionRequest = &addSubscriptionRequest
 	return r
 }
 
@@ -247,6 +260,7 @@ Requires JWT token with tenant context.
 - Enable usage-based billing for resources
 - Add additional services to tenant's billing
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiAddSubscriptionRequest
 */
@@ -272,13 +286,13 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/payments/subscription/add"
+	localVarPath := localBasePath + "/api/v1/tenants/subscriptions"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.addSubscriptionRequest == nil {
+		return localVarReturnValue, nil, reportError("addSubscriptionRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -291,7 +305,7 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -299,18 +313,32 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.addSubscriptionRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -337,7 +365,7 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -348,7 +376,18 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -359,7 +398,7 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -387,12 +426,11 @@ type ApiAssignRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	userId string
-	request *TenantsAssignRoleRequest
+	assignRoleRequest *AssignRoleRequest
 }
 
-// Role assignment parameters
-func (r ApiAssignRoleRequest) Request(request TenantsAssignRoleRequest) ApiAssignRoleRequest {
-	r.request = &request
+func (r ApiAssignRoleRequest) AssignRoleRequest(assignRoleRequest AssignRoleRequest) ApiAssignRoleRequest {
+	r.assignRoleRequest = &assignRoleRequest
 	return r
 }
 
@@ -409,12 +447,17 @@ Assigns a role to a user and creates all associated Keto relationships for the r
 Requires JWT token with tenant context and appropriate permissions.
 
 ## Request Format
-Provide either `role_id` or `role_name` (not both).
+**Mutually Exclusive Fields:** Provide exactly ONE of the following:
+- `role_id`: The UUID of the role to assign
+- `role_name`: The name of the role to assign (e.g., "member", "admin")
+
+If both or neither are provided, returns 400: "Must provide exactly one of role_id or role_name"
 
 ## Use Cases
 - Grant role to user
 - Assign permissions via role
 - User onboarding
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param userId User ID
@@ -449,8 +492,8 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.assignRoleRequest == nil {
+		return localVarReturnValue, nil, reportError("assignRoleRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -463,7 +506,7 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -471,18 +514,32 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.assignRoleRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -509,7 +566,7 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -520,7 +577,7 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -531,7 +588,7 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -542,7 +599,7 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -569,12 +626,11 @@ func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*Assign
 type ApiCreateInviteRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsCreateTenantUserInviteRequest
+	createTenantUserInviteRequest *CreateTenantUserInviteRequest
 }
 
-// Invite creation parameters
-func (r ApiCreateInviteRequest) Request(request TenantsCreateTenantUserInviteRequest) ApiCreateInviteRequest {
-	r.request = &request
+func (r ApiCreateInviteRequest) CreateTenantUserInviteRequest(createTenantUserInviteRequest CreateTenantUserInviteRequest) ApiCreateInviteRequest {
+	r.createTenantUserInviteRequest = &createTenantUserInviteRequest
 	return r
 }
 
@@ -598,6 +654,7 @@ Requires JWT token with `invite_user` permission.
 ## Use Cases
 - Add team members to organization
 - Invite collaborators with specific roles
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateInviteRequest
@@ -629,8 +686,8 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.createTenantUserInviteRequest == nil {
+		return localVarReturnValue, nil, reportError("createTenantUserInviteRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -643,7 +700,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -651,18 +708,32 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.createTenantUserInviteRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -689,7 +760,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -700,7 +771,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -711,7 +782,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -722,7 +793,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -733,7 +804,7 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -760,12 +831,11 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 type ApiCreateRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsCreateRoleRequest
+	createRoleRequest *CreateRoleRequest
 }
 
-// Role creation parameters
-func (r ApiCreateRoleRequest) Request(request TenantsCreateRoleRequest) ApiCreateRoleRequest {
-	r.request = &request
+func (r ApiCreateRoleRequest) CreateRoleRequest(createRoleRequest CreateRoleRequest) ApiCreateRoleRequest {
+	r.createRoleRequest = &createRoleRequest
 	return r
 }
 
@@ -790,6 +860,7 @@ Permissions should be in the format: `namespace:resource#relation`
 - Create custom roles for specific workflows
 - Define project-specific permissions
 - Build granular access control
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRoleRequest
@@ -821,8 +892,8 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.createRoleRequest == nil {
+		return localVarReturnValue, nil, reportError("createRoleRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -843,18 +914,32 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.createRoleRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -881,7 +966,7 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -892,7 +977,18 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 409 {
+			var v SchemasConflictResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -903,182 +999,7 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiCreateSubscriptionRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsAPIService
-	request *TenantsCreateSubscriptionRequest
-}
-
-// Subscription creation parameters
-func (r ApiCreateSubscriptionRequest) Request(request TenantsCreateSubscriptionRequest) ApiCreateSubscriptionRequest {
-	r.request = &request
-	return r
-}
-
-func (r ApiCreateSubscriptionRequest) Execute() (*CreateSubscription200Response, *http.Response, error) {
-	return r.ApiService.CreateSubscriptionExecute(r)
-}
-
-/*
-CreateSubscription Create subscription
-
-Creates a Stripe subscription for the authenticated tenant using the provided plan ID.
-
-## Authentication
-Requires JWT token with tenant context.
-
-## Request Parameters
-- **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") that maps to a Stripe price
-- **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
-
-## Process Flow
-1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
-2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
-3. Creates the subscription in Stripe with the specified price
-4. Returns the subscription ID and status
-
-## Use Cases
-- Subscribe tenant to metered pricing plans (compute, storage, workers)
-- Enable usage-based billing for resources
-- Add additional services to tenant's billing
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCreateSubscriptionRequest
-*/
-func (a *V1TenantsAPIService) CreateSubscription(ctx context.Context) ApiCreateSubscriptionRequest {
-	return ApiCreateSubscriptionRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return CreateSubscription200Response
-func (a *V1TenantsAPIService) CreateSubscriptionExecute(r ApiCreateSubscriptionRequest) (*CreateSubscription200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateSubscription200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateSubscription")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/payments/subscription"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.request
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1105,12 +1026,18 @@ func (a *V1TenantsAPIService) CreateSubscriptionExecute(r ApiCreateSubscriptionR
 type ApiCreateTenantRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsCreateTenantRequest
+	createTenantRequest *CreateTenantRequest
+	xUserID *string
 }
 
-// Tenant creation parameters
-func (r ApiCreateTenantRequest) Request(request TenantsCreateTenantRequest) ApiCreateTenantRequest {
-	r.request = &request
+func (r ApiCreateTenantRequest) CreateTenantRequest(createTenantRequest CreateTenantRequest) ApiCreateTenantRequest {
+	r.createTenantRequest = &createTenantRequest
+	return r
+}
+
+// User ID (UUID) - Required when using service key authentication
+func (r ApiCreateTenantRequest) XUserID(xUserID string) ApiCreateTenantRequest {
+	r.xUserID = &xUserID
 	return r
 }
 
@@ -1124,7 +1051,12 @@ CreateTenant Create tenant
 Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.
 
 ## Authentication
-Requires JWT token.
+- **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
+
+## Service Key Usage
+When using service key authentication, provide the user_id via the X-User-ID header.
+The user_id must be a valid UUID matching an existing Kratos identity.
 
 ## Process
 1. Creates Stripe customer (if billing_email provided)
@@ -1133,6 +1065,7 @@ Requires JWT token.
 4. Adds creator as owner
 5. Assigns owner role with all permissions
 6. Sets as active tenant and returns JWT token
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateTenantRequest
@@ -1164,8 +1097,8 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.createTenantRequest == nil {
+		return localVarReturnValue, nil, reportError("createTenantRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1178,26 +1111,43 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.xUserID != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-ID", r.xUserID, "simple", "")
+	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.createTenantRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -1224,7 +1174,7 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1235,7 +1185,7 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1246,7 +1196,7 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1292,6 +1242,7 @@ Requires JWT token with tenant context and appropriate permissions.
 - Remove obsolete roles
 - Clean up role definitions
 - Revoke all permissions from role users
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param roleId Role ID
@@ -1347,14 +1298,28 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -1380,8 +1345,19 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1392,7 +1368,7 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1403,7 +1379,7 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1450,6 +1426,7 @@ Requires JWT token with `delete_tenant` permission.
 3. Deletes tenant (cascades to users, settings, invites)
 4. Cleans up all affected users' tenant state
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeleteTenantRequest
 */
@@ -1491,7 +1468,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1501,14 +1478,28 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -1535,7 +1526,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1546,7 +1537,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1557,7 +1548,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1568,7 +1559,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1579,7 +1570,7 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1624,6 +1615,7 @@ Requires JWT token with appropriate permissions.
 - Discover available permission namespaces
 - List relations for each namespace
 - Build dynamic permission UIs
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetRoleDefinitionsRequest
@@ -1676,14 +1668,28 @@ func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsR
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -1710,7 +1716,7 @@ func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsR
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1721,7 +1727,7 @@ func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1766,6 +1772,7 @@ Requires JWT token with tenant context.
 - Check if billing setup is required
 - Conditional feature access
 - Payment method verification
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetTenantBillingStatusRequest
@@ -1818,14 +1825,28 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -1852,7 +1873,7 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1863,7 +1884,7 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1874,7 +1895,7 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1919,6 +1940,7 @@ Requires JWT token and active tenant.
 - Client-side database queries
 - Real-time subscriptions
 - Direct PostgREST API access
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetTenantJWTRequest
@@ -1971,14 +1993,28 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2005,7 +2041,7 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2016,7 +2052,7 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2027,7 +2063,7 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2072,6 +2108,7 @@ Requires JWT token with tenant context.
 - Display available roles to assign
 - Role management UI
 - Permission auditing
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListRolesRequest
@@ -2124,14 +2161,28 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2158,7 +2209,7 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2169,7 +2220,7 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2180,7 +2231,7 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2225,6 +2276,7 @@ Requires JWT token with tenant context.
 - Display current subscriptions
 - Billing overview
 - Subscription management UI
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListTenantSubscriptionsRequest
@@ -2277,14 +2329,28 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2311,7 +2377,7 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2322,7 +2388,7 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2333,7 +2399,7 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2378,6 +2444,7 @@ Requires JWT token with `view_users` permission.
 - Display team members list
 - User management UI
 - Member directory
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListTenantUsersRequest
@@ -2430,14 +2497,28 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2463,8 +2544,19 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2475,7 +2567,7 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2486,7 +2578,7 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2513,12 +2605,11 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 type ApiRemoveSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsRemoveSubscriptionRequest
+	removeSubscriptionRequest *RemoveSubscriptionRequest
 }
 
-// Subscription removal parameters
-func (r ApiRemoveSubscriptionRequest) Request(request TenantsRemoveSubscriptionRequest) ApiRemoveSubscriptionRequest {
-	r.request = &request
+func (r ApiRemoveSubscriptionRequest) RemoveSubscriptionRequest(removeSubscriptionRequest RemoveSubscriptionRequest) ApiRemoveSubscriptionRequest {
+	r.removeSubscriptionRequest = &removeSubscriptionRequest
 	return r
 }
 
@@ -2555,6 +2646,7 @@ Requires JWT token with tenant context.
 - Downgrade by removing premium features
 - Stop billing for unused resources
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRemoveSubscriptionRequest
 */
@@ -2580,13 +2672,13 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/payments/subscription"
+	localVarPath := localBasePath + "/api/v1/tenants/subscriptions"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.removeSubscriptionRequest == nil {
+		return localVarReturnValue, nil, reportError("removeSubscriptionRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -2599,7 +2691,7 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2607,18 +2699,32 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.removeSubscriptionRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2645,7 +2751,7 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2656,7 +2762,7 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2667,7 +2773,7 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2678,7 +2784,7 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2705,16 +2811,15 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 type ApiRemoveTenantUserRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsDeleteTenantUserRequest
+	deleteTenantUserRequest *DeleteTenantUserRequest
 }
 
-// User removal parameters
-func (r ApiRemoveTenantUserRequest) Request(request TenantsDeleteTenantUserRequest) ApiRemoveTenantUserRequest {
-	r.request = &request
+func (r ApiRemoveTenantUserRequest) DeleteTenantUserRequest(deleteTenantUserRequest DeleteTenantUserRequest) ApiRemoveTenantUserRequest {
+	r.deleteTenantUserRequest = &deleteTenantUserRequest
 	return r
 }
 
-func (r ApiRemoveTenantUserRequest) Execute() (*HandlersSuccessResponse, *http.Response, error) {
+func (r ApiRemoveTenantUserRequest) Execute() (*SuccessResponse, *http.Response, error) {
 	return r.ApiService.RemoveTenantUserExecute(r)
 }
 
@@ -2737,6 +2842,7 @@ Requires JWT token with `remove_user` permission.
 4. Removes from database
 5. Cleans up user's tenant state
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRemoveTenantUserRequest
 */
@@ -2748,13 +2854,13 @@ func (a *V1TenantsAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTen
 }
 
 // Execute executes the request
-//  @return HandlersSuccessResponse
-func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*HandlersSuccessResponse, *http.Response, error) {
+//  @return SuccessResponse
+func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*SuccessResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *HandlersSuccessResponse
+		localVarReturnValue  *SuccessResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.RemoveTenantUser")
@@ -2767,8 +2873,8 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.deleteTenantUserRequest == nil {
+		return localVarReturnValue, nil, reportError("deleteTenantUserRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -2781,7 +2887,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2789,18 +2895,32 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.deleteTenantUserRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -2827,7 +2947,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2838,7 +2958,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2849,7 +2969,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2860,7 +2980,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2871,7 +2991,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2898,12 +3018,11 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 type ApiSwitchActiveTenantRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsSwitchTenantRequest
+	switchTenantRequest *SwitchTenantRequest
 }
 
-// Tenant switch parameters
-func (r ApiSwitchActiveTenantRequest) Request(request TenantsSwitchTenantRequest) ApiSwitchActiveTenantRequest {
-	r.request = &request
+func (r ApiSwitchActiveTenantRequest) SwitchTenantRequest(switchTenantRequest SwitchTenantRequest) ApiSwitchActiveTenantRequest {
+	r.switchTenantRequest = &switchTenantRequest
 	return r
 }
 
@@ -2922,6 +3041,7 @@ Requires JWT token.
 ## Use Cases
 - Switch between organizations
 - Change context for multi-tenant users
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiSwitchActiveTenantRequest
@@ -2953,8 +3073,8 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.switchTenantRequest == nil {
+		return localVarReturnValue, nil, reportError("switchTenantRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -2967,7 +3087,7 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2975,18 +3095,32 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.switchTenantRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -3013,7 +3147,7 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3024,7 +3158,7 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3035,7 +3169,7 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3063,12 +3197,11 @@ type ApiUpdateRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	roleId string
-	request *TenantsUpdateRoleRequest
+	updateRoleRequest *UpdateRoleRequest
 }
 
-// Role update parameters
-func (r ApiUpdateRoleRequest) Request(request TenantsUpdateRoleRequest) ApiUpdateRoleRequest {
-	r.request = &request
+func (r ApiUpdateRoleRequest) UpdateRoleRequest(updateRoleRequest UpdateRoleRequest) ApiUpdateRoleRequest {
+	r.updateRoleRequest = &updateRoleRequest
 	return r
 }
 
@@ -3091,6 +3224,7 @@ Permissions should be in the format: `namespace:resource#relation`
 - Modify role permissions
 - Grant or revoke access
 - Update role capabilities
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param roleId Role ID
@@ -3125,8 +3259,8 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.updateRoleRequest == nil {
+		return localVarReturnValue, nil, reportError("updateRoleRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -3139,7 +3273,7 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -3147,18 +3281,32 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.updateRoleRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -3185,7 +3333,7 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3196,7 +3344,7 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3207,7 +3355,7 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3218,7 +3366,7 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3245,12 +3393,11 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 type ApiUpdateTenantUserRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
-	request *TenantsUpdateTenantUserRoleRequest
+	updateTenantUserRoleRequest *UpdateTenantUserRoleRequest
 }
 
-// Role update parameters
-func (r ApiUpdateTenantUserRoleRequest) Request(request TenantsUpdateTenantUserRoleRequest) ApiUpdateTenantUserRoleRequest {
-	r.request = &request
+func (r ApiUpdateTenantUserRoleRequest) UpdateTenantUserRoleRequest(updateTenantUserRoleRequest UpdateTenantUserRoleRequest) ApiUpdateTenantUserRoleRequest {
+	r.updateTenantUserRoleRequest = &updateTenantUserRoleRequest
 	return r
 }
 
@@ -3277,6 +3424,7 @@ Requires JWT token with `update_user_role` permission.
 3. Updates database
 4. Assigns new role permissions
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUpdateTenantUserRoleRequest
 */
@@ -3302,13 +3450,13 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/v1/tenants/users/role"
+	localVarPath := localBasePath + "/api/v1/tenants/users"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.updateTenantUserRoleRequest == nil {
+		return localVarReturnValue, nil, reportError("updateTenantUserRoleRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -3321,7 +3469,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -3329,18 +3477,32 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.updateTenantUserRoleRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["BearerAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Authorization"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -3367,7 +3529,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3378,7 +3540,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3389,7 +3551,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3400,7 +3562,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -3411,7 +3573,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

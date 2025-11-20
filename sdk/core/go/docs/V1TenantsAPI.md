@@ -1,15 +1,14 @@
 # \V1TenantsAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AcceptInvite**](V1TenantsAPI.md#AcceptInvite) | **Put** /api/v1/tenants/invites/accept | Accept tenant invite
-[**AddSubscription**](V1TenantsAPI.md#AddSubscription) | **Post** /api/v1/payments/subscription/add | Add subscription
+[**AddSubscription**](V1TenantsAPI.md#AddSubscription) | **Post** /api/v1/tenants/subscriptions | Add subscription
 [**AssignRole**](V1TenantsAPI.md#AssignRole) | **Post** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
 [**CreateInvite**](V1TenantsAPI.md#CreateInvite) | **Post** /api/v1/tenants/invites | Create tenant invite
 [**CreateRole**](V1TenantsAPI.md#CreateRole) | **Post** /api/v1/tenants/roles | Create role
-[**CreateSubscription**](V1TenantsAPI.md#CreateSubscription) | **Post** /api/v1/payments/subscription | Create subscription
 [**CreateTenant**](V1TenantsAPI.md#CreateTenant) | **Post** /api/v1/tenants | Create tenant
 [**DeleteRole**](V1TenantsAPI.md#DeleteRole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete role
 [**DeleteTenant**](V1TenantsAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete tenant
@@ -19,17 +18,17 @@ Method | HTTP request | Description
 [**ListRoles**](V1TenantsAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles
 [**ListTenantSubscriptions**](V1TenantsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions | Get tenant subscriptions
 [**ListTenantUsers**](V1TenantsAPI.md#ListTenantUsers) | **Get** /api/v1/tenants/users | Get tenant users
-[**RemoveSubscription**](V1TenantsAPI.md#RemoveSubscription) | **Delete** /api/v1/payments/subscription | Remove subscription
+[**RemoveSubscription**](V1TenantsAPI.md#RemoveSubscription) | **Delete** /api/v1/tenants/subscriptions | Remove subscription
 [**RemoveTenantUser**](V1TenantsAPI.md#RemoveTenantUser) | **Delete** /api/v1/tenants/users | Remove tenant user
 [**SwitchActiveTenant**](V1TenantsAPI.md#SwitchActiveTenant) | **Put** /api/v1/tenants/switch-active | Switch active tenant
 [**UpdateRole**](V1TenantsAPI.md#UpdateRole) | **Put** /api/v1/tenants/roles/{role_id} | Update role
-[**UpdateTenantUserRole**](V1TenantsAPI.md#UpdateTenantUserRole) | **Put** /api/v1/tenants/users/role | Update user role
+[**UpdateTenantUserRole**](V1TenantsAPI.md#UpdateTenantUserRole) | **Put** /api/v1/tenants/users | Update user role
 
 
 
 ## AcceptInvite
 
-> AcceptInvite200Response AcceptInvite(ctx).Request(request).Execute()
+> AcceptInvite200Response AcceptInvite(ctx).AcceptInviteRequest(acceptInviteRequest).Execute()
 
 Accept tenant invite
 
@@ -48,11 +47,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsAcceptInviteRequest("550e8400-e29b-41d4-a716-446655440000") // TenantsAcceptInviteRequest | Invite acceptance parameters
+	acceptInviteRequest := *openapiclient.NewAcceptInviteRequest("tok_test_abc123xyz") // AcceptInviteRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.AcceptInvite(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AcceptInvite(context.Background()).AcceptInviteRequest(acceptInviteRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AcceptInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -73,7 +72,7 @@ Other parameters are passed through a pointer to a apiAcceptInviteRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsAcceptInviteRequest**](TenantsAcceptInviteRequest.md) | Invite acceptance parameters | 
+ **acceptInviteRequest** | [**AcceptInviteRequest**](AcceptInviteRequest.md) |  | 
 
 ### Return type
 
@@ -81,7 +80,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -95,7 +94,7 @@ Name | Type | Description  | Notes
 
 ## AddSubscription
 
-> AddSubscription200Response AddSubscription(ctx).Request(request).Execute()
+> AddSubscription200Response AddSubscription(ctx).AddSubscriptionRequest(addSubscriptionRequest).Execute()
 
 Add subscription
 
@@ -114,11 +113,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsAddSubscriptionRequest("neon_compute_starter") // TenantsAddSubscriptionRequest | Subscription addition parameters
+	addSubscriptionRequest := *openapiclient.NewAddSubscriptionRequest("price_test_basic") // AddSubscriptionRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).AddSubscriptionRequest(addSubscriptionRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AddSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -139,7 +138,7 @@ Other parameters are passed through a pointer to a apiAddSubscriptionRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsAddSubscriptionRequest**](TenantsAddSubscriptionRequest.md) | Subscription addition parameters | 
+ **addSubscriptionRequest** | [**AddSubscriptionRequest**](AddSubscriptionRequest.md) |  | 
 
 ### Return type
 
@@ -147,12 +146,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -161,7 +160,7 @@ Name | Type | Description  | Notes
 
 ## AssignRole
 
-> AssignRole200Response AssignRole(ctx, userId).Request(request).Execute()
+> AssignRole200Response AssignRole(ctx, userId).AssignRoleRequest(assignRoleRequest).Execute()
 
 Assign role to user
 
@@ -181,11 +180,11 @@ import (
 
 func main() {
 	userId := "userId_example" // string | User ID
-	request := *openapiclient.NewTenantsAssignRoleRequest() // TenantsAssignRoleRequest | Role assignment parameters
+	assignRoleRequest := openapiclient.AssignRoleRequest{AssignRoleRequestOneOf: openapiclient.NewAssignRoleRequestOneOf("role_test_123")} // AssignRoleRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.AssignRole(context.Background(), userId).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AssignRole(context.Background(), userId).AssignRoleRequest(assignRoleRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AssignRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -211,7 +210,7 @@ Other parameters are passed through a pointer to a apiAssignRoleRequest struct v
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **request** | [**TenantsAssignRoleRequest**](TenantsAssignRoleRequest.md) | Role assignment parameters | 
+ **assignRoleRequest** | [**AssignRoleRequest**](AssignRoleRequest.md) |  | 
 
 ### Return type
 
@@ -219,12 +218,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -233,7 +232,7 @@ Name | Type | Description  | Notes
 
 ## CreateInvite
 
-> CreateInvite200Response CreateInvite(ctx).Request(request).Execute()
+> CreateInvite200Response CreateInvite(ctx).CreateTenantUserInviteRequest(createTenantUserInviteRequest).Execute()
 
 Create tenant invite
 
@@ -252,11 +251,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsCreateTenantUserInviteRequest("user@example.com", "https://app.example.com/accept-invite", "member") // TenantsCreateTenantUserInviteRequest | Invite creation parameters
+	createTenantUserInviteRequest := *openapiclient.NewCreateTenantUserInviteRequest("test@example.com", "member", "https://test.example.com/accept-invite") // CreateTenantUserInviteRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.CreateInvite(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateInvite(context.Background()).CreateTenantUserInviteRequest(createTenantUserInviteRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -277,7 +276,7 @@ Other parameters are passed through a pointer to a apiCreateInviteRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsCreateTenantUserInviteRequest**](TenantsCreateTenantUserInviteRequest.md) | Invite creation parameters | 
+ **createTenantUserInviteRequest** | [**CreateTenantUserInviteRequest**](CreateTenantUserInviteRequest.md) |  | 
 
 ### Return type
 
@@ -285,12 +284,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -299,7 +298,7 @@ Name | Type | Description  | Notes
 
 ## CreateRole
 
-> CreateRole200Response CreateRole(ctx).Request(request).Execute()
+> CreateRole200Response CreateRole(ctx).CreateRoleRequest(createRoleRequest).Execute()
 
 Create role
 
@@ -318,11 +317,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsCreateRoleRequest([]string{"Permissions_example"}, "project_viewer") // TenantsCreateRoleRequest | Role creation parameters
+	createRoleRequest := *openapiclient.NewCreateRoleRequest("test_project_viewer", []string{"Permissions_example"}) // CreateRoleRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.CreateRole(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateRole(context.Background()).CreateRoleRequest(createRoleRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -343,7 +342,7 @@ Other parameters are passed through a pointer to a apiCreateRoleRequest struct v
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsCreateRoleRequest**](TenantsCreateRoleRequest.md) | Role creation parameters | 
+ **createRoleRequest** | [**CreateRoleRequest**](CreateRoleRequest.md) |  | 
 
 ### Return type
 
@@ -351,73 +350,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## CreateSubscription
-
-> CreateSubscription200Response CreateSubscription(ctx).Request(request).Execute()
-
-Create subscription
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-	request := *openapiclient.NewTenantsCreateSubscriptionRequest("neon_compute_starter") // TenantsCreateSubscriptionRequest | Subscription creation parameters
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.CreateSubscription(context.Background()).Request(request).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateSubscription``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `CreateSubscription`: CreateSubscription200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateSubscription`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiCreateSubscriptionRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **request** | [**TenantsCreateSubscriptionRequest**](TenantsCreateSubscriptionRequest.md) | Subscription creation parameters | 
-
-### Return type
-
-[**CreateSubscription200Response**](CreateSubscription200Response.md)
-
-### Authorization
-
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -431,7 +364,7 @@ Name | Type | Description  | Notes
 
 ## CreateTenant
 
-> CreateTenant200Response CreateTenant(ctx).Request(request).Execute()
+> CreateTenant200Response CreateTenant(ctx).CreateTenantRequest(createTenantRequest).XUserID(xUserID).Execute()
 
 Create tenant
 
@@ -450,11 +383,12 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsCreateTenantRequest("Acme Corp", "550e8400-e29b-41d4-a716-446655440000") // TenantsCreateTenantRequest | Tenant creation parameters
+	createTenantRequest := *openapiclient.NewCreateTenantRequest("Test Organization") // CreateTenantRequest | 
+	xUserID := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using service key authentication (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.CreateTenant(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.CreateTenant(context.Background()).CreateTenantRequest(createTenantRequest).XUserID(xUserID).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -475,7 +409,8 @@ Other parameters are passed through a pointer to a apiCreateTenantRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsCreateTenantRequest**](TenantsCreateTenantRequest.md) | Tenant creation parameters | 
+ **createTenantRequest** | [**CreateTenantRequest**](CreateTenantRequest.md) |  | 
+ **xUserID** | **string** | User ID (UUID) - Required when using service key authentication | 
 
 ### Return type
 
@@ -483,12 +418,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -553,7 +488,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -614,12 +549,12 @@ Other parameters are passed through a pointer to a apiDeleteTenantRequest struct
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -675,7 +610,7 @@ Other parameters are passed through a pointer to a apiGetRoleDefinitionsRequest 
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -736,7 +671,7 @@ Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequ
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -797,7 +732,7 @@ Other parameters are passed through a pointer to a apiGetTenantJWTRequest struct
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -858,7 +793,7 @@ Other parameters are passed through a pointer to a apiListRolesRequest struct vi
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -919,7 +854,7 @@ Other parameters are passed through a pointer to a apiListTenantSubscriptionsReq
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -980,7 +915,7 @@ Other parameters are passed through a pointer to a apiListTenantUsersRequest str
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -994,7 +929,7 @@ Other parameters are passed through a pointer to a apiListTenantUsersRequest str
 
 ## RemoveSubscription
 
-> RemoveSubscription200Response RemoveSubscription(ctx).Request(request).Execute()
+> RemoveSubscription200Response RemoveSubscription(ctx).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
 
 Remove subscription
 
@@ -1013,11 +948,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsRemoveSubscriptionRequest("neon_compute_starter") // TenantsRemoveSubscriptionRequest | Subscription removal parameters
+	removeSubscriptionRequest := *openapiclient.NewRemoveSubscriptionRequest("price_test_basic") // RemoveSubscriptionRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1038,7 +973,7 @@ Other parameters are passed through a pointer to a apiRemoveSubscriptionRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsRemoveSubscriptionRequest**](TenantsRemoveSubscriptionRequest.md) | Subscription removal parameters | 
+ **removeSubscriptionRequest** | [**RemoveSubscriptionRequest**](RemoveSubscriptionRequest.md) |  | 
 
 ### Return type
 
@@ -1046,12 +981,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1060,7 +995,7 @@ Name | Type | Description  | Notes
 
 ## RemoveTenantUser
 
-> HandlersSuccessResponse RemoveTenantUser(ctx).Request(request).Execute()
+> SuccessResponse RemoveTenantUser(ctx).DeleteTenantUserRequest(deleteTenantUserRequest).Execute()
 
 Remove tenant user
 
@@ -1079,16 +1014,16 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsDeleteTenantUserRequest("550e8400-e29b-41d4-a716-446655440000") // TenantsDeleteTenantUserRequest | User removal parameters
+	deleteTenantUserRequest := *openapiclient.NewDeleteTenantUserRequest("550e8400-e29b-41d4-a716-446655440001") // DeleteTenantUserRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).DeleteTenantUserRequest(deleteTenantUserRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveTenantUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RemoveTenantUser`: HandlersSuccessResponse
+	// response from `RemoveTenantUser`: SuccessResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.RemoveTenantUser`: %v\n", resp)
 }
 ```
@@ -1104,20 +1039,20 @@ Other parameters are passed through a pointer to a apiRemoveTenantUserRequest st
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsDeleteTenantUserRequest**](TenantsDeleteTenantUserRequest.md) | User removal parameters | 
+ **deleteTenantUserRequest** | [**DeleteTenantUserRequest**](DeleteTenantUserRequest.md) |  | 
 
 ### Return type
 
-[**HandlersSuccessResponse**](HandlersSuccessResponse.md)
+[**SuccessResponse**](SuccessResponse.md)
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1126,7 +1061,7 @@ Name | Type | Description  | Notes
 
 ## SwitchActiveTenant
 
-> SwitchActiveTenant200Response SwitchActiveTenant(ctx).Request(request).Execute()
+> SwitchActiveTenant200Response SwitchActiveTenant(ctx).SwitchTenantRequest(switchTenantRequest).Execute()
 
 Switch active tenant
 
@@ -1145,11 +1080,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsSwitchTenantRequest("tenant-123") // TenantsSwitchTenantRequest | Tenant switch parameters
+	switchTenantRequest := *openapiclient.NewSwitchTenantRequest("tenant_test_123") // SwitchTenantRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.SwitchActiveTenant(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.SwitchActiveTenant(context.Background()).SwitchTenantRequest(switchTenantRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.SwitchActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1170,7 +1105,7 @@ Other parameters are passed through a pointer to a apiSwitchActiveTenantRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsSwitchTenantRequest**](TenantsSwitchTenantRequest.md) | Tenant switch parameters | 
+ **switchTenantRequest** | [**SwitchTenantRequest**](SwitchTenantRequest.md) |  | 
 
 ### Return type
 
@@ -1178,12 +1113,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1192,7 +1127,7 @@ Name | Type | Description  | Notes
 
 ## UpdateRole
 
-> CreateRole200Response UpdateRole(ctx, roleId).Request(request).Execute()
+> CreateRole200Response UpdateRole(ctx, roleId).UpdateRoleRequest(updateRoleRequest).Execute()
 
 Update role
 
@@ -1212,11 +1147,11 @@ import (
 
 func main() {
 	roleId := "roleId_example" // string | Role ID
-	request := *openapiclient.NewTenantsUpdateRoleRequest([]string{"Permissions_example"}) // TenantsUpdateRoleRequest | Role update parameters
+	updateRoleRequest := *openapiclient.NewUpdateRoleRequest([]string{"Permissions_example"}) // UpdateRoleRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.UpdateRole(context.Background(), roleId).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.UpdateRole(context.Background(), roleId).UpdateRoleRequest(updateRoleRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1242,7 +1177,7 @@ Other parameters are passed through a pointer to a apiUpdateRoleRequest struct v
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **request** | [**TenantsUpdateRoleRequest**](TenantsUpdateRoleRequest.md) | Role update parameters | 
+ **updateRoleRequest** | [**UpdateRoleRequest**](UpdateRoleRequest.md) |  | 
 
 ### Return type
 
@@ -1250,12 +1185,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -1264,7 +1199,7 @@ Name | Type | Description  | Notes
 
 ## UpdateTenantUserRole
 
-> UpdateTenantUserRole200Response UpdateTenantUserRole(ctx).Request(request).Execute()
+> UpdateTenantUserRole200Response UpdateTenantUserRole(ctx).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).Execute()
 
 Update user role
 
@@ -1283,11 +1218,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewTenantsUpdateTenantUserRoleRequest("admin", "550e8400-e29b-41d4-a716-446655440000") // TenantsUpdateTenantUserRoleRequest | Role update parameters
+	updateTenantUserRoleRequest := *openapiclient.NewUpdateTenantUserRoleRequest("member", "550e8400-e29b-41d4-a716-446655440001") // UpdateTenantUserRoleRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateTenantUserRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1308,7 +1243,7 @@ Other parameters are passed through a pointer to a apiUpdateTenantUserRoleReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**TenantsUpdateTenantUserRoleRequest**](TenantsUpdateTenantUserRoleRequest.md) | Role update parameters | 
+ **updateTenantUserRoleRequest** | [**UpdateTenantUserRoleRequest**](UpdateTenantUserRoleRequest.md) |  | 
 
 ### Return type
 
@@ -1316,12 +1251,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

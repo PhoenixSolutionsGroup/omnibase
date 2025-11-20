@@ -1,6 +1,6 @@
 # \V1PaymentsAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## CreateCheckout
 
-> CreateCheckout200Response CreateCheckout(ctx).Request(request).Execute()
+> CreateCheckout200Response CreateCheckout(ctx).CreateCheckoutRequest(createCheckoutRequest).Execute()
 
 Create checkout session
 
@@ -31,11 +31,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewV1CreateCheckoutRequest("https://example.com/cancel", "price_basic_monthly", "https://example.com/success") // V1CreateCheckoutRequest | Checkout session parameters
+	createCheckoutRequest := *openapiclient.NewCreateCheckoutRequest("price_test_basic", "https://test.example.com/success", "https://test.example.com/cancel") // CreateCheckoutRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.CreateCheckout(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.CreateCheckout(context.Background()).CreateCheckoutRequest(createCheckoutRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCheckout``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -56,7 +56,7 @@ Other parameters are passed through a pointer to a apiCreateCheckoutRequest stru
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**V1CreateCheckoutRequest**](V1CreateCheckoutRequest.md) | Checkout session parameters | 
+ **createCheckoutRequest** | [**CreateCheckoutRequest**](CreateCheckoutRequest.md) |  | 
 
 ### Return type
 
@@ -64,7 +64,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 ## CreateCustomerPortal
 
-> CreateCustomerPortal200Response CreateCustomerPortal(ctx).Request(request).Execute()
+> CreateCustomerPortal200Response CreateCustomerPortal(ctx).CreatePortalRequest(createPortalRequest).Execute()
 
 Create customer portal session
 
@@ -97,11 +97,11 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewV1CreatePortalRequest("https://example.com/dashboard") // V1CreatePortalRequest | Portal session parameters
+	createPortalRequest := *openapiclient.NewCreatePortalRequest("https://test.example.com/dashboard") // CreatePortalRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.CreateCustomerPortal(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.CreateCustomerPortal(context.Background()).CreatePortalRequest(createPortalRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCustomerPortal``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -122,7 +122,7 @@ Other parameters are passed through a pointer to a apiCreateCustomerPortalReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**V1CreatePortalRequest**](V1CreatePortalRequest.md) | Portal session parameters | 
+ **createPortalRequest** | [**CreatePortalRequest**](CreatePortalRequest.md) |  | 
 
 ### Return type
 
@@ -130,7 +130,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -144,7 +144,7 @@ Name | Type | Description  | Notes
 
 ## RecordUsage
 
-> HandlersSuccessResponse RecordUsage(ctx).Request(request).Execute()
+> SuccessResponse RecordUsage(ctx).RecordUsageRequest(recordUsageRequest).Execute()
 
 Record metered usage
 
@@ -163,16 +163,16 @@ import (
 )
 
 func main() {
-	request := *openapiclient.NewV1RecordUsageRequest("api_requests", "100") // V1RecordUsageRequest | Usage event parameters
+	recordUsageRequest := *openapiclient.NewRecordUsageRequest("api_requests", "100") // RecordUsageRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).Request(request).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).RecordUsageRequest(recordUsageRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.RecordUsage``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RecordUsage`: HandlersSuccessResponse
+	// response from `RecordUsage`: SuccessResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.RecordUsage`: %v\n", resp)
 }
 ```
@@ -188,15 +188,15 @@ Other parameters are passed through a pointer to a apiRecordUsageRequest struct 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**V1RecordUsageRequest**](V1RecordUsageRequest.md) | Usage event parameters | 
+ **recordUsageRequest** | [**RecordUsageRequest**](RecordUsageRequest.md) |  | 
 
 ### Return type
 
-[**HandlersSuccessResponse**](HandlersSuccessResponse.md)
+[**SuccessResponse**](SuccessResponse.md)
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+No authorization required
 
 ### HTTP request headers
 

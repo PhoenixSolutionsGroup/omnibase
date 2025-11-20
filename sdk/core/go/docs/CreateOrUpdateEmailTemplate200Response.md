@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Status** | **int32** | HTTP status code | 
 **Data** | Pointer to [**CreateOrUpdateEmailTemplate200ResponseAllOfData**](CreateOrUpdateEmailTemplate200ResponseAllOfData.md) |  | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
 
 ## Methods
 
 ### NewCreateOrUpdateEmailTemplate200Response
 
-`func NewCreateOrUpdateEmailTemplate200Response() *CreateOrUpdateEmailTemplate200Response`
+`func NewCreateOrUpdateEmailTemplate200Response(status int32, ) *CreateOrUpdateEmailTemplate200Response`
 
 NewCreateOrUpdateEmailTemplate200Response instantiates a new CreateOrUpdateEmailTemplate200Response object
 This constructor will assign default values to properties that have it defined,
@@ -25,6 +25,26 @@ will change when the set of required properties is changed
 NewCreateOrUpdateEmailTemplate200ResponseWithDefaults instantiates a new CreateOrUpdateEmailTemplate200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetStatus
+
+`func (o *CreateOrUpdateEmailTemplate200Response) GetStatus() int32`
+
+GetStatus returns the Status field if non-nil, zero value otherwise.
+
+### GetStatusOk
+
+`func (o *CreateOrUpdateEmailTemplate200Response) GetStatusOk() (*int32, bool)`
+
+GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStatus
+
+`func (o *CreateOrUpdateEmailTemplate200Response) SetStatus(v int32)`
+
+SetStatus sets Status field to given value.
+
 
 ### GetData
 
@@ -50,31 +70,6 @@ SetData sets Data field to given value.
 `func (o *CreateOrUpdateEmailTemplate200Response) HasData() bool`
 
 HasData returns a boolean if a field has been set.
-
-### GetStatus
-
-`func (o *CreateOrUpdateEmailTemplate200Response) GetStatus() int32`
-
-GetStatus returns the Status field if non-nil, zero value otherwise.
-
-### GetStatusOk
-
-`func (o *CreateOrUpdateEmailTemplate200Response) GetStatusOk() (*int32, bool)`
-
-GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetStatus
-
-`func (o *CreateOrUpdateEmailTemplate200Response) SetStatus(v int32)`
-
-SetStatus sets Status field to given value.
-
-### HasStatus
-
-`func (o *CreateOrUpdateEmailTemplate200Response) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -1,12 +1,12 @@
 # \V1StripeAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ConvertStripeIDToConfigID**](V1StripeAPI.md#ConvertStripeIDToConfigID) | **Get** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
 [**GetStripeConfig**](V1StripeAPI.md#GetStripeConfig) | **Get** /api/v1/stripe/config | Get public Stripe config
-[**GetStripeConfigAdmin**](V1StripeAPI.md#GetStripeConfigAdmin) | **Get** /api/v1/stripe/config/admin | Get full Stripe config (admin)
+[**GetStripeConfigAdmin**](V1StripeAPI.md#GetStripeConfigAdmin) | **Get** /api/v1/stripe/admin/config | Get full Stripe config (admin)
 
 
 
@@ -31,7 +31,7 @@ import (
 )
 
 func main() {
-	stripeId := "stripeId_example" // string | Stripe ID to convert
+	stripeId := "price_1SRiyyCJIZaBlhY1NpAJFhNU" // string | Stripe ID to convert
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -190,7 +190,7 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 

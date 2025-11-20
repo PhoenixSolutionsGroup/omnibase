@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -20,8 +20,8 @@ var _ MappedNullable = &GetEmailTemplates200ResponseAllOfData{}
 
 // GetEmailTemplates200ResponseAllOfData struct for GetEmailTemplates200ResponseAllOfData
 type GetEmailTemplates200ResponseAllOfData struct {
+	Templates []EmailTemplate `json:"templates,omitempty"`
 	Count *int32 `json:"count,omitempty"`
-	Templates []ModelsEmailTemplate `json:"templates,omitempty"`
 }
 
 // NewGetEmailTemplates200ResponseAllOfData instantiates a new GetEmailTemplates200ResponseAllOfData object
@@ -39,6 +39,38 @@ func NewGetEmailTemplates200ResponseAllOfData() *GetEmailTemplates200ResponseAll
 func NewGetEmailTemplates200ResponseAllOfDataWithDefaults() *GetEmailTemplates200ResponseAllOfData {
 	this := GetEmailTemplates200ResponseAllOfData{}
 	return &this
+}
+
+// GetTemplates returns the Templates field value if set, zero value otherwise.
+func (o *GetEmailTemplates200ResponseAllOfData) GetTemplates() []EmailTemplate {
+	if o == nil || IsNil(o.Templates) {
+		var ret []EmailTemplate
+		return ret
+	}
+	return o.Templates
+}
+
+// GetTemplatesOk returns a tuple with the Templates field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *GetEmailTemplates200ResponseAllOfData) GetTemplatesOk() ([]EmailTemplate, bool) {
+	if o == nil || IsNil(o.Templates) {
+		return nil, false
+	}
+	return o.Templates, true
+}
+
+// HasTemplates returns a boolean if a field has been set.
+func (o *GetEmailTemplates200ResponseAllOfData) HasTemplates() bool {
+	if o != nil && !IsNil(o.Templates) {
+		return true
+	}
+
+	return false
+}
+
+// SetTemplates gets a reference to the given []EmailTemplate and assigns it to the Templates field.
+func (o *GetEmailTemplates200ResponseAllOfData) SetTemplates(v []EmailTemplate) {
+	o.Templates = v
 }
 
 // GetCount returns the Count field value if set, zero value otherwise.
@@ -73,38 +105,6 @@ func (o *GetEmailTemplates200ResponseAllOfData) SetCount(v int32) {
 	o.Count = &v
 }
 
-// GetTemplates returns the Templates field value if set, zero value otherwise.
-func (o *GetEmailTemplates200ResponseAllOfData) GetTemplates() []ModelsEmailTemplate {
-	if o == nil || IsNil(o.Templates) {
-		var ret []ModelsEmailTemplate
-		return ret
-	}
-	return o.Templates
-}
-
-// GetTemplatesOk returns a tuple with the Templates field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *GetEmailTemplates200ResponseAllOfData) GetTemplatesOk() ([]ModelsEmailTemplate, bool) {
-	if o == nil || IsNil(o.Templates) {
-		return nil, false
-	}
-	return o.Templates, true
-}
-
-// HasTemplates returns a boolean if a field has been set.
-func (o *GetEmailTemplates200ResponseAllOfData) HasTemplates() bool {
-	if o != nil && !IsNil(o.Templates) {
-		return true
-	}
-
-	return false
-}
-
-// SetTemplates gets a reference to the given []ModelsEmailTemplate and assigns it to the Templates field.
-func (o *GetEmailTemplates200ResponseAllOfData) SetTemplates(v []ModelsEmailTemplate) {
-	o.Templates = v
-}
-
 func (o GetEmailTemplates200ResponseAllOfData) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -115,11 +115,11 @@ func (o GetEmailTemplates200ResponseAllOfData) MarshalJSON() ([]byte, error) {
 
 func (o GetEmailTemplates200ResponseAllOfData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Count) {
-		toSerialize["count"] = o.Count
-	}
 	if !IsNil(o.Templates) {
 		toSerialize["templates"] = o.Templates
+	}
+	if !IsNil(o.Count) {
+		toSerialize["count"] = o.Count
 	}
 	return toSerialize, nil
 }

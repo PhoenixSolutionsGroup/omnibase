@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**TenantsAcceptInviteResponse**](TenantsAcceptInviteResponse.md) |  | [optional] 
-**Status** | Pointer to **int32** | HTTP status code | [optional] 
+**Status** | **int32** | HTTP status code | 
+**Data** | Pointer to [**AcceptInviteResponse**](AcceptInviteResponse.md) |  | [optional] 
 
 ## Methods
 
 ### NewAcceptInvite200Response
 
-`func NewAcceptInvite200Response() *AcceptInvite200Response`
+`func NewAcceptInvite200Response(status int32, ) *AcceptInvite200Response`
 
 NewAcceptInvite200Response instantiates a new AcceptInvite200Response object
 This constructor will assign default values to properties that have it defined,
@@ -25,31 +25,6 @@ will change when the set of required properties is changed
 NewAcceptInvite200ResponseWithDefaults instantiates a new AcceptInvite200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetData
-
-`func (o *AcceptInvite200Response) GetData() TenantsAcceptInviteResponse`
-
-GetData returns the Data field if non-nil, zero value otherwise.
-
-### GetDataOk
-
-`func (o *AcceptInvite200Response) GetDataOk() (*TenantsAcceptInviteResponse, bool)`
-
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetData
-
-`func (o *AcceptInvite200Response) SetData(v TenantsAcceptInviteResponse)`
-
-SetData sets Data field to given value.
-
-### HasData
-
-`func (o *AcceptInvite200Response) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -70,11 +45,31 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
 
-`func (o *AcceptInvite200Response) HasStatus() bool`
+### GetData
 
-HasStatus returns a boolean if a field has been set.
+`func (o *AcceptInvite200Response) GetData() AcceptInviteResponse`
+
+GetData returns the Data field if non-nil, zero value otherwise.
+
+### GetDataOk
+
+`func (o *AcceptInvite200Response) GetDataOk() (*AcceptInviteResponse, bool)`
+
+GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetData
+
+`func (o *AcceptInvite200Response) SetData(v AcceptInviteResponse)`
+
+SetData sets Data field to given value.
+
+### HasData
+
+`func (o *AcceptInvite200Response) HasData() bool`
+
+HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

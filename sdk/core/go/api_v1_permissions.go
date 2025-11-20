@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -26,12 +26,12 @@ type V1PermissionsAPIService service
 type ApiCheckPermissionRequest struct {
 	ctx context.Context
 	ApiService *V1PermissionsAPIService
-	body *V1CheckPermissionRequest
+	checkPermissionRequest *CheckPermissionRequest
 }
 
-// Permission check request
-func (r ApiCheckPermissionRequest) Body(body V1CheckPermissionRequest) ApiCheckPermissionRequest {
-	r.body = &body
+// Permission check request with either subject_id or subject_set
+func (r ApiCheckPermissionRequest) CheckPermissionRequest(checkPermissionRequest CheckPermissionRequest) ApiCheckPermissionRequest {
+	r.checkPermissionRequest = &checkPermissionRequest
 	return r
 }
 
@@ -48,12 +48,14 @@ Checks if a subject has a specific permission on an object using Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both).
+Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
+to enforce this constraint at the schema level.
 
 ## Use Cases
 - Verify user permissions before performing actions
 - Implement fine-grained access control
 - Check role-based permissions
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCheckPermissionRequest
@@ -85,8 +87,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	if r.checkPermissionRequest == nil {
+		return localVarReturnValue, nil, reportError("checkPermissionRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -107,18 +109,32 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.checkPermissionRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Cookie"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -145,7 +161,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -156,7 +172,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -167,7 +183,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -194,12 +210,12 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 type ApiCreateRelationshipRequest struct {
 	ctx context.Context
 	ApiService *V1PermissionsAPIService
-	body *V1CreateRelationshipRequest
+	createRelationshipRequest *CreateRelationshipRequest
 }
 
-// Relationship creation request
-func (r ApiCreateRelationshipRequest) Body(body V1CreateRelationshipRequest) ApiCreateRelationshipRequest {
-	r.body = &body
+// Relationship creation request with either subject_id or subject_set
+func (r ApiCreateRelationshipRequest) CreateRelationshipRequest(createRelationshipRequest CreateRelationshipRequest) ApiCreateRelationshipRequest {
+	r.createRelationshipRequest = &createRelationshipRequest
 	return r
 }
 
@@ -216,12 +232,14 @@ Creates a new relationship tuple in Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both).
+Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
+to enforce this constraint at the schema level.
 
 ## Use Cases
 - Link resources to tenants
 - Assign users to projects
 - Create permission relationships
+
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRelationshipRequest
@@ -253,8 +271,8 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	if r.createRelationshipRequest == nil {
+		return localVarReturnValue, nil, reportError("createRelationshipRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -275,18 +293,32 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.createRelationshipRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Cookie"] = key
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -313,7 +345,7 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -324,7 +356,18 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v NotFoundResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -335,7 +378,7 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements.
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.15
+API version: 0.9.16
 Contact: support@omnibase.dev
 */
 
@@ -23,24 +23,200 @@ import (
 // V1StorageAPIService V1StorageAPI service
 type V1StorageAPIService service
 
-type ApiApiV1StorageDownloadPostRequest struct {
+type ApiDeleteObjectRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
-	request *ModelsDownloadRequest
+	deleteObjectRequest *DeleteObjectRequest
 }
 
-// Path of file to download
-func (r ApiApiV1StorageDownloadPostRequest) Request(request ModelsDownloadRequest) ApiApiV1StorageDownloadPostRequest {
-	r.request = &request
+func (r ApiDeleteObjectRequest) DeleteObjectRequest(deleteObjectRequest DeleteObjectRequest) ApiDeleteObjectRequest {
+	r.deleteObjectRequest = &deleteObjectRequest
 	return r
 }
 
-func (r ApiApiV1StorageDownloadPostRequest) Execute() (*ApiV1StorageDownloadPost200Response, *http.Response, error) {
-	return r.ApiService.ApiV1StorageDownloadPostExecute(r)
+func (r ApiDeleteObjectRequest) Execute() (*DeleteObject200Response, *http.Response, error) {
+	return r.ApiService.DeleteObjectExecute(r)
 }
 
 /*
-ApiV1StorageDownloadPost Download file from storage
+DeleteObject Delete file from storage
+
+Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
+
+## RLS Policy
+Delete permission is checked via PostgREST against the `storage.objects` table.
+Users must have DELETE permission based on their custom RLS policies.
+
+## Deletion Process
+1. Metadata is deleted from database (with RLS check)
+2. File is deleted from S3 storage
+3. If S3 deletion fails, metadata is already removed (eventual consistency)
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiDeleteObjectRequest
+*/
+func (a *V1StorageAPIService) DeleteObject(ctx context.Context) ApiDeleteObjectRequest {
+	return ApiDeleteObjectRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return DeleteObject200Response
+func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*DeleteObject200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *DeleteObject200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DeleteObject")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/storage/object"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.deleteObjectRequest == nil {
+		return localVarReturnValue, nil, reportError("deleteObjectRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.deleteObjectRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v ForbiddenResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v NotFoundResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDownloadFileRequest struct {
+	ctx context.Context
+	ApiService *V1StorageAPIService
+	downloadRequest *DownloadRequest
+}
+
+func (r ApiDownloadFileRequest) DownloadRequest(downloadRequest DownloadRequest) ApiDownloadFileRequest {
+	r.downloadRequest = &downloadRequest
+	return r
+}
+
+func (r ApiDownloadFileRequest) Execute() (*DownloadFile200Response, *http.Response, error) {
+	return r.ApiService.DownloadFileExecute(r)
+}
+
+/*
+DownloadFile Download file from storage
 
 Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
 
@@ -55,27 +231,28 @@ Users must have SELECT permission based on their custom RLS policies.
 ## URL Expiration
 Presigned URLs are valid for 15 minutes after generation.
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1StorageDownloadPostRequest
+ @return ApiDownloadFileRequest
 */
-func (a *V1StorageAPIService) ApiV1StorageDownloadPost(ctx context.Context) ApiApiV1StorageDownloadPostRequest {
-	return ApiApiV1StorageDownloadPostRequest{
+func (a *V1StorageAPIService) DownloadFile(ctx context.Context) ApiDownloadFileRequest {
+	return ApiDownloadFileRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1StorageDownloadPost200Response
-func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageDownloadPostRequest) (*ApiV1StorageDownloadPost200Response, *http.Response, error) {
+//  @return DownloadFile200Response
+func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*DownloadFile200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1StorageDownloadPost200Response
+		localVarReturnValue  *DownloadFile200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageDownloadPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DownloadFile")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -85,8 +262,8 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.downloadRequest == nil {
+		return localVarReturnValue, nil, reportError("downloadRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -99,7 +276,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -107,18 +284,18 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.downloadRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Cookie"] = key
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -145,7 +322,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -156,7 +333,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -167,7 +344,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ForbiddenResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -178,7 +355,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
+			var v NotFoundResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -189,7 +366,7 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -213,201 +390,23 @@ func (a *V1StorageAPIService) ApiV1StorageDownloadPostExecute(r ApiApiV1StorageD
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiApiV1StorageObjectDeleteRequest struct {
+type ApiUploadFileRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
-	request *ModelsDeleteObjectRequest
+	uploadRequest *UploadRequest
 }
 
-// Path of file to delete
-func (r ApiApiV1StorageObjectDeleteRequest) Request(request ModelsDeleteObjectRequest) ApiApiV1StorageObjectDeleteRequest {
-	r.request = &request
+func (r ApiUploadFileRequest) UploadRequest(uploadRequest UploadRequest) ApiUploadFileRequest {
+	r.uploadRequest = &uploadRequest
 	return r
 }
 
-func (r ApiApiV1StorageObjectDeleteRequest) Execute() (*ApiV1StorageObjectDelete200Response, *http.Response, error) {
-	return r.ApiService.ApiV1StorageObjectDeleteExecute(r)
+func (r ApiUploadFileRequest) Execute() (*UploadFile200Response, *http.Response, error) {
+	return r.ApiService.UploadFileExecute(r)
 }
 
 /*
-ApiV1StorageObjectDelete Delete file from storage
-
-Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
-
-## RLS Policy
-Delete permission is checked via PostgREST against the `storage.objects` table.
-Users must have DELETE permission based on their custom RLS policies.
-
-## Deletion Process
-1. Metadata is deleted from database (with RLS check)
-2. File is deleted from S3 storage
-3. If S3 deletion fails, metadata is already removed (eventual consistency)
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1StorageObjectDeleteRequest
-*/
-func (a *V1StorageAPIService) ApiV1StorageObjectDelete(ctx context.Context) ApiApiV1StorageObjectDeleteRequest {
-	return ApiApiV1StorageObjectDeleteRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return ApiV1StorageObjectDelete200Response
-func (a *V1StorageAPIService) ApiV1StorageObjectDeleteExecute(r ApiApiV1StorageObjectDeleteRequest) (*ApiV1StorageObjectDelete200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiV1StorageObjectDelete200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageObjectDelete")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/storage/object"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.request
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Cookie"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v HandlersNotFoundErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiApiV1StorageUploadPostRequest struct {
-	ctx context.Context
-	ApiService *V1StorageAPIService
-	request *ModelsUploadRequest
-}
-
-// Upload configuration with path and optional metadata
-func (r ApiApiV1StorageUploadPostRequest) Request(request ModelsUploadRequest) ApiApiV1StorageUploadPostRequest {
-	r.request = &request
-	return r
-}
-
-func (r ApiApiV1StorageUploadPostRequest) Execute() (*ApiV1StorageUploadPost200Response, *http.Response, error) {
-	return r.ApiService.ApiV1StorageUploadPostExecute(r)
-}
-
-/*
-ApiV1StorageUploadPost Upload file to storage
+UploadFile Upload file to storage
 
 Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
@@ -423,27 +422,28 @@ Users must have INSERT permission based on their custom RLS policies.
 ## URL Expiration
 Presigned URLs are valid for 15 minutes after generation.
 
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiApiV1StorageUploadPostRequest
+ @return ApiUploadFileRequest
 */
-func (a *V1StorageAPIService) ApiV1StorageUploadPost(ctx context.Context) ApiApiV1StorageUploadPostRequest {
-	return ApiApiV1StorageUploadPostRequest{
+func (a *V1StorageAPIService) UploadFile(ctx context.Context) ApiUploadFileRequest {
+	return ApiUploadFileRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiV1StorageUploadPost200Response
-func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUploadPostRequest) (*ApiV1StorageUploadPost200Response, *http.Response, error) {
+//  @return UploadFile200Response
+func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*UploadFile200Response, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApiV1StorageUploadPost200Response
+		localVarReturnValue  *UploadFile200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.ApiV1StorageUploadPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.UploadFile")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -453,8 +453,8 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.request == nil {
-		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	if r.uploadRequest == nil {
+		return localVarReturnValue, nil, reportError("uploadRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -467,7 +467,7 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -475,18 +475,18 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.request
+	localVarPostBody = r.uploadRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionAuth"]; ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
 					key = apiKey.Prefix + " " + apiKey.Key
 				} else {
 					key = apiKey.Key
 				}
-				localVarHeaderParams["Cookie"] = key
+				localVarHeaderParams["X-Session-Token"] = key
 			}
 		}
 	}
@@ -513,7 +513,7 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v HandlersBadRequestResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -524,7 +524,7 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
-			var v HandlersUnauthorizedResponse
+			var v UnauthorizedResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -535,7 +535,7 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
-			var v HandlersForbiddenResponse
+			var v ForbiddenResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -546,7 +546,7 @@ func (a *V1StorageAPIService) ApiV1StorageUploadPostExecute(r ApiApiV1StorageUpl
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
-			var v HandlersInternalServerErrorResponse
+			var v InternalServerErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

@@ -1,21 +1,20 @@
 # \V1ConfigurationAPI
 
-All URIs are relative to *http://api.omnibase.tech*
+All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ArchiveAllStripeConfig**](V1ConfigurationAPI.md#ArchiveAllStripeConfig) | **Post** /api/v1/stripe/config/archive-all | Archive all Stripe config
+[**ArchiveAllStripeConfig**](V1ConfigurationAPI.md#ArchiveAllStripeConfig) | **Post** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
 [**CreateOrUpdateEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateEmailTemplate) | **Post** /api/v1/email/templates | Create or update email template
 [**DeleteEmailTemplate**](V1ConfigurationAPI.md#DeleteEmailTemplate) | **Delete** /api/v1/email/templates/{type} | Delete email template
 [**DeployPermissionNamespaces**](V1ConfigurationAPI.md#DeployPermissionNamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
-[**GetEmailTemplateByType**](V1ConfigurationAPI.md#GetEmailTemplateByType) | **Get** /api/v1/email/templates/{type} | Get email template by type
 [**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates) | **Get** /api/v1/email/templates | Get all email templates
-[**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/config/history | Get config history
+[**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 [**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
-[**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/config/pull | Pull config from Stripe
-[**UpdateStripeConfig**](V1ConfigurationAPI.md#UpdateStripeConfig) | **Post** /api/v1/stripe/config | Update Stripe config
+[**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
+[**UpdateStripeConfig**](V1ConfigurationAPI.md#UpdateStripeConfig) | **Post** /api/v1/stripe/admin/config | Update Stripe config
 [**UploadDatabaseMigrations**](V1ConfigurationAPI.md#UploadDatabaseMigrations) | **Post** /api/v1/database/migrations | Upload database migrations
-[**ValidateStripeConfig**](V1ConfigurationAPI.md#ValidateStripeConfig) | **Post** /api/v1/stripe/config/validate | Validate Stripe config
+[**ValidateStripeConfig**](V1ConfigurationAPI.md#ValidateStripeConfig) | **Post** /api/v1/stripe/admin/config/validate | Validate Stripe config
 
 
 
@@ -68,7 +67,7 @@ Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequ
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -82,7 +81,7 @@ Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequ
 
 ## CreateOrUpdateEmailTemplate
 
-> CreateOrUpdateEmailTemplate200Response CreateOrUpdateEmailTemplate(ctx).Body(body).Execute()
+> CreateOrUpdateEmailTemplate200Response CreateOrUpdateEmailTemplate(ctx).CreateEmailTemplateRequest(createEmailTemplateRequest).Execute()
 
 Create or update email template
 
@@ -101,11 +100,11 @@ import (
 )
 
 func main() {
-	body := *openapiclient.NewV1CreateEmailTemplateRequest("<h1>Welcome!</h1>", "Welcome to Our Platform", "welcome") // V1CreateEmailTemplateRequest | Email template data
+	createEmailTemplateRequest := *openapiclient.NewCreateEmailTemplateRequest("test_welcome", "Welcome to Test Platform", "<h1>Welcome!</h1><p>Thanks for joining our test platform.</p>") // CreateEmailTemplateRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.CreateOrUpdateEmailTemplate(context.Background()).Body(body).Execute()
+	resp, r, err := apiClient.V1ConfigurationAPI.CreateOrUpdateEmailTemplate(context.Background()).CreateEmailTemplateRequest(createEmailTemplateRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.CreateOrUpdateEmailTemplate``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -126,7 +125,7 @@ Other parameters are passed through a pointer to a apiCreateOrUpdateEmailTemplat
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | [**V1CreateEmailTemplateRequest**](V1CreateEmailTemplateRequest.md) | Email template data | 
+ **createEmailTemplateRequest** | [**CreateEmailTemplateRequest**](CreateEmailTemplateRequest.md) |  | 
 
 ### Return type
 
@@ -134,12 +133,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -167,7 +166,7 @@ import (
 )
 
 func main() {
-	type_ := "type__example" // string | Template type identifier
+	type_ := "welcome" // string | Template type identifier
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -204,7 +203,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -270,81 +269,11 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: multipart/form-data
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## GetEmailTemplateByType
-
-> GetEmailTemplateByType200Response GetEmailTemplateByType(ctx, type_).Execute()
-
-Get email template by type
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-	type_ := "type__example" // string | Template type identifier
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.GetEmailTemplateByType(context.Background(), type_).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetEmailTemplateByType``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `GetEmailTemplateByType`: GetEmailTemplateByType200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetEmailTemplateByType`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**type_** | **string** | Template type identifier | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetEmailTemplateByTypeRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-### Return type
-
-[**GetEmailTemplateByType200Response**](GetEmailTemplateByType200Response.md)
-
-### Authorization
-
-[SessionAuth](../README.md#SessionAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -401,7 +330,7 @@ Other parameters are passed through a pointer to a apiGetEmailTemplatesRequest s
 
 ### Authorization
 
-[SessionAuth](../README.md#SessionAuth)
+[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -469,7 +398,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -535,7 +464,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/schema+json, application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -591,7 +520,7 @@ Other parameters are passed through a pointer to a apiPullStripeConfigRequest st
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -605,7 +534,7 @@ Other parameters are passed through a pointer to a apiPullStripeConfigRequest st
 
 ## UpdateStripeConfig
 
-> HandlersSuccessResponse UpdateStripeConfig(ctx).Config(config).Execute()
+> SuccessResponse UpdateStripeConfig(ctx).StripeConfigUpdateRequest(stripeConfigUpdateRequest).Execute()
 
 Update Stripe config
 
@@ -624,16 +553,16 @@ import (
 )
 
 func main() {
-	config := map[string]interface{}{"key": interface{}(123)} // map[string]interface{} | Stripe configuration data
+	stripeConfigUpdateRequest := *openapiclient.NewStripeConfigUpdateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", int64(1999), "usd")}})}) // StripeConfigUpdateRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).StripeConfigUpdateRequest(stripeConfigUpdateRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.UpdateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateStripeConfig`: HandlersSuccessResponse
+	// response from `UpdateStripeConfig`: SuccessResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.UpdateStripeConfig`: %v\n", resp)
 }
 ```
@@ -649,15 +578,15 @@ Other parameters are passed through a pointer to a apiUpdateStripeConfigRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **config** | **map[string]interface{}** | Stripe configuration data | 
+ **stripeConfigUpdateRequest** | [**StripeConfigUpdateRequest**](StripeConfigUpdateRequest.md) |  | 
 
 ### Return type
 
-[**HandlersSuccessResponse**](HandlersSuccessResponse.md)
+[**SuccessResponse**](SuccessResponse.md)
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -671,7 +600,7 @@ Name | Type | Description  | Notes
 
 ## UploadDatabaseMigrations
 
-> V1MigrationSuccessResponse UploadDatabaseMigrations(ctx).Migrations(migrations).Execute()
+> MigrationSuccessResponse UploadDatabaseMigrations(ctx).Migrations(migrations).Execute()
 
 Upload database migrations
 
@@ -699,7 +628,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.UploadDatabaseMigrations``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UploadDatabaseMigrations`: V1MigrationSuccessResponse
+	// response from `UploadDatabaseMigrations`: MigrationSuccessResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.UploadDatabaseMigrations`: %v\n", resp)
 }
 ```
@@ -719,11 +648,11 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**V1MigrationSuccessResponse**](V1MigrationSuccessResponse.md)
+[**MigrationSuccessResponse**](MigrationSuccessResponse.md)
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -737,7 +666,7 @@ Name | Type | Description  | Notes
 
 ## ValidateStripeConfig
 
-> HandlersSuccessResponse ValidateStripeConfig(ctx).Config(config).Execute()
+> SuccessResponse ValidateStripeConfig(ctx).StripeConfigValidateRequest(stripeConfigValidateRequest).Execute()
 
 Validate Stripe config
 
@@ -756,16 +685,16 @@ import (
 )
 
 func main() {
-	config := map[string]interface{}{"key": interface{}(123)} // map[string]interface{} | Stripe configuration to validate
+	stripeConfigValidateRequest := *openapiclient.NewStripeConfigValidateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", int64(1999), "usd")}})}) // StripeConfigValidateRequest | Stripe configuration to validate
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.ValidateStripeConfig(context.Background()).Config(config).Execute()
+	resp, r, err := apiClient.V1ConfigurationAPI.ValidateStripeConfig(context.Background()).StripeConfigValidateRequest(stripeConfigValidateRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.ValidateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ValidateStripeConfig`: HandlersSuccessResponse
+	// response from `ValidateStripeConfig`: SuccessResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.ValidateStripeConfig`: %v\n", resp)
 }
 ```
@@ -781,15 +710,15 @@ Other parameters are passed through a pointer to a apiValidateStripeConfigReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **config** | **map[string]interface{}** | Stripe configuration to validate | 
+ **stripeConfigValidateRequest** | [**StripeConfigValidateRequest**](StripeConfigValidateRequest.md) | Stripe configuration to validate | 
 
 ### Return type
 
-[**HandlersSuccessResponse**](HandlersSuccessResponse.md)
+[**SuccessResponse**](SuccessResponse.md)
 
 ### Authorization
 
-[BearerAuth](../README.md#BearerAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
