@@ -279,6 +279,25 @@ func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
 	logger.Logger.Info("Executing database migrations")
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		logger.Logger.Error("Migration execution failed", "error", err)
+
+		version, dirty, vErr := m.Version()
+		if vErr == nil && dirty {
+			logger.Logger.Warn("Detected dirty migration state, forcing cleanup",
+				"version", version,
+				"original_error", err)
+
+			if forceErr := m.Force(int(version)); forceErr != nil {
+				logger.Logger.Error("Failed to force clean dirty migration",
+					"version", version,
+					"error", forceErr)
+				return fmt.Errorf("migration failed and cleanup failed: %w (original: %v)", forceErr, err)
+			}
+
+			logger.Logger.Info("Auto-cleaned dirty migration state", "version", version)
+			// Return original error so caller knows migration failed
+			return fmt.Errorf("migration failed (dirty state cleaned for retry): %w", err)
+		}
+
 		return err
 	}
 
