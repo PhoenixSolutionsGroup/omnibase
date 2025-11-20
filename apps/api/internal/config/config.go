@@ -56,6 +56,7 @@ type StripeConfig struct {
 	SecretKey          string
 	StripeAccountID    string
 	PlatformFeePercent float64
+	WebhookSecret      string
 }
 
 type AuthConfig struct {
