@@ -85,26 +85,7 @@ type RolesListResponse struct {
 	Roles []models.Role `json:"roles" binding:"required"`
 }
 
-// ListRoles returns all roles for the tenant
-// @Summary      List roles
-// @Description  Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Display available roles to assign
-// @Description  - Role management UI
-// @Description  - Permission auditing
-// @ID           listRoles
-// @Tags         V1 Tenants
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=RolesListResponse} "Roles retrieved successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Missing tenant ID"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to list roles"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/roles [get]
+// /api/v1/tenants/roles [get]
 func (h *RolesHandler) ListRoles(c *gin.Context) {
 	tenantID := c.GetString("tenant_id")
 	if tenantID == "" {
@@ -424,64 +405,6 @@ type AssignRoleRequest struct {
 type AssignRoleResponse struct {
 	// Success message
 	Message string `json:"message" binding:"required" example:"Role assigned successfully"`
-}
-
-func (h *RolesHandler) AssignRole(c *gin.Context) {
-	tenantID := c.GetString("tenant_id")
-	userID := c.Param("user_id")
-
-	logger.Logger.Info("Assigning role to user", "tenant_id", tenantID, "user_id", userID)
-
-	var req AssignRoleRequest
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		logger.Logger.Warn("Invalid request body for assign role", "error", err)
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
-
-	// Validate that exactly one is provided and not empty
-	bothNil := req.RoleID == nil && req.RoleName == nil
-	bothProvided := req.RoleID != nil && req.RoleName != nil
-	roleIDEmpty := req.RoleID != nil && *req.RoleID == ""
-	roleNameEmpty := req.RoleName != nil && *req.RoleName == ""
-
-	if bothNil || bothProvided || roleIDEmpty || roleNameEmpty {
-		logger.Logger.Warn("Must provide exactly one of role_id or role_name")
-		handlers.NewBadRequestResponse(c, "Must provide exactly one of role_id or role_name")
-		return
-	}
-
-	logger.Logger.Debug("Looking up role", "role_id", req.RoleID, "role_name", req.RoleName)
-
-	// Get role by either ID or name (always tenant-specific)
-	var role models.Role
-	var err error
-	if req.RoleID != nil {
-		err = h.db.Preload("Template").Where("id = ? AND tenant_id = ?", *req.RoleID, tenantID).First(&role).Error
-	} else {
-		err = h.db.Preload("Template").Where("role_name = ? AND tenant_id = ?", *req.RoleName, tenantID).First(&role).Error
-	}
-
-	if err != nil {
-		logger.Logger.Warn("Role not found for assignment", "role_id", req.RoleID, "role_name", req.RoleName, "tenant_id", tenantID)
-		handlers.NewNotFoundResponse(c, "Role not found")
-		return
-	}
-
-	// Call the extracted helper
-	if err := h.assignRoleToUser(c.Request.Context(), userID, &role, tenantID); err != nil {
-		logger.Logger.Error("Failed to assign role to user", "error", err)
-		handlers.NewInternalServerErrorResponse(c, err)
-		return
-	}
-
-	logger.Logger.Info("Successfully assigned role to user",
-		"role_id", role.ID,
-		"role_name", role.RoleName,
-		"user_id", userID,
-		"total_users", len(role.UserIDs))
-	handlers.NewSuccessResponse(c, AssignRoleResponse{Message: "Role assigned successfully"})
 }
 
 // createKetoRelationship parses permission format and creates Keto relationship

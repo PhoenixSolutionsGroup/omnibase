@@ -57,6 +57,4 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	router.PUT("/roles/:role_id", rolesHandler.UpdateRole)
 
 	router.DELETE("/roles/:role_id", rolesHandler.DeleteRole)
-
-	router.POST("/roles/assign/:user_id", rolesHandler.AssignRole)
 }

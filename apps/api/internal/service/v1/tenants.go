@@ -40,6 +40,7 @@ func NewTenantsService(db *gorm.DB, cfg *config.Config) *TenantsService {
 type PostgRESTClaims struct {
 	UserID   string `json:"user_id"`
 	TenantID string `json:"tenant_id"`
+	UserRole string `json:"user_role"`
 	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
@@ -47,9 +48,17 @@ type PostgRESTClaims struct {
 func (s *TenantsService) CreateJWTToken(userID, tenantID string) (string, error) {
 	logger.Logger.Debug("Creating JWT token", "userID", userID, "tenantID", tenantID)
 
+	// Get user's role in this tenant
+	var tenantUser models.TenantUser
+	if err := s.db.Where("user_id = ? AND tenant_id = ?", userID, tenantID).First(&tenantUser).Error; err != nil {
+		logger.Logger.Error("Failed to get user's tenant role", "error", err, "userID", userID, "tenantID", tenantID)
+		return "", fmt.Errorf("failed to get user's tenant role: %w", err)
+	}
+
 	claims := PostgRESTClaims{
 		UserID:   userID,
 		TenantID: tenantID,
+		UserRole: tenantUser.Role,
 		Role:     "anon_user",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // 24 hour expiration
