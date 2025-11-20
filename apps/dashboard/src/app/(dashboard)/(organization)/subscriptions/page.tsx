@@ -1,20 +1,70 @@
-import { omnibase } from "@/lib/server";
 import { PricingTable } from "@omnibase/shadcn";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import React from "react";
 import { CustomerPortalButton } from "./customer-portal-button";
+import {
+  createPaymentsServerClient,
+  createStripeServerClient,
+  createTenantsServerClient,
+} from "@/lib/server";
 
-export default async function Page() {
-  const products = await omnibase.payments.config.getAvailableProducts();
-  const { data } = await omnibase.tenants.subscriptions.getActive();
-
-  const active_subscription_id = data?.[0].config_price_id;
+async function createCustomerPortal() {
+  "use server";
+  const payments = await createPaymentsServerClient();
 
   const headersList = await headers();
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto");
   const currentUrl = `${protocol}://${host}`;
+
+  const { data: portal } = await payments.createCustomerPortal({
+    request: {
+      returnUrl: currentUrl,
+    },
+  });
+
+  console.log(portal);
+  if (!portal?.url) return;
+  redirect(portal.url);
+}
+
+async function createCheckout(id: string) {
+  "use server";
+  const payments = await createPaymentsServerClient();
+
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto");
+  const currentUrl = `${protocol}://${host}`;
+
+  const { data } = await payments.createCheckout({
+    request: {
+      priceId: id,
+      successUrl: `${currentUrl}/subscriptions?success=true`,
+      cancelUrl: `${currentUrl}/subscriptions`,
+      trialPeriodDays: 14,
+      allowPromotionCodes: true,
+    },
+  });
+
+  if (!data) return;
+  redirect(data.url!);
+}
+
+export default async function Page() {
+  const tenants = await createTenantsServerClient();
+  const stripe = await createStripeServerClient();
+
+  const { data: configData } = await stripe.getStripeConfig();
+  if (!configData) {
+    throw new Error("Failed to fetch Stripe config");
+  }
+  const products = configData.config.products;
+
+  const { data: subscriptions } = await tenants.listTenantSubscriptions();
+
+  const active_subscription_id = subscriptions?.[0].configPriceId;
 
   return (
     <div className="my-8 mx-16">
@@ -25,16 +75,7 @@ export default async function Page() {
             Manage your subscription plans and billing details
           </p>
         </div>
-        <form
-          action={async () => {
-            "use server";
-            const portal = await omnibase.payments.portal.create({
-              return_url: currentUrl,
-            });
-            if (!portal.data?.url) return;
-            redirect(portal.data.url);
-          }}
-        >
+        <form action={createCustomerPortal}>
           <CustomerPortalButton />
         </form>
       </div>
@@ -44,18 +85,7 @@ export default async function Page() {
           selectedPriceId={active_subscription_id}
           showPricingToggle
           className="scale-[95%]"
-          onPriceSelect={async (id) => {
-            "use server";
-            const { data } = await omnibase.payments.checkout.createSession({
-              price_id: id,
-              success_url: `${currentUrl}/subscriptions?success=true`,
-              cancel_url: `${currentUrl}/subscriptions`,
-              trial_period_days: 14,
-              allow_promotion_codes: true,
-            });
-            if (!data) return;
-            redirect(data.url);
-          }}
+          onPriceSelect={createCheckout}
         />
       )}
     </div>

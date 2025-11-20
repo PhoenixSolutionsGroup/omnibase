@@ -8,9 +8,9 @@ import {
   TenantCreator,
   VerificationForm,
 } from "@omnibase/shadcn";
-import { omnibase } from "@/lib/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createTenantsServerClient } from "@/lib/server";
 
 export default function page({ params, searchParams }: any) {
   return (
@@ -74,14 +74,21 @@ export default function page({ params, searchParams }: any) {
                       return;
                     }
 
-                    const tenant = await omnibase.tenants.manage.createTenant({
-                      billing_email: billingEmail,
-                      user_id: session.identity?.id!,
-                      name: organizationName,
+                    const client = await createTenantsServerClient();
+                    const { data } = await client.createTenant({
+                      request: {
+                        name: organizationName,
+                        billingEmail: billingEmail,
+                        userId: session.identity?.id!,
+                      },
                     });
 
+                    if (!data) {
+                      throw new Error("Failed to create tenant");
+                    }
                     const c = await cookies();
-                    c.set("omnibase_postgrest_jwt", tenant.data?.token!);
+
+                    c.set("omnibase_postgrest_jwt", data.token!);
                     redirect("/");
                   },
                   async joinOrganizationAction(formData) {
@@ -93,9 +100,19 @@ export default function page({ params, searchParams }: any) {
                       return;
                     }
 
-                    const tenant = await omnibase.tenants.invites.accept(token);
+                    const client = await createTenantsServerClient();
+                    const { data } = await client.acceptInvite({
+                      request: {
+                        token,
+                      },
+                    });
+
+                    if (!data) {
+                      throw new Error("Failed to accept invite");
+                    }
+
                     const c = await cookies();
-                    c.set("omnibase_postgrest_jwt", tenant.data?.token!);
+                    c.set("omnibase_postgrest_jwt", data.token!);
                     redirect("/");
                   },
                 }}

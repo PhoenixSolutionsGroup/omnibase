@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { protectedRoute } from "@omnibase/nextjs/auth";
-import { getProject } from "@/utils/get-project";
 
 export const metadata: Metadata = {
   title: "OmniBase Dashboard",

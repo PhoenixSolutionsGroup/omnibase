@@ -18,9 +18,9 @@ export default async function Page({
 
   // Calculate date range: 3 days ago to 3 days from now (as a tester)
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 3);
+  startDate.setDate(startDate.getDate() - 1);
   const endDate = new Date();
-  endDate.setDate(endDate.getDate() + 3);
+  endDate.setDate(endDate.getDate());
 
   const project = await getProject(project_group_id, project_branch);
 
@@ -29,7 +29,7 @@ export default async function Page({
   }
 
   const response = await fetch(
-    `${process.env.MANAGED_HOSTING_API_URL}/api/v1/usage?project_id=${
+    `${process.env.MANAGED_HOSTING_API_URL}/api/v1/usage/cost?project_id=${
       project.id
     }&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`,
     {

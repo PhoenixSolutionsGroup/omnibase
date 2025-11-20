@@ -1,36 +1,58 @@
-import { omnibase } from "@/lib/server";
-import { UserViewer } from "@omnibase/shadcn";
+import { createTenantsServerClient } from "@/lib/server";
+import { TenantUser, UserViewer } from "@omnibase/shadcn";
 import React from "react";
 import { DeleteSection } from "./delete-section";
 
+async function removeUser(user_id: string) {
+  "use server";
+  const tenant = await createTenantsServerClient();
+  await tenant.removeTenantUser({
+    request: {
+      userId: user_id,
+    },
+  });
+}
+
+async function updateUserRole(user_id: string, role: string) {
+  "use server";
+  const tenant = await createTenantsServerClient();
+  await tenant.updateTenantUserRole({
+    request: {
+      role,
+      userId: user_id,
+    },
+  });
+}
+
+async function deleteTenantAction() {
+  "use server";
+  const tenant = await createTenantsServerClient();
+  await tenant.deleteTenant({});
+}
+
 export default async function page() {
-  const users = await omnibase.tenants.user.getAll();
-  const roles = await omnibase.permissions.roles.list();
+  const tenant = await createTenantsServerClient();
+  const { data: users } = await tenant.listTenantUsers();
+  if (!users) {
+    throw new Error("Failed to fetch tenant users");
+  }
+
+  const { data: roles } = await tenant.listRoles();
+  if (!roles || !roles.roles) {
+    throw new Error("Failed to fetch roles");
+  }
 
   return (
     <div className="flex h-full w-full flex-col items-center my-8 gap-y-8">
       <UserViewer
-        availableRoles={roles.map((r) => r.role_name)}
-        users={users.data!}
+        availableRoles={roles.roles.map((r) => r.roleName!)}
+        // users={users}
+        users={[]}
         canEditUsers={true}
-        onRemoveUser={async (user_id) => {
-          "use server";
-          await omnibase.tenants.user.remove({ user_id });
-        }}
-        onRoleUpdate={async (user_id, role) => {
-          "use server";
-          await omnibase.tenants.user.updateRole({
-            role: role,
-            user_id: user_id,
-          });
-        }}
+        onRemoveUser={removeUser}
+        onRoleUpdate={updateUserRole}
       />
-      <DeleteSection
-        onDeleteTenant={async () => {
-          "use server";
-          await omnibase.tenants.manage.deleteTenant();
-        }}
-      />
+      <DeleteSection onDeleteTenant={deleteTenantAction} />
     </div>
   );
 }
