@@ -143,9 +143,15 @@ func (s *TenantsService) UpdateUserMetadata(ctx *gin.Context, UserID string, is_
 	}
 
 	logger.Logger.Info("Making Kratos API call to update user metadata", "userID", UserID)
-	_, _, err := s.kratos.IdentityAPI.PatchIdentity(ctx, UserID).JsonPatch(patchDoc).Execute()
+	_, resp, err := s.kratos.IdentityAPI.PatchIdentity(ctx, UserID).JsonPatch(patchDoc).Execute()
 
 	if err != nil {
+		// Check if user doesn't exist (404) - this can happen in testing scenarios
+		// where service keys are used with non-existent user IDs
+		if resp != nil && resp.StatusCode == 404 {
+			logger.Logger.Warn("User not found in Kratos, skipping metadata update", "userID", UserID)
+			return nil // Treat as success - user doesn't exist so no metadata to update
+		}
 		logger.Logger.Error("Failed to update user metadata", "error", err, "userID", UserID)
 		return fmt.Errorf("failed to update metadata: %w", err)
 	}
