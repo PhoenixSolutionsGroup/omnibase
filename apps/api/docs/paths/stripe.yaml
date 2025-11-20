@@ -1,0 +1,403 @@
+paths:
+  /api/v1/stripe/schema:
+    get:
+      tags:
+        - V1 Configuration
+      summary: Get Stripe config schema
+      description: |
+        Returns the JSON schema definition for validating Stripe configuration files.
+        
+        ## Use Cases
+        - Validate configuration before upload
+        - IDE autocomplete support
+        - Generate configuration templates
+      operationId: getStripeConfigSchema
+      responses:
+        '200':
+          description: JSON schema for Stripe configuration
+          content:
+            application/schema+json:
+              schema:
+                type: object
+        '500':
+          description: Failed to load schema
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/config:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get public Stripe config
+      description: |
+        Returns the current Stripe configuration with public prices only (filters out enterprise prices).
+        
+        ## Authentication
+        No authentication required for public endpoint.
+        
+        ## Use Cases
+        - Display pricing to users
+        - Build subscription selection UI
+        - Public pricing pages
+      operationId: getStripeConfig
+      responses:
+        '200':
+          description: Stripe configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
+        '500':
+          description: Failed to retrieve configuration
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/config:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get full Stripe config (admin)
+      description: |
+        Returns the complete Stripe configuration including all prices (both public and enterprise).
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Use Cases
+        - Admin configuration management
+        - Enterprise pricing display
+        - Configuration auditing
+      operationId: getStripeConfigAdmin
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Full Stripe configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve configuration
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+    post:
+      tags:
+        - V1 Configuration
+      summary: Update Stripe config
+      description: |
+        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Use Cases
+        - Deploy new pricing
+        - Update product definitions
+        - Modify metered billing settings
+      operationId: updateStripeConfig
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigUpdateRequest'
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid configuration, validation errors, or configuration data is required
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+
+  /api/v1/stripe/admin/config/history:
+    get:
+      tags:
+        - V1 Configuration
+      summary: Get config history
+      description: |
+        Returns paginated history of all Stripe configurations.
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Query Parameters
+        - limit: Items per page (default: 10, max: 100, min: 1)
+        - offset: Number of items to skip (default: 0, min: 0)
+      operationId: getStripeConfigHistory
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Configuration history retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/ConfigHistoryResponse'
+        '400':
+          description: Invalid limit/offset parameters or unknown query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve history
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/config/validate:
+    post:
+      tags:
+        - V1 Configuration
+      summary: Validate Stripe config
+      description: |
+        Validates a Stripe configuration against the schema without saving or deploying it.
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Use Cases
+        - Pre-deployment validation
+        - Configuration testing
+        - Schema compliance checking
+      operationId: validateStripeConfig
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        description: Stripe configuration to validate
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigValidateRequest'
+      responses:
+        '200':
+          description: Configuration is valid
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+        '400':
+          description: Configuration validation failed or version is required
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+
+  /api/v1/stripe/admin/config/pull:
+    get:
+      tags:
+        - V1 Configuration
+      summary: Pull config from Stripe
+      description: |
+        Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Use Cases
+        - Sync remote Stripe config to local
+        - Import existing Stripe setup
+        - Configuration backup
+      operationId: pullStripeConfig
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Stripe configuration pulled successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfiguration'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to pull configuration from Stripe
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/config/archive-all:
+    post:
+      tags:
+        - V1 Configuration
+      summary: Archive all Stripe config
+      description: |
+        Archives all active products, prices, and meters in Stripe and clears the local configuration.
+        
+        ## Authentication
+        Requires admin JWT token.
+        
+        ## Warning
+        This is a destructive operation that will archive ALL active Stripe resources.
+        
+        ## Use Cases
+        - Clean slate for new configuration
+        - Remove all test data
+        - Reset Stripe account
+      operationId: archiveAllStripeConfig
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Archive operation completed
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/ArchiveAllResponse'
+        '401':
+          description: Invalid or missing admin token
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to archive resources
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/convert/stripe-id/{stripe_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Convert Stripe ID to config ID
+      description: |
+        Converts a Stripe ID (product, price, or meter) to the corresponding config ID.
+        
+        ## Authentication
+        No authentication required for public endpoint.
+        
+        ## Use Cases
+        - Webhook processing
+        - Subscription mapping
+        - Price lookups
+      operationId: convertStripeIDToConfigID
+      parameters:
+        - name: stripe_id
+          in: path
+          description: Stripe ID to convert
+          required: true
+          schema:
+            type: string
+            example: "price_1SRiyyCJIZaBlhY1NpAJFhNU"
+      responses:
+        '200':
+          description: Config ID found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeIDConversionResponse'
+        '400':
+          description: Missing Stripe ID
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '404':
+          description: Mapping not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve mapping
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'

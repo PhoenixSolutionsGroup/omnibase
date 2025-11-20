@@ -1,0 +1,54 @@
+# openapi: 3.1.0
+
+components:
+  schemas:
+    SuccessResponse:
+      type: object
+      description: Standard success response wrapper
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 200
+        data:
+          description: Response data payload
+          oneOf:
+            - type: object
+            - type: array
+            - type: string
+            - type: number
+            - type: boolean
+      required:
+        - status
+    
+    ErrorResponse:
+      type: object
+      description: Standard error response wrapper
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        error:
+          type: string
+          description: Error message or details
+          example: Invalid request parameters
+      required:
+        - status
+        - error
+    
+    ConflictResponse:
+      type: object
+      description: 409 Conflict response when resource already exists
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 409
+        error:
+          type: string
+          description: Error message describing the conflict
+          example: Role with this name already exists for tenant
+      required:
+        - status
+        - error

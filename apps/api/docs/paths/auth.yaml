@@ -1,0 +1,279 @@
+paths:
+  /api/v1/auth/session:
+    get:
+      operationId: getSession
+      summary: Get current session
+      description: |
+        Returns the current authenticated user's session including identity and tenant information.
+
+        ## Session Data
+        - Session metadata (ID, expiry, authentication methods)
+        - Identity information (user ID, traits like email, name)
+        - Active tenant context (if user has tenant membership)
+
+        ## Authentication
+        Requires valid session via Cookie or X-Session-Token header.
+      tags:
+        - V1 Auth
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+      responses:
+        '200':
+          description: Session retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/auth.yaml#/components/schemas/SessionResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+
+  /api/v1/auth/identity:
+    get:
+      operationId: getIdentity
+      summary: Get current identity
+      description: |
+        Returns the current authenticated user's identity information (traits like email, name).
+
+        ## Identity Data
+        - User ID (unique identifier)
+        - Traits (email, first name, last name based on identity schema)
+        - Schema ID
+        - Created/updated timestamps
+
+        ## Use Case
+        Lighter alternative to full session when you only need user profile data.
+      tags:
+        - V1 Auth
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+      responses:
+        '200':
+          description: Identity retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      summary: Logout user
+      description: |
+        Creates a Kratos logout flow and returns the logout URL for browser redirect.
+
+        ## Logout Process
+        1. Request this endpoint to get logout URL
+        2. Redirect browser to the returned logout_url
+        3. Session will be invalidated and user logged out
+
+        ## Cookie Cleanup
+        The logout URL handles clearing session cookies automatically.
+      tags:
+        - V1 Auth
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+      responses:
+        '200':
+          description: Logout flow created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/auth.yaml#/components/schemas/LogoutResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/auth/whoami:
+    get:
+      operationId: whoAmI
+      summary: Check authentication status
+      description: |
+        Lightweight endpoint to check if the user is authenticated.
+
+        ## Response
+        Returns boolean authentication status and user ID if authenticated.
+
+        ## Use Case
+        Quick auth checks for route guards without fetching full session data.
+      tags:
+        - V1 Auth
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+      responses:
+        '200':
+          description: Authentication status checked
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/auth.yaml#/components/schemas/WhoAmIResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+
+  /api/v1/auth/active-tenant:
+    get:
+      operationId: getActiveTenant
+      summary: Get active tenant
+      description: |
+        Returns the full tenant object for the user's currently active tenant.
+
+        ## Tenant Context
+        Users can be members of multiple tenants but only one is active at a time.
+        The active tenant determines which resources and data the user can access.
+
+        ## Use Case
+        Determine which tenant context to use for API calls and data filtering.
+      tags:
+        - V1 Auth
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+      responses:
+        '200':
+          description: Active tenant retrieved
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/tenants.yaml#/components/schemas/ActiveTenantResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+
+  /api/v1/auth/tenants:
+    get:
+      operationId: listTenants
+      summary: List user's tenants
+      description: |
+        Returns all tenants the user is a member of with their active status.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
+        ## Tenant Memberships
+        Users can be members of multiple tenants. Each membership has:
+        - Active status (only one tenant can be active at a time)
+        - Full tenant information (ID, name, type, etc.)
+
+        ## Use Case
+        Display tenant switcher UI or list all organizations the user belongs to.
+      tags:
+        - V1 Auth
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Tenants retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/tenants.yaml#/components/schemas/ListTenantsResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/auth/users:
+    post:
+      operationId: createUser
+      summary: Create new user
+      description: |
+        Creates a new user identity via Kratos admin API with email/password credentials.
+
+        ## User Creation
+        - Creates Kratos identity with provided traits (email, name)
+        - Sets up password authentication credentials
+        - Returns the created identity information
+
+        ## Use Case
+        Administrative user creation endpoint for onboarding flows or user management.
+
+        ## Authentication
+        This is an admin endpoint that requires service key authentication.
+      tags:
+        - V1 Auth
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/components/schemas/CreateUserRequest'
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/auth.yaml#/components/schemas/KratosIdentity'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

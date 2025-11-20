@@ -1,0 +1,31 @@
+components:
+  schemas:
+    MigrationSuccessResponse:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 200
+        message:
+          type: string
+          description: Success message
+          example: Migrations applied successfully
+
+    MigrationErrorResponse:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: No migrations zip file provided

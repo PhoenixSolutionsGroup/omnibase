@@ -1,0 +1,58 @@
+components:
+  schemas:
+    EmailTemplate:
+      type: object
+      required:
+        - id
+        - type
+        - subject
+        - html_body
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Template ID (UUID)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        type:
+          type: string
+          description: Template type identifier
+          example: welcome
+        subject:
+          type: string
+          description: Email subject line
+          example: Welcome to Test Platform
+        html_body:
+          type: string
+          description: HTML email body content
+          example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: "2025-11-10T00:18:19.653645Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: "2025-11-10T00:33:08.726632Z"
+
+    CreateEmailTemplateRequest:
+      type: object
+      required:
+        - type
+        - subject
+        - html_body
+      properties:
+        type:
+          type: string
+          description: Template type identifier (e.g., "welcome", "password-reset")
+          example: test_welcome
+        subject:
+          type: string
+          description: Email subject line
+          example: Welcome to Test Platform
+        html_body:
+          type: string
+          description: HTML email body content
+          example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>

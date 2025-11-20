@@ -1,0 +1,53 @@
+paths:
+  /api/v1/database/migrations:
+    post:
+      operationId: uploadDatabaseMigrations
+      summary: Upload database migrations
+      description: |
+        Uploads SQL migration files and applies them to the user's PostgreSQL database.
+
+        ## Authentication
+        Requires JWT token (typically used by CLI tools, not browser sessions).
+
+        ## Migration Format
+        Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
+        Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
+
+        ## Use Cases
+        - CLI migration uploads via `omnibase db migration push`
+        - CI/CD pipeline integrations
+        - Programmatic schema management
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - migrations
+              properties:
+                migrations:
+                  type: string
+                  format: binary
+                  description: Zip file containing SQL migration files
+      responses:
+        '200':
+          description: Migrations applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationSuccessResponse'
+        '400':
+          description: No migrations zip file provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationErrorResponse'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

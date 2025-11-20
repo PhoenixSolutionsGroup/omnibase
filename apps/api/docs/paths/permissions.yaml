@@ -1,0 +1,208 @@
+# openapi: 3.1.0
+
+paths:
+  /api/v1/permissions/check:
+    post:
+      operationId: checkPermission
+      summary: Check permission
+      description: |
+        Checks if a subject has a specific permission on an object using Ory Keto.
+        
+        ## Authentication
+        Requires session authentication.
+        
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
+        to enforce this constraint at the schema level.
+        
+        ## Use Cases
+        - Verify user permissions before performing actions
+        - Implement fine-grained access control
+        - Check role-based permissions
+      tags:
+        - V1 Permissions
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+          ServiceKeyAuth: []
+      requestBody:
+        required: true
+        description: Permission check request with either subject_id or subject_set
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/permissions.yaml#/components/schemas/CheckPermissionRequest'
+            examples:
+              withSubjectId:
+                summary: Check permission with subject_id
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_invite_user
+                  subject_id: 550e8400-e29b-41d4-a716-446655440000
+              withSubjectSet:
+                summary: Check permission with subject_set
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_delete_tenant
+                  subject_set:
+                    namespace: Tenant
+                    object: tenant_parent_456
+                    relation: can_invite_user
+      responses:
+        '200':
+          description: Permission check result
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/permissions.yaml#/components/schemas/CheckPermissionResponse'
+              examples:
+                allowed:
+                  summary: Permission granted
+                  value:
+                    status: 200
+                    data:
+                      allowed: true
+                denied:
+                  summary: Permission denied
+                  value:
+                    status: 200
+                    data:
+                      allowed: false
+        '400':
+          description: Invalid request body - namespace, object, and relation cannot be empty, or both/neither subject fields provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
+              examples:
+                bothSubjects:
+                  summary: Both subject_id and subject_set provided
+                  value:
+                    status: 400
+                    error: "Provide either subject_id or subject_set, not both"
+                neitherSubject:
+                  summary: Neither subject_id nor subject_set provided
+                  value:
+                    status: 400
+                    error: "Either subject_id or subject_set must be provided"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/UnauthorizedResponse'
+        '500':
+          description: Failed to check permission
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerErrorResponse'
+
+  /api/v1/permissions/relationships:
+    post:
+      operationId: createRelationship
+      summary: Create relationship
+      description: |
+        Creates a new relationship tuple in Ory Keto.
+        
+        ## Authentication
+        Requires session authentication.
+        
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
+        to enforce this constraint at the schema level.
+        
+        ## Use Cases
+        - Link resources to tenants
+        - Assign users to projects
+        - Create permission relationships
+      tags:
+        - V1 Permissions
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        description: Relationship creation request with either subject_id or subject_set
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/permissions.yaml#/components/schemas/CreateRelationshipRequest'
+            examples:
+              withSubjectId:
+                summary: Create relationship with subject_id
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_invite_user
+                  subject_id: 550e8400-e29b-41d4-a716-446655440000
+              withSubjectSet:
+                summary: Create relationship with subject_set
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_delete_tenant
+                  subject_set:
+                    namespace: Tenant
+                    object: tenant_parent_456
+                    relation: can_invite_user
+      responses:
+        '200':
+          description: Relationship created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/permissions.yaml#/components/schemas/CreateRelationshipResponse'
+              example:
+                status: 200
+                data:
+                  message: Relationship created successfully
+                  relationship:
+                    namespace: Tenant
+                    object: tenant_test_123
+                    relation: can_invite_user
+                    subject_id: 550e8400-e29b-41d4-a716-446655440000
+        '400':
+          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
+              examples:
+                bothSubjects:
+                  summary: Both subject_id and subject_set provided
+                  value:
+                    status: 400
+                    error: "Provide either subject_id or subject_set, not both"
+                neitherSubject:
+                  summary: Neither subject_id nor subject_set provided
+                  value:
+                    status: 400
+                    error: "Either subject_id or subject_set must be provided"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/UnauthorizedResponse'
+        '404':
+          $ref: "../schemas/errors.yaml#/components/responses/NotFoundError"
+        '500':
+          description: Failed to create relationship
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerErrorResponse'

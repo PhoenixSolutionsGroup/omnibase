@@ -1,0 +1,30 @@
+components:
+  schemas:
+    NamespaceDeploymentResponse:
+      type: object
+      required:
+        - message
+        - tenant_id
+        - path
+        - managed_mode
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Namespaces deployed successfully
+        tenant_id:
+          type: string
+          description: Tenant ID
+          example: tenant_test_123
+        path:
+          type: string
+          description: S3 storage path
+          example: tenant_test_123/latest.zip
+        managed_mode:
+          type: boolean
+          description: Whether managed mode is enabled
+          example: true
+        roles_synced:
+          type: integer
+          description: Number of system roles synced (optional)
+          example: 5

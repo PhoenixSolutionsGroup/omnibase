@@ -1,0 +1,266 @@
+components:
+  schemas:
+    SessionResponse:
+      type: object
+      required:
+        - session
+        - identity
+      properties:
+        session:
+          type: object
+          description: Kratos session metadata
+        identity:
+          type: object
+          description: User identity information
+        tenant:
+          allOf:
+            - $ref: './tenants.yaml#/components/schemas/Tenant'
+          description: Active tenant context (if user has tenant membership)
+      example:
+        session:
+          id: session_test_123
+          active: true
+          expires_at: "2025-11-11T05:00:00Z"
+        identity:
+          id: 550e8400-e29b-41d4-a716-446655440000
+          traits:
+            email: user@example.com
+            first_name: John
+            last_name: Doe
+
+    WhoAmIResponse:
+      type: object
+      required:
+        - authenticated
+        - user_id
+      properties:
+        authenticated:
+          type: boolean
+          description: Whether the user is authenticated
+          example: true
+        user_id:
+          type: string
+          description: User ID (Kratos identity ID)
+          example: 550e8400-e29b-41d4-a716-446655440000
+
+    LogoutResponse:
+      type: object
+      required:
+        - logout_url
+        - logout_token
+      properties:
+        logout_url:
+          type: string
+          description: Kratos logout URL for browser redirect
+          example: http://auth.test.example.com/self-service/logout?token=tok_test_abc123xyz
+        logout_token:
+          type: string
+          description: Logout token for the flow
+          example: tok_test_abc123xyz
+
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: User's password (minimum 8 characters)
+          example: securepassword123
+        name:
+          type: object
+          required:
+            - first
+            - last
+          properties:
+            first:
+              type: string
+              description: User's first name
+              example: John
+            last:
+              type: string
+              description: User's last name
+              example: Doe
+
+    CreateUserResponse:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - traits
+      properties:
+        id:
+          type: string
+          description: User's unique identifier (Kratos identity ID)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: user@example.com
+        name:
+          type: object
+          properties:
+            first:
+              type: string
+              example: John
+            last:
+              type: string
+              example: Doe
+        traits:
+          type: object
+          description: Full identity traits from Kratos
+          additionalProperties: true
+    
+    KratosIdentity:
+      type: object
+      required:
+        - id
+        - schema_id
+        - schema_url
+        - state
+        - state_changed_at
+        - traits
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the identity
+          example: 319fc51a-9684-4f4f-87ea-6feefcfcc334
+        schema_id:
+          type: string
+          description: Identity schema ID
+          example: default
+        schema_url:
+          type: string
+          description: URL to the identity schema
+          example: http://127.0.0.1:4433/schemas/ZGVmYXVsdA
+        state:
+          type: string
+          description: Current state of the identity
+          enum: [active, inactive]
+          example: active
+        state_changed_at:
+          type: string
+          format: date-time
+          description: Timestamp when state last changed
+          example: "2025-11-12T09:18:51.828257251Z"
+        traits:
+          type: object
+          description: Identity traits (email, name, etc.)
+          properties:
+            email:
+              type: string
+              format: email
+              example: user@example.com
+            name:
+              type: object
+              properties:
+                first:
+                  type: string
+                  example: John
+                last:
+                  type: string
+                  example: Doe
+          additionalProperties: true
+        credentials:
+          type: object
+          description: Authentication credentials information
+          properties:
+            password:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: password
+                identifiers:
+                  type: array
+                  items:
+                    type: string
+                  example: ["user@example.com"]
+                version:
+                  type: integer
+                  example: 0
+                created_at:
+                  type: string
+                  format: date-time
+                updated_at:
+                  type: string
+                  format: date-time
+          additionalProperties: true
+        verifiable_addresses:
+          type: array
+          description: Email addresses associated with the identity
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: a25b4bd7-3629-4aa5-bec5-212dc13b2395
+              value:
+                type: string
+                format: email
+                example: user@example.com
+              verified:
+                type: boolean
+                example: false
+              via:
+                type: string
+                example: email
+              status:
+                type: string
+                example: pending
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+        recovery_addresses:
+          type: array
+          description: Recovery email addresses
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 586ff4ca-f7d6-4a99-8f3c-2b46dbcedb4e
+              value:
+                type: string
+                format: email
+                example: user@example.com
+              via:
+                type: string
+                example: email
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+        organization_id:
+          type: string
+          nullable: true
+          description: Organization ID if applicable
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when identity was created
+          example: "2025-11-12T09:18:51.829324Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when identity was last updated
+          example: "2025-11-12T09:18:51.829324Z"

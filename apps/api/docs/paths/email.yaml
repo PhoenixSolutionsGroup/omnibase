@@ -1,0 +1,161 @@
+paths:
+  /api/v1/email/templates:
+    get:
+      operationId: getEmailTemplates
+      summary: Get all email templates
+      description: |
+        Retrieves all email templates stored in the database.
+
+        ## Response
+        Returns array of all templates with their type, subject, and HTML body.
+
+        ## Use Cases
+        - List available email templates
+        - Display template management interface
+        - Audit email template inventory
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+      responses:
+        '200':
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          templates:
+                            type: array
+                            items:
+                              $ref: '../schemas/email.yaml#/components/schemas/EmailTemplate'
+                          count:
+                            type: integer
+                            example: 3
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+    post:
+      operationId: createOrUpdateEmailTemplate
+      summary: Create or update email template
+      description: |
+        Creates a new email template or updates an existing one based on template type.
+
+        ## Template Management
+        - If template type exists: updates subject and HTML body
+        - If template type is new: creates new template entry
+
+        ## Template Types
+        Template types are user-defined identifiers (e.g., "welcome", "password-reset", "invoice").
+
+        ## Use Cases
+        - Store custom email templates for transactional emails
+        - Update email content without code deployments
+        - Maintain versioned email templates
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/email.yaml#/components/schemas/CreateEmailTemplateRequest'
+      responses:
+        '200':
+          description: Template created/updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Template created successfully
+                          template:
+                            $ref: '../schemas/email.yaml#/components/schemas/EmailTemplate'
+        '400':
+          description: Bad request - Invalid or missing required headers/body
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                example: "400 Bad Request"
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/email/templates/{type}:
+    delete:
+      operationId: deleteEmailTemplate
+      summary: Delete email template
+      description: |
+        Deletes an email template by its type identifier.
+
+        ## Deletion Process
+        - Searches for template by type
+        - Removes template from database if found
+        - Returns 404 if template doesn't exist
+
+        ## Use Cases
+        - Remove deprecated email templates
+        - Clean up test templates
+        - Template lifecycle management
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: Template type identifier
+          schema:
+            type: string
+          example: welcome
+      responses:
+        '200':
+          description: Template deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Template deleted successfully
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

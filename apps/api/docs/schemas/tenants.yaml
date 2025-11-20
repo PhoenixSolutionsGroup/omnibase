@@ -1,0 +1,710 @@
+# Tenant Management Schemas
+# OpenAPI 3.1.0 Schema Definitions for Tenant-related models
+
+components:
+  schemas:
+    # Core Tenant Models
+    Tenant:
+      type: object
+      description: Main tenant/organization entity
+      required:
+        - id
+        - name
+        - type
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique tenant identifier
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        name:
+          type: string
+          description: Tenant/organization name
+          example: "Test Organization"
+        stripe_customer_id:
+          type: string
+          nullable: true
+          description: Stripe customer ID (nullable initially)
+          example: "cus_TOWEstcga5ou7a"
+        type:
+          type: string
+          description: Tenant type
+          example: "organization"
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when tenant was created
+          example: "2025-11-10T00:42:29.440300124Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when tenant was last updated
+          example: "2025-11-10T00:42:29.440300172Z"
+        settings:
+          $ref: '#/components/schemas/TenantSettings'
+
+    TenantSettings:
+      type: object
+      description: Tenant configuration settings
+      required:
+        - tenant_id
+        - allow_user_invites
+        - max_members
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID these settings belong to
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        allow_user_invites:
+          type: boolean
+          description: Whether non-admin users can invite others
+          example: true
+        max_members:
+          type: integer
+          description: Maximum number of users allowed
+          example: 10
+
+    UserTenantListItem:
+      type: object
+      description: Simplified tenant info for user's tenant list
+      required:
+        - tenant
+        - is_active
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        is_active:
+          type: boolean
+          description: Whether this is the user's currently active tenant
+          example: true
+
+    ActiveTenantResponse:
+      type: object
+      description: Response containing the user's active tenant information
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+
+    ListTenantsResponse:
+      type: object
+      required:
+        - tenants
+      properties:
+        tenants:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserTenantListItem'
+
+    # Role Models
+    Role:
+      type: object
+      description: Role definition with permissions
+      required:
+        - id
+        - role_name
+        - permissions
+        - user_ids
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique role identifier
+          example: "7bde7bd1-9be9-42f5-bc4b-be9f24cde432"
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the tenant this role belongs to (NULL for system roles)
+        role_name:
+          type: string
+          description: Role name
+          example: "member"
+        permissions:
+          type: array
+          description: List of permissions in namespace:resource#relation format
+          items:
+            type: string
+          example: ["tenant#invite_user", "tenant#remove_user"]
+        user_ids:
+          type: array
+          description: Array of user IDs assigned to this role
+          items:
+            type: string
+            format: uuid
+          example: ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"]
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when role was created
+          example: "2025-11-10T00:18:19.653645Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when role was last updated
+          example: "2025-11-10T00:33:08.726632Z"
+
+    NamespaceDefinition:
+      type: object
+      description: Definition of a permission namespace
+      required:
+        - id
+        - namespace
+        - relations
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique namespace definition identifier
+          example: "bfab650b-f834-4904-a4e8-41343fea86bc"
+        namespace:
+          type: string
+          description: Namespace name
+          example: "Tenant"
+        relations:
+          type: array
+          description: Available relations in this namespace
+          items:
+            type: string
+          example: ["can_delete_tenant", "can_invite_user", "can_update_user_role"]
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when definition was last updated
+          example: "2025-11-10T00:33:08.720326Z"
+
+    # Invitation Models
+    TenantInvite:
+      type: object
+      description: Tenant user invitation
+      required:
+        - id
+        - tenant_id
+        - email
+        - role
+        - token
+        - inviter_id
+        - expires_at
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique invite identifier
+          example: "550e8400-e29b-41d4-a716-446655440001"
+        tenant_id:
+          type: string
+          format: uuid
+          description: ID of the tenant being invited to
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        email:
+          type: string
+          format: email
+          description: Email address of invitee
+          example: "test@example.com"
+        role:
+          type: string
+          description: Role to assign upon acceptance
+          example: "member"
+        token:
+          type: string
+          description: Unique invite token
+          example: "tok_test_abc123xyz"
+        inviter_id:
+          type: string
+          format: uuid
+          description: ID of user who created the invite (references auth.identities.id)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        expires_at:
+          type: string
+          format: date-time
+          description: Timestamp when invite expires
+          example: "2025-11-17T00:42:29.440300124Z"
+        used_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when invite was used (null if not used)
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when invite was created
+          example: "2025-11-10T00:42:29.440300124Z"
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+
+    # Subscription Models
+    SubscriptionResponse:
+      type: object
+      description: Stripe subscription information
+      required:
+        - subscription_id
+        - config_price_id
+        - status
+        - current_period_start
+        - current_period_end
+        - cancel_at_period_end
+        - is_legacy_price
+      properties:
+        subscription_id:
+          type: string
+          description: Stripe subscription ID
+          example: "sub_1234567890"
+        config_price_id:
+          type: string
+          description: Configuration price ID
+          example: "neon_compute_starter"
+        status:
+          type: string
+          description: Subscription status
+          example: "active"
+        current_period_start:
+          type: integer
+          format: int64
+          description: Unix timestamp of current period start
+          example: 1705320600
+        current_period_end:
+          type: integer
+          format: int64
+          description: Unix timestamp of current period end
+          example: 1707999000
+        cancel_at_period_end:
+          type: boolean
+          description: Whether subscription will cancel at period end
+          example: false
+        canceled_at:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when subscription was canceled
+        trial_start:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when trial started
+        trial_end:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when trial ends
+        is_legacy_price:
+          type: boolean
+          description: Whether this is a legacy price
+          example: false
+
+    BillingStatusResponse:
+      type: object
+      required:
+        - is_active
+      properties:
+        is_active:
+          type: boolean
+          description: Whether tenant has active billing configured
+          example: true
+
+    # Request/Response Models - Lifecycle
+    CreateTenantRequest:
+      type: object
+      description: Request to create a new tenant
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Organization name
+          example: "Test Organization"
+        billing_email:
+          type: string
+          format: email
+          description: Billing email for Stripe customer
+          example: "billing@test.example.com"
+
+    CreateTenantResponse:
+      type: object
+      description: Response after creating a tenant
+      required:
+        - message
+        - tenant
+        - token
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Tenant created successfully"
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        token:
+          type: string
+          description: JWT token with tenant context
+          example: "eyJhbGciOiJIUzI1NiIs..."
+
+    DeleteTenantResponse:
+      type: object
+      description: Response after deleting a tenant
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Tenant deleted successfully"
+
+    SwitchTenantRequest:
+      type: object
+      description: Request to switch active tenant
+      required:
+        - tenant_id
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          minLength: 1
+          description: Target tenant ID
+          example: "tenant_test_123"
+
+    SwitchTenantResponse:
+      type: object
+      description: Response after switching active tenant
+      required:
+        - message
+        - token
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Successfully switched tenants"
+        token:
+          type: string
+          description: New JWT token with updated tenant context
+          example: "eyJhbGciOiJIUzI1NiIs..."
+
+    # Request/Response Models - Users
+    TenantUserResponse:
+      type: object
+      description: Information about a user in the tenant
+      required:
+        - user_id
+        - first_name
+        - last_name
+        - email
+        - role
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: User ID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        first_name:
+          type: string
+          description: User's first name
+          example: "John"
+        last_name:
+          type: string
+          description: User's last name
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          description: User's email
+          example: "test@example.com"
+        role:
+          type: string
+          description: User's role in the tenant
+          example: "member"
+
+    DeleteTenantUserRequest:
+      type: object
+      description: Request to remove a user from tenant
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          minLength: 1
+          description: Target user ID to remove
+          example: "550e8400-e29b-41d4-a716-446655440001"
+
+    UpdateTenantUserRoleRequest:
+      type: object
+      description: Request to update a user's role
+      required:
+        - role
+        - user_id
+      properties:
+        role:
+          type: string
+          description: New role to assign
+          example: "member"
+        user_id:
+          type: string
+          format: uuid
+          description: Target user ID
+          example: "550e8400-e29b-41d4-a716-446655440001"
+
+    UpdateTenantUserRoleResponse:
+      type: object
+      description: Response after updating user role
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "User role updated successfully"
+
+    # Request/Response Models - Roles
+    RolesListResponse:
+      type: object
+      description: List of roles in a tenant
+      required:
+        - roles
+      properties:
+        roles:
+          type: array
+          description: List of roles (including system roles)
+          items:
+            $ref: '#/components/schemas/Role'
+
+    CreateRoleRequest:
+      type: object
+      description: Request to create a new role
+      required:
+        - role_name
+        - permissions
+      properties:
+        role_name:
+          type: string
+          minLength: 1
+          description: Name of the role (required, cannot be empty)
+          example: "test_project_viewer"
+        permissions:
+          type: array
+          minItems: 1
+          description: List of permissions in namespace:resource#relation format (required, must have at least one non-empty permission). Empty strings are not allowed and will be rejected with a 400 error.
+          items:
+            type: string
+            minLength: 1
+          example: ["project:*#view", "tenant#read"]
+
+    UpdateRoleRequest:
+      type: object
+      description: Request to update an existing role
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          description: Updated list of permissions
+          items:
+            type: string
+          example: ["project:*#view", "project:*#edit"]
+
+    DeleteRoleResponse:
+      type: object
+      description: Response after deleting a role
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Role deleted successfully"
+
+    AssignRoleRequest:
+      type: object
+      description: Request to assign a role to a user. Must provide EITHER role_id OR role_name, not both.
+      oneOf:
+        - required: [role_id]
+          properties:
+            role_id:
+              type: string
+              format: uuid
+              minLength: 1
+              description: Role ID to assign (provide either role_id or role_name, not both)
+              example: "role_test_123"
+        - required: [role_name]
+          properties:
+            role_name:
+              type: string
+              minLength: 1
+              description: Role name to assign (provide either role_id or role_name, not both)
+              example: "member"
+
+    AssignRoleResponse:
+      type: object
+      description: Response after assigning a role
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Role assigned successfully"
+
+    NamespaceDefinitionsResponse:
+      type: object
+      description: Available permission namespace definitions
+      required:
+        - definitions
+      properties:
+        definitions:
+          type: array
+          description: List of namespace definitions
+          items:
+            $ref: '#/components/schemas/NamespaceDefinition'
+
+    # Request/Response Models - Invitations
+    CreateTenantUserInviteRequest:
+      type: object
+      description: Request to invite a user to the tenant
+      required:
+        - email
+        - role
+        - invite_url
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address of the user to invite
+          example: "test@example.com"
+        role:
+          type: string
+          description: Role to assign to the invited user
+          example: "member"
+        invite_url:
+          type: string
+          format: uri
+          description: Base URL for the invite acceptance page
+          example: "https://test.example.com/accept-invite"
+
+    CreateTenantUserInviteResponse:
+      type: object
+      description: Response after creating an invite
+      required:
+        - invite
+        - message
+      properties:
+        invite:
+          $ref: '#/components/schemas/TenantInvite'
+        message:
+          type: string
+          description: Success message
+          example: "Invite sent successfully"
+
+    AcceptInviteRequest:
+      type: object
+      description: Request to accept a tenant invitation
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: Invite token from email
+          example: "tok_test_abc123xyz"
+
+    AcceptInviteResponse:
+      type: object
+      description: Response after accepting an invite
+      required:
+        - tenant_id
+        - token
+        - message
+      properties:
+        tenant_id:
+          type: string
+          description: Tenant ID the user joined
+          example: "tenant_test_123"
+        token:
+          type: string
+          description: New JWT token with tenant context
+          example: "eyJhbGciOiJIUzI1NiIs..."
+        message:
+          type: string
+          description: Success message
+          example: "Successfully joined organization"
+
+    # Request/Response Models - Subscriptions
+    AddSubscriptionRequest:
+      type: object
+      description: Request to add a subscription to the tenant
+      required:
+        - plan_id
+      properties:
+        plan_id:
+          type: string
+          minLength: 1
+          description: The plan ID from your Stripe configuration (required, cannot be empty)
+          example: "price_test_basic"
+        stripe_customer_id:
+          type: string
+          minLength: 1
+          description: Optional Stripe customer ID to use directly (provide either tenant_id OR stripe_customer_id)
+          example: "cus_test_123"
+
+    AddSubscriptionResponse:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+          description: Stripe Subscription ID
+          example: "sub_test_123"
+        status:
+          type: string
+          description: Subscription status (active, trialing, etc.)
+          example: "active"
+        message:
+          type: string
+          description: Message confirming the addition
+          example: "Subscription added successfully"
+
+    RemoveSubscriptionRequest:
+      type: object
+      description: Request to remove/cancel a subscription
+      required:
+        - plan_id
+      properties:
+        plan_id:
+          type: string
+          minLength: 1
+          description: The plan ID from your Stripe configuration (required, cannot be empty)
+          example: "price_test_basic"
+        stripe_customer_id:
+          type: string
+          minLength: 1
+          description: Optional Stripe customer ID to use directly (provide either tenant_id OR stripe_customer_id)
+          example: "cus_test_123"
+
+    RemoveSubscriptionResponse:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+          description: Stripe Subscription ID that was canceled
+          example: "sub_test_123"
+        status:
+          type: string
+          description: Subscription status after cancellation
+          example: "canceled"
+        message:
+          type: string
+          description: Message confirming the cancellation
+          example: "Subscription canceled successfully"
+
+    # JWT Token Response
+    JWTTokenResponse:
+      type: object
+      description: PostgREST JWT token for direct database access
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: PostgREST JWT token
+          example: "eyJhbGciOiJIUzI1NiIs..."

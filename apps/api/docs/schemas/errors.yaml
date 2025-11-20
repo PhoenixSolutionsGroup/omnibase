@@ -1,0 +1,222 @@
+# openapi: 3.1.0
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      description: Generic error response
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        error:
+          type: string
+          description: Error message or details
+          example: An error occurred
+      required:
+        - status
+        - error
+    
+    BadRequest:
+      type: object
+      description: Bad Request error response (400)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        error:
+          type: string
+          description: Error message or details
+          example: Invalid request parameters
+      required:
+        - status
+        - error
+    
+    BadRequestResponse:
+      type: object
+      description: Bad Request error response (400)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        error:
+          type: string
+          description: Error message or details
+          example: Invalid request parameters
+      required:
+        - status
+        - error
+    
+    Unauthorized:
+      type: object
+      description: Unauthorized error response (401)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 401
+        error:
+          type: string
+          description: Error message
+          example: Unauthorized
+      required:
+        - status
+        - error
+    
+    UnauthorizedResponse:
+      type: object
+      description: Unauthorized error response (401)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 401
+        error:
+          type: string
+          description: Error message
+          example: Unauthorized
+      required:
+        - status
+        - error
+    
+    ForbiddenResponse:
+      type: object
+      description: Forbidden error response (403)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 403
+        error:
+          type: string
+          description: Error message
+          example: Forbidden
+      required:
+        - status
+        - error
+    
+    NotFound:
+      type: object
+      description: Not Found error response (404)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 404
+        error:
+          type: string
+          description: Error message
+          example: Not Found
+      required:
+        - status
+        - error
+    
+    NotFoundResponse:
+      type: object
+      description: Not Found error response (404)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 404
+        error:
+          type: string
+          description: Error message
+          example: Not Found
+      required:
+        - status
+        - error
+    
+    InternalServerError:
+      type: object
+      description: Internal Server Error response (500)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 500
+        error:
+          type: string
+          description: Error message
+          example: Internal Server Error
+      required:
+        - status
+        - error
+    
+    InternalServerErrorResponse:
+      type: object
+      description: Internal Server Error response (500)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 500
+        error:
+          type: string
+          description: Error message
+          example: Internal Server Error
+      required:
+        - status
+        - error
+    
+    ConflictResponse:
+      type: object
+      description: Conflict error response (409)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 409
+        error:
+          type: string
+          description: Error message
+          example: Conflict
+      required:
+        - status
+        - error
+
+  responses:
+    BadRequestError:
+      description: Bad Request - Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestResponse'
+    
+    UnauthorizedError:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedResponse'
+    
+    ForbiddenError:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenResponse'
+    
+    NotFoundError:
+      description: Not Found - Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundResponse'
+    
+    ConflictError:
+      description: Conflict - Resource already exists or conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConflictResponse'
+    
+    InternalServerError:
+      description: Internal Server Error - Server encountered an error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerErrorResponse'

@@ -1,0 +1,70 @@
+components:
+  schemas:
+    UploadRequest:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          description: Storage path for the file (user-controlled directory structure)
+          example: avatars/user-123.png
+        metadata:
+          type: object
+          description: Optional custom metadata for the file
+          example:
+            content_type: image/png
+            size: 1024
+
+    UploadResponse:
+      type: object
+      required:
+        - upload_url
+        - path
+      properties:
+        upload_url:
+          type: string
+          description: Presigned URL for uploading the file (valid for 15 minutes)
+          example: https://storage.test.example.com/bucket/path?signature=...
+        path:
+          type: string
+          description: Confirmed storage path
+          example: avatars/user-123.png
+
+    DownloadRequest:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          description: Path of the file to download
+          example: avatars/user-123.png
+
+    DownloadResponse:
+      type: object
+      required:
+        - download_url
+      properties:
+        download_url:
+          type: string
+          description: Presigned URL for downloading the file (valid for 15 minutes)
+          example: https://storage.test.example.com/bucket/path?signature=...
+
+    DeleteObjectRequest:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          description: Path of the file to delete
+          example: avatars/user-123.png
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Status message
+          example: file deleted

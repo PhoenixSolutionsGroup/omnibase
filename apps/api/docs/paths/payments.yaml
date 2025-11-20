@@ -1,0 +1,133 @@
+paths:
+  /api/v1/payments/checkout:
+    post:
+      operationId: createCheckout
+      summary: Create checkout session
+      description: |
+        Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
+
+        ## Authentication
+        Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.
+
+        ## Use Cases
+        - Subscription sign-ups
+        - One-time purchases
+        - Trial period checkouts
+        - Promotional code redemption
+      tags:
+        - V1 Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/CreateCheckoutRequest'
+      responses:
+        '200':
+          description: Checkout session created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/CreateCheckoutResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/portal:
+    post:
+      operationId: createCustomerPortal
+      summary: Create customer portal session
+      description: |
+        Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
+
+        ## Authentication
+        Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+
+        ## Prerequisites
+        - User must be authenticated
+        - Tenant must have a Stripe customer ID configured
+        - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+
+        ## Use Cases
+        - Subscription management
+        - Payment method updates
+        - Invoice history viewing
+        - Subscription cancellation
+      tags:
+        - V1 Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/CreatePortalRequest'
+      responses:
+        '200':
+          description: Portal session created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/CreatePortalResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/usage:
+    post:
+      operationId: recordUsage
+      summary: Record metered usage
+      description: |
+        Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
+
+        ## Authentication
+        Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+
+        ## Prerequisites
+        - User must be authenticated
+        - Tenant must have a Stripe customer ID configured
+        - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+
+        ## Use Cases
+        - API request metering
+        - Compute time tracking
+        - Storage usage recording
+        - Any metered billing scenario
+      tags:
+        - V1 Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/RecordUsageRequest'
+      responses:
+        '200':
+          description: Usage recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

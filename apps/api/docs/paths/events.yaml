@@ -1,0 +1,74 @@
+paths:
+  /api/v1/events:
+    get:
+      operationId: connectWebSocket
+      summary: WebSocket connection for real-time events
+      description: |
+        WebSocket endpoint for receiving real-time database change notifications with Row-Level Security (RLS) enforcement.
+
+        ## Connection Details
+        - Protocol: WebSocket
+        - Upgrade from HTTP GET request
+
+        ## Authentication
+        Session authentication via JWT token sent in subscription messages.
+
+        ## Message Format
+        **Subscribe to changes:**
+        ```json
+        {
+          "action": "subscribe",
+          "subscription": {
+            "table": "projects",
+            "row_id": "project_test_123",
+            "columns": ["name", "status"],
+            "jwt": "eyJhbGciOiJIUzI1NiIs..."
+          }
+        }
+        ```
+
+        **Unsubscribe:**
+        ```json
+        {
+          "action": "unsubscribe",
+          "subscription": {
+            "table": "projects",
+            "row_id": "project_test_123"
+          }
+        }
+        ```
+
+        **Received updates:**
+        ```json
+        {
+          "type": "update",
+          "table": "projects",
+          "row_id": "project_test_123",
+          "data": {
+            "name": "Updated Project",
+            "status": "active"
+          }
+        }
+        ```
+
+        ## RLS Enforcement
+        - Access checked via PostgREST using provided JWT
+        - Only changes to accessible rows are broadcast
+        - Re-validates access on each change notification
+
+        ## Use Cases
+        - Real-time collaboration features
+        - Live data synchronization
+        - Notification systems
+        - Activity feeds
+      tags:
+        - V1 Events
+      responses:
+        '101':
+          description: Switching Protocols - WebSocket connection established
+        '400':
+          description: Bad Request - Invalid WebSocket upgrade
+        '401':
+          description: Unauthorized - Invalid JWT in subscription message
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'

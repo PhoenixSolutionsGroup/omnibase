@@ -1,0 +1,182 @@
+# openapi: 3.1.0
+
+components:
+  schemas:
+    SubjectSetRequest:
+      type: object
+      description: Subject set representation for permission checks and relationship creation
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: Namespace of the subject set
+          example: Tenant
+        object:
+          type: string
+          minLength: 1
+          description: Object of the subject set
+          example: tenant_test_123
+        relation:
+          type: string
+          description: Relation of the subject set
+          example: can_invite_user
+      required:
+        - namespace
+        - object
+
+    CheckPermissionRequest:
+      description: Check permission request. Must provide exactly one of subject_id or subject_set.
+      oneOf:
+        - type: object
+          required:
+            - namespace
+            - object
+            - relation
+            - subject_id
+          properties:
+            namespace:
+              type: string
+              minLength: 1
+              description: The namespace of the permission check
+            object:
+              type: string
+              minLength: 1
+              description: The object to check permissions on
+            relation:
+              type: string
+              minLength: 1
+              description: The relation/permission to check
+            subject_id:
+              type: string
+              description: Direct subject identifier
+          additionalProperties: false
+        - type: object
+          required:
+            - namespace
+            - object
+            - relation
+            - subject_set
+          properties:
+            namespace:
+              type: string
+              minLength: 1
+              description: The namespace of the permission check
+            object:
+              type: string
+              minLength: 1
+              description: The object to check permissions on
+            relation:
+              type: string
+              minLength: 1
+              description: The relation/permission to check
+            subject_set:
+              $ref: '#/components/schemas/SubjectSetRequest'
+          additionalProperties: false
+
+    CheckPermissionResponse:
+      type: object
+      description: Permission check result
+      properties:
+        allowed:
+          type: boolean
+          description: Whether the permission check passed
+          example: true
+      required:
+        - allowed
+
+    CreateRelationshipRequest:
+      description: Create relationship request. Must provide exactly one of subject_id or subject_set.
+      oneOf:
+        - type: object
+          required:
+            - namespace
+            - object
+            - relation
+            - subject_id
+          properties:
+            namespace:
+              type: string
+              description: The namespace for the relationship
+            object:
+              type: string
+              description: The object in the relationship
+            relation:
+              type: string
+              description: The relation type
+            subject_id:
+              type: string
+              description: Direct subject identifier
+          additionalProperties: false
+        - type: object
+          required:
+            - namespace
+            - object
+            - relation
+            - subject_set
+          properties:
+            namespace:
+              type: string
+              description: The namespace for the relationship
+            object:
+              type: string
+              description: The object in the relationship
+            relation:
+              type: string
+              description: The relation type
+            subject_set:
+              $ref: '#/components/schemas/SubjectSetRequest'
+          additionalProperties: false
+
+    CreateRelationshipResponse:
+      type: object
+      description: Relationship creation result
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Relationship created successfully
+        relationship:
+          $ref: '#/components/schemas/Relationship'
+      required:
+        - message
+        - relationship
+
+    Relationship:
+      type: object
+      description: Keto relationship tuple representing a permission relationship
+      properties:
+        namespace:
+          type: string
+          description: Namespace of the relation tuple
+          example: Project
+        object:
+          type: string
+          description: Object of the relation tuple
+          example: project_test_123
+        relation:
+          type: string
+          description: Relation of the relation tuple
+          example: member
+        subject_id:
+          type: string
+          description: Subject ID of the relation tuple (optional, mutually exclusive with subject_set)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        subject_set:
+          $ref: '#/components/schemas/SubjectSet'
+
+    SubjectSet:
+      type: object
+      description: Subject set representation in Keto relationship tuples
+      properties:
+        namespace:
+          type: string
+          description: Namespace of the subject set
+          example: Tenant
+        object:
+          type: string
+          description: Object of the subject set
+          example: tenant_test_123
+        relation:
+          type: string
+          description: Relation of the subject set
+          example: member
