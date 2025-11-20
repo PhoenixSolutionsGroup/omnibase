@@ -271,13 +271,6 @@ func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 		return
 	}
 
-	// Create JWT token
-	token, err := h.tenants.CreateJWTToken(userID, tenantID)
-	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create JWT token: %s", err))
-		return
-	}
-
 	var tenantUser models.TenantUser
 	if err := h.db.Where("user_id = ? AND tenant_id = ?", userID, tenantID).First(&tenantUser).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -285,6 +278,13 @@ func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to verify tenant membership: %s", err))
+		return
+	}
+
+	// Create JWT token
+	token, err := h.tenants.CreateJWTToken(userID, tenantID)
+	if err != nil {
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create JWT token: %s", err))
 		return
 	}
 
