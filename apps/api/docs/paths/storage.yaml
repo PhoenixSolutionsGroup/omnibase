@@ -6,6 +6,10 @@ paths:
       description: |
         Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Upload permission is checked via PostgREST against the `storage.objects` table.
         Users must have INSERT permission based on their custom RLS policies.
@@ -22,6 +26,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:
@@ -64,6 +96,10 @@ paths:
       description: |
         Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Download permission is checked via PostgREST against the `storage.objects` table.
         Users must have SELECT permission based on their custom RLS policies.
@@ -79,6 +115,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:
@@ -123,6 +187,10 @@ paths:
       description: |
         Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Delete permission is checked via PostgREST against the `storage.objects` table.
         Users must have DELETE permission based on their custom RLS policies.
@@ -136,6 +204,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:

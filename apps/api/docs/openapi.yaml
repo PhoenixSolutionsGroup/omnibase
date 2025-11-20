@@ -1022,6 +1022,10 @@ paths:
       description: |
         Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Upload permission is checked via PostgREST against the `storage.objects` table.
         Users must have INSERT permission based on their custom RLS policies.
@@ -1038,6 +1042,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:
@@ -1079,6 +1111,10 @@ paths:
       description: |
         Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Download permission is checked via PostgREST against the `storage.objects` table.
         Users must have SELECT permission based on their custom RLS policies.
@@ -1094,6 +1130,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:
@@ -1137,6 +1201,10 @@ paths:
       description: |
         Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Delete permission is checked via PostgREST against the `storage.objects` table.
         Users must have DELETE permission based on their custom RLS policies.
@@ -1150,6 +1218,34 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
       requestBody:
         required: true
         content:
@@ -1953,7 +2049,8 @@ paths:
         Updates a user's role in the tenant and updates all associated Keto permissions.
 
         ## Authentication
-        Requires JWT token with `update_user_role` permission.
+        - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission
 
         ## Restrictions
         - Promoting to owner requires `update_user_role_to_owner` permission
@@ -1966,6 +2063,21 @@ paths:
         3. Updates database
         4. Assigns new role permissions
       operationId: updateTenantUserRole
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -2326,86 +2438,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to delete role
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /api/v1/tenants/roles/assign/{user_id}:
-    post:
-      tags:
-        - V1 Tenants
-      summary: Assign role to user
-      description: |
-        Assigns a role to a user and creates all associated Keto relationships for the role's permissions.
-
-        ## Authentication
-        Requires JWT token with tenant context and appropriate permissions.
-
-        ## Request Format
-        **Mutually Exclusive Fields:** Provide exactly ONE of the following:
-        - `role_id`: The UUID of the role to assign
-        - `role_name`: The name of the role to assign (e.g., "member", "admin")
-
-        If both or neither are provided, returns 400: "Must provide exactly one of role_id or role_name"
-
-        ## Use Cases
-        - Grant role to user
-        - Assign permissions via role
-        - User onboarding
-      operationId: assignRole
-      security:
-        - CookieAuth: []
-        - SessionTokenAuth: []
-        - ServiceKeyAuth: []
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          description: User ID
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AssignRoleRequest'
-      responses:
-        '200':
-          description: Role assigned successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/AssignRoleResponse'
-        '400':
-          description: Bad request - Invalid or missing required headers/body
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-            text/plain:
-              schema:
-                type: string
-                example: 400 Bad Request
-        '401':
-          description: Invalid or missing JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Role not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Failed to assign role
           content:
             application/json:
               schema:
@@ -5015,37 +5047,6 @@ components:
           type: string
           description: Success message
           example: Role deleted successfully
-    AssignRoleRequest:
-      type: object
-      description: Request to assign a role to a user. Must provide EITHER role_id OR role_name, not both.
-      oneOf:
-        - required:
-            - role_id
-          properties:
-            role_id:
-              type: string
-              format: uuid
-              minLength: 1
-              description: Role ID to assign (provide either role_id or role_name, not both)
-              example: role_test_123
-        - required:
-            - role_name
-          properties:
-            role_name:
-              type: string
-              minLength: 1
-              description: Role name to assign (provide either role_id or role_name, not both)
-              example: member
-    AssignRoleResponse:
-      type: object
-      description: Response after assigning a role
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: Success message
-          example: Role assigned successfully
     NamespaceDefinition:
       type: object
       description: Definition of a permission namespace
