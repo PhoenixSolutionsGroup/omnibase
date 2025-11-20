@@ -7,9 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SuccessResponse represents a successful API response
 type SuccessResponse struct {
-	Status int `json:"status"`
-	Data   any `json:"data,omitempty"`
+	// HTTP status code
+	Status int `json:"status" example:"200"`
+	// Response data payload
+	Data any `json:"data,omitempty"`
 }
 
 func NewSuccessResponse(ctx *gin.Context, data any) {
@@ -20,22 +23,29 @@ func NewSuccessResponse(ctx *gin.Context, data any) {
 	})
 }
 
+// BadRequestResponse represents a 400 Bad Request error response
 type BadRequestResponse struct {
-	Status int `json:"status"`
-	Error  any `json:"error"`
+	// HTTP status code
+	Status int `json:"status" example:"400"`
+	// Error message or details
+	Error string `json:"error" example:"Invalid request parameters"`
 }
 
-func NewBadRequestResponse(ctx *gin.Context, message any) {
+func NewBadRequestResponse(ctx *gin.Context, message string) {
 	logger.Logger.Warn("Bad request", "status", http.StatusBadRequest, "path", ctx.Request.URL.Path, "error", message)
+
 	ctx.JSON(http.StatusBadRequest, BadRequestResponse{
 		Status: http.StatusBadRequest,
 		Error:  message,
 	})
 }
 
+// InternalServerErrorResponse represents a 500 Internal Server Error response
 type InternalServerErrorResponse struct {
-	Status int    `json:"status"`
-	Error  string `json:"error"`
+	// HTTP status code
+	Status int `json:"status" example:"500"`
+	// Error message
+	Error string `json:"error" example:"Internal Server Error"`
 }
 
 func NewInternalServerErrorResponse(ctx *gin.Context, err error) {
@@ -46,9 +56,12 @@ func NewInternalServerErrorResponse(ctx *gin.Context, err error) {
 	})
 }
 
+// NotFoundErrorResponse represents a 404 Not Found error response
 type NotFoundErrorResponse struct {
-	Status int    `json:"status"`
-	Error  string `json:"error"`
+	// HTTP status code
+	Status int `json:"status" example:"404"`
+	// Error message
+	Error string `json:"error" example:"Not Found"`
 }
 
 func NewNotFoundErrorResponse(ctx *gin.Context) {
@@ -59,9 +72,12 @@ func NewNotFoundErrorResponse(ctx *gin.Context) {
 	})
 }
 
+// UnauthorizedResponse represents a 401 Unauthorized error response
 type UnauthorizedResponse struct {
-	Status int    `json:"status"`
-	Error  string `json:"error"`
+	// HTTP status code
+	Status int `json:"status" example:"401"`
+	// Error message
+	Error string `json:"error" example:"Unauthorized"`
 }
 
 func NewUnauthorizedResponse(ctx *gin.Context, message string) {
@@ -75,9 +91,12 @@ func NewUnauthorizedResponse(ctx *gin.Context, message string) {
 	})
 }
 
+// ForbiddenResponse represents a 403 Forbidden error response
 type ForbiddenResponse struct {
-	Status int    `json:"status"`
-	Error  string `json:"error"`
+	// HTTP status code
+	Status int `json:"status" example:"403"`
+	// Error message
+	Error string `json:"error" example:"Forbidden"`
 }
 
 func NewForbiddenResponse(ctx *gin.Context, message string) {
@@ -98,6 +117,63 @@ func NewNotFoundResponse(ctx *gin.Context, message string) {
 	logger.Logger.Warn("Not found", "status", http.StatusNotFound, "path", ctx.Request.URL.Path, "message", message)
 	ctx.JSON(http.StatusNotFound, NotFoundErrorResponse{
 		Status: http.StatusNotFound,
+		Error:  message,
+	})
+}
+
+// NotAcceptableResponse represents a 406 Not Acceptable error response
+type NotAcceptableResponse struct {
+	// HTTP status code
+	Status int `json:"status" example:"406"`
+	// Error message
+	Error string `json:"error" example:"Not Acceptable"`
+}
+
+func NewNotAcceptableResponse(ctx *gin.Context, message string) {
+	if message == "" {
+		message = "Not Acceptable"
+	}
+	logger.Logger.Warn("Not acceptable", "status", http.StatusNotAcceptable, "path", ctx.Request.URL.Path, "message", message)
+	ctx.JSON(http.StatusNotAcceptable, NotAcceptableResponse{
+		Status: http.StatusNotAcceptable,
+		Error:  message,
+	})
+}
+
+// MethodNotAllowedResponse represents a 405 Method Not Allowed error response
+type MethodNotAllowedResponse struct {
+	// HTTP status code
+	Status int `json:"status" example:"405"`
+	// Error message
+	Error string `json:"error" example:"Method Not Allowed"`
+}
+
+func NewMethodNotAllowedResponse(ctx *gin.Context, message string) {
+	if message == "" {
+		message = "Method Not Allowed"
+	}
+	logger.Logger.Warn("Method not allowed", "status", http.StatusMethodNotAllowed, "path", ctx.Request.URL.Path, "message", message)
+	ctx.JSON(http.StatusMethodNotAllowed, MethodNotAllowedResponse{
+		Status: http.StatusMethodNotAllowed,
+		Error:  message,
+	})
+}
+
+// ConflictResponse represents a 409 Conflict error response
+type ConflictResponse struct {
+	// HTTP status code
+	Status int `json:"status" example:"409"`
+	// Error message
+	Error string `json:"error" example:"Conflict"`
+}
+
+func NewConflictResponse(ctx *gin.Context, message string) {
+	if message == "" {
+		message = "Conflict"
+	}
+	logger.Logger.Warn("Conflict", "status", http.StatusConflict, "path", ctx.Request.URL.Path, "message", message)
+	ctx.JSON(http.StatusConflict, ConflictResponse{
+		Status: http.StatusConflict,
 		Error:  message,
 	})
 }
