@@ -13,37 +13,28 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Initializing stripe routes")
 	cfg := config.New()
 
-	logger.Logger.Debug("Creating stripe handler and auth middleware")
 	stripeHandler := v1.NewStripeHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
-	logger.Logger.Info("Registering GET /schema route for stripe schema")
 	router.GET("/schema", stripeHandler.GetSchema)
 
-	logger.Logger.Info("Registering GET /config route for stripe config")
 	router.GET("/config", stripeHandler.GetConfig)
 
-	logger.Logger.Debug("Creating admin group at /admin with JWT authentication")
-	adminGroup := router.Group("/admin")
-	adminGroup.Use(authMiddleware.RequireJWT())
+	router.GET("/convert/stripe-id/:stripe_id", stripeHandler.ConvertStripeIDToConfigID)
 
-	logger.Logger.Info("Registering GET /admin/config route for admin config retrieval")
+	adminGroup := router.Group("/admin")
+	adminGroup.Use(authMiddleware.RequireAuthHeaders())
+	adminGroup.Use(authMiddleware.RequireServiceKey())
+
 	adminGroup.GET("/config", stripeHandler.GetConfigAdmin)
 
-	logger.Logger.Info("Registering GET /admin/config/history route for config history")
 	adminGroup.GET("/config/history", stripeHandler.GetConfigHistory)
 
-	logger.Logger.Info("Registering GET /admin/config/pull route for config pull")
 	adminGroup.GET("/config/pull", stripeHandler.PullConfig)
 
-	logger.Logger.Info("Registering POST /admin/config route for config updates")
 	adminGroup.POST("/config", stripeHandler.UpdateConfig)
 
-	logger.Logger.Info("Registering POST /admin/config/validate route for config validation")
 	adminGroup.POST("/config/validate", stripeHandler.ValidateConfig)
 
-	logger.Logger.Info("Registering POST /admin/config/archive-all route for archiving all configs")
 	adminGroup.POST("/config/archive-all", stripeHandler.ArchiveAllConfig)
-
-	logger.Logger.Info("Stripe routes registration completed")
 }

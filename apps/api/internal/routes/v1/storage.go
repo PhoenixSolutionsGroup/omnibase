@@ -13,21 +13,17 @@ func SetUpStorageRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Initializing storage routes")
 	cfg := config.New()
 
-	logger.Logger.Debug("Creating storage handler and auth middleware")
 	storageHandler := v1.NewStorageHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
-	logger.Logger.Debug("Applying session authentication middleware to storage routes")
+	// Validate auth headers first (406 if missing), then authenticate (401 if invalid)
+	router.Use(authMiddleware.RequireAuthHeaders())
 	router.Use(authMiddleware.RequireSession())
 
-	logger.Logger.Info("Registering POST /upload route with upload handler")
 	router.POST("/upload", storageHandler.Upload)
 
-	logger.Logger.Info("Registering POST /download route with download handler")
 	router.POST("/download", storageHandler.Download)
 
-	logger.Logger.Info("Registering DELETE /object route with delete handler")
 	router.DELETE("/object", storageHandler.DeleteObject)
 
-	logger.Logger.Info("Storage routes registration completed")
 }

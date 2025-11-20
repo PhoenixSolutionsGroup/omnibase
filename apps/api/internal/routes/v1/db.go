@@ -17,8 +17,9 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	databaseHandler := v1.NewMigrationHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
-	logger.Logger.Debug("Applying JWT authentication middleware to database routes")
-	router.Use(authMiddleware.RequireJWT())
+	logger.Logger.Debug("Applying authentication middleware to database routes")
+	router.Use(authMiddleware.RequireAuthHeaders())
+	router.Use(authMiddleware.RequireServiceKey())
 
 	logger.Logger.Info("Registering POST /migrations route with migration handler")
 	router.POST("/migrations", databaseHandler.HandleMigrations)
