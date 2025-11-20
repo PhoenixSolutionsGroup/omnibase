@@ -12,21 +12,65 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreateTenantRequest represents the request to create a new tenant
 type CreateTenantRequest struct {
-	Name         string `json:"name" binding:"required"`
-	BillingEmail string `json:"billing_email"`
-	UserID       string `json:"user_id" binding:"required"`
+	// Organization name
+	Name string `json:"name" binding:"required,min=1" example:"Test Organization"`
+	// Billing email for Stripe customer
+	BillingEmail string `json:"billing_email" example:"billing@test.example.com"`
 }
 
+// CreateTenantResponse represents the tenant creation response
+type CreateTenantResponse struct {
+	// Created tenant
+	Tenant models.Tenant `json:"tenant" binding:"required"`
+	// JWT token with tenant context
+	Token string `json:"token" binding:"required" example:"eyJhbGciOiJIUzI1NiIs..."`
+	// Success message
+	Message string `json:"message" binding:"required" example:"Tenant created successfully"`
+}
+
+// SwitchTenantRequest represents the request to switch active tenant
 type SwitchTenantRequest struct {
-	TenantID string `json:"tenant_id" binding:"required"`
+	// Target tenant ID
+	TenantID string `json:"tenant_id" binding:"required,min=1" example:"tenant_test_123"`
 }
 
-// POST api/v1/tenants - Create Tenant + Stripe Customer + Set Active Tenant for User
+// SwitchTenantResponse represents the tenant switch response
+type SwitchTenantResponse struct {
+	// New JWT token with updated tenant context
+	Token string `json:"token" binding:"required" example:"eyJhbGciOiJIUzI1NiIs..."`
+	// Success message
+	Message string `json:"message" binding:"required" example:"Successfully switched tenants"`
+}
+
+// DeleteTenantResponse represents the tenant deletion response
+type DeleteTenantResponse struct {
+	// Success message
+	Message string `json:"message" binding:"required" example:"Tenant deleted successfully"`
+}
+
+// JWTTokenResponse represents the JWT token response
+type JWTTokenResponse struct {
+	// PostgREST JWT token
+	Token string `json:"token" binding:"required" example:"eyJhbGciOiJIUzI1NiIs..."`
+}
+
 func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
+	logger.Logger.Info("CreateTenant handler started")
+
 	var req CreateTenantRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Failed to bind JSON request", "error", err, "user_id", ctx.GetString("user_id"))
 		handlers.NewBadRequestResponse(ctx, "Invalid request format")
+		return
+	}
+
+	logger.Logger.Debug("Request bound successfully", "tenant_name", req.Name)
+
+	userID := ctx.GetString("user_id")
+	if userID == "" {
+		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
 		return
 	}
 
@@ -68,7 +112,7 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 	tenantUser := models.TenantUser{
 		ID:       uuid.New().String(),
 		TenantID: tenant.ID,
-		UserID:   req.UserID,
+		UserID:   userID,
 		Role:     "owner",
 		IsActive: true, // This will be the active tenant
 		JoinedAt: time.Now(),
@@ -81,35 +125,35 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 
 	// Assign owner role to user with all its permissions
 	logger.Logger.Info("Assigning owner role to tenant creator",
-		"user_id", req.UserID,
+		"user_id", userID,
 		"tenant_id", tenant.ID)
 
-	if err := h.roles.AssignRoleByName(ctx.Request.Context(), req.UserID, "owner", tenant.ID); err != nil {
+	if err := h.roles.AssignRoleByName(ctx.Request.Context(), userID, "owner", tenant.ID); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to assign owner role: %w", err))
 		return
 	}
 
 	// Set this as the active tenant for the user
-	token, err := h.tenants.SetActiveTenant(req.UserID, tenant.ID)
+	token, err := h.tenants.SetActiveTenant(userID, tenant.ID)
 
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to set active tenant: %s", err))
 		return
 	}
 
-	err = h.tenants.UpdateUserMetadata(ctx, req.UserID, true)
+	err = h.tenants.UpdateUserMetadata(ctx, userID, true)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update user metadata: %s", err))
+		return
 	}
 
-	handlers.NewSuccessResponse(ctx, gin.H{
-		"tenant":  tenant,
-		"token":   token,
-		"message": "Tenant created successfully",
+	handlers.NewSuccessResponse(ctx, CreateTenantResponse{
+		Tenant:  tenant,
+		Token:   token,
+		Message: "Tenant created successfully",
 	})
 }
 
-// Delete api/v1/tenants - Cleanup Stripe, Cleanup Keto
 func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 	if tenantID == "" {
@@ -176,13 +220,12 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 		}
 	}
 
-	handlers.NewSuccessResponse(ctx, gin.H{
-		"message": "Tenant deleted successfully",
+	handlers.NewSuccessResponse(ctx, DeleteTenantResponse{
+		Message: "Tenant deleted successfully",
 	})
 
 }
 
-// PUT api/v1/tenants/switch-active - Update Kratos identity traits to new active tenant
 func (h *TenantHandler) UpdateUsersActiveTenant(ctx *gin.Context) {
 	var req SwitchTenantRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -202,13 +245,12 @@ func (h *TenantHandler) UpdateUsersActiveTenant(ctx *gin.Context) {
 		return
 	}
 
-	handlers.NewSuccessResponse(ctx, gin.H{
-		"token":   token,
-		"message": "Successfully switched tenants",
+	handlers.NewSuccessResponse(ctx, SwitchTenantResponse{
+		Token:   token,
+		Message: "Successfully switched tenants",
 	})
 }
 
-// GET api/v1/tenants/jwt
 func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 	userID := ctx.GetString("user_id")
 	if userID == "" {
@@ -216,25 +258,20 @@ func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 		return
 	}
 
-	// Get user's active tenant
-	var tenantUser models.TenantUser
-	if err := h.db.Where("user_id = ? AND is_active = ?", userID, true).First(&tenantUser).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			handlers.NewBadRequestResponse(ctx, "No active tenant found for user")
-			return
-		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to get active tenant: %s", err))
+	tenantID := ctx.GetString("tenant_id")
+	if tenantID == "" {
+		handlers.NewUnauthorizedResponse(ctx, "Tenant not authenticated")
 		return
 	}
 
 	// Create JWT token
-	token, err := h.tenants.CreateJWTToken(userID, tenantUser.TenantID)
+	token, err := h.tenants.CreateJWTToken(userID, tenantID)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create JWT token: %s", err))
 		return
 	}
 
-	handlers.NewSuccessResponse(ctx, gin.H{
-		"token": token,
+	handlers.NewSuccessResponse(ctx, JWTTokenResponse{
+		Token: token,
 	})
 }

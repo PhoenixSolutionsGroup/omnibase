@@ -11,14 +11,38 @@ import (
 
 // TenantUserResponse represents the user data returned by the API
 type TenantUserResponse struct {
-	UserID    string `json:"user_id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Role      string `json:"role"`
+	// User ID
+	UserID string `json:"user_id" binding:"required" example:"550e8400-e29b-41d4-a716-446655440000"`
+	// User's first name
+	FirstName string `json:"first_name" binding:"required" example:"John"`
+	// User's last name
+	LastName string `json:"last_name" binding:"required" example:"Doe"`
+	// User's email
+	Email string `json:"email" binding:"required" example:"test@example.com"`
+	// User's role in the tenant
+	Role string `json:"role" binding:"required" example:"member"`
 }
 
-// GET api/v1/tenants/users
+// DeleteTenantUserRequest represents the request to remove a user from a tenant
+type DeleteTenantUserRequest struct {
+	// Target user ID to remove
+	TargetUserID string `json:"user_id" binding:"required,min=1" example:"550e8400-e29b-41d4-a716-446655440001"`
+}
+
+// UpdateTenantUserRoleRequest represents the request to update a user's role
+type UpdateTenantUserRoleRequest struct {
+	// New role to assign
+	Role string `json:"role" binding:"required" example:"member"`
+	// Target user ID
+	TargetUserID string `json:"user_id" binding:"required" example:"550e8400-e29b-41d4-a716-446655440001"`
+}
+
+// UpdateTenantUserRoleResponse represents the role update response
+type UpdateTenantUserRoleResponse struct {
+	// Success message
+	Message string `json:"message" binding:"required" example:"User role updated successfully"`
+}
+
 func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 	userID := ctx.GetString("user_id")
@@ -68,21 +92,13 @@ func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, users)
 }
 
-// DELETE api/v1/tenants/users - update Keto
 func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 	currentUserID := ctx.GetString("user_id")
 
-	var req struct {
-		TargetUserID string `json:"user_id" binding:"required"`
-	}
+	var req DeleteTenantUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		handlers.NewBadRequestResponse(ctx, "Invalid request format")
-		return
-	}
-
-	if req.TargetUserID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant ID and User ID are required")
 		return
 	}
 
@@ -214,7 +230,6 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, "")
 }
 
-// PUT api/v1/tenants/users - update Keto
 func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 	userID := ctx.GetString("user_id")
@@ -224,10 +239,7 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 		return
 	}
 
-	var req struct {
-		Role         string `json:"role" binding:"required"`
-		TargetUserID string `json:"user_id" binding:"required"`
-	}
+	var req UpdateTenantUserRoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		handlers.NewBadRequestResponse(ctx, "Invalid request format")
 		return
@@ -368,5 +380,5 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 	}
 
 	logger.Logger.Info("Successfully updated user role", "tenant_id", tenantID, "target_user_id", req.TargetUserID, "previous_role", previousRole, "new_role", req.Role)
-	handlers.NewSuccessResponse(ctx, gin.H{"message": "User role updated successfully"})
+	handlers.NewSuccessResponse(ctx, UpdateTenantUserRoleResponse{Message: "User role updated successfully"})
 }
