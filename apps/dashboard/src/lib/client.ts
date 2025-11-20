@@ -1,18 +1,15 @@
-import { createClient } from "@omnibase/core-js/database";
+import { PostgrestClient } from "@supabase/postgrest-js";
+import Cookie from "js-cookie";
 
 const OMNIBASE_POSTGREST_URL = process.env.NEXT_PUBLIC_OMNIBASE_POSTGREST_URL!;
 const OMNIBASE_ANON_KEY = process.env.NEXT_PUBLIC_OMNIBASE_ANON_KEY!;
 
 export const createBrowserClient = () => {
-  return createClient(
-    OMNIBASE_POSTGREST_URL,
-    OMNIBASE_ANON_KEY,
-    (cookie: string) => {
-      // Get cookie value from document.cookie
-      const match = document.cookie.match(
-        new RegExp("(^| )" + cookie + "=([^;]+)")
-      );
-      return match ? match[2] : "";
-    }
-  );
+  const key = Cookie.get("omnibase_postgrest_jwt") || OMNIBASE_ANON_KEY;
+
+  return new PostgrestClient(OMNIBASE_POSTGREST_URL, {
+    headers: {
+      Authorization: `Bearer ${key}`,
+    },
+  });
 };
