@@ -278,6 +278,16 @@ func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
 		return
 	}
 
+	var tenantUser models.TenantUser
+	if err := h.db.Where("user_id = ? AND tenant_id = ?", userID, tenantID).First(&tenantUser).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			handlers.NewForbiddenResponse(ctx, "User is not a member of this tenant")
+			return
+		}
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to verify tenant membership: %s", err))
+		return
+	}
+
 	handlers.NewSuccessResponse(ctx, JWTTokenResponse{
 		Token: token,
 	})

@@ -16,9 +16,12 @@ func SetUpStorageRoutes(router *gin.RouterGroup) {
 	storageHandler := v1.NewStorageHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
+	postgrestMiddleware := middleware.NewPostgrestMiddleware()
+
 	// Validate auth headers first (406 if missing), then authenticate (401 if invalid)
 	router.Use(authMiddleware.RequireAuthHeaders())
 	router.Use(authMiddleware.RequireSession())
+	router.Use(postgrestMiddleware.PostgRESTJWT())
 
 	router.POST("/upload", storageHandler.Upload)
 

@@ -13,6 +13,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
+CREATE OR REPLACE FUNCTION auth.active_user_role()
+RETURNS text AS $$
+BEGIN
+    RETURN current_setting('request.jwt.claims', true)::json->>'user_role';
+END;
+$$ LANGUAGE plpgsql STABLE;
+
 CREATE OR REPLACE FUNCTION auth.user_tenant_ids()
 RETURNS text[] AS $$
 BEGIN

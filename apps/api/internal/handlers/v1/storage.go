@@ -13,7 +13,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -76,44 +75,7 @@ func NewStorageHandler(cfg *config.Config) *StorageHandler {
 	}
 }
 
-// Helper: Extract JWT from cookie header
-func extractJWTFromCookie(cookieHeader string) string {
-	cookies := strings.Split(cookieHeader, "; ")
-	for _, cookie := range cookies {
-		parts := strings.SplitN(cookie, "=", 2)
-		if len(parts) == 2 && parts[0] == "omnibase_postgrest_jwt" {
-			return parts[1]
-		}
-	}
-	return ""
-}
-
-// Upload generates a presigned URL for uploading files to storage
-// @Summary      Upload file to storage
-// @Description  Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
-// @Description
-// @Description  ## RLS Policy
-// @Description  Upload permission is checked via PostgREST against the `storage.objects` table.
-// @Description  Users must have INSERT permission based on their custom RLS policies.
-// @Description
-// @Description  ## Upload Process
-// @Description  1. Request presigned URL from this endpoint
-// @Description  2. Upload file directly to S3 using returned URL (PUT request)
-// @Description  3. File metadata is automatically stored in database
-// @Description
-// @Description  ## URL Expiration
-// @Description  Presigned URLs are valid for 15 minutes after generation.
-// @Tags         V1 Storage
-// @Accept       json
-// @Produce      json
-// @Param        request body models.UploadRequest true "Upload configuration with path and optional metadata"
-// @Success      200 {object} object{status=int,data=models.UploadResponse} "Upload URL generated successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body or missing required fields"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Missing authentication session"
-// @Failure      403 {object} handlers.ForbiddenResponse "RLS policy denied upload access for this path"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to generate presigned URL or store metadata"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/storage/upload [post]
+// /api/v1/storage/upload [post]
 func (h *StorageHandler) Upload(c *gin.Context) {
 	logger.Logger.Info("Upload handler started")
 	var req models.UploadRequest
@@ -126,8 +88,7 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 
 	userID := c.GetString("user_id")
 	tenantID := c.GetString("tenant_id")
-	cookieHeader := c.GetHeader("Cookie")
-	jwt := extractJWTFromCookie(cookieHeader)
+	jwt := c.GetString("omnibase_postgrest_jwt")
 
 	if jwt == "" {
 		logger.Logger.Warn("Missing JWT token")
@@ -189,32 +150,7 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 	})
 }
 
-// Download generates a presigned URL for downloading files from storage
-// @Summary      Download file from storage
-// @Description  Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
-// @Description
-// @Description  ## RLS Policy
-// @Description  Download permission is checked via PostgREST against the `storage.objects` table.
-// @Description  Users must have SELECT permission based on their custom RLS policies.
-// @Description
-// @Description  ## Download Process
-// @Description  1. Request presigned URL from this endpoint
-// @Description  2. Download file directly from S3 using returned URL (GET request)
-// @Description
-// @Description  ## URL Expiration
-// @Description  Presigned URLs are valid for 15 minutes after generation.
-// @Tags         V1 Storage
-// @Accept       json
-// @Produce      json
-// @Param        request body models.DownloadRequest true "Path of file to download"
-// @Success      200 {object} object{status=int,data=models.DownloadResponse} "Download URL generated successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body or missing path"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Missing authentication session"
-// @Failure      403 {object} handlers.ForbiddenResponse "RLS policy denied download access for this path"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "File not found in storage"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to generate presigned URL"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/storage/download [post]
+// /api/v1/storage/download [post]
 func (h *StorageHandler) Download(c *gin.Context) {
 	logger.Logger.Info("Download handler started")
 	var req models.DownloadRequest
@@ -227,8 +163,7 @@ func (h *StorageHandler) Download(c *gin.Context) {
 
 	logger.Logger.Debug("Processing download request", "path", req.Path)
 
-	cookieHeader := c.GetHeader("Cookie")
-	jwt := extractJWTFromCookie(cookieHeader)
+	jwt := c.GetString("omnibase_postgrest_jwt")
 
 	if jwt == "" {
 		logger.Logger.Warn("Missing JWT token")
@@ -265,29 +200,7 @@ func (h *StorageHandler) Download(c *gin.Context) {
 	})
 }
 
-// DeleteObject deletes a file from storage
-// @Summary      Delete file from storage
-// @Description  Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
-// @Description
-// @Description  ## RLS Policy
-// @Description  Delete permission is checked via PostgREST against the `storage.objects` table.
-// @Description  Users must have DELETE permission based on their custom RLS policies.
-// @Description
-// @Description  ## Deletion Process
-// @Description  1. Metadata is deleted from database (with RLS check)
-// @Description  2. File is deleted from S3 storage
-// @Description  3. If S3 deletion fails, metadata is already removed (eventual consistency)
-// @Tags         V1 Storage
-// @Accept       json
-// @Produce      json
-// @Param        request body models.DeleteObjectRequest true "Path of file to delete"
-// @Success      200 {object} object{status=int,data=models.MessageResponse} "File deleted successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body or missing path"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Missing authentication session"
-// @Failure      403 {object} handlers.ForbiddenResponse "RLS policy denied delete access for this path"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "File not found or already deleted"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/storage/object [delete]
+// /api/v1/storage/object [delete]
 func (h *StorageHandler) DeleteObject(c *gin.Context) {
 	logger.Logger.Info("DeleteObject handler started")
 	var req models.DeleteObjectRequest
@@ -300,8 +213,7 @@ func (h *StorageHandler) DeleteObject(c *gin.Context) {
 
 	logger.Logger.Debug("Processing delete request", "path", req.Path)
 
-	cookieHeader := c.GetHeader("Cookie")
-	jwt := extractJWTFromCookie(cookieHeader)
+	jwt := c.GetString("omnibase_postgrest_jwt")
 
 	if jwt == "" {
 		logger.Logger.Warn("Missing JWT token")
