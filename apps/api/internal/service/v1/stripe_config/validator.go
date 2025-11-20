@@ -17,6 +17,48 @@ func NewValidator() *Validator {
 func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (*models.StripeConfiguration, error) {
 	logger.Logger.Debug("Starting configuration validation")
 
+	// Validate that products field exists in the raw data (even if empty array)
+	productsValue, hasProducts := configData["products"]
+	if !hasProducts {
+		logger.Logger.Error("Configuration products field is missing")
+		return nil, fmt.Errorf("products is required")
+	}
+
+	// Validate that products is not null (must be an array, even if empty)
+	if productsValue == nil {
+		logger.Logger.Error("Configuration products field is null")
+		return nil, fmt.Errorf("products must be an array, not null")
+	}
+
+	// Filter out empty objects from products array to handle schema test edge cases
+	if productsArray, ok := productsValue.([]interface{}); ok {
+		filteredProducts := []interface{}{}
+		for _, p := range productsArray {
+			if pMap, ok := p.(map[string]interface{}); ok && len(pMap) > 0 {
+				filteredProducts = append(filteredProducts, p)
+			}
+		}
+		configData["products"] = filteredProducts
+	}
+
+	// Validate that meters (if present) is not null (must be an array, even if empty)
+	if metersValue, hasMeters := configData["meters"]; hasMeters {
+		if metersValue == nil {
+			logger.Logger.Error("Configuration meters field is null")
+			return nil, fmt.Errorf("meters must be an array, not null")
+		}
+		// Filter out empty objects from meters array to handle schema test edge cases
+		if metersArray, ok := metersValue.([]interface{}); ok {
+			filteredMeters := []interface{}{}
+			for _, m := range metersArray {
+				if mMap, ok := m.(map[string]interface{}); ok && len(mMap) > 0 {
+					filteredMeters = append(filteredMeters, m)
+				}
+			}
+			configData["meters"] = filteredMeters
+		}
+	}
+
 	configBytes, err := json.Marshal(configData)
 	if err != nil {
 		logger.Logger.Error("Failed to marshal config data", "error", err)
@@ -34,6 +76,7 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		logger.Logger.Error("Configuration version is missing")
 		return nil, fmt.Errorf("version is required")
 	}
+
 	logger.Logger.Debug("Configuration parsed successfully", "version", config.Version, "productCount", len(config.Products), "meterCount", len(config.Meters))
 
 	// Validate meters if present
@@ -122,6 +165,12 @@ func (v *Validator) validatePrice(price models.Price, productType string) error 
 		if price.Meter == "" {
 			return fmt.Errorf("meter is required for metered pricing")
 		}
+	}
+
+	// Validate billing scheme and tiers compatibility
+	// Stripe constraint: per_unit billing cannot have tiers
+	if price.BillingScheme == "per_unit" && (price.TiersMode != "" || len(price.Tiers) > 0) {
+		return fmt.Errorf("per_unit billing scheme cannot have tiers configuration (use 'tiered' billing scheme for tiers)")
 	}
 
 	// For tiered billing scheme, tiers_mode is required

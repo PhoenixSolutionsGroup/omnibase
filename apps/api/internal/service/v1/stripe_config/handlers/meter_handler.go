@@ -163,6 +163,7 @@ func (h *MeterHandler) ListMeters(ctx context.Context) ([]*stripe.BillingMeter, 
 }
 
 // DeactivateMeter deactivates a meter in Stripe and returns a MeterChange for response
+// Idempotent: returns success if meter is already deactivated
 func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*models.MeterChange, error) {
 	logger.Logger.Info("Deactivating Stripe meter", "stripeID", stripeID)
 
@@ -181,11 +182,23 @@ func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*m
 	logger.Logger.Info("Making Stripe API call to deactivate meter", "stripeID", stripeID)
 	_, err = meter.Deactivate(stripeID, params)
 	if err != nil {
-		logger.Logger.Error("Failed to deactivate Stripe meter", "error", err, "stripeID", stripeID)
-		return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
+		// Check if meter is already deactivated - treat as success (idempotent)
+		if stripeErr, ok := err.(*stripe.Error); ok {
+			// Stripe returns "meter_already_deactivated" in the Msg field
+			if stripeErr.Msg == "meter_already_deactivated" {
+				logger.Logger.Info("Meter already deactivated, treating as success", "stripeID", stripeID)
+				// Continue to return success with meter details
+			} else {
+				logger.Logger.Error("Failed to deactivate Stripe meter", "error", err, "stripeID", stripeID)
+				return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
+			}
+		} else {
+			logger.Logger.Error("Failed to deactivate Stripe meter", "error", err, "stripeID", stripeID)
+			return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
+		}
+	} else {
+		logger.Logger.Info("Stripe meter deactivated successfully", "stripeID", stripeID)
 	}
-
-	logger.Logger.Info("Stripe meter deactivated successfully", "stripeID", stripeID)
 
 	// Find the config meter ID from ID mapping
 	var configMeterID string
