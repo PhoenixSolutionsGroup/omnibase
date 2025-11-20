@@ -180,6 +180,19 @@ func (h *StorageHandler) Download(c *gin.Context) {
 		return
 	}
 
+	fileExists, err := h.checkFileExists(jwt, h.bucketName, req.Path)
+	if err != nil {
+		logger.Logger.Error("Failed to check file existence", "path", req.Path, "error", err)
+		handlers.NewInternalServerErrorResponse(c, err)
+		return
+	}
+
+	if !fileExists {
+		logger.Logger.Info("File not found", "path", req.Path)
+		handlers.NewNotFoundResponse(c, "File not found")
+		return
+	}
+
 	// Generate pre-signed download URL (use public client for browser access)
 	logger.Logger.Debug("Generating presigned download URL", "bucket", h.bucketName, "key", req.Path)
 	presignClient := s3.NewPresignClient(h.s3PublicClient)
@@ -336,4 +349,46 @@ func (h *StorageHandler) deleteFileMetadata(jwt, bucket, path string) error {
 
 	logger.Logger.Trace("File metadata deleted successfully")
 	return nil
+}
+
+// Helper: Check if file exists via PostgREST SELECT
+func (h *StorageHandler) checkFileExists(jwt, bucket, path string) (bool, error) {
+	url := fmt.Sprintf("%s/objects?bucket_name=eq.%s&path=eq.%s",
+		h.postgrestURL, bucket, path)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return false, err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt))
+	req.Header.Set("Accept-Profile", "storage")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 403 || resp.StatusCode == 401 {
+		// Permission denied
+		return false, fmt.Errorf("permission denied")
+	}
+
+	if resp.StatusCode != 200 {
+		return false, fmt.Errorf("unexpected status: %d", resp.StatusCode)
+	}
+
+	// Parse response body to check if file exists
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	var records []map[string]interface{}
+	if err := json.Unmarshal(bodyBytes, &records); err != nil {
+		return false, err
+	}
+
+	// Empty array means file not found (but user has permission to the path)
+	return len(records) > 0, nil
 }
