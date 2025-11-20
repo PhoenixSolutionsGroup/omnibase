@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outfile dist/worker.js",
     "deploy": "wrangler deploy"
   },
   "devDependencies": {

@@ -23,4 +23,6 @@ app.get("/api/hello", (c) => {
   });
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+};
