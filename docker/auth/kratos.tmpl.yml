@@ -71,8 +71,6 @@ selfservice:
       use: code
       after:
         default_browser_return_url: ${WEBSITE_URL}
-        hooks:
-         - hook: session
 
     logout:
       after:
