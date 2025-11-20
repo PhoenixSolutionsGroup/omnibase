@@ -4,223 +4,308 @@ import (
 	"api/internal/config"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
+	keto "github.com/ory/keto-client-go"
 )
 
 type PermissionsHandler struct {
-	readURL  string
-	writeURL string
+	readURL      string
+	writeURL     string
+	ketoReadAPI  keto.PermissionApi
+	ketoWriteAPI keto.RelationshipApi
 }
 
 func NewPermissionsHandler(cfg *config.Config) *PermissionsHandler {
 	logger.Logger.Info("Initializing PermissionsHandler", "read_url", cfg.PermissionsConfig.ReadURL, "write_url", cfg.PermissionsConfig.WriteURL)
-	return &PermissionsHandler{
-		readURL:  cfg.PermissionsConfig.ReadURL,  // Keto read API
-		writeURL: cfg.PermissionsConfig.WriteURL, // Keto write API
-	}
-}
 
-// ProxyRead forwards read requests to Keto read API
-func (h *PermissionsHandler) ProxyRead(ctx *gin.Context) {
-	logger.Logger.Debug("ProxyRead handler started", "path", ctx.Request.URL.Path, "method", ctx.Request.Method)
-	h.proxyRequest(ctx, h.readURL, "read")
-}
-
-// ProxyWrite forwards write requests to Keto write API
-func (h *PermissionsHandler) ProxyWrite(ctx *gin.Context) {
-	logger.Logger.Debug("ProxyWrite handler started", "path", ctx.Request.URL.Path, "method", ctx.Request.Method)
-	h.proxyRequest(ctx, h.writeURL, "write")
-}
-
-// proxyRequest handles the actual proxying logic
-func (h *PermissionsHandler) proxyRequest(ctx *gin.Context, targetURL, apiType string) {
-	// Extract the path after /api/v1/permissions/{read|write}
-
-	originalPath := ctx.Request.URL.Path
-	pathPrefix := fmt.Sprintf("/api/v1/permissions/%s", apiType)
-
-	// Remove the prefix to get the path for Keto
-	ketoPath := strings.TrimPrefix(originalPath, pathPrefix)
-	if ketoPath == "" {
-		ketoPath = "/"
-	}
-
-	// Construct the full target URL
-	fullURL := targetURL + ketoPath
-	if ctx.Request.URL.RawQuery != "" {
-		fullURL += "?" + ctx.Request.URL.RawQuery
-	}
-
-	logger.Logger.Trace("Proxying request to Keto", "api_type", apiType, "original_path", originalPath, "keto_path", ketoPath, "full_url", fullURL)
-
-	// Read the request body
-	var bodyBytes []byte
-	if ctx.Request.Body != nil {
-		bodyBytes, _ = io.ReadAll(ctx.Request.Body)
-		ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	}
-
-	// Create the proxy request
-	proxyReq, err := http.NewRequest(ctx.Request.Method, fullURL, bytes.NewBuffer(bodyBytes))
-	if err != nil {
-		logger.Logger.Error("Failed to create proxy request", "url", fullURL, "method", ctx.Request.Method, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create proxy request: %s", err))
-		return
-	}
-
-	// Copy headers (excluding host and connection headers)
-	for key, values := range ctx.Request.Header {
-		// Skip hop-by-hop headers
-		if strings.ToLower(key) == "host" ||
-			strings.ToLower(key) == "connection" ||
-			strings.ToLower(key) == "proxy-connection" ||
-			strings.ToLower(key) == "te" ||
-			strings.ToLower(key) == "trailer" ||
-			strings.ToLower(key) == "upgrade" {
-			continue
-		}
-		for _, value := range values {
-			proxyReq.Header.Add(key, value)
-		}
-	}
-
-	// Set content type if body exists
-	if len(bodyBytes) > 0 && proxyReq.Header.Get("Content-Type") == "" {
-		proxyReq.Header.Set("Content-Type", "application/json")
-	}
-
-	// Execute the proxy request
-	client := &http.Client{}
-	resp, err := client.Do(proxyReq)
-	if err != nil {
-		logger.Logger.Error("Failed to proxy request to Keto", "url", fullURL, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to proxy request to Keto: %s", err))
-		return
-	}
-	defer resp.Body.Close()
-
-	logger.Logger.Debug("Received response from Keto", "status", resp.StatusCode, "api_type", apiType)
-
-	// Read response body
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logger.Logger.Error("Failed to read Keto response", "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to read Keto response: %s", err))
-		return
-	}
-
-	// Copy response headers
-	for key, values := range resp.Header {
-		for _, value := range values {
-			ctx.Header(key, value)
-		}
-	}
-
-	// Set the status code and return the response
-	logger.Logger.Trace("Returning proxied response", "status", resp.StatusCode, "content_length", len(respBody))
-	ctx.Status(resp.StatusCode)
-	ctx.Data(resp.StatusCode, resp.Header.Get("Content-Type"), respBody)
-}
-
-// Health check endpoint for permissions service
-func (h *PermissionsHandler) Health(ctx *gin.Context) {
-	logger.Logger.Debug("Health check started")
-	// Check if both Keto APIs are accessible
-	readHealth := h.checkHealth(h.readURL + "/health/ready")
-	writeHealth := h.checkHealth(h.writeURL + "/health/ready")
-
-	status := "healthy"
-	if !readHealth || !writeHealth {
-		status = "unhealthy"
-		logger.Logger.Warn("Permissions service unhealthy", "read_health", readHealth, "write_health", writeHealth)
-	} else {
-		logger.Logger.Debug("Permissions service healthy")
-	}
-
-	handlers.NewSuccessResponse(ctx, gin.H{
-		"status": status,
-		"services": gin.H{
-			"keto_read":  readHealth,
-			"keto_write": writeHealth,
+	// Configure Keto read client
+	readConfig := keto.NewConfiguration()
+	readConfig.Servers = keto.ServerConfigurations{
+		keto.ServerConfiguration{
+			URL: cfg.PermissionsConfig.ReadURL,
 		},
+	}
+
+	// Configure Keto write client
+	writeConfig := keto.NewConfiguration()
+	writeConfig.Servers = keto.ServerConfigurations{
+		keto.ServerConfiguration{
+			URL: cfg.PermissionsConfig.WriteURL,
+		},
+	}
+
+	return &PermissionsHandler{
+		readURL:      cfg.PermissionsConfig.ReadURL,
+		writeURL:     cfg.PermissionsConfig.WriteURL,
+		ketoReadAPI:  keto.NewAPIClient(readConfig).PermissionApi,
+		ketoWriteAPI: keto.NewAPIClient(writeConfig).RelationshipApi,
+	}
+}
+
+// CheckPermissionRequest represents the request body for checking permissions
+// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
+type CheckPermissionRequest struct {
+	// Namespace of the relationship (required, cannot be empty)
+	Namespace string `json:"namespace" binding:"required,min=1" example:"Tenant"`
+	// Object ID to check permission on (required, cannot be empty)
+	Object string `json:"object" binding:"required,min=1" example:"tenant_test_123"`
+	// Relation to check (required, cannot be empty)
+	Relation string `json:"relation" binding:"required,min=1" example:"can_invite_user"`
+	// Subject ID (user ID) to check permission for - provide either this OR subject_set, not both
+	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
+	// Subject set (alternative to subject_id) - provide either this OR subject_id, not both
+	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
+}
+
+// SubjectSetRequest represents a subject set in permission checks
+type SubjectSetRequest struct {
+	// Namespace of the subject set
+	Namespace string `json:"namespace" binding:"required" example:"Tenant"`
+	// Object of the subject set
+	Object string `json:"object" binding:"required" example:"tenant_test_123"`
+	// Relation of the subject set
+	Relation string `json:"relation,omitempty" example:"can_invite_user"`
+}
+
+// CheckPermissionResponse represents the response for permission checks
+type CheckPermissionResponse struct {
+	// Whether the permission check passed
+	Allowed bool `json:"allowed" binding:"required" example:"true"`
+}
+
+// CheckPermission godoc
+// @Summary      Check permission
+// @Description  Checks if a subject has a specific permission on an object using Ory Keto.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires session authentication.
+// @Description
+// @Description  ## Request Format
+// @Description  Provide either `subject_id` or `subject_set` (not both).
+// @Description
+// @Description  ## Use Cases
+// @Description  - Verify user permissions before performing actions
+// @Description  - Implement fine-grained access control
+// @Description  - Check role-based permissions
+// @Tags         V1 Permissions
+// @Accept       json
+// @Produce      json
+// @Param        body body CheckPermissionRequest true "Permission check request"
+// @Success      200 {object} handlers.SuccessResponse{data=CheckPermissionResponse} "Permission check result"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation cannot be empty"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to check permission"
+// @Security     CookieAuth,SessionTokenAuth
+// @Router       /api/v1/permissions/check [post]
+// @ID           checkPermission
+func (h *PermissionsHandler) CheckPermission(ctx *gin.Context) {
+	logger.Logger.Debug("CheckPermission handler started")
+
+	var req CheckPermissionRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request body", "error", err)
+		handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Invalid request body: %s", err))
+		return
+	}
+
+	// Validate that exactly one of subject_id or subject_set is provided
+	if req.SubjectID != nil && req.SubjectSet != nil {
+		logger.Logger.Warn("Both subject_id and subject_set provided in permission check")
+		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
+		return
+	}
+	if req.SubjectID == nil && req.SubjectSet == nil {
+		logger.Logger.Warn("Neither subject_id nor subject_set provided in permission check")
+		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
+		return
+	}
+
+	logger.Logger.Debug("Checking permission via Keto SDK",
+		"namespace", req.Namespace,
+		"object", req.Object,
+		"relation", req.Relation,
+		"has_subject_id", req.SubjectID != nil,
+		"has_subject_set", req.SubjectSet != nil)
+
+	// Build the check request
+	checkReq := h.ketoReadAPI.CheckPermission(ctx.Request.Context()).
+		Namespace(req.Namespace).
+		Object(req.Object).
+		Relation(req.Relation)
+
+	if req.SubjectID != nil {
+		checkReq = checkReq.SubjectId(*req.SubjectID)
+	}
+
+	if req.SubjectSet != nil {
+		checkReq = checkReq.SubjectSetNamespace(req.SubjectSet.Namespace).
+			SubjectSetObject(req.SubjectSet.Object).
+			SubjectSetRelation(req.SubjectSet.Relation)
+	}
+
+	// Execute the permission check
+	result, resp, err := checkReq.Execute()
+	if err != nil {
+		statusCode := 500
+		if resp != nil {
+			statusCode = resp.StatusCode
+		}
+
+		logger.Logger.Error("Failed to check permission",
+			"error", err,
+			"http_status", statusCode)
+
+		// Return the same status code that Keto returned (400 for bad requests, etc.)
+		if statusCode >= 400 && statusCode < 500 {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Permission check failed: %s", err))
+		} else {
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to check permission: %w", err))
+		}
+		return
+	}
+
+	logger.Logger.Debug("Permission check completed", "allowed", result.Allowed)
+
+	handlers.NewSuccessResponse(ctx, CheckPermissionResponse{
+		Allowed: result.Allowed,
 	})
 }
 
-// checkHealth performs a health check on the given URL
-func (h *PermissionsHandler) checkHealth(url string) bool {
-	logger.Logger.Trace("Checking health", "url", url)
-	resp, err := http.Get(url)
-	if err != nil {
-		logger.Logger.Debug("Health check failed", "url", url, "error", err)
-		return false
-	}
-	defer resp.Body.Close()
-	healthy := resp.StatusCode == http.StatusOK
-	if !healthy {
-		logger.Logger.Debug("Health check returned non-OK status", "url", url, "status", resp.StatusCode)
-	}
-	return healthy
+// CreateRelationshipRequest represents the request body for creating relationships
+// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
+type CreateRelationshipRequest struct {
+	// Namespace of the relationship
+	Namespace *string `json:"namespace" binding:"required" example:"Tenant"`
+	// Object ID in the relationship
+	Object *string `json:"object" binding:"required" example:"tenant_test_123"`
+	// Relation type
+	Relation *string `json:"relation" binding:"required" example:"can_invite_user"`
+	// Subject ID (user ID) - provide either this OR subject_id, not both
+	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
+	// Subject set - provide either this OR subject_id, not both
+	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
 }
 
-// checkPermission checks if a user has a specific permission on a tenant using Keto
-func (h *PermissionsHandler) checkPermission(userID, tenantID, relation string) (bool, error) {
-	logger.Logger.Debug("Checking permission", "user_id", userID, "tenant_id", tenantID, "relation", relation)
-	// Construct Keto check request
-	checkURL := h.readURL + "/relation-tuples/check"
+// CreateRelationshipResponse represents the response for creating relationships
+type CreateRelationshipResponse struct {
+	// Success message
+	Message string `json:"message" binding:"required" example:"Relationship created successfully"`
+	// The created relationship
+	Relationship keto.Relationship `json:"relationship" binding:"required"`
+}
 
-	checkRequest := map[string]interface{}{
-		"namespace":  "Tenant",
-		"object":     tenantID,
-		"relation":   relation,
-		"subject_id": userID,
+// CreateRelationship godoc
+// @Summary      Create relationship
+// @Description  Creates a new relationship tuple in Ory Keto.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires session authentication.
+// @Description
+// @Description  ## Request Format
+// @Description  Provide either `subject_id` or `subject_set` (not both).
+// @Description
+// @Description  ## Use Cases
+// @Description  - Link resources to tenants
+// @Description  - Assign users to projects
+// @Description  - Create permission relationships
+// @Tags         V1 Permissions
+// @Accept       json
+// @Produce      json
+// @Param        body body CreateRelationshipRequest true "Relationship creation request"
+// @Success      200 {object} handlers.SuccessResponse{data=CreateRelationshipResponse} "Relationship created successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation are required"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create relationship"
+// @Security     CookieAuth,SessionTokenAuth
+// @Router       /api/v1/permissions/relationships [post]
+// @ID           createRelationship
+func (h *PermissionsHandler) CreateRelationship(ctx *gin.Context) {
+	logger.Logger.Debug("CreateRelationship handler started")
+
+	var req CreateRelationshipRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request body", "error", err)
+		handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Invalid request body: %s", err))
+		return
 	}
 
-	requestBody, err := json.Marshal(checkRequest)
+	// Validate that exactly one of subject_id or subject_set is provided
+	if req.SubjectID != nil && req.SubjectSet != nil {
+		logger.Logger.Warn("Both subject_id and subject_set provided in relationship creation")
+		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
+		return
+	}
+	if req.SubjectID == nil && req.SubjectSet == nil {
+		logger.Logger.Warn("Neither subject_id nor subject_set provided in relationship creation")
+		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
+		return
+	}
+
+	logger.Logger.Debug("Creating relationship via Keto SDK",
+		"namespace", *req.Namespace,
+		"object", *req.Object,
+		"relation", *req.Relation,
+		"has_subject_id", req.SubjectID != nil,
+		"has_subject_set", req.SubjectSet != nil)
+
+	// Build the relationship body
+	relationshipBody := keto.CreateRelationshipBody{
+		Namespace: req.Namespace,
+		Object:    req.Object,
+		Relation:  req.Relation,
+	}
+
+	if req.SubjectID != nil {
+		relationshipBody.SubjectId = req.SubjectID
+	}
+
+	if req.SubjectSet != nil {
+		relationshipBody.SubjectSet = &keto.SubjectSet{
+			Namespace: req.SubjectSet.Namespace,
+			Object:    req.SubjectSet.Object,
+			Relation:  req.SubjectSet.Relation,
+		}
+	}
+
+	// Execute the relationship creation
+	relationship, resp, err := h.ketoWriteAPI.CreateRelationship(ctx.Request.Context()).
+		CreateRelationshipBody(relationshipBody).
+		Execute()
+
 	if err != nil {
-		logger.Logger.Error("Failed to marshal check request", "error", err)
-		return false, fmt.Errorf("failed to marshal check request: %w", err)
+		statusCode := 500
+		if resp != nil {
+			statusCode = resp.StatusCode
+		}
+
+		logger.Logger.Error("Failed to create relationship",
+			"error", err,
+			"http_status", statusCode)
+
+		// Check if the error is a 404 from Keto (namespace or object not found)
+		if statusCode == 404 {
+			handlers.NewNotFoundResponse(ctx, "Namespace or object not found")
+			return
+		}
+
+		// Return the same status code that Keto returned (400 for bad requests, etc.)
+		if statusCode >= 400 && statusCode < 500 {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Relationship creation failed: %s", err))
+		} else {
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to create relationship: %w", err))
+		}
+		return
 	}
 
-	// Make request to Keto
-	req, err := http.NewRequest("POST", checkURL, bytes.NewBuffer(requestBody))
-	if err != nil {
-		logger.Logger.Error("Failed to create check request", "error", err)
-		return false, fmt.Errorf("failed to create check request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
+	logger.Logger.Info("Relationship created successfully",
+		"namespace", *req.Namespace,
+		"object", *req.Object,
+		"relation", *req.Relation)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		logger.Logger.Error("Failed to execute check request", "error", err)
-		return false, fmt.Errorf("failed to execute check request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// Read response
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logger.Logger.Error("Failed to read check response", "error", err)
-		return false, fmt.Errorf("failed to read check response: %w", err)
-	}
-
-	// Parse response
-	var checkResponse struct {
-		Allowed bool `json:"allowed"`
-	}
-
-	if err := json.Unmarshal(respBody, &checkResponse); err != nil {
-		logger.Logger.Error("Failed to parse check response", "error", err)
-		return false, fmt.Errorf("failed to parse check response: %w", err)
-	}
-
-	logger.Logger.Debug("Permission check completed", "user_id", userID, "tenant_id", tenantID, "relation", relation, "allowed", checkResponse.Allowed)
-	return checkResponse.Allowed, nil
+	handlers.NewSuccessResponse(ctx, CreateRelationshipResponse{
+		Message:      "Relationship created successfully",
+		Relationship: *relationship,
+	})
 }

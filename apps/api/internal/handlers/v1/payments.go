@@ -10,10 +10,12 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type PaymentsHandler struct {
 	stripe *services_v1.StripeService
+	db     *gorm.DB
 }
 
 func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
@@ -28,37 +30,77 @@ func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
 	logger.Logger.Info("PaymentsHandler initialized successfully")
 	return &PaymentsHandler{
 		stripe: stripe,
+		db:     db,
 	}
 }
 
+// CreateCheckoutRequest represents the request to create a checkout session
 type CreateCheckoutRequest struct {
-	PriceID             string `json:"price_id" binding:"required"`
-	SuccessURL          string `json:"success_url" binding:"required"`
-	CancelURL           string `json:"cancel_url" binding:"required"`
-	TrialPeriodDays     *int64 `json:"trial_period_days,omitempty"`
-	PromotionCode       string `json:"promotion_code,omitempty"`
-	AllowPromotionCodes *bool  `json:"allow_promotion_codes,omitempty"`
+	// The price ID from your Stripe configuration (required, cannot be empty)
+	PriceID string `json:"price_id" binding:"required,min=1" example:"price_test_basic"`
+	// URL to redirect to after successful checkout (required, cannot be empty)
+	SuccessURL string `json:"success_url" binding:"required,min=1" example:"https://test.example.com/success"`
+	// URL to redirect to if checkout is cancelled (required, cannot be empty)
+	CancelURL string `json:"cancel_url" binding:"required,min=1" example:"https://test.example.com/cancel"`
+	// Optional trial period in days
+	TrialPeriodDays *int64 `json:"trial_period_days,omitempty" example:"14"`
+	// Optional promotion code to apply
+	PromotionCode string `json:"promotion_code,omitempty" example:"SUMMER2024"`
+	// Whether to allow promotion codes to be entered
+	AllowPromotionCodes *bool `json:"allow_promotion_codes,omitempty" example:"true"`
 }
 
+// CreateCheckoutResponse represents the checkout session response
 type CreateCheckoutResponse struct {
-	URL       string `json:"url"`
-	SessionID string `json:"session_id"`
+	// Stripe Checkout Session URL
+	URL string `json:"url" binding:"required" example:"https://checkout.stripe.com/pay/cs_test_..."`
+	// Stripe Checkout Session ID
+	SessionID string `json:"session_id" binding:"required" example:"cs_test_a1b2c3d4e5f6"`
 }
 
+// RecordUsageRequest represents a metered billing usage record
 type RecordUsageRequest struct {
-	MeterEventName string `json:"meter_event_name" binding:"required"`
-	Value          string `json:"value" binding:"required"`
+	// The meter event name as defined in your Stripe configuration (required, cannot be empty)
+	MeterEventName string `json:"meter_event_name" binding:"required,min=1" example:"api_requests"`
+	// The usage value to record (required, cannot be empty)
+	Value string `json:"value" binding:"required,min=1" example:"100"`
 }
 
+// CreatePortalRequest represents the customer portal session request
 type CreatePortalRequest struct {
-	ReturnURL string `json:"return_url" binding:"required"`
+	// URL to redirect to after leaving the portal (required, cannot be empty)
+	ReturnURL string `json:"return_url" binding:"required,min=1" example:"https://test.example.com/dashboard"`
 }
 
+// CreatePortalResponse represents the customer portal session response
 type CreatePortalResponse struct {
-	URL string `json:"url" binding:"required"`
+	// Stripe Customer Portal URL
+	URL string `json:"url" binding:"required" example:"https://billing.stripe.com/session/live_..."`
 }
 
-// (POST) /api/v1/payments/checkout
+// CreateCheckout creates a Stripe Checkout Session for subscription or one-time payments
+// @Summary      Create checkout session
+// @Description  Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
+// @Description
+// @Description  ## Authentication
+// @Description  Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.
+// @Description
+// @Description  ## Use Cases
+// @Description  - Subscription sign-ups
+// @Description  - One-time purchases
+// @Description  - Trial period checkouts
+// @Description  - Promotional code redemption
+// @Tags         V1 Payments
+// @Accept       json
+// @Produce      json
+// @Param        request body CreateCheckoutRequest true "Checkout session parameters"
+// @Success      200 {object} handlers.SuccessResponse{data=CreateCheckoutResponse} "Checkout session created successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request payload - price_id, success_url, and cancel_url cannot be empty"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
+// @Failure      404 {object} handlers.NotFoundErrorResponse "No Stripe price mapping found for the provided price_id"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create checkout session"
+// @Router       /api/v1/payments/checkout [post]
+// @ID           createCheckout
 func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 	logger.Logger.Info("CreateCheckout handler started")
 	var req CreateCheckoutRequest
@@ -72,8 +114,8 @@ func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 
 	priceID, err := h.stripe.GetStripeIDByConfigID(req.PriceID)
 	if err != nil {
-		logger.Logger.Error("Failed to map config_id to stripe_id", "config_id", req.PriceID, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to map config_id -> stripe_id: %s", err))
+		logger.Logger.Warn("Config ID not found", "config_id", req.PriceID, "error", err)
+		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
 		return
 	}
 
@@ -118,7 +160,33 @@ func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 	})
 }
 
-// (POST) /api/v1/payments/usage
+// RecordUsage records metered billing usage for the authenticated customer
+// @Summary      Record metered usage
+// @Description  Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+// @Description
+// @Description  ## Prerequisites
+// @Description  - User must be authenticated
+// @Description  - Tenant must have a Stripe customer ID configured
+// @Description  - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+// @Description
+// @Description  ## Use Cases
+// @Description  - API request metering
+// @Description  - Compute time tracking
+// @Description  - Storage usage recording
+// @Description  - Any metered billing scenario
+// @Tags         V1 Payments
+// @Accept       json
+// @Produce      json
+// @Param        request body RecordUsageRequest true "Usage event parameters"
+// @Success      200 {object} handlers.SuccessResponse "Usage recorded successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request, empty fields, or stripe_customer_id not found in context"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to record usage"
+// @Router       /api/v1/payments/usage [post]
+// @ID           recordUsage
 func (h *PaymentsHandler) RecordUsage(ctx *gin.Context) {
 	logger.Logger.Info("RecordUsage handler started")
 	var req RecordUsageRequest
@@ -145,10 +213,36 @@ func (h *PaymentsHandler) RecordUsage(ctx *gin.Context) {
 	}
 
 	logger.Logger.Info("Usage recorded successfully", "meter_event_name", req.MeterEventName, "customer_id", customerID.(string))
-	handlers.NewSuccessResponse(ctx, "")
+	handlers.NewSuccessResponse(ctx, nil)
 }
 
-// (POST) /api/v1/payments/portal
+// CreateCustomerPortal creates a Stripe Customer Portal session
+// @Summary      Create customer portal session
+// @Description  Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
+// @Description
+// @Description  ## Prerequisites
+// @Description  - User must be authenticated
+// @Description  - Tenant must have a Stripe customer ID configured
+// @Description  - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+// @Description
+// @Description  ## Use Cases
+// @Description  - Subscription management
+// @Description  - Payment method updates
+// @Description  - Invoice history viewing
+// @Description  - Subscription cancellation
+// @Tags         V1 Payments
+// @Accept       json
+// @Produce      json
+// @Param        request body CreatePortalRequest true "Portal session parameters"
+// @Success      200 {object} handlers.SuccessResponse{data=CreatePortalResponse} "Portal session created successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request, empty return_url, or stripe_customer_id not found in context"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create portal session"
+// @Router       /api/v1/payments/portal [post]
+// @ID           createCustomerPortal
 func (h *PaymentsHandler) CreateCustomerPortal(ctx *gin.Context) {
 	logger.Logger.Info("CreateCustomerPortal handler started")
 	var req CreatePortalRequest

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"api/internal/config"
+	"api/internal/handlers"
 	"api/internal/logger"
 	"database/sql"
 	"encoding/json"
@@ -26,15 +27,15 @@ var upgrader = websocket.Upgrader{
 
 // Subscription represents a client's subscription to database changes
 type Subscription struct {
-	Table   string   `json:"table"`
-	RowID   *string  `json:"row_id,omitempty"`  // Optional: subscribe to specific row (string to support UUID and integers)
-	Columns []string `json:"columns,omitempty"` // Optional: filter by specific columns
-	JWT     string   `json:"jwt"`
+	Table   string   `json:"table" example:"projects"`
+	RowID   *string  `json:"row_id,omitempty" example:"project_test_123"`        // Optional: subscribe to specific row (string to support UUID and integers)
+	Columns []string `json:"columns,omitempty" example:"name,status,updated_at"` // Optional: filter by specific columns
+	JWT     string   `json:"jwt" example:"eyJhbGciOiJIUzI1NiIs..."`
 }
 
 // SubscriptionMessage represents the message format from client
 type SubscriptionMessage struct {
-	Action string       `json:"action"` // "subscribe" or "unsubscribe"
+	Action string       `json:"action" example:"subscribe"` // "subscribe" or "unsubscribe"
 	Sub    Subscription `json:"subscription"`
 }
 
@@ -131,7 +132,7 @@ func (h *EventsHandler) HandleWebSocket(c *gin.Context) {
 				"error", err)
 			h.unregisterClient(client)
 			conn.Close()
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize listener"})
+			handlers.NewInternalServerErrorResponse(c, err)
 			return
 		}
 	}

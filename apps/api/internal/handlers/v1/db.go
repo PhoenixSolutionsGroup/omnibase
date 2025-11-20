@@ -40,10 +40,48 @@ func NewMigrationHandler(cfg *config.Config) *MigrationHandler {
 	}
 }
 
-// POST /migrations - Upload zip and apply migrations
-// The endpoint expects a multipart/form-data request with a "migrations" field containing a zip file
-// The zip file should contain .sql files named like: 001-seed.sql, 002-rls.sql, etc.
-// These will be automatically renamed to golang-migrate format: 001_seed.up.sql, 002_rls.up.sql, etc.
+// MigrationSuccessResponse represents a successful migration response
+type MigrationSuccessResponse struct {
+	// HTTP status code
+	Status int `json:"status" binding:"required" example:"200"`
+	// Success message
+	Message string `json:"message" binding:"required" example:"Migrations applied successfully"`
+}
+
+// MigrationErrorResponse represents a migration error response
+type MigrationErrorResponse struct {
+	// HTTP status code
+	Status int `json:"status" binding:"required" example:"400"`
+	// Error message
+	Message string `json:"message" binding:"required" example:"No migrations zip file provided"`
+}
+
+// HandleMigrations uploads and applies database migrations
+// @Summary      Upload database migrations
+// @Description  Uploads SQL migration files and applies them to the user's PostgreSQL database.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires JWT token (typically used by CLI tools, not browser sessions).
+// @Description
+// @Description  ## Migration Format
+// @Description  Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
+// @Description  Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
+// @Description
+// @Description  ## Use Cases
+// @Description  - CLI migration uploads via `omnibase db migration push`
+// @Description  - CI/CD pipeline integrations
+// @Description  - Programmatic schema management
+// @Tags         V1 Configuration
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        migrations formData file true "Zip file containing SQL migration files"
+// @Success      200 {object} MigrationSuccessResponse "Migrations applied successfully"
+// @Failure      400 {object} MigrationErrorResponse "No migrations zip file provided"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Migration execution failed"
+// @Security     ServiceKeyAuth
+// @Router       /api/v1/database/migrations [post]
+// @ID           uploadDatabaseMigrations
 func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	logger.Logger.Info("Starting migration upload and application process")
 
@@ -61,9 +99,9 @@ func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	// Create the temporary directory
 	if err := os.MkdirAll(migrationsDir, 0755); err != nil {
 		logger.Logger.Error("Failed to create migrations directory", "path", migrationsDir, "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": fmt.Sprintf("Failed to create migrations directory: %v", err),
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Failed to create migrations directory: %v", err),
 		})
 		return
 	}
@@ -72,20 +110,30 @@ func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	fileHeader, err := c.FormFile("migrations")
 	if err != nil {
 		logger.Logger.Warn("No migrations zip file provided in request", "error", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "No migrations zip file provided",
+		c.JSON(http.StatusBadRequest, MigrationErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "No migrations zip file provided",
 		})
 		return
 	}
 	logger.Logger.Info("Received migration zip file", "filename", fileHeader.Filename, "size", fileHeader.Size)
 
+	// Validate that file is not empty
+	if fileHeader.Size == 0 {
+		logger.Logger.Warn("Empty file provided", "filename", fileHeader.Filename)
+		c.JSON(http.StatusBadRequest, MigrationErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Empty file provided",
+		})
+		return
+	}
+
 	zipFile, err := fileHeader.Open()
 	if err != nil {
 		logger.Logger.Error("Failed to open zip file", "filename", fileHeader.Filename, "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": "Failed to open zip file",
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to open zip file",
 		})
 		return
 	}
@@ -95,9 +143,9 @@ func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	logger.Logger.Info("Extracting migration files from zip")
 	if err := h.extractZip(zipFile, migrationsDir); err != nil {
 		logger.Logger.Error("Failed to extract zip file", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": fmt.Sprintf("Failed to extract zip: %v", err),
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Failed to extract zip: %v", err),
 		})
 		return
 	}
@@ -107,17 +155,17 @@ func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	logger.Logger.Info("Applying migrations to database")
 	if err := h.applyMigrations(migrationsDir); err != nil {
 		logger.Logger.Error("Migration application failed", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  http.StatusInternalServerError,
-			"message": fmt.Sprintf("Migration failed: %v", err),
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Migration failed: %v", err),
 		})
 		return
 	}
 
 	logger.Logger.Info("Migrations applied successfully")
-	c.JSON(http.StatusOK, gin.H{
-		"status":  http.StatusOK,
-		"message": "Migrations applied successfully",
+	c.JSON(http.StatusOK, MigrationSuccessResponse{
+		Status:  http.StatusOK,
+		Message: "Migrations applied successfully",
 	})
 }
 

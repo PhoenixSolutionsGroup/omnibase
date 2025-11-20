@@ -74,7 +74,49 @@ func NewKetoNamespacesHandler(cfg *config.Config) (*KetoNamespacesHandler, error
 	}, nil
 }
 
+// NamespaceDeploymentResponse represents a successful namespace deployment response
+type NamespaceDeploymentResponse struct {
+	// Success message
+	Message string `json:"message" binding:"required" example:"Namespaces deployed successfully"`
+	// Tenant ID
+	TenantID string `json:"tenant_id" binding:"required" example:"tenant_test_123"`
+	// S3 storage path
+	Path string `json:"path" binding:"required" example:"tenant_test_123/latest.zip"`
+	// Whether managed mode is enabled
+	ManagedMode bool `json:"managed_mode" binding:"required" example:"true"`
+	// Number of system roles synced (optional)
+	RolesSynced *int `json:"roles_synced,omitempty" example:"5"`
+}
+
 // DeployNamespaces handles uploading and deploying Keto namespace configurations
+// @Summary      Deploy Keto namespace configurations
+// @Description  Uploads and deploys permission namespace configurations as a zip file.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires JWT token with appropriate permissions.
+// @Description
+// @Description  ## File Format
+// @Description  Upload a zip file containing namespace definition files and optionally a roles.config.json file.
+// @Description  The namespace files are stored in S3 and parsed to extract permission definitions.
+// @Description
+// @Description  ## Managed Mode
+// @Description  If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.
+// @Description
+// @Description  ## Use Cases
+// @Description  - CLI namespace deployment via `omnibase permissions push`
+// @Description  - CI/CD pipeline integrations
+// @Description  - Programmatic permission management
+// @Tags         V1 Configuration
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        namespaces formData file true "Zip file containing namespace configuration files"
+// @Success      200 {object} handlers.SuccessResponse{data=NamespaceDeploymentResponse} "Namespaces deployed successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid file or missing tenant ID"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to deploy namespaces"
+// @Security     ServiceKeyAuth
+// @Router       /api/v1/permissions/namespaces [post]
+// @ID           deployPermissionNamespaces
 func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 	logger.Logger.Info("DeployNamespaces handler started")
 	tenantID := h.config.ManagedHostingConfig.TenantID
@@ -198,16 +240,18 @@ func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 		logger.Logger.Info("Keto service restart triggered successfully", "tenant_id", tenantID)
 	}
 
-	response := gin.H{
-		"message":      "Namespaces deployed successfully",
-		"tenant_id":    tenantID,
-		"path":         objectKey,
-		"managed_mode": isManaged,
+	response := NamespaceDeploymentResponse{
+		Message:     "Namespaces deployed successfully",
+		TenantID:    tenantID,
+		Path:        objectKey,
+		ManagedMode: isManaged,
 	}
 
 	// Add roles_synced if present
 	if rolesSynced, exists := c.Get("roles_synced"); exists {
-		response["roles_synced"] = rolesSynced
+		if count, ok := rolesSynced.(int); ok {
+			response.RolesSynced = &count
+		}
 	}
 
 	logger.Logger.Info("Namespaces deployed successfully", "tenant_id", tenantID, "managed_mode", isManaged)
