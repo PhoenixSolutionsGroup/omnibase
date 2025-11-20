@@ -3,6 +3,24 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "generate:openapi": "redocly bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml",
+    "generate:k6": "openapi-to-k6 ./apps/api/docs/openapi.yaml ./tests/api/k6/sdk.ts",
+    "generate:sdk:js": "cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g typescript-fetch -o ../../sdk/core/js --additional-properties=supportsES6=true,npmName=@omnibase/core-js,npmVersion=0.9.15",
+    "generate:sdk:go": "cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g go -o ../../sdk/core/go --additional-properties=packageName=omnibase --git-user-id=phoenixsolutionsgroup --git-repo-id=omnibase/sdk/core/go",
+    "generate:sdk": "bun run generate:openapi && bun run generate:sdk:js && bun run generate:sdk:go",
+    "publish:sdk:core": "cd sdk/core && ./publish.sh",
+    "test:api:contract:setup": "./tests/api/contract/scripts/setup-test-env.sh",
+    "test:api:contract:cleanup": "./tests/api/contract/scripts/cleanup-test-env.sh",
+    "test:api:contract:results": "./tests/api/contract/scripts/view-test-results.sh",
+    "test:api:contract:spec": "bun run test:api:contract:setup && (source $PWD/tests/api/contract/.test-env && cd tests/api/contract && schemathesis run ../../../apps/api/docs/openapi.yaml --report junit,har --report-dir ./test-reports; EXIT_CODE=$?; bun run test:api:cleanup; exit $EXIT_CODE)",
+    "test:api:contract": "bun run test:api:contract:spec && bun run test:api:contract:results",
+    "build:k6": "bun build ./tests/api/k6/index.ts --outdir ./tests/api/k6/dist --target=node --format=esm --external k6",
+    "test:api:performance": "bun run build:k6 && k6 run --vus 100 --duration 30s --out cloud ./tests/api/k6/dist/index.js",
+    "test:api:integration": "bun run build:k6 && k6 run --out cloud ./tests/api/k6/dist/index.js",
+    "test:api:integration:local": "bun run build:k6 && k6 run ./tests/api/k6/dist/index.js"
+
+  },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
     "@types/bun": "latest"
@@ -12,7 +30,13 @@
     "tests/test-apps/*",
     "packages/*"
   ],
+  "resolutions": {
+    "find-up": "5.0.0"
+  },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@redocly/cli": "^2.11.1"
   }
 }
