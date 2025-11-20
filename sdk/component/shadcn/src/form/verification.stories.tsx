@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { VerificationForm } from "./verification";
-import { mockVerificationFlow } from "./stories//verification";
-import { mockVerificationFlowError } from "./stories//verification_error";
+import { mockVerificationFlow } from "./stories/verification";
+import { mockVerificationFlowError } from "./stories/verification_error";
 
 const meta: Meta<typeof VerificationForm> = {
   title: "Auth/Verification",

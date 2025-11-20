@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import type { NamespaceDefinition, Role } from "@omnibase/core-js";
+import type { ModelsNamespaceDefinition, ModelsRole } from "@omnibase/core-js";
 
 interface NamespaceMapEntry {
   id: string;
@@ -21,8 +21,8 @@ interface NamespaceMapEntry {
 }
 
 interface RoleCreatorProps {
-  definitions: NamespaceDefinition[];
-  roles: Role[];
+  definitions: ModelsNamespaceDefinition[];
+  roles: ModelsRole[];
   namespaceMap?: Record<string, NamespaceMapEntry[]>;
   onRoleCreate?: (roleData: {
     role_name: string;
@@ -67,7 +67,7 @@ export function RoleCreator({
 
   // Get role suggestions
   const roleSuggestions = useMemo(() => {
-    return roles.map((role) => role.role_name);
+    return roles.map((role) => role.roleName);
   }, [roles]);
 
   // Handle role name input
@@ -76,7 +76,7 @@ export function RoleCreator({
 
     // Check if this is an existing role
     const existingRole = roles.find(
-      (role) => role.role_name.toLowerCase() === value.toLowerCase()
+      (role) => role.roleName.toLowerCase() === value.toLowerCase()
     );
 
     if (existingRole) {

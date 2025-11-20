@@ -28,18 +28,10 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, UserX } from "lucide-react";
-
-// Types for the component
-export interface TenantUser {
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-}
+import type { TenantsTenantUserResponse } from "@omnibase/core-js";
 
 interface UserViewerProps {
-  users: TenantUser[];
+  users: TenantsTenantUserResponse[];
   availableRoles: string[];
   canEditUsers: boolean;
   onRoleUpdate?: (userId: string, newRole: string) => void | Promise<void>;
@@ -68,8 +60,8 @@ export function UserViewer({
     const query = searchQuery.toLowerCase();
     return users.filter(
       (user) =>
-        user.first_name.toLowerCase().includes(query) ||
-        user.last_name.toLowerCase().includes(query) ||
+        user.firstName.toLowerCase().includes(query) ||
+        user.lastName.toLowerCase().includes(query) ||
         user.email.toLowerCase().includes(query) ||
         user.role.toLowerCase().includes(query)
     );
@@ -158,18 +150,18 @@ export function UserViewer({
               </TableHeader>
               <TableBody>
                 {filteredUsers.map((user) => (
-                  <TableRow key={user.user_id}>
+                  <TableRow key={user.userId}>
                     {/* User Info */}
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarFallback>
-                            {getInitials(user.first_name, user.last_name)}
+                            {getInitials(user.firstName, user.lastName)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="font-medium">
-                            {user.first_name} {user.last_name}
+                            {user.firstName} {user.lastName}
                           </div>
                           <div className="text-xs text-muted-foreground md:hidden">
                             {user.email}
@@ -189,9 +181,9 @@ export function UserViewer({
                         <Select
                           value={user.role}
                           onValueChange={(newRole) =>
-                            handleRoleUpdate(user.user_id, newRole)
+                            handleRoleUpdate(user.userId, newRole)
                           }
-                          disabled={isUpdating[user.user_id]}
+                          disabled={isUpdating[user.userId]}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue />
@@ -217,8 +209,8 @@ export function UserViewer({
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleRemoveUser(user.user_id)}
-                          disabled={isUpdating[user.user_id]}
+                          onClick={() => handleRemoveUser(user.userId)}
+                          disabled={isUpdating[user.userId]}
                           className="h-8 w-8"
                         >
                           <UserX className="h-4 w-4" />

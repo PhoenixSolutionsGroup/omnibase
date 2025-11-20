@@ -1,5 +1,4 @@
 import * as React from "react";
-import type { Product } from "@omnibase/core-js/payments";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,9 +10,10 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Check, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import type { ModelsPrice, ModelsProduct } from "@omnibase/core-js";
 
 export interface PricingTableProps {
-  products: Product[];
+  products: ModelsProduct[];
   selectedPriceId?: string;
   onPriceSelect?: (priceId: string, productId: string) => void;
   className?: string;
@@ -33,27 +33,26 @@ const getCurrencySymbol = (currency: string): string => {
   return symbols[currency] || currency;
 };
 
-const formatPrice = (price: any): string => {
+const formatPrice = (price: ModelsPrice): string => {
   const priceUI = price.ui || {};
-  if (priceUI.price_display?.custom_text)
-    return priceUI.price_display.custom_text;
+  if (priceUI.priceDisplay?.customText) return priceUI.priceDisplay.customText;
   if (!price.amount || price.amount === 0) return "Free";
   const amount = price.amount / 100;
-  const currency = price.currency.toUpperCase();
+  const currency = (price.currency || "USD").toUpperCase();
   let formattedPrice =
-    priceUI.price_display?.show_currency !== false
+    priceUI.priceDisplay?.showCurrency !== false
       ? `${getCurrencySymbol(currency)}${amount.toFixed(2)}`
       : amount.toFixed(2);
-  if (priceUI.price_display?.suffix)
-    formattedPrice += ` ${priceUI.price_display.suffix}`;
+  if (priceUI.priceDisplay?.suffix)
+    formattedPrice += ` ${priceUI.priceDisplay.suffix}`;
   return formattedPrice;
 };
 
-const formatBillingPeriod = (price: any): string => {
+const formatBillingPeriod = (price: ModelsPrice): string => {
   const priceUI = price.ui || {};
-  if (priceUI.billing_period) return priceUI.billing_period;
+  if (priceUI.billingPeriod) return priceUI.billingPeriod;
   if (price.interval) {
-    const count = price.interval_count || 1;
+    const count = price.intervalCount || 1;
     return `per ${
       count === 1 ? price.interval : `${count} ${price.interval}s`
     }`;
@@ -67,10 +66,10 @@ function PricingCard({
   onPriceSelect,
   displayedPrice,
 }: {
-  product: Product;
+  product: ModelsProduct;
   isSelected: boolean;
   onPriceSelect?: (priceId: string, productId: string) => void;
-  displayedPrice: any;
+  displayedPrice: ModelsPrice;
 }) {
   const ui = product.ui || {};
   const isHighlighted = ui.highlighted;
@@ -101,7 +100,7 @@ function PricingCard({
       >
         <CardHeader className="text-center">
           <CardTitle className="text-xl font-bold">
-            {ui.display_name || product.name}
+            {ui.displayName || product.name}
           </CardTitle>
           {ui.tagline && (
             <CardDescription className="text-base">
@@ -119,8 +118,8 @@ function PricingCard({
             </div>
           </div>
           {((ui.features && ui.features.length > 0) ||
-            displayedPrice.ui?.features?.length > 0 ||
-            displayedPrice.ui?.limits?.length > 0) && (
+            (displayedPrice.ui?.features?.length ?? 0) > 0 ||
+            (displayedPrice.ui?.limits?.length ?? 0) > 0) && (
             <div className="space-y-4">
               {ui.features && ui.features.length > 0 && (
                 <div className="space-y-2">
@@ -162,16 +161,14 @@ function PricingCard({
                       Usage Limits
                     </h4>
                     <ul className="space-y-1">
-                      {displayedPrice.ui.limits.map(
-                        (limit: { text: string }, index: number) => (
-                          <li
-                            key={index}
-                            className="text-sm text-muted-foreground"
-                          >
-                            {limit.text}
-                          </li>
-                        )
-                      )}
+                      {displayedPrice.ui.limits.map((limit, index: number) => (
+                        <li
+                          key={index}
+                          className="text-sm text-muted-foreground"
+                        >
+                          {limit.text || ""}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}
@@ -185,7 +182,7 @@ function PricingCard({
             size="lg"
             onClick={() => onPriceSelect?.(displayedPrice.id, product.id)}
           >
-            {ui.cta_text || "Choose Plan"}
+            {ui.ctaText || "Choose Plan"}
           </Button>
         </CardFooter>
       </Card>
@@ -212,7 +209,7 @@ export function PricingTable({
   const sortedProducts = React.useMemo(
     () =>
       [...products].sort(
-        (a, b) => (a.ui?.sort_order ?? 999) - (b.ui?.sort_order ?? 999)
+        (a, b) => (a.ui?.sortOrder ?? 999) - (b.ui?.sortOrder ?? 999)
       ),
     [products]
   );
@@ -225,11 +222,11 @@ export function PricingTable({
     [products]
   );
 
-  const getDisplayedPrice = (product: Product) =>
+  const getDisplayedPrice = (product: ModelsProduct) =>
     product.prices.find((price) => price.interval === selectedInterval) ||
     product.prices[0];
 
-  const renderCard = (product: Product) => {
+  const renderCard = (product: ModelsProduct) => {
     const displayedPrice = getDisplayedPrice(product);
     return (
       <PricingCard

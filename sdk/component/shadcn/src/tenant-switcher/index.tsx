@@ -1,5 +1,4 @@
 import * as React from "react";
-import type { Tenant } from "@omnibase/core-js/tenants";
 import {
   Select,
   SelectContent,
@@ -8,10 +7,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { ModelsTenant } from "@omnibase/core-js";
 
 export interface SwitchActiveTenantProps {
   /** Array of tenants available to the user */
-  tenants: Tenant[];
+  tenants: ModelsTenant[];
   /** Currently active tenant ID */
   currentTenantId?: string;
   /** Custom form action to handle tenant switching */
