@@ -36,11 +36,11 @@ func (s *StripeConfigData) Scan(value interface{}) error {
 
 // StripeConfig represents a stored stripe configuration
 type StripeConfig struct {
-	ID        uuid.UUID        `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	Config    StripeConfigData `json:"config" gorm:"type:jsonb;not null"`
-	Version   string           `json:"version" gorm:"not null"`
-	CreatedAt time.Time        `json:"created_at"`
-	UpdatedAt time.Time        `json:"updated_at"`
+	ID        uuid.UUID        `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
+	Config    StripeConfigData `json:"config" gorm:"type:jsonb;not null" binding:"required"`
+	Version   string           `json:"version" gorm:"not null" binding:"required"`
+	CreatedAt time.Time        `json:"created_at" binding:"required"`
+	UpdatedAt time.Time        `json:"updated_at" binding:"required"`
 }
 
 func (StripeConfig) TableName() string {
@@ -199,14 +199,14 @@ type ProductUpdate struct {
 
 // StripeIDMapping stores the relationship between config IDs and actual Stripe IDs
 type StripeIDMapping struct {
-	ID              uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	ConfigID        uuid.UUID      `json:"config_id" gorm:"type:uuid;not null;index"`            // References StripeConfig.ID
-	ConfigItemID    string         `json:"config_item_id" gorm:"not null;index"`                 // Our config ID (e.g., "price_test_basic_monthly")
-	StripeID        string         `json:"stripe_id" gorm:"not null;index"`                      // Stripe's generated ID (e.g., "price_1S7p7w...")
-	StripeIDHistory pq.StringArray `json:"stripe_id_history" gorm:"type:text[];default:ARRAY[]"` // Historical Stripe IDs for legacy price tracking
-	ItemType        string         `json:"item_type" gorm:"not null"`                            // "product" or "price"
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
+	ID              uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
+	ConfigID        uuid.UUID      `json:"config_id" gorm:"type:uuid;not null;index" binding:"required"`            // References StripeConfig.ID
+	ConfigItemID    string         `json:"config_item_id" gorm:"not null;index" binding:"required"`                 // Our config ID (e.g., "price_test_basic_monthly")
+	StripeID        string         `json:"stripe_id" gorm:"not null;index" binding:"required"`                      // Stripe's generated ID (e.g., "price_1S7p7w...")
+	StripeIDHistory pq.StringArray `json:"stripe_id_history" gorm:"type:text[];default:ARRAY[]" binding:"required"` // Historical Stripe IDs for legacy price tracking
+	ItemType        string         `json:"item_type" gorm:"not null" binding:"required"`                            // "product" or "price"
+	CreatedAt       time.Time      `json:"created_at" binding:"required"`
+	UpdatedAt       time.Time      `json:"updated_at" binding:"required"`
 }
 
 func (StripeIDMapping) TableName() string {
@@ -254,15 +254,19 @@ type MeterValueSettings struct {
 
 // SubscriptionResponse represents an active subscription for a tenant
 type SubscriptionResponse struct {
-	SubscriptionID   string `json:"subscription_id"`
-	ConfigPriceID    string `json:"config_price_id"`
-	Status           string `json:"status"`
-	IsLegacyPrice    bool   `json:"is_legacy_price"`
-	CurrentPeriodEnd int64  `json:"current_period_end"`
+	SubscriptionID     string `json:"subscription_id" binding:"required"`
+	ConfigPriceID      string `json:"config_price_id" binding:"required"`
+	Status             string `json:"status" binding:"required"`
+	IsLegacyPrice      bool   `json:"is_legacy_price" binding:"required"`
+	CurrentPeriodStart int64  `json:"current_period_start" binding:"required"`
+	CurrentPeriodEnd   int64  `json:"current_period_end" binding:"required"`
+	CancelAtPeriodEnd  bool   `json:"cancel_at_period_end" binding:"required"`
+	CanceledAt         *int64 `json:"canceled_at,omitempty"`
+	TrialStart         *int64 `json:"trial_start,omitempty"`
+	TrialEnd           *int64 `json:"trial_end,omitempty"`
 }
 
 // BillingStatusResponse represents the billing status of a tenant
 type BillingStatusResponse struct {
-	HasBillingInfo bool `json:"has_billing_info"`
-	IsActive       bool `json:"is_active"`
+	IsActive bool `json:"is_active" binding:"required"`
 }
