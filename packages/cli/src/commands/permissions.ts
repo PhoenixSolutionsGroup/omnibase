@@ -143,11 +143,11 @@ export class PermissionsCommand {
 
       // Add API key for backend authentication
       if (apiKey) {
-        headers["x-api-key"] = apiKey;
+        headers["X-Service-Key"] = apiKey;
       }
 
       const response = await axios.post(
-        `${apiUrl}/api/v1/permissions/deploy`,
+        `${apiUrl}/api/v1/permissions/namespaces`,
         formData,
         { headers }
       );

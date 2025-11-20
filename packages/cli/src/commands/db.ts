@@ -225,7 +225,7 @@ async function applyMigrations(
     };
 
     if (apiKey) {
-      headers["x-api-key"] = apiKey;
+      headers["X-Service-Key"] = apiKey;
     }
 
     const response = await axios.post(endpoint, formData, { headers });

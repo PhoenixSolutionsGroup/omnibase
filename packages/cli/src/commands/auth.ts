@@ -80,7 +80,7 @@ export class AuthCommand {
         },
         {
           headers: {
-            "x-api-key": envConfig.apiKey,
+            "X-Service-Key": envConfig.apiKey,
           },
         }
       );

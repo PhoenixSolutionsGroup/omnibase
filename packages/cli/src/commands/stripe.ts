@@ -44,7 +44,7 @@ async function makeApiRequest(
 
   // Add API key if available
   if (envConfig.apiKey) {
-    headers["x-api-key"] = envConfig.apiKey;
+    headers["X-Service-Key"] = envConfig.apiKey;
   }
 
   const options: RequestInit = {
