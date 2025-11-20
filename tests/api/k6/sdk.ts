@@ -1556,37 +1556,6 @@ export interface DeleteRoleResponse {
   message: string;
 }
 
-export type AssignRoleRequestOneOf = {
-  /**
-   * Role ID to assign (provide either role_id or role_name, not both)
-   * @minLength 1
-   */
-  role_id: string;
-};
-
-export type AssignRoleRequestOneOfTwo = {
-  /**
-   * Role name to assign (provide either role_id or role_name, not both)
-   * @minLength 1
-   */
-  role_name: string;
-};
-
-/**
- * Request to assign a role to a user. Must provide EITHER role_id OR role_name, not both.
- */
-export type AssignRoleRequest =
-  | AssignRoleRequestOneOf
-  | AssignRoleRequestOneOfTwo;
-
-/**
- * Response after assigning a role
- */
-export interface AssignRoleResponse {
-  /** Success message */
-  message: string;
-}
-
 /**
  * Definition of a permission namespace
  */
@@ -1929,17 +1898,62 @@ export type DeployPermissionNamespaces200AllOf = {
 export type DeployPermissionNamespaces200 = SuccessResponse &
   DeployPermissionNamespaces200AllOf;
 
+export type UploadFileHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+  /**
+   * Tenant ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * PostgREST JWT token - Alternative to cookie authentication
+   */
+  "X-Postgrest-Token"?: string;
+};
+
 export type UploadFile200AllOf = {
   data?: UploadResponse;
 };
 
 export type UploadFile200 = SuccessResponse & UploadFile200AllOf;
 
+export type DownloadFileHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+  /**
+   * Tenant ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * PostgREST JWT token - Alternative to cookie authentication
+   */
+  "X-Postgrest-Token"?: string;
+};
+
 export type DownloadFile200AllOf = {
   data?: DownloadResponse;
 };
 
 export type DownloadFile200 = SuccessResponse & DownloadFile200AllOf;
+
+export type DeleteObjectHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+  /**
+   * Tenant ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * PostgREST JWT token - Alternative to cookie authentication
+   */
+  "X-Postgrest-Token"?: string;
+};
 
 export type DeleteObject200AllOf = {
   data?: MessageResponse;
@@ -2064,6 +2078,17 @@ export type ListTenantUsers200AllOf = {
 
 export type ListTenantUsers200 = SuccessResponse & ListTenantUsers200AllOf;
 
+export type UpdateTenantUserRoleHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+  /**
+   * Tenant ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-Tenant-Id"?: string;
+};
+
 export type UpdateTenantUserRole200AllOf = {
   data?: UpdateTenantUserRoleResponse;
 };
@@ -2134,12 +2159,6 @@ export type DeleteRole200AllOf = {
 };
 
 export type DeleteRole200 = SuccessResponse & DeleteRole200AllOf;
-
-export type AssignRole200AllOf = {
-  data?: AssignRoleResponse;
-};
-
-export type AssignRole200 = SuccessResponse & AssignRole200AllOf;
 
 export type GetRoleDefinitions200AllOf = {
   data?: NamespaceDefinitionsResponse;
@@ -3178,6 +3197,10 @@ If managed hosting is enabled, this endpoint will also trigger a restart of the 
   /**
  * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
 ## RLS Policy
 Upload permission is checked via PostgREST against the `storage.objects` table.
 Users must have INSERT permission based on their custom RLS policies.
@@ -3194,6 +3217,7 @@ Presigned URLs are valid for 15 minutes after generation.
  */
   uploadFile(
     uploadRequest: UploadRequest,
+    headers?: UploadFileHeaders,
     requestParameters?: Params,
   ): {
     response: Response;
@@ -3213,6 +3237,13 @@ Presigned URLs are valid for 15 minutes after generation.
         headers: {
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
+          ),
         },
       },
     );
@@ -3232,6 +3263,10 @@ Presigned URLs are valid for 15 minutes after generation.
   /**
  * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
 
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
 ## RLS Policy
 Download permission is checked via PostgREST against the `storage.objects` table.
 Users must have SELECT permission based on their custom RLS policies.
@@ -3247,6 +3282,7 @@ Presigned URLs are valid for 15 minutes after generation.
  */
   downloadFile(
     downloadRequest: DownloadRequest,
+    headers?: DownloadFileHeaders,
     requestParameters?: Params,
   ): {
     response: Response;
@@ -3266,6 +3302,13 @@ Presigned URLs are valid for 15 minutes after generation.
         headers: {
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
+          ),
         },
       },
     );
@@ -3285,6 +3328,10 @@ Presigned URLs are valid for 15 minutes after generation.
   /**
  * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
 
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
 ## RLS Policy
 Delete permission is checked via PostgREST against the `storage.objects` table.
 Users must have DELETE permission based on their custom RLS policies.
@@ -3298,6 +3345,7 @@ Users must have DELETE permission based on their custom RLS policies.
  */
   deleteObject(
     deleteObjectRequest: DeleteObjectRequest,
+    headers?: DeleteObjectHeaders,
     requestParameters?: Params,
   ): {
     response: Response;
@@ -3317,6 +3365,13 @@ Users must have DELETE permission based on their custom RLS policies.
         headers: {
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
+          ),
         },
       },
     );
@@ -4021,7 +4076,8 @@ Requires JWT token with `remove_user` permission.
  * Updates a user's role in the tenant and updates all associated Keto permissions.
 
 ## Authentication
-Requires JWT token with `update_user_role` permission.
+- **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission
 
 ## Restrictions
 - Promoting to owner requires `update_user_role_to_owner` permission
@@ -4038,6 +4094,7 @@ Requires JWT token with `update_user_role` permission.
  */
   updateTenantUserRole(
     updateTenantUserRoleRequest: UpdateTenantUserRoleRequest,
+    headers?: UpdateTenantUserRoleHeaders,
     requestParameters?: Params,
   ): {
     response: Response;
@@ -4057,6 +4114,13 @@ Requires JWT token with `update_user_role` permission.
         headers: {
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
+          ),
         },
       },
     );
@@ -4292,66 +4356,6 @@ Permissions should be in the format: `namespace:resource#relation`
         ),
       },
     });
-    let data;
-
-    try {
-      data = response.json();
-    } catch {
-      data = response.body;
-    }
-    return {
-      response,
-      data,
-    };
-  }
-
-  /**
- * Assigns a role to a user and creates all associated Keto relationships for the role's permissions.
-
-## Authentication
-Requires JWT token with tenant context and appropriate permissions.
-
-## Request Format
-**Mutually Exclusive Fields:** Provide exactly ONE of the following:
-- `role_id`: The UUID of the role to assign
-- `role_name`: The name of the role to assign (e.g., "member", "admin")
-
-If both or neither are provided, returns 400: "Must provide exactly one of role_id or role_name"
-
-## Use Cases
-- Grant role to user
-- Assign permissions via role
-- User onboarding
-
- * @summary Assign role to user
- */
-  assignRole(
-    userId: string,
-    assignRoleRequest: AssignRoleRequest,
-    requestParameters?: Params,
-  ): {
-    response: Response;
-    data: AssignRole200;
-  } {
-    const url = new URL(
-      this.cleanBaseUrl + `/api/v1/tenants/roles/assign/${userId}`,
-    );
-    const mergedRequestParameters = this._mergeRequestParameters(
-      requestParameters || {},
-      this.commonRequestParameters,
-    );
-    const response = http.request(
-      "POST",
-      url.toString(),
-      JSON.stringify(assignRoleRequest),
-      {
-        ...mergedRequestParameters,
-        headers: {
-          ...mergedRequestParameters?.headers,
-          "Content-Type": "application/json",
-        },
-      },
-    );
     let data;
 
     try {
