@@ -1,0 +1,28 @@
+{
+  "roles": [
+    {
+      "role": "owner",
+      "permissions": [
+        "tenant#delete_tenant",
+        "tenant#invite_user",
+        "tenant#remove_user",
+        "tenant#update_user_role"
+      ],
+      "immutable": true
+    },
+    {
+      "role": "admin",
+      "permissions": [
+        "tenant#invite_user",
+        "tenant#remove_user",
+        "tenant#update_user_role"
+      ],
+      "immutable": false
+    },
+    {
+      "role": "member",
+      "permissions": [],
+      "immutable": false
+    }
+  ]
+}

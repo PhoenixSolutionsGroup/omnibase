@@ -1,0 +1,116 @@
+# Schemathesis Configuration for Thorough API Testing
+# See https://schemathesis.readthedocs.io/en/stable/reference/configuration.html
+
+base-url = "http://127.0.0.1:8080"
+
+request-timeout = 30.0          # 30 second timeout for API requests
+workers = 10                    # Number of parallel workers
+rate-limit = "100/s"            # 100 requests per second max
+continue-on-failure = true      # Continue testing after failures for complete coverage
+
+# Authentication headers for all requests
+# These will be automatically populated from environment variables
+[headers]
+X-Service-Key = "${TEST_SERVICE_KEY}"
+X-Tenant-ID = "${TEST_TENANT_ID}"
+
+# Enable specific checks for thorough testing
+[checks]
+enabled = true
+not_a_server_error.enabled = true
+status_code_conformance.enabled = true
+content_type_conformance.enabled = true
+response_schema_conformance.enabled = true
+response_headers_conformance.enabled = true
+# Exclude checks that conflict with proper HTTP authentication
+use_after_free.enabled = false
+missing_required_header.enabled = false
+negative_data_rejection.enabled = false  # Add this line to disable 406 checks
+
+# Generation configuration for property-based testing
+[generation]
+max-examples = 200              # Generate 200 test cases per endpoint (thorough testing)
+allow-x00 = false               # Don't generate null bytes
+codec = "utf-8"                 # Use UTF-8 encoding
+with-security-parameters = false  # Don't generate security parameters (Cookie, X-Session-Token)
+
+# Test phases configuration - skip stateful testing to avoid 1.5 hour runs
+[phases]
+stateful.enabled = false        # Disable stateful testing phase (examples, coverage, fuzzing still run)
+
+# Skip file upload endpoints that require valid binary files
+# These endpoints need real zip files and cannot be reliably fuzzed with random data
+# Test these separately with dedicated integration tests instead
+[[operations]]
+include-name = "POST /api/v1/database/migrations"
+enabled = false
+
+[[operations]]
+include-name = "POST /api/v1/permissions/namespaces"
+enabled = false
+
+# Need proper invite before accepting.
+[[operations]]
+include-name = "PUT /api/v1/tenants/invites/accept"
+enabled = false
+
+# Disable unsupported method checks for this endpoint to avoid conflicts
+# with PUT /api/v1/tenants/roles/{role_id}
+[[operations]]
+include-name = "GET /api/v1/tenants/roles/definitions"
+[operations.checks]
+unsupported_method.enabled = false
+
+# Disable role assignment endpoint - requires valid user UUID from test setup
+# This endpoint needs a real user ID which varies per test environment
+[[operations]]
+include-name = "POST /api/v1/tenants/roles/assign/{user_id}"
+enabled = false
+
+[[operations]]
+include-name = "GET /api/v1/events"
+enabled = false
+
+# Accept 409 Conflict as valid response for role creation (duplicate role names)
+# This is expected behavior when Schemathesis reuses test data across requests
+[[operations]]
+include-name = "POST /api/v1/tenants/roles"
+[operations.checks]
+positive_data_acceptance.expected-statuses = [200, 201, 409]
+
+# Disable usage endpoint - meter_event_name is dynamic and varies per Stripe setup
+[[operations]]
+include-name = "POST /api/v1/payments/usage"
+enabled = false
+
+[[operations]]
+include-name = "POST /api/v1/payments/portal"
+enabled = false
+
+[[operations]]
+include-name = "POST /api/v1/payments/checkout"
+enabled = false
+
+[[operations]]
+include-name = "POST /api/v1/tenants/subscriptions"
+enabled = false
+
+[[operations]]
+include-name = "DELETE /api/v1/tenants/subscriptions"
+enabled = false
+
+[[operations]]
+include-name = "POST /api/v1/stripe/admin/config"
+enabled = false
+
+# Accept 400 Bad Request for validation endpoint when fuzzer generates invalid cross-references
+# (e.g., meters referenced in prices that don't exist in meters array)
+[[operations]]
+include-name = "POST /api/v1/stripe/admin/config/validate"
+[operations.checks]
+positive_data_acceptance.expected-statuses = [200, 400]
+
+[[operations]]
+include-name = "POST /api/v1/auth/users"
+[operations.checks]
+positive_data_acceptance.expected-statuses = [200, 409]
