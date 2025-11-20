@@ -2,7 +2,7 @@
 
 > **useAuth**(): `FrontendApi`
 
-Defined in: [context/provider.tsx:113](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/react/src/context/provider.tsx#L113)
+Defined in: context/provider.tsx:113
 
 Hook to access the Ory authentication client
 

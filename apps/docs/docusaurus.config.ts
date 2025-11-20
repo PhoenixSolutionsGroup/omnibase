@@ -66,6 +66,20 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+    [
+      "redocusaurus",
+      {
+        specs: [
+          {
+            spec: "../api/docs/swagger.yaml",
+            route: "/api/",
+          },
+        ],
+        theme: {
+          primaryColor: "#1890ff",
+        },
+      },
+    ],
   ],
 
   themeConfig: {
@@ -88,6 +102,7 @@ const config: Config = {
           label: "Tutorial",
         },
         { to: "/blog", label: "Blog", position: "left" },
+        { to: "/api", label: "API Reference", position: "left" },
         {
           href: "https://github.com/facebook/docusaurus",
           label: "GitHub",
@@ -149,39 +164,14 @@ const config: Config = {
     [
       "docusaurus-plugin-typedoc",
       {
-        id: "core-js",
-        entryPoints: [
-          "../../sdk/core-js/src/auth/index.ts",
-          "../../sdk/core-js/src/tenants/index.ts",
-          "../../sdk/core-js/src/database/index.ts",
-        ],
-        tsconfig: "../../sdk/core-js/tsconfig.json",
-        readme: "../../sdk/core-js/README.md",
-        includeVersion: true,
-        categorizeByGroup: false,
-        groupOrder: ["Tenant Management", "User Management"],
-        navigation: {
-          includeGroups: true,
-          includeCategories: false,
-        },
-        mergeReadme: true,
-        hidePageHeader: true,
-        modulesFileName: false,
-        out: "./docs/Core SDKs/core-js",
-        excludePrivate: true,
-      },
-    ],
-    [
-      "docusaurus-plugin-typedoc",
-      {
         id: "nextjs",
         entryPoints: [
-          "../../sdk/nextjs/src/auth/index.ts",
-          "../../sdk/nextjs/src/tenants/index.ts",
-          "../../sdk/nextjs/src/database/index.ts",
+          "../../sdk/framework/nextjs/src/auth/index.ts",
+          "../../sdk/framework/nextjs/src/tenants/index.ts",
+          "../../sdk/framework/nextjs/src/database/index.ts",
         ],
-        tsconfig: "../../sdk/nextjs/tsconfig.json",
-        readme: "../../sdk/nextjs/README.md",
+        tsconfig: "../../sdk/framework/nextjs/tsconfig.json",
+        readme: "../../sdk/framework/nextjs/README.md",
         includeVersion: true,
         categorizeByGroup: false,
         navigation: {
@@ -200,12 +190,12 @@ const config: Config = {
       {
         id: "react",
         entryPoints: [
-          "../../sdk/react/src/components/index.ts",
-          "../../sdk/react/src/context/index.ts",
-          "../../sdk/react/src/hooks/index.ts",
+          "../../sdk/framework/react/src/components/index.ts",
+          "../../sdk/framework/react/src/context/index.ts",
+          "../../sdk/framework/react/src/hooks/index.ts",
         ],
-        tsconfig: "../../sdk/react/tsconfig.json",
-        readme: "../../sdk/react/README.md",
+        tsconfig: "../../sdk/framework/react/tsconfig.json",
+        readme: "../../sdk/framework/react/README.md",
         includeVersion: true,
         categorizeByGroup: false,
         navigation: {

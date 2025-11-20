@@ -2,7 +2,7 @@
 
 > **useSession**(): `object`
 
-Defined in: [hooks/use-session.ts:48](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/react/src/hooks/use-session.ts#L48)
+Defined in: hooks/use-session.ts:48
 
 React hook for accessing user session information
 

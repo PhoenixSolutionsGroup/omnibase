@@ -2,7 +2,7 @@
 
 > **AuthProviderProps** = `object`
 
-Defined in: [context/provider.tsx:22](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/react/src/context/provider.tsx#L22)
+Defined in: context/provider.tsx:22
 
 Configuration properties for the authentication provider
 
@@ -25,7 +25,7 @@ const props: AuthProviderProps = {
 
 > **basePath**: `string`
 
-Defined in: [context/provider.tsx:24](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/react/src/context/provider.tsx#L24)
+Defined in: context/provider.tsx:24
 
 Base URL for the Omnibase API endpoint
 
@@ -35,6 +35,6 @@ Base URL for the Omnibase API endpoint
 
 > **children**: `ReactNode`
 
-Defined in: [context/provider.tsx:27](https://github.com/PhoenixSolutionsGroup/omnibase/blob/52b2e10cfa3b1e29a2da7bc2b05f6fe1e4c9061d/sdk/react/src/context/provider.tsx#L27)
+Defined in: context/provider.tsx:27
 
 React children components to be wrapped by the provider
