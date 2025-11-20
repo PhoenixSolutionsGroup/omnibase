@@ -3,25 +3,35 @@
     {
       "role": "owner",
       "permissions": [
-        "tenant#delete_tenant",
-        "tenant#invite_user",
-        "tenant#remove_user",
-        "tenant#update_user_role"
+        "tenant#can_delete_tenant",
+        "tenant#can_invite_user",
+        "tenant#can_remove_user",
+        "tenant#can_update_user_role",
+        "tenant#can_view_users",
+        "tenant#can_create_roles",
+        "tenant#can_update_roles",
+        "tenant#can_delete_roles"
       ],
       "immutable": true
     },
     {
       "role": "admin",
       "permissions": [
-        "tenant#invite_user",
-        "tenant#remove_user",
-        "tenant#update_user_role"
+        "tenant#can_invite_user",
+        "tenant#can_remove_user",
+        "tenant#can_update_user_role",
+        "tenant#can_view_users",
+        "tenant#can_create_roles",
+        "tenant#can_update_roles",
+        "tenant#can_delete_roles"
       ],
       "immutable": false
     },
     {
       "role": "member",
-      "permissions": [],
+      "permissions": [
+        "tenant#can_view_users"
+      ],
       "immutable": false
     }
   ]
