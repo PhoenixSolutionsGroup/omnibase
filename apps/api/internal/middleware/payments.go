@@ -147,10 +147,110 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 		// Set the stripe_customer_id in context
 		logger.Logger.Debug("Stripe customer ID set in context",
 			"user_id", user_id,
-			"stripe_customer_id", *stripe_customer_id,
+			"stripe_customer_id", stripe_customer_id,
 			"path", path,
 		)
-		ctx.Set("stripe_customer_id", *stripe_customer_id)
+		ctx.Set("stripe_customer_id", stripe_customer_id)
+		ctx.Next()
+	}
+}
+
+// GetCustomerIDFromTenant retrieves stripe_customer_id from tenant_id context
+func (m *PaymentsMiddleware) GetCustomerIDFromTenant() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		path := ctx.Request.URL.Path
+		method := ctx.Request.Method
+
+		logger.Logger.Debug("GetCustomerIDFromTenant middleware executing",
+			"method", method,
+			"path", path,
+		)
+
+		// Check if stripe_customer_id is already set (from previous middleware)
+		if _, exists := ctx.Get("stripe_customer_id"); exists {
+			logger.Logger.Debug("stripe_customer_id already set in context, skipping tenant lookup",
+				"path", path,
+			)
+			ctx.Next()
+			return
+		}
+
+		// Get tenant_id from context (set by auth middleware when using service key)
+		tenantIDVal, exists := ctx.Get("tenant_id")
+		if !exists {
+			logger.Logger.Debug("No tenant_id in context, skipping",
+				"path", path,
+			)
+			ctx.Next()
+			return
+		}
+
+		tenantID, ok := tenantIDVal.(string)
+		if !ok || tenantID == "" {
+			logger.Logger.Debug("Invalid tenant_id in context",
+				"path", path,
+			)
+			ctx.Next()
+			return
+		}
+
+		logger.Logger.Debug("Looking up stripe_customer_id for tenant",
+			"tenant_id", tenantID,
+			"path", path,
+		)
+
+		// Query tenant for stripe_customer_id
+		var stripeCustomerID *string
+		err := m.db.Table("auth.tenants").
+			Select("stripe_customer_id").
+			Where("id = ?", tenantID).
+			Scan(&stripeCustomerID).Error
+
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				logger.Logger.Warn("Tenant not found",
+					"tenant_id", tenantID,
+					"path", path,
+				)
+				ctx.Next()
+				return
+			}
+			logger.Logger.Error("Error querying tenant for stripe_customer_id",
+				"tenant_id", tenantID,
+				"path", path,
+				"error", err,
+			)
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("database error: %w", err))
+			return
+		}
+
+		// If tenant has no stripe_customer_id, continue without setting it
+		if stripeCustomerID == nil || *stripeCustomerID == "" {
+			logger.Logger.Debug("Tenant has no stripe_customer_id configured",
+				"tenant_id", tenantID,
+				"path", path,
+			)
+			ctx.Next()
+			return
+		}
+
+		// Set the stripe_customer_id in context
+		logger.Logger.Debug("Stripe customer ID set in context from tenant",
+			"tenant_id", tenantID,
+			"stripe_customer_id", *stripeCustomerID,
+			"path", path,
+		)
+		ctx.Set("stripe_customer_id", *stripeCustomerID)
+		ctx.Next()
+	}
+}
+
+func (m *PaymentsMiddleware) GetCustomerIDFromHeader() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		stripe_customer_id := ctx.GetHeader("X-Stripe-Customer-Id")
+		if stripe_customer_id != "" {
+			ctx.Set("stripe_customer_id", stripe_customer_id)
+		}
 		ctx.Next()
 	}
 }
