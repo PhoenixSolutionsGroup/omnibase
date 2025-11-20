@@ -44,6 +44,7 @@ export type Database = {
           tenant_id: string
           type_gen_url: string | null
           updated_at: string
+          worker_url: string | null
         }
         Insert: {
           anon_key?: string | null
@@ -79,6 +80,7 @@ export type Database = {
           tenant_id: string
           type_gen_url?: string | null
           updated_at?: string
+          worker_url?: string | null
         }
         Update: {
           anon_key?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           tenant_id?: string
           type_gen_url?: string | null
           updated_at?: string
+          worker_url?: string | null
         }
         Relationships: []
       }
@@ -132,11 +135,76 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_metrics: {
+        Row: {
+          cloudrun_billable_time_seconds: number | null
+          created_at: string | null
+          db_compute_hours: number | null
+          db_storage_gb: number | null
+          email_sends: number | null
+          end_time: string
+          id: string
+          organization_id: string
+          project_group_id: string
+          project_id: string
+          start_time: string
+          storage_bytes: number | null
+          storage_operations: number | null
+          workers_cpu_ms: number | null
+          workers_requests: number | null
+        }
+        Insert: {
+          cloudrun_billable_time_seconds?: number | null
+          created_at?: string | null
+          db_compute_hours?: number | null
+          db_storage_gb?: number | null
+          email_sends?: number | null
+          end_time: string
+          id?: string
+          organization_id: string
+          project_group_id: string
+          project_id: string
+          start_time: string
+          storage_bytes?: number | null
+          storage_operations?: number | null
+          workers_cpu_ms?: number | null
+          workers_requests?: number | null
+        }
+        Update: {
+          cloudrun_billable_time_seconds?: number | null
+          created_at?: string | null
+          db_compute_hours?: number | null
+          db_storage_gb?: number | null
+          email_sends?: number | null
+          end_time?: string
+          id?: string
+          organization_id?: string
+          project_group_id?: string
+          project_id?: string
+          start_time?: string
+          storage_bytes?: number | null
+          storage_operations?: number | null
+          workers_cpu_ms?: number | null
+          workers_requests?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_metrics_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_last_collection_end_time: {
+        Args: { p_project_id: string }
+        Returns: string
+      }
       uuid_generate_v1: { Args: never; Returns: string }
       uuid_generate_v1mc: { Args: never; Returns: string }
       uuid_generate_v3: {
