@@ -3,7 +3,7 @@ import { createClient } from "../client";
 
 /**
  * Test Scenario: Role Management
- * 
+ *
  * Flow:
  * 1. Create owner user and tenant
  * 2. Create member user
@@ -16,7 +16,7 @@ import { createClient } from "../client";
  * 9. Verify permission changes reflected
  * 10. Delete custom role
  * 11. Verify role deleted and cleanup successful
- * 
+ *
  * This test validates:
  * - System role availability
  * - Custom role creation with permissions
@@ -73,7 +73,6 @@ export async function roleManagement() {
   }
 
   const tenant = tenantData.tenant;
-  const ownerToken = tenantData.token;
 
   // Step 2: Create member user
   const memberResponse = client.createUser({
@@ -97,7 +96,7 @@ export async function roleManagement() {
 
   // Step 3: List initial roles (verify system roles exist)
   const initialRolesResponse = client.listRoles({
-    "X-Tenant-Id": owner.id
+    "X-Tenant-Id": tenant.id,
   });
 
   check(initialRolesResponse.response, {
@@ -128,7 +127,7 @@ export async function roleManagement() {
     },
     {
       "X-User-Id": owner.id,
-      "X-Tenant-Id": tenant.id
+      "X-Tenant-Id": tenant.id,
     }
   );
 
@@ -156,7 +155,7 @@ export async function roleManagement() {
 
   // Step 5: Verify custom role appears in role list
   const rolesAfterCreateResponse = client.listRoles({
-    "X-Tenant-Id": tenant.id
+    "X-Tenant-Id": tenant.id,
   });
 
   check(rolesAfterCreateResponse.response, {
@@ -194,7 +193,7 @@ export async function roleManagement() {
     console.error("Invite creation failed");
     return;
   }
-  
+
   const acceptResponse = client.acceptInvite(
     {
       token: inviteData.invite.token,
@@ -239,7 +238,7 @@ export async function roleManagement() {
     },
     {
       "X-Tenant-Id": tenant.id,
-      "X-User-Id": owner.id
+      "X-User-Id": owner.id,
     }
   );
 
@@ -257,7 +256,7 @@ export async function roleManagement() {
 
   // Step 10: Verify updated role in role list
   const rolesAfterUpdateResponse = client.listRoles({
-    "X-Tenant-Id": tenant.id
+    "X-Tenant-Id": tenant.id,
   });
 
   check(rolesAfterUpdateResponse.response, {
@@ -277,7 +276,7 @@ export async function roleManagement() {
   // Step 11: Delete custom role
   const deleteRoleResponse = client.deleteRole(customRole.id, {
     "X-Tenant-Id": tenant.id,
-    "X-User-Id": owner.id
+    "X-User-Id": owner.id,
   });
 
   check(deleteRoleResponse.response, {
@@ -286,7 +285,7 @@ export async function roleManagement() {
 
   // Step 12: Verify role deleted from list
   const rolesAfterDeleteResponse = client.listRoles({
-    "X-Tenant-Id": tenant.id
+    "X-Tenant-Id": tenant.id,
   });
 
   check(rolesAfterDeleteResponse.response, {
