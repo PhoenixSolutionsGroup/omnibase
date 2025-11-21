@@ -56,6 +56,10 @@ components:
           minLength: 1
           description: Product identifier (config ID)
           example: "basic_plan"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe products)
+          example: "prod_1SRiyyCJIZaBlhY1"
         name:
           type: string
           minLength: 1
@@ -143,6 +147,10 @@ components:
           minLength: 1
           description: Price identifier (config ID)
           example: "basic_monthly"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe prices)
+          example: "price_1SRiyyCJIZaBlhY1NpAJFhNU"
         public:
           type: boolean
           nullable: true
@@ -245,6 +253,10 @@ components:
           minLength: 1
           description: Price identifier (config ID)
           example: "basic_monthly_tiered"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe prices)
+          example: "price_1SRiyyCJIZaBlhY1NpAJFhNU"
         public:
           type: boolean
           nullable: true
@@ -445,6 +457,10 @@ components:
           minLength: 1
           description: Meter identifier (config ID)
           example: "api_requests"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe meters)
+          example: "mtr_1SRiyyCJIZaBlhY1"
         display_name:
           type: string
           minLength: 1

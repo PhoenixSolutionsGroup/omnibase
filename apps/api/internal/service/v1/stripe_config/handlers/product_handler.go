@@ -18,6 +18,7 @@ type ProductHandler struct {
 type IDMapperInterface interface {
 	SaveIDMapping(configID uuid.UUID, configItemID string, stripeID string, itemType string) error
 	GetStripeIDByConfigItemID(configItemID string, itemType string) (string, error)
+	GetMappingByConfigItemID(configItemID string, itemType string) (*models.StripeIDMapping, error)
 }
 
 func NewProductHandler(idMapper IDMapperInterface, accountID string) *ProductHandler {
@@ -29,6 +30,55 @@ func NewProductHandler(idMapper IDMapperInterface, accountID string) *ProductHan
 
 func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uuid.UUID) (*models.ProductChange, error) {
 	logger.Logger.Info("Creating product", "productID", productConfig.ID, "name", productConfig.Name)
+
+	// Check if stripe_id is provided for migration support
+	if productConfig.StripeID != "" {
+		logger.Logger.Info("Product has stripe_id, checking for existing mapping",
+			"productID", productConfig.ID,
+			"stripeID", productConfig.StripeID)
+
+		// Check if mapping already exists for this config_id
+		existingMapping, err := h.idMapper.GetMappingByConfigItemID(productConfig.ID, "product")
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to check existing mapping: %w", err)
+		}
+
+		if existingMapping != nil {
+			// Mapping exists - SKIP
+			logger.Logger.Info("Skipped product - stripe_id already linked",
+				"productID", productConfig.ID,
+				"existingStripeID", existingMapping.StripeID)
+
+			return &models.ProductChange{
+				ProductID:   productConfig.ID,
+				ProductName: productConfig.Name,
+				Action:      "skipped",
+				Details: []string{
+					fmt.Sprintf("Skipped product %s as stripe_id has already been linked to %s. Remove the stripe_id mapping to modify this resource.",
+						productConfig.ID, existingMapping.StripeID),
+				},
+			}, nil
+		}
+
+		// No mapping exists - CREATE mapping with provided stripe_id
+		logger.Logger.Info("Creating stripe_id mapping from config",
+			"productID", productConfig.ID,
+			"stripeID", productConfig.StripeID)
+
+		if configID != uuid.Nil {
+			if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, productConfig.StripeID, "product"); err != nil {
+				return nil, fmt.Errorf("failed to create product mapping: %w", err)
+			}
+		}
+
+		return &models.ProductChange{
+			ProductID:   productConfig.ID,
+			ProductName: productConfig.Name,
+			Action:      "linked",
+			Details:     []string{fmt.Sprintf("Linked existing Stripe product %s to config ID %s", productConfig.StripeID, productConfig.ID)},
+		}, nil
+	}
 
 	// Skip Stripe API for free products - store in DB only
 	if productConfig.ID == "free" {

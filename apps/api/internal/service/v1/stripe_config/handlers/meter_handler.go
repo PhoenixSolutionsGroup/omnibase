@@ -33,6 +33,42 @@ func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, mete
 		"displayName", meterConfig.DisplayName,
 		"eventName", meterConfig.EventName)
 
+	// Check if stripe_id is provided for migration support
+	if meterConfig.StripeID != "" {
+		logger.Logger.Info("Meter has stripe_id, checking for existing mapping",
+			"meterID", meterConfig.ID,
+			"stripeID", meterConfig.StripeID)
+
+		// Check if mapping already exists for this config_id
+		existingMapping, err := h.idMapper.GetMappingByConfigItemID(meterConfig.ID, "meter")
+
+		if err != nil {
+			return "", fmt.Errorf("failed to check existing mapping: %w", err)
+		}
+
+		if existingMapping != nil {
+			// Mapping exists - SKIP and return the existing Stripe ID
+			logger.Logger.Info("Skipped meter - stripe_id already linked",
+				"meterID", meterConfig.ID,
+				"existingStripeID", existingMapping.StripeID)
+
+			return existingMapping.StripeID, nil
+		}
+
+		// No mapping exists - CREATE mapping with provided stripe_id
+		logger.Logger.Info("Creating stripe_id mapping from config",
+			"meterID", meterConfig.ID,
+			"stripeID", meterConfig.StripeID)
+
+		if configID != uuid.Nil && h.idMapper != nil {
+			if err := h.idMapper.SaveIDMapping(configID, meterConfig.ID, meterConfig.StripeID, "meter"); err != nil {
+				return "", fmt.Errorf("failed to create meter mapping: %w", err)
+			}
+		}
+
+		return meterConfig.StripeID, nil
+	}
+
 	// Use the EXACT structure from official Stripe docs
 	params := &stripe.BillingMeterParams{
 		DisplayName: stripe.String(meterConfig.DisplayName),

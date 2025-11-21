@@ -36,6 +36,10 @@
           "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Unique identifier for the product"
         },
+        "stripe_id": {
+          "type": "string",
+          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe products)"
+        },
         "name": {
           "type": "string",
           "minLength": 1,
@@ -76,6 +80,10 @@
           "type": "string",
           "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Unique identifier for the price"
+        },
+        "stripe_id": {
+          "type": "string",
+          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe prices)"
         },
         "public": {
           "type": "boolean",
@@ -320,6 +328,10 @@
           "type": "string",
           "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Unique identifier for the meter"
+        },
+        "stripe_id": {
+          "type": "string",
+          "description": "Original Stripe ID for migration support (optional, used to link existing Stripe meters)"
         },
         "display_name": {
           "type": "string",

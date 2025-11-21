@@ -33,6 +33,45 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 
 	// Create prices for the product
 	for _, priceConfig := range productConfig.Prices {
+		// Check if stripe_id is provided for migration support
+		if priceConfig.StripeID != "" {
+			logger.Logger.Info("Price has stripe_id, checking for existing mapping",
+				"priceID", priceConfig.ID,
+				"stripeID", priceConfig.StripeID)
+
+			// Check if mapping already exists for this config_id
+			existingMapping, err := h.idMapper.GetMappingByConfigItemID(priceConfig.ID, "price")
+
+			if err != nil {
+				return nil, fmt.Errorf("failed to check existing mapping: %w", err)
+			}
+
+			if existingMapping != nil {
+				// Mapping exists - SKIP
+				logger.Logger.Info("Skipped price - stripe_id already linked",
+					"priceID", priceConfig.ID,
+					"existingStripeID", existingMapping.StripeID)
+
+				details = append(details, fmt.Sprintf("Skipped price %s as stripe_id has already been linked to %s. Remove the stripe_id mapping to modify this resource.",
+					priceConfig.ID, existingMapping.StripeID))
+				continue
+			}
+
+			// No mapping exists - CREATE mapping with provided stripe_id
+			logger.Logger.Info("Creating stripe_id mapping from config",
+				"priceID", priceConfig.ID,
+				"stripeID", priceConfig.StripeID)
+
+			if configID != uuid.Nil {
+				if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, priceConfig.StripeID, "price"); err != nil {
+					return nil, fmt.Errorf("failed to create price mapping: %w", err)
+				}
+			}
+
+			details = append(details, fmt.Sprintf("Linked existing Stripe price %s to config ID %s", priceConfig.StripeID, priceConfig.ID))
+			continue
+		}
+
 		// Skip Stripe API for free prices
 		if priceConfig.ID == "free" {
 			logger.Logger.Debug("Skipping free price (local only)", "priceID", priceConfig.ID)
@@ -196,6 +235,42 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 
 func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, configID uuid.UUID) (string, error) {
 	logger.Logger.Info("Creating price", "priceID", priceConfig.ID, "productID", productID)
+
+	// Check if stripe_id is provided for migration support
+	if priceConfig.StripeID != "" {
+		logger.Logger.Info("Price has stripe_id, checking for existing mapping",
+			"priceID", priceConfig.ID,
+			"stripeID", priceConfig.StripeID)
+
+		// Check if mapping already exists for this config_id
+		existingMapping, err := h.idMapper.GetMappingByConfigItemID(priceConfig.ID, "price")
+
+		if err != nil {
+			return "", fmt.Errorf("failed to check existing mapping: %w", err)
+		}
+
+		if existingMapping != nil {
+			// Mapping exists - SKIP and return the existing Stripe ID
+			logger.Logger.Info("Skipped price - stripe_id already linked",
+				"priceID", priceConfig.ID,
+				"existingStripeID", existingMapping.StripeID)
+
+			return existingMapping.StripeID, nil
+		}
+
+		// No mapping exists - CREATE mapping with provided stripe_id
+		logger.Logger.Info("Creating stripe_id mapping from config",
+			"priceID", priceConfig.ID,
+			"stripeID", priceConfig.StripeID)
+
+		if configID != uuid.Nil {
+			if err := h.idMapper.SaveIDMapping(configID, priceConfig.ID, priceConfig.StripeID, "price"); err != nil {
+				return "", fmt.Errorf("failed to create price mapping: %w", err)
+			}
+		}
+
+		return priceConfig.StripeID, nil
+	}
 
 	// Skip Stripe API for free prices
 	if priceConfig.ID == "free" {

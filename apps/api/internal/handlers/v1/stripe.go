@@ -566,25 +566,7 @@ func (h *StripeHandler) ValidateConfig(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, "")
 }
 
-// PullConfig pulls the current Stripe configuration from the Stripe API
-// @Summary      Pull config from Stripe
-// @Description  Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Sync remote Stripe config to local
-// @Description  - Import existing Stripe setup
-// @Description  - Configuration backup
-// @Tags         V1 Configuration
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=models.StripeConfiguration} "Stripe configuration pulled successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to pull configuration from Stripe"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config/pull [get]
-// @ID           pullStripeConfig
+// api/v1/stripe/admin/config/pull [get]
 func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 	logger.Logger.Info("Pulling stripe config from Stripe API")
 
@@ -642,6 +624,9 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 	var configMeters []models.Meter
 	for _, stripeMeter := range stripeMeters {
 		configMeter := h.convertStripeMeterToConfig(stripeMeter)
+		// Generate normalized config ID from display name and preserve Stripe ID
+		configMeter.ID = normalizeConfigID(stripeMeter.DisplayName)
+		configMeter.StripeID = stripeMeter.ID
 		configMeters = append(configMeters, configMeter)
 	}
 
@@ -655,8 +640,12 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 
 	var configProducts []models.Product
 	for _, stripeProduct := range stripeProducts {
+		// Generate normalized config ID from product name
+		normalizedID := normalizeConfigID(stripeProduct.Name)
+
 		configProduct := models.Product{
-			ID:          h.convertStripeIDToConfigID(stripeProduct.ID, "product"),
+			ID:          normalizedID,
+			StripeID:    stripeProduct.ID, // Preserve original Stripe ID
 			Name:        stripeProduct.Name,
 			Description: "",
 			Type:        "service", // default
@@ -674,6 +663,9 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		if productPrices, exists := pricesByProduct[stripeProduct.ID]; exists {
 			for _, stripePrice := range productPrices {
 				configPrice := h.convertStripePriceToConfig(stripePrice)
+				// Generate normalized config ID for price and preserve Stripe ID
+				configPrice.ID = generatePriceConfigID(stripePrice, normalizedID)
+				configPrice.StripeID = stripePrice.ID
 				configProduct.Prices = append(configProduct.Prices, configPrice)
 			}
 		}
@@ -905,9 +897,50 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, response)
 }
 
+// normalizeConfigID converts a name to a normalized config ID (e.g., "Pro Plan" -> "pro_plan")
+func normalizeConfigID(name string) string {
+	normalized := strings.ToLower(name)
+	normalized = strings.ReplaceAll(normalized, " ", "_")
+	normalized = strings.ReplaceAll(normalized, "-", "_")
+
+	// Remove special characters, keep only alphanumeric and underscore
+	result := ""
+	for _, char := range normalized {
+		if (char >= 'a' && char <= 'z') || (char >= '0' && char <= '9') || char == '_' {
+			result += string(char)
+		}
+	}
+
+	// Remove consecutive underscores
+	for strings.Contains(result, "__") {
+		result = strings.ReplaceAll(result, "__", "_")
+	}
+
+	// Trim underscores from start and end
+	result = strings.Trim(result, "_")
+
+	return result
+}
+
+// generatePriceConfigID generates a normalized config ID for a price
+// Prices don't have names in Stripe, so we generate from nickname or product+interval
+func generatePriceConfigID(stripePrice *stripe.Price, productConfigID string) string {
+	// Use nickname if available
+	if stripePrice.Nickname != "" {
+		return normalizeConfigID(stripePrice.Nickname)
+	}
+
+	// Fallback: product_id + interval (or "price" for one-time)
+	if stripePrice.Recurring != nil {
+		interval := string(stripePrice.Recurring.Interval)
+		return fmt.Sprintf("%s_%s", productConfigID, interval)
+	}
+
+	return fmt.Sprintf("%s_price", productConfigID)
+}
+
 func (h *StripeHandler) convertStripeMeterToConfig(stripeMeter *stripe.BillingMeter) models.Meter {
 	configMeter := models.Meter{
-		ID:          h.convertStripeIDToConfigID(stripeMeter.ID, "meter"),
 		DisplayName: stripeMeter.DisplayName,
 		EventName:   stripeMeter.EventName,
 		DefaultAggregation: models.MeterDefaultAggregation{
@@ -953,7 +986,6 @@ func (h *StripeHandler) convertStripePriceToConfig(stripePrice *stripe.Price) mo
 		"tiers_count", len(stripePrice.Tiers))
 
 	configPrice := models.Price{
-		ID:       h.convertStripeIDToConfigID(stripePrice.ID, "price"),
 		Amount:   stripePrice.UnitAmount,
 		Currency: string(stripePrice.Currency),
 	}

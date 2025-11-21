@@ -88,6 +88,28 @@ func (m *IDMapper) GetStripeIDByConfigItemID(configItemID string, itemType strin
 	return mapping.StripeID, nil
 }
 
+// GetMappingByConfigItemID returns the mapping for a config item ID, or nil if not found
+func (m *IDMapper) GetMappingByConfigItemID(configItemID string, itemType string) (*models.StripeIDMapping, error) {
+	logger.Logger.Trace("Getting mapping by config item ID", "configItemID", configItemID, "itemType", itemType)
+
+	var mapping models.StripeIDMapping
+	err := m.db.Where("config_item_id = ? AND item_type = ?", configItemID, itemType).
+		Order("created_at DESC").
+		First(&mapping).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			logger.Logger.Debug("No mapping found", "configItemID", configItemID, "itemType", itemType)
+			return nil, nil // No mapping found
+		}
+		logger.Logger.Error("Failed to fetch mapping", "error", err, "configItemID", configItemID)
+		return nil, fmt.Errorf("failed to fetch mapping: %w", err)
+	}
+
+	logger.Logger.Trace("Mapping found", "configItemID", configItemID, "stripeID", mapping.StripeID)
+	return &mapping, nil
+}
+
 func (m *IDMapper) UpdateIDMapping(configItemID string, newStripeID string, itemType string) error {
 	logger.Logger.Debug("Updating ID mapping", "configItemID", configItemID, "newStripeID", newStripeID, "itemType", itemType)
 

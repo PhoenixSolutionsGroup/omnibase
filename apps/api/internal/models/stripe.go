@@ -57,6 +57,7 @@ type StripeConfiguration struct {
 
 type Product struct {
 	ID          string     `json:"id" validate:"required"`
+	StripeID    string     `json:"stripe_id,omitempty"` // Original Stripe ID for migration support
 	Name        string     `json:"name" validate:"required"`
 	Description string     `json:"description,omitempty"`
 	Type        string     `json:"type,omitempty"` // service, good, metered
@@ -66,6 +67,7 @@ type Product struct {
 
 type Price struct {
 	ID                 string   `json:"id" validate:"required"`
+	StripeID           string   `json:"stripe_id,omitempty"`             // Original Stripe ID for migration support
 	Public             *bool    `json:"public,omitempty"`                // nil = true (default), false = hidden from public API
 	TaxIncludedInPrice *bool    `json:"tax_included_in_price,omitempty"` // nil = false (default)
 	Amount             int64    `json:"amount,omitempty" validate:"min=0"`
@@ -223,6 +225,7 @@ func (s *StripeIDMapping) BeforeCreate(tx *gorm.DB) error {
 // Meter represents a billing meter configuration
 type Meter struct {
 	ID                 string                  `json:"id" validate:"required"`
+	StripeID           string                  `json:"stripe_id,omitempty"` // Original Stripe ID for migration support
 	DisplayName        string                  `json:"display_name" validate:"required"`
 	EventName          string                  `json:"event_name" validate:"required"`
 	DefaultAggregation MeterDefaultAggregation `json:"default_aggregation" validate:"required"`
