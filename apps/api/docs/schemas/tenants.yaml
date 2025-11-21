@@ -440,6 +440,7 @@ components:
       properties:
         role:
           type: string
+          minLength: 1
           description: New role to assign
           example: "member"
         user_id:
@@ -576,6 +577,7 @@ components:
           example: "test@example.com"
         role:
           type: string
+          minLength: 1
           description: Role to assign to the invited user
           example: "member"
         invite_url:

@@ -4,13 +4,18 @@ components:
       type: object
       required:
         - path
+      additionalProperties: false
       properties:
         path:
           type: string
-          description: Storage path for the file (user-controlled directory structure)
+          minLength: 1
+          maxLength: 1024
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$'
+          description: Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
           example: avatars/user-123.png
         metadata:
           type: object
+          additionalProperties: true
           description: Optional custom metadata for the file
           example:
             content_type: image/png
@@ -35,10 +40,14 @@ components:
       type: object
       required:
         - path
+      additionalProperties: false
       properties:
         path:
           type: string
-          description: Path of the file to download
+          minLength: 1
+          maxLength: 1024
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$'
+          description: Path of the file to download. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
           example: avatars/user-123.png
 
     DownloadResponse:
@@ -55,10 +64,14 @@ components:
       type: object
       required:
         - path
+      additionalProperties: false
       properties:
         path:
           type: string
-          description: Path of the file to delete
+          minLength: 1
+          maxLength: 1024
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$'
+          description: Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
           example: avatars/user-123.png
 
     MessageResponse:

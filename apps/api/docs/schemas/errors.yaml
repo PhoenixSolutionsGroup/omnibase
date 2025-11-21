@@ -185,6 +185,10 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/BadRequestResponse'
+        text/plain:
+          schema:
+            type: string
+            example: "400 Bad Request"
     
     UnauthorizedError:
       description: Unauthorized - Authentication required

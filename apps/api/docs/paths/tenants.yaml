@@ -601,11 +601,7 @@ paths:
                       data:
                         $ref: '../schemas/tenants.yaml#/components/schemas/Role'
         '400':
-          description: Invalid request or missing tenant ID
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           description: Invalid or missing JWT token
           content:

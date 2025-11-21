@@ -7,6 +7,7 @@ import (
 	"api/internal/logger"
 	"api/internal/models"
 	"context"
+	"net/mail"
 
 	"github.com/gin-gonic/gin"
 	kratos "github.com/ory/kratos-client-go"
@@ -193,7 +194,7 @@ func (h *AuthHandler) ListTenants(c *gin.Context) {
 	// Session already validated by RequireSession() middleware
 	userID := c.GetString("user_id")
 	if userID == "" {
-		handlers.NewBadRequestResponse(c, "UserID not found in context")
+		handlers.NewUnauthorizedResponse(c, "UserID not found in context")
 		return
 	}
 
@@ -244,6 +245,20 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		logger.Logger.Warn("Invalid create user request", "error", err)
 		handlers.NewBadRequestResponse(c, err.Error())
+		return
+	}
+
+	// Validate email format before calling Kratos
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		logger.Logger.Warn("Invalid email format", "email", req.Email, "error", err)
+		handlers.NewBadRequestResponse(c, "Invalid email format")
+		return
+	}
+
+	// Validate password length (bcrypt limit is 72 bytes)
+	if len(req.Password) > 72 {
+		logger.Logger.Warn("Password exceeds maximum length", "email", req.Email, "length", len(req.Password))
+		handlers.NewBadRequestResponse(c, "Password must be at most 72 characters long")
 		return
 	}
 
