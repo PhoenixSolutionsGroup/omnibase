@@ -143,6 +143,13 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 func (h *AuthHandler) GetActiveTenant(c *gin.Context) {
 	logger.Logger.Info("GetActiveTenant handler started")
 
+	userID := c.GetString("user_id")
+	if userID == "" {
+		logger.Logger.Warn("Missing user_id in request context - returning 403")
+		handlers.NewUnauthorizedResponse(c, "User ID not found in context")
+		return
+	}
+
 	// Tenant ID set by RequireSession() middleware if user has active tenant
 	tenantID, hasTenant := c.Get("tenant_id")
 
@@ -151,12 +158,29 @@ func (h *AuthHandler) GetActiveTenant(c *gin.Context) {
 	response := models.ActiveTenantResponse{}
 
 	// Fetch full tenant object if user has active tenant
+	var tenant models.Tenant
 	if hasTenant {
-		var tenant models.Tenant
+		logger.Logger.Debug("Fetching tenant by tenant_id from context", "tenant_id", tenantID)
 		if err := h.db.Where("id = ?", tenantID).First(&tenant).Error; err != nil {
 			logger.Logger.Warn("Failed to fetch tenant", "tenant_id", tenantID, "error", err)
 		} else {
 			response.Tenant = &tenant
+		}
+	} else {
+		// No tenant_id in context, search for first active tenant for user
+		logger.Logger.Debug("No tenant_id in context, searching for active tenant", "user_id", userID)
+
+		var tenantUser models.TenantUser
+		if err := h.db.
+			Preload("Tenant").
+			Where("user_id = ? AND is_active = ?", userID, true).
+			First(&tenantUser).Error; err != nil {
+			logger.Logger.Debug("No active tenant found for user", "user_id", userID, "error", err)
+		} else if tenantUser.Tenant != nil {
+			logger.Logger.Info("Found active tenant for user", "user_id", userID, "tenant_id", tenantUser.TenantID)
+			response.Tenant = tenantUser.Tenant
+		} else {
+			logger.Logger.Warn("TenantUser found but Tenant is nil", "user_id", userID, "tenant_user_id", tenantUser.ID)
 		}
 	}
 

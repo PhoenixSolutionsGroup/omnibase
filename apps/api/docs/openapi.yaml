@@ -1684,7 +1684,7 @@ paths:
 
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
-        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers
 
         ## Service Key Usage
         When using service key authentication, provide the user_id via the X-User-ID header.
@@ -1889,6 +1889,12 @@ paths:
                 example: 400 Bad Request
         '401':
           description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Tenant not found or user doesn't have access to it
           content:
             application/json:
               schema:
@@ -2222,6 +2228,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         - name: X-Tenant-Id
           in: header
           required: false
@@ -2229,6 +2236,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -2263,6 +2271,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '409':
           description: Role with this name already exists for tenant
           content:
@@ -2316,6 +2326,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         - name: X-Tenant-Id
           in: header
           required: false
@@ -2323,6 +2334,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
       requestBody:
         required: true
         content:
@@ -2357,6 +2369,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Role not found
           content:
@@ -2403,6 +2417,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
         - name: X-Tenant-Id
           in: header
           required: false
@@ -2410,6 +2425,7 @@ paths:
           schema:
             type: string
             format: uuid
+          example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
       responses:
         '200':
           description: Role deleted successfully
@@ -2430,6 +2446,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           description: Role not found
           content:
@@ -2921,6 +2939,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '500':
           description: Failed to create JWT token
           content:

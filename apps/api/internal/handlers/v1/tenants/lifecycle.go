@@ -4,6 +4,7 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/models"
+	"errors"
 	"fmt"
 	"time"
 
@@ -248,6 +249,11 @@ func (h *TenantHandler) UpdateUsersActiveTenant(ctx *gin.Context) {
 
 	token, err := h.tenants.SetActiveTenant(userID, req.TenantID)
 	if err != nil {
+		// Check if error is due to tenant not found or user not having access
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			handlers.NewNotFoundResponse(ctx, "Tenant not found or you don't have access to it")
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to set active tenant: %s", err))
 		return
 	}

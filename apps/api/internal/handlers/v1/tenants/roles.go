@@ -46,25 +46,7 @@ type NamespaceDefinitionsResponse struct {
 	Definitions []models.NamespaceDefinition `json:"definitions" binding:"required"`
 }
 
-// GetDefinitions returns available namespaces and their relations
-// @Summary      Get namespace definitions
-// @Description  Returns all available permission namespaces and their relations from the database.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with appropriate permissions.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Discover available permission namespaces
-// @Description  - List relations for each namespace
-// @Description  - Build dynamic permission UIs
-// @ID           getRoleDefinitions
-// @Tags         V1 Tenants
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=NamespaceDefinitionsResponse} "Namespace definitions retrieved successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to fetch definitions"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/roles/definitions [get]
+// /api/v1/tenants/roles/definitions [get]
 func (h *RolesHandler) GetDefinitions(c *gin.Context) {
 	logger.Logger.Info("Fetching namespace definitions")
 
@@ -115,33 +97,7 @@ type CreateRoleRequest struct {
 	Permissions []string `json:"permissions" binding:"required,min=1" validate:"required,min=1,dive,min=1" example:"project:*#view,tenant#read"`
 }
 
-// CreateRole creates a new custom role
-// @Summary      Create role
-// @Description  Creates a new custom role for the tenant with specified permissions.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context and appropriate permissions.
-// @Description
-// @Description  ## Permission Format
-// @Description  Permissions should be in the format: `namespace:resource#relation`
-// @Description  - Tenant-wide: `tenant#relation`
-// @Description  - Resource-specific: `project:uuid#relation`
-// @Description
-// @Description  ## Use Cases
-// @Description  - Create custom roles for specific workflows
-// @Description  - Define project-specific permissions
-// @Description  - Build granular access control
-// @ID           createRole
-// @Tags         V1 Tenants
-// @Accept       json
-// @Produce      json
-// @Param        request body CreateRoleRequest true "Role creation parameters"
-// @Success      200 {object} handlers.SuccessResponse{data=models.Role} "Role created successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request or missing tenant ID"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create role"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/roles [post]
+// /api/v1/tenants/roles [post]
 func (h *RolesHandler) CreateRole(c *gin.Context) {
 	tenantID := c.GetString("tenant_id")
 	if tenantID == "" {
@@ -152,8 +108,8 @@ func (h *RolesHandler) CreateRole(c *gin.Context) {
 
 	userID := c.GetString("user_id")
 	if userID == "" {
-		logger.Logger.Warn("Missing user_id in request context")
-		handlers.NewBadRequestResponse(c, "Missing user_id")
+		logger.Logger.Warn("Missing user_id in request context - returning 403")
+		handlers.NewForbiddenResponse(c, "User ID required for permission checks")
 		return
 	}
 
@@ -235,6 +191,12 @@ type UpdateRoleRequest struct {
 func (h *RolesHandler) UpdateRole(c *gin.Context) {
 	tenantID := c.GetString("tenant_id")
 	userID := c.GetString("user_id")
+
+	if userID == "" {
+		logger.Logger.Warn("Missing user_id in request context - returning 403")
+		handlers.NewForbiddenResponse(c, "User ID required for permission checks")
+		return
+	}
 
 	logger.Logger.Debug("Verifying user has update_roles permission", "user_id", userID)
 	canUpdateRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "update_roles", userID)
@@ -337,6 +299,12 @@ type DeleteRoleResponse struct {
 func (h *RolesHandler) DeleteRole(c *gin.Context) {
 	tenantID := c.GetString("tenant_id")
 	userID := c.GetString("user_id")
+
+	if userID == "" {
+		logger.Logger.Warn("Missing user_id in request context - returning 403")
+		handlers.NewForbiddenResponse(c, "User ID required for permission checks")
+		return
+	}
 
 	logger.Logger.Debug("Verifying user has delete_roles permission", "user_id", userID)
 	canDeleteRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "delete_roles", userID)

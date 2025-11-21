@@ -4,6 +4,7 @@ import (
 	"api/internal/config"
 	"api/internal/logger"
 	"api/internal/models"
+	"errors"
 	"fmt"
 	"time"
 
@@ -80,6 +81,18 @@ func (s *TenantsService) CreateJWTToken(userID, tenantID string) (string, error)
 
 func (s *TenantsService) SetActiveTenant(userID, tenantID string) (string, error) {
 	logger.Logger.Info("Setting active tenant", "userID", userID, "tenantID", tenantID)
+
+	// Verify user has access to this tenant before proceeding
+	var checkTenantUser models.TenantUser
+	if err := s.db.Where("user_id = ? AND tenant_id = ?", userID, tenantID).First(&checkTenantUser).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Logger.Warn("User attempted to switch to tenant they don't have access to",
+				"userID", userID, "tenantID", tenantID)
+			return "", gorm.ErrRecordNotFound
+		}
+		logger.Logger.Error("Failed to verify tenant access", "error", err, "userID", userID, "tenantID", tenantID)
+		return "", err
+	}
 
 	if err := s.db.Model(&models.TenantUser{}).
 		Where("user_id = ?", userID).

@@ -39,6 +39,7 @@ func (m *PostgrestMiddleware) PostgRESTJWT() gin.HandlerFunc {
 		// Store in context for handlers to access
 		if jwt == "" {
 			handlers.NewUnauthorizedResponse(c, "Missing or invalid JWT")
+			c.Abort()
 			return
 		}
 		c.Set("omnibase_postgrest_jwt", jwt)
