@@ -1873,6 +1873,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Invalid or missing JWT token
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "409":
           content:
             application/json:
@@ -1932,6 +1934,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Invalid or missing JWT token
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "404":
           content:
             application/json:
@@ -2004,6 +2008,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Invalid or missing JWT token
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "404":
           content:
             application/json:
@@ -2495,6 +2501,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: User not authenticated
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "500":
           content:
             application/json:
