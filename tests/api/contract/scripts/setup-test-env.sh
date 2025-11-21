@@ -57,14 +57,9 @@ fi
 # Step 2: Create Tenant
 echo -e "${BLUE}[2/4] Creating tenant...${NC}"
 
-# Use a placeholder tenant ID since we're creating a new tenant
-# The actual tenant ID will be returned in the response
-PLACEHOLDER_TENANT_ID="00000000-0000-0000-0000-000000000000"
-
 TENANT_RESPONSE=$(curl -s -X POST "${API_BASE_URL}/api/v1/tenants" \
   -H "Content-Type: application/json" \
   -H "X-Service-Key: ${SERVICE_KEY}" \
-  -H "X-Tenant-ID: ${PLACEHOLDER_TENANT_ID}" \
   -H "X-User-ID: ${USER_ID}" \
   -d "{
     \"name\": \"Schemathesis Test Org\",
