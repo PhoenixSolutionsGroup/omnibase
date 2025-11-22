@@ -139,10 +139,10 @@ func (v *Validator) validatePrice(price models.Price, productType string) error 
 	}
 
 	// For tiered billing, amount is not required (pricing is defined by tiers)
-	// For non-tiered billing, amount is required and must be non-negative
+	// For non-tiered billing, amount must be non-negative (allows $0 for PAYG plans)
 	if price.BillingScheme != "tiered" {
-		if price.Amount <= 0 {
-			return fmt.Errorf("price amount is required and must be positive for non-tiered pricing")
+		if price.Amount < 0 {
+			return fmt.Errorf("price amount must be non-negative for non-tiered pricing")
 		}
 	} else if price.Amount != 0 {
 		return fmt.Errorf("price amount must not be set for tiered pricing (pricing is defined by tiers)")
