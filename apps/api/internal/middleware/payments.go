@@ -147,10 +147,10 @@ func (m *PaymentsMiddleware) GetCustomerIDFromAuthSession() gin.HandlerFunc {
 		// Set the stripe_customer_id in context
 		logger.Logger.Debug("Stripe customer ID set in context",
 			"user_id", user_id,
-			"stripe_customer_id", stripe_customer_id,
+			"stripe_customer_id", *stripe_customer_id,
 			"path", path,
 		)
-		ctx.Set("stripe_customer_id", stripe_customer_id)
+		ctx.Set("stripe_customer_id", *stripe_customer_id)
 		ctx.Next()
 	}
 }
