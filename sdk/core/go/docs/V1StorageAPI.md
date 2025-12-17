@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## DeleteObject
 
-> DeleteObject200Response DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).Execute()
+> DeleteObject200Response DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Delete file from storage
 
@@ -32,10 +32,14 @@ import (
 
 func main() {
 	deleteObjectRequest := *openapiclient.NewDeleteObjectRequest("avatars/user-123.png") // DeleteObjectRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+	xPostgrestToken := "xPostgrestToken_example" // string | PostgREST JWT token - Alternative to cookie authentication (optional)
+	omnibasePostgrestJwt := "omnibasePostgrestJwt_example" // string | PostgREST JWT token in cookie form (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.DeleteObject(context.Background()).DeleteObjectRequest(deleteObjectRequest).Execute()
+	resp, r, err := apiClient.V1StorageAPI.DeleteObject(context.Background()).DeleteObjectRequest(deleteObjectRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DeleteObject``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -57,6 +61,10 @@ Other parameters are passed through a pointer to a apiDeleteObjectRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **deleteObjectRequest** | [**DeleteObjectRequest**](DeleteObjectRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
+ **xPostgrestToken** | **string** | PostgREST JWT token - Alternative to cookie authentication | 
+ **omnibasePostgrestJwt** | **string** | PostgREST JWT token in cookie form | 
 
 ### Return type
 
@@ -64,7 +72,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -78,7 +86,7 @@ Name | Type | Description  | Notes
 
 ## DownloadFile
 
-> DownloadFile200Response DownloadFile(ctx).DownloadRequest(downloadRequest).Execute()
+> DownloadFile200Response DownloadFile(ctx).DownloadRequest(downloadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Download file from storage
 
@@ -98,10 +106,14 @@ import (
 
 func main() {
 	downloadRequest := *openapiclient.NewDownloadRequest("avatars/user-123.png") // DownloadRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+	xPostgrestToken := "xPostgrestToken_example" // string | PostgREST JWT token - Alternative to cookie authentication (optional)
+	omnibasePostgrestJwt := "omnibasePostgrestJwt_example" // string | PostgREST JWT token in cookie form (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.DownloadFile(context.Background()).DownloadRequest(downloadRequest).Execute()
+	resp, r, err := apiClient.V1StorageAPI.DownloadFile(context.Background()).DownloadRequest(downloadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DownloadFile``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -123,6 +135,10 @@ Other parameters are passed through a pointer to a apiDownloadFileRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **downloadRequest** | [**DownloadRequest**](DownloadRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
+ **xPostgrestToken** | **string** | PostgREST JWT token - Alternative to cookie authentication | 
+ **omnibasePostgrestJwt** | **string** | PostgREST JWT token in cookie form | 
 
 ### Return type
 
@@ -130,7 +146,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -144,7 +160,7 @@ Name | Type | Description  | Notes
 
 ## UploadFile
 
-> UploadFile200Response UploadFile(ctx).UploadRequest(uploadRequest).Execute()
+> UploadFile200Response UploadFile(ctx).UploadRequest(uploadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Upload file to storage
 
@@ -164,10 +180,14 @@ import (
 
 func main() {
 	uploadRequest := *openapiclient.NewUploadRequest("avatars/user-123.png") // UploadRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+	xPostgrestToken := "xPostgrestToken_example" // string | PostgREST JWT token - Alternative to cookie authentication (optional)
+	omnibasePostgrestJwt := "omnibasePostgrestJwt_example" // string | PostgREST JWT token in cookie form (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1StorageAPI.UploadFile(context.Background()).UploadRequest(uploadRequest).Execute()
+	resp, r, err := apiClient.V1StorageAPI.UploadFile(context.Background()).UploadRequest(uploadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.UploadFile``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -189,6 +209,10 @@ Other parameters are passed through a pointer to a apiUploadFileRequest struct v
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **uploadRequest** | [**UploadRequest**](UploadRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
+ **xPostgrestToken** | **string** | PostgREST JWT token - Alternative to cookie authentication | 
+ **omnibasePostgrestJwt** | **string** | PostgREST JWT token in cookie form | 
 
 ### Return type
 
@@ -196,7 +220,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

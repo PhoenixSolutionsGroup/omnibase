@@ -11,11 +11,6 @@ docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
 docs/ArchiveAllResponse.md
 docs/ArchiveAllStripeConfig200Response.md
-docs/AssignRole200Response.md
-docs/AssignRoleRequest.md
-docs/AssignRoleRequestOneOf.md
-docs/AssignRoleRequestOneOf1.md
-docs/AssignRoleResponse.md
 docs/BadRequest.md
 docs/BadRequestResponse.md
 docs/BillingStatusResponse.md
@@ -190,11 +185,6 @@ src/models/AddSubscriptionRequest.ts
 src/models/AddSubscriptionResponse.ts
 src/models/ArchiveAllResponse.ts
 src/models/ArchiveAllStripeConfig200Response.ts
-src/models/AssignRole200Response.ts
-src/models/AssignRoleRequest.ts
-src/models/AssignRoleRequestOneOf.ts
-src/models/AssignRoleRequestOneOf1.ts
-src/models/AssignRoleResponse.ts
 src/models/BadRequest.ts
 src/models/BadRequestResponse.ts
 src/models/BillingStatusResponse.ts

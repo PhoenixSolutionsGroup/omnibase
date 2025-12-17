@@ -48,6 +48,12 @@ export interface Meter {
      */
     id: string;
     /**
+     * Original Stripe ID for migration support (optional, used to link existing Stripe meters)
+     * @type {string}
+     * @memberof Meter
+     */
+    stripeId?: string;
+    /**
      * Human-readable meter name
      * @type {string}
      * @memberof Meter
@@ -101,6 +107,7 @@ export function MeterFromJSONTyped(json: any, ignoreDiscriminator: boolean): Met
     return {
         
         'id': json['id'],
+        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
         'displayName': json['display_name'],
         'eventName': json['event_name'],
         'defaultAggregation': MeterDefaultAggregationFromJSON(json['default_aggregation']),
@@ -121,6 +128,7 @@ export function MeterToJSONTyped(value?: Meter | null, ignoreDiscriminator: bool
     return {
         
         'id': value['id'],
+        'stripe_id': value['stripeId'],
         'display_name': value['displayName'],
         'event_name': value['eventName'],
         'default_aggregation': MeterDefaultAggregationToJSON(value['defaultAggregation']),

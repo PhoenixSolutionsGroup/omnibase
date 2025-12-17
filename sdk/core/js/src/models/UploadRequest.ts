@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface UploadRequest {
     /**
-     * Storage path for the file (user-controlled directory structure)
+     * Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
      * @type {string}
      * @memberof UploadRequest
      */

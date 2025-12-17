@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**First** | **string** | User&#39;s first name | 
-**Last** | **string** | User&#39;s last name | 
+**First** | **string** | User&#39;s first name (letters, spaces, hyphens, dots, apostrophes only) | 
+**Last** | **string** | User&#39;s last name (letters, spaces, hyphens, dots, apostrophes only) | 
 
 ## Methods
 

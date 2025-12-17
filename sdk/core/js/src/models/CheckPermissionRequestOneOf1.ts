@@ -27,7 +27,6 @@ import {
  * @interface CheckPermissionRequestOneOf1
  */
 export interface CheckPermissionRequestOneOf1 {
-    [key: string]: any | any;
     /**
      * The namespace of the permission check
      * @type {string}
@@ -75,7 +74,6 @@ export function CheckPermissionRequestOneOf1FromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-            ...json,
         'namespace': json['namespace'],
         'object': json['object'],
         'relation': json['relation'],
@@ -94,7 +92,6 @@ export function CheckPermissionRequestOneOf1ToJSONTyped(value?: CheckPermissionR
 
     return {
         
-            ...value,
         'namespace': value['namespace'],
         'object': value['object'],
         'relation': value['relation'],

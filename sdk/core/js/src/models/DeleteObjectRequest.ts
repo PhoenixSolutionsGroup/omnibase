@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface DeleteObjectRequest {
     /**
-     * Path of the file to delete
+     * Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
      * @type {string}
      * @memberof DeleteObjectRequest
      */

@@ -19,7 +19,6 @@ import { mapValues } from '../runtime';
  * @interface CreateRelationshipRequestOneOf
  */
 export interface CreateRelationshipRequestOneOf {
-    [key: string]: any | any;
     /**
      * The namespace for the relationship
      * @type {string}
@@ -67,7 +66,6 @@ export function CreateRelationshipRequestOneOfFromJSONTyped(json: any, ignoreDis
     }
     return {
         
-            ...json,
         'namespace': json['namespace'],
         'object': json['object'],
         'relation': json['relation'],
@@ -86,7 +84,6 @@ export function CreateRelationshipRequestOneOfToJSONTyped(value?: CreateRelation
 
     return {
         
-            ...value,
         'namespace': value['namespace'],
         'object': value['object'],
         'relation': value['relation'],

@@ -74,7 +74,7 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -143,7 +143,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -210,7 +210,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -277,7 +277,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -292,11 +292,11 @@ This endpoint does not need any parameter.
 
 ## listTenants
 
-> ListTenants200Response listTenants()
+> ListTenants200Response listTenants(xUserId)
 
 List user\&#39;s tenants
 
-Returns all tenants the user is a member of with their active status.  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
+Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
 
 ### Example
 
@@ -310,6 +310,8 @@ import type { ListTenantsRequest } from '@omnibase/core-js';
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
   const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
@@ -317,8 +319,13 @@ async function example() {
   });
   const api = new V1AuthApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies ListTenantsRequest;
+
   try {
-    const data = await api.listTenants();
+    const data = await api.listTenants(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -331,7 +338,10 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -339,12 +349,12 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -412,7 +422,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -480,7 +490,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details

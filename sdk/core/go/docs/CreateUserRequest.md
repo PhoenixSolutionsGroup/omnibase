@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** | User&#39;s email address | 
-**Password** | **string** | User&#39;s password (minimum 8 characters) | 
+**Email** | **string** | User&#39;s email address (RFC 5322 compliant) | 
+**Password** | **string** | User&#39;s password (8-72 printable ASCII characters, bcrypt compatible) | 
 **Name** | [**CreateUserRequestName**](CreateUserRequestName.md) |  | 
 
 ## Methods

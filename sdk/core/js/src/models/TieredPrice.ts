@@ -41,6 +41,12 @@ export interface TieredPrice {
      */
     id: string;
     /**
+     * Original Stripe ID for migration support (optional, used to link existing Stripe prices)
+     * @type {string}
+     * @memberof TieredPrice
+     */
+    stripeId?: string;
+    /**
      * Whether price is visible in public API (null/true = public, false = enterprise only)
      * @type {boolean}
      * @memberof TieredPrice
@@ -137,6 +143,7 @@ export function TieredPriceFromJSONTyped(json: any, ignoreDiscriminator: boolean
     return {
         
         'id': json['id'],
+        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
         '_public': json['public'] == null ? undefined : json['public'],
         'taxIncludedInPrice': json['tax_included_in_price'] == null ? undefined : json['tax_included_in_price'],
         'currency': json['currency'],
@@ -164,6 +171,7 @@ export function TieredPriceToJSONTyped(value?: TieredPrice | null, ignoreDiscrim
     return {
         
         'id': value['id'],
+        'stripe_id': value['stripeId'],
         'public': value['_public'],
         'tax_included_in_price': value['taxIncludedInPrice'],
         'currency': value['currency'],

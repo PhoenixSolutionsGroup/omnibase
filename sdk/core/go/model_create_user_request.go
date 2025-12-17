@@ -13,7 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
 	"fmt"
 )
 
@@ -22,11 +21,12 @@ var _ MappedNullable = &CreateUserRequest{}
 
 // CreateUserRequest struct for CreateUserRequest
 type CreateUserRequest struct {
-	// User's email address
-	Email string `json:"email"`
-	// User's password (minimum 8 characters)
-	Password string `json:"password"`
+	// User's email address (RFC 5322 compliant)
+	Email string `json:"email" validate:"regexp=^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"`
+	// User's password (8-72 printable ASCII characters, bcrypt compatible)
+	Password string `json:"password" validate:"regexp=^[ -~]+$"`
 	Name CreateUserRequestName `json:"name"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _CreateUserRequest CreateUserRequest
@@ -136,6 +136,11 @@ func (o CreateUserRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize["email"] = o.Email
 	toSerialize["password"] = o.Password
 	toSerialize["name"] = o.Name
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -165,15 +170,22 @@ func (o *CreateUserRequest) UnmarshalJSON(data []byte) (err error) {
 
 	varCreateUserRequest := _CreateUserRequest{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreateUserRequest)
+	err = json.Unmarshal(data, &varCreateUserRequest)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CreateUserRequest(varCreateUserRequest)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "email")
+		delete(additionalProperties, "password")
+		delete(additionalProperties, "name")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

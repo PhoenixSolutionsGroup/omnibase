@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
+`stripeId` | string
 `_public` | boolean
 `taxIncludedInPrice` | boolean
 `amount` | number
@@ -27,6 +28,7 @@ import type { PerUnitPrice } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "id": basic_monthly,
+  "stripeId": price_1SRiyyCJIZaBlhY1NpAJFhNU,
   "_public": true,
   "taxIncludedInPrice": false,
   "amount": 1999,

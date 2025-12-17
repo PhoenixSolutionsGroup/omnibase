@@ -19,8 +19,6 @@ import type {
   AcceptInviteRequest,
   AddSubscription200Response,
   AddSubscriptionRequest,
-  AssignRole200Response,
-  AssignRoleRequest,
   BadRequestResponse,
   CreateInvite200Response,
   CreateRole200Response,
@@ -32,6 +30,7 @@ import type {
   DeleteTenant200Response,
   DeleteTenantUserRequest,
   ErrorResponse,
+  ForbiddenResponse,
   GetRoleDefinitions200Response,
   GetTenantBillingStatus200Response,
   GetTenantJWT200Response,
@@ -57,10 +56,6 @@ import {
     AddSubscription200ResponseToJSON,
     AddSubscriptionRequestFromJSON,
     AddSubscriptionRequestToJSON,
-    AssignRole200ResponseFromJSON,
-    AssignRole200ResponseToJSON,
-    AssignRoleRequestFromJSON,
-    AssignRoleRequestToJSON,
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
     CreateInvite200ResponseFromJSON,
@@ -83,6 +78,8 @@ import {
     DeleteTenantUserRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    ForbiddenResponseFromJSON,
+    ForbiddenResponseToJSON,
     GetRoleDefinitions200ResponseFromJSON,
     GetRoleDefinitions200ResponseToJSON,
     GetTenantBillingStatus200ResponseFromJSON,
@@ -117,32 +114,53 @@ import {
 
 export interface AcceptInviteOperationRequest {
     acceptInviteRequest: AcceptInviteRequest;
+    xUserId?: string;
 }
 
 export interface AddSubscriptionOperationRequest {
     addSubscriptionRequest: AddSubscriptionRequest;
 }
 
-export interface AssignRoleOperationRequest {
-    userId: string;
-    assignRoleRequest: AssignRoleRequest;
-}
-
 export interface CreateInviteRequest {
     createTenantUserInviteRequest: CreateTenantUserInviteRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface CreateRoleOperationRequest {
     createRoleRequest: CreateRoleRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface CreateTenantOperationRequest {
     createTenantRequest: CreateTenantRequest;
-    xUserID?: string;
+    xUserId?: string;
 }
 
 export interface DeleteRoleRequest {
     roleId: string;
+    xUserId?: string;
+    xTenantId?: string;
+}
+
+export interface DeleteTenantRequest {
+    xUserId?: string;
+    xTenantId?: string;
+}
+
+export interface GetTenantJWTRequest {
+    xUserId?: string;
+    xTenantId?: string;
+}
+
+export interface ListRolesRequest {
+    xTenantId?: string;
+}
+
+export interface ListTenantUsersRequest {
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface RemoveSubscriptionOperationRequest {
@@ -155,15 +173,20 @@ export interface RemoveTenantUserRequest {
 
 export interface SwitchActiveTenantRequest {
     switchTenantRequest: SwitchTenantRequest;
+    xUserId?: string;
 }
 
 export interface UpdateRoleOperationRequest {
     roleId: string;
     updateRoleRequest: UpdateRoleRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface UpdateTenantUserRoleOperationRequest {
     updateTenantUserRoleRequest: UpdateTenantUserRoleRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 /**
@@ -172,7 +195,7 @@ export interface UpdateTenantUserRoleOperationRequest {
 export class V1TenantsApi extends runtime.BaseAPI {
 
     /**
-     * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication Requires JWT token. User\'s email must match the invite email.  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
+     * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - User\'s email must match the invite email - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
      * Accept tenant invite
      */
     async acceptInviteRaw(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AcceptInvite200Response>> {
@@ -188,6 +211,10 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -212,7 +239,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication Requires JWT token. User\'s email must match the invite email.  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
+     * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - User\'s email must match the invite email - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
      * Accept tenant invite
      */
     async acceptInvite(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AcceptInvite200Response> {
@@ -270,64 +297,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Assigns a role to a user and creates all associated Keto relationships for the role\'s permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Request Format **Mutually Exclusive Fields:** Provide exactly ONE of the following: - `role_id`: The UUID of the role to assign - `role_name`: The name of the role to assign (e.g., \"member\", \"admin\")  If both or neither are provided, returns 400: \"Must provide exactly one of role_id or role_name\"  ## Use Cases - Grant role to user - Assign permissions via role - User onboarding 
-     * Assign role to user
-     */
-    async assignRoleRaw(requestParameters: AssignRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AssignRole200Response>> {
-        if (requestParameters['userId'] == null) {
-            throw new runtime.RequiredError(
-                'userId',
-                'Required parameter "userId" was null or undefined when calling assignRole().'
-            );
-        }
-
-        if (requestParameters['assignRoleRequest'] == null) {
-            throw new runtime.RequiredError(
-                'assignRoleRequest',
-                'Required parameter "assignRoleRequest" was null or undefined when calling assignRole().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/roles/assign/{user_id}`;
-        urlPath = urlPath.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: AssignRoleRequestToJSON(requestParameters['assignRoleRequest']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => AssignRole200ResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Assigns a role to a user and creates all associated Keto relationships for the role\'s permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Request Format **Mutually Exclusive Fields:** Provide exactly ONE of the following: - `role_id`: The UUID of the role to assign - `role_name`: The name of the role to assign (e.g., \"member\", \"admin\")  If both or neither are provided, returns 400: \"Must provide exactly one of role_id or role_name\"  ## Use Cases - Grant role to user - Assign permissions via role - User onboarding 
-     * Assign role to user
-     */
-    async assignRole(requestParameters: AssignRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AssignRole200Response> {
-        const response = await this.assignRoleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication Requires JWT token with `invite_user` permission.  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
+     * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
      * Create tenant invite
      */
     async createInviteRaw(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvite200Response>> {
@@ -343,6 +313,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -367,7 +345,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication Requires JWT token with `invite_user` permission.  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
+     * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
      * Create tenant invite
      */
     async createInvite(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvite200Response> {
@@ -376,7 +354,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a new custom role for the tenant with specified permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
+     * Creates a new custom role for the tenant with specified permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
      * Create role
      */
     async createRoleRaw(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRole200Response>> {
@@ -392,6 +370,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -416,7 +402,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a new custom role for the tenant with specified permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
+     * Creates a new custom role for the tenant with specified permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
      * Create role
      */
     async createRole(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRole200Response> {
@@ -425,7 +411,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
+     * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
      * Create tenant
      */
     async createTenantRaw(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateTenant200Response>> {
@@ -442,8 +428,8 @@ export class V1TenantsApi extends runtime.BaseAPI {
 
         headerParameters['Content-Type'] = 'application/json';
 
-        if (requestParameters['xUserID'] != null) {
-            headerParameters['X-User-ID'] = String(requestParameters['xUserID']);
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
         }
 
         if (this.configuration && this.configuration.apiKey) {
@@ -469,7 +455,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
+     * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
      * Create tenant
      */
     async createTenant(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateTenant200Response> {
@@ -478,7 +464,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
+     * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
      * Delete role
      */
     async deleteRoleRaw(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRole200Response>> {
@@ -492,6 +478,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -516,7 +510,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
+     * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
      * Delete role
      */
     async deleteRole(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRole200Response> {
@@ -525,13 +519,21 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication Requires JWT token with `delete_tenant` permission.  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
+     * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
      * Delete tenant
      */
-    async deleteTenantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTenant200Response>> {
+    async deleteTenantRaw(requestParameters: DeleteTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTenant200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -555,11 +557,11 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication Requires JWT token with `delete_tenant` permission.  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
+     * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
      * Delete tenant
      */
-    async deleteTenant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTenant200Response> {
-        const response = await this.deleteTenantRaw(initOverrides);
+    async deleteTenant(requestParameters: DeleteTenantRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTenant200Response> {
+        const response = await this.deleteTenantRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -642,13 +644,21 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a JWT token for direct PostgREST database access with the user\'s active tenant context.  ## Authentication Requires JWT token and active tenant.  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
+     * Generates a JWT token for direct PostgREST database access with the user\'s active tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session and active tenant - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
      * Get PostgREST JWT token
      */
-    async getTenantJWTRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantJWT200Response>> {
+    async getTenantJWTRaw(requestParameters: GetTenantJWTRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantJWT200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -672,22 +682,26 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a JWT token for direct PostgREST database access with the user\'s active tenant context.  ## Authentication Requires JWT token and active tenant.  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
+     * Generates a JWT token for direct PostgREST database access with the user\'s active tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session and active tenant - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
      * Get PostgREST JWT token
      */
-    async getTenantJWT(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantJWT200Response> {
-        const response = await this.getTenantJWTRaw(initOverrides);
+    async getTenantJWT(requestParameters: GetTenantJWTRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantJWT200Response> {
+        const response = await this.getTenantJWTRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
+     * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
      * List roles
      */
-    async listRolesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListRoles200Response>> {
+    async listRolesRaw(requestParameters: ListRolesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListRoles200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -711,11 +725,11 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
+     * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
      * List roles
      */
-    async listRoles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListRoles200Response> {
-        const response = await this.listRolesRaw(initOverrides);
+    async listRoles(requestParameters: ListRolesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListRoles200Response> {
+        const response = await this.listRolesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -759,13 +773,21 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication Requires JWT token with `view_users` permission.  ## Use Cases - Display team members list - User management UI - Member directory 
+     * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission  ## Use Cases - Display team members list - User management UI - Member directory 
      * Get tenant users
      */
-    async listTenantUsersRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantUsers200Response>> {
+    async listTenantUsersRaw(requestParameters: ListTenantUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantUsers200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -789,11 +811,11 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication Requires JWT token with `view_users` permission.  ## Use Cases - Display team members list - User management UI - Member directory 
+     * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission  ## Use Cases - Display team members list - User management UI - Member directory 
      * Get tenant users
      */
-    async listTenantUsers(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantUsers200Response> {
-        const response = await this.listTenantUsersRaw(initOverrides);
+    async listTenantUsers(requestParameters: ListTenantUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantUsers200Response> {
+        const response = await this.listTenantUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -896,7 +918,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication Requires JWT token.  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
+     * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
      * Switch active tenant
      */
     async switchActiveTenantRaw(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SwitchActiveTenant200Response>> {
@@ -912,6 +934,10 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -936,7 +962,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication Requires JWT token.  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
+     * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
      * Switch active tenant
      */
     async switchActiveTenant(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwitchActiveTenant200Response> {
@@ -945,7 +971,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
+     * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
      * Update role
      */
     async updateRoleRaw(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRole200Response>> {
@@ -968,6 +994,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -993,7 +1027,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
+     * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
      * Update role
      */
     async updateRole(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRole200Response> {
@@ -1002,7 +1036,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication Requires JWT token with `update_user_role` permission.  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
+     * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
      * Update user role
      */
     async updateTenantUserRoleRaw(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateTenantUserRole200Response>> {
@@ -1018,6 +1052,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -1042,7 +1084,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication Requires JWT token with `update_user_role` permission.  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
+     * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
      * Update user role
      */
     async updateTenantUserRole(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateTenantUserRole200Response> {

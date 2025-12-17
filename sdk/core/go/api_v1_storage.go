@@ -27,10 +27,38 @@ type ApiDeleteObjectRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	deleteObjectRequest *DeleteObjectRequest
+	xUserId *string
+	xTenantId *string
+	xPostgrestToken *string
+	omnibasePostgrestJwt *string
 }
 
 func (r ApiDeleteObjectRequest) DeleteObjectRequest(deleteObjectRequest DeleteObjectRequest) ApiDeleteObjectRequest {
 	r.deleteObjectRequest = &deleteObjectRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteObjectRequest) XUserId(xUserId string) ApiDeleteObjectRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteObjectRequest) XTenantId(xTenantId string) ApiDeleteObjectRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// PostgREST JWT token - Alternative to cookie authentication
+func (r ApiDeleteObjectRequest) XPostgrestToken(xPostgrestToken string) ApiDeleteObjectRequest {
+	r.xPostgrestToken = &xPostgrestToken
+	return r
+}
+
+// PostgREST JWT token in cookie form
+func (r ApiDeleteObjectRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiDeleteObjectRequest {
+	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
 	return r
 }
 
@@ -42,6 +70,10 @@ func (r ApiDeleteObjectRequest) Execute() (*DeleteObject200Response, *http.Respo
 DeleteObject Delete file from storage
 
 Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
+
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
 
 ## RLS Policy
 Delete permission is checked via PostgREST against the `storage.objects` table.
@@ -104,8 +136,31 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*De
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xPostgrestToken != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
+	}
 	// body params
 	localVarPostBody = r.deleteObjectRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -204,10 +259,38 @@ type ApiDownloadFileRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	downloadRequest *DownloadRequest
+	xUserId *string
+	xTenantId *string
+	xPostgrestToken *string
+	omnibasePostgrestJwt *string
 }
 
 func (r ApiDownloadFileRequest) DownloadRequest(downloadRequest DownloadRequest) ApiDownloadFileRequest {
 	r.downloadRequest = &downloadRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiDownloadFileRequest) XUserId(xUserId string) ApiDownloadFileRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiDownloadFileRequest) XTenantId(xTenantId string) ApiDownloadFileRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// PostgREST JWT token - Alternative to cookie authentication
+func (r ApiDownloadFileRequest) XPostgrestToken(xPostgrestToken string) ApiDownloadFileRequest {
+	r.xPostgrestToken = &xPostgrestToken
+	return r
+}
+
+// PostgREST JWT token in cookie form
+func (r ApiDownloadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiDownloadFileRequest {
+	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
 	return r
 }
 
@@ -219,6 +302,10 @@ func (r ApiDownloadFileRequest) Execute() (*DownloadFile200Response, *http.Respo
 DownloadFile Download file from storage
 
 Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
+
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
 
 ## RLS Policy
 Download permission is checked via PostgREST against the `storage.objects` table.
@@ -283,8 +370,31 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xPostgrestToken != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
+	}
 	// body params
 	localVarPostBody = r.downloadRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -394,10 +504,38 @@ type ApiUploadFileRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	uploadRequest *UploadRequest
+	xUserId *string
+	xTenantId *string
+	xPostgrestToken *string
+	omnibasePostgrestJwt *string
 }
 
 func (r ApiUploadFileRequest) UploadRequest(uploadRequest UploadRequest) ApiUploadFileRequest {
 	r.uploadRequest = &uploadRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiUploadFileRequest) XUserId(xUserId string) ApiUploadFileRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiUploadFileRequest) XTenantId(xTenantId string) ApiUploadFileRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// PostgREST JWT token - Alternative to cookie authentication
+func (r ApiUploadFileRequest) XPostgrestToken(xPostgrestToken string) ApiUploadFileRequest {
+	r.xPostgrestToken = &xPostgrestToken
+	return r
+}
+
+// PostgREST JWT token in cookie form
+func (r ApiUploadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiUploadFileRequest {
+	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
 	return r
 }
 
@@ -409,6 +547,10 @@ func (r ApiUploadFileRequest) Execute() (*UploadFile200Response, *http.Response,
 UploadFile Upload file to storage
 
 Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
+
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
 
 ## RLS Policy
 Upload permission is checked via PostgREST against the `storage.objects` table.
@@ -474,8 +616,31 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xPostgrestToken != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
+	}
 	// body params
 	localVarPostBody = r.uploadRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

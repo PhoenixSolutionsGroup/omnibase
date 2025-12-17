@@ -19,7 +19,6 @@ import { mapValues } from '../runtime';
  * @interface CheckPermissionRequestOneOf
  */
 export interface CheckPermissionRequestOneOf {
-    [key: string]: any | any;
     /**
      * The namespace of the permission check
      * @type {string}
@@ -67,7 +66,6 @@ export function CheckPermissionRequestOneOfFromJSONTyped(json: any, ignoreDiscri
     }
     return {
         
-            ...json,
         'namespace': json['namespace'],
         'object': json['object'],
         'relation': json['relation'],
@@ -86,7 +84,6 @@ export function CheckPermissionRequestOneOfToJSONTyped(value?: CheckPermissionRe
 
     return {
         
-            ...value,
         'namespace': value['namespace'],
         'object': value['object'],
         'relation': value['relation'],

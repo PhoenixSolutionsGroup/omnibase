@@ -54,14 +54,26 @@ import {
 
 export interface DeleteObjectOperationRequest {
     deleteObjectRequest: DeleteObjectRequest;
+    xUserId?: string;
+    xTenantId?: string;
+    xPostgrestToken?: string;
+    omnibasePostgrestJwt?: string;
 }
 
 export interface DownloadFileRequest {
     downloadRequest: DownloadRequest;
+    xUserId?: string;
+    xTenantId?: string;
+    xPostgrestToken?: string;
+    omnibasePostgrestJwt?: string;
 }
 
 export interface UploadFileRequest {
     uploadRequest: UploadRequest;
+    xUserId?: string;
+    xTenantId?: string;
+    xPostgrestToken?: string;
+    omnibasePostgrestJwt?: string;
 }
 
 /**
@@ -70,7 +82,7 @@ export interface UploadFileRequest {
 export class V1StorageApi extends runtime.BaseAPI {
 
     /**
-     * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
+     * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
      * Delete file from storage
      */
     async deleteObjectRaw(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteObject200Response>> {
@@ -86,6 +98,22 @@ export class V1StorageApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
+
+        if (requestParameters['xPostgrestToken'] != null) {
+            headerParameters['X-Postgrest-Token'] = String(requestParameters['xPostgrestToken']);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -106,7 +134,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
-     * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
+     * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
      * Delete file from storage
      */
     async deleteObject(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteObject200Response> {
@@ -115,7 +143,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
+     * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Download file from storage
      */
     async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DownloadFile200Response>> {
@@ -131,6 +159,22 @@ export class V1StorageApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
+
+        if (requestParameters['xPostgrestToken'] != null) {
+            headerParameters['X-Postgrest-Token'] = String(requestParameters['xPostgrestToken']);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -151,7 +195,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
+     * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Download file from storage
      */
     async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadFile200Response> {
@@ -160,7 +204,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
+     * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Upload file to storage
      */
     async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadFile200Response>> {
@@ -176,6 +220,22 @@ export class V1StorageApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
+
+        if (requestParameters['xPostgrestToken'] != null) {
+            headerParameters['X-Postgrest-Token'] = String(requestParameters['xPostgrestToken']);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -196,7 +256,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
-     * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
+     * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Upload file to storage
      */
     async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadFile200Response> {

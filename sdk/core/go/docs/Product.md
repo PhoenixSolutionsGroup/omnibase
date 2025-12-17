@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | Product identifier (config ID) | 
+**StripeId** | Pointer to **string** | Original Stripe ID for migration support (optional, used to link existing Stripe products) | [optional] 
 **Name** | **string** | Product name | 
 **Description** | Pointer to **string** | Product description | [optional] 
 **Type** | Pointer to **string** | Product type | [optional] 
@@ -49,6 +50,31 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
+
+### GetStripeId
+
+`func (o *Product) GetStripeId() string`
+
+GetStripeId returns the StripeId field if non-nil, zero value otherwise.
+
+### GetStripeIdOk
+
+`func (o *Product) GetStripeIdOk() (*string, bool)`
+
+GetStripeIdOk returns a tuple with the StripeId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStripeId
+
+`func (o *Product) SetStripeId(v string)`
+
+SetStripeId sets StripeId field to given value.
+
+### HasStripeId
+
+`func (o *Product) HasStripeId() bool`
+
+HasStripeId returns a boolean if a field has been set.
 
 ### GetName
 

@@ -22,10 +22,10 @@ var _ MappedNullable = &CreateUserRequestName{}
 
 // CreateUserRequestName struct for CreateUserRequestName
 type CreateUserRequestName struct {
-	// User's first name
-	First string `json:"first"`
-	// User's last name
-	Last string `json:"last"`
+	// User's first name (letters, spaces, hyphens, dots, apostrophes only)
+	First string `json:"first" validate:"regexp=^[a-zA-Z\\\\s\\\\-\\\\.']+$"`
+	// User's last name (letters, spaces, hyphens, dots, apostrophes only)
+	Last string `json:"last" validate:"regexp=^[a-zA-Z\\\\s\\\\-\\\\.']+$"`
 }
 
 type _CreateUserRequestName CreateUserRequestName

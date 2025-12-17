@@ -27,7 +27,6 @@ import {
  * @interface KratosIdentityCredentials
  */
 export interface KratosIdentityCredentials {
-    [key: string]: any | any;
     /**
      * 
      * @type {KratosIdentityCredentialsPassword}
@@ -53,7 +52,6 @@ export function KratosIdentityCredentialsFromJSONTyped(json: any, ignoreDiscrimi
     }
     return {
         
-            ...json,
         'password': json['password'] == null ? undefined : KratosIdentityCredentialsPasswordFromJSON(json['password']),
     };
 }
@@ -69,7 +67,6 @@ export function KratosIdentityCredentialsToJSONTyped(value?: KratosIdentityCrede
 
     return {
         
-            ...value,
         'password': KratosIdentityCredentialsPasswordToJSON(value['password']),
     };
 }

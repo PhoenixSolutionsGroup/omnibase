@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Path** | **string** | Path of the file to download | 
+**Path** | **string** | Path of the file to download. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens. | 
 
 ## Methods
 

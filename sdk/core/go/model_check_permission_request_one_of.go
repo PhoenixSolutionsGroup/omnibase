@@ -13,6 +13,7 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
 )
 
@@ -29,7 +30,6 @@ type CheckPermissionRequestOneOf struct {
 	Relation string `json:"relation"`
 	// Direct subject identifier
 	SubjectId string `json:"subject_id"`
-	AdditionalProperties map[string]interface{}
 }
 
 type _CheckPermissionRequestOneOf CheckPermissionRequestOneOf
@@ -165,11 +165,6 @@ func (o CheckPermissionRequestOneOf) ToMap() (map[string]interface{}, error) {
 	toSerialize["object"] = o.Object
 	toSerialize["relation"] = o.Relation
 	toSerialize["subject_id"] = o.SubjectId
-
-	for key, value := range o.AdditionalProperties {
-		toSerialize[key] = value
-	}
-
 	return toSerialize, nil
 }
 
@@ -200,23 +195,15 @@ func (o *CheckPermissionRequestOneOf) UnmarshalJSON(data []byte) (err error) {
 
 	varCheckPermissionRequestOneOf := _CheckPermissionRequestOneOf{}
 
-	err = json.Unmarshal(data, &varCheckPermissionRequestOneOf)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCheckPermissionRequestOneOf)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CheckPermissionRequestOneOf(varCheckPermissionRequestOneOf)
-
-	additionalProperties := make(map[string]interface{})
-
-	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "namespace")
-		delete(additionalProperties, "object")
-		delete(additionalProperties, "relation")
-		delete(additionalProperties, "subject_id")
-		o.AdditionalProperties = additionalProperties
-	}
 
 	return err
 }

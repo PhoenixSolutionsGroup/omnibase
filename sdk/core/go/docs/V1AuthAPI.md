@@ -73,7 +73,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -134,7 +134,7 @@ Other parameters are passed through a pointer to a apiGetActiveTenantRequest str
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -195,7 +195,7 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -256,7 +256,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -265,7 +265,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 
 ## ListTenants
 
-> ListTenants200Response ListTenants(ctx).Execute()
+> ListTenants200Response ListTenants(ctx).XUserId(xUserId).Execute()
 
 List user's tenants
 
@@ -284,10 +284,11 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ListTenants(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.ListTenants(context.Background()).XUserId(xUserId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ListTenants``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -299,12 +300,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListTenantsRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -312,12 +317,12 @@ Other parameters are passed through a pointer to a apiListTenantsRequest struct 
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -378,7 +383,7 @@ Other parameters are passed through a pointer to a apiLogoutRequest struct via t
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -439,7 +444,7 @@ Other parameters are passed through a pointer to a apiWhoAmIRequest struct via t
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, text/plain
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

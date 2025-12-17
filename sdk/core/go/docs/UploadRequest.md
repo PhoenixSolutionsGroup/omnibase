@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Path** | **string** | Storage path for the file (user-controlled directory structure) | 
+**Path** | **string** | Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens. | 
 **Metadata** | Pointer to **map[string]interface{}** | Optional custom metadata for the file | [optional] 
 
 ## Methods

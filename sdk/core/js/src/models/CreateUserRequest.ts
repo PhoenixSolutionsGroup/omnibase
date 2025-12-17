@@ -28,13 +28,13 @@ import {
  */
 export interface CreateUserRequest {
     /**
-     * User's email address
+     * User's email address (RFC 5322 compliant)
      * @type {string}
      * @memberof CreateUserRequest
      */
     email: string;
     /**
-     * User's password (minimum 8 characters)
+     * User's password (8-72 printable ASCII characters, bcrypt compatible)
      * @type {string}
      * @memberof CreateUserRequest
      */

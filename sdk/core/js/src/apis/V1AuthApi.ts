@@ -59,6 +59,10 @@ export interface CreateUserOperationRequest {
     createUserRequest: CreateUserRequest;
 }
 
+export interface ListTenantsRequest {
+    xUserId?: string;
+}
+
 /**
  * 
  */
@@ -215,13 +219,21 @@ export class V1AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all tenants the user is a member of with their active status.  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
+     * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenantsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenants200Response>> {
+    async listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenants200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -241,11 +253,11 @@ export class V1AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all tenants the user is a member of with their active status.  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
+     * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenants(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenants200Response> {
-        const response = await this.listTenantsRaw(initOverrides);
+    async listTenants(requestParameters: ListTenantsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenants200Response> {
+        const response = await this.listTenantsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

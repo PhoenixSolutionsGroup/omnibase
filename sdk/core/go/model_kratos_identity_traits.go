@@ -22,10 +22,7 @@ var _ MappedNullable = &KratosIdentityTraits{}
 type KratosIdentityTraits struct {
 	Email *string `json:"email,omitempty"`
 	Name *KratosIdentityTraitsName `json:"name,omitempty"`
-	AdditionalProperties map[string]interface{}
 }
-
-type _KratosIdentityTraits KratosIdentityTraits
 
 // NewKratosIdentityTraits instantiates a new KratosIdentityTraits object
 // This constructor will assign default values to properties that have it defined,
@@ -124,34 +121,7 @@ func (o KratosIdentityTraits) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-
-	for key, value := range o.AdditionalProperties {
-		toSerialize[key] = value
-	}
-
 	return toSerialize, nil
-}
-
-func (o *KratosIdentityTraits) UnmarshalJSON(data []byte) (err error) {
-	varKratosIdentityTraits := _KratosIdentityTraits{}
-
-	err = json.Unmarshal(data, &varKratosIdentityTraits)
-
-	if err != nil {
-		return err
-	}
-
-	*o = KratosIdentityTraits(varKratosIdentityTraits)
-
-	additionalProperties := make(map[string]interface{})
-
-	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "email")
-		delete(additionalProperties, "name")
-		o.AdditionalProperties = additionalProperties
-	}
-
-	return err
 }
 
 type NullableKratosIdentityTraits struct {

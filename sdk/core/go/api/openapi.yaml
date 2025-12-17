@@ -209,6 +209,10 @@ paths:
       description: |
         Returns all tenants the user is a member of with their active status.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
         ## Tenant Memberships
         Users can be members of multiple tenants. Each membership has:
         - Active status (only one tenant can be active at a time)
@@ -217,6 +221,16 @@ paths:
         ## Use Case
         Display tenant switcher UI or list all organizations the user belongs to.
       operationId: listTenants
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -233,6 +247,7 @@ paths:
       security:
       - CookieAuth: []
         SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: List user's tenants
       tags:
       - V1 Auth
@@ -887,6 +902,10 @@ paths:
       description: |
         Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
         ## RLS Policy
         Upload permission is checked via PostgREST against the `storage.objects` table.
         Users must have INSERT permission based on their custom RLS policies.
@@ -899,6 +918,41 @@ paths:
         ## URL Expiration
         Presigned URLs are valid for 15 minutes after generation.
       operationId: uploadFile
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: PostgREST JWT token - Alternative to cookie authentication
+        explode: false
+        in: header
+        name: X-Postgrest-Token
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: PostgREST JWT token in cookie form
+        explode: true
+        in: cookie
+        name: omnibase_postgrest_jwt
+        required: false
+        schema:
+          type: string
+        style: form
       requestBody:
         content:
           application/json:
@@ -931,6 +985,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Upload file to storage
       tags:
       - V1 Storage
@@ -938,6 +993,10 @@ paths:
     post:
       description: |
         Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
 
         ## RLS Policy
         Download permission is checked via PostgREST against the `storage.objects` table.
@@ -950,6 +1009,41 @@ paths:
         ## URL Expiration
         Presigned URLs are valid for 15 minutes after generation.
       operationId: downloadFile
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: PostgREST JWT token - Alternative to cookie authentication
+        explode: false
+        in: header
+        name: X-Postgrest-Token
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: PostgREST JWT token in cookie form
+        explode: true
+        in: cookie
+        name: omnibase_postgrest_jwt
+        required: false
+        schema:
+          type: string
+        style: form
       requestBody:
         content:
           application/json:
@@ -984,6 +1078,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Download file from storage
       tags:
       - V1 Storage
@@ -991,6 +1086,10 @@ paths:
     delete:
       description: |
         Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
 
         ## RLS Policy
         Delete permission is checked via PostgREST against the `storage.objects` table.
@@ -1001,6 +1100,41 @@ paths:
         2. File is deleted from S3 storage
         3. If S3 deletion fails, metadata is already removed (eventual consistency)
       operationId: deleteObject
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: PostgREST JWT token - Alternative to cookie authentication
+        explode: false
+        in: header
+        name: X-Postgrest-Token
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: PostgREST JWT token in cookie form
+        explode: true
+        in: cookie
+        name: omnibase_postgrest_jwt
+        required: false
+        schema:
+          type: string
+        style: form
       requestBody:
         content:
           application/json:
@@ -1033,6 +1167,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Delete file from storage
       tags:
       - V1 Storage
@@ -1413,7 +1548,8 @@ paths:
         Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.
 
         ## Authentication
-        Requires JWT token with `delete_tenant` permission.
+        - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission
 
         ## Process
         1. Verifies user has delete permission
@@ -1421,6 +1557,25 @@ paths:
         3. Deletes tenant (cascades to users, settings, invites)
         4. Cleans up all affected users' tenant state
       operationId: deleteTenant
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -1475,7 +1630,7 @@ paths:
 
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
-        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers
 
         ## Service Key Usage
         When using service key authentication, provide the user_id via the X-User-ID header.
@@ -1493,7 +1648,7 @@ paths:
       - description: User ID (UUID) - Required when using service key authentication
         explode: false
         in: header
-        name: X-User-ID
+        name: X-User-Id
         required: false
         schema:
           format: uuid
@@ -1547,12 +1702,23 @@ paths:
         Updates the user's active tenant in Kratos identity and returns a new JWT token with updated tenant context.
 
         ## Authentication
-        Requires JWT token.
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
         ## Use Cases
         - Switch between organizations
         - Change context for multi-tenant users
       operationId: switchActiveTenant
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -1582,6 +1748,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Tenant not found or user doesn't have access to it
         "500":
           content:
             application/json:
@@ -1673,13 +1845,33 @@ paths:
         Returns all users who are members of the tenant with their profile information and roles.
 
         ## Authentication
-        Requires JWT token with `view_users` permission.
+        - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission
 
         ## Use Cases
         - Display team members list
         - User management UI
         - Member directory
       operationId: listTenantUsers
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -1719,7 +1911,8 @@ paths:
         Updates a user's role in the tenant and updates all associated Keto permissions.
 
         ## Authentication
-        Requires JWT token with `update_user_role` permission.
+        - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission
 
         ## Restrictions
         - Promoting to owner requires `update_user_role_to_owner` permission
@@ -1732,6 +1925,25 @@ paths:
         3. Updates database
         4. Assigns new role permissions
       operationId: updateTenantUserRole
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -1792,13 +2004,24 @@ paths:
         Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.
 
         ## Authentication
-        Requires JWT token with tenant context.
+        - **Session Auth**: Requires JWT token / Cookie Session with tenant context
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header
 
         ## Use Cases
         - Display available roles to assign
         - Role management UI
         - Permission auditing
       operationId: listRoles
+      parameters:
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -1836,7 +2059,8 @@ paths:
         Creates a new custom role for the tenant with specified permissions.
 
         ## Authentication
-        Requires JWT token with tenant context and appropriate permissions.
+        - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
 
         ## Permission Format
         Permissions should be in the format: `namespace:resource#relation`
@@ -1848,6 +2072,27 @@ paths:
         - Define project-specific permissions
         - Build granular access control
       operationId: createRole
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        example: 550e8400-e29b-41d4-a716-446655440000
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -1862,11 +2107,7 @@ paths:
                 $ref: "#/components/schemas/createRole_200_response"
           description: Role created successfully
         "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: Invalid request or missing tenant ID
+          $ref: "#/components/responses/BadRequestError"
         "401":
           content:
             application/json:
@@ -1903,7 +2144,8 @@ paths:
         Deletes a role and removes all associated Keto relationships for users who had this role assigned.
 
         ## Authentication
-        Requires JWT token with tenant context and appropriate permissions.
+        - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
 
         ## Use Cases
         - Remove obsolete roles
@@ -1917,6 +2159,26 @@ paths:
         name: role_id
         required: true
         schema:
+          type: string
+        style: simple
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        example: 550e8400-e29b-41d4-a716-446655440000
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
           type: string
         style: simple
       responses:
@@ -1960,7 +2222,8 @@ paths:
         Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.
 
         ## Authentication
-        Requires JWT token with tenant context and appropriate permissions.
+        - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
 
         ## Permission Format
         Permissions should be in the format: `namespace:resource#relation`
@@ -1977,6 +2240,26 @@ paths:
         name: role_id
         required: true
         schema:
+          type: string
+        style: simple
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        example: 550e8400-e29b-41d4-a716-446655440000
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        example: 31c60057-bd7c-41b8-b96e-c4ceb845034f
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
           type: string
         style: simple
       requestBody:
@@ -2027,83 +2310,6 @@ paths:
       - SessionTokenAuth: []
       - ServiceKeyAuth: []
       summary: Update role
-      tags:
-      - V1 Tenants
-  /api/v1/tenants/roles/assign/{user_id}:
-    post:
-      description: |
-        Assigns a role to a user and creates all associated Keto relationships for the role's permissions.
-
-        ## Authentication
-        Requires JWT token with tenant context and appropriate permissions.
-
-        ## Request Format
-        **Mutually Exclusive Fields:** Provide exactly ONE of the following:
-        - `role_id`: The UUID of the role to assign
-        - `role_name`: The name of the role to assign (e.g., "member", "admin")
-
-        If both or neither are provided, returns 400: "Must provide exactly one of role_id or role_name"
-
-        ## Use Cases
-        - Grant role to user
-        - Assign permissions via role
-        - User onboarding
-      operationId: assignRole
-      parameters:
-      - description: User ID
-        explode: false
-        in: path
-        name: user_id
-        required: true
-        schema:
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AssignRoleRequest"
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/assignRole_200_response"
-          description: Role assigned successfully
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-            text/plain:
-              schema:
-                example: 400 Bad Request
-                type: string
-          description: Bad request - Invalid or missing required headers/body
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: Invalid or missing JWT token
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: Role not found
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-          description: Failed to assign role
-      security:
-      - CookieAuth: []
-      - SessionTokenAuth: []
-      - ServiceKeyAuth: []
-      summary: Assign role to user
       tags:
       - V1 Tenants
   /api/v1/tenants/roles/definitions:
@@ -2348,7 +2554,8 @@ paths:
         Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.
 
         ## Authentication
-        Requires JWT token with `invite_user` permission.
+        - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission
 
         ## Process
         1. Verifies user has invite permission
@@ -2359,6 +2566,25 @@ paths:
         - Add team members to organization
         - Invite collaborators with specific roles
       operationId: createInvite
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -2419,7 +2645,8 @@ paths:
         Accepts a tenant invitation using the token from the invite email and adds the user to the organization.
 
         ## Authentication
-        Requires JWT token. User's email must match the invite email.
+        - **Session Auth**: Requires JWT token / Cookie Session - User's email must match the invite email
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
         ## Process
         1. Validates invite token and expiry
@@ -2429,6 +2656,16 @@ paths:
         5. Assigns role with permissions
         6. Sets as active tenant and returns JWT token
       operationId: acceptInvite
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -2479,13 +2716,33 @@ paths:
         Generates a JWT token for direct PostgREST database access with the user's active tenant context.
 
         ## Authentication
-        Requires JWT token and active tenant.
+        - **Session Auth**: Requires JWT token / Cookie Session and active tenant
+        - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
 
         ## Use Cases
         - Client-side database queries
         - Real-time subscriptions
         - Direct PostgREST API access
       operationId: getTenantJWT
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -2568,6 +2825,10 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/BadRequestResponse"
+        text/plain:
+          schema:
+            example: 400 Bad Request
+            type: string
       description: Bad Request - Invalid request parameters
     UnauthorizedError:
       content:
@@ -2874,6 +3135,7 @@ components:
       required:
       - tenants
     CreateUserRequest:
+      additionalProperties: {}
       example:
         password: securepassword123
         name:
@@ -2882,15 +3144,19 @@ components:
         email: user@example.com
       properties:
         email:
-          description: User's email address
+          description: User's email address (RFC 5322 compliant)
           example: user@example.com
           format: email
+          maxLength: 255
+          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
           type: string
         password:
-          description: User's password (minimum 8 characters)
+          description: "User's password (8-72 printable ASCII characters, bcrypt compatible)"
           example: securepassword123
           format: password
+          maxLength: 72
           minLength: 8
+          pattern: "^[ -~]+$"
           type: string
         name:
           $ref: "#/components/schemas/CreateUserRequest_name"
@@ -3410,6 +3676,7 @@ components:
       - path
       - tenant_id
     UploadRequest:
+      additionalProperties: {}
       example:
         path: avatars/user-123.png
         metadata:
@@ -3417,10 +3684,16 @@ components:
           size: 1024
       properties:
         path:
-          description: Storage path for the file (user-controlled directory structure)
+          description: "Storage path for the file (user-controlled directory structure).\
+            \ Must start with alphanumeric character, can contain forward slashes,\
+            \ underscores, dots, spaces, and hyphens."
           example: avatars/user-123.png
+          maxLength: 1024
+          minLength: 1
+          pattern: "^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$"
           type: string
         metadata:
+          additionalProperties: false
           description: Optional custom metadata for the file
           example:
             content_type: image/png
@@ -3462,12 +3735,18 @@ components:
       - error
       - status
     DownloadRequest:
+      additionalProperties: false
       example:
         path: avatars/user-123.png
       properties:
         path:
-          description: Path of the file to download
+          description: "Path of the file to download. Must start with alphanumeric\
+            \ character, can contain forward slashes, underscores, dots, spaces, and\
+            \ hyphens."
           example: avatars/user-123.png
+          maxLength: 1024
+          minLength: 1
+          pattern: "^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$"
           type: string
       required:
       - path
@@ -3482,12 +3761,17 @@ components:
       required:
       - download_url
     DeleteObjectRequest:
+      additionalProperties: false
       example:
         path: avatars/user-123.png
       properties:
         path:
-          description: Path of the file to delete
+          description: "Path of the file to delete. Must start with alphanumeric character,\
+            \ can contain forward slashes, underscores, dots, spaces, and hyphens."
           example: avatars/user-123.png
+          maxLength: 1024
+          minLength: 1
+          pattern: "^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$"
           type: string
       required:
       - path
@@ -4488,11 +4772,17 @@ components:
           event_payload_key: customer_id
           type: by_id
         display_name: API Requests
+        stripe_id: mtr_1SRiyyCJIZaBlhY1
       properties:
         id:
           description: Meter identifier (config ID)
           example: api_requests
           minLength: 1
+          type: string
+        stripe_id:
+          description: "Original Stripe ID for migration support (optional, used to\
+            \ link existing Stripe meters)"
+          example: mtr_1SRiyyCJIZaBlhY1
           type: string
         display_name:
           description: Human-readable meter name
@@ -4520,6 +4810,8 @@ components:
       example:
         interval_count: 1
         amount: 1999
+        meter: api_requests
+        billing_scheme: per_unit
         default: false
         public: true
         ui:
@@ -4539,18 +4831,22 @@ components:
             text: Up to 1000 API calls
             value: 1000
         usage_type: licensed
-        meter: api_requests
         currency: usd
         interval: month
-        billing_scheme: per_unit
         id: basic_monthly
         tax_included_in_price: false
+        stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
       nullable: true
       properties:
         id:
           description: Price identifier (config ID)
           example: basic_monthly
           minLength: 1
+          type: string
+        stripe_id:
+          description: "Original Stripe ID for migration support (optional, used to\
+            \ link existing Stripe prices)"
+          example: price_1SRiyyCJIZaBlhY1NpAJFhNU
           type: string
         public:
           description: "Whether price is visible in public API (null/true = public,\
@@ -4648,6 +4944,11 @@ components:
           description: Price identifier (config ID)
           example: basic_monthly_tiered
           minLength: 1
+          type: string
+        stripe_id:
+          description: "Original Stripe ID for migration support (optional, used to\
+            \ link existing Stripe prices)"
+          example: price_1SRiyyCJIZaBlhY1NpAJFhNU
           type: string
         public:
           description: "Whether price is visible in public API (null/true = public,\
@@ -4749,6 +5050,8 @@ components:
         prices:
         - interval_count: 1
           amount: 1999
+          meter: api_requests
+          billing_scheme: per_unit
           default: false
           public: true
           ui:
@@ -4768,14 +5071,15 @@ components:
               text: Up to 1000 API calls
               value: 1000
           usage_type: licensed
-          meter: api_requests
           currency: usd
           interval: month
-          billing_scheme: per_unit
           id: basic_monthly
           tax_included_in_price: false
+          stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
         - interval_count: 1
           amount: 1999
+          meter: api_requests
+          billing_scheme: per_unit
           default: false
           public: true
           ui:
@@ -4795,17 +5099,22 @@ components:
               text: Up to 1000 API calls
               value: 1000
           usage_type: licensed
-          meter: api_requests
           currency: usd
           interval: month
-          billing_scheme: per_unit
           id: basic_monthly
           tax_included_in_price: false
+          stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+        stripe_id: prod_1SRiyyCJIZaBlhY1
       properties:
         id:
           description: Product identifier (config ID)
           example: basic_plan
           minLength: 1
+          type: string
+        stripe_id:
+          description: "Original Stripe ID for migration support (optional, used to\
+            \ link existing Stripe products)"
+          example: prod_1SRiyyCJIZaBlhY1
           type: string
         name:
           description: Product name
@@ -4850,6 +5159,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         - default_aggregation:
             formula: sum
           value_settings:
@@ -4860,6 +5170,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         products:
         - ui:
             features:
@@ -4878,6 +5189,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -4897,14 +5210,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -4924,12 +5238,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
         - ui:
             features:
             - Unlimited projects
@@ -4947,6 +5261,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -4966,14 +5282,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -4993,12 +5310,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
       properties:
         version:
           description: "Configuration version (required, semantic version format)"
@@ -5770,6 +6087,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         - default_aggregation:
             formula: sum
           value_settings:
@@ -5780,6 +6098,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         products:
         - ui:
             features:
@@ -5798,6 +6117,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -5817,14 +6138,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -5844,12 +6166,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
         - ui:
             features:
             - Unlimited projects
@@ -5867,6 +6189,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -5886,14 +6210,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -5913,12 +6238,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
       properties:
         version:
           description: "Configuration version (required, semantic version format)"
@@ -5955,6 +6280,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         - default_aggregation:
             formula: sum
           value_settings:
@@ -5965,6 +6291,7 @@ components:
             event_payload_key: customer_id
             type: by_id
           display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
         products:
         - ui:
             features:
@@ -5983,6 +6310,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -6002,14 +6331,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -6029,12 +6359,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
         - ui:
             features:
             - Unlimited projects
@@ -6052,6 +6382,8 @@ components:
           prices:
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -6071,14 +6403,15 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
             amount: 1999
+            meter: api_requests
+            billing_scheme: per_unit
             default: false
             public: true
             ui:
@@ -6098,12 +6431,12 @@ components:
                 text: Up to 1000 API calls
                 value: 1000
             usage_type: licensed
-            meter: api_requests
             currency: usd
             interval: month
-            billing_scheme: per_unit
             id: basic_monthly
             tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
       properties:
         version:
           description: Configuration version in semantic versioning format
@@ -6363,6 +6696,7 @@ components:
         role:
           description: New role to assign
           example: member
+          minLength: 1
           type: string
         user_id:
           description: Target user ID
@@ -6563,23 +6897,6 @@ components:
         message:
           description: Success message
           example: Role deleted successfully
-          type: string
-      required:
-      - message
-    AssignRoleRequest:
-      description: "Request to assign a role to a user. Must provide EITHER role_id\
-        \ OR role_name, not both."
-      oneOf:
-      - $ref: "#/components/schemas/AssignRoleRequest_oneOf"
-      - $ref: "#/components/schemas/AssignRoleRequest_oneOf_1"
-    AssignRoleResponse:
-      description: Response after assigning a role
-      example:
-        message: Role assigned successfully
-      properties:
-        message:
-          description: Success message
-          example: Role assigned successfully
           type: string
       required:
       - message
@@ -6806,6 +7123,7 @@ components:
         role:
           description: Role to assign to the invited user
           example: member
+          minLength: 1
           type: string
         invite_url:
           description: Base URL for the invite acceptance page
@@ -8018,6 +8336,7 @@ components:
               event_payload_key: customer_id
               type: by_id
             display_name: API Requests
+            stripe_id: mtr_1SRiyyCJIZaBlhY1
           - default_aggregation:
               formula: sum
             value_settings:
@@ -8028,6 +8347,7 @@ components:
               event_payload_key: customer_id
               type: by_id
             display_name: API Requests
+            stripe_id: mtr_1SRiyyCJIZaBlhY1
           products:
           - ui:
               features:
@@ -8046,6 +8366,8 @@ components:
             prices:
             - interval_count: 1
               amount: 1999
+              meter: api_requests
+              billing_scheme: per_unit
               default: false
               public: true
               ui:
@@ -8065,14 +8387,15 @@ components:
                   text: Up to 1000 API calls
                   value: 1000
               usage_type: licensed
-              meter: api_requests
               currency: usd
               interval: month
-              billing_scheme: per_unit
               id: basic_monthly
               tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
               amount: 1999
+              meter: api_requests
+              billing_scheme: per_unit
               default: false
               public: true
               ui:
@@ -8092,12 +8415,12 @@ components:
                   text: Up to 1000 API calls
                   value: 1000
               usage_type: licensed
-              meter: api_requests
               currency: usd
               interval: month
-              billing_scheme: per_unit
               id: basic_monthly
               tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            stripe_id: prod_1SRiyyCJIZaBlhY1
           - ui:
               features:
               - Unlimited projects
@@ -8115,6 +8438,8 @@ components:
             prices:
             - interval_count: 1
               amount: 1999
+              meter: api_requests
+              billing_scheme: per_unit
               default: false
               public: true
               ui:
@@ -8134,14 +8459,15 @@ components:
                   text: Up to 1000 API calls
                   value: 1000
               usage_type: licensed
-              meter: api_requests
               currency: usd
               interval: month
-              billing_scheme: per_unit
               id: basic_monthly
               tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
               amount: 1999
+              meter: api_requests
+              billing_scheme: per_unit
               default: false
               public: true
               ui:
@@ -8161,12 +8487,12 @@ components:
                   text: Up to 1000 API calls
                   value: 1000
               usage_type: licensed
-              meter: api_requests
               currency: usd
               interval: month
-              billing_scheme: per_unit
               id: basic_monthly
               tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            stripe_id: prod_1SRiyyCJIZaBlhY1
         status: 200
     archiveAllStripeConfig_200_response:
       allOf:
@@ -8335,16 +8661,6 @@ components:
         data:
           message: Role deleted successfully
         status: 200
-    assignRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/AssignRoleResponse"
-      example:
-        data:
-          message: Role assigned successfully
-        status: 200
     getRoleDefinitions_200_response:
       allOf:
       - $ref: "#/components/schemas/SuccessResponse"
@@ -8497,17 +8813,26 @@ components:
       - type: number
       - type: boolean
     CreateUserRequest_name:
+      additionalProperties: false
       example:
         last: Doe
         first: John
       properties:
         first:
-          description: User's first name
+          description: "User's first name (letters, spaces, hyphens, dots, apostrophes\
+            \ only)"
           example: John
+          maxLength: 100
+          minLength: 1
+          pattern: "^[a-zA-Z\\s\\-\\.']+$"
           type: string
         last:
-          description: User's last name
+          description: "User's last name (letters, spaces, hyphens, dots, apostrophes\
+            \ only)"
           example: Doe
+          maxLength: 100
+          minLength: 1
+          pattern: "^[a-zA-Z\\s\\-\\.']+$"
           type: string
       required:
       - first
@@ -8524,7 +8849,7 @@ components:
           example: Doe
           type: string
     KratosIdentity_traits:
-      additionalProperties: true
+      additionalProperties: false
       description: "Identity traits (email, name, etc.)"
       example:
         name:
@@ -8566,7 +8891,7 @@ components:
           format: date-time
           type: string
     KratosIdentity_credentials:
-      additionalProperties: true
+      additionalProperties: false
       description: Authentication credentials information
       example:
         password:
@@ -8636,7 +8961,7 @@ components:
           format: date-time
           type: string
     CheckPermissionRequest_oneOf:
-      additionalProperties: true
+      additionalProperties: false
       example:
         subject_id: subject_id
         namespace: namespace
@@ -8664,7 +8989,7 @@ components:
       - relation
       - subject_id
     CheckPermissionRequest_oneOf_1:
-      additionalProperties: true
+      additionalProperties: false
       properties:
         namespace:
           description: The namespace of the permission check
@@ -8686,7 +9011,7 @@ components:
       - relation
       - subject_set
     CreateRelationshipRequest_oneOf:
-      additionalProperties: true
+      additionalProperties: false
       example:
         subject_id: subject_id
         namespace: namespace
@@ -8711,7 +9036,7 @@ components:
       - relation
       - subject_id
     CreateRelationshipRequest_oneOf_1:
-      additionalProperties: true
+      additionalProperties: false
       properties:
         namespace:
           description: The namespace for the relationship
@@ -8738,29 +9063,6 @@ components:
         enum:
         - inf
         type: string
-    AssignRoleRequest_oneOf:
-      example:
-        role_id: role_test_123
-      properties:
-        role_id:
-          description: "Role ID to assign (provide either role_id or role_name, not\
-            \ both)"
-          example: role_test_123
-          format: uuid
-          minLength: 1
-          type: string
-      required:
-      - role_id
-    AssignRoleRequest_oneOf_1:
-      properties:
-        role_name:
-          description: "Role name to assign (provide either role_id or role_name,\
-            \ not both)"
-          example: member
-          minLength: 1
-          type: string
-      required:
-      - role_name
     getIdentity_200_response_allOf_data:
       type: object
   securitySchemes:

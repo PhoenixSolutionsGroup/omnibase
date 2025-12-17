@@ -20,13 +20,13 @@ import { mapValues } from '../runtime';
  */
 export interface CreateUserRequestName {
     /**
-     * User's first name
+     * User's first name (letters, spaces, hyphens, dots, apostrophes only)
      * @type {string}
      * @memberof CreateUserRequestName
      */
     first: string;
     /**
-     * User's last name
+     * User's last name (letters, spaces, hyphens, dots, apostrophes only)
      * @type {string}
      * @memberof CreateUserRequestName
      */

@@ -28,10 +28,17 @@ type ApiAcceptInviteRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	acceptInviteRequest *AcceptInviteRequest
+	xUserId *string
 }
 
 func (r ApiAcceptInviteRequest) AcceptInviteRequest(acceptInviteRequest AcceptInviteRequest) ApiAcceptInviteRequest {
 	r.acceptInviteRequest = &acceptInviteRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiAcceptInviteRequest) XUserId(xUserId string) ApiAcceptInviteRequest {
+	r.xUserId = &xUserId
 	return r
 }
 
@@ -45,7 +52,8 @@ AcceptInvite Accept tenant invite
 Accepts a tenant invitation using the token from the invite email and adds the user to the organization.
 
 ## Authentication
-Requires JWT token. User's email must match the invite email.
+- **Session Auth**: Requires JWT token / Cookie Session - User's email must match the invite email
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
 ## Process
 1. Validates invite token and expiry
@@ -106,6 +114,9 @@ func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*Ac
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.acceptInviteRequest
@@ -422,215 +433,28 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAssignRoleRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsAPIService
-	userId string
-	assignRoleRequest *AssignRoleRequest
-}
-
-func (r ApiAssignRoleRequest) AssignRoleRequest(assignRoleRequest AssignRoleRequest) ApiAssignRoleRequest {
-	r.assignRoleRequest = &assignRoleRequest
-	return r
-}
-
-func (r ApiAssignRoleRequest) Execute() (*AssignRole200Response, *http.Response, error) {
-	return r.ApiService.AssignRoleExecute(r)
-}
-
-/*
-AssignRole Assign role to user
-
-Assigns a role to a user and creates all associated Keto relationships for the role's permissions.
-
-## Authentication
-Requires JWT token with tenant context and appropriate permissions.
-
-## Request Format
-**Mutually Exclusive Fields:** Provide exactly ONE of the following:
-- `role_id`: The UUID of the role to assign
-- `role_name`: The name of the role to assign (e.g., "member", "admin")
-
-If both or neither are provided, returns 400: "Must provide exactly one of role_id or role_name"
-
-## Use Cases
-- Grant role to user
-- Assign permissions via role
-- User onboarding
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param userId User ID
- @return ApiAssignRoleRequest
-*/
-func (a *V1TenantsAPIService) AssignRole(ctx context.Context, userId string) ApiAssignRoleRequest {
-	return ApiAssignRoleRequest{
-		ApiService: a,
-		ctx: ctx,
-		userId: userId,
-	}
-}
-
-// Execute executes the request
-//  @return AssignRole200Response
-func (a *V1TenantsAPIService) AssignRoleExecute(r ApiAssignRoleRequest) (*AssignRole200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *AssignRole200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.AssignRole")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/tenants/roles/assign/{user_id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"user_id"+"}", url.PathEscape(parameterValueToString(r.userId, "userId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.assignRoleRequest == nil {
-		return localVarReturnValue, nil, reportError("assignRoleRequest is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.assignRoleRequest
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionTokenAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Session-Token"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
 type ApiCreateInviteRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	createTenantUserInviteRequest *CreateTenantUserInviteRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiCreateInviteRequest) CreateTenantUserInviteRequest(createTenantUserInviteRequest CreateTenantUserInviteRequest) ApiCreateInviteRequest {
 	r.createTenantUserInviteRequest = &createTenantUserInviteRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiCreateInviteRequest) XUserId(xUserId string) ApiCreateInviteRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiCreateInviteRequest) XTenantId(xTenantId string) ApiCreateInviteRequest {
+	r.xTenantId = &xTenantId
 	return r
 }
 
@@ -644,7 +468,8 @@ CreateInvite Create tenant invite
 Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.
 
 ## Authentication
-Requires JWT token with `invite_user` permission.
+- **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission
 
 ## Process
 1. Verifies user has invite permission
@@ -706,6 +531,12 @@ func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*Cr
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.createTenantUserInviteRequest
@@ -832,10 +663,24 @@ type ApiCreateRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	createRoleRequest *CreateRoleRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiCreateRoleRequest) CreateRoleRequest(createRoleRequest CreateRoleRequest) ApiCreateRoleRequest {
 	r.createRoleRequest = &createRoleRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiCreateRoleRequest) XUserId(xUserId string) ApiCreateRoleRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiCreateRoleRequest) XTenantId(xTenantId string) ApiCreateRoleRequest {
+	r.xTenantId = &xTenantId
 	return r
 }
 
@@ -849,7 +694,8 @@ CreateRole Create role
 Creates a new custom role for the tenant with specified permissions.
 
 ## Authentication
-Requires JWT token with tenant context and appropriate permissions.
+- **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
 
 ## Permission Format
 Permissions should be in the format: `namespace:resource#relation`
@@ -906,12 +752,18 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.createRoleRequest
@@ -966,7 +818,7 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v BadRequestResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -978,6 +830,17 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v ForbiddenResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1027,7 +890,7 @@ type ApiCreateTenantRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	createTenantRequest *CreateTenantRequest
-	xUserID *string
+	xUserId *string
 }
 
 func (r ApiCreateTenantRequest) CreateTenantRequest(createTenantRequest CreateTenantRequest) ApiCreateTenantRequest {
@@ -1036,8 +899,8 @@ func (r ApiCreateTenantRequest) CreateTenantRequest(createTenantRequest CreateTe
 }
 
 // User ID (UUID) - Required when using service key authentication
-func (r ApiCreateTenantRequest) XUserID(xUserID string) ApiCreateTenantRequest {
-	r.xUserID = &xUserID
+func (r ApiCreateTenantRequest) XUserId(xUserId string) ApiCreateTenantRequest {
+	r.xUserId = &xUserId
 	return r
 }
 
@@ -1052,7 +915,7 @@ Creates a new tenant organization with Stripe customer, sets up owner role, and 
 
 ## Authentication
 - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
-- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID headers
 
 ## Service Key Usage
 When using service key authentication, provide the user_id via the X-User-ID header.
@@ -1118,8 +981,8 @@ func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*Cr
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	if r.xUserID != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-ID", r.xUserID, "simple", "")
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.createTenantRequest
@@ -1224,6 +1087,20 @@ type ApiDeleteRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	roleId string
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteRoleRequest) XUserId(xUserId string) ApiDeleteRoleRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteRoleRequest) XTenantId(xTenantId string) ApiDeleteRoleRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiDeleteRoleRequest) Execute() (*DeleteRole200Response, *http.Response, error) {
@@ -1236,7 +1113,8 @@ DeleteRole Delete role
 Deletes a role and removes all associated Keto relationships for users who had this role assigned.
 
 ## Authentication
-Requires JWT token with tenant context and appropriate permissions.
+- **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
 
 ## Use Cases
 - Remove obsolete roles
@@ -1288,12 +1166,18 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -1367,6 +1251,17 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v ForbiddenResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -1406,6 +1301,20 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 type ApiDeleteTenantRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteTenantRequest) XUserId(xUserId string) ApiDeleteTenantRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiDeleteTenantRequest) XTenantId(xTenantId string) ApiDeleteTenantRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiDeleteTenantRequest) Execute() (*DeleteTenant200Response, *http.Response, error) {
@@ -1418,7 +1327,8 @@ DeleteTenant Delete tenant
 Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.
 
 ## Authentication
-Requires JWT token with `delete_tenant` permission.
+- **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission
 
 ## Process
 1. Verifies user has delete permission
@@ -1474,6 +1384,12 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -1922,6 +1838,20 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 type ApiGetTenantJWTRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantJWTRequest) XUserId(xUserId string) ApiGetTenantJWTRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantJWTRequest) XTenantId(xTenantId string) ApiGetTenantJWTRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiGetTenantJWTRequest) Execute() (*GetTenantJWT200Response, *http.Response, error) {
@@ -1934,7 +1864,8 @@ GetTenantJWT Get PostgREST JWT token
 Generates a JWT token for direct PostgREST database access with the user's active tenant context.
 
 ## Authentication
-Requires JWT token and active tenant.
+- **Session Auth**: Requires JWT token / Cookie Session and active tenant
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
 
 ## Use Cases
 - Client-side database queries
@@ -1983,12 +1914,18 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2062,6 +1999,17 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 					newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v ForbiddenResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
 		if localVarHTTPResponse.StatusCode == 500 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
@@ -2090,6 +2038,13 @@ func (a *V1TenantsAPIService) GetTenantJWTExecute(r ApiGetTenantJWTRequest) (*Ge
 type ApiListRolesRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xTenantId *string
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiListRolesRequest) XTenantId(xTenantId string) ApiListRolesRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiListRolesRequest) Execute() (*ListRoles200Response, *http.Response, error) {
@@ -2102,7 +2057,8 @@ ListRoles List roles
 Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.
 
 ## Authentication
-Requires JWT token with tenant context.
+- **Session Auth**: Requires JWT token / Cookie Session with tenant context
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header
 
 ## Use Cases
 - Display available roles to assign
@@ -2157,6 +2113,9 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2426,6 +2385,20 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 type ApiListTenantUsersRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantUsersRequest) XUserId(xUserId string) ApiListTenantUsersRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantUsersRequest) XTenantId(xTenantId string) ApiListTenantUsersRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiListTenantUsersRequest) Execute() (*ListTenantUsers200Response, *http.Response, error) {
@@ -2438,7 +2411,8 @@ ListTenantUsers Get tenant users
 Returns all users who are members of the tenant with their profile information and roles.
 
 ## Authentication
-Requires JWT token with `view_users` permission.
+- **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission
 
 ## Use Cases
 - Display team members list
@@ -2487,12 +2461,18 @@ func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -3019,10 +2999,17 @@ type ApiSwitchActiveTenantRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	switchTenantRequest *SwitchTenantRequest
+	xUserId *string
 }
 
 func (r ApiSwitchActiveTenantRequest) SwitchTenantRequest(switchTenantRequest SwitchTenantRequest) ApiSwitchActiveTenantRequest {
 	r.switchTenantRequest = &switchTenantRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiSwitchActiveTenantRequest) XUserId(xUserId string) ApiSwitchActiveTenantRequest {
+	r.xUserId = &xUserId
 	return r
 }
 
@@ -3036,7 +3023,8 @@ SwitchActiveTenant Switch active tenant
 Updates the user's active tenant in Kratos identity and returns a new JWT token with updated tenant context.
 
 ## Authentication
-Requires JWT token.
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
 ## Use Cases
 - Switch between organizations
@@ -3094,194 +3082,11 @@ func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantR
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
 	// body params
 	localVarPostBody = r.switchTenantRequest
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionTokenAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Session-Token"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiUpdateRoleRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsAPIService
-	roleId string
-	updateRoleRequest *UpdateRoleRequest
-}
-
-func (r ApiUpdateRoleRequest) UpdateRoleRequest(updateRoleRequest UpdateRoleRequest) ApiUpdateRoleRequest {
-	r.updateRoleRequest = &updateRoleRequest
-	return r
-}
-
-func (r ApiUpdateRoleRequest) Execute() (*CreateRole200Response, *http.Response, error) {
-	return r.ApiService.UpdateRoleExecute(r)
-}
-
-/*
-UpdateRole Update role
-
-Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.
-
-## Authentication
-Requires JWT token with tenant context and appropriate permissions.
-
-## Permission Format
-Permissions should be in the format: `namespace:resource#relation`
-
-## Use Cases
-- Modify role permissions
-- Grant or revoke access
-- Update role capabilities
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param roleId Role ID
- @return ApiUpdateRoleRequest
-*/
-func (a *V1TenantsAPIService) UpdateRole(ctx context.Context, roleId string) ApiUpdateRoleRequest {
-	return ApiUpdateRoleRequest{
-		ApiService: a,
-		ctx: ctx,
-		roleId: roleId,
-	}
-}
-
-// Execute executes the request
-//  @return CreateRole200Response
-func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRole200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateRole200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateRole")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/tenants/roles/{role_id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"role_id"+"}", url.PathEscape(parameterValueToString(r.roleId, "roleId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.updateRoleRequest == nil {
-		return localVarReturnValue, nil, reportError("updateRoleRequest is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.updateRoleRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -3390,14 +3195,257 @@ func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Create
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiUpdateRoleRequest struct {
+	ctx context.Context
+	ApiService *V1TenantsAPIService
+	roleId string
+	updateRoleRequest *UpdateRoleRequest
+	xUserId *string
+	xTenantId *string
+}
+
+func (r ApiUpdateRoleRequest) UpdateRoleRequest(updateRoleRequest UpdateRoleRequest) ApiUpdateRoleRequest {
+	r.updateRoleRequest = &updateRoleRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiUpdateRoleRequest) XUserId(xUserId string) ApiUpdateRoleRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiUpdateRoleRequest) XTenantId(xTenantId string) ApiUpdateRoleRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiUpdateRoleRequest) Execute() (*CreateRole200Response, *http.Response, error) {
+	return r.ApiService.UpdateRoleExecute(r)
+}
+
+/*
+UpdateRole Update role
+
+Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.
+
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
+
+## Permission Format
+Permissions should be in the format: `namespace:resource#relation`
+
+## Use Cases
+- Modify role permissions
+- Grant or revoke access
+- Update role capabilities
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param roleId Role ID
+ @return ApiUpdateRoleRequest
+*/
+func (a *V1TenantsAPIService) UpdateRole(ctx context.Context, roleId string) ApiUpdateRoleRequest {
+	return ApiUpdateRoleRequest{
+		ApiService: a,
+		ctx: ctx,
+		roleId: roleId,
+	}
+}
+
+// Execute executes the request
+//  @return CreateRole200Response
+func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRole200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateRole200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateRole")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/tenants/roles/{role_id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"role_id"+"}", url.PathEscape(parameterValueToString(r.roleId, "roleId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.updateRoleRequest == nil {
+		return localVarReturnValue, nil, reportError("updateRoleRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.updateRoleRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v ForbiddenResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiUpdateTenantUserRoleRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	updateTenantUserRoleRequest *UpdateTenantUserRoleRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiUpdateTenantUserRoleRequest) UpdateTenantUserRoleRequest(updateTenantUserRoleRequest UpdateTenantUserRoleRequest) ApiUpdateTenantUserRoleRequest {
 	r.updateTenantUserRoleRequest = &updateTenantUserRoleRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiUpdateTenantUserRoleRequest) XUserId(xUserId string) ApiUpdateTenantUserRoleRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiUpdateTenantUserRoleRequest) XTenantId(xTenantId string) ApiUpdateTenantUserRoleRequest {
+	r.xTenantId = &xTenantId
 	return r
 }
 
@@ -3411,7 +3459,8 @@ UpdateTenantUserRole Update user role
 Updates a user's role in the tenant and updates all associated Keto permissions.
 
 ## Authentication
-Requires JWT token with `update_user_role` permission.
+- **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission
+- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission
 
 ## Restrictions
 - Promoting to owner requires `update_user_role_to_owner` permission
@@ -3475,6 +3524,12 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.updateTenantUserRoleRequest

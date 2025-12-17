@@ -13,7 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
 	"fmt"
 )
 
@@ -22,10 +21,11 @@ var _ MappedNullable = &UploadRequest{}
 
 // UploadRequest struct for UploadRequest
 type UploadRequest struct {
-	// Storage path for the file (user-controlled directory structure)
-	Path string `json:"path"`
+	// Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+	Path string `json:"path" validate:"regexp=^[a-zA-Z0-9][a-zA-Z0-9\\/_. -]*$"`
 	// Optional custom metadata for the file
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _UploadRequest UploadRequest
@@ -118,6 +118,11 @@ func (o UploadRequest) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -145,15 +150,21 @@ func (o *UploadRequest) UnmarshalJSON(data []byte) (err error) {
 
 	varUploadRequest := _UploadRequest{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varUploadRequest)
+	err = json.Unmarshal(data, &varUploadRequest)
 
 	if err != nil {
 		return err
 	}
 
 	*o = UploadRequest(varUploadRequest)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "path")
+		delete(additionalProperties, "metadata")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

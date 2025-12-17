@@ -27,7 +27,6 @@ import {
  * @interface CreateRelationshipRequestOneOf1
  */
 export interface CreateRelationshipRequestOneOf1 {
-    [key: string]: any | any;
     /**
      * The namespace for the relationship
      * @type {string}
@@ -75,7 +74,6 @@ export function CreateRelationshipRequestOneOf1FromJSONTyped(json: any, ignoreDi
     }
     return {
         
-            ...json,
         'namespace': json['namespace'],
         'object': json['object'],
         'relation': json['relation'],
@@ -94,7 +92,6 @@ export function CreateRelationshipRequestOneOf1ToJSONTyped(value?: CreateRelatio
 
     return {
         
-            ...value,
         'namespace': value['namespace'],
         'object': value['object'],
         'relation': value['relation'],

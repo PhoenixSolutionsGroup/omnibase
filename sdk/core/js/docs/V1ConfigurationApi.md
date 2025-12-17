@@ -221,7 +221,7 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -296,7 +296,7 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `multipart/form-data`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -364,7 +364,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details

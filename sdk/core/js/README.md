@@ -86,7 +86,6 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1StripeApi* | [**getStripeConfigAdmin**](docs/V1StripeApi.md#getstripeconfigadmin) | **GET** /api/v1/stripe/admin/config | Get full Stripe config (admin)
 *V1TenantsApi* | [**acceptInvite**](docs/V1TenantsApi.md#acceptinviteoperation) | **PUT** /api/v1/tenants/invites/accept | Accept tenant invite
 *V1TenantsApi* | [**addSubscription**](docs/V1TenantsApi.md#addsubscriptionoperation) | **POST** /api/v1/tenants/subscriptions | Add subscription
-*V1TenantsApi* | [**assignRole**](docs/V1TenantsApi.md#assignroleoperation) | **POST** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
 *V1TenantsApi* | [**createInvite**](docs/V1TenantsApi.md#createinvite) | **POST** /api/v1/tenants/invites | Create tenant invite
 *V1TenantsApi* | [**createRole**](docs/V1TenantsApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create role
 *V1TenantsApi* | [**createTenant**](docs/V1TenantsApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create tenant
@@ -116,11 +115,6 @@ All URIs are relative to *https://api.omnibase.tech*
 - [AddSubscriptionResponse](docs/AddSubscriptionResponse.md)
 - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
 - [ArchiveAllStripeConfig200Response](docs/ArchiveAllStripeConfig200Response.md)
-- [AssignRole200Response](docs/AssignRole200Response.md)
-- [AssignRoleRequest](docs/AssignRoleRequest.md)
-- [AssignRoleRequestOneOf](docs/AssignRoleRequestOneOf.md)
-- [AssignRoleRequestOneOf1](docs/AssignRoleRequestOneOf1.md)
-- [AssignRoleResponse](docs/AssignRoleResponse.md)
 - [BadRequest](docs/BadRequest.md)
 - [BadRequestResponse](docs/BadRequestResponse.md)
 - [BillingStatusResponse](docs/BillingStatusResponse.md)

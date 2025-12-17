@@ -99,7 +99,7 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*CreateUse
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -265,7 +265,7 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -409,7 +409,7 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*GetIden
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -552,7 +552,7 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*GetSessio
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -634,6 +634,13 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*GetSessio
 type ApiListTenantsRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
+	xUserId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantsRequest) XUserId(xUserId string) ApiListTenantsRequest {
+	r.xUserId = &xUserId
+	return r
 }
 
 func (r ApiListTenantsRequest) Execute() (*ListTenants200Response, *http.Response, error) {
@@ -644,6 +651,10 @@ func (r ApiListTenantsRequest) Execute() (*ListTenants200Response, *http.Respons
 ListTenants List user's tenants
 
 Returns all tenants the user is a member of with their active status.
+
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
 ## Tenant Memberships
 Users can be members of multiple tenants. Each membership has:
@@ -695,12 +706,29 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -849,7 +877,7 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*Logout200Response
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1001,7 +1029,7 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmI200Response
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)

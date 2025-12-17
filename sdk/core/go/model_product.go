@@ -24,6 +24,8 @@ var _ MappedNullable = &Product{}
 type Product struct {
 	// Product identifier (config ID)
 	Id string `json:"id"`
+	// Original Stripe ID for migration support (optional, used to link existing Stripe products)
+	StripeId *string `json:"stripe_id,omitempty"`
 	// Product name
 	Name string `json:"name"`
 	// Product description
@@ -79,6 +81,38 @@ func (o *Product) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *Product) SetId(v string) {
 	o.Id = v
+}
+
+// GetStripeId returns the StripeId field value if set, zero value otherwise.
+func (o *Product) GetStripeId() string {
+	if o == nil || IsNil(o.StripeId) {
+		var ret string
+		return ret
+	}
+	return *o.StripeId
+}
+
+// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Product) GetStripeIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeId) {
+		return nil, false
+	}
+	return o.StripeId, true
+}
+
+// HasStripeId returns a boolean if a field has been set.
+func (o *Product) HasStripeId() bool {
+	if o != nil && !IsNil(o.StripeId) {
+		return true
+	}
+
+	return false
+}
+
+// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
+func (o *Product) SetStripeId(v string) {
+	o.StripeId = &v
 }
 
 // GetName returns the Name field value
@@ -236,6 +270,9 @@ func (o Product) MarshalJSON() ([]byte, error) {
 func (o Product) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
+	}
 	toSerialize["name"] = o.Name
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description

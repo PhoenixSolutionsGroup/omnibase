@@ -27,7 +27,6 @@ import {
  * @interface KratosIdentityTraits
  */
 export interface KratosIdentityTraits {
-    [key: string]: any | any;
     /**
      * 
      * @type {string}
@@ -59,7 +58,6 @@ export function KratosIdentityTraitsFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-            ...json,
         'email': json['email'] == null ? undefined : json['email'],
         'name': json['name'] == null ? undefined : KratosIdentityTraitsNameFromJSON(json['name']),
     };
@@ -76,7 +74,6 @@ export function KratosIdentityTraitsToJSONTyped(value?: KratosIdentityTraits | n
 
     return {
         
-            ...value,
         'email': value['email'],
         'name': KratosIdentityTraitsNameToJSON(value['name']),
     };

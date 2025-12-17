@@ -124,7 +124,6 @@ Class | Method | HTTP request | Description
 *V1StripeAPI* | [**GetStripeConfigAdmin**](docs/V1StripeAPI.md#getstripeconfigadmin) | **Get** /api/v1/stripe/admin/config | Get full Stripe config (admin)
 *V1TenantsAPI* | [**AcceptInvite**](docs/V1TenantsAPI.md#acceptinvite) | **Put** /api/v1/tenants/invites/accept | Accept tenant invite
 *V1TenantsAPI* | [**AddSubscription**](docs/V1TenantsAPI.md#addsubscription) | **Post** /api/v1/tenants/subscriptions | Add subscription
-*V1TenantsAPI* | [**AssignRole**](docs/V1TenantsAPI.md#assignrole) | **Post** /api/v1/tenants/roles/assign/{user_id} | Assign role to user
 *V1TenantsAPI* | [**CreateInvite**](docs/V1TenantsAPI.md#createinvite) | **Post** /api/v1/tenants/invites | Create tenant invite
 *V1TenantsAPI* | [**CreateRole**](docs/V1TenantsAPI.md#createrole) | **Post** /api/v1/tenants/roles | Create role
 *V1TenantsAPI* | [**CreateTenant**](docs/V1TenantsAPI.md#createtenant) | **Post** /api/v1/tenants | Create tenant
@@ -154,11 +153,6 @@ Class | Method | HTTP request | Description
  - [AddSubscriptionResponse](docs/AddSubscriptionResponse.md)
  - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
  - [ArchiveAllStripeConfig200Response](docs/ArchiveAllStripeConfig200Response.md)
- - [AssignRole200Response](docs/AssignRole200Response.md)
- - [AssignRoleRequest](docs/AssignRoleRequest.md)
- - [AssignRoleRequestOneOf](docs/AssignRoleRequestOneOf.md)
- - [AssignRoleRequestOneOf1](docs/AssignRoleRequestOneOf1.md)
- - [AssignRoleResponse](docs/AssignRoleResponse.md)
  - [BadRequest](docs/BadRequest.md)
  - [BadRequestResponse](docs/BadRequestResponse.md)
  - [BillingStatusResponse](docs/BillingStatusResponse.md)

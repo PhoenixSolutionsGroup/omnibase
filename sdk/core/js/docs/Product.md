@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
+`stripeId` | string
 `name` | string
 `description` | string
 `type` | string
@@ -21,6 +22,7 @@ import type { Product } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "id": basic_plan,
+  "stripeId": prod_1SRiyyCJIZaBlhY1,
   "name": Basic Plan,
   "description": Our basic subscription tier,
   "type": service,

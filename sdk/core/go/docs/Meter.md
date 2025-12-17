@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | Meter identifier (config ID) | 
+**StripeId** | Pointer to **string** | Original Stripe ID for migration support (optional, used to link existing Stripe meters) | [optional] 
 **DisplayName** | **string** | Human-readable meter name | 
 **EventName** | **string** | Event name to track for this meter | 
 **DefaultAggregation** | [**MeterDefaultAggregation**](MeterDefaultAggregation.md) |  | 
@@ -49,6 +50,31 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
+
+### GetStripeId
+
+`func (o *Meter) GetStripeId() string`
+
+GetStripeId returns the StripeId field if non-nil, zero value otherwise.
+
+### GetStripeIdOk
+
+`func (o *Meter) GetStripeIdOk() (*string, bool)`
+
+GetStripeIdOk returns a tuple with the StripeId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStripeId
+
+`func (o *Meter) SetStripeId(v string)`
+
+SetStripeId sets StripeId field to given value.
+
+### HasStripeId
+
+`func (o *Meter) HasStripeId() bool`
+
+HasStripeId returns a boolean if a field has been set.
 
 ### GetDisplayName
 

@@ -66,7 +66,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -137,7 +137,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -207,7 +207,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details

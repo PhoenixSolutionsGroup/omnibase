@@ -24,6 +24,8 @@ var _ MappedNullable = &TieredPrice{}
 type TieredPrice struct {
 	// Price identifier (config ID)
 	Id string
+	// Original Stripe ID for migration support (optional, used to link existing Stripe prices)
+	StripeId *string
 	// Whether price is visible in public API (null/true = public, false = enterprise only)
 	Public *bool
 	// Whether tax is included in the price (null/false = exclusive)
@@ -90,6 +92,38 @@ func (o *TieredPrice) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *TieredPrice) SetId(v string) {
 	o.Id = v
+}
+
+// GetStripeId returns the StripeId field value if set, zero value otherwise.
+func (o *TieredPrice) GetStripeId() string {
+	if o == nil || IsNil(o.StripeId) {
+		var ret string
+		return ret
+	}
+	return *o.StripeId
+}
+
+// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TieredPrice) GetStripeIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeId) {
+		return nil, false
+	}
+	return o.StripeId, true
+}
+
+// HasStripeId returns a boolean if a field has been set.
+func (o *TieredPrice) HasStripeId() bool {
+	if o != nil && !IsNil(o.StripeId) {
+		return true
+	}
+
+	return false
+}
+
+// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
+func (o *TieredPrice) SetStripeId(v string) {
+	o.StripeId = &v
 }
 
 // GetPublic returns the Public field value if set, zero value otherwise.
@@ -455,6 +489,9 @@ func (o TieredPrice) MarshalJSON() ([]byte, error) {
 func (o TieredPrice) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
+	}
 	if !IsNil(o.Public) {
 		toSerialize["public"] = o.Public
 	}

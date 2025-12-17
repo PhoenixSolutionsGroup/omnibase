@@ -41,6 +41,12 @@ export interface Product {
      */
     id: string;
     /**
+     * Original Stripe ID for migration support (optional, used to link existing Stripe products)
+     * @type {string}
+     * @memberof Product
+     */
+    stripeId?: string;
+    /**
      * Product name
      * @type {string}
      * @memberof Product
@@ -105,6 +111,7 @@ export function ProductFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
     return {
         
         'id': json['id'],
+        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
         'name': json['name'],
         'description': json['description'] == null ? undefined : json['description'],
         'type': json['type'] == null ? undefined : json['type'],
@@ -125,6 +132,7 @@ export function ProductToJSONTyped(value?: Product | null, ignoreDiscriminator: 
     return {
         
         'id': value['id'],
+        'stripe_id': value['stripeId'],
         'name': value['name'],
         'description': value['description'],
         'type': value['type'],

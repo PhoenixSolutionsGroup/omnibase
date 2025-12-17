@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -22,11 +21,6 @@ docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
 docs/ArchiveAllResponse.md
 docs/ArchiveAllStripeConfig200Response.md
-docs/AssignRole200Response.md
-docs/AssignRoleRequest.md
-docs/AssignRoleRequestOneOf.md
-docs/AssignRoleRequestOneOf1.md
-docs/AssignRoleResponse.md
 docs/BadRequest.md
 docs/BadRequestResponse.md
 docs/BillingStatusResponse.md
@@ -193,11 +187,6 @@ model_add_subscription_request.go
 model_add_subscription_response.go
 model_archive_all_response.go
 model_archive_all_stripe_config_200_response.go
-model_assign_role_200_response.go
-model_assign_role_request.go
-model_assign_role_request_one_of.go
-model_assign_role_request_one_of_1.go
-model_assign_role_response.go
 model_bad_request.go
 model_bad_request_response.go
 model_billing_status_response.go
@@ -345,12 +334,4 @@ model_user_tenant_list_item.go
 model_who_am_i_200_response.go
 model_who_am_i_response.go
 response.go
-test/api_v1_auth_test.go
-test/api_v1_configuration_test.go
-test/api_v1_events_test.go
-test/api_v1_payments_test.go
-test/api_v1_permissions_test.go
-test/api_v1_storage_test.go
-test/api_v1_stripe_test.go
-test/api_v1_tenants_test.go
 utils.go

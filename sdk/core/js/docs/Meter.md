@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `id` | string
+`stripeId` | string
 `displayName` | string
 `eventName` | string
 `defaultAggregation` | [MeterDefaultAggregation](MeterDefaultAggregation.md)
@@ -21,6 +22,7 @@ import type { Meter } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "id": api_requests,
+  "stripeId": mtr_1SRiyyCJIZaBlhY1,
   "displayName": API Requests,
   "eventName": api_request,
   "defaultAggregation": null,

@@ -34,6 +34,12 @@ export interface PerUnitPrice {
      */
     id: string;
     /**
+     * Original Stripe ID for migration support (optional, used to link existing Stripe prices)
+     * @type {string}
+     * @memberof PerUnitPrice
+     */
+    stripeId?: string;
+    /**
      * Whether price is visible in public API (null/true = public, false = enterprise only)
      * @type {boolean}
      * @memberof PerUnitPrice
@@ -122,6 +128,7 @@ export function PerUnitPriceFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return {
         
         'id': json['id'],
+        'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
         '_public': json['public'] == null ? undefined : json['public'],
         'taxIncludedInPrice': json['tax_included_in_price'] == null ? undefined : json['tax_included_in_price'],
         'amount': json['amount'],
@@ -148,6 +155,7 @@ export function PerUnitPriceToJSONTyped(value?: PerUnitPrice | null, ignoreDiscr
     return {
         
         'id': value['id'],
+        'stripe_id': value['stripeId'],
         'public': value['_public'],
         'tax_included_in_price': value['taxIncludedInPrice'],
         'amount': value['amount'],

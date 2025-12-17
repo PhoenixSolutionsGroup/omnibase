@@ -13,6 +13,7 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
 )
 
@@ -28,7 +29,6 @@ type CreateRelationshipRequestOneOf1 struct {
 	// The relation type
 	Relation string `json:"relation"`
 	SubjectSet SubjectSetRequest `json:"subject_set"`
-	AdditionalProperties map[string]interface{}
 }
 
 type _CreateRelationshipRequestOneOf1 CreateRelationshipRequestOneOf1
@@ -164,11 +164,6 @@ func (o CreateRelationshipRequestOneOf1) ToMap() (map[string]interface{}, error)
 	toSerialize["object"] = o.Object
 	toSerialize["relation"] = o.Relation
 	toSerialize["subject_set"] = o.SubjectSet
-
-	for key, value := range o.AdditionalProperties {
-		toSerialize[key] = value
-	}
-
 	return toSerialize, nil
 }
 
@@ -199,23 +194,15 @@ func (o *CreateRelationshipRequestOneOf1) UnmarshalJSON(data []byte) (err error)
 
 	varCreateRelationshipRequestOneOf1 := _CreateRelationshipRequestOneOf1{}
 
-	err = json.Unmarshal(data, &varCreateRelationshipRequestOneOf1)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCreateRelationshipRequestOneOf1)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CreateRelationshipRequestOneOf1(varCreateRelationshipRequestOneOf1)
-
-	additionalProperties := make(map[string]interface{})
-
-	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "namespace")
-		delete(additionalProperties, "object")
-		delete(additionalProperties, "relation")
-		delete(additionalProperties, "subject_set")
-		o.AdditionalProperties = additionalProperties
-	}
 
 	return err
 }

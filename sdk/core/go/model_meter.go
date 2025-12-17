@@ -24,6 +24,8 @@ var _ MappedNullable = &Meter{}
 type Meter struct {
 	// Meter identifier (config ID)
 	Id string `json:"id"`
+	// Original Stripe ID for migration support (optional, used to link existing Stripe meters)
+	StripeId *string `json:"stripe_id,omitempty"`
 	// Human-readable meter name
 	DisplayName string `json:"display_name"`
 	// Event name to track for this meter
@@ -78,6 +80,38 @@ func (o *Meter) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *Meter) SetId(v string) {
 	o.Id = v
+}
+
+// GetStripeId returns the StripeId field value if set, zero value otherwise.
+func (o *Meter) GetStripeId() string {
+	if o == nil || IsNil(o.StripeId) {
+		var ret string
+		return ret
+	}
+	return *o.StripeId
+}
+
+// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Meter) GetStripeIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeId) {
+		return nil, false
+	}
+	return o.StripeId, true
+}
+
+// HasStripeId returns a boolean if a field has been set.
+func (o *Meter) HasStripeId() bool {
+	if o != nil && !IsNil(o.StripeId) {
+		return true
+	}
+
+	return false
+}
+
+// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
+func (o *Meter) SetStripeId(v string) {
+	o.StripeId = &v
 }
 
 // GetDisplayName returns the DisplayName field value
@@ -227,6 +261,9 @@ func (o Meter) MarshalJSON() ([]byte, error) {
 func (o Meter) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
+	}
 	toSerialize["display_name"] = o.DisplayName
 	toSerialize["event_name"] = o.EventName
 	toSerialize["default_aggregation"] = o.DefaultAggregation

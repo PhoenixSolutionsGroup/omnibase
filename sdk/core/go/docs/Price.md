@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | Price identifier (config ID) | 
+**StripeId** | Pointer to **string** | Original Stripe ID for migration support (optional, used to link existing Stripe prices) | [optional] 
 **Public** | Pointer to **bool** | Whether price is visible in public API (null/true &#x3D; public, false &#x3D; enterprise only) | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price (null/false &#x3D; exclusive) | [optional] 
 **Amount** | **int64** | Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements | 
@@ -57,6 +58,31 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
+
+### GetStripeId
+
+`func (o *Price) GetStripeId() string`
+
+GetStripeId returns the StripeId field if non-nil, zero value otherwise.
+
+### GetStripeIdOk
+
+`func (o *Price) GetStripeIdOk() (*string, bool)`
+
+GetStripeIdOk returns a tuple with the StripeId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStripeId
+
+`func (o *Price) SetStripeId(v string)`
+
+SetStripeId sets StripeId field to given value.
+
+### HasStripeId
+
+`func (o *Price) HasStripeId() bool`
+
+HasStripeId returns a boolean if a field has been set.
 
 ### GetPublic
 

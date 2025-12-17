@@ -22,8 +22,8 @@ var _ MappedNullable = &DeleteObjectRequest{}
 
 // DeleteObjectRequest struct for DeleteObjectRequest
 type DeleteObjectRequest struct {
-	// Path of the file to delete
-	Path string `json:"path"`
+	// Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+	Path string `json:"path" validate:"regexp=^[a-zA-Z0-9][a-zA-Z0-9\\/_. -]*$"`
 }
 
 type _DeleteObjectRequest DeleteObjectRequest

@@ -6,7 +6,6 @@ All URIs are relative to *https://api.omnibase.tech*
 |------------- | ------------- | -------------|
 | [**acceptInvite**](V1TenantsApi.md#acceptinviteoperation) | **PUT** /api/v1/tenants/invites/accept | Accept tenant invite |
 | [**addSubscription**](V1TenantsApi.md#addsubscriptionoperation) | **POST** /api/v1/tenants/subscriptions | Add subscription |
-| [**assignRole**](V1TenantsApi.md#assignroleoperation) | **POST** /api/v1/tenants/roles/assign/{user_id} | Assign role to user |
 | [**createInvite**](V1TenantsApi.md#createinvite) | **POST** /api/v1/tenants/invites | Create tenant invite |
 | [**createRole**](V1TenantsApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create role |
 | [**createTenant**](V1TenantsApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create tenant |
@@ -28,11 +27,11 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## acceptInvite
 
-> AcceptInvite200Response acceptInvite(acceptInviteRequest)
+> AcceptInvite200Response acceptInvite(acceptInviteRequest, xUserId)
 
 Accept tenant invite
 
-Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication Requires JWT token. User\&#39;s email must match the invite email.  ## Process 1. Validates invite token and expiry 2. Verifies user\&#39;s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
+Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - User\&#39;s email must match the invite email - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Process 1. Validates invite token and expiry 2. Verifies user\&#39;s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
 
 ### Example
 
@@ -58,6 +57,8 @@ async function example() {
   const body = {
     // AcceptInviteRequest
     acceptInviteRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies AcceptInviteOperationRequest;
 
   try {
@@ -78,6 +79,7 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **acceptInviteRequest** | [AcceptInviteRequest](AcceptInviteRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -184,95 +186,13 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
-## assignRole
-
-> AssignRole200Response assignRole(userId, assignRoleRequest)
-
-Assign role to user
-
-Assigns a role to a user and creates all associated Keto relationships for the role\&#39;s permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Request Format **Mutually Exclusive Fields:** Provide exactly ONE of the following: - &#x60;role_id&#x60;: The UUID of the role to assign - &#x60;role_name&#x60;: The name of the role to assign (e.g., \&quot;member\&quot;, \&quot;admin\&quot;)  If both or neither are provided, returns 400: \&quot;Must provide exactly one of role_id or role_name\&quot;  ## Use Cases - Grant role to user - Assign permissions via role - User onboarding 
-
-### Example
-
-```ts
-import {
-  Configuration,
-  V1TenantsApi,
-} from '@omnibase/core-js';
-import type { AssignRoleOperationRequest } from '@omnibase/core-js';
-
-async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsApi(config);
-
-  const body = {
-    // string | User ID
-    userId: userId_example,
-    // AssignRoleRequest
-    assignRoleRequest: ...,
-  } satisfies AssignRoleOperationRequest;
-
-  try {
-    const data = await api.assignRole(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
-```
-
-### Parameters
-
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **userId** | `string` | User ID | [Defaults to `undefined`] |
-| **assignRoleRequest** | [AssignRoleRequest](AssignRoleRequest.md) |  | |
-
-### Return type
-
-[**AssignRole200Response**](AssignRole200Response.md)
-
-### Authorization
-
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
-
-### HTTP request headers
-
-- **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | Role assigned successfully |  -  |
-| **400** | Bad request - Invalid or missing required headers/body |  -  |
-| **401** | Invalid or missing JWT token |  -  |
-| **404** | Role not found |  -  |
-| **500** | Failed to assign role |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-
 ## createInvite
 
-> CreateInvite200Response createInvite(createTenantUserInviteRequest)
+> CreateInvite200Response createInvite(createTenantUserInviteRequest, xUserId, xTenantId)
 
 Create tenant invite
 
-Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication Requires JWT token with &#x60;invite_user&#x60; permission.  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
+Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with &#x60;invite_user&#x60; permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with &#x60;invite_user&#x60; permission  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
 
 ### Example
 
@@ -298,6 +218,10 @@ async function example() {
   const body = {
     // CreateTenantUserInviteRequest
     createTenantUserInviteRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies CreateInviteRequest;
 
   try {
@@ -318,6 +242,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **createTenantUserInviteRequest** | [CreateTenantUserInviteRequest](CreateTenantUserInviteRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -348,11 +274,11 @@ example().catch(console.error);
 
 ## createRole
 
-> CreateRole200Response createRole(createRoleRequest)
+> CreateRole200Response createRole(createRoleRequest, xUserId, xTenantId)
 
 Create role
 
-Creates a new custom role for the tenant with specified permissions.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: &#x60;namespace:resource#relation&#x60; - Tenant-wide: &#x60;tenant#relation&#x60; - Resource-specific: &#x60;project:uuid#relation&#x60;  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
+Creates a new custom role for the tenant with specified permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: &#x60;namespace:resource#relation&#x60; - Tenant-wide: &#x60;tenant#relation&#x60; - Resource-specific: &#x60;project:uuid#relation&#x60;  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
 
 ### Example
 
@@ -378,6 +304,10 @@ async function example() {
   const body = {
     // CreateRoleRequest
     createRoleRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 550e8400-e29b-41d4-a716-446655440000,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 31c60057-bd7c-41b8-b96e-c4ceb845034f,
   } satisfies CreateRoleOperationRequest;
 
   try {
@@ -398,6 +328,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **createRoleRequest** | [CreateRoleRequest](CreateRoleRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -410,15 +342,16 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Role created successfully |  -  |
-| **400** | Invalid request or missing tenant ID |  -  |
+| **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Invalid or missing JWT token |  -  |
+| **403** | Forbidden - Insufficient permissions |  -  |
 | **409** | Role with this name already exists for tenant |  -  |
 | **500** | Failed to create role |  -  |
 
@@ -427,11 +360,11 @@ example().catch(console.error);
 
 ## createTenant
 
-> CreateTenant200Response createTenant(createTenantRequest, xUserID)
+> CreateTenant200Response createTenant(createTenantRequest, xUserId)
 
 Create tenant
 
-Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
+Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
 
 ### Example
 
@@ -458,7 +391,7 @@ async function example() {
     // CreateTenantRequest
     createTenantRequest: ...,
     // string | User ID (UUID) - Required when using service key authentication (optional)
-    xUserID: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies CreateTenantOperationRequest;
 
   try {
@@ -479,7 +412,7 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **createTenantRequest** | [CreateTenantRequest](CreateTenantRequest.md) |  | |
-| **xUserID** | `string` | User ID (UUID) - Required when using service key authentication | [Optional] [Defaults to `undefined`] |
+| **xUserId** | `string` | User ID (UUID) - Required when using service key authentication | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -508,11 +441,11 @@ example().catch(console.error);
 
 ## deleteRole
 
-> DeleteRole200Response deleteRole(roleId)
+> DeleteRole200Response deleteRole(roleId, xUserId, xTenantId)
 
 Delete role
 
-Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
+Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
 
 ### Example
 
@@ -538,6 +471,10 @@ async function example() {
   const body = {
     // string | Role ID
     roleId: roleId_example,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 550e8400-e29b-41d4-a716-446655440000,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 31c60057-bd7c-41b8-b96e-c4ceb845034f,
   } satisfies DeleteRoleRequest;
 
   try {
@@ -558,6 +495,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **roleId** | `string` | Role ID | [Defaults to `undefined`] |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -570,7 +509,7 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -579,6 +518,7 @@ example().catch(console.error);
 | **200** | Role deleted successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Invalid or missing JWT token |  -  |
+| **403** | Forbidden - Insufficient permissions |  -  |
 | **404** | Role not found |  -  |
 | **500** | Failed to delete role |  -  |
 
@@ -587,11 +527,11 @@ example().catch(console.error);
 
 ## deleteTenant
 
-> DeleteTenant200Response deleteTenant()
+> DeleteTenant200Response deleteTenant(xUserId, xTenantId)
 
 Delete tenant
 
-Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication Requires JWT token with &#x60;delete_tenant&#x60; permission.  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\&#39; tenant state 
+Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with &#x60;delete_tenant&#x60; permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with &#x60;delete_tenant&#x60; permission  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\&#39; tenant state 
 
 ### Example
 
@@ -614,8 +554,15 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies DeleteTenantRequest;
+
   try {
-    const data = await api.deleteTenant();
+    const data = await api.deleteTenant(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -628,7 +575,11 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -798,11 +749,11 @@ This endpoint does not need any parameter.
 
 ## getTenantJWT
 
-> GetTenantJWT200Response getTenantJWT()
+> GetTenantJWT200Response getTenantJWT(xUserId, xTenantId)
 
 Get PostgREST JWT token
 
-Generates a JWT token for direct PostgREST database access with the user\&#39;s active tenant context.  ## Authentication Requires JWT token and active tenant.  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
+Generates a JWT token for direct PostgREST database access with the user\&#39;s active tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session and active tenant - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers  ## Use Cases - Client-side database queries - Real-time subscriptions - Direct PostgREST API access 
 
 ### Example
 
@@ -825,8 +776,15 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies GetTenantJWTRequest;
+
   try {
-    const data = await api.getTenantJWT();
+    const data = await api.getTenantJWT(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -839,7 +797,11 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -852,7 +814,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -861,6 +823,7 @@ This endpoint does not need any parameter.
 | **200** | JWT token generated successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | User not authenticated |  -  |
+| **403** | Forbidden - Insufficient permissions |  -  |
 | **500** | Failed to create JWT token |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -868,11 +831,11 @@ This endpoint does not need any parameter.
 
 ## listRoles
 
-> ListRoles200Response listRoles()
+> ListRoles200Response listRoles(xTenantId)
 
 List roles
 
-Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
+Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
 
 ### Example
 
@@ -895,8 +858,13 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies ListRolesRequest;
+
   try {
-    const data = await api.listRoles();
+    const data = await api.listRoles(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -909,7 +877,10 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1008,11 +979,11 @@ This endpoint does not need any parameter.
 
 ## listTenantUsers
 
-> ListTenantUsers200Response listTenantUsers()
+> ListTenantUsers200Response listTenantUsers(xUserId, xTenantId)
 
 Get tenant users
 
-Returns all users who are members of the tenant with their profile information and roles.  ## Authentication Requires JWT token with &#x60;view_users&#x60; permission.  ## Use Cases - Display team members list - User management UI - Member directory 
+Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with &#x60;view_users&#x60; permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with &#x60;view_users&#x60; permission  ## Use Cases - Display team members list - User management UI - Member directory 
 
 ### Example
 
@@ -1035,8 +1006,15 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies ListTenantUsersRequest;
+
   try {
-    const data = await api.listTenantUsers();
+    const data = await api.listTenantUsers(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -1049,7 +1027,11 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1062,7 +1044,7 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `text/plain`
 
 
 ### HTTP response details
@@ -1238,11 +1220,11 @@ example().catch(console.error);
 
 ## switchActiveTenant
 
-> SwitchActiveTenant200Response switchActiveTenant(switchTenantRequest)
+> SwitchActiveTenant200Response switchActiveTenant(switchTenantRequest, xUserId)
 
 Switch active tenant
 
-Updates the user\&#39;s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication Requires JWT token.  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
+Updates the user\&#39;s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
 
 ### Example
 
@@ -1268,6 +1250,8 @@ async function example() {
   const body = {
     // SwitchTenantRequest
     switchTenantRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies SwitchActiveTenantRequest;
 
   try {
@@ -1288,6 +1272,7 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **switchTenantRequest** | [SwitchTenantRequest](SwitchTenantRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1309,6 +1294,7 @@ example().catch(console.error);
 | **200** | Successfully switched tenants |  -  |
 | **400** | Bad request - Invalid or missing required headers/body |  -  |
 | **401** | User not authenticated |  -  |
+| **404** | Tenant not found or user doesn\&#39;t have access to it |  -  |
 | **500** | Failed to switch tenant |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -1316,11 +1302,11 @@ example().catch(console.error);
 
 ## updateRole
 
-> CreateRole200Response updateRole(roleId, updateRoleRequest)
+> CreateRole200Response updateRole(roleId, updateRoleRequest, xUserId, xTenantId)
 
 Update role
 
-Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication Requires JWT token with tenant context and appropriate permissions.  ## Permission Format Permissions should be in the format: &#x60;namespace:resource#relation&#x60;  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
+Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: &#x60;namespace:resource#relation&#x60;  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
 
 ### Example
 
@@ -1348,6 +1334,10 @@ async function example() {
     roleId: roleId_example,
     // UpdateRoleRequest
     updateRoleRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 550e8400-e29b-41d4-a716-446655440000,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 31c60057-bd7c-41b8-b96e-c4ceb845034f,
   } satisfies UpdateRoleOperationRequest;
 
   try {
@@ -1369,6 +1359,8 @@ example().catch(console.error);
 |------------- | ------------- | ------------- | -------------|
 | **roleId** | `string` | Role ID | [Defaults to `undefined`] |
 | **updateRoleRequest** | [UpdateRoleRequest](UpdateRoleRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1390,6 +1382,7 @@ example().catch(console.error);
 | **200** | Role updated successfully |  -  |
 | **400** | Bad request - Invalid or missing required headers/body |  -  |
 | **401** | Invalid or missing JWT token |  -  |
+| **403** | Forbidden - Insufficient permissions |  -  |
 | **404** | Role not found |  -  |
 | **500** | Failed to update role |  -  |
 
@@ -1398,11 +1391,11 @@ example().catch(console.error);
 
 ## updateTenantUserRole
 
-> UpdateTenantUserRole200Response updateTenantUserRole(updateTenantUserRoleRequest)
+> UpdateTenantUserRole200Response updateTenantUserRole(updateTenantUserRoleRequest, xUserId, xTenantId)
 
 Update user role
 
-Updates a user\&#39;s role in the tenant and updates all associated Keto permissions.  ## Authentication Requires JWT token with &#x60;update_user_role&#x60; permission.  ## Restrictions - Promoting to owner requires &#x60;update_user_role_to_owner&#x60; permission - Demoting from owner requires &#x60;remove_owner_role&#x60; permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
+Updates a user\&#39;s role in the tenant and updates all associated Keto permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with &#x60;update_user_role&#x60; permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with &#x60;update_user_role&#x60; permission  ## Restrictions - Promoting to owner requires &#x60;update_user_role_to_owner&#x60; permission - Demoting from owner requires &#x60;remove_owner_role&#x60; permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
 
 ### Example
 
@@ -1428,6 +1421,10 @@ async function example() {
   const body = {
     // UpdateTenantUserRoleRequest
     updateTenantUserRoleRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies UpdateTenantUserRoleOperationRequest;
 
   try {
@@ -1448,6 +1445,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **updateTenantUserRoleRequest** | [UpdateTenantUserRoleRequest](UpdateTenantUserRoleRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
