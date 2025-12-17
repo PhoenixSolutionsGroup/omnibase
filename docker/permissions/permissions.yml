@@ -48,7 +48,7 @@ serve:
       debug: true
 
 namespaces:
-  location: file:///etc/config/keto/namespaces
+  location: file:///etc/config/permissions/namespaces
 
 log:
   level: debug

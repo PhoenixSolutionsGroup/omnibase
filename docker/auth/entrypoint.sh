@@ -2,6 +2,11 @@
 set -e
 
 wait_for_api_health() {
+    if [ -z "${API_URL}" ]; then
+        echo "Skipping API health check (API_URL not set)" >&2
+        return 0
+    fi
+    
     if [ "${WAIT_FOR_API_HEALTH}" != "true" ]; then
         echo "Skipping API health check (WAIT_FOR_API_HEALTH not set to true)" >&2
         return 0
@@ -18,7 +23,7 @@ wait_for_api_health() {
         attempt=$((attempt + 1))
         echo "Health check attempt $attempt/$max_attempts: $health_url" >&2
         
-        if curl -f -s -o /dev/null "$health_url" 2>/dev/null; then
+        if curl -f -s --connect-timeout 2 --max-time 5 -o /dev/null "$health_url" 2>/dev/null; then
             echo "✓ rest-api is healthy" >&2
             return 0
         else
@@ -35,23 +40,28 @@ wait_for_api_health() {
 }
 
 ensure_jwks() {
-    local jwks_dir="/tmp/kratos/tokenizer-templates/jwt"
+    local jwks_dir="/tmp/auth/tokenizer-templates/jwt"
     local jwks_file="$jwks_dir/jwks.json"
     
-    if [ -z "$KRATOS_JWT_JWKS" ]; then
-        echo "ERROR: KRATOS_JWT_JWKS environment variable is not set" >&2
+    if [ -z "$AUTH_JWT_JWKS" ]; then
+        echo "ERROR: AUTH_JWT_JWKS environment variable is not set" >&2
     fi
     
     echo "Creating JWKS directory: $jwks_dir" >&2
     mkdir -p "$jwks_dir"
     
     echo "Writing JWKS to: $jwks_file" >&2
-    printf '%b\n' "$KRATOS_JWT_JWKS" > "$jwks_file"
+    printf '%b\n' "$AUTH_JWT_JWKS" > "$jwks_file"
     chmod 600 "$jwks_file"
 }
 
 download_templates() {
-    template_dir="/tmp/kratos/templates"
+    if [ -z "${API_URL}" ]; then
+        echo "Skipping template download (API_URL not set, will use Auth defaults)" >&2
+        return 0
+    fi
+    
+    template_dir="/tmp/auth/templates"
     
     echo "Creating template directories" >&2
     mkdir -p "$template_dir/verification/valid" "$template_dir/recovery/valid"
@@ -79,10 +89,10 @@ download_templates() {
             url="${API_URL}/api/v1/email/templates/${template_name}/${template_type}"
             output="$template_dir/$template_name/valid/$filename"
             
-            if curl -f -s -o "$output" "$url" 2>/dev/null; then
+            if curl -f -s --connect-timeout 2 --max-time 5 -o "$output" "$url" 2>/dev/null; then
                 echo "✓ Downloaded: $template_name/$template_type" >&2
             else
-                echo "✗ Failed to download $template_name/$template_type (will use Kratos defaults)" >&2
+                echo "✗ Failed to download $template_name/$template_type (will use Auth defaults)" >&2
             fi
         ) &
     done
@@ -94,12 +104,12 @@ download_templates() {
 }
 
 generate_config() {
-    local template_file="/etc/config/kratos/kratos.tmpl.yml"
-    local output_file="/tmp/kratos.yml"
+    local template_file="/etc/config/auth/auth.tmpl.yml"
+    local output_file="/tmp/auth.yml"
     
     # Build OIDC providers (raw, no substitution yet)
     local providers=""
-    local oidc_dir="/etc/config/kratos/oidc"
+    local oidc_dir="/etc/config/auth/oidc"
     
     if [ -d "$oidc_dir" ]; then
         for provider_dir in "$oidc_dir"/*; do
@@ -159,4 +169,4 @@ download_templates
 
 generate_config
 
-exec kratos "$@" -c /tmp/kratos.yml
+exec kratos "$@" -c /tmp/auth.yml

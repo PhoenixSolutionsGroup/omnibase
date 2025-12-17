@@ -5,4 +5,4 @@ client_secret: ${GOOGLE_CLIENT_SECRET}
 scope:
   - profile
   - email
-mapper_url: file:///etc/config/kratos/oidc/google/oidc.google.jsonnet
+mapper_url: file:///etc/config/auth/oidc/google/oidc.google.jsonnet

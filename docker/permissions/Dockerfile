@@ -6,14 +6,14 @@ USER root
 RUN apk add --no-cache aws-cli unzip
 
 # Copy base config and default namespaces
-COPY keto.yml /etc/config/keto/keto.yml
-COPY namespaces/ /etc/config/keto/namespaces/
+COPY permissions.yml /etc/config/permissions/permissions.yml
+COPY namespaces/ /etc/config/permissions/namespaces/
 
 # Copy entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-RUN chown -R ory:ory /etc/config/keto
+RUN chown -R ory:ory /etc/config/permissions
 
 USER ory
 
@@ -24,4 +24,4 @@ EXPOSE 4466 4467
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command (can be overridden)
-CMD ["serve", "--config", "/etc/config/keto/keto.yml"]
+CMD ["serve", "--config", "/etc/config/permissions/permissions.yml"]

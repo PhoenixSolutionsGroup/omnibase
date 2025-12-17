@@ -8,4 +8,4 @@ issuer_url: https://appleid.apple.com
 scope:
   - email
   - name
-mapper_url: file:///etc/config/kratos/oidc/apple/oidc.apple.jsonnet
+mapper_url: file:///etc/config/auth/oidc/apple/oidc.apple.jsonnet

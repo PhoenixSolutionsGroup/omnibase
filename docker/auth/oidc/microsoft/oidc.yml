@@ -7,4 +7,4 @@ scope:
   - profile
   - openid
   - email
-mapper_url: file:///etc/config/kratos/oidc/microsoft/oidc.microsoft.jsonnet
+mapper_url: file:///etc/config/kratos/auth/microsoft/oidc.microsoft.jsonnet

@@ -16,9 +16,9 @@ if [ -n "$NAMESPACE_BUCKET" ] && [ -n "$TENANT_ID" ]; then
     /tmp/namespaces.zip || echo "⚠️  No custom namespaces found, using defaults"
   
   if [ -f /tmp/namespaces.zip ]; then
-    rm -rf /etc/config/keto/namespaces/*
+    rm -rf /etc/config/permissions/namespaces/*
     
-    unzip -o /tmp/namespaces.zip '*.ts' -d /etc/config/keto/namespaces/
+    unzip -o /tmp/namespaces.zip '*.ts' -d /etc/config/permissions/namespaces/
     
     echo "✅ Custom namespaces loaded"
   fi
