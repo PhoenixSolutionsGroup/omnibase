@@ -96,14 +96,12 @@ async function runDockerCompose(
       ...args,
     ];
 
-    console.log(`Running: docker ${cmdArgs.join(" ")}`);
     console.log(`Using project name: ${projectName}`);
-    console.log(`Using environment: ${envConfig.name} (${envPath})`);
-    console.log(`Using compose file: ${composeFileName}`);
+    console.log(`Using environment: ${envConfig.name}`);
 
     // Execute docker compose command with OMNIBASE_PROJECT_DIR and OMNIBASE_ENV_FILE set
     execSync(`docker ${cmdArgs.join(" ")}`, {
-      stdio: "inherit",
+      stdio: "ignore",
       cwd: projectRoot,
       env: {
         ...process.env,
@@ -127,18 +125,19 @@ program
     const omnibaseDir = path.join(currentDir, "omnibase");
 
     if (fs.existsSync(omnibaseDir)) {
-      console.log("⚠️  omnibase directory already exists!");
+      console.log("⚠ omnibase directory already exists");
       console.log(
-        "💡 Tip: Remove the existing omnibase directory if you want to reinitialize."
+        "  Remove the existing omnibase directory if you want to reinitialize"
       );
       return;
     }
 
-    console.log("🚀 Initializing omnibase project...");
+    console.log("Initializing omnibase project...");
     createTemplateFiles(currentDir);
     console.log("");
-    console.log("🎉 Project initialized successfully!");
-    console.log("💡 Next steps:");
+    console.log("✓ Project initialized successfully");
+    console.log("");
+    console.log("Next steps:");
     console.log("  1. Organize the template files in omnibase/ as needed");
     console.log("  2. Edit the .env files with your configuration");
     console.log("  3. Edit stripe.config.json with your Stripe products");
@@ -155,7 +154,7 @@ program
       const args = cmdOptions.build ? ["up", "-d", "--build"] : ["up", "-d"];
       await runDockerCompose(globalOptions.env, globalOptions.mode, ...args);
     } catch (error) {
-      console.error("Error:", error instanceof Error ? error.message : error);
+      console.error("✗ Error:", error instanceof Error ? error.message : error);
       process.exit(1);
     }
   });
@@ -168,7 +167,7 @@ program
       const options = program.opts();
       await runDockerCompose(options.env, options.mode, "down");
     } catch (error) {
-      console.error("Error:", error instanceof Error ? error.message : error);
+      console.error("✗ Error:", error instanceof Error ? error.message : error);
       process.exit(1);
     }
   });

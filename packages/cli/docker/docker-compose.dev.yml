@@ -2,7 +2,6 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:17-alpine
-    container_name: postgres
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: postgres
@@ -16,21 +15,21 @@ services:
       - app-network
     restart: unless-stopped
 
-  kratos-migrate:
+  auth-migrate:
     build:
       context: ../../../docker/auth
       dockerfile: Dockerfile
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - IDENTITY_SCHEMA_URL=http://rest-api:8080/api/v1/auth/identity-schema
-      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS-{}}
+      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - WAIT_FOR_API_HEALTH=true
       - API_URL=http://rest-api:8080
 
     volumes:
       - type: bind
         source: ../../../docker/auth
-        target: /etc/config/kratos
+        target: /etc/config/auth
     command: migrate sql -e --yes
     restart: on-failure
     networks:
@@ -39,9 +38,9 @@ services:
       - postgres
       - rest-api
 
-  kratos:
+  auth:
     depends_on:
-      - kratos-migrate
+      - auth-migrate
       - rest-api
     build:
       context: ../../../docker/auth
@@ -65,7 +64,7 @@ services:
       # Optional with defaults
       - LOG_LEVEL=${AUTH_LOG_LEVEL:-info}
       - AUTH_URL=${AUTH_URL:-http://127.0.0.1:4433}
-      - AUTH_ADMIN_URL=${AUTH_ADMIN_URL:-http://kratos:4434}
+      - AUTH_ADMIN_URL=${AUTH_ADMIN_URL:-http://auth:4434}
 
       - WEBSITE_AUTH_ERROR_URL=${WEBSITE_AUTH_ERROR_URL:-${WEBSITE_URL}/auth/error}
       - WEBSITE_SETTING_URL=${WEBSITE_SETTING_URL:-${WEBSITE_URL}/auth/settings}
@@ -78,20 +77,20 @@ services:
       - SMTP_FROM_ADDRESS=${SMTP_FROM_ADDRESS:-no-reply@omnibase.tech}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-"Omnibase Auth"}
 
-      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS-{}}
+      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - API_URL=http://rest-api:8080
       - WAIT_FOR_API_HEALTH=true
+      - APP_NAME=${APP_NAME:-"My App"}
     volumes:
       - type: bind
         source: ../../../docker/auth
-        target: /etc/config/kratos
+        target: /etc/config/auth
     command: serve --dev --watch-courier
     networks:
       - app-network
 
   mailpit:
     image: axllent/mailpit:latest
-    container_name: mailpit
     ports:
       - "8025:8025" # Web UI
       - "1025:1025" # SMTP server
@@ -106,7 +105,6 @@ services:
   # MinIO - Object Storage
   minio:
     image: minio/minio:latest
-    container_name: minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -123,7 +121,6 @@ services:
   # Create MinIO bucket on startup
   minio-init:
     image: minio/mc:latest
-    container_name: minio-init
     depends_on:
       - minio
     entrypoint: >
@@ -142,7 +139,6 @@ services:
   # Adminer - Simple Database Management Interface
   adminer:
     image: adminer:latest
-    container_name: adminer
     ports:
       - "8081:8080"
     depends_on:
@@ -154,7 +150,6 @@ services:
   # PostgREST - Auto-generated REST API from PostgreSQL schema
   postgrest:
     image: postgrest/postgrest:v12.2.0
-    container_name: postgrest
     ports:
       - "8001:3000"
     environment:
@@ -174,7 +169,6 @@ services:
     build:
       context: ../../../apps/api
       dockerfile: Dockerfile.dev
-    container_name: restapi
     ports:
       - "8080:8080"
     volumes:
@@ -187,8 +181,8 @@ services:
     environment:
       # Application
       - PORT=8080
-      - KRATOS_URL=http://kratos:4433
-      - KRATOS_ADMIN_URL=http://kratos:4434
+      - AUTH_URL=http://auth:4433
+      - AUTH_ADMIN_URL=http://auth:4434
 
       # Database
       - DB_HOST=postgres
@@ -217,9 +211,9 @@ services:
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
       - JWT_SECRET=${JWT_SECRET:-VERY_SECRET_KEY}
 
-      # Keto Configuration
-      - KETO_READ_URL=http://keto:4466
-      - KETO_WRITE_URL=http://keto:4467
+      # Permissions Configuration
+      - PERMISSIONS_READ_URL=http://permissions:4466
+      - PERMISSIONS_WRITE_URL=http://permissions:4467
 
       # PostgREST Configuration
       - POSTGREST_URL=http://postgrest:3000
@@ -231,15 +225,15 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-TRACE}
       - LOG_FORMAT=${LOG_FORMAT:-pretty}
 
-      - KRATOS_JWT_JWKS=${KRATOS_JWT_JWKS}
-  # Keto Migration
-  keto-migrate:
+      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS}
+  # Permissions Migration
+  permissions-migrate:
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=keto
-    command: migrate up -c /etc/config/keto/keto.yml --yes
+      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
+    command: migrate up -c /etc/config/permissions/permissions.yml --yes
     restart: on-failure
     networks:
       - app-network
@@ -247,9 +241,9 @@ services:
       - postgres
       - rest-api
 
-  keto:
+  permissions:
     depends_on:
-      - keto-migrate
+      - permissions-migrate
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
@@ -258,14 +252,14 @@ services:
       - "4467:4467" # write API
     restart: unless-stopped
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=keto
+      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
       - LOG_LEVEL=debug
       - NAMESPACE_BUCKET=permission-namespaces
       - TENANT_ID=local
       - R2_ENDPOINT=http://minio:9000
       - R2_ACCESS_KEY=minioadmin
       - R2_SECRET_KEY=minioadmin123
-    command: serve -c /etc/config/keto/keto.yml
+    command: serve -c /etc/config/permissions/permissions.yml
     networks:
       - app-network
 
@@ -283,26 +277,6 @@ services:
       - postgres
     networks:
       - app-network
-  # Edge Functions (Hono)
-  edge:
-    image: oven/bun:1
-    container_name: edge
-    working_dir: /app
-    command: ["sh", "-c", "bun install && bun run --watch dev.ts"]
-    ports:
-      - "8787:8787"
-    volumes:
-      - ${OMNIBASE_PROJECT_DIR}/omnibase/edge:/app
-    env_file:
-      - ${OMNIBASE_ENV_FILE}
-    environment:
-      - PORT=8787
-      - NODE_ENV=development
-    networks:
-      - app-network
-    restart: unless-stopped
-    depends_on:
-      - rest-api
 
 volumes:
   postgres_data:

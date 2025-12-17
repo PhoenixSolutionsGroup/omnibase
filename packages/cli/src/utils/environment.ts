@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { config } from "dotenv";
+import { getActiveProfile } from "./credentials";
 
 export interface EnvironmentConfig {
   name: string;
@@ -164,12 +165,28 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
  */
 export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
   try {
+    let envName = "local";
     if (envFlag) {
-      return loadEnvironment(envFlag);
+      envName = envFlag;
+    } else {
+      const config = loadOmnibaseConfig();
+      envName = config.defaultEnvironment || "local";
     }
 
-    const config = loadOmnibaseConfig();
-    return loadEnvironment(config.defaultEnvironment);
+    const envConfig = loadEnvironment(envName);
+
+    // If not local, enrich with active profile API key
+    if (envName !== "local") {
+      const profile = getActiveProfile();
+      if (profile) {
+        return {
+          ...envConfig,
+          apiKey: profile.api_key,
+        };
+      }
+    }
+
+    return envConfig;
   } catch (error) {
     // Fallback to local
     try {

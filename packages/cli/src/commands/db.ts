@@ -57,6 +57,7 @@ export function addDbCommands(program: Command): void {
         await applyMigrations(env.apiUrl, env.apiKey, options.dir);
       } catch (error) {
         console.error("❌ Migration failed:");
+        console.log(error);
         console.error(error instanceof Error ? error.message : error);
         process.exit(1);
       }
