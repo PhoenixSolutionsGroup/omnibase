@@ -60,9 +60,9 @@ type StripeConfig struct {
 }
 
 type AuthConfig struct {
-	KratosURL      string
-	KratosAdminURL string
-	KratosJWTJWKS  string
+	AuthURL      string
+	AuthAdminURL string
+	AuthJWTJWKS  string
 }
 
 type SMTPConfig struct {
@@ -101,9 +101,9 @@ func New() *Config {
 			PlatformFeePercent: getFloat64Env("PLATFORM_FEE_PERCENT", 0),
 		},
 		AuthConfig: AuthConfig{
-			KratosURL:      os.Getenv("KRATOS_URL"),
-			KratosAdminURL: os.Getenv("KRATOS_ADMIN_URL"),
-			KratosJWTJWKS:  os.Getenv("KRATOS_JWT_JWKS"),
+			AuthURL:      os.Getenv("AUTH_URL"),
+			AuthAdminURL: os.Getenv("AUTH_ADMIN_URL"),
+			AuthJWTJWKS:  os.Getenv("AUTH_JWT_JWKS"),
 		},
 		SMTPConfig: SMTPConfig{
 			ConnectionURI: os.Getenv("SMTP_CONNECTION_URI"),
@@ -111,8 +111,8 @@ func New() *Config {
 			FrontendURL:   os.Getenv("FRONTEND_URL"),
 		},
 		PermissionsConfig: PermissionsConfig{
-			ReadURL:  os.Getenv("KETO_READ_URL"),
-			WriteURL: os.Getenv("KETO_WRITE_URL"),
+			ReadURL:  os.Getenv("PERMISSIONS_READ_URL"),
+			WriteURL: os.Getenv("PERMISSIONS_WRITE_URL"),
 		},
 		ManagedHostingConfig: ManagedHostingConfig{
 			IsManaged:            os.Getenv("OMNIBASE_MANAGED") == "true",

@@ -21,19 +21,19 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(cfg *config.Config) *AuthHandler {
-	logger.Logger.Info("Initializing AuthHandler", "kratos_url", cfg.AuthConfig.KratosURL)
+	logger.Logger.Info("Initializing AuthHandler", "kratos_url", cfg.AuthConfig.AuthURL)
 
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
-			URL: cfg.AuthConfig.KratosURL,
+			URL: cfg.AuthConfig.AuthURL,
 		},
 	}
 
 	adminConfig := kratos.NewConfiguration()
 	adminConfig.Servers = []kratos.ServerConfiguration{
 		{
-			URL: cfg.AuthConfig.KratosAdminURL,
+			URL: cfg.AuthConfig.AuthAdminURL,
 		},
 	}
 

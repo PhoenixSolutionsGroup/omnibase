@@ -21,11 +21,11 @@ type TenantsService struct {
 }
 
 func NewTenantsService(db *gorm.DB, cfg *config.Config) *TenantsService {
-	logger.Logger.Info("Initializing tenants service", "kratosURL", cfg.AuthConfig.KratosURL)
+	logger.Logger.Info("Initializing tenants service", "kratosURL", cfg.AuthConfig.AuthURL)
 
 	kratos := client.NewConfiguration()
 	kratos.Servers = client.ServerConfigurations{{
-		URL: cfg.AuthConfig.KratosURL,
+		URL: cfg.AuthConfig.AuthURL,
 	}}
 
 	kratosClient := client.NewAPIClient(kratos)

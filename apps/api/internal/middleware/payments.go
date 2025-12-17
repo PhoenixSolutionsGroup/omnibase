@@ -19,14 +19,14 @@ type PaymentsMiddleware struct {
 
 func NewPaymentsMiddleware(cfg *config.Config) *PaymentsMiddleware {
 	logger.Logger.Debug("Initializing PaymentsMiddleware",
-		"kratos_url", cfg.AuthConfig.KratosURL,
+		"kratos_url", cfg.AuthConfig.AuthURL,
 	)
 
 	// Public API client for session validation
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
-			URL: cfg.AuthConfig.KratosURL,
+			URL: cfg.AuthConfig.AuthURL,
 		},
 	}
 

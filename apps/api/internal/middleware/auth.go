@@ -56,7 +56,7 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
-			URL: cfg.AuthConfig.KratosURL,
+			URL: cfg.AuthConfig.AuthURL,
 		},
 	}
 
@@ -72,7 +72,7 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 		kratosClient: kratos.NewAPIClient(publicConfig),
 		db:           db,
 		JWTSecret:    JWTSecret,
-		jwksData:     cfg.AuthConfig.KratosJWTJWKS,
+		jwksData:     cfg.AuthConfig.AuthJWTJWKS,
 	}
 }
 
@@ -84,7 +84,11 @@ func (m *AuthMiddleware) validateSessionWithCookie(ctx context.Context, cookieHe
 	session, res, err := toSessionReq.Execute()
 
 	if err != nil {
-		logger.Logger.Error("Error validating session with cookie", "error", err, "http_status", res.StatusCode)
+		if res != nil {
+			logger.Logger.Error("Error validating session with cookie", "error", err, "http_status", res.StatusCode)
+		} else {
+			logger.Logger.Error("Error validating session with cookie", "error", err, "http_status", "no_response")
+		}
 		return nil, fmt.Errorf("invalid or expired session: %w", err)
 	}
 
@@ -102,7 +106,7 @@ func (m *AuthMiddleware) validateSessionWithJWT(ctx context.Context, sessionToke
 
 	// Parse JWKS
 	if m.jwksData == "" {
-		return nil, fmt.Errorf("KRATOS_JWT_JWKS not configured")
+		return nil, fmt.Errorf("AUTH_JWT_JWKS not configured")
 	}
 
 	var jwks JWKS
