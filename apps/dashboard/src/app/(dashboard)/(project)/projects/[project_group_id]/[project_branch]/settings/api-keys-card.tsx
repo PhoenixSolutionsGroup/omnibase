@@ -17,88 +17,129 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Eye, EyeOff, Copy, Check, RotateCw } from "lucide-react";
+import { Eye, EyeOff, Loader2, RotateCw } from "lucide-react";
+import { toast } from "sonner";
+import { fetchProjectSecretKey, fetchAPIServiceKey } from "../settings/actions";
+import { Project } from "../dashboard/project-provisioning-dashboard";
 
 interface ApiKeysCardProps {
-  anonKey: string | null;
-  projectId: string;
-  onFetchSecretKey: (projectId: string) => Promise<{
-    success: boolean;
-    serviceKey?: string;
-    error?: string;
-  }>;
+  project: Project;
   onRotateKeys: (projectId: string) => Promise<{
     success: boolean;
     anonKey?: string;
-    serviceKey?: string;
     error?: string;
   }>;
 }
 
-export function ApiKeysCard({
-  anonKey,
-  projectId,
-  onFetchSecretKey,
-  onRotateKeys,
-}: ApiKeysCardProps) {
-  const [currentAnonKey, setCurrentAnonKey] = useState<string | null>(anonKey);
-  const [serviceKey, setServiceKey] = useState<string | null>(null);
-  const [isLoadingKey, setIsLoadingKey] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showServiceKey, setShowServiceKey] = useState(false);
-  const [copiedAnon, setCopiedAnon] = useState(false);
-  const [copiedService, setCopiedService] = useState(false);
+interface KeyItem {
+  label: string;
+  value: string | null | undefined;
+  sensitive?: boolean;
+  encryptedField?: "db_service_key" | "api_service_key";
+}
+
+export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
+  const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(
+    new Set()
+  );
+  const [decryptedValues, setDecryptedValues] = useState<Map<string, string>>(
+    new Map()
+  );
+  const [loadingSecrets, setLoadingSecrets] = useState<Set<string>>(new Set());
+  const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const [isRotateModalOpen, setIsRotateModalOpen] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const [rotateError, setRotateError] = useState<string | null>(null);
 
-  const handleViewSecretKey = async () => {
-    if (serviceKey) {
-      setShowServiceKey(!showServiceKey);
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied to clipboard`);
+  };
+
+  const toggleReveal = async (key: string, encryptedField?: string) => {
+    const isCurrentlyRevealed = revealedSecrets.has(key);
+
+    // If hiding, just remove from revealed set
+    if (isCurrentlyRevealed) {
+      setRevealedSecrets((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
       return;
     }
 
-    setIsLoadingKey(true);
-    setError(null);
+    // If revealing and we already have the decrypted value, just show it
+    if (decryptedValues.has(key)) {
+      setRevealedSecrets((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(key);
+        return newSet;
+      });
+      return;
+    }
+
+    // Otherwise, fetch the decrypted value from the backend
+    if (!encryptedField) {
+      return;
+    }
+
+    setLoadingSecrets((prev) => new Set(prev).add(key));
+    setErrors((prev) => {
+      const newMap = new Map(prev);
+      newMap.delete(key);
+      return newMap;
+    });
 
     try {
-      const result = await onFetchSecretKey(projectId);
-
-      if (result.success && result.serviceKey) {
-        setServiceKey(result.serviceKey);
-        setShowServiceKey(true);
-      } else {
-        setError(result.error || "Failed to fetch secret key");
+      let result:
+        | {
+            success: boolean;
+            error?: string;
+            serviceKey?: string;
+            apiServiceKey?: string;
+          }
+        | undefined;
+      switch (encryptedField) {
+        case "db_service_key":
+          result = await fetchProjectSecretKey(project.id);
+          if (result?.success && result.serviceKey) {
+            setDecryptedValues((prev) =>
+              new Map(prev).set(key, result!.serviceKey!)
+            );
+          }
+          break;
+        case "api_service_key":
+          result = await fetchAPIServiceKey(project.id);
+          if (result?.success && result.apiServiceKey) {
+            setDecryptedValues((prev) =>
+              new Map(prev).set(key, result!.apiServiceKey!)
+            );
+          }
+          break;
       }
-    } catch (err) {
-      setError("An unexpected error occurred");
+
+      if (result && result.success) {
+        setRevealedSecrets((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(key);
+          return newSet;
+        });
+      } else if (result && result.error) {
+        setErrors((prev) => new Map(prev).set(key, result.error!));
+        toast.error(result.error);
+      }
+    } catch (error) {
+      const errorMessage = "Failed to decrypt secret";
+      setErrors((prev) => new Map(prev).set(key, errorMessage));
+      toast.error(errorMessage);
     } finally {
-      setIsLoadingKey(false);
+      setLoadingSecrets((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
     }
-  };
-
-  const copyToClipboard = async (text: string, isService: boolean) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      if (isService) {
-        setCopiedService(true);
-        setTimeout(() => setCopiedService(false), 2000);
-      } else {
-        setCopiedAnon(true);
-        setTimeout(() => setCopiedAnon(false), 2000);
-      }
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
-
-  const maskKey = (key: string) => {
-    if (key.length <= 20) return "•".repeat(key.length);
-    return (
-      key.substring(0, 10) +
-      "•".repeat(key.length - 20) +
-      key.substring(key.length - 10)
-    );
   };
 
   const handleRotateKeys = async () => {
@@ -106,13 +147,16 @@ export function ApiKeysCard({
     setRotateError(null);
 
     try {
-      const result = await onRotateKeys(projectId);
+      const result = await onRotateKeys(project.id);
 
-      if (result.success && result.anonKey && result.serviceKey) {
-        setCurrentAnonKey(result.anonKey);
-        setServiceKey(result.serviceKey);
-        setShowServiceKey(true);
+      if (result.success && result.anonKey) {
+        toast.success("Keys rotated successfully");
         setIsRotateModalOpen(false);
+        // Clear decrypted values and revealed secrets to force refetch
+        setDecryptedValues(new Map());
+        setRevealedSecrets(new Set());
+        // Refresh the page to show new keys
+        window.location.reload();
       } else {
         setRotateError(result.error || "Failed to rotate keys");
       }
@@ -123,6 +167,22 @@ export function ApiKeysCard({
     }
   };
 
+  const keys: KeyItem[] = [
+    { label: "Anon Key", value: project.database_anon_key },
+    {
+      label: "Database Service Key",
+      value: project.database_service_key_encrypted,
+      sensitive: true,
+      encryptedField: "db_service_key",
+    },
+    {
+      label: "API Service Key",
+      value: project.api_service_key_encrypted,
+      sensitive: true,
+      encryptedField: "api_service_key",
+    },
+  ];
+
   return (
     <>
       <Card>
@@ -131,7 +191,7 @@ export function ApiKeysCard({
             <div>
               <CardTitle>API Keys</CardTitle>
               <CardDescription>
-                Manage your project's API keys for accessing the database
+                Manage and rotate your project's API keys
               </CardDescription>
             </div>
             <button
@@ -143,94 +203,83 @@ export function ApiKeysCard({
             </button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Anon Key */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Anon Key (Public)</label>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm break-all">
-                {currentAnonKey || "Not yet provisioned"}
-              </div>
-              {currentAnonKey && (
-                <button
-                  onClick={() => copyToClipboard(currentAnonKey, false)}
-                  className="rounded-md border px-3 py-2 hover:bg-accent transition-colors"
-                  title="Copy to clipboard"
-                >
-                  {copiedAnon ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              This key is safe to use in a browser if you have enabled Row Level
-              Security for your tables and configured policies.
-            </p>
-          </div>
+        <CardContent>
+          <div className="space-y-4">
+            {keys.map((item) => {
+              const secretKey = item.label;
+              const isRevealed = revealedSecrets.has(secretKey);
+              const isLoading = loadingSecrets.has(secretKey);
+              const error = errors.get(secretKey);
+              const decryptedValue = decryptedValues.get(secretKey);
 
-          {/* Service Key */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">
-                Service Key (Secret)
-              </label>
-              <button
-                onClick={handleViewSecretKey}
-                disabled={isLoadingKey}
-                className="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-accent transition-colors disabled:opacity-50"
-              >
-                {isLoadingKey ? (
-                  "Loading..."
-                ) : showServiceKey ? (
-                  <>
-                    <EyeOff className="h-4 w-4" />
-                    Hide
-                  </>
-                ) : (
-                  <>
-                    <Eye className="h-4 w-4" />
-                    View
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm break-all">
-                {error ? (
-                  <span className="text-destructive">{error}</span>
-                ) : serviceKey ? (
-                  showServiceKey ? (
-                    serviceKey
-                  ) : (
-                    maskKey(serviceKey)
-                  )
-                ) : (
-                  "Click 'View' to reveal the secret key"
-                )}
-              </div>
-              {serviceKey && showServiceKey && (
-                <button
-                  onClick={() => copyToClipboard(serviceKey, true)}
-                  className="rounded-md border px-3 py-2 hover:bg-accent transition-colors"
-                  title="Copy to clipboard"
+              // Determine what value to display
+              let displayValue = item.value;
+              if (item.sensitive && item.value) {
+                if (isLoading) {
+                  displayValue = "Decrypting...";
+                } else if (error) {
+                  displayValue = `Error: ${error}`;
+                } else if (isRevealed && decryptedValue) {
+                  displayValue = decryptedValue;
+                } else if (!isRevealed) {
+                  displayValue = "••••••••••••••••";
+                }
+              }
+
+              return (
+                <div
+                  key={item.label}
+                  className="flex items-start justify-between gap-4 rounded-lg border p-3"
                 >
-                  {copiedService ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </button>
-              )}
-            </div>
-            <p className="text-xs text-destructive">
-              This key has the ability to bypass Row Level Security. Never share
-              it publicly.
-            </p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {item.label}
+                    </p>
+                    <p
+                      className={`mt-1 font-mono text-sm break-all ${
+                        error ? "text-destructive" : ""
+                      }`}
+                    >
+                      {displayValue || "Not yet provisioned"}
+                    </p>
+                  </div>
+                  <div className="flex flex-shrink-0 gap-2">
+                    {item.sensitive && item.value && (
+                      <button
+                        onClick={() =>
+                          toggleReveal(secretKey, item.encryptedField)
+                        }
+                        disabled={isLoading}
+                        className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={isRevealed ? "Hide" : "Reveal"}
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : isRevealed ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
+                    <button
+                      onClick={() =>
+                        handleCopy(
+                          item.sensitive && isRevealed && decryptedValue
+                            ? decryptedValue
+                            : item.value || "",
+                          item.label
+                        )
+                      }
+                      disabled={item.sensitive && !isRevealed}
+                      className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

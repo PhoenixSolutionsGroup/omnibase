@@ -11,114 +11,151 @@ export type Database = {
     Tables: {
       projects: {
         Row: {
-          anon_key: string | null
+          api_service_key_encrypted: string | null
           api_url: string | null
           auth_admin_url: string | null
           auth_public_url: string | null
-          branch_name: string | null
-          cloud_run_service_names: string[] | null
+          branch_name: string
+          cloud_run_service_resource_names: Json | null
+          compute_provider: string | null
           created_at: string
+          database_anon_key: string | null
+          database_connection_string_encrypted: string | null
           database_host: string | null
           database_name: string | null
-          database_password: string | null
-          database_pooler_host: string | null
-          database_port: string | null
+          database_password_encrypted: string | null
+          database_port: number | null
+          database_provider: string | null
+          database_service_key_encrypted: string | null
           database_username: string | null
+          dedicated_vps_id: string | null
+          email_provider: string | null
           error_message: string | null
           id: string
-          is_default_branch: boolean | null
-          keto_read_url: string | null
-          keto_write_url: string | null
+          is_default_branch: boolean
+          last_activity_at: string | null
           name: string
           neon_project_id: string | null
+          permissions_read_url: string | null
+          permissions_write_url: string | null
           postgrest_url: string | null
           postmark_server_id: string | null
-          postmark_server_token: string | null
+          postmark_server_token_encrypted: string | null
           project_group_id: string
-          r2_bucket_name: string | null
-          region: string
-          service_key: string | null
-          stage: Database["public"]["Enums"]["project_stage"]
+          provisioning_type:
+            | Database["public"]["Enums"]["provisioning_type"]
+            | null
+          status: Database["public"]["Enums"]["project_status"]
+          storage_bucket_name: string | null
+          storage_provider: string | null
           stripe_customer_id: string | null
-          stripe_onboarding_complete: boolean | null
+          stripe_onboarding_complete: boolean
+          suspension_reason: string | null
           tenant_id: string
-          type_gen_url: string | null
           updated_at: string
+          vps_host_id: string | null
           worker_url: string | null
         }
         Insert: {
-          anon_key?: string | null
+          api_service_key_encrypted?: string | null
           api_url?: string | null
           auth_admin_url?: string | null
           auth_public_url?: string | null
-          branch_name?: string | null
-          cloud_run_service_names?: string[] | null
+          branch_name: string
+          cloud_run_service_resource_names?: Json | null
+          compute_provider?: string | null
           created_at?: string
+          database_anon_key?: string | null
+          database_connection_string_encrypted?: string | null
           database_host?: string | null
           database_name?: string | null
-          database_password?: string | null
-          database_pooler_host?: string | null
-          database_port?: string | null
+          database_password_encrypted?: string | null
+          database_port?: number | null
+          database_provider?: string | null
+          database_service_key_encrypted?: string | null
           database_username?: string | null
+          dedicated_vps_id?: string | null
+          email_provider?: string | null
           error_message?: string | null
-          id: string
-          is_default_branch?: boolean | null
-          keto_read_url?: string | null
-          keto_write_url?: string | null
+          id?: string
+          is_default_branch?: boolean
+          last_activity_at?: string | null
           name: string
           neon_project_id?: string | null
+          permissions_read_url?: string | null
+          permissions_write_url?: string | null
           postgrest_url?: string | null
           postmark_server_id?: string | null
-          postmark_server_token?: string | null
+          postmark_server_token_encrypted?: string | null
           project_group_id: string
-          r2_bucket_name?: string | null
-          region: string
-          service_key?: string | null
-          stage?: Database["public"]["Enums"]["project_stage"]
+          provisioning_type?:
+            | Database["public"]["Enums"]["provisioning_type"]
+            | null
+          status?: Database["public"]["Enums"]["project_status"]
+          storage_bucket_name?: string | null
+          storage_provider?: string | null
           stripe_customer_id?: string | null
-          stripe_onboarding_complete?: boolean | null
+          stripe_onboarding_complete?: boolean
+          suspension_reason?: string | null
           tenant_id: string
-          type_gen_url?: string | null
           updated_at?: string
+          vps_host_id?: string | null
           worker_url?: string | null
         }
         Update: {
-          anon_key?: string | null
+          api_service_key_encrypted?: string | null
           api_url?: string | null
           auth_admin_url?: string | null
           auth_public_url?: string | null
-          branch_name?: string | null
-          cloud_run_service_names?: string[] | null
+          branch_name?: string
+          cloud_run_service_resource_names?: Json | null
+          compute_provider?: string | null
           created_at?: string
+          database_anon_key?: string | null
+          database_connection_string_encrypted?: string | null
           database_host?: string | null
           database_name?: string | null
-          database_password?: string | null
-          database_pooler_host?: string | null
-          database_port?: string | null
+          database_password_encrypted?: string | null
+          database_port?: number | null
+          database_provider?: string | null
+          database_service_key_encrypted?: string | null
           database_username?: string | null
+          dedicated_vps_id?: string | null
+          email_provider?: string | null
           error_message?: string | null
           id?: string
-          is_default_branch?: boolean | null
-          keto_read_url?: string | null
-          keto_write_url?: string | null
+          is_default_branch?: boolean
+          last_activity_at?: string | null
           name?: string
           neon_project_id?: string | null
+          permissions_read_url?: string | null
+          permissions_write_url?: string | null
           postgrest_url?: string | null
           postmark_server_id?: string | null
-          postmark_server_token?: string | null
+          postmark_server_token_encrypted?: string | null
           project_group_id?: string
-          r2_bucket_name?: string | null
-          region?: string
-          service_key?: string | null
-          stage?: Database["public"]["Enums"]["project_stage"]
+          provisioning_type?:
+            | Database["public"]["Enums"]["provisioning_type"]
+            | null
+          status?: Database["public"]["Enums"]["project_status"]
+          storage_bucket_name?: string | null
+          storage_provider?: string | null
           stripe_customer_id?: string | null
-          stripe_onboarding_complete?: boolean | null
+          stripe_onboarding_complete?: boolean
+          suspension_reason?: string | null
           tenant_id?: string
-          type_gen_url?: string | null
           updated_at?: string
+          vps_host_id?: string | null
           worker_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_vps_host_id_fkey"
+            columns: ["vps_host_id"]
+            referencedRelation: "vps_hosts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       schema_migrations: {
         Row: {
@@ -138,6 +175,9 @@ export type Database = {
       usage_metrics: {
         Row: {
           cloudrun_billable_time_seconds: number | null
+          cloudrun_memory_gb_seconds: number
+          cloudrun_requests: number
+          cloudrun_vcpu_seconds: number
           created_at: string | null
           db_compute_hours: number | null
           db_storage_gb: number | null
@@ -155,6 +195,9 @@ export type Database = {
         }
         Insert: {
           cloudrun_billable_time_seconds?: number | null
+          cloudrun_memory_gb_seconds?: number
+          cloudrun_requests?: number
+          cloudrun_vcpu_seconds?: number
           created_at?: string | null
           db_compute_hours?: number | null
           db_storage_gb?: number | null
@@ -172,6 +215,9 @@ export type Database = {
         }
         Update: {
           cloudrun_billable_time_seconds?: number | null
+          cloudrun_memory_gb_seconds?: number
+          cloudrun_requests?: number
+          cloudrun_vcpu_seconds?: number
           created_at?: string | null
           db_compute_hours?: number | null
           db_storage_gb?: number | null
@@ -187,14 +233,70 @@ export type Database = {
           workers_cpu_ms?: number | null
           workers_requests?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "usage_metrics_project_id_fkey"
-            columns: ["project_id"]
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      vps_hosts: {
+        Row: {
+          created_at: string | null
+          current_tenants: number
+          health_check_url: string | null
+          id: string
+          ip_address: string
+          last_health_check: string | null
+          max_tenants: number
+          memory_gb: number
+          name: string
+          provider: Database["public"]["Enums"]["vps_provider"]
+          provider_server_id: string
+          region: string
+          ssh_port: number | null
+          status: Database["public"]["Enums"]["vps_status"]
+          storage_gb: number
+          tier: Database["public"]["Enums"]["vps_tier"]
+          updated_at: string | null
+          vcpus: number
+        }
+        Insert: {
+          created_at?: string | null
+          current_tenants?: number
+          health_check_url?: string | null
+          id?: string
+          ip_address: string
+          last_health_check?: string | null
+          max_tenants?: number
+          memory_gb: number
+          name: string
+          provider: Database["public"]["Enums"]["vps_provider"]
+          provider_server_id: string
+          region: string
+          ssh_port?: number | null
+          status?: Database["public"]["Enums"]["vps_status"]
+          storage_gb: number
+          tier: Database["public"]["Enums"]["vps_tier"]
+          updated_at?: string | null
+          vcpus: number
+        }
+        Update: {
+          created_at?: string | null
+          current_tenants?: number
+          health_check_url?: string | null
+          id?: string
+          ip_address?: string
+          last_health_check?: string | null
+          max_tenants?: number
+          memory_gb?: number
+          name?: string
+          provider?: Database["public"]["Enums"]["vps_provider"]
+          provider_server_id?: string
+          region?: string
+          ssh_port?: number | null
+          status?: Database["public"]["Enums"]["vps_status"]
+          storage_gb?: number
+          tier?: Database["public"]["Enums"]["vps_tier"]
+          updated_at?: string | null
+          vcpus?: number
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -233,6 +335,18 @@ export type Database = {
         | "error"
         | "deleting"
         | "deletion_failed"
+      project_status:
+        | "provisioning"
+        | "active"
+        | "suspended"
+        | "failed"
+        | "deleting"
+        | "deleted"
+      provisioning_type: "serverless" | "vps_shared" | "vps_dedicated"
+      subscription_tier: "free" | "starter" | "payg" | "pro" | "enterprise"
+      vps_provider: "hetzner" | "gcp" | "aws"
+      vps_status: "active" | "full" | "maintenance" | "decommissioned"
+      vps_tier: "shared_free" | "dedicated" | "shared_starter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -371,6 +485,19 @@ export const Constants = {
         "deleting",
         "deletion_failed",
       ],
+      project_status: [
+        "provisioning",
+        "active",
+        "suspended",
+        "failed",
+        "deleting",
+        "deleted",
+      ],
+      provisioning_type: ["serverless", "vps_shared", "vps_dedicated"],
+      subscription_tier: ["free", "starter", "payg", "pro", "enterprise"],
+      vps_provider: ["hetzner", "gcp", "aws"],
+      vps_status: ["active", "full", "maintenance", "decommissioned"],
+      vps_tier: ["shared_free", "dedicated", "shared_starter"],
     },
   },
 } as const

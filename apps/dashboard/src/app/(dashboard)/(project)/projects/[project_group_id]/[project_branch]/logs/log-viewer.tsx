@@ -8,8 +8,15 @@ interface Log {
   timestamp: string;
   message?: string;
   severity?: string;
-  [key: string]: any;
+  source?: string;
+  service_type?: string;
+  labels?: Record<string, string>;
+  metadata?: Record<string, any>;
 }
+
+const MANAGED_HOSTING_API_URL = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
+if (!MANAGED_HOSTING_API_URL)
+  throw new Error("NEXT_PUBLIC_MANAGED_HOSTING_API_URL must be set");
 
 // GCP Cloud Logging severity levels with subtle styling
 const getSeverityBadge = (severity?: string) => {
@@ -70,7 +77,7 @@ const getSeverityBadge = (severity?: string) => {
 interface LogViewerProps {
   initialLogs: Log[];
   projectId: string;
-  serviceName: string;
+  serviceType: string;
   totalCount: number;
   limit: number;
 }
@@ -78,14 +85,20 @@ interface LogViewerProps {
 export function LogViewer({
   initialLogs,
   projectId,
-  serviceName,
+  serviceType,
   totalCount,
   limit,
 }: LogViewerProps) {
-  const [logs, setLogs] = useState<Log[]>(initialLogs);
+  // Sort logs newest first on initial load
+  const [logs, setLogs] = useState<Log[]>(
+    [...initialLogs].sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+  );
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(initialLogs.length < totalCount);
+  const [hasMore, setHasMore] = useState(true); // Always show button initially
 
   const toggleRow = (index: number) => {
     setExpandedRows((prev) => {
@@ -100,26 +113,42 @@ export function LogViewer({
   };
 
   const loadMoreLogs = async () => {
-    if (loading) return;
+    if (loading || logs.length === 0) return;
 
     setLoading(true);
     try {
       const oldestLog = logs[logs.length - 1];
+      const oldestTimestamp = new Date(oldestLog.timestamp);
+
+      // Use the oldest log timestamp as end_time (backend will exclude it)
+      const endTime = oldestTimestamp.toISOString();
+
       const url = new URL(
-        `/api/projects/${projectId}/logs`,
+        `${MANAGED_HOSTING_API_URL}/api/v1/projects/${projectId}/logs`,
         window.location.origin
       );
-      url.searchParams.set("service", "cloud_run");
-      url.searchParams.set("cloud_run_service", serviceName);
+      url.searchParams.set("service_type", serviceType);
       url.searchParams.set("limit", limit.toString());
-      url.searchParams.set("before", oldestLog.timestamp);
+      url.searchParams.set("end_time", endTime);
+      // Don't use tail=true for historical logs - we want older logs, not newest
 
-      const response = await fetch(url.toString());
+      console.log("Loading older logs before:", endTime);
+
+      const response = await fetch(url.toString(), {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
+        console.log("Load more response:", data);
         if (data.logs && data.logs.length > 0) {
-          setLogs((prev) => [...prev, ...data.logs]);
+          // Sort and append older logs
+          const sortedOlderLogs = [...data.logs].sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
+          setLogs((prev) => [...prev, ...sortedOlderLogs]);
           setHasMore(data.logs.length >= limit);
+          console.log("Added", sortedOlderLogs.length, "older logs");
         } else {
           setHasMore(false);
         }
@@ -132,22 +161,35 @@ export function LogViewer({
   };
 
   const checkNewLogs = async () => {
+    if (logs.length === 0) return;
+
     try {
       const newestLog = logs[0];
+      const newestTimestamp = new Date(newestLog.timestamp);
+
+      // Add 1 millisecond to exclude the newest log we already have
+      const startTime = new Date(newestTimestamp.getTime() + 1).toISOString();
+
       const url = new URL(
-        `/api/projects/${projectId}/logs`,
+        `${MANAGED_HOSTING_API_URL}/api/v1/projects/${projectId}/logs`,
         window.location.origin
       );
-      url.searchParams.set("service", "cloud_run");
-      url.searchParams.set("cloud_run_service", serviceName);
+      url.searchParams.set("service_type", serviceType);
       url.searchParams.set("limit", "20");
-      url.searchParams.set("after", newestLog.timestamp);
+      url.searchParams.set("start_time", startTime);
+      url.searchParams.set("tail", "true");
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         if (data.logs && data.logs.length > 0) {
-          setLogs((prev) => [...data.logs, ...prev]);
+          const sortedNewLogs = [...data.logs].sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
+          setLogs((prev) => [...sortedNewLogs, ...prev]);
         }
       }
     } catch (error) {
@@ -164,7 +206,7 @@ export function LogViewer({
     }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
-  }, [logs, projectId, serviceName]);
+  }, [logs, projectId, serviceType]);
 
   const formatTimestamp = (timestamp: string) => {
     try {
@@ -192,7 +234,7 @@ export function LogViewer({
               <th className="px-0 py-2 text-left text-sm font-medium">
                 Severity
               </th>
-              <th className="px-3 py-2 text-left text-sm font-medium w-48">
+              <th className="px-3 py-2 text-left text-sm font-medium w-56">
                 Timestamp
               </th>
               <th className="px-4 py-3 text-left text-sm font-medium">
@@ -202,51 +244,51 @@ export function LogViewer({
           </thead>
           <tbody className="divide-y">
             {logs.map((log, index) => (
-              <tr key={index}>
-                <td colSpan={3} className="p-0">
-                  <button
-                    onClick={() => toggleRow(index)}
-                    className="w-full text-left hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 px-4 py-2">
-                      <div className="flex-shrink-0">
-                        {expandedRows.has(index) ? (
-                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="flex-shrink-0 w-20">
-                        {getSeverityBadge(log.severity)}
-                      </div>
-                      <div className="flex-shrink-0 w-48">
-                        <span className="text-sm text-muted-foreground font-mono">
-                          {formatTimestamp(log.timestamp)}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-mono truncate block">
-                          {log.message || "(no message)"}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                  {expandedRows.has(index) && (
-                    <div className="px-4 pb-3 bg-muted/30">
+              <>
+                <tr key={index} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-4 py-2 w-8">
+                    <button
+                      onClick={() => toggleRow(index)}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      {expandedRows.has(index) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
+                  </td>
+                  <td className="px-0 py-2">
+                    {getSeverityBadge(log.severity)}
+                  </td>
+                  <td className="px-3 py-2 w-56">
+                    <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
+                      {formatTimestamp(log.timestamp)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="text-sm font-mono truncate block">
+                      {log.message || "(no message)"}
+                    </span>
+                  </td>
+                </tr>
+                {expandedRows.has(index) && (
+                  <tr key={`${index}-expanded`}>
+                    <td colSpan={4} className="px-4 pb-3 bg-muted/30">
                       <pre className="text-xs font-mono bg-muted text-foreground p-4 rounded overflow-x-auto border">
                         {JSON.stringify(log, null, 2)}
                       </pre>
-                    </div>
-                  )}
-                </td>
-              </tr>
+                    </td>
+                  </tr>
+                )}
+              </>
             ))}
           </tbody>
         </table>
       </div>
 
       {/* Load More Button */}
-      {logs.length > 0 && (
+      {logs.length > 0 && hasMore && (
         <div className="px-4 py-3 border-t flex justify-center">
           <Button
             onClick={loadMoreLogs}

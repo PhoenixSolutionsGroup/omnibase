@@ -24,7 +24,6 @@ async function createCustomerPortal() {
     },
   });
 
-  console.log(portal);
   if (!portal?.url) return;
   redirect(portal.url);
 }
@@ -64,7 +63,11 @@ export default async function Page() {
 
   const { data: subscriptions } = await tenants.listTenantSubscriptions();
 
-  const active_subscription_id = subscriptions?.[0].configPriceId;
+  let active_subscription_id = undefined;
+
+  if (subscriptions && subscriptions?.length > 0) {
+    active_subscription_id = subscriptions[0].configPriceId;
+  }
 
   return (
     <div className="my-8 mx-16">

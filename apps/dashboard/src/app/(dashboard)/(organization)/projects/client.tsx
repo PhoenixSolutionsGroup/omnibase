@@ -10,13 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CreateProjectModal } from "@/components/create-project-modal";
 import { useState } from "react";
 
 interface Project {
   id: string;
   name: string;
-  region: string;
+  provisioning_type: string | null;
   created_at: string;
 }
 
@@ -25,7 +24,6 @@ interface ProjectsClientProps {
 }
 
 export function ProjectsClient({ projects }: ProjectsClientProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
   const formatDate = (dateString: string) => {
@@ -56,7 +54,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
               </p>
             </div>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => router.push("/projects/new")}
               className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="h-4 w-4" />
@@ -70,7 +68,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Project Name</TableHead>
-                  <TableHead>Region</TableHead>
+                  <TableHead>Provisioning Type</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -93,7 +91,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {project.region}
+                      {project.provisioning_type || "-"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatDate(project.created_at)}
@@ -103,7 +101,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                         className="text-sm text-muted-foreground hover:text-foreground"
                         onClick={(e) => {
                           e.stopPropagation();
-                          router.push(`/projects/${project.id}/dashboard`);
+                          router.push(`/projects/${project.id}/main/dashboard`);
                         }}
                       >
                         View →
@@ -116,8 +114,6 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
           </div>
         </div>
       </div>
-
-      <CreateProjectModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }

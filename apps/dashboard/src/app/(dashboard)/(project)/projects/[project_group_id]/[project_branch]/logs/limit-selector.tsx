@@ -27,7 +27,7 @@ export function LimitSelector({
       <Select
         value={currentLimit.toString()}
         onValueChange={(value) => {
-          window.location.href = `/projects/${project_group_id}/${project_branch}/logs?logs=${activeService}&limit=${value}`;
+          window.location.href = `/projects/${project_group_id}/${project_branch}/logs?service_type=${activeService}&limit=${value}`;
         }}
       >
         <SelectTrigger className="w-[100px]">

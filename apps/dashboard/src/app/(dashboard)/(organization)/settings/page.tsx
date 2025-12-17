@@ -1,7 +1,9 @@
 import { createTenantsServerClient } from "@/lib/server";
-import { TenantUser, UserViewer } from "@omnibase/shadcn";
+import { UserViewer } from "@omnibase/shadcn";
 import React from "react";
 import { DeleteSection } from "./delete-section";
+import { APIKeysSection } from "./api-keys-section";
+import { listAPIKeys } from "./actions";
 
 async function removeUser(user_id: string) {
   "use server";
@@ -42,17 +44,30 @@ export default async function page() {
     throw new Error("Failed to fetch roles");
   }
 
+  // Fetch API keys
+  const apiKeysResponse = await listAPIKeys();
+
   return (
-    <div className="flex h-full w-full flex-col items-center my-8 gap-y-8">
-      <UserViewer
-        availableRoles={roles.roles.map((r) => r.roleName!)}
-        // users={users}
-        users={[]}
-        canEditUsers={true}
-        onRemoveUser={removeUser}
-        onRoleUpdate={updateUserRole}
-      />
-      <DeleteSection onDeleteTenant={deleteTenantAction} />
+    <div className="flex h-full w-full flex-col items-center my-8 gap-y-8 max-w-5xl mx-auto px-4">
+      <div className="w-full">
+        <UserViewer
+          availableRoles={roles.roles.map((r) => r.roleName!)}
+          // users={users}
+          users={[]}
+          canEditUsers={true}
+          onRemoveUser={removeUser}
+          onRoleUpdate={updateUserRole}
+        />
+      </div>
+      <div className="w-full">
+        <APIKeysSection
+          initialKeys={apiKeysResponse.api_keys}
+          hasPermission={apiKeysResponse.hasPermission}
+        />
+      </div>
+      <div className="w-full">
+        <DeleteSection onDeleteTenant={deleteTenantAction} />
+      </div>
     </div>
   );
 }

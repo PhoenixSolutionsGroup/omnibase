@@ -1,4 +1,3 @@
-import { createServerClient } from "@/lib/server";
 import { notFound } from "next/navigation";
 import { ProjectDashboardClient } from "./client";
 import { ProjectProvisioningDashboard } from "./project-provisioning-dashboard";
@@ -23,12 +22,12 @@ export default async function ProjectDashboardPage({
   }
 
   // If project is provisioning, show the provisioning dashboard
-  if (project.stage === "provisioning") {
+  if (project.status === "provisioning") {
     return <ProjectProvisioningDashboard project={project} />;
   }
 
   // If project is in error state, show error
-  if (project.stage === "error") {
+  if (project.status === "failed") {
     return (
       <div className="flex h-full flex-col items-center justify-center">
         <div className="mx-auto max-w-md space-y-6 text-center">

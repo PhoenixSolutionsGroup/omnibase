@@ -404,6 +404,24 @@
           }
         }
       ]
+    },
+     {
+      "id": "payg_plan",
+      "name": "PAYG Plan",
+      "description": "For professional teams - 50 projects, unlimited members, priority support, advanced features",
+      "type": "service",
+      "prices": [
+        {
+          "id": "payg",
+          "amount": 0,
+          "currency": "usd",
+          "interval": "month",
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "per month"            
+          }
+        }
+      ]
     }
   ]
 }

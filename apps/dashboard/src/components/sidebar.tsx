@@ -14,6 +14,7 @@ import {
   Users,
   ChevronDown,
   ChevronRight,
+  Wrench,
 } from "lucide-react";
 import { ProjectDropdown } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
@@ -31,7 +32,6 @@ interface ProjectContext {
   projectName: string;
   branches: string[];
   projects?: Project[];
-  onCreateBranch?: () => void;
   onCreateProject?: () => void;
 }
 
@@ -50,6 +50,11 @@ const getProjectNavigationItems = (
     icon: LayoutDashboard,
   },
   {
+    title: "Configuration",
+    href: `/projects/${projectGroupId}/${projectBranch}/configuration`,
+    icon: Wrench,
+  },
+  {
     title: "Logs",
     href: `/projects/${projectGroupId}/${projectBranch}/logs`,
     icon: ScrollText,
@@ -60,7 +65,7 @@ const getProjectNavigationItems = (
     icon: BarChart3,
   },
   {
-    title: "Stripe Settings",
+    title: "Stripe",
     href: `/projects/${projectGroupId}/${projectBranch}/stripe-settings`,
     icon: CreditCard,
   },
@@ -138,7 +143,7 @@ export function UnifiedSidebar({
               <BranchDropdown
                 currentBranch={projectContext.projectBranch}
                 branches={projectContext.branches}
-                onCreateBranch={projectContext.onCreateBranch}
+                projectGroupId={projectContext.projectGroupId}
               />
 
               {/* Branch Navigation Items */}

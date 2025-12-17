@@ -7,7 +7,7 @@ export default async function ProjectsPage() {
   // Query the projects table
   const { data: projects, error } = await db
     .from("projects")
-    .select("id, name, region, created_at")
+    .select("id, name, provisioning_type, created_at")
     .eq("branch_name", "main")
     .order("created_at", { ascending: false });
 
@@ -21,7 +21,7 @@ export default async function ProjectsPage() {
   const formattedProjects = (projects || []).map((project) => ({
     id: project.id,
     name: project.name,
-    region: project.region,
+    provisioning_type: project.provisioning_type,
     created_at: project.created_at,
   }));
 

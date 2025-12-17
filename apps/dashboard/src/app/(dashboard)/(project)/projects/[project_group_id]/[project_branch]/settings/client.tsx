@@ -19,36 +19,18 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApiKeysCard } from "./api-keys-card";
-
-interface Project {
-  id: string;
-  name: string;
-  tenant_id: string;
-  stage: string;
-  anon_key?: string | null;
-  [key: string]: any;
-}
+import { Project } from "../dashboard/project-provisioning-dashboard";
 
 interface SettingsClientProps {
   project: Project;
-  onFetchSecretKey: (projectId: string) => Promise<{
-    success: boolean;
-    serviceKey?: string;
-    error?: string;
-  }>;
   onRotateKeys: (projectId: string) => Promise<{
     success: boolean;
     anonKey?: string;
-    serviceKey?: string;
     error?: string;
   }>;
 }
 
-export function SettingsClient({
-  project,
-  onFetchSecretKey,
-  onRotateKeys,
-}: SettingsClientProps) {
+export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -95,12 +77,7 @@ export function SettingsClient({
           </div>
 
           {/* API Keys */}
-          <ApiKeysCard
-            anonKey={project.anon_key || null}
-            projectId={project.id}
-            onFetchSecretKey={onFetchSecretKey}
-            onRotateKeys={onRotateKeys}
-          />
+          <ApiKeysCard project={project} onRotateKeys={onRotateKeys} />
 
           {/* Danger Zone */}
           <Card className="border-destructive">

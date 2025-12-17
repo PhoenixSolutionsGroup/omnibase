@@ -1,6 +1,8 @@
 import React from "react";
 import { StripeSettingsClient } from "./client";
 import { getProject } from "@/utils/get-project";
+import { cookies, headers } from "next/headers";
+import Link from "next/link";
 
 export default async function StripeSettingsPage({
   params,
@@ -26,15 +28,36 @@ export default async function StripeSettingsPage({
     );
   }
 
-  if (!project.stripe_customer_id) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Stripe Not Connected</h1>
-        <p className="text-muted-foreground">
-          Please complete Stripe onboarding before accessing these settings.
-        </p>
-      </div>
-    );
+  // Get the onboarding link if not complete
+  let onboardingUrl = "#";
+  if (!project.stripe_onboarding_complete) {
+    const headersList = await headers();
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto");
+    const currentUrl = `${protocol}://${host}/projects/${project_group_id}/${project_branch}/stripe-settings`;
+    const returnTo = encodeURIComponent(currentUrl);
+
+    const cookieStore = await cookies();
+    const cookieHeader = Array.from(cookieStore.getAll())
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
+
+    try {
+      const response = await fetch(
+        `${process.env.MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
+        {
+          headers: {
+            Cookie: cookieHeader,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.url) {
+        onboardingUrl = data.url;
+      }
+    } catch (error) {
+      console.error("Failed to fetch Stripe onboarding link:", error);
+    }
   }
 
   return (
@@ -46,7 +69,11 @@ export default async function StripeSettingsPage({
         </p>
       </div>
 
-      <StripeSettingsClient stripeAccountId={project.stripe_customer_id} />
+      <StripeSettingsClient
+        stripeAccountId={project.stripe_customer_id || ""}
+        isOnboarded={project.stripe_onboarding_complete}
+        onboardingUrl={onboardingUrl}
+      />
     </div>
   );
 }

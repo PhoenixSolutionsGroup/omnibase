@@ -3,24 +3,41 @@
     {
       "role": "owner",
       "permissions": [
+        "tenant#can_update_roles",
         "tenant#can_delete_tenant",
         "tenant#can_invite_user",
         "tenant#can_remove_user",
         "tenant#can_update_user_role",
         "tenant#can_view_users",
         "tenant#can_view_db_secret_key",
-        "tenant#can_rotate_keys"
+        "tenant#can_view_database_password",
+        "tenant#can_view_database_connection_string",
+        "tenant#can_view_postmark_server_token",
+        "tenant#can_rotate_keys",
+        "tenant#can_view_api_service_key",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys",
+        "tenant#can_revoke_api_keys"
       ],
-      "immutable": true
+      "immutable": false
     },
     {
       "role": "admin",
       "permissions": [
         "tenant#can_invite_user",
+        "tenant#can_update_roles",
         "tenant#can_remove_user",
         "tenant#can_update_user_role",
         "tenant#can_view_users",
-        "tenant#can_view_db_secret_key"
+        "tenant#can_view_db_secret_key",
+        "tenant#can_view_database_password",
+        "tenant#can_view_database_connection_string",
+        "tenant#can_view_postmark_server_token",
+        "tenant#can_view_api_service_key",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys",
+        "tenant#can_revoke_api_keys"
+
       ],
       "immutable": false
     },
@@ -29,7 +46,14 @@
       "permissions": [
         "tenant#can_view_users",
         "tenant#can_view_db_secret_key",
-        "tenant#can_rotate_keys"
+        "tenant#can_view_database_password",
+        "tenant#can_view_database_connection_string",
+        "tenant#can_view_postmark_server_token",
+        "tenant#can_rotate_keys",
+        "tenant#can_view_api_service_key",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys",
+        "tenant#can_revoke_api_keys"
       ],
       "immutable": false
     },

@@ -6,6 +6,7 @@ export const getProject = cache(
     const db = await createServerClient();
     const { data: project, error } = await db
       .from("projects")
+      // .select("*, vps_hosts(*)")
       .select("*")
       .eq("project_group_id", projectGroupId)
       .eq("branch_name", projectBranch)

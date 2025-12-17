@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { createServerClient } from "@/lib/server";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getProject } from "@/utils/get-project";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { UnifiedLayoutClient } from "@/components/layout-client";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function ProjectLayout({
   const project = await getProject(project_group_id, project_branch);
 
   if (!project) {
-    notFound();
+    redirect("/projects/new");
   }
 
   const headersList = await headers();
@@ -32,24 +32,24 @@ export default async function ProjectLayout({
   const currentUrl = `${protocol}://${host}/projects/${project_group_id}/${project_branch}/dashboard`;
   const returnTo = encodeURIComponent(currentUrl);
   // Redirect to Stripe onboarding
-  const cookieStore = await cookies();
-  const cookieHeader = Array.from(cookieStore.getAll())
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
+  // const cookieStore = await cookies();
+  // const cookieHeader = Array.from(cookieStore.getAll())
+  //   .map((cookie) => `${cookie.name}=${cookie.value}`)
+  //   .join("; ");
 
-  const response = await fetch(
-    `${process.env.MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
-    {
-      headers: {
-        Cookie: cookieHeader,
-      },
-    }
-  );
-  const data = await response.json();
+  // const response = await fetch(
+  //   `${process.env.MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
+  //   {
+  //     headers: {
+  //       Cookie: cookieHeader,
+  //     },
+  //   }
+  // );
+  // const data = await response.json();
 
-  if (data.onboarding_required && data.url) {
-    redirect(data.url);
-  }
+  // if (data.onboarding_required && data.url) {
+  //   redirect(data.url);
+  // }
 
   const db = await createServerClient();
 

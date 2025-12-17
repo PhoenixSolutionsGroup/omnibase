@@ -1,18 +1,18 @@
+import { createServerClient } from "@/lib/server";
 import { notFound } from "next/navigation";
-import { SettingsClient } from "./client";
 import { getProject } from "@/utils/get-project";
-import { rotateProjectKeys } from "./actions";
+import { ConfigurationClient } from "./client";
 
-interface ProjectSettingsPageProps {
+interface ConfigurationPageProps {
   params: Promise<{
     project_group_id: string;
     project_branch: string;
   }>;
 }
 
-export default async function ProjectSettingsPage({
+export default async function ConfigurationPage({
   params,
-}: ProjectSettingsPageProps) {
+}: ConfigurationPageProps) {
   const { project_group_id, project_branch } = await params;
   const project = await getProject(project_group_id, project_branch);
 
@@ -20,5 +20,5 @@ export default async function ProjectSettingsPage({
     notFound();
   }
 
-  return <SettingsClient project={project} onRotateKeys={rotateProjectKeys} />;
+  return <ConfigurationClient project={project} />;
 }
