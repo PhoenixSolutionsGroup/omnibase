@@ -1,50 +1,5 @@
 package main
 
-// @title           Omnibase REST API
-// @version         0.9.15
-// @description     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
-// @description
-// @description     ## Features
-// @description     - **Database**: PostgreSQL with RLS and migrations
-// @description     - **Authentication**: Ory Kratos integration with session management
-// @description     - **Payments**: Stripe integration with version-controlled billing configs
-// @description     - **Storage**: S3-compatible object storage with RLS
-// @description     - **Email**: Transactional email service
-// @description     - **Permissions**: Fine-grained access control via Ory Keto
-// @description
-// @description     ## Authentication
-// @description     Most endpoints require authentication via session cookies or JWT tokens.
-// @description     Use the appropriate security scheme based on the endpoint requirements.
-
-// @termsOfService  https://omnibase.dev/terms
-
-// @contact.name   Omnibase Support
-// @contact.url    https://omnibase.dev/support
-// @contact.email  support@omnibase.dev
-
-// @license.name  MIT
-// @license.url   https://opensource.org/licenses/MIT
-
-// @host      api.omnibase.tech
-
-// @securityDefinitions.apikey CookieAuth
-// @in header
-// @name Cookie
-// @description Session cookie authentication. Cookie name: `ory_kratos_session`. Automatically set by browser after Kratos login.
-
-// @securityDefinitions.apikey SessionTokenAuth
-// @in header
-// @name X-Session-Token
-// @description Kratos session JWT token. Alternative to cookie authentication for non-browser clients. Obtain from Kratos after login.
-
-// @securityDefinitions.apikey ServiceKeyAuth
-// @in header
-// @name X-Service-Key
-// @description Service-to-service authentication key for backend operations. When used with tenant endpoints, must include X-Tenant-ID header.
-
-// @externalDocs.description  OpenAPI Specification
-// @externalDocs.url          https://swagger.io/specification/
-
 import (
 	"api/internal/config"
 	"api/internal/handlers"
@@ -81,7 +36,7 @@ func main() {
 	}))
 
 	// Add Gin's logger middleware
-	r.Use(gin.Logger())
+	r.Use(middleware.GinLogger())
 
 	logger.Logger.Info("Setting up CORS middleware")
 	r.Use(middleware.CORS())
