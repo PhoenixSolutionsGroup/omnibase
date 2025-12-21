@@ -56,3 +56,27 @@ components:
           type: string
           description: HTML email body content
           example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
+
+    SendEmailRequest:
+      type: object
+      required:
+        - to
+        - subject
+        - body
+      properties:
+        to:
+          type: string
+          description: Recipient email address
+          example: user@example.com
+        subject:
+          type: string
+          description: Email subject line
+          example: Welcome to Our Platform
+        body:
+          type: string
+          description: HTML email body content
+          example: <h1>Hello!</h1><p>Welcome to our platform.</p>
+        plain:
+          type: string
+          description: Optional plain text version of the email body
+          example: Hello! Welcome to our platform.

@@ -12,14 +12,7 @@ func CORS() gin.HandlerFunc {
 
 	return gin.HandlerFunc(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		method := c.Request.Method
 		path := c.Request.URL.Path
-
-		logger.Logger.Debug("CORS middleware executing",
-			"method", method,
-			"path", path,
-			"origin", origin,
-		)
 
 		// Allow all origins and rely on JWT/session authentication for security
 		if origin != "" {

@@ -106,6 +106,56 @@ paths:
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
+  /api/v1/email/send:
+    post:
+      operationId: sendEmail
+      summary: Send an email
+      description: |
+        Sends an email to the specified recipient using the configured SMTP server.
+
+        ## Email Content
+        - Supports HTML body content
+        - Optional plain text version for email clients that don't support HTML
+        - If both HTML and plain text are provided, sends as multipart/alternative
+
+        ## Use Cases
+        - Send transactional emails
+        - Send notifications to users
+        - Custom email communications
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/email.yaml#/components/schemas/SendEmailRequest'
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Email sent successfully
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
   /api/v1/email/templates/{type}:
     delete:
       operationId: deleteEmailTemplate

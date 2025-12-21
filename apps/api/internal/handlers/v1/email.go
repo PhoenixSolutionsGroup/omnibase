@@ -6,6 +6,7 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/models"
+	services_v1 "api/internal/service/v1"
 	"context"
 	"fmt"
 	"os"
@@ -20,9 +21,10 @@ import (
 )
 
 type EmailHandler struct {
-	db       *gorm.DB
-	cfg      *config.Config
-	s3Client *s3.Client
+	db           *gorm.DB
+	cfg          *config.Config
+	s3Client     *s3.Client
+	emailService *services_v1.EmailService
 }
 
 func NewEmailHandler(cfg *config.Config) *EmailHandler {
@@ -53,11 +55,19 @@ func NewEmailHandler(cfg *config.Config) *EmailHandler {
 		o.UsePathStyle = cfg.S3Config.ForcePathStyle
 	})
 
+	// Initialize email service
+	emailService, err := services_v1.NewEmailService(cfg.SMTPConfig.ConnectionURI, cfg.SMTPConfig.FromEmail, db)
+	if err != nil {
+		logger.Logger.Error("Failed to initialize email service", "error", err)
+		panic(fmt.Sprintf("Failed to initialize email service: %s", err))
+	}
+
 	logger.Logger.Info("Email handler initialized successfully")
 	return &EmailHandler{
-		db:       db,
-		cfg:      cfg,
-		s3Client: s3Client,
+		db:           db,
+		cfg:          cfg,
+		s3Client:     s3Client,
+		emailService: emailService,
 	}
 }
 
@@ -303,4 +313,71 @@ func (h *EmailHandler) ServeTemplate(ctx *gin.Context) {
 	ctx.Header("Content-Type", "text/plain; charset=utf-8")
 	ctx.Header("Cache-Control", "public, max-age=86400")
 	ctx.String(200, string(defaultTemplate))
+}
+
+// SendEmailRequest represents the request body for sending an email
+type SendEmailRequest struct {
+	// Recipient email address
+	To string `json:"to" binding:"required" example:"user@example.com"`
+	// Email subject line
+	Subject string `json:"subject" binding:"required" example:"Welcome to Our Platform"`
+	// HTML email body content
+	Body string `json:"body" binding:"required" example:"<h1>Hello!</h1><p>Welcome to our platform.</p>"`
+	// Optional plain text version of the email body
+	Plain string `json:"plain" example:"Hello! Welcome to our platform."`
+}
+
+// SendEmail godoc
+// @Summary      Send an email
+// @Description  Sends an email to the specified recipient using the configured SMTP server.
+// @Description
+// @Description  ## Email Content
+// @Description  - Supports HTML body content
+// @Description  - Optional plain text version for email clients that don't support HTML
+// @Description  - If both HTML and plain text are provided, sends as multipart/alternative
+// @Description
+// @Description  ## Use Cases
+// @Description  - Send transactional emails
+// @Description  - Send notifications to users
+// @Description  - Custom email communications
+// @Tags         V1 Configuration
+// @Accept       json
+// @Produce      json
+// @Param        body body SendEmailRequest true "Email data"
+// @Success      200 {object} handlers.SuccessResponse{data=object{message=string}} "Email sent successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body or missing required fields"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to send email"
+// @Security     CookieAuth,SessionTokenAuth
+// @Router       /api/v1/email/send [post]
+// @ID           sendEmail
+func (h *EmailHandler) SendEmail(ctx *gin.Context) {
+	var request SendEmailRequest
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		handlers.NewBadRequestResponse(ctx, "Invalid request body")
+		return
+	}
+
+	logger.Logger.Info("Sending email",
+		"to", request.To,
+		"subject", request.Subject)
+
+	// Send email using the email service
+	err := h.emailService.SendEmail(ctx, request.To, request.Subject, request.Body, request.Plain)
+	if err != nil {
+		logger.Logger.Error("Failed to send email",
+			"error", err,
+			"to", request.To)
+
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to send email: %w", err))
+		return
+	}
+
+	logger.Logger.Info("Email sent successfully",
+		"to", request.To)
+
+	handlers.NewSuccessResponse(ctx, gin.H{
+		"message": "Email sent successfully",
+	})
 }

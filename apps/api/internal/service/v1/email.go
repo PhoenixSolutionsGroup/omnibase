@@ -4,6 +4,7 @@ import (
 	"api/internal/logger"
 	"api/internal/models"
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"net"
@@ -196,6 +197,84 @@ func (e *EmailService) sendPlainSMTP(addr, from, to, msg string) error {
 	logger.Logger.Info("Plain SMTP email sent successfully", "to", to)
 	// Quit gracefully
 	return client.Quit()
+}
+
+// SendEmail sends a generic email with HTML body and optional plain text
+func (e *EmailService) SendEmail(ctx context.Context, to, subject, htmlBody, plainBody string) error {
+	logger.Logger.Info("Sending email",
+		"to", to,
+		"subject", subject)
+
+	// Build the email message with headers
+	msg := e.buildMessageMultipart(to, subject, htmlBody, plainBody)
+
+	// Prepare SMTP address
+	addr := fmt.Sprintf("%s:%s", e.host, e.port)
+
+	// For plain SMTP without STARTTLS (MailSlurper), use direct connection
+	if e.disableStartTLS {
+		logger.Logger.Debug("Sending email via plain SMTP (no STARTTLS)", "address", addr)
+		return e.sendPlainSMTP(addr, e.from, to, msg)
+	}
+
+	// For production SMTP with STARTTLS and authentication
+	var auth smtp.Auth
+	if e.username != "" && e.password != "" {
+		auth = smtp.PlainAuth("", e.username, e.password, e.host)
+	}
+
+	logger.Logger.Info("Sending email via SMTP with STARTTLS", "address", addr)
+	err := smtp.SendMail(addr, auth, e.from, []string{to}, []byte(msg))
+	if err != nil {
+		logger.Logger.Error("Failed to send email", "error", err, "to", to)
+		return fmt.Errorf("failed to send email: %w", err)
+	}
+
+	logger.Logger.Info("Email sent successfully", "to", to)
+	return nil
+}
+
+// buildMessageMultipart constructs an email message with both HTML and plain text parts
+func (e *EmailService) buildMessageMultipart(to, subject, htmlBody, plainBody string) string {
+	boundary := "----=_Part_0_1234567890"
+
+	var msg strings.Builder
+
+	// Headers
+	msg.WriteString(fmt.Sprintf("From: %s\r\n", e.from))
+	msg.WriteString(fmt.Sprintf("To: %s\r\n", to))
+	msg.WriteString(fmt.Sprintf("Subject: %s\r\n", subject))
+	msg.WriteString("MIME-Version: 1.0\r\n")
+
+	if plainBody != "" {
+		// Multipart message with both plain text and HTML
+		msg.WriteString(fmt.Sprintf("Content-Type: multipart/alternative; boundary=\"%s\"\r\n", boundary))
+		msg.WriteString("\r\n")
+
+		// Plain text part
+		msg.WriteString(fmt.Sprintf("--%s\r\n", boundary))
+		msg.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+		msg.WriteString("\r\n")
+		msg.WriteString(plainBody)
+		msg.WriteString("\r\n")
+
+		// HTML part
+		msg.WriteString(fmt.Sprintf("--%s\r\n", boundary))
+		msg.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+		msg.WriteString("\r\n")
+		msg.WriteString(htmlBody)
+		msg.WriteString("\r\n")
+
+		// End boundary
+		msg.WriteString(fmt.Sprintf("--%s--\r\n", boundary))
+	} else {
+		// HTML only
+		msg.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+		msg.WriteString("\r\n")
+		msg.WriteString(htmlBody)
+	}
+
+	return msg.String()
 }
 
 // buildMessage constructs the email message with headers

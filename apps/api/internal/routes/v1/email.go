@@ -19,13 +19,14 @@ func SetUpEmailRoutes(group *gin.RouterGroup) {
 	logger.Logger.Debug("Applying session authentication middleware to email template management routes")
 
 	// Create authenticated group with middleware
-	authGroup := group.Group("")
-	authGroup.Use(authMiddleware.RequireAuthHeaders())
-	authGroup.Use(authMiddleware.RequireSession())
+	group.Use(authMiddleware.RequireAuthHeaders())
+	group.Use(authMiddleware.RequireSessionOrServiceKey())
 
-	authGroup.POST("/templates", handler.CreateOrUpdateTemplate)
-	authGroup.GET("/templates", handler.GetTemplates)
-	authGroup.DELETE("/templates/:type", handler.DeleteTemplate)
+	group.POST("/templates", handler.CreateOrUpdateTemplate)
+	group.GET("/templates", handler.GetTemplates)
+	group.DELETE("/templates/:type", handler.DeleteTemplate)
+
+	group.POST("/send", handler.SendEmail)
 
 	// Public Kratos template serving route (must be after other routes to avoid conflicts)
 	logger.Logger.Debug("Registering public template serving route for Kratos")
