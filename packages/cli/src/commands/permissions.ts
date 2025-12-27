@@ -190,13 +190,14 @@ export class PermissionsCommand {
         // Need to load env flag from `--env ENV`
         const apiClient = createApiClient();
         try {
-          await apiClient.post(
-            `/api/v1/projects/${env.projectId}/services/perm-read/restart`
-          );
-
-          await apiClient.post(
-            `/api/v1/projects/${env.projectId}/services/perm-write/restart`
-          );
+          Promise.all([
+            await apiClient.post(
+              `/api/v1/projects/${env.projectId}/services/perm-read/restart`
+            ),
+            await apiClient.post(
+              `/api/v1/projects/${env.projectId}/services/perm-write/restart`
+            ),
+          ]);
         } catch (error) {
           console.log(error);
         }

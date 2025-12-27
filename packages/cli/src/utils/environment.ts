@@ -13,6 +13,7 @@ export interface EnvironmentConfig {
   stripePublishableKey?: string;
   stripeWebhookSecret?: string;
   typegenApiUrl?: string;
+  profileApiKey?: string;
 }
 
 export interface OmnibaseConfig {
@@ -181,7 +182,7 @@ export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
       if (profile) {
         return {
           ...envConfig,
-          apiKey: profile.api_key,
+          profileApiKey: profile.api_key,
         };
       }
     }
