@@ -18,7 +18,7 @@ export const createClient = (headers?: Record<string, string>) => {
     commonRequestParameters: {
       headers: {
         "X-Service-Key": SERVICE_KEY,
-        ...headers
+        ...headers,
       },
     },
   });

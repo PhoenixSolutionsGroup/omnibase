@@ -243,7 +243,8 @@ export async function fileOperations() {
     return;
   }
 
-  // Step 7: Attempt file upload as member (permission enforcement depends on RLS policies)
+  // Step 7: Member can upload files within the same tenant
+  // (storage_objects_tenant_isolation policy allows all operations for tenant members)
   const memberUploadPath = `test-files/member-document-${timestamp}.txt`;
   const memberUploadResponse = client.uploadFile(
     {
@@ -260,11 +261,11 @@ export async function fileOperations() {
   );
 
   check(memberUploadResponse.response, {
-    "member upload: status is 200 or 403": (r) =>
-      r.status === 200 || r.status === 403,
+    "member upload: status is 200": (r) => r.status === 200,
   });
 
-  // Step 8: Attempt file download as member - should fail for owner's files in test-files/
+  // Step 8: Member can download owner's files within the same tenant
+  // (storage_objects_tenant_isolation policy allows all operations for tenant members)
   const memberDownloadResponse = client.downloadFile(
     {
       path: filePath,
@@ -277,11 +278,10 @@ export async function fileOperations() {
   );
 
   check(memberDownloadResponse.response, {
-    "member download owner file: status is 404": (r) => r.status === 404,
-    "member download owner file: error indicates not found": (r) => {
+    "member download owner file: status is 200": (r) => r.status === 200,
+    "member download owner file: returns download_url": (r) => {
       const body = r.json() as any;
-      const errorMsg = (body?.error || "").toLowerCase();
-      return errorMsg.includes("not found");
+      return body?.data?.download_url !== undefined;
     },
   });
 
