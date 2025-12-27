@@ -126,7 +126,11 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 
 	logoutFlow, resp, err := logoutReq.Execute()
 	if err != nil {
-		logger.Logger.Error("Failed to create logout flow", "error", err, "status", resp.StatusCode)
+		statusCode := 0
+		if resp != nil {
+			statusCode = resp.StatusCode
+		}
+		logger.Logger.Error("Failed to create logout flow", "error", err, "status", statusCode)
 		handlers.NewInternalServerErrorResponse(c, err)
 		return
 	}
@@ -293,9 +297,13 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 		Execute()
 
 	if err != nil {
+		statusCode := 0
+		if resp != nil {
+			statusCode = resp.StatusCode
+		}
 		logger.Logger.Error("Failed to create identity via Kratos",
 			"error", err,
-			"status", resp.StatusCode,
+			"status", statusCode,
 			"email", req.Email)
 
 		// Handle specific HTTP status codes from Kratos

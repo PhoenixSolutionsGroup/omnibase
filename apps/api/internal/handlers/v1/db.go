@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,7 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"gorm.io/gorm"
@@ -23,7 +24,8 @@ import (
 )
 
 type MigrationHandler struct {
-	db *gorm.DB
+	db  *gorm.DB
+	cfg *config.Config
 }
 
 func NewMigrationHandler(cfg *config.Config) *MigrationHandler {
@@ -36,7 +38,8 @@ func NewMigrationHandler(cfg *config.Config) *MigrationHandler {
 
 	logger.Logger.Info("Migration handler initialized successfully")
 	return &MigrationHandler{
-		db: db,
+		db:  db,
+		cfg: cfg,
 	}
 }
 
@@ -56,32 +59,6 @@ type MigrationErrorResponse struct {
 	Message string `json:"message" binding:"required" example:"No migrations zip file provided"`
 }
 
-// HandleMigrations uploads and applies database migrations
-// @Summary      Upload database migrations
-// @Description  Uploads SQL migration files and applies them to the user's PostgreSQL database.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token (typically used by CLI tools, not browser sessions).
-// @Description
-// @Description  ## Migration Format
-// @Description  Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
-// @Description  Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
-// @Description
-// @Description  ## Use Cases
-// @Description  - CLI migration uploads via `omnibase db migration push`
-// @Description  - CI/CD pipeline integrations
-// @Description  - Programmatic schema management
-// @Tags         V1 Configuration
-// @Accept       multipart/form-data
-// @Produce      json
-// @Param        migrations formData file true "Zip file containing SQL migration files"
-// @Success      200 {object} MigrationSuccessResponse "Migrations applied successfully"
-// @Failure      400 {object} MigrationErrorResponse "No migrations zip file provided"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Migration execution failed"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/database/migrations [post]
-// @ID           uploadDatabaseMigrations
 func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 	logger.Logger.Info("Starting migration upload and application process")
 
@@ -251,29 +228,28 @@ func (h *MigrationHandler) extractZip(zipFile io.Reader, migrationsDir string) e
 }
 
 func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
-	logger.Logger.Trace("Getting database connection for migrations")
+	logger.Logger.Trace("Building migration DSN")
 
-	// Get the underlying *sql.DB from GORM
-	sqlDB, err := h.db.DB()
-	if err != nil {
-		logger.Logger.Error("Failed to get underlying sql.DB from GORM", "error", err)
-		return fmt.Errorf("failed to get underlying sql.DB: %w", err)
-	}
-
-	logger.Logger.Debug("Creating postgres driver instance for migrations")
-	driver, err := postgres.WithInstance(sqlDB, &postgres.Config{})
-	if err != nil {
-		logger.Logger.Error("Failed to create postgres driver instance", "error", err)
-		return err
-	}
+	// Build DSN with x-no-lock=true to disable advisory locks
+	// Advisory locks don't work with connection poolers like PgBouncer
+	// Use migrations schema to keep migration tracking out of public schema
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s&x-no-lock=true&x-migrations-table=%s&x-migrations-table-quoted=true",
+		url.QueryEscape(h.cfg.Database.User),
+		url.QueryEscape(h.cfg.Database.Password),
+		h.cfg.Database.Host,
+		h.cfg.Database.Port,
+		h.cfg.Database.Name,
+		h.cfg.Database.SSLMode,
+		url.QueryEscape(`"migrations"."schema_migrations"`))
 
 	sourceURL := fmt.Sprintf("file://%s", migrationsDir)
 	logger.Logger.Debug("Creating migration instance", "source_url", sourceURL)
-	m, err := migrate.NewWithDatabaseInstance(sourceURL, "postgres", driver)
+	m, err := migrate.New(sourceURL, dsn)
 	if err != nil {
 		logger.Logger.Error("Failed to create migration instance", "source_url", sourceURL, "error", err)
 		return err
 	}
+	defer m.Close()
 
 	// Apply migrations
 	logger.Logger.Info("Executing database migrations")

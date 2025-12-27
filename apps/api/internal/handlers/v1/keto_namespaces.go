@@ -88,35 +88,6 @@ type NamespaceDeploymentResponse struct {
 	RolesSynced *int `json:"roles_synced,omitempty" example:"5"`
 }
 
-// DeployNamespaces handles uploading and deploying Keto namespace configurations
-// @Summary      Deploy Keto namespace configurations
-// @Description  Uploads and deploys permission namespace configurations as a zip file.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with appropriate permissions.
-// @Description
-// @Description  ## File Format
-// @Description  Upload a zip file containing namespace definition files and optionally a roles.config.json file.
-// @Description  The namespace files are stored in S3 and parsed to extract permission definitions.
-// @Description
-// @Description  ## Managed Mode
-// @Description  If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.
-// @Description
-// @Description  ## Use Cases
-// @Description  - CLI namespace deployment via `omnibase permissions push`
-// @Description  - CI/CD pipeline integrations
-// @Description  - Programmatic permission management
-// @Tags         V1 Configuration
-// @Accept       multipart/form-data
-// @Produce      json
-// @Param        namespaces formData file true "Zip file containing namespace configuration files"
-// @Success      200 {object} handlers.SuccessResponse{data=NamespaceDeploymentResponse} "Namespaces deployed successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid file or missing tenant ID"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to deploy namespaces"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/permissions/namespaces [post]
-// @ID           deployPermissionNamespaces
 func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 	logger.Logger.Info("DeployNamespaces handler started")
 	tenantID := h.config.ManagedHostingConfig.TenantID
@@ -149,28 +120,9 @@ func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 	}
 
 	// Upload to R2/MinIO
-	bucketName := "permission-namespaces"
-	objectKey := fmt.Sprintf("%s/latest.zip", tenantID)
-
-	// Ensure bucket exists
+	bucketName := h.config.S3Config.BucketName
+	objectKey := "internal/permissions.zip"
 	ctx := context.Background()
-	logger.Logger.Debug("Checking if bucket exists", "bucket", bucketName)
-	_, err = h.s3Client.HeadBucket(ctx, &s3.HeadBucketInput{
-		Bucket: aws.String(bucketName),
-	})
-	if err != nil {
-		// Bucket doesn't exist, create it
-		logger.Logger.Info("Bucket does not exist, creating", "bucket", bucketName)
-		_, err = h.s3Client.CreateBucket(ctx, &s3.CreateBucketInput{
-			Bucket: aws.String(bucketName),
-		})
-		if err != nil {
-			logger.Logger.Error("Failed to create bucket", "bucket", bucketName, "error", err)
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to create bucket: %w", err))
-			return
-		}
-		logger.Logger.Info("Bucket created successfully", "bucket", bucketName)
-	}
 
 	// Upload file to S3
 	logger.Logger.Info("Uploading namespace file to S3", "bucket", bucketName, "key", objectKey, "size", header.Size)
