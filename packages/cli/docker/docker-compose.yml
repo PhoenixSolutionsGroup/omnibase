@@ -75,13 +75,18 @@ services:
     networks:
       - app-network
 
-  mailslurper:
-    image: oryd/mailslurper:latest-smtps
+  mailpit:
+    image: axllent/mailpit:latest
     ports:
-      - "4436:4436"
-      - "4437:4437"
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP server
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
       - app-network
+    restart: unless-stopped
 
   # MinIO - Object Storage
   minio:
@@ -99,6 +104,22 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin123; do
+        echo 'Waiting for MinIO to be ready...';
+        sleep 2;
+      done;
+      /usr/bin/mc mb myminio/dev --ignore-existing;
+      echo 'MinIO buckets created successfully';
+      "
+    networks:
+      - app-network
 
   # Adminer - Simple Database Management Interface
   adminer:
@@ -130,7 +151,7 @@ services:
 
   # REST API Service
   rest-api:
-    image: phoenixsolutionsgroup/omnibase-api:v0.1.0
+    image: phoenixsolutionsgroup/omnibase-api:v0.1.2
     ports:
       - "8080:8080"
     depends_on:
@@ -187,7 +208,7 @@ services:
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS}
 
   permissions-migrate:
-    image: phoenixsolutionsgroup/omnibase-permissions:v0.1.0
+    image: phoenixsolutionsgroup/omnibase-permissions:v0.1.1
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
     command: migrate up -c /etc/config/permissions/permissions.yml --yes
@@ -201,7 +222,7 @@ services:
   permissions:
     depends_on:
       - permissions-migrate
-    image: phoenixsolutionsgroup/omnibase-permissions:v0.1.0
+    image: phoenixsolutionsgroup/omnibase-permissions:v0.1.1
     ports:
       - "4466:4466" # read API
       - "4467:4467" # write API
@@ -209,8 +230,7 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
       - LOG_LEVEL=debug
-      - NAMESPACE_BUCKET=permission-namespaces
-      - TENANT_ID=local
+      - NAMESPACE_BUCKET=dev
       - R2_ENDPOINT=http://minio:9000
       - R2_ACCESS_KEY=minioadmin
       - R2_SECRET_KEY=minioadmin123

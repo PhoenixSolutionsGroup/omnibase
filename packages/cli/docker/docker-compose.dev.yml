@@ -130,7 +130,6 @@ services:
         sleep 2;
       done;
       /usr/bin/mc mb myminio/dev --ignore-existing;
-      /usr/bin/mc mb myminio/permission-namespaces --ignore-existing;
       echo 'MinIO buckets created successfully';
       "
     networks:
@@ -254,8 +253,7 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
       - LOG_LEVEL=debug
-      - NAMESPACE_BUCKET=permission-namespaces
-      - TENANT_ID=local
+      - NAMESPACE_BUCKET=dev
       - R2_ENDPOINT=http://minio:9000
       - R2_ACCESS_KEY=minioadmin
       - R2_SECRET_KEY=minioadmin123
