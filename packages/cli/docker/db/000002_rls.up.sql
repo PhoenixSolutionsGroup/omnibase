@@ -31,9 +31,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
--- Create PostgREST database roles
-CREATE ROLE anon_user;
-CREATE ROLE super_user;
+-- Create PostgREST database roles (idempotent - safe to run multiple times)
+-- For shared Postgres: Roles are created by provisioning system as admin
+-- For managed services (Neon): Admin user creates them here on first run
+-- Uses nested exception handling to gracefully handle:
+--   1. insufficient_privilege: Roles pre-created by admin, tenant user can't create roles
+--   2. duplicate_object: Role already exists
+DO $$
+BEGIN
+    -- Create anon_user if it doesn't exist
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon_user') THEN
+            CREATE ROLE anon_user;
+        END IF;
+    EXCEPTION
+        WHEN insufficient_privilege THEN
+            RAISE NOTICE 'Skipping CREATE ROLE anon_user - insufficient permissions (pre-created by admin)';
+        WHEN duplicate_object THEN
+            NULL; -- Role already exists
+    END;
+
+    -- Create super_user if it doesn't exist
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'super_user') THEN
+            CREATE ROLE super_user;
+        END IF;
+    EXCEPTION
+        WHEN insufficient_privilege THEN
+            RAISE NOTICE 'Skipping CREATE ROLE super_user - insufficient permissions (pre-created by admin)';
+        WHEN duplicate_object THEN
+            NULL; -- Role already exists
+    END;
+END $$;
 
 GRANT USAGE ON SCHEMA public, auth, storage TO anon_user;
 GRANT USAGE ON SCHEMA public, auth, storage, stripe TO super_user;
@@ -50,8 +79,20 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO super_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA storage TO super_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA stripe TO super_user;
 
--- Grant admin user the ability to bypass RLS
-ALTER ROLE super_user SET row_security = off;
+-- Only alter super_user if we have permission (admin user or first tenant in shared Postgres)
+-- Uses try/catch to gracefully handle permission errors
+DO $$
+BEGIN
+    BEGIN
+        ALTER ROLE super_user SET row_security = off;
+    EXCEPTION
+        WHEN insufficient_privilege THEN
+            RAISE NOTICE 'Skipping ALTER ROLE super_user - insufficient permissions (already configured)';
+        WHEN OTHERS THEN
+            -- Catch any other errors and log them
+            RAISE NOTICE 'Could not alter super_user: % (%)', SQLERRM, SQLSTATE;
+    END;
+END $$;
 
 -- Set default privileges for future tables (only super_user gets direct access)
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO super_user;
