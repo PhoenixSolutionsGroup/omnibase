@@ -750,6 +750,96 @@ paths:
       tags:
       - V1 Permissions
   /api/v1/permissions/relationships:
+    delete:
+      description: |
+        Deletes a relationship tuple from Ory Keto.
+
+        ## Authentication
+        Requires session authentication.
+
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
+        to enforce this constraint at the schema level.
+
+        ## Use Cases
+        - Remove resource links from tenants
+        - Revoke user assignments from projects
+        - Delete permission relationships
+      operationId: deleteRelationship
+      requestBody:
+        content:
+          application/json:
+            examples:
+              withSubjectId:
+                summary: Delete relationship with subject_id
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_invite_user
+                  subject_id: 550e8400-e29b-41d4-a716-446655440000
+              withSubjectSet:
+                summary: Delete relationship with subject_set
+                value:
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
+                  subject_set:
+                    namespace: Tenant
+                    object: tenant_456
+            schema:
+              $ref: "#/components/schemas/DeleteRelationshipRequest"
+        description: Relationship deletion request with either subject_id or subject_set
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                status: 200
+                data:
+                  message: Relationship deleted successfully
+              schema:
+                $ref: "#/components/schemas/deleteRelationship_200_response"
+          description: Relationship deleted successfully
+        "400":
+          content:
+            application/json:
+              examples:
+                bothSubjects:
+                  summary: Both subject_id and subject_set provided
+                  value:
+                    status: 400
+                    error: "Provide either subject_id or subject_set, not both"
+                neitherSubject:
+                  summary: Neither subject_id nor subject_set provided
+                  value:
+                    status: 400
+                    error: Either subject_id or subject_set must be provided
+              schema:
+                $ref: "#/components/schemas/BadRequestResponse"
+          description: "Invalid request body - namespace, object, and relation are\
+            \ required, or both/neither subject fields provided"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+          description: Not authenticated
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerErrorResponse"
+          description: Failed to delete relationship
+      security:
+      - CookieAuth: []
+        SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Delete relationship
+      tags:
+      - V1 Permissions
     post:
       description: "Creates a new relationship tuple in Ory Keto.\n\n## Authentication\n\
         Requires session authentication.\n\n## Request Format\nProvide either `subject_id`\
@@ -3642,6 +3732,23 @@ components:
       required:
       - message
       - relationship
+    DeleteRelationshipRequest:
+      description: Delete relationship request. Must provide exactly one of subject_id
+        or subject_set.
+      oneOf:
+      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf"
+      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf_1"
+    DeleteRelationshipResponse:
+      description: Relationship deletion result
+      example:
+        message: Relationship deleted successfully
+      properties:
+        message:
+          description: Success message
+          example: Relationship deleted successfully
+          type: string
+      required:
+      - message
     NamespaceDeploymentResponse:
       example:
         tenant_id: tenant_test_123
@@ -3891,6 +3998,47 @@ components:
       - display_name
       - event_name
       - id
+    CurrencyCode:
+      description: Three-letter ISO currency code (lowercase)
+      enum:
+      - usd
+      - eur
+      - gbp
+      - cad
+      - aud
+      - jpy
+      - inr
+      - brl
+      - mxn
+      - sgd
+      - hkd
+      - nzd
+      - chf
+      - sek
+      - dkk
+      - nok
+      - pln
+      - czk
+      - ils
+      - zar
+      example: usd
+      type: string
+    BillingInterval:
+      description: Billing interval for recurring prices
+      enum:
+      - day
+      - week
+      - month
+      - year
+      example: month
+      type: string
+    UsageType:
+      description: Usage type for recurring prices
+      enum:
+      - licensed
+      - metered
+      example: licensed
+      type: string
     Tier:
       example:
         flat_amount: 0
@@ -4053,32 +4201,15 @@ components:
           minimum: 0
           type: integer
         currency:
-          description: Three-letter ISO currency code (lowercase)
-          example: usd
-          maxLength: 3
-          minLength: 3
-          pattern: "^[a-z]{3}$"
-          type: string
+          $ref: "#/components/schemas/CurrencyCode"
         interval:
-          description: Billing interval
-          enum:
-          - day
-          - week
-          - month
-          - year
-          example: month
-          type: string
+          $ref: "#/components/schemas/BillingInterval"
         interval_count:
           description: Number of intervals between billings
           example: 1
           type: integer
         usage_type:
-          description: Usage type for recurring prices
-          enum:
-          - licensed
-          - metered
-          example: licensed
-          type: string
+          $ref: "#/components/schemas/UsageType"
         meter:
           description: Meter ID for metered pricing
           example: api_requests
@@ -4805,6 +4936,13 @@ components:
       - display_name
       - event_name
       - id
+    PerUnitBillingScheme:
+      default: per_unit
+      description: Billing scheme type for per-unit pricing
+      enum:
+      - per_unit
+      example: per_unit
+      type: string
     PerUnitPrice:
       anyOf: []
       example:
@@ -4830,9 +4968,9 @@ components:
           - unit: requests
             text: Up to 1000 API calls
             value: 1000
-        usage_type: licensed
+        usage_type: ""
         currency: usd
-        interval: month
+        interval: ""
         id: basic_monthly
         tax_included_in_price: false
         stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -4867,52 +5005,21 @@ components:
           minimum: 1
           type: integer
         currency:
-          description: Three-letter ISO currency code (lowercase)
-          enum:
-          - usd
-          - eur
-          - gbp
-          - cad
-          - aud
-          - jpy
-          - inr
-          - brl
-          - mxn
-          - sgd
-          - hkd
-          - nzd
-          - chf
-          - sek
-          - dkk
-          - nok
-          - pln
-          - czk
-          - ils
-          - zar
-          example: usd
-          type: string
+          $ref: "#/components/schemas/CurrencyCode"
         interval:
+          allOf:
+          - $ref: "#/components/schemas/BillingInterval"
           description: Billing interval for recurring prices (required when usage_type
             is metered)
-          enum:
-          - day
-          - week
-          - month
-          - year
-          example: month
-          type: string
         interval_count:
           description: Number of intervals between billings (default 1)
           example: 1
           type: integer
         usage_type:
+          allOf:
+          - $ref: "#/components/schemas/UsageType"
           description: "Usage type for recurring prices (when set to metered, interval\
             \ and meter are required)"
-          enum:
-          - licensed
-          - metered
-          example: licensed
-          type: string
         meter:
           description: "Meter ID for metered pricing (required when usage_type is\
             \ metered, must reference a meter defined in the meters array)"
@@ -4920,12 +5027,7 @@ components:
           minLength: 1
           type: string
         billing_scheme:
-          default: per_unit
-          description: Billing scheme type
-          enum:
-          - per_unit
-          example: per_unit
-          type: string
+          $ref: "#/components/schemas/PerUnitBillingScheme"
         default:
           description: Mark as default price for the product
           example: false
@@ -4936,6 +5038,19 @@ components:
       - amount
       - currency
       - id
+    TieredBillingScheme:
+      description: Billing scheme type for tiered pricing
+      enum:
+      - tiered
+      example: tiered
+      type: string
+    TiersMode:
+      description: Tiers mode for tiered pricing
+      enum:
+      - graduated
+      - volume
+      example: graduated
+      type: string
     TieredPrice:
       anyOf: []
       nullable: true
@@ -4962,34 +5077,21 @@ components:
           type: boolean
           nullable: true
         currency:
-          description: Three-letter ISO currency code (lowercase)
-          example: usd
-          maxLength: 3
-          minLength: 3
-          pattern: "^[a-z]{3}$"
-          type: string
+          $ref: "#/components/schemas/CurrencyCode"
         interval:
+          allOf:
+          - $ref: "#/components/schemas/BillingInterval"
           description: Billing interval for recurring prices (required when usage_type
             is metered)
-          enum:
-          - day
-          - week
-          - month
-          - year
-          example: month
-          type: string
         interval_count:
           description: Number of intervals between billings (default 1)
           example: 1
           type: integer
         usage_type:
+          allOf:
+          - $ref: "#/components/schemas/UsageType"
           description: "Usage type for recurring prices (when set to metered, interval\
             \ and meter are required)"
-          enum:
-          - licensed
-          - metered
-          example: licensed
-          type: string
         meter:
           description: "Meter ID for metered pricing (required when usage_type is\
             \ metered, must reference a meter defined in the meters array)"
@@ -4997,18 +5099,9 @@ components:
           minLength: 1
           type: string
         billing_scheme:
-          description: Billing scheme type (must be 'tiered')
-          enum:
-          - tiered
-          example: tiered
-          type: string
+          $ref: "#/components/schemas/TieredBillingScheme"
         tiers_mode:
-          description: Tiers mode
-          enum:
-          - graduated
-          - volume
-          example: graduated
-          type: string
+          $ref: "#/components/schemas/TiersMode"
         tiers:
           description: Pricing tiers
           items:
@@ -5070,9 +5163,9 @@ components:
             - unit: requests
               text: Up to 1000 API calls
               value: 1000
-          usage_type: licensed
+          usage_type: ""
           currency: usd
-          interval: month
+          interval: ""
           id: basic_monthly
           tax_included_in_price: false
           stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -5098,9 +5191,9 @@ components:
             - unit: requests
               text: Up to 1000 API calls
               value: 1000
-          usage_type: licensed
+          usage_type: ""
           currency: usd
-          interval: month
+          interval: ""
           id: basic_monthly
           tax_included_in_price: false
           stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -5209,9 +5302,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -5237,9 +5330,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -5281,9 +5374,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -5309,9 +5402,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6137,9 +6230,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6165,9 +6258,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6209,9 +6302,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6237,9 +6330,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6330,9 +6423,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6358,9 +6451,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6402,9 +6495,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6430,9 +6523,9 @@ components:
               - unit: requests
                 text: Up to 1000 API calls
                 value: 1000
-            usage_type: licensed
+            usage_type: ""
             currency: usd
-            interval: month
+            interval: ""
             id: basic_monthly
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -6832,8 +6925,8 @@ components:
       example:
         role_name: test_project_viewer
         permissions:
-        - project:*#view
         - tenant#read
+        - tenant#manage_projects
       properties:
         role_name:
           description: "Name of the role (required, cannot be empty)"
@@ -6845,8 +6938,8 @@ components:
             \ (required, must have at least one non-empty permission). Empty strings\
             \ are not allowed and will be rejected with a 400 error."
           example:
-          - project:*#view
           - tenant#read
+          - tenant#manage_projects
           items:
             minLength: 1
             type: string
@@ -6876,14 +6969,14 @@ components:
       description: Request to update an existing role
       example:
         permissions:
-        - project:*#view
-        - project:*#edit
+        - tenant#read
+        - tenant#write
       properties:
         permissions:
           description: Updated list of permissions
           example:
-          - project:*#view
-          - project:*#edit
+          - tenant#read
+          - tenant#write
           items:
             type: string
           type: array
@@ -7616,6 +7709,16 @@ components:
               namespace: Tenant
               object: tenant_test_123
               relation: member
+        status: 200
+    deleteRelationship_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/DeleteRelationshipResponse"
+      example:
+        data:
+          message: Relationship deleted successfully
         status: 200
     deployPermissionNamespaces_request:
       properties:
@@ -8386,9 +8489,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: licensed
+              usage_type: ""
               currency: usd
-              interval: month
+              interval: ""
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -8414,9 +8517,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: licensed
+              usage_type: ""
               currency: usd
-              interval: month
+              interval: ""
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -8458,9 +8561,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: licensed
+              usage_type: ""
               currency: usd
-              interval: month
+              interval: ""
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -8486,9 +8589,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: licensed
+              usage_type: ""
               currency: usd
-              interval: month
+              interval: ""
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU

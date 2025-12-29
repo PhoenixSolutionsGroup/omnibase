@@ -9,12 +9,12 @@ Name | Type | Description | Notes
 **Public** | Pointer to **bool** | Whether price is visible in public API (null/true &#x3D; public, false &#x3D; enterprise only) | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price (null/false &#x3D; exclusive) | [optional] 
 **Amount** | **int64** | Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements | 
-**Currency** | **string** | Three-letter ISO currency code (lowercase) | 
-**Interval** | Pointer to **string** | Billing interval for recurring prices (required when usage_type is metered) | [optional] 
+**Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
+**Interval** | Pointer to [**BillingInterval**](BillingInterval.md) | Billing interval for recurring prices (required when usage_type is metered) | [optional] 
 **IntervalCount** | Pointer to **int32** | Number of intervals between billings (default 1) | [optional] 
-**UsageType** | Pointer to **string** | Usage type for recurring prices (when set to metered, interval and meter are required) | [optional] 
+**UsageType** | Pointer to [**UsageType**](UsageType.md) | Usage type for recurring prices (when set to metered, interval and meter are required) | [optional] 
 **Meter** | Pointer to **string** | Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array) | [optional] 
-**BillingScheme** | Pointer to **string** | Billing scheme type | [optional] [default to "per_unit"]
+**BillingScheme** | Pointer to [**PerUnitBillingScheme**](PerUnitBillingScheme.md) |  | [optional] [default to PER_UNIT]
 **Default** | Pointer to **bool** | Mark as default price for the product | [optional] 
 **Ui** | Pointer to [**PriceUI**](PriceUI.md) |  | [optional] 
 
@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 
 ### NewPerUnitPrice
 
-`func NewPerUnitPrice(id string, amount int64, currency string, ) *PerUnitPrice`
+`func NewPerUnitPrice(id string, amount int64, currency CurrencyCode, ) *PerUnitPrice`
 
 NewPerUnitPrice instantiates a new PerUnitPrice object
 This constructor will assign default values to properties that have it defined,
@@ -154,40 +154,40 @@ SetAmount sets Amount field to given value.
 
 ### GetCurrency
 
-`func (o *PerUnitPrice) GetCurrency() string`
+`func (o *PerUnitPrice) GetCurrency() CurrencyCode`
 
 GetCurrency returns the Currency field if non-nil, zero value otherwise.
 
 ### GetCurrencyOk
 
-`func (o *PerUnitPrice) GetCurrencyOk() (*string, bool)`
+`func (o *PerUnitPrice) GetCurrencyOk() (*CurrencyCode, bool)`
 
 GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCurrency
 
-`func (o *PerUnitPrice) SetCurrency(v string)`
+`func (o *PerUnitPrice) SetCurrency(v CurrencyCode)`
 
 SetCurrency sets Currency field to given value.
 
 
 ### GetInterval
 
-`func (o *PerUnitPrice) GetInterval() string`
+`func (o *PerUnitPrice) GetInterval() BillingInterval`
 
 GetInterval returns the Interval field if non-nil, zero value otherwise.
 
 ### GetIntervalOk
 
-`func (o *PerUnitPrice) GetIntervalOk() (*string, bool)`
+`func (o *PerUnitPrice) GetIntervalOk() (*BillingInterval, bool)`
 
 GetIntervalOk returns a tuple with the Interval field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetInterval
 
-`func (o *PerUnitPrice) SetInterval(v string)`
+`func (o *PerUnitPrice) SetInterval(v BillingInterval)`
 
 SetInterval sets Interval field to given value.
 
@@ -224,20 +224,20 @@ HasIntervalCount returns a boolean if a field has been set.
 
 ### GetUsageType
 
-`func (o *PerUnitPrice) GetUsageType() string`
+`func (o *PerUnitPrice) GetUsageType() UsageType`
 
 GetUsageType returns the UsageType field if non-nil, zero value otherwise.
 
 ### GetUsageTypeOk
 
-`func (o *PerUnitPrice) GetUsageTypeOk() (*string, bool)`
+`func (o *PerUnitPrice) GetUsageTypeOk() (*UsageType, bool)`
 
 GetUsageTypeOk returns a tuple with the UsageType field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetUsageType
 
-`func (o *PerUnitPrice) SetUsageType(v string)`
+`func (o *PerUnitPrice) SetUsageType(v UsageType)`
 
 SetUsageType sets UsageType field to given value.
 
@@ -274,20 +274,20 @@ HasMeter returns a boolean if a field has been set.
 
 ### GetBillingScheme
 
-`func (o *PerUnitPrice) GetBillingScheme() string`
+`func (o *PerUnitPrice) GetBillingScheme() PerUnitBillingScheme`
 
 GetBillingScheme returns the BillingScheme field if non-nil, zero value otherwise.
 
 ### GetBillingSchemeOk
 
-`func (o *PerUnitPrice) GetBillingSchemeOk() (*string, bool)`
+`func (o *PerUnitPrice) GetBillingSchemeOk() (*PerUnitBillingScheme, bool)`
 
 GetBillingSchemeOk returns a tuple with the BillingScheme field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetBillingScheme
 
-`func (o *PerUnitPrice) SetBillingScheme(v string)`
+`func (o *PerUnitPrice) SetBillingScheme(v PerUnitBillingScheme)`
 
 SetBillingScheme sets BillingScheme field to given value.
 

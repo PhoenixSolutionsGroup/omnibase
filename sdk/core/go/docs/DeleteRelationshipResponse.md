@@ -1,4 +1,4 @@
-# AssignRoleResponse
+# DeleteRelationshipResponse
 
 ## Properties
 
@@ -8,39 +8,39 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewAssignRoleResponse
+### NewDeleteRelationshipResponse
 
-`func NewAssignRoleResponse(message string, ) *AssignRoleResponse`
+`func NewDeleteRelationshipResponse(message string, ) *DeleteRelationshipResponse`
 
-NewAssignRoleResponse instantiates a new AssignRoleResponse object
+NewDeleteRelationshipResponse instantiates a new DeleteRelationshipResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewAssignRoleResponseWithDefaults
+### NewDeleteRelationshipResponseWithDefaults
 
-`func NewAssignRoleResponseWithDefaults() *AssignRoleResponse`
+`func NewDeleteRelationshipResponseWithDefaults() *DeleteRelationshipResponse`
 
-NewAssignRoleResponseWithDefaults instantiates a new AssignRoleResponse object
+NewDeleteRelationshipResponseWithDefaults instantiates a new DeleteRelationshipResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetMessage
 
-`func (o *AssignRoleResponse) GetMessage() string`
+`func (o *DeleteRelationshipResponse) GetMessage() string`
 
 GetMessage returns the Message field if non-nil, zero value otherwise.
 
 ### GetMessageOk
 
-`func (o *AssignRoleResponse) GetMessageOk() (*string, bool)`
+`func (o *DeleteRelationshipResponse) GetMessageOk() (*string, bool)`
 
 GetMessageOk returns a tuple with the Message field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMessage
 
-`func (o *AssignRoleResponse) SetMessage(v string)`
+`func (o *DeleteRelationshipResponse) SetMessage(v string)`
 
 SetMessage sets Message field to given value.
 

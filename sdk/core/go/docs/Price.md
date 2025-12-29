@@ -9,22 +9,22 @@ Name | Type | Description | Notes
 **Public** | Pointer to **bool** | Whether price is visible in public API (null/true &#x3D; public, false &#x3D; enterprise only) | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price (null/false &#x3D; exclusive) | [optional] 
 **Amount** | **int64** | Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements | 
-**Currency** | **string** | Three-letter ISO currency code (lowercase) | 
-**Interval** | Pointer to **string** | Billing interval for recurring prices (required when usage_type is metered) | [optional] 
+**Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
+**Interval** | Pointer to [**BillingInterval**](BillingInterval.md) | Billing interval for recurring prices (required when usage_type is metered) | [optional] 
 **IntervalCount** | Pointer to **int32** | Number of intervals between billings (default 1) | [optional] 
-**UsageType** | Pointer to **string** | Usage type for recurring prices (when set to metered, interval and meter are required) | [optional] 
+**UsageType** | Pointer to [**UsageType**](UsageType.md) | Usage type for recurring prices (when set to metered, interval and meter are required) | [optional] 
 **Meter** | Pointer to **string** | Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array) | [optional] 
-**BillingScheme** | **string** | Billing scheme type (must be &#39;tiered&#39;) | 
+**BillingScheme** | [**TieredBillingScheme**](TieredBillingScheme.md) |  | 
 **Default** | Pointer to **bool** | Mark as default price for the product | [optional] 
 **Ui** | Pointer to [**PriceUI**](PriceUI.md) |  | [optional] 
-**TiersMode** | **string** | Tiers mode | 
+**TiersMode** | [**TiersMode**](TiersMode.md) |  | 
 **Tiers** | [**[]Tier**](Tier.md) | Pricing tiers | 
 
 ## Methods
 
 ### NewPrice
 
-`func NewPrice(id string, amount int64, currency string, billingScheme string, tiersMode string, tiers []Tier, ) *Price`
+`func NewPrice(id string, amount int64, currency CurrencyCode, billingScheme TieredBillingScheme, tiersMode TiersMode, tiers []Tier, ) *Price`
 
 NewPrice instantiates a new Price object
 This constructor will assign default values to properties that have it defined,
@@ -156,40 +156,40 @@ SetAmount sets Amount field to given value.
 
 ### GetCurrency
 
-`func (o *Price) GetCurrency() string`
+`func (o *Price) GetCurrency() CurrencyCode`
 
 GetCurrency returns the Currency field if non-nil, zero value otherwise.
 
 ### GetCurrencyOk
 
-`func (o *Price) GetCurrencyOk() (*string, bool)`
+`func (o *Price) GetCurrencyOk() (*CurrencyCode, bool)`
 
 GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCurrency
 
-`func (o *Price) SetCurrency(v string)`
+`func (o *Price) SetCurrency(v CurrencyCode)`
 
 SetCurrency sets Currency field to given value.
 
 
 ### GetInterval
 
-`func (o *Price) GetInterval() string`
+`func (o *Price) GetInterval() BillingInterval`
 
 GetInterval returns the Interval field if non-nil, zero value otherwise.
 
 ### GetIntervalOk
 
-`func (o *Price) GetIntervalOk() (*string, bool)`
+`func (o *Price) GetIntervalOk() (*BillingInterval, bool)`
 
 GetIntervalOk returns a tuple with the Interval field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetInterval
 
-`func (o *Price) SetInterval(v string)`
+`func (o *Price) SetInterval(v BillingInterval)`
 
 SetInterval sets Interval field to given value.
 
@@ -226,20 +226,20 @@ HasIntervalCount returns a boolean if a field has been set.
 
 ### GetUsageType
 
-`func (o *Price) GetUsageType() string`
+`func (o *Price) GetUsageType() UsageType`
 
 GetUsageType returns the UsageType field if non-nil, zero value otherwise.
 
 ### GetUsageTypeOk
 
-`func (o *Price) GetUsageTypeOk() (*string, bool)`
+`func (o *Price) GetUsageTypeOk() (*UsageType, bool)`
 
 GetUsageTypeOk returns a tuple with the UsageType field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetUsageType
 
-`func (o *Price) SetUsageType(v string)`
+`func (o *Price) SetUsageType(v UsageType)`
 
 SetUsageType sets UsageType field to given value.
 
@@ -276,20 +276,20 @@ HasMeter returns a boolean if a field has been set.
 
 ### GetBillingScheme
 
-`func (o *Price) GetBillingScheme() string`
+`func (o *Price) GetBillingScheme() TieredBillingScheme`
 
 GetBillingScheme returns the BillingScheme field if non-nil, zero value otherwise.
 
 ### GetBillingSchemeOk
 
-`func (o *Price) GetBillingSchemeOk() (*string, bool)`
+`func (o *Price) GetBillingSchemeOk() (*TieredBillingScheme, bool)`
 
 GetBillingSchemeOk returns a tuple with the BillingScheme field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetBillingScheme
 
-`func (o *Price) SetBillingScheme(v string)`
+`func (o *Price) SetBillingScheme(v TieredBillingScheme)`
 
 SetBillingScheme sets BillingScheme field to given value.
 
@@ -346,20 +346,20 @@ HasUi returns a boolean if a field has been set.
 
 ### GetTiersMode
 
-`func (o *Price) GetTiersMode() string`
+`func (o *Price) GetTiersMode() TiersMode`
 
 GetTiersMode returns the TiersMode field if non-nil, zero value otherwise.
 
 ### GetTiersModeOk
 
-`func (o *Price) GetTiersModeOk() (*string, bool)`
+`func (o *Price) GetTiersModeOk() (*TiersMode, bool)`
 
 GetTiersModeOk returns a tuple with the TiersMode field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTiersMode
 
-`func (o *Price) SetTiersMode(v string)`
+`func (o *Price) SetTiersMode(v TiersMode)`
 
 SetTiersMode sets TiersMode field to given value.
 

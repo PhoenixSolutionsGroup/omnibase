@@ -30,20 +30,17 @@ type TieredPrice struct {
 	Public *bool
 	// Whether tax is included in the price (null/false = exclusive)
 	TaxIncludedInPrice *bool
-	// Three-letter ISO currency code (lowercase)
-	Currency string
+	Currency CurrencyCode
 	// Billing interval for recurring prices (required when usage_type is metered)
-	Interval *string
+	Interval *BillingInterval
 	// Number of intervals between billings (default 1)
 	IntervalCount *int32
 	// Usage type for recurring prices (when set to metered, interval and meter are required)
-	UsageType *string
+	UsageType *UsageType
 	// Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
 	Meter *string
-	// Billing scheme type (must be 'tiered')
-	BillingScheme string
-	// Tiers mode
-	TiersMode string
+	BillingScheme TieredBillingScheme
+	TiersMode TiersMode
 	// Pricing tiers
 	Tiers []Tier
 	// Mark as default price for the product
@@ -57,7 +54,7 @@ type _TieredPrice TieredPrice
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTieredPrice(id string, currency string, billingScheme string, tiersMode string, tiers []Tier) *TieredPrice {
+func NewTieredPrice(id string, currency CurrencyCode, billingScheme TieredBillingScheme, tiersMode TiersMode, tiers []Tier) *TieredPrice {
 	this := TieredPrice{}
 	return &this
 }
@@ -191,9 +188,9 @@ func (o *TieredPrice) SetTaxIncludedInPrice(v bool) {
 }
 
 // GetCurrency returns the Currency field value
-func (o *TieredPrice) GetCurrency() string {
+func (o *TieredPrice) GetCurrency() CurrencyCode {
 	if o == nil {
-		var ret string
+		var ret CurrencyCode
 		return ret
 	}
 
@@ -202,7 +199,7 @@ func (o *TieredPrice) GetCurrency() string {
 
 // GetCurrencyOk returns a tuple with the Currency field value
 // and a boolean to check if the value has been set.
-func (o *TieredPrice) GetCurrencyOk() (*string, bool) {
+func (o *TieredPrice) GetCurrencyOk() (*CurrencyCode, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -210,14 +207,14 @@ func (o *TieredPrice) GetCurrencyOk() (*string, bool) {
 }
 
 // SetCurrency sets field value
-func (o *TieredPrice) SetCurrency(v string) {
+func (o *TieredPrice) SetCurrency(v CurrencyCode) {
 	o.Currency = v
 }
 
 // GetInterval returns the Interval field value if set, zero value otherwise.
-func (o *TieredPrice) GetInterval() string {
+func (o *TieredPrice) GetInterval() BillingInterval {
 	if o == nil || IsNil(o.Interval) {
-		var ret string
+		var ret BillingInterval
 		return ret
 	}
 	return *o.Interval
@@ -225,7 +222,7 @@ func (o *TieredPrice) GetInterval() string {
 
 // GetIntervalOk returns a tuple with the Interval field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TieredPrice) GetIntervalOk() (*string, bool) {
+func (o *TieredPrice) GetIntervalOk() (*BillingInterval, bool) {
 	if o == nil || IsNil(o.Interval) {
 		return nil, false
 	}
@@ -241,8 +238,8 @@ func (o *TieredPrice) HasInterval() bool {
 	return false
 }
 
-// SetInterval gets a reference to the given string and assigns it to the Interval field.
-func (o *TieredPrice) SetInterval(v string) {
+// SetInterval gets a reference to the given BillingInterval and assigns it to the Interval field.
+func (o *TieredPrice) SetInterval(v BillingInterval) {
 	o.Interval = &v
 }
 
@@ -279,9 +276,9 @@ func (o *TieredPrice) SetIntervalCount(v int32) {
 }
 
 // GetUsageType returns the UsageType field value if set, zero value otherwise.
-func (o *TieredPrice) GetUsageType() string {
+func (o *TieredPrice) GetUsageType() UsageType {
 	if o == nil || IsNil(o.UsageType) {
-		var ret string
+		var ret UsageType
 		return ret
 	}
 	return *o.UsageType
@@ -289,7 +286,7 @@ func (o *TieredPrice) GetUsageType() string {
 
 // GetUsageTypeOk returns a tuple with the UsageType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TieredPrice) GetUsageTypeOk() (*string, bool) {
+func (o *TieredPrice) GetUsageTypeOk() (*UsageType, bool) {
 	if o == nil || IsNil(o.UsageType) {
 		return nil, false
 	}
@@ -305,8 +302,8 @@ func (o *TieredPrice) HasUsageType() bool {
 	return false
 }
 
-// SetUsageType gets a reference to the given string and assigns it to the UsageType field.
-func (o *TieredPrice) SetUsageType(v string) {
+// SetUsageType gets a reference to the given UsageType and assigns it to the UsageType field.
+func (o *TieredPrice) SetUsageType(v UsageType) {
 	o.UsageType = &v
 }
 
@@ -343,9 +340,9 @@ func (o *TieredPrice) SetMeter(v string) {
 }
 
 // GetBillingScheme returns the BillingScheme field value
-func (o *TieredPrice) GetBillingScheme() string {
+func (o *TieredPrice) GetBillingScheme() TieredBillingScheme {
 	if o == nil {
-		var ret string
+		var ret TieredBillingScheme
 		return ret
 	}
 
@@ -354,7 +351,7 @@ func (o *TieredPrice) GetBillingScheme() string {
 
 // GetBillingSchemeOk returns a tuple with the BillingScheme field value
 // and a boolean to check if the value has been set.
-func (o *TieredPrice) GetBillingSchemeOk() (*string, bool) {
+func (o *TieredPrice) GetBillingSchemeOk() (*TieredBillingScheme, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -362,14 +359,14 @@ func (o *TieredPrice) GetBillingSchemeOk() (*string, bool) {
 }
 
 // SetBillingScheme sets field value
-func (o *TieredPrice) SetBillingScheme(v string) {
+func (o *TieredPrice) SetBillingScheme(v TieredBillingScheme) {
 	o.BillingScheme = v
 }
 
 // GetTiersMode returns the TiersMode field value
-func (o *TieredPrice) GetTiersMode() string {
+func (o *TieredPrice) GetTiersMode() TiersMode {
 	if o == nil {
-		var ret string
+		var ret TiersMode
 		return ret
 	}
 
@@ -378,7 +375,7 @@ func (o *TieredPrice) GetTiersMode() string {
 
 // GetTiersModeOk returns a tuple with the TiersMode field value
 // and a boolean to check if the value has been set.
-func (o *TieredPrice) GetTiersModeOk() (*string, bool) {
+func (o *TieredPrice) GetTiersModeOk() (*TiersMode, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -386,7 +383,7 @@ func (o *TieredPrice) GetTiersModeOk() (*string, bool) {
 }
 
 // SetTiersMode sets field value
-func (o *TieredPrice) SetTiersMode(v string) {
+func (o *TieredPrice) SetTiersMode(v TiersMode) {
 	o.TiersMode = v
 }
 

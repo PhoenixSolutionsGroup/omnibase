@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CheckPermission**](V1PermissionsAPI.md#CheckPermission) | **Post** /api/v1/permissions/check | Check permission
 [**CreateRelationship**](V1PermissionsAPI.md#CreateRelationship) | **Post** /api/v1/permissions/relationships | Create relationship
+[**DeleteRelationship**](V1PermissionsAPI.md#DeleteRelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship
 
 
 
@@ -126,6 +127,72 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**CreateRelationship200Response**](CreateRelationship200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteRelationship
+
+> DeleteRelationship200Response DeleteRelationship(ctx).DeleteRelationshipRequest(deleteRelationshipRequest).Execute()
+
+Delete relationship
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	deleteRelationshipRequest := openapiclient.DeleteRelationshipRequest{CreateRelationshipRequestOneOf: openapiclient.NewCreateRelationshipRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1PermissionsAPI.DeleteRelationship(context.Background()).DeleteRelationshipRequest(deleteRelationshipRequest).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.DeleteRelationship``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `DeleteRelationship`: DeleteRelationship200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.DeleteRelationship`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteRelationshipRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) | Relationship deletion request with either subject_id or subject_set | 
+
+### Return type
+
+[**DeleteRelationship200Response**](DeleteRelationship200Response.md)
 
 ### Authorization
 

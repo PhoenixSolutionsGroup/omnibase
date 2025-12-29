@@ -116,6 +116,7 @@ Class | Method | HTTP request | Description
 *V1PaymentsAPI* | [**RecordUsage**](docs/V1PaymentsAPI.md#recordusage) | **Post** /api/v1/payments/usage | Record metered usage
 *V1PermissionsAPI* | [**CheckPermission**](docs/V1PermissionsAPI.md#checkpermission) | **Post** /api/v1/permissions/check | Check permission
 *V1PermissionsAPI* | [**CreateRelationship**](docs/V1PermissionsAPI.md#createrelationship) | **Post** /api/v1/permissions/relationships | Create relationship
+*V1PermissionsAPI* | [**DeleteRelationship**](docs/V1PermissionsAPI.md#deleterelationship) | **Delete** /api/v1/permissions/relationships | Delete relationship
 *V1StorageAPI* | [**DeleteObject**](docs/V1StorageAPI.md#deleteobject) | **Delete** /api/v1/storage/object | Delete file from storage
 *V1StorageAPI* | [**DownloadFile**](docs/V1StorageAPI.md#downloadfile) | **Post** /api/v1/storage/download | Download file from storage
 *V1StorageAPI* | [**UploadFile**](docs/V1StorageAPI.md#uploadfile) | **Post** /api/v1/storage/upload | Upload file to storage
@@ -155,6 +156,7 @@ Class | Method | HTTP request | Description
  - [ArchiveAllStripeConfig200Response](docs/ArchiveAllStripeConfig200Response.md)
  - [BadRequest](docs/BadRequest.md)
  - [BadRequestResponse](docs/BadRequestResponse.md)
+ - [BillingInterval](docs/BillingInterval.md)
  - [BillingStatusResponse](docs/BillingStatusResponse.md)
  - [CheckPermission200Response](docs/CheckPermission200Response.md)
  - [CheckPermissionRequest](docs/CheckPermissionRequest.md)
@@ -191,10 +193,14 @@ Class | Method | HTTP request | Description
  - [CreateUser200Response](docs/CreateUser200Response.md)
  - [CreateUserRequest](docs/CreateUserRequest.md)
  - [CreateUserRequestName](docs/CreateUserRequestName.md)
+ - [CurrencyCode](docs/CurrencyCode.md)
  - [DeleteEmailTemplate200Response](docs/DeleteEmailTemplate200Response.md)
  - [DeleteEmailTemplate200ResponseAllOfData](docs/DeleteEmailTemplate200ResponseAllOfData.md)
  - [DeleteObject200Response](docs/DeleteObject200Response.md)
  - [DeleteObjectRequest](docs/DeleteObjectRequest.md)
+ - [DeleteRelationship200Response](docs/DeleteRelationship200Response.md)
+ - [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
+ - [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
  - [DeleteRole200Response](docs/DeleteRole200Response.md)
  - [DeleteRoleResponse](docs/DeleteRoleResponse.md)
  - [DeleteTenant200Response](docs/DeleteTenant200Response.md)
@@ -247,6 +253,7 @@ Class | Method | HTTP request | Description
  - [NamespaceDeploymentResponse](docs/NamespaceDeploymentResponse.md)
  - [NotFound](docs/NotFound.md)
  - [NotFoundResponse](docs/NotFoundResponse.md)
+ - [PerUnitBillingScheme](docs/PerUnitBillingScheme.md)
  - [PerUnitPrice](docs/PerUnitPrice.md)
  - [Price](docs/Price.md)
  - [PriceDisplay](docs/PriceDisplay.md)
@@ -286,7 +293,9 @@ Class | Method | HTTP request | Description
  - [TenantUserResponse](docs/TenantUserResponse.md)
  - [Tier](docs/Tier.md)
  - [TierUpTo](docs/TierUpTo.md)
+ - [TieredBillingScheme](docs/TieredBillingScheme.md)
  - [TieredPrice](docs/TieredPrice.md)
+ - [TiersMode](docs/TiersMode.md)
  - [Unauthorized](docs/Unauthorized.md)
  - [UnauthorizedResponse](docs/UnauthorizedResponse.md)
  - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
@@ -296,6 +305,7 @@ Class | Method | HTTP request | Description
  - [UploadFile200Response](docs/UploadFile200Response.md)
  - [UploadRequest](docs/UploadRequest.md)
  - [UploadResponse](docs/UploadResponse.md)
+ - [UsageType](docs/UsageType.md)
  - [UserTenantListItem](docs/UserTenantListItem.md)
  - [WhoAmI200Response](docs/WhoAmI200Response.md)
  - [WhoAmIResponse](docs/WhoAmIResponse.md)

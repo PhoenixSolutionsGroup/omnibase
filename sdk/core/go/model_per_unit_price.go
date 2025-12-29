@@ -32,18 +32,16 @@ type PerUnitPrice struct {
 	TaxIncludedInPrice *bool
 	// Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
 	Amount int64
-	// Three-letter ISO currency code (lowercase)
-	Currency string
+	Currency CurrencyCode
 	// Billing interval for recurring prices (required when usage_type is metered)
-	Interval *string
+	Interval *BillingInterval
 	// Number of intervals between billings (default 1)
 	IntervalCount *int32
 	// Usage type for recurring prices (when set to metered, interval and meter are required)
-	UsageType *string
+	UsageType *UsageType
 	// Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
 	Meter *string
-	// Billing scheme type
-	BillingScheme *string
+	BillingScheme *PerUnitBillingScheme
 	// Mark as default price for the product
 	Default *bool
 	Ui *PriceUI
@@ -55,7 +53,7 @@ type _PerUnitPrice PerUnitPrice
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPerUnitPrice(id string, amount int64, currency string) *PerUnitPrice {
+func NewPerUnitPrice(id string, amount int64, currency CurrencyCode) *PerUnitPrice {
 	this := PerUnitPrice{}
 	return &this
 }
@@ -65,7 +63,7 @@ func NewPerUnitPrice(id string, amount int64, currency string) *PerUnitPrice {
 // but it doesn't guarantee that properties required by API are set
 func NewPerUnitPriceWithDefaults() *PerUnitPrice {
 	this := PerUnitPrice{}
-	var billingScheme string = "per_unit"
+	var billingScheme PerUnitBillingScheme = PER_UNIT
 	this.BillingScheme = &billingScheme
 	return &this
 }
@@ -215,9 +213,9 @@ func (o *PerUnitPrice) SetAmount(v int64) {
 }
 
 // GetCurrency returns the Currency field value
-func (o *PerUnitPrice) GetCurrency() string {
+func (o *PerUnitPrice) GetCurrency() CurrencyCode {
 	if o == nil {
-		var ret string
+		var ret CurrencyCode
 		return ret
 	}
 
@@ -226,7 +224,7 @@ func (o *PerUnitPrice) GetCurrency() string {
 
 // GetCurrencyOk returns a tuple with the Currency field value
 // and a boolean to check if the value has been set.
-func (o *PerUnitPrice) GetCurrencyOk() (*string, bool) {
+func (o *PerUnitPrice) GetCurrencyOk() (*CurrencyCode, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -234,14 +232,14 @@ func (o *PerUnitPrice) GetCurrencyOk() (*string, bool) {
 }
 
 // SetCurrency sets field value
-func (o *PerUnitPrice) SetCurrency(v string) {
+func (o *PerUnitPrice) SetCurrency(v CurrencyCode) {
 	o.Currency = v
 }
 
 // GetInterval returns the Interval field value if set, zero value otherwise.
-func (o *PerUnitPrice) GetInterval() string {
+func (o *PerUnitPrice) GetInterval() BillingInterval {
 	if o == nil || IsNil(o.Interval) {
-		var ret string
+		var ret BillingInterval
 		return ret
 	}
 	return *o.Interval
@@ -249,7 +247,7 @@ func (o *PerUnitPrice) GetInterval() string {
 
 // GetIntervalOk returns a tuple with the Interval field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PerUnitPrice) GetIntervalOk() (*string, bool) {
+func (o *PerUnitPrice) GetIntervalOk() (*BillingInterval, bool) {
 	if o == nil || IsNil(o.Interval) {
 		return nil, false
 	}
@@ -265,8 +263,8 @@ func (o *PerUnitPrice) HasInterval() bool {
 	return false
 }
 
-// SetInterval gets a reference to the given string and assigns it to the Interval field.
-func (o *PerUnitPrice) SetInterval(v string) {
+// SetInterval gets a reference to the given BillingInterval and assigns it to the Interval field.
+func (o *PerUnitPrice) SetInterval(v BillingInterval) {
 	o.Interval = &v
 }
 
@@ -303,9 +301,9 @@ func (o *PerUnitPrice) SetIntervalCount(v int32) {
 }
 
 // GetUsageType returns the UsageType field value if set, zero value otherwise.
-func (o *PerUnitPrice) GetUsageType() string {
+func (o *PerUnitPrice) GetUsageType() UsageType {
 	if o == nil || IsNil(o.UsageType) {
-		var ret string
+		var ret UsageType
 		return ret
 	}
 	return *o.UsageType
@@ -313,7 +311,7 @@ func (o *PerUnitPrice) GetUsageType() string {
 
 // GetUsageTypeOk returns a tuple with the UsageType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PerUnitPrice) GetUsageTypeOk() (*string, bool) {
+func (o *PerUnitPrice) GetUsageTypeOk() (*UsageType, bool) {
 	if o == nil || IsNil(o.UsageType) {
 		return nil, false
 	}
@@ -329,8 +327,8 @@ func (o *PerUnitPrice) HasUsageType() bool {
 	return false
 }
 
-// SetUsageType gets a reference to the given string and assigns it to the UsageType field.
-func (o *PerUnitPrice) SetUsageType(v string) {
+// SetUsageType gets a reference to the given UsageType and assigns it to the UsageType field.
+func (o *PerUnitPrice) SetUsageType(v UsageType) {
 	o.UsageType = &v
 }
 
@@ -367,9 +365,9 @@ func (o *PerUnitPrice) SetMeter(v string) {
 }
 
 // GetBillingScheme returns the BillingScheme field value if set, zero value otherwise.
-func (o *PerUnitPrice) GetBillingScheme() string {
+func (o *PerUnitPrice) GetBillingScheme() PerUnitBillingScheme {
 	if o == nil || IsNil(o.BillingScheme) {
-		var ret string
+		var ret PerUnitBillingScheme
 		return ret
 	}
 	return *o.BillingScheme
@@ -377,7 +375,7 @@ func (o *PerUnitPrice) GetBillingScheme() string {
 
 // GetBillingSchemeOk returns a tuple with the BillingScheme field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PerUnitPrice) GetBillingSchemeOk() (*string, bool) {
+func (o *PerUnitPrice) GetBillingSchemeOk() (*PerUnitBillingScheme, bool) {
 	if o == nil || IsNil(o.BillingScheme) {
 		return nil, false
 	}
@@ -393,8 +391,8 @@ func (o *PerUnitPrice) HasBillingScheme() bool {
 	return false
 }
 
-// SetBillingScheme gets a reference to the given string and assigns it to the BillingScheme field.
-func (o *PerUnitPrice) SetBillingScheme(v string) {
+// SetBillingScheme gets a reference to the given PerUnitBillingScheme and assigns it to the BillingScheme field.
+func (o *PerUnitPrice) SetBillingScheme(v PerUnitBillingScheme) {
 	o.BillingScheme = &v
 }
 

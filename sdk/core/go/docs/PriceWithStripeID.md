@@ -8,10 +8,10 @@ Name | Type | Description | Notes
 **Public** | Pointer to **bool** | Whether price is visible in public API | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price | [optional] 
 **Amount** | Pointer to **int64** | Price amount in smallest currency unit | [optional] 
-**Currency** | **string** | Three-letter ISO currency code (lowercase) | 
-**Interval** | Pointer to **string** | Billing interval | [optional] 
+**Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
+**Interval** | Pointer to [**BillingInterval**](BillingInterval.md) |  | [optional] 
 **IntervalCount** | Pointer to **int32** | Number of intervals between billings | [optional] 
-**UsageType** | Pointer to **string** | Usage type for recurring prices | [optional] 
+**UsageType** | Pointer to [**UsageType**](UsageType.md) |  | [optional] 
 **Meter** | Pointer to **string** | Meter ID for metered pricing | [optional] 
 **BillingScheme** | Pointer to **string** | Billing scheme type | [optional] 
 **TiersMode** | Pointer to **string** | Tiers mode | [optional] 
@@ -24,7 +24,7 @@ Name | Type | Description | Notes
 
 ### NewPriceWithStripeID
 
-`func NewPriceWithStripeID(id string, currency string, ) *PriceWithStripeID`
+`func NewPriceWithStripeID(id string, currency CurrencyCode, ) *PriceWithStripeID`
 
 NewPriceWithStripeID instantiates a new PriceWithStripeID object
 This constructor will assign default values to properties that have it defined,
@@ -136,40 +136,40 @@ HasAmount returns a boolean if a field has been set.
 
 ### GetCurrency
 
-`func (o *PriceWithStripeID) GetCurrency() string`
+`func (o *PriceWithStripeID) GetCurrency() CurrencyCode`
 
 GetCurrency returns the Currency field if non-nil, zero value otherwise.
 
 ### GetCurrencyOk
 
-`func (o *PriceWithStripeID) GetCurrencyOk() (*string, bool)`
+`func (o *PriceWithStripeID) GetCurrencyOk() (*CurrencyCode, bool)`
 
 GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCurrency
 
-`func (o *PriceWithStripeID) SetCurrency(v string)`
+`func (o *PriceWithStripeID) SetCurrency(v CurrencyCode)`
 
 SetCurrency sets Currency field to given value.
 
 
 ### GetInterval
 
-`func (o *PriceWithStripeID) GetInterval() string`
+`func (o *PriceWithStripeID) GetInterval() BillingInterval`
 
 GetInterval returns the Interval field if non-nil, zero value otherwise.
 
 ### GetIntervalOk
 
-`func (o *PriceWithStripeID) GetIntervalOk() (*string, bool)`
+`func (o *PriceWithStripeID) GetIntervalOk() (*BillingInterval, bool)`
 
 GetIntervalOk returns a tuple with the Interval field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetInterval
 
-`func (o *PriceWithStripeID) SetInterval(v string)`
+`func (o *PriceWithStripeID) SetInterval(v BillingInterval)`
 
 SetInterval sets Interval field to given value.
 
@@ -206,20 +206,20 @@ HasIntervalCount returns a boolean if a field has been set.
 
 ### GetUsageType
 
-`func (o *PriceWithStripeID) GetUsageType() string`
+`func (o *PriceWithStripeID) GetUsageType() UsageType`
 
 GetUsageType returns the UsageType field if non-nil, zero value otherwise.
 
 ### GetUsageTypeOk
 
-`func (o *PriceWithStripeID) GetUsageTypeOk() (*string, bool)`
+`func (o *PriceWithStripeID) GetUsageTypeOk() (*UsageType, bool)`
 
 GetUsageTypeOk returns a tuple with the UsageType field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetUsageType
 
-`func (o *PriceWithStripeID) SetUsageType(v string)`
+`func (o *PriceWithStripeID) SetUsageType(v UsageType)`
 
 SetUsageType sets UsageType field to given value.
 

@@ -17,37 +17,37 @@ import (
 	"fmt"
 )
 
-// checks if the AssignRoleResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &AssignRoleResponse{}
+// checks if the DeleteRelationshipResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DeleteRelationshipResponse{}
 
-// AssignRoleResponse Response after assigning a role
-type AssignRoleResponse struct {
+// DeleteRelationshipResponse Relationship deletion result
+type DeleteRelationshipResponse struct {
 	// Success message
 	Message string `json:"message"`
 }
 
-type _AssignRoleResponse AssignRoleResponse
+type _DeleteRelationshipResponse DeleteRelationshipResponse
 
-// NewAssignRoleResponse instantiates a new AssignRoleResponse object
+// NewDeleteRelationshipResponse instantiates a new DeleteRelationshipResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAssignRoleResponse(message string) *AssignRoleResponse {
-	this := AssignRoleResponse{}
+func NewDeleteRelationshipResponse(message string) *DeleteRelationshipResponse {
+	this := DeleteRelationshipResponse{}
 	this.Message = message
 	return &this
 }
 
-// NewAssignRoleResponseWithDefaults instantiates a new AssignRoleResponse object
+// NewDeleteRelationshipResponseWithDefaults instantiates a new DeleteRelationshipResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewAssignRoleResponseWithDefaults() *AssignRoleResponse {
-	this := AssignRoleResponse{}
+func NewDeleteRelationshipResponseWithDefaults() *DeleteRelationshipResponse {
+	this := DeleteRelationshipResponse{}
 	return &this
 }
 
 // GetMessage returns the Message field value
-func (o *AssignRoleResponse) GetMessage() string {
+func (o *DeleteRelationshipResponse) GetMessage() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -58,7 +58,7 @@ func (o *AssignRoleResponse) GetMessage() string {
 
 // GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
-func (o *AssignRoleResponse) GetMessageOk() (*string, bool) {
+func (o *DeleteRelationshipResponse) GetMessageOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -66,11 +66,11 @@ func (o *AssignRoleResponse) GetMessageOk() (*string, bool) {
 }
 
 // SetMessage sets field value
-func (o *AssignRoleResponse) SetMessage(v string) {
+func (o *DeleteRelationshipResponse) SetMessage(v string) {
 	o.Message = v
 }
 
-func (o AssignRoleResponse) MarshalJSON() ([]byte, error) {
+func (o DeleteRelationshipResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -78,13 +78,13 @@ func (o AssignRoleResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o AssignRoleResponse) ToMap() (map[string]interface{}, error) {
+func (o DeleteRelationshipResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
 	return toSerialize, nil
 }
 
-func (o *AssignRoleResponse) UnmarshalJSON(data []byte) (err error) {
+func (o *DeleteRelationshipResponse) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -106,53 +106,53 @@ func (o *AssignRoleResponse) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varAssignRoleResponse := _AssignRoleResponse{}
+	varDeleteRelationshipResponse := _DeleteRelationshipResponse{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAssignRoleResponse)
+	err = decoder.Decode(&varDeleteRelationshipResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = AssignRoleResponse(varAssignRoleResponse)
+	*o = DeleteRelationshipResponse(varDeleteRelationshipResponse)
 
 	return err
 }
 
-type NullableAssignRoleResponse struct {
-	value *AssignRoleResponse
+type NullableDeleteRelationshipResponse struct {
+	value *DeleteRelationshipResponse
 	isSet bool
 }
 
-func (v NullableAssignRoleResponse) Get() *AssignRoleResponse {
+func (v NullableDeleteRelationshipResponse) Get() *DeleteRelationshipResponse {
 	return v.value
 }
 
-func (v *NullableAssignRoleResponse) Set(val *AssignRoleResponse) {
+func (v *NullableDeleteRelationshipResponse) Set(val *DeleteRelationshipResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableAssignRoleResponse) IsSet() bool {
+func (v NullableDeleteRelationshipResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableAssignRoleResponse) Unset() {
+func (v *NullableDeleteRelationshipResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableAssignRoleResponse(val *AssignRoleResponse) *NullableAssignRoleResponse {
-	return &NullableAssignRoleResponse{value: val, isSet: true}
+func NewNullableDeleteRelationshipResponse(val *DeleteRelationshipResponse) *NullableDeleteRelationshipResponse {
+	return &NullableDeleteRelationshipResponse{value: val, isSet: true}
 }
 
-func (v NullableAssignRoleResponse) MarshalJSON() ([]byte, error) {
+func (v NullableDeleteRelationshipResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableAssignRoleResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableDeleteRelationshipResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

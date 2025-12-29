@@ -23,6 +23,7 @@ docs/ArchiveAllResponse.md
 docs/ArchiveAllStripeConfig200Response.md
 docs/BadRequest.md
 docs/BadRequestResponse.md
+docs/BillingInterval.md
 docs/BillingStatusResponse.md
 docs/CheckPermission200Response.md
 docs/CheckPermissionRequest.md
@@ -59,10 +60,14 @@ docs/CreateTenantUserInviteResponse.md
 docs/CreateUser200Response.md
 docs/CreateUserRequest.md
 docs/CreateUserRequestName.md
+docs/CurrencyCode.md
 docs/DeleteEmailTemplate200Response.md
 docs/DeleteEmailTemplate200ResponseAllOfData.md
 docs/DeleteObject200Response.md
 docs/DeleteObjectRequest.md
+docs/DeleteRelationship200Response.md
+docs/DeleteRelationshipRequest.md
+docs/DeleteRelationshipResponse.md
 docs/DeleteRole200Response.md
 docs/DeleteRoleResponse.md
 docs/DeleteTenant200Response.md
@@ -115,6 +120,7 @@ docs/NamespaceDefinitionsResponse.md
 docs/NamespaceDeploymentResponse.md
 docs/NotFound.md
 docs/NotFoundResponse.md
+docs/PerUnitBillingScheme.md
 docs/PerUnitPrice.md
 docs/Price.md
 docs/PriceDisplay.md
@@ -154,7 +160,9 @@ docs/TenantSettings.md
 docs/TenantUserResponse.md
 docs/Tier.md
 docs/TierUpTo.md
+docs/TieredBillingScheme.md
 docs/TieredPrice.md
+docs/TiersMode.md
 docs/Unauthorized.md
 docs/UnauthorizedResponse.md
 docs/UpdateRoleRequest.md
@@ -164,6 +172,7 @@ docs/UpdateTenantUserRoleResponse.md
 docs/UploadFile200Response.md
 docs/UploadRequest.md
 docs/UploadResponse.md
+docs/UsageType.md
 docs/UserTenantListItem.md
 docs/V1AuthAPI.md
 docs/V1ConfigurationAPI.md
@@ -189,6 +198,7 @@ model_archive_all_response.go
 model_archive_all_stripe_config_200_response.go
 model_bad_request.go
 model_bad_request_response.go
+model_billing_interval.go
 model_billing_status_response.go
 model_check_permission_200_response.go
 model_check_permission_request.go
@@ -225,10 +235,14 @@ model_create_tenant_user_invite_response.go
 model_create_user_200_response.go
 model_create_user_request.go
 model_create_user_request_name.go
+model_currency_code.go
 model_delete_email_template_200_response.go
 model_delete_email_template_200_response_all_of_data.go
 model_delete_object_200_response.go
 model_delete_object_request.go
+model_delete_relationship_200_response.go
+model_delete_relationship_request.go
+model_delete_relationship_response.go
 model_delete_role_200_response.go
 model_delete_role_response.go
 model_delete_tenant_200_response.go
@@ -281,6 +295,7 @@ model_namespace_definitions_response.go
 model_namespace_deployment_response.go
 model_not_found.go
 model_not_found_response.go
+model_per_unit_billing_scheme.go
 model_per_unit_price.go
 model_price.go
 model_price_display.go
@@ -320,7 +335,9 @@ model_tenant_settings.go
 model_tenant_user_response.go
 model_tier.go
 model_tier_up_to.go
+model_tiered_billing_scheme.go
 model_tiered_price.go
+model_tiers_mode.go
 model_unauthorized.go
 model_unauthorized_response.go
 model_update_role_request.go
@@ -330,8 +347,17 @@ model_update_tenant_user_role_response.go
 model_upload_file_200_response.go
 model_upload_request.go
 model_upload_response.go
+model_usage_type.go
 model_user_tenant_list_item.go
 model_who_am_i_200_response.go
 model_who_am_i_response.go
 response.go
+test/api_v1_auth_test.go
+test/api_v1_configuration_test.go
+test/api_v1_events_test.go
+test/api_v1_payments_test.go
+test/api_v1_permissions_test.go
+test/api_v1_storage_test.go
+test/api_v1_stripe_test.go
+test/api_v1_tenants_test.go
 utils.go

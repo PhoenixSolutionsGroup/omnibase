@@ -1,73 +1,73 @@
-# AssignRole200Response
+# DeleteRelationship200Response
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Status** | **int32** | HTTP status code | 
-**Data** | Pointer to [**AssignRoleResponse**](AssignRoleResponse.md) |  | [optional] 
+**Data** | Pointer to [**DeleteRelationshipResponse**](DeleteRelationshipResponse.md) |  | [optional] 
 
 ## Methods
 
-### NewAssignRole200Response
+### NewDeleteRelationship200Response
 
-`func NewAssignRole200Response(status int32, ) *AssignRole200Response`
+`func NewDeleteRelationship200Response(status int32, ) *DeleteRelationship200Response`
 
-NewAssignRole200Response instantiates a new AssignRole200Response object
+NewDeleteRelationship200Response instantiates a new DeleteRelationship200Response object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewAssignRole200ResponseWithDefaults
+### NewDeleteRelationship200ResponseWithDefaults
 
-`func NewAssignRole200ResponseWithDefaults() *AssignRole200Response`
+`func NewDeleteRelationship200ResponseWithDefaults() *DeleteRelationship200Response`
 
-NewAssignRole200ResponseWithDefaults instantiates a new AssignRole200Response object
+NewDeleteRelationship200ResponseWithDefaults instantiates a new DeleteRelationship200Response object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetStatus
 
-`func (o *AssignRole200Response) GetStatus() int32`
+`func (o *DeleteRelationship200Response) GetStatus() int32`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *AssignRole200Response) GetStatusOk() (*int32, bool)`
+`func (o *DeleteRelationship200Response) GetStatusOk() (*int32, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *AssignRole200Response) SetStatus(v int32)`
+`func (o *DeleteRelationship200Response) SetStatus(v int32)`
 
 SetStatus sets Status field to given value.
 
 
 ### GetData
 
-`func (o *AssignRole200Response) GetData() AssignRoleResponse`
+`func (o *DeleteRelationship200Response) GetData() DeleteRelationshipResponse`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *AssignRole200Response) GetDataOk() (*AssignRoleResponse, bool)`
+`func (o *DeleteRelationship200Response) GetDataOk() (*DeleteRelationshipResponse, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *AssignRole200Response) SetData(v AssignRoleResponse)`
+`func (o *DeleteRelationship200Response) SetData(v DeleteRelationshipResponse)`
 
 SetData sets Data field to given value.
 
 ### HasData
 
-`func (o *AssignRole200Response) HasData() bool`
+`func (o *DeleteRelationship200Response) HasData() bool`
 
 HasData returns a boolean if a field has been set.
 

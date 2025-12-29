@@ -17,38 +17,38 @@ import (
 	"fmt"
 )
 
-// checks if the AssignRole200Response type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &AssignRole200Response{}
+// checks if the DeleteRelationship200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DeleteRelationship200Response{}
 
-// AssignRole200Response struct for AssignRole200Response
-type AssignRole200Response struct {
+// DeleteRelationship200Response struct for DeleteRelationship200Response
+type DeleteRelationship200Response struct {
 	// HTTP status code
 	Status int32 `json:"status"`
-	Data *AssignRoleResponse `json:"data,omitempty"`
+	Data *DeleteRelationshipResponse `json:"data,omitempty"`
 }
 
-type _AssignRole200Response AssignRole200Response
+type _DeleteRelationship200Response DeleteRelationship200Response
 
-// NewAssignRole200Response instantiates a new AssignRole200Response object
+// NewDeleteRelationship200Response instantiates a new DeleteRelationship200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAssignRole200Response(status int32) *AssignRole200Response {
-	this := AssignRole200Response{}
+func NewDeleteRelationship200Response(status int32) *DeleteRelationship200Response {
+	this := DeleteRelationship200Response{}
 	this.Status = status
 	return &this
 }
 
-// NewAssignRole200ResponseWithDefaults instantiates a new AssignRole200Response object
+// NewDeleteRelationship200ResponseWithDefaults instantiates a new DeleteRelationship200Response object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewAssignRole200ResponseWithDefaults() *AssignRole200Response {
-	this := AssignRole200Response{}
+func NewDeleteRelationship200ResponseWithDefaults() *DeleteRelationship200Response {
+	this := DeleteRelationship200Response{}
 	return &this
 }
 
 // GetStatus returns the Status field value
-func (o *AssignRole200Response) GetStatus() int32 {
+func (o *DeleteRelationship200Response) GetStatus() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -59,7 +59,7 @@ func (o *AssignRole200Response) GetStatus() int32 {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *AssignRole200Response) GetStatusOk() (*int32, bool) {
+func (o *DeleteRelationship200Response) GetStatusOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -67,14 +67,14 @@ func (o *AssignRole200Response) GetStatusOk() (*int32, bool) {
 }
 
 // SetStatus sets field value
-func (o *AssignRole200Response) SetStatus(v int32) {
+func (o *DeleteRelationship200Response) SetStatus(v int32) {
 	o.Status = v
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *AssignRole200Response) GetData() AssignRoleResponse {
+func (o *DeleteRelationship200Response) GetData() DeleteRelationshipResponse {
 	if o == nil || IsNil(o.Data) {
-		var ret AssignRoleResponse
+		var ret DeleteRelationshipResponse
 		return ret
 	}
 	return *o.Data
@@ -82,7 +82,7 @@ func (o *AssignRole200Response) GetData() AssignRoleResponse {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *AssignRole200Response) GetDataOk() (*AssignRoleResponse, bool) {
+func (o *DeleteRelationship200Response) GetDataOk() (*DeleteRelationshipResponse, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -90,7 +90,7 @@ func (o *AssignRole200Response) GetDataOk() (*AssignRoleResponse, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *AssignRole200Response) HasData() bool {
+func (o *DeleteRelationship200Response) HasData() bool {
 	if o != nil && !IsNil(o.Data) {
 		return true
 	}
@@ -98,12 +98,12 @@ func (o *AssignRole200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given AssignRoleResponse and assigns it to the Data field.
-func (o *AssignRole200Response) SetData(v AssignRoleResponse) {
+// SetData gets a reference to the given DeleteRelationshipResponse and assigns it to the Data field.
+func (o *DeleteRelationship200Response) SetData(v DeleteRelationshipResponse) {
 	o.Data = &v
 }
 
-func (o AssignRole200Response) MarshalJSON() ([]byte, error) {
+func (o DeleteRelationship200Response) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -111,7 +111,7 @@ func (o AssignRole200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o AssignRole200Response) ToMap() (map[string]interface{}, error) {
+func (o DeleteRelationship200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["status"] = o.Status
 	if !IsNil(o.Data) {
@@ -120,7 +120,7 @@ func (o AssignRole200Response) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *AssignRole200Response) UnmarshalJSON(data []byte) (err error) {
+func (o *DeleteRelationship200Response) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -142,53 +142,53 @@ func (o *AssignRole200Response) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varAssignRole200Response := _AssignRole200Response{}
+	varDeleteRelationship200Response := _DeleteRelationship200Response{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAssignRole200Response)
+	err = decoder.Decode(&varDeleteRelationship200Response)
 
 	if err != nil {
 		return err
 	}
 
-	*o = AssignRole200Response(varAssignRole200Response)
+	*o = DeleteRelationship200Response(varDeleteRelationship200Response)
 
 	return err
 }
 
-type NullableAssignRole200Response struct {
-	value *AssignRole200Response
+type NullableDeleteRelationship200Response struct {
+	value *DeleteRelationship200Response
 	isSet bool
 }
 
-func (v NullableAssignRole200Response) Get() *AssignRole200Response {
+func (v NullableDeleteRelationship200Response) Get() *DeleteRelationship200Response {
 	return v.value
 }
 
-func (v *NullableAssignRole200Response) Set(val *AssignRole200Response) {
+func (v *NullableDeleteRelationship200Response) Set(val *DeleteRelationship200Response) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableAssignRole200Response) IsSet() bool {
+func (v NullableDeleteRelationship200Response) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableAssignRole200Response) Unset() {
+func (v *NullableDeleteRelationship200Response) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableAssignRole200Response(val *AssignRole200Response) *NullableAssignRole200Response {
-	return &NullableAssignRole200Response{value: val, isSet: true}
+func NewNullableDeleteRelationship200Response(val *DeleteRelationship200Response) *NullableDeleteRelationship200Response {
+	return &NullableDeleteRelationship200Response{value: val, isSet: true}
 }
 
-func (v NullableAssignRole200Response) MarshalJSON() ([]byte, error) {
+func (v NullableDeleteRelationship200Response) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableAssignRole200Response) UnmarshalJSON(src []byte) error {
+func (v *NullableDeleteRelationship200Response) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

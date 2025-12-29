@@ -30,14 +30,11 @@ type PriceWithStripeID struct {
 	TaxIncludedInPrice *bool `json:"tax_included_in_price,omitempty"`
 	// Price amount in smallest currency unit
 	Amount *int64 `json:"amount,omitempty"`
-	// Three-letter ISO currency code (lowercase)
-	Currency string `json:"currency" validate:"regexp=^[a-z]{3}$"`
-	// Billing interval
-	Interval *string `json:"interval,omitempty"`
+	Currency CurrencyCode `json:"currency"`
+	Interval *BillingInterval `json:"interval,omitempty"`
 	// Number of intervals between billings
 	IntervalCount *int32 `json:"interval_count,omitempty"`
-	// Usage type for recurring prices
-	UsageType *string `json:"usage_type,omitempty"`
+	UsageType *UsageType `json:"usage_type,omitempty"`
 	// Meter ID for metered pricing
 	Meter *string `json:"meter,omitempty"`
 	// Billing scheme type
@@ -59,7 +56,7 @@ type _PriceWithStripeID PriceWithStripeID
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPriceWithStripeID(id string, currency string) *PriceWithStripeID {
+func NewPriceWithStripeID(id string, currency CurrencyCode) *PriceWithStripeID {
 	this := PriceWithStripeID{}
 	this.Id = id
 	this.Currency = currency
@@ -195,9 +192,9 @@ func (o *PriceWithStripeID) SetAmount(v int64) {
 }
 
 // GetCurrency returns the Currency field value
-func (o *PriceWithStripeID) GetCurrency() string {
+func (o *PriceWithStripeID) GetCurrency() CurrencyCode {
 	if o == nil {
-		var ret string
+		var ret CurrencyCode
 		return ret
 	}
 
@@ -206,7 +203,7 @@ func (o *PriceWithStripeID) GetCurrency() string {
 
 // GetCurrencyOk returns a tuple with the Currency field value
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetCurrencyOk() (*string, bool) {
+func (o *PriceWithStripeID) GetCurrencyOk() (*CurrencyCode, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -214,14 +211,14 @@ func (o *PriceWithStripeID) GetCurrencyOk() (*string, bool) {
 }
 
 // SetCurrency sets field value
-func (o *PriceWithStripeID) SetCurrency(v string) {
+func (o *PriceWithStripeID) SetCurrency(v CurrencyCode) {
 	o.Currency = v
 }
 
 // GetInterval returns the Interval field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetInterval() string {
+func (o *PriceWithStripeID) GetInterval() BillingInterval {
 	if o == nil || IsNil(o.Interval) {
-		var ret string
+		var ret BillingInterval
 		return ret
 	}
 	return *o.Interval
@@ -229,7 +226,7 @@ func (o *PriceWithStripeID) GetInterval() string {
 
 // GetIntervalOk returns a tuple with the Interval field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetIntervalOk() (*string, bool) {
+func (o *PriceWithStripeID) GetIntervalOk() (*BillingInterval, bool) {
 	if o == nil || IsNil(o.Interval) {
 		return nil, false
 	}
@@ -245,8 +242,8 @@ func (o *PriceWithStripeID) HasInterval() bool {
 	return false
 }
 
-// SetInterval gets a reference to the given string and assigns it to the Interval field.
-func (o *PriceWithStripeID) SetInterval(v string) {
+// SetInterval gets a reference to the given BillingInterval and assigns it to the Interval field.
+func (o *PriceWithStripeID) SetInterval(v BillingInterval) {
 	o.Interval = &v
 }
 
@@ -283,9 +280,9 @@ func (o *PriceWithStripeID) SetIntervalCount(v int32) {
 }
 
 // GetUsageType returns the UsageType field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetUsageType() string {
+func (o *PriceWithStripeID) GetUsageType() UsageType {
 	if o == nil || IsNil(o.UsageType) {
-		var ret string
+		var ret UsageType
 		return ret
 	}
 	return *o.UsageType
@@ -293,7 +290,7 @@ func (o *PriceWithStripeID) GetUsageType() string {
 
 // GetUsageTypeOk returns a tuple with the UsageType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetUsageTypeOk() (*string, bool) {
+func (o *PriceWithStripeID) GetUsageTypeOk() (*UsageType, bool) {
 	if o == nil || IsNil(o.UsageType) {
 		return nil, false
 	}
@@ -309,8 +306,8 @@ func (o *PriceWithStripeID) HasUsageType() bool {
 	return false
 }
 
-// SetUsageType gets a reference to the given string and assigns it to the UsageType field.
-func (o *PriceWithStripeID) SetUsageType(v string) {
+// SetUsageType gets a reference to the given UsageType and assigns it to the UsageType field.
+func (o *PriceWithStripeID) SetUsageType(v UsageType) {
 	o.UsageType = &v
 }
 
