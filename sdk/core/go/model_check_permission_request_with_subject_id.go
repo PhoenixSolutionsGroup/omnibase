@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.16
+API version: 0.9.17
 Contact: support@omnibase.dev
 */
 
@@ -17,11 +17,11 @@ import (
 	"fmt"
 )
 
-// checks if the CheckPermissionRequestOneOf type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CheckPermissionRequestOneOf{}
+// checks if the CheckPermissionRequestWithSubjectId type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CheckPermissionRequestWithSubjectId{}
 
-// CheckPermissionRequestOneOf struct for CheckPermissionRequestOneOf
-type CheckPermissionRequestOneOf struct {
+// CheckPermissionRequestWithSubjectId Check permission request using a direct subject identifier
+type CheckPermissionRequestWithSubjectId struct {
 	// The namespace of the permission check
 	Namespace string `json:"namespace"`
 	// The object to check permissions on
@@ -32,14 +32,14 @@ type CheckPermissionRequestOneOf struct {
 	SubjectId string `json:"subject_id"`
 }
 
-type _CheckPermissionRequestOneOf CheckPermissionRequestOneOf
+type _CheckPermissionRequestWithSubjectId CheckPermissionRequestWithSubjectId
 
-// NewCheckPermissionRequestOneOf instantiates a new CheckPermissionRequestOneOf object
+// NewCheckPermissionRequestWithSubjectId instantiates a new CheckPermissionRequestWithSubjectId object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCheckPermissionRequestOneOf(namespace string, object string, relation string, subjectId string) *CheckPermissionRequestOneOf {
-	this := CheckPermissionRequestOneOf{}
+func NewCheckPermissionRequestWithSubjectId(namespace string, object string, relation string, subjectId string) *CheckPermissionRequestWithSubjectId {
+	this := CheckPermissionRequestWithSubjectId{}
 	this.Namespace = namespace
 	this.Object = object
 	this.Relation = relation
@@ -47,16 +47,16 @@ func NewCheckPermissionRequestOneOf(namespace string, object string, relation st
 	return &this
 }
 
-// NewCheckPermissionRequestOneOfWithDefaults instantiates a new CheckPermissionRequestOneOf object
+// NewCheckPermissionRequestWithSubjectIdWithDefaults instantiates a new CheckPermissionRequestWithSubjectId object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCheckPermissionRequestOneOfWithDefaults() *CheckPermissionRequestOneOf {
-	this := CheckPermissionRequestOneOf{}
+func NewCheckPermissionRequestWithSubjectIdWithDefaults() *CheckPermissionRequestWithSubjectId {
+	this := CheckPermissionRequestWithSubjectId{}
 	return &this
 }
 
 // GetNamespace returns the Namespace field value
-func (o *CheckPermissionRequestOneOf) GetNamespace() string {
+func (o *CheckPermissionRequestWithSubjectId) GetNamespace() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -67,7 +67,7 @@ func (o *CheckPermissionRequestOneOf) GetNamespace() string {
 
 // GetNamespaceOk returns a tuple with the Namespace field value
 // and a boolean to check if the value has been set.
-func (o *CheckPermissionRequestOneOf) GetNamespaceOk() (*string, bool) {
+func (o *CheckPermissionRequestWithSubjectId) GetNamespaceOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -75,12 +75,12 @@ func (o *CheckPermissionRequestOneOf) GetNamespaceOk() (*string, bool) {
 }
 
 // SetNamespace sets field value
-func (o *CheckPermissionRequestOneOf) SetNamespace(v string) {
+func (o *CheckPermissionRequestWithSubjectId) SetNamespace(v string) {
 	o.Namespace = v
 }
 
 // GetObject returns the Object field value
-func (o *CheckPermissionRequestOneOf) GetObject() string {
+func (o *CheckPermissionRequestWithSubjectId) GetObject() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -91,7 +91,7 @@ func (o *CheckPermissionRequestOneOf) GetObject() string {
 
 // GetObjectOk returns a tuple with the Object field value
 // and a boolean to check if the value has been set.
-func (o *CheckPermissionRequestOneOf) GetObjectOk() (*string, bool) {
+func (o *CheckPermissionRequestWithSubjectId) GetObjectOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -99,12 +99,12 @@ func (o *CheckPermissionRequestOneOf) GetObjectOk() (*string, bool) {
 }
 
 // SetObject sets field value
-func (o *CheckPermissionRequestOneOf) SetObject(v string) {
+func (o *CheckPermissionRequestWithSubjectId) SetObject(v string) {
 	o.Object = v
 }
 
 // GetRelation returns the Relation field value
-func (o *CheckPermissionRequestOneOf) GetRelation() string {
+func (o *CheckPermissionRequestWithSubjectId) GetRelation() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -115,7 +115,7 @@ func (o *CheckPermissionRequestOneOf) GetRelation() string {
 
 // GetRelationOk returns a tuple with the Relation field value
 // and a boolean to check if the value has been set.
-func (o *CheckPermissionRequestOneOf) GetRelationOk() (*string, bool) {
+func (o *CheckPermissionRequestWithSubjectId) GetRelationOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -123,12 +123,12 @@ func (o *CheckPermissionRequestOneOf) GetRelationOk() (*string, bool) {
 }
 
 // SetRelation sets field value
-func (o *CheckPermissionRequestOneOf) SetRelation(v string) {
+func (o *CheckPermissionRequestWithSubjectId) SetRelation(v string) {
 	o.Relation = v
 }
 
 // GetSubjectId returns the SubjectId field value
-func (o *CheckPermissionRequestOneOf) GetSubjectId() string {
+func (o *CheckPermissionRequestWithSubjectId) GetSubjectId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -139,7 +139,7 @@ func (o *CheckPermissionRequestOneOf) GetSubjectId() string {
 
 // GetSubjectIdOk returns a tuple with the SubjectId field value
 // and a boolean to check if the value has been set.
-func (o *CheckPermissionRequestOneOf) GetSubjectIdOk() (*string, bool) {
+func (o *CheckPermissionRequestWithSubjectId) GetSubjectIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -147,11 +147,11 @@ func (o *CheckPermissionRequestOneOf) GetSubjectIdOk() (*string, bool) {
 }
 
 // SetSubjectId sets field value
-func (o *CheckPermissionRequestOneOf) SetSubjectId(v string) {
+func (o *CheckPermissionRequestWithSubjectId) SetSubjectId(v string) {
 	o.SubjectId = v
 }
 
-func (o CheckPermissionRequestOneOf) MarshalJSON() ([]byte, error) {
+func (o CheckPermissionRequestWithSubjectId) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -159,7 +159,7 @@ func (o CheckPermissionRequestOneOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CheckPermissionRequestOneOf) ToMap() (map[string]interface{}, error) {
+func (o CheckPermissionRequestWithSubjectId) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["namespace"] = o.Namespace
 	toSerialize["object"] = o.Object
@@ -168,7 +168,7 @@ func (o CheckPermissionRequestOneOf) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *CheckPermissionRequestOneOf) UnmarshalJSON(data []byte) (err error) {
+func (o *CheckPermissionRequestWithSubjectId) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -193,53 +193,53 @@ func (o *CheckPermissionRequestOneOf) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCheckPermissionRequestOneOf := _CheckPermissionRequestOneOf{}
+	varCheckPermissionRequestWithSubjectId := _CheckPermissionRequestWithSubjectId{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCheckPermissionRequestOneOf)
+	err = decoder.Decode(&varCheckPermissionRequestWithSubjectId)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CheckPermissionRequestOneOf(varCheckPermissionRequestOneOf)
+	*o = CheckPermissionRequestWithSubjectId(varCheckPermissionRequestWithSubjectId)
 
 	return err
 }
 
-type NullableCheckPermissionRequestOneOf struct {
-	value *CheckPermissionRequestOneOf
+type NullableCheckPermissionRequestWithSubjectId struct {
+	value *CheckPermissionRequestWithSubjectId
 	isSet bool
 }
 
-func (v NullableCheckPermissionRequestOneOf) Get() *CheckPermissionRequestOneOf {
+func (v NullableCheckPermissionRequestWithSubjectId) Get() *CheckPermissionRequestWithSubjectId {
 	return v.value
 }
 
-func (v *NullableCheckPermissionRequestOneOf) Set(val *CheckPermissionRequestOneOf) {
+func (v *NullableCheckPermissionRequestWithSubjectId) Set(val *CheckPermissionRequestWithSubjectId) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCheckPermissionRequestOneOf) IsSet() bool {
+func (v NullableCheckPermissionRequestWithSubjectId) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCheckPermissionRequestOneOf) Unset() {
+func (v *NullableCheckPermissionRequestWithSubjectId) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCheckPermissionRequestOneOf(val *CheckPermissionRequestOneOf) *NullableCheckPermissionRequestOneOf {
-	return &NullableCheckPermissionRequestOneOf{value: val, isSet: true}
+func NewNullableCheckPermissionRequestWithSubjectId(val *CheckPermissionRequestWithSubjectId) *NullableCheckPermissionRequestWithSubjectId {
+	return &NullableCheckPermissionRequestWithSubjectId{value: val, isSet: true}
 }
 
-func (v NullableCheckPermissionRequestOneOf) MarshalJSON() ([]byte, error) {
+func (v NullableCheckPermissionRequestWithSubjectId) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCheckPermissionRequestOneOf) UnmarshalJSON(src []byte) error {
+func (v *NullableCheckPermissionRequestWithSubjectId) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

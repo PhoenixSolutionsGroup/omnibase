@@ -27,8 +27,8 @@ docs/BillingInterval.md
 docs/BillingStatusResponse.md
 docs/CheckPermission200Response.md
 docs/CheckPermissionRequest.md
-docs/CheckPermissionRequestOneOf.md
-docs/CheckPermissionRequestOneOf1.md
+docs/CheckPermissionRequestWithSubjectId.md
+docs/CheckPermissionRequestWithSubjectSet.md
 docs/CheckPermissionResponse.md
 docs/ConfigHistoryItem.md
 docs/ConfigHistoryPagination.md
@@ -47,8 +47,8 @@ docs/CreatePortalRequest.md
 docs/CreatePortalResponse.md
 docs/CreateRelationship200Response.md
 docs/CreateRelationshipRequest.md
-docs/CreateRelationshipRequestOneOf.md
-docs/CreateRelationshipRequestOneOf1.md
+docs/CreateRelationshipRequestWithSubjectId.md
+docs/CreateRelationshipRequestWithSubjectSet.md
 docs/CreateRelationshipResponse.md
 docs/CreateRole200Response.md
 docs/CreateRoleRequest.md
@@ -67,6 +67,8 @@ docs/DeleteObject200Response.md
 docs/DeleteObjectRequest.md
 docs/DeleteRelationship200Response.md
 docs/DeleteRelationshipRequest.md
+docs/DeleteRelationshipRequestWithSubjectId.md
+docs/DeleteRelationshipRequestWithSubjectSet.md
 docs/DeleteRelationshipResponse.md
 docs/DeleteRole200Response.md
 docs/DeleteRoleResponse.md
@@ -202,8 +204,8 @@ model_billing_interval.go
 model_billing_status_response.go
 model_check_permission_200_response.go
 model_check_permission_request.go
-model_check_permission_request_one_of.go
-model_check_permission_request_one_of_1.go
+model_check_permission_request_with_subject_id.go
+model_check_permission_request_with_subject_set.go
 model_check_permission_response.go
 model_config_history_item.go
 model_config_history_pagination.go
@@ -222,8 +224,8 @@ model_create_portal_request.go
 model_create_portal_response.go
 model_create_relationship_200_response.go
 model_create_relationship_request.go
-model_create_relationship_request_one_of.go
-model_create_relationship_request_one_of_1.go
+model_create_relationship_request_with_subject_id.go
+model_create_relationship_request_with_subject_set.go
 model_create_relationship_response.go
 model_create_role_200_response.go
 model_create_role_request.go
@@ -242,6 +244,8 @@ model_delete_object_200_response.go
 model_delete_object_request.go
 model_delete_relationship_200_response.go
 model_delete_relationship_request.go
+model_delete_relationship_request_with_subject_id.go
+model_delete_relationship_request_with_subject_set.go
 model_delete_relationship_response.go
 model_delete_role_200_response.go
 model_delete_role_response.go

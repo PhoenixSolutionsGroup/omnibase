@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.16
+API version: 0.9.17
 Contact: support@omnibase.dev
 */
 
@@ -19,21 +19,21 @@ import (
 
 // CreateRelationshipRequest - Create relationship request. Must provide exactly one of subject_id or subject_set.
 type CreateRelationshipRequest struct {
-	CreateRelationshipRequestOneOf *CreateRelationshipRequestOneOf
-	CreateRelationshipRequestOneOf1 *CreateRelationshipRequestOneOf1
+	CreateRelationshipRequestWithSubjectId *CreateRelationshipRequestWithSubjectId
+	CreateRelationshipRequestWithSubjectSet *CreateRelationshipRequestWithSubjectSet
 }
 
-// CreateRelationshipRequestOneOfAsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestOneOf wrapped in CreateRelationshipRequest
-func CreateRelationshipRequestOneOfAsCreateRelationshipRequest(v *CreateRelationshipRequestOneOf) CreateRelationshipRequest {
+// CreateRelationshipRequestWithSubjectIdAsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestWithSubjectId wrapped in CreateRelationshipRequest
+func CreateRelationshipRequestWithSubjectIdAsCreateRelationshipRequest(v *CreateRelationshipRequestWithSubjectId) CreateRelationshipRequest {
 	return CreateRelationshipRequest{
-		CreateRelationshipRequestOneOf: v,
+		CreateRelationshipRequestWithSubjectId: v,
 	}
 }
 
-// CreateRelationshipRequestOneOf1AsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestOneOf1 wrapped in CreateRelationshipRequest
-func CreateRelationshipRequestOneOf1AsCreateRelationshipRequest(v *CreateRelationshipRequestOneOf1) CreateRelationshipRequest {
+// CreateRelationshipRequestWithSubjectSetAsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestWithSubjectSet wrapped in CreateRelationshipRequest
+func CreateRelationshipRequestWithSubjectSetAsCreateRelationshipRequest(v *CreateRelationshipRequestWithSubjectSet) CreateRelationshipRequest {
 	return CreateRelationshipRequest{
-		CreateRelationshipRequestOneOf1: v,
+		CreateRelationshipRequestWithSubjectSet: v,
 	}
 }
 
@@ -42,44 +42,44 @@ func CreateRelationshipRequestOneOf1AsCreateRelationshipRequest(v *CreateRelatio
 func (dst *CreateRelationshipRequest) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
-	// try to unmarshal data into CreateRelationshipRequestOneOf
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestOneOf)
+	// try to unmarshal data into CreateRelationshipRequestWithSubjectId
+	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestWithSubjectId)
 	if err == nil {
-		jsonCreateRelationshipRequestOneOf, _ := json.Marshal(dst.CreateRelationshipRequestOneOf)
-		if string(jsonCreateRelationshipRequestOneOf) == "{}" { // empty struct
-			dst.CreateRelationshipRequestOneOf = nil
+		jsonCreateRelationshipRequestWithSubjectId, _ := json.Marshal(dst.CreateRelationshipRequestWithSubjectId)
+		if string(jsonCreateRelationshipRequestWithSubjectId) == "{}" { // empty struct
+			dst.CreateRelationshipRequestWithSubjectId = nil
 		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestOneOf); err != nil {
-				dst.CreateRelationshipRequestOneOf = nil
+			if err = validator.Validate(dst.CreateRelationshipRequestWithSubjectId); err != nil {
+				dst.CreateRelationshipRequestWithSubjectId = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CreateRelationshipRequestOneOf = nil
+		dst.CreateRelationshipRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into CreateRelationshipRequestOneOf1
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestOneOf1)
+	// try to unmarshal data into CreateRelationshipRequestWithSubjectSet
+	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestWithSubjectSet)
 	if err == nil {
-		jsonCreateRelationshipRequestOneOf1, _ := json.Marshal(dst.CreateRelationshipRequestOneOf1)
-		if string(jsonCreateRelationshipRequestOneOf1) == "{}" { // empty struct
-			dst.CreateRelationshipRequestOneOf1 = nil
+		jsonCreateRelationshipRequestWithSubjectSet, _ := json.Marshal(dst.CreateRelationshipRequestWithSubjectSet)
+		if string(jsonCreateRelationshipRequestWithSubjectSet) == "{}" { // empty struct
+			dst.CreateRelationshipRequestWithSubjectSet = nil
 		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestOneOf1); err != nil {
-				dst.CreateRelationshipRequestOneOf1 = nil
+			if err = validator.Validate(dst.CreateRelationshipRequestWithSubjectSet); err != nil {
+				dst.CreateRelationshipRequestWithSubjectSet = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CreateRelationshipRequestOneOf1 = nil
+		dst.CreateRelationshipRequestWithSubjectSet = nil
 	}
 
 	if match > 1 { // more than 1 match
 		// reset to nil
-		dst.CreateRelationshipRequestOneOf = nil
-		dst.CreateRelationshipRequestOneOf1 = nil
+		dst.CreateRelationshipRequestWithSubjectId = nil
+		dst.CreateRelationshipRequestWithSubjectSet = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(CreateRelationshipRequest)")
 	} else if match == 1 {
@@ -91,12 +91,12 @@ func (dst *CreateRelationshipRequest) UnmarshalJSON(data []byte) error {
 
 // Marshal data from the first non-nil pointers in the struct to JSON
 func (src CreateRelationshipRequest) MarshalJSON() ([]byte, error) {
-	if src.CreateRelationshipRequestOneOf != nil {
-		return json.Marshal(&src.CreateRelationshipRequestOneOf)
+	if src.CreateRelationshipRequestWithSubjectId != nil {
+		return json.Marshal(&src.CreateRelationshipRequestWithSubjectId)
 	}
 
-	if src.CreateRelationshipRequestOneOf1 != nil {
-		return json.Marshal(&src.CreateRelationshipRequestOneOf1)
+	if src.CreateRelationshipRequestWithSubjectSet != nil {
+		return json.Marshal(&src.CreateRelationshipRequestWithSubjectSet)
 	}
 
 	return nil, nil // no data in oneOf schemas
@@ -107,12 +107,12 @@ func (obj *CreateRelationshipRequest) GetActualInstance() (interface{}) {
 	if obj == nil {
 		return nil
 	}
-	if obj.CreateRelationshipRequestOneOf != nil {
-		return obj.CreateRelationshipRequestOneOf
+	if obj.CreateRelationshipRequestWithSubjectId != nil {
+		return obj.CreateRelationshipRequestWithSubjectId
 	}
 
-	if obj.CreateRelationshipRequestOneOf1 != nil {
-		return obj.CreateRelationshipRequestOneOf1
+	if obj.CreateRelationshipRequestWithSubjectSet != nil {
+		return obj.CreateRelationshipRequestWithSubjectSet
 	}
 
 	// all schemas are nil
@@ -121,12 +121,12 @@ func (obj *CreateRelationshipRequest) GetActualInstance() (interface{}) {
 
 // Get the actual instance value
 func (obj CreateRelationshipRequest) GetActualInstanceValue() (interface{}) {
-	if obj.CreateRelationshipRequestOneOf != nil {
-		return *obj.CreateRelationshipRequestOneOf
+	if obj.CreateRelationshipRequestWithSubjectId != nil {
+		return *obj.CreateRelationshipRequestWithSubjectId
 	}
 
-	if obj.CreateRelationshipRequestOneOf1 != nil {
-		return *obj.CreateRelationshipRequestOneOf1
+	if obj.CreateRelationshipRequestWithSubjectSet != nil {
+		return *obj.CreateRelationshipRequestWithSubjectSet
 	}
 
 	// all schemas are nil

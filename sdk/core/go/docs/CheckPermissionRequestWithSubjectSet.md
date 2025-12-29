@@ -1,4 +1,4 @@
-# CheckPermissionRequestOneOf1
+# CheckPermissionRequestWithSubjectSet
 
 ## Properties
 
@@ -11,99 +11,99 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewCheckPermissionRequestOneOf1
+### NewCheckPermissionRequestWithSubjectSet
 
-`func NewCheckPermissionRequestOneOf1(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *CheckPermissionRequestOneOf1`
+`func NewCheckPermissionRequestWithSubjectSet(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *CheckPermissionRequestWithSubjectSet`
 
-NewCheckPermissionRequestOneOf1 instantiates a new CheckPermissionRequestOneOf1 object
+NewCheckPermissionRequestWithSubjectSet instantiates a new CheckPermissionRequestWithSubjectSet object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewCheckPermissionRequestOneOf1WithDefaults
+### NewCheckPermissionRequestWithSubjectSetWithDefaults
 
-`func NewCheckPermissionRequestOneOf1WithDefaults() *CheckPermissionRequestOneOf1`
+`func NewCheckPermissionRequestWithSubjectSetWithDefaults() *CheckPermissionRequestWithSubjectSet`
 
-NewCheckPermissionRequestOneOf1WithDefaults instantiates a new CheckPermissionRequestOneOf1 object
+NewCheckPermissionRequestWithSubjectSetWithDefaults instantiates a new CheckPermissionRequestWithSubjectSet object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetNamespace
 
-`func (o *CheckPermissionRequestOneOf1) GetNamespace() string`
+`func (o *CheckPermissionRequestWithSubjectSet) GetNamespace() string`
 
 GetNamespace returns the Namespace field if non-nil, zero value otherwise.
 
 ### GetNamespaceOk
 
-`func (o *CheckPermissionRequestOneOf1) GetNamespaceOk() (*string, bool)`
+`func (o *CheckPermissionRequestWithSubjectSet) GetNamespaceOk() (*string, bool)`
 
 GetNamespaceOk returns a tuple with the Namespace field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetNamespace
 
-`func (o *CheckPermissionRequestOneOf1) SetNamespace(v string)`
+`func (o *CheckPermissionRequestWithSubjectSet) SetNamespace(v string)`
 
 SetNamespace sets Namespace field to given value.
 
 
 ### GetObject
 
-`func (o *CheckPermissionRequestOneOf1) GetObject() string`
+`func (o *CheckPermissionRequestWithSubjectSet) GetObject() string`
 
 GetObject returns the Object field if non-nil, zero value otherwise.
 
 ### GetObjectOk
 
-`func (o *CheckPermissionRequestOneOf1) GetObjectOk() (*string, bool)`
+`func (o *CheckPermissionRequestWithSubjectSet) GetObjectOk() (*string, bool)`
 
 GetObjectOk returns a tuple with the Object field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetObject
 
-`func (o *CheckPermissionRequestOneOf1) SetObject(v string)`
+`func (o *CheckPermissionRequestWithSubjectSet) SetObject(v string)`
 
 SetObject sets Object field to given value.
 
 
 ### GetRelation
 
-`func (o *CheckPermissionRequestOneOf1) GetRelation() string`
+`func (o *CheckPermissionRequestWithSubjectSet) GetRelation() string`
 
 GetRelation returns the Relation field if non-nil, zero value otherwise.
 
 ### GetRelationOk
 
-`func (o *CheckPermissionRequestOneOf1) GetRelationOk() (*string, bool)`
+`func (o *CheckPermissionRequestWithSubjectSet) GetRelationOk() (*string, bool)`
 
 GetRelationOk returns a tuple with the Relation field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetRelation
 
-`func (o *CheckPermissionRequestOneOf1) SetRelation(v string)`
+`func (o *CheckPermissionRequestWithSubjectSet) SetRelation(v string)`
 
 SetRelation sets Relation field to given value.
 
 
 ### GetSubjectSet
 
-`func (o *CheckPermissionRequestOneOf1) GetSubjectSet() SubjectSetRequest`
+`func (o *CheckPermissionRequestWithSubjectSet) GetSubjectSet() SubjectSetRequest`
 
 GetSubjectSet returns the SubjectSet field if non-nil, zero value otherwise.
 
 ### GetSubjectSetOk
 
-`func (o *CheckPermissionRequestOneOf1) GetSubjectSetOk() (*SubjectSetRequest, bool)`
+`func (o *CheckPermissionRequestWithSubjectSet) GetSubjectSetOk() (*SubjectSetRequest, bool)`
 
 GetSubjectSetOk returns a tuple with the SubjectSet field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetSubjectSet
 
-`func (o *CheckPermissionRequestOneOf1) SetSubjectSet(v SubjectSetRequest)`
+`func (o *CheckPermissionRequestWithSubjectSet) SetSubjectSet(v SubjectSetRequest)`
 
 SetSubjectSet sets SubjectSet field to given value.
 

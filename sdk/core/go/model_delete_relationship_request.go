@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.16
+API version: 0.9.17
 Contact: support@omnibase.dev
 */
 
@@ -19,21 +19,21 @@ import (
 
 // DeleteRelationshipRequest - Delete relationship request. Must provide exactly one of subject_id or subject_set.
 type DeleteRelationshipRequest struct {
-	CreateRelationshipRequestOneOf *CreateRelationshipRequestOneOf
-	CreateRelationshipRequestOneOf1 *CreateRelationshipRequestOneOf1
+	DeleteRelationshipRequestWithSubjectId *DeleteRelationshipRequestWithSubjectId
+	DeleteRelationshipRequestWithSubjectSet *DeleteRelationshipRequestWithSubjectSet
 }
 
-// CreateRelationshipRequestOneOfAsDeleteRelationshipRequest is a convenience function that returns CreateRelationshipRequestOneOf wrapped in DeleteRelationshipRequest
-func CreateRelationshipRequestOneOfAsDeleteRelationshipRequest(v *CreateRelationshipRequestOneOf) DeleteRelationshipRequest {
+// DeleteRelationshipRequestWithSubjectIdAsDeleteRelationshipRequest is a convenience function that returns DeleteRelationshipRequestWithSubjectId wrapped in DeleteRelationshipRequest
+func DeleteRelationshipRequestWithSubjectIdAsDeleteRelationshipRequest(v *DeleteRelationshipRequestWithSubjectId) DeleteRelationshipRequest {
 	return DeleteRelationshipRequest{
-		CreateRelationshipRequestOneOf: v,
+		DeleteRelationshipRequestWithSubjectId: v,
 	}
 }
 
-// CreateRelationshipRequestOneOf1AsDeleteRelationshipRequest is a convenience function that returns CreateRelationshipRequestOneOf1 wrapped in DeleteRelationshipRequest
-func CreateRelationshipRequestOneOf1AsDeleteRelationshipRequest(v *CreateRelationshipRequestOneOf1) DeleteRelationshipRequest {
+// DeleteRelationshipRequestWithSubjectSetAsDeleteRelationshipRequest is a convenience function that returns DeleteRelationshipRequestWithSubjectSet wrapped in DeleteRelationshipRequest
+func DeleteRelationshipRequestWithSubjectSetAsDeleteRelationshipRequest(v *DeleteRelationshipRequestWithSubjectSet) DeleteRelationshipRequest {
 	return DeleteRelationshipRequest{
-		CreateRelationshipRequestOneOf1: v,
+		DeleteRelationshipRequestWithSubjectSet: v,
 	}
 }
 
@@ -42,44 +42,44 @@ func CreateRelationshipRequestOneOf1AsDeleteRelationshipRequest(v *CreateRelatio
 func (dst *DeleteRelationshipRequest) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
-	// try to unmarshal data into CreateRelationshipRequestOneOf
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestOneOf)
+	// try to unmarshal data into DeleteRelationshipRequestWithSubjectId
+	err = newStrictDecoder(data).Decode(&dst.DeleteRelationshipRequestWithSubjectId)
 	if err == nil {
-		jsonCreateRelationshipRequestOneOf, _ := json.Marshal(dst.CreateRelationshipRequestOneOf)
-		if string(jsonCreateRelationshipRequestOneOf) == "{}" { // empty struct
-			dst.CreateRelationshipRequestOneOf = nil
+		jsonDeleteRelationshipRequestWithSubjectId, _ := json.Marshal(dst.DeleteRelationshipRequestWithSubjectId)
+		if string(jsonDeleteRelationshipRequestWithSubjectId) == "{}" { // empty struct
+			dst.DeleteRelationshipRequestWithSubjectId = nil
 		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestOneOf); err != nil {
-				dst.CreateRelationshipRequestOneOf = nil
+			if err = validator.Validate(dst.DeleteRelationshipRequestWithSubjectId); err != nil {
+				dst.DeleteRelationshipRequestWithSubjectId = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CreateRelationshipRequestOneOf = nil
+		dst.DeleteRelationshipRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into CreateRelationshipRequestOneOf1
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestOneOf1)
+	// try to unmarshal data into DeleteRelationshipRequestWithSubjectSet
+	err = newStrictDecoder(data).Decode(&dst.DeleteRelationshipRequestWithSubjectSet)
 	if err == nil {
-		jsonCreateRelationshipRequestOneOf1, _ := json.Marshal(dst.CreateRelationshipRequestOneOf1)
-		if string(jsonCreateRelationshipRequestOneOf1) == "{}" { // empty struct
-			dst.CreateRelationshipRequestOneOf1 = nil
+		jsonDeleteRelationshipRequestWithSubjectSet, _ := json.Marshal(dst.DeleteRelationshipRequestWithSubjectSet)
+		if string(jsonDeleteRelationshipRequestWithSubjectSet) == "{}" { // empty struct
+			dst.DeleteRelationshipRequestWithSubjectSet = nil
 		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestOneOf1); err != nil {
-				dst.CreateRelationshipRequestOneOf1 = nil
+			if err = validator.Validate(dst.DeleteRelationshipRequestWithSubjectSet); err != nil {
+				dst.DeleteRelationshipRequestWithSubjectSet = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CreateRelationshipRequestOneOf1 = nil
+		dst.DeleteRelationshipRequestWithSubjectSet = nil
 	}
 
 	if match > 1 { // more than 1 match
 		// reset to nil
-		dst.CreateRelationshipRequestOneOf = nil
-		dst.CreateRelationshipRequestOneOf1 = nil
+		dst.DeleteRelationshipRequestWithSubjectId = nil
+		dst.DeleteRelationshipRequestWithSubjectSet = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(DeleteRelationshipRequest)")
 	} else if match == 1 {
@@ -91,12 +91,12 @@ func (dst *DeleteRelationshipRequest) UnmarshalJSON(data []byte) error {
 
 // Marshal data from the first non-nil pointers in the struct to JSON
 func (src DeleteRelationshipRequest) MarshalJSON() ([]byte, error) {
-	if src.CreateRelationshipRequestOneOf != nil {
-		return json.Marshal(&src.CreateRelationshipRequestOneOf)
+	if src.DeleteRelationshipRequestWithSubjectId != nil {
+		return json.Marshal(&src.DeleteRelationshipRequestWithSubjectId)
 	}
 
-	if src.CreateRelationshipRequestOneOf1 != nil {
-		return json.Marshal(&src.CreateRelationshipRequestOneOf1)
+	if src.DeleteRelationshipRequestWithSubjectSet != nil {
+		return json.Marshal(&src.DeleteRelationshipRequestWithSubjectSet)
 	}
 
 	return nil, nil // no data in oneOf schemas
@@ -107,12 +107,12 @@ func (obj *DeleteRelationshipRequest) GetActualInstance() (interface{}) {
 	if obj == nil {
 		return nil
 	}
-	if obj.CreateRelationshipRequestOneOf != nil {
-		return obj.CreateRelationshipRequestOneOf
+	if obj.DeleteRelationshipRequestWithSubjectId != nil {
+		return obj.DeleteRelationshipRequestWithSubjectId
 	}
 
-	if obj.CreateRelationshipRequestOneOf1 != nil {
-		return obj.CreateRelationshipRequestOneOf1
+	if obj.DeleteRelationshipRequestWithSubjectSet != nil {
+		return obj.DeleteRelationshipRequestWithSubjectSet
 	}
 
 	// all schemas are nil
@@ -121,12 +121,12 @@ func (obj *DeleteRelationshipRequest) GetActualInstance() (interface{}) {
 
 // Get the actual instance value
 func (obj DeleteRelationshipRequest) GetActualInstanceValue() (interface{}) {
-	if obj.CreateRelationshipRequestOneOf != nil {
-		return *obj.CreateRelationshipRequestOneOf
+	if obj.DeleteRelationshipRequestWithSubjectId != nil {
+		return *obj.DeleteRelationshipRequestWithSubjectId
 	}
 
-	if obj.CreateRelationshipRequestOneOf1 != nil {
-		return *obj.CreateRelationshipRequestOneOf1
+	if obj.DeleteRelationshipRequestWithSubjectSet != nil {
+		return *obj.DeleteRelationshipRequestWithSubjectSet
 	}
 
 	// all schemas are nil

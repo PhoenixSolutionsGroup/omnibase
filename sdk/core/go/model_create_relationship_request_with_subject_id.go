@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.16
+API version: 0.9.17
 Contact: support@omnibase.dev
 */
 
@@ -17,11 +17,11 @@ import (
 	"fmt"
 )
 
-// checks if the CreateRelationshipRequestOneOf type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateRelationshipRequestOneOf{}
+// checks if the CreateRelationshipRequestWithSubjectId type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateRelationshipRequestWithSubjectId{}
 
-// CreateRelationshipRequestOneOf struct for CreateRelationshipRequestOneOf
-type CreateRelationshipRequestOneOf struct {
+// CreateRelationshipRequestWithSubjectId Create relationship request using a direct subject identifier
+type CreateRelationshipRequestWithSubjectId struct {
 	// The namespace for the relationship
 	Namespace string `json:"namespace"`
 	// The object in the relationship
@@ -32,14 +32,14 @@ type CreateRelationshipRequestOneOf struct {
 	SubjectId string `json:"subject_id"`
 }
 
-type _CreateRelationshipRequestOneOf CreateRelationshipRequestOneOf
+type _CreateRelationshipRequestWithSubjectId CreateRelationshipRequestWithSubjectId
 
-// NewCreateRelationshipRequestOneOf instantiates a new CreateRelationshipRequestOneOf object
+// NewCreateRelationshipRequestWithSubjectId instantiates a new CreateRelationshipRequestWithSubjectId object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateRelationshipRequestOneOf(namespace string, object string, relation string, subjectId string) *CreateRelationshipRequestOneOf {
-	this := CreateRelationshipRequestOneOf{}
+func NewCreateRelationshipRequestWithSubjectId(namespace string, object string, relation string, subjectId string) *CreateRelationshipRequestWithSubjectId {
+	this := CreateRelationshipRequestWithSubjectId{}
 	this.Namespace = namespace
 	this.Object = object
 	this.Relation = relation
@@ -47,16 +47,16 @@ func NewCreateRelationshipRequestOneOf(namespace string, object string, relation
 	return &this
 }
 
-// NewCreateRelationshipRequestOneOfWithDefaults instantiates a new CreateRelationshipRequestOneOf object
+// NewCreateRelationshipRequestWithSubjectIdWithDefaults instantiates a new CreateRelationshipRequestWithSubjectId object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateRelationshipRequestOneOfWithDefaults() *CreateRelationshipRequestOneOf {
-	this := CreateRelationshipRequestOneOf{}
+func NewCreateRelationshipRequestWithSubjectIdWithDefaults() *CreateRelationshipRequestWithSubjectId {
+	this := CreateRelationshipRequestWithSubjectId{}
 	return &this
 }
 
 // GetNamespace returns the Namespace field value
-func (o *CreateRelationshipRequestOneOf) GetNamespace() string {
+func (o *CreateRelationshipRequestWithSubjectId) GetNamespace() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -67,7 +67,7 @@ func (o *CreateRelationshipRequestOneOf) GetNamespace() string {
 
 // GetNamespaceOk returns a tuple with the Namespace field value
 // and a boolean to check if the value has been set.
-func (o *CreateRelationshipRequestOneOf) GetNamespaceOk() (*string, bool) {
+func (o *CreateRelationshipRequestWithSubjectId) GetNamespaceOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -75,12 +75,12 @@ func (o *CreateRelationshipRequestOneOf) GetNamespaceOk() (*string, bool) {
 }
 
 // SetNamespace sets field value
-func (o *CreateRelationshipRequestOneOf) SetNamespace(v string) {
+func (o *CreateRelationshipRequestWithSubjectId) SetNamespace(v string) {
 	o.Namespace = v
 }
 
 // GetObject returns the Object field value
-func (o *CreateRelationshipRequestOneOf) GetObject() string {
+func (o *CreateRelationshipRequestWithSubjectId) GetObject() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -91,7 +91,7 @@ func (o *CreateRelationshipRequestOneOf) GetObject() string {
 
 // GetObjectOk returns a tuple with the Object field value
 // and a boolean to check if the value has been set.
-func (o *CreateRelationshipRequestOneOf) GetObjectOk() (*string, bool) {
+func (o *CreateRelationshipRequestWithSubjectId) GetObjectOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -99,12 +99,12 @@ func (o *CreateRelationshipRequestOneOf) GetObjectOk() (*string, bool) {
 }
 
 // SetObject sets field value
-func (o *CreateRelationshipRequestOneOf) SetObject(v string) {
+func (o *CreateRelationshipRequestWithSubjectId) SetObject(v string) {
 	o.Object = v
 }
 
 // GetRelation returns the Relation field value
-func (o *CreateRelationshipRequestOneOf) GetRelation() string {
+func (o *CreateRelationshipRequestWithSubjectId) GetRelation() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -115,7 +115,7 @@ func (o *CreateRelationshipRequestOneOf) GetRelation() string {
 
 // GetRelationOk returns a tuple with the Relation field value
 // and a boolean to check if the value has been set.
-func (o *CreateRelationshipRequestOneOf) GetRelationOk() (*string, bool) {
+func (o *CreateRelationshipRequestWithSubjectId) GetRelationOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -123,12 +123,12 @@ func (o *CreateRelationshipRequestOneOf) GetRelationOk() (*string, bool) {
 }
 
 // SetRelation sets field value
-func (o *CreateRelationshipRequestOneOf) SetRelation(v string) {
+func (o *CreateRelationshipRequestWithSubjectId) SetRelation(v string) {
 	o.Relation = v
 }
 
 // GetSubjectId returns the SubjectId field value
-func (o *CreateRelationshipRequestOneOf) GetSubjectId() string {
+func (o *CreateRelationshipRequestWithSubjectId) GetSubjectId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -139,7 +139,7 @@ func (o *CreateRelationshipRequestOneOf) GetSubjectId() string {
 
 // GetSubjectIdOk returns a tuple with the SubjectId field value
 // and a boolean to check if the value has been set.
-func (o *CreateRelationshipRequestOneOf) GetSubjectIdOk() (*string, bool) {
+func (o *CreateRelationshipRequestWithSubjectId) GetSubjectIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -147,11 +147,11 @@ func (o *CreateRelationshipRequestOneOf) GetSubjectIdOk() (*string, bool) {
 }
 
 // SetSubjectId sets field value
-func (o *CreateRelationshipRequestOneOf) SetSubjectId(v string) {
+func (o *CreateRelationshipRequestWithSubjectId) SetSubjectId(v string) {
 	o.SubjectId = v
 }
 
-func (o CreateRelationshipRequestOneOf) MarshalJSON() ([]byte, error) {
+func (o CreateRelationshipRequestWithSubjectId) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -159,7 +159,7 @@ func (o CreateRelationshipRequestOneOf) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateRelationshipRequestOneOf) ToMap() (map[string]interface{}, error) {
+func (o CreateRelationshipRequestWithSubjectId) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["namespace"] = o.Namespace
 	toSerialize["object"] = o.Object
@@ -168,7 +168,7 @@ func (o CreateRelationshipRequestOneOf) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-func (o *CreateRelationshipRequestOneOf) UnmarshalJSON(data []byte) (err error) {
+func (o *CreateRelationshipRequestWithSubjectId) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -193,53 +193,53 @@ func (o *CreateRelationshipRequestOneOf) UnmarshalJSON(data []byte) (err error) 
 		}
 	}
 
-	varCreateRelationshipRequestOneOf := _CreateRelationshipRequestOneOf{}
+	varCreateRelationshipRequestWithSubjectId := _CreateRelationshipRequestWithSubjectId{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreateRelationshipRequestOneOf)
+	err = decoder.Decode(&varCreateRelationshipRequestWithSubjectId)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CreateRelationshipRequestOneOf(varCreateRelationshipRequestOneOf)
+	*o = CreateRelationshipRequestWithSubjectId(varCreateRelationshipRequestWithSubjectId)
 
 	return err
 }
 
-type NullableCreateRelationshipRequestOneOf struct {
-	value *CreateRelationshipRequestOneOf
+type NullableCreateRelationshipRequestWithSubjectId struct {
+	value *CreateRelationshipRequestWithSubjectId
 	isSet bool
 }
 
-func (v NullableCreateRelationshipRequestOneOf) Get() *CreateRelationshipRequestOneOf {
+func (v NullableCreateRelationshipRequestWithSubjectId) Get() *CreateRelationshipRequestWithSubjectId {
 	return v.value
 }
 
-func (v *NullableCreateRelationshipRequestOneOf) Set(val *CreateRelationshipRequestOneOf) {
+func (v *NullableCreateRelationshipRequestWithSubjectId) Set(val *CreateRelationshipRequestWithSubjectId) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateRelationshipRequestOneOf) IsSet() bool {
+func (v NullableCreateRelationshipRequestWithSubjectId) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateRelationshipRequestOneOf) Unset() {
+func (v *NullableCreateRelationshipRequestWithSubjectId) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateRelationshipRequestOneOf(val *CreateRelationshipRequestOneOf) *NullableCreateRelationshipRequestOneOf {
-	return &NullableCreateRelationshipRequestOneOf{value: val, isSet: true}
+func NewNullableCreateRelationshipRequestWithSubjectId(val *CreateRelationshipRequestWithSubjectId) *NullableCreateRelationshipRequestWithSubjectId {
+	return &NullableCreateRelationshipRequestWithSubjectId{value: val, isSet: true}
 }
 
-func (v NullableCreateRelationshipRequestOneOf) MarshalJSON() ([]byte, error) {
+func (v NullableCreateRelationshipRequestWithSubjectId) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateRelationshipRequestOneOf) UnmarshalJSON(src []byte) error {
+func (v *NullableCreateRelationshipRequestWithSubjectId) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

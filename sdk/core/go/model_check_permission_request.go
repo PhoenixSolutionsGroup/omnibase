@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.16
+API version: 0.9.17
 Contact: support@omnibase.dev
 */
 
@@ -19,21 +19,21 @@ import (
 
 // CheckPermissionRequest - Check permission request. Must provide exactly one of subject_id or subject_set.
 type CheckPermissionRequest struct {
-	CheckPermissionRequestOneOf *CheckPermissionRequestOneOf
-	CheckPermissionRequestOneOf1 *CheckPermissionRequestOneOf1
+	CheckPermissionRequestWithSubjectId *CheckPermissionRequestWithSubjectId
+	CheckPermissionRequestWithSubjectSet *CheckPermissionRequestWithSubjectSet
 }
 
-// CheckPermissionRequestOneOfAsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestOneOf wrapped in CheckPermissionRequest
-func CheckPermissionRequestOneOfAsCheckPermissionRequest(v *CheckPermissionRequestOneOf) CheckPermissionRequest {
+// CheckPermissionRequestWithSubjectIdAsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestWithSubjectId wrapped in CheckPermissionRequest
+func CheckPermissionRequestWithSubjectIdAsCheckPermissionRequest(v *CheckPermissionRequestWithSubjectId) CheckPermissionRequest {
 	return CheckPermissionRequest{
-		CheckPermissionRequestOneOf: v,
+		CheckPermissionRequestWithSubjectId: v,
 	}
 }
 
-// CheckPermissionRequestOneOf1AsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestOneOf1 wrapped in CheckPermissionRequest
-func CheckPermissionRequestOneOf1AsCheckPermissionRequest(v *CheckPermissionRequestOneOf1) CheckPermissionRequest {
+// CheckPermissionRequestWithSubjectSetAsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestWithSubjectSet wrapped in CheckPermissionRequest
+func CheckPermissionRequestWithSubjectSetAsCheckPermissionRequest(v *CheckPermissionRequestWithSubjectSet) CheckPermissionRequest {
 	return CheckPermissionRequest{
-		CheckPermissionRequestOneOf1: v,
+		CheckPermissionRequestWithSubjectSet: v,
 	}
 }
 
@@ -42,44 +42,44 @@ func CheckPermissionRequestOneOf1AsCheckPermissionRequest(v *CheckPermissionRequ
 func (dst *CheckPermissionRequest) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
-	// try to unmarshal data into CheckPermissionRequestOneOf
-	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestOneOf)
+	// try to unmarshal data into CheckPermissionRequestWithSubjectId
+	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestWithSubjectId)
 	if err == nil {
-		jsonCheckPermissionRequestOneOf, _ := json.Marshal(dst.CheckPermissionRequestOneOf)
-		if string(jsonCheckPermissionRequestOneOf) == "{}" { // empty struct
-			dst.CheckPermissionRequestOneOf = nil
+		jsonCheckPermissionRequestWithSubjectId, _ := json.Marshal(dst.CheckPermissionRequestWithSubjectId)
+		if string(jsonCheckPermissionRequestWithSubjectId) == "{}" { // empty struct
+			dst.CheckPermissionRequestWithSubjectId = nil
 		} else {
-			if err = validator.Validate(dst.CheckPermissionRequestOneOf); err != nil {
-				dst.CheckPermissionRequestOneOf = nil
+			if err = validator.Validate(dst.CheckPermissionRequestWithSubjectId); err != nil {
+				dst.CheckPermissionRequestWithSubjectId = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CheckPermissionRequestOneOf = nil
+		dst.CheckPermissionRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into CheckPermissionRequestOneOf1
-	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestOneOf1)
+	// try to unmarshal data into CheckPermissionRequestWithSubjectSet
+	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestWithSubjectSet)
 	if err == nil {
-		jsonCheckPermissionRequestOneOf1, _ := json.Marshal(dst.CheckPermissionRequestOneOf1)
-		if string(jsonCheckPermissionRequestOneOf1) == "{}" { // empty struct
-			dst.CheckPermissionRequestOneOf1 = nil
+		jsonCheckPermissionRequestWithSubjectSet, _ := json.Marshal(dst.CheckPermissionRequestWithSubjectSet)
+		if string(jsonCheckPermissionRequestWithSubjectSet) == "{}" { // empty struct
+			dst.CheckPermissionRequestWithSubjectSet = nil
 		} else {
-			if err = validator.Validate(dst.CheckPermissionRequestOneOf1); err != nil {
-				dst.CheckPermissionRequestOneOf1 = nil
+			if err = validator.Validate(dst.CheckPermissionRequestWithSubjectSet); err != nil {
+				dst.CheckPermissionRequestWithSubjectSet = nil
 			} else {
 				match++
 			}
 		}
 	} else {
-		dst.CheckPermissionRequestOneOf1 = nil
+		dst.CheckPermissionRequestWithSubjectSet = nil
 	}
 
 	if match > 1 { // more than 1 match
 		// reset to nil
-		dst.CheckPermissionRequestOneOf = nil
-		dst.CheckPermissionRequestOneOf1 = nil
+		dst.CheckPermissionRequestWithSubjectId = nil
+		dst.CheckPermissionRequestWithSubjectSet = nil
 
 		return fmt.Errorf("data matches more than one schema in oneOf(CheckPermissionRequest)")
 	} else if match == 1 {
@@ -91,12 +91,12 @@ func (dst *CheckPermissionRequest) UnmarshalJSON(data []byte) error {
 
 // Marshal data from the first non-nil pointers in the struct to JSON
 func (src CheckPermissionRequest) MarshalJSON() ([]byte, error) {
-	if src.CheckPermissionRequestOneOf != nil {
-		return json.Marshal(&src.CheckPermissionRequestOneOf)
+	if src.CheckPermissionRequestWithSubjectId != nil {
+		return json.Marshal(&src.CheckPermissionRequestWithSubjectId)
 	}
 
-	if src.CheckPermissionRequestOneOf1 != nil {
-		return json.Marshal(&src.CheckPermissionRequestOneOf1)
+	if src.CheckPermissionRequestWithSubjectSet != nil {
+		return json.Marshal(&src.CheckPermissionRequestWithSubjectSet)
 	}
 
 	return nil, nil // no data in oneOf schemas
@@ -107,12 +107,12 @@ func (obj *CheckPermissionRequest) GetActualInstance() (interface{}) {
 	if obj == nil {
 		return nil
 	}
-	if obj.CheckPermissionRequestOneOf != nil {
-		return obj.CheckPermissionRequestOneOf
+	if obj.CheckPermissionRequestWithSubjectId != nil {
+		return obj.CheckPermissionRequestWithSubjectId
 	}
 
-	if obj.CheckPermissionRequestOneOf1 != nil {
-		return obj.CheckPermissionRequestOneOf1
+	if obj.CheckPermissionRequestWithSubjectSet != nil {
+		return obj.CheckPermissionRequestWithSubjectSet
 	}
 
 	// all schemas are nil
@@ -121,12 +121,12 @@ func (obj *CheckPermissionRequest) GetActualInstance() (interface{}) {
 
 // Get the actual instance value
 func (obj CheckPermissionRequest) GetActualInstanceValue() (interface{}) {
-	if obj.CheckPermissionRequestOneOf != nil {
-		return *obj.CheckPermissionRequestOneOf
+	if obj.CheckPermissionRequestWithSubjectId != nil {
+		return *obj.CheckPermissionRequestWithSubjectId
 	}
 
-	if obj.CheckPermissionRequestOneOf1 != nil {
-		return *obj.CheckPermissionRequestOneOf1
+	if obj.CheckPermissionRequestWithSubjectSet != nil {
+		return *obj.CheckPermissionRequestWithSubjectSet
 	}
 
 	// all schemas are nil

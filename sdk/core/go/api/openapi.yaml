@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.16
+  version: 0.9.17
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -3615,6 +3615,35 @@ components:
       required:
       - meter_event_name
       - value
+    CheckPermissionRequestWithSubjectId:
+      additionalProperties: false
+      description: Check permission request using a direct subject identifier
+      example:
+        subject_id: subject_id
+        namespace: namespace
+        object: object
+        relation: relation
+      properties:
+        namespace:
+          description: The namespace of the permission check
+          minLength: 1
+          type: string
+        object:
+          description: The object to check permissions on
+          minLength: 1
+          type: string
+        relation:
+          description: The relation/permission to check
+          minLength: 1
+          type: string
+        subject_id:
+          description: Direct subject identifier
+          type: string
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_id
     SubjectSetRequest:
       description: Subject set representation for permission checks and relationship
         creation
@@ -3636,12 +3665,35 @@ components:
       required:
       - namespace
       - object
+    CheckPermissionRequestWithSubjectSet:
+      additionalProperties: false
+      description: Check permission request using a subject set
+      properties:
+        namespace:
+          description: The namespace of the permission check
+          minLength: 1
+          type: string
+        object:
+          description: The object to check permissions on
+          minLength: 1
+          type: string
+        relation:
+          description: The relation/permission to check
+          minLength: 1
+          type: string
+        subject_set:
+          $ref: "#/components/schemas/SubjectSetRequest"
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_set
     CheckPermissionRequest:
       description: Check permission request. Must provide exactly one of subject_id
         or subject_set.
       oneOf:
-      - $ref: "#/components/schemas/CheckPermissionRequest_oneOf"
-      - $ref: "#/components/schemas/CheckPermissionRequest_oneOf_1"
+      - $ref: "#/components/schemas/CheckPermissionRequestWithSubjectId"
+      - $ref: "#/components/schemas/CheckPermissionRequestWithSubjectSet"
     CheckPermissionResponse:
       description: Permission check result
       example:
@@ -3653,12 +3705,58 @@ components:
           type: boolean
       required:
       - allowed
+    CreateRelationshipRequestWithSubjectId:
+      additionalProperties: false
+      description: Create relationship request using a direct subject identifier
+      example:
+        subject_id: subject_id
+        namespace: namespace
+        object: object
+        relation: relation
+      properties:
+        namespace:
+          description: The namespace for the relationship
+          type: string
+        object:
+          description: The object in the relationship
+          type: string
+        relation:
+          description: The relation type
+          type: string
+        subject_id:
+          description: Direct subject identifier
+          type: string
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_id
+    CreateRelationshipRequestWithSubjectSet:
+      additionalProperties: false
+      description: Create relationship request using a subject set
+      properties:
+        namespace:
+          description: The namespace for the relationship
+          type: string
+        object:
+          description: The object in the relationship
+          type: string
+        relation:
+          description: The relation type
+          type: string
+        subject_set:
+          $ref: "#/components/schemas/SubjectSetRequest"
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_set
     CreateRelationshipRequest:
       description: Create relationship request. Must provide exactly one of subject_id
         or subject_set.
       oneOf:
-      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf"
-      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf_1"
+      - $ref: "#/components/schemas/CreateRelationshipRequestWithSubjectId"
+      - $ref: "#/components/schemas/CreateRelationshipRequestWithSubjectSet"
     SubjectSet:
       description: Subject set representation in Keto relationship tuples
       example:
@@ -3732,12 +3830,58 @@ components:
       required:
       - message
       - relationship
+    DeleteRelationshipRequestWithSubjectId:
+      additionalProperties: false
+      description: Delete relationship request using a direct subject identifier
+      example:
+        subject_id: subject_id
+        namespace: namespace
+        object: object
+        relation: relation
+      properties:
+        namespace:
+          description: The namespace for the relationship
+          type: string
+        object:
+          description: The object in the relationship
+          type: string
+        relation:
+          description: The relation type
+          type: string
+        subject_id:
+          description: Direct subject identifier
+          type: string
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_id
+    DeleteRelationshipRequestWithSubjectSet:
+      additionalProperties: false
+      description: Delete relationship request using a subject set
+      properties:
+        namespace:
+          description: The namespace for the relationship
+          type: string
+        object:
+          description: The object in the relationship
+          type: string
+        relation:
+          description: The relation type
+          type: string
+        subject_set:
+          $ref: "#/components/schemas/SubjectSetRequest"
+      required:
+      - namespace
+      - object
+      - relation
+      - subject_set
     DeleteRelationshipRequest:
       description: Delete relationship request. Must provide exactly one of subject_id
         or subject_set.
       oneOf:
-      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf"
-      - $ref: "#/components/schemas/CreateRelationshipRequest_oneOf_1"
+      - $ref: "#/components/schemas/DeleteRelationshipRequestWithSubjectId"
+      - $ref: "#/components/schemas/DeleteRelationshipRequestWithSubjectSet"
     DeleteRelationshipResponse:
       description: Relationship deletion result
       example:
@@ -9063,100 +9207,6 @@ components:
         updated_at:
           format: date-time
           type: string
-    CheckPermissionRequest_oneOf:
-      additionalProperties: false
-      example:
-        subject_id: subject_id
-        namespace: namespace
-        object: object
-        relation: relation
-      properties:
-        namespace:
-          description: The namespace of the permission check
-          minLength: 1
-          type: string
-        object:
-          description: The object to check permissions on
-          minLength: 1
-          type: string
-        relation:
-          description: The relation/permission to check
-          minLength: 1
-          type: string
-        subject_id:
-          description: Direct subject identifier
-          type: string
-      required:
-      - namespace
-      - object
-      - relation
-      - subject_id
-    CheckPermissionRequest_oneOf_1:
-      additionalProperties: false
-      properties:
-        namespace:
-          description: The namespace of the permission check
-          minLength: 1
-          type: string
-        object:
-          description: The object to check permissions on
-          minLength: 1
-          type: string
-        relation:
-          description: The relation/permission to check
-          minLength: 1
-          type: string
-        subject_set:
-          $ref: "#/components/schemas/SubjectSetRequest"
-      required:
-      - namespace
-      - object
-      - relation
-      - subject_set
-    CreateRelationshipRequest_oneOf:
-      additionalProperties: false
-      example:
-        subject_id: subject_id
-        namespace: namespace
-        object: object
-        relation: relation
-      properties:
-        namespace:
-          description: The namespace for the relationship
-          type: string
-        object:
-          description: The object in the relationship
-          type: string
-        relation:
-          description: The relation type
-          type: string
-        subject_id:
-          description: Direct subject identifier
-          type: string
-      required:
-      - namespace
-      - object
-      - relation
-      - subject_id
-    CreateRelationshipRequest_oneOf_1:
-      additionalProperties: false
-      properties:
-        namespace:
-          description: The namespace for the relationship
-          type: string
-        object:
-          description: The object in the relationship
-          type: string
-        relation:
-          description: The relation type
-          type: string
-        subject_set:
-          $ref: "#/components/schemas/SubjectSetRequest"
-      required:
-      - namespace
-      - object
-      - relation
-      - subject_set
     Tier_up_to:
       example: 100
       oneOf:

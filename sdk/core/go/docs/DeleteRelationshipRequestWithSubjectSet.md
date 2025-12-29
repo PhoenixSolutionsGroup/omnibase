@@ -1,4 +1,4 @@
-# CreateRelationshipRequestOneOf1
+# DeleteRelationshipRequestWithSubjectSet
 
 ## Properties
 
@@ -11,99 +11,99 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewCreateRelationshipRequestOneOf1
+### NewDeleteRelationshipRequestWithSubjectSet
 
-`func NewCreateRelationshipRequestOneOf1(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *CreateRelationshipRequestOneOf1`
+`func NewDeleteRelationshipRequestWithSubjectSet(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *DeleteRelationshipRequestWithSubjectSet`
 
-NewCreateRelationshipRequestOneOf1 instantiates a new CreateRelationshipRequestOneOf1 object
+NewDeleteRelationshipRequestWithSubjectSet instantiates a new DeleteRelationshipRequestWithSubjectSet object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewCreateRelationshipRequestOneOf1WithDefaults
+### NewDeleteRelationshipRequestWithSubjectSetWithDefaults
 
-`func NewCreateRelationshipRequestOneOf1WithDefaults() *CreateRelationshipRequestOneOf1`
+`func NewDeleteRelationshipRequestWithSubjectSetWithDefaults() *DeleteRelationshipRequestWithSubjectSet`
 
-NewCreateRelationshipRequestOneOf1WithDefaults instantiates a new CreateRelationshipRequestOneOf1 object
+NewDeleteRelationshipRequestWithSubjectSetWithDefaults instantiates a new DeleteRelationshipRequestWithSubjectSet object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetNamespace
 
-`func (o *CreateRelationshipRequestOneOf1) GetNamespace() string`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetNamespace() string`
 
 GetNamespace returns the Namespace field if non-nil, zero value otherwise.
 
 ### GetNamespaceOk
 
-`func (o *CreateRelationshipRequestOneOf1) GetNamespaceOk() (*string, bool)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetNamespaceOk() (*string, bool)`
 
 GetNamespaceOk returns a tuple with the Namespace field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetNamespace
 
-`func (o *CreateRelationshipRequestOneOf1) SetNamespace(v string)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) SetNamespace(v string)`
 
 SetNamespace sets Namespace field to given value.
 
 
 ### GetObject
 
-`func (o *CreateRelationshipRequestOneOf1) GetObject() string`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetObject() string`
 
 GetObject returns the Object field if non-nil, zero value otherwise.
 
 ### GetObjectOk
 
-`func (o *CreateRelationshipRequestOneOf1) GetObjectOk() (*string, bool)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetObjectOk() (*string, bool)`
 
 GetObjectOk returns a tuple with the Object field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetObject
 
-`func (o *CreateRelationshipRequestOneOf1) SetObject(v string)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) SetObject(v string)`
 
 SetObject sets Object field to given value.
 
 
 ### GetRelation
 
-`func (o *CreateRelationshipRequestOneOf1) GetRelation() string`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetRelation() string`
 
 GetRelation returns the Relation field if non-nil, zero value otherwise.
 
 ### GetRelationOk
 
-`func (o *CreateRelationshipRequestOneOf1) GetRelationOk() (*string, bool)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetRelationOk() (*string, bool)`
 
 GetRelationOk returns a tuple with the Relation field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetRelation
 
-`func (o *CreateRelationshipRequestOneOf1) SetRelation(v string)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) SetRelation(v string)`
 
 SetRelation sets Relation field to given value.
 
 
 ### GetSubjectSet
 
-`func (o *CreateRelationshipRequestOneOf1) GetSubjectSet() SubjectSetRequest`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetSubjectSet() SubjectSetRequest`
 
 GetSubjectSet returns the SubjectSet field if non-nil, zero value otherwise.
 
 ### GetSubjectSetOk
 
-`func (o *CreateRelationshipRequestOneOf1) GetSubjectSetOk() (*SubjectSetRequest, bool)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) GetSubjectSetOk() (*SubjectSetRequest, bool)`
 
 GetSubjectSetOk returns a tuple with the SubjectSet field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetSubjectSet
 
-`func (o *CreateRelationshipRequestOneOf1) SetSubjectSet(v SubjectSetRequest)`
+`func (o *DeleteRelationshipRequestWithSubjectSet) SetSubjectSet(v SubjectSetRequest)`
 
 SetSubjectSet sets SubjectSet field to given value.
 

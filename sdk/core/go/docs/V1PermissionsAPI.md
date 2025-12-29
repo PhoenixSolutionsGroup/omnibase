@@ -31,7 +31,7 @@ import (
 )
 
 func main() {
-	checkPermissionRequest := openapiclient.CheckPermissionRequest{CheckPermissionRequestOneOf: openapiclient.NewCheckPermissionRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CheckPermissionRequest | Permission check request with either subject_id or subject_set
+	checkPermissionRequest := openapiclient.CheckPermissionRequest{CheckPermissionRequestWithSubjectId: openapiclient.NewCheckPermissionRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CheckPermissionRequest | Permission check request with either subject_id or subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -97,7 +97,7 @@ import (
 )
 
 func main() {
-	createRelationshipRequest := openapiclient.CreateRelationshipRequest{CreateRelationshipRequestOneOf: openapiclient.NewCreateRelationshipRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CreateRelationshipRequest | Relationship creation request with either subject_id or subject_set
+	createRelationshipRequest := openapiclient.CreateRelationshipRequest{CreateRelationshipRequestWithSubjectId: openapiclient.NewCreateRelationshipRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CreateRelationshipRequest | Relationship creation request with either subject_id or subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -163,7 +163,7 @@ import (
 )
 
 func main() {
-	deleteRelationshipRequest := openapiclient.DeleteRelationshipRequest{CreateRelationshipRequestOneOf: openapiclient.NewCreateRelationshipRequestOneOf("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
+	deleteRelationshipRequest := openapiclient.DeleteRelationshipRequest{DeleteRelationshipRequestWithSubjectId: openapiclient.NewDeleteRelationshipRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
