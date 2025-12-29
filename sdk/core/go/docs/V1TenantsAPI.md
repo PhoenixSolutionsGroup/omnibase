@@ -511,7 +511,7 @@ Name | Type | Description  | Notes
 
 ## GetRoleDefinitions
 
-> GetRoleDefinitions200Response GetRoleDefinitions(ctx).Execute()
+> GetRoleDefinitions200Response GetRoleDefinitions(ctx).Subject(subject).Execute()
 
 Get namespace definitions
 
@@ -530,10 +530,11 @@ import (
 )
 
 func main() {
+	subject := "ApiKey" // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetRoleDefinitions(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetRoleDefinitions(context.Background()).Subject(subject).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetRoleDefinitions``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -545,12 +546,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetRoleDefinitionsRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **subject** | **string** | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | 
 
 ### Return type
 

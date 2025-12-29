@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.17
+  version: 0.9.18
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -2414,7 +2414,19 @@ paths:
         - Discover available permission namespaces
         - List relations for each namespace
         - Build dynamic permission UIs
+        - Filter by subject type for API key creation
       operationId: getRoleDefinitions
+      parameters:
+      - description: "Filter to only return relations that accept this subject type\
+          \ (e.g., \"ApiKey\", \"User\")"
+        explode: true
+        in: query
+        name: subject
+        required: false
+        schema:
+          example: ApiKey
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -7143,6 +7155,14 @@ components:
         updated_at: 2025-11-10T00:33:08.720326Z
         namespace: Tenant
         id: bfab650b-f834-4904-a4e8-41343fea86bc
+        subject_relations:
+          User:
+          - can_delete_tenant
+          - can_invite_user
+          - can_rotate_keys
+          ApiKey:
+          - can_rotate_keys
+          - can_view_db_secret_key
         relations:
         - can_delete_tenant
         - can_invite_user
@@ -7166,6 +7186,19 @@ components:
           items:
             type: string
           type: array
+        subject_relations:
+          additionalProperties:
+            items:
+              type: string
+          description: Maps subject types to their allowed relations
+          example:
+            User:
+            - can_delete_tenant
+            - can_invite_user
+            - can_rotate_keys
+            ApiKey:
+            - can_rotate_keys
+            - can_view_db_secret_key
         updated_at:
           description: Timestamp when definition was last updated
           example: 2025-11-10T00:33:08.720326Z
@@ -7183,6 +7216,14 @@ components:
         - updated_at: 2025-11-10T00:33:08.720326Z
           namespace: Tenant
           id: bfab650b-f834-4904-a4e8-41343fea86bc
+          subject_relations:
+            User:
+            - can_delete_tenant
+            - can_invite_user
+            - can_rotate_keys
+            ApiKey:
+            - can_rotate_keys
+            - can_view_db_secret_key
           relations:
           - can_delete_tenant
           - can_invite_user
@@ -7190,6 +7231,14 @@ components:
         - updated_at: 2025-11-10T00:33:08.720326Z
           namespace: Tenant
           id: bfab650b-f834-4904-a4e8-41343fea86bc
+          subject_relations:
+            User:
+            - can_delete_tenant
+            - can_invite_user
+            - can_rotate_keys
+            ApiKey:
+            - can_rotate_keys
+            - can_view_db_secret_key
           relations:
           - can_delete_tenant
           - can_invite_user
@@ -8920,6 +8969,14 @@ components:
           - updated_at: 2025-11-10T00:33:08.720326Z
             namespace: Tenant
             id: bfab650b-f834-4904-a4e8-41343fea86bc
+            subject_relations:
+              User:
+              - can_delete_tenant
+              - can_invite_user
+              - can_rotate_keys
+              ApiKey:
+              - can_rotate_keys
+              - can_view_db_secret_key
             relations:
             - can_delete_tenant
             - can_invite_user
@@ -8927,6 +8984,14 @@ components:
           - updated_at: 2025-11-10T00:33:08.720326Z
             namespace: Tenant
             id: bfab650b-f834-4904-a4e8-41343fea86bc
+            subject_relations:
+              User:
+              - can_delete_tenant
+              - can_invite_user
+              - can_rotate_keys
+              ApiKey:
+              - can_rotate_keys
+              - can_view_db_secret_key
             relations:
             - can_delete_tenant
             - can_invite_user

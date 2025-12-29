@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Id** | **string** | Unique namespace definition identifier | 
 **Namespace** | **string** | Namespace name | 
 **Relations** | **[]string** | Available relations in this namespace | 
+**SubjectRelations** | Pointer to **map[string][]string** | Maps subject types to their allowed relations | [optional] 
 **UpdatedAt** | **time.Time** | Timestamp when definition was last updated | 
 
 ## Methods
@@ -87,6 +88,31 @@ and a boolean to check if the value has been set.
 
 SetRelations sets Relations field to given value.
 
+
+### GetSubjectRelations
+
+`func (o *NamespaceDefinition) GetSubjectRelations() map[string][]string`
+
+GetSubjectRelations returns the SubjectRelations field if non-nil, zero value otherwise.
+
+### GetSubjectRelationsOk
+
+`func (o *NamespaceDefinition) GetSubjectRelationsOk() (*map[string][]string, bool)`
+
+GetSubjectRelationsOk returns a tuple with the SubjectRelations field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetSubjectRelations
+
+`func (o *NamespaceDefinition) SetSubjectRelations(v map[string][]string)`
+
+SetSubjectRelations sets SubjectRelations field to given value.
+
+### HasSubjectRelations
+
+`func (o *NamespaceDefinition) HasSubjectRelations() bool`
+
+HasSubjectRelations returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 

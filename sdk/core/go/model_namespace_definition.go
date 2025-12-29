@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.17
+API version: 0.9.18
 Contact: support@omnibase.dev
 */
 
@@ -29,6 +29,8 @@ type NamespaceDefinition struct {
 	Namespace string `json:"namespace"`
 	// Available relations in this namespace
 	Relations []string `json:"relations"`
+	// Maps subject types to their allowed relations
+	SubjectRelations map[string][]string `json:"subject_relations,omitempty"`
 	// Timestamp when definition was last updated
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -128,6 +130,38 @@ func (o *NamespaceDefinition) SetRelations(v []string) {
 	o.Relations = v
 }
 
+// GetSubjectRelations returns the SubjectRelations field value if set, zero value otherwise.
+func (o *NamespaceDefinition) GetSubjectRelations() map[string][]string {
+	if o == nil || IsNil(o.SubjectRelations) {
+		var ret map[string][]string
+		return ret
+	}
+	return o.SubjectRelations
+}
+
+// GetSubjectRelationsOk returns a tuple with the SubjectRelations field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *NamespaceDefinition) GetSubjectRelationsOk() (map[string][]string, bool) {
+	if o == nil || IsNil(o.SubjectRelations) {
+		return map[string][]string{}, false
+	}
+	return o.SubjectRelations, true
+}
+
+// HasSubjectRelations returns a boolean if a field has been set.
+func (o *NamespaceDefinition) HasSubjectRelations() bool {
+	if o != nil && !IsNil(o.SubjectRelations) {
+		return true
+	}
+
+	return false
+}
+
+// SetSubjectRelations gets a reference to the given map[string][]string and assigns it to the SubjectRelations field.
+func (o *NamespaceDefinition) SetSubjectRelations(v map[string][]string) {
+	o.SubjectRelations = v
+}
+
 // GetUpdatedAt returns the UpdatedAt field value
 func (o *NamespaceDefinition) GetUpdatedAt() time.Time {
 	if o == nil {
@@ -165,6 +199,9 @@ func (o NamespaceDefinition) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["namespace"] = o.Namespace
 	toSerialize["relations"] = o.Relations
+	if !IsNil(o.SubjectRelations) {
+		toSerialize["subject_relations"] = o.SubjectRelations
+	}
 	toSerialize["updated_at"] = o.UpdatedAt
 	return toSerialize, nil
 }

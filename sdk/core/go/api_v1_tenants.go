@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.17
+API version: 0.9.18
 Contact: support@omnibase.dev
 */
 
@@ -1513,6 +1513,13 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 type ApiGetRoleDefinitionsRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	subject *string
+}
+
+// Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;)
+func (r ApiGetRoleDefinitionsRequest) Subject(subject string) ApiGetRoleDefinitionsRequest {
+	r.subject = &subject
+	return r
 }
 
 func (r ApiGetRoleDefinitionsRequest) Execute() (*GetRoleDefinitions200Response, *http.Response, error) {
@@ -1531,6 +1538,7 @@ Requires JWT token with appropriate permissions.
 - Discover available permission namespaces
 - List relations for each namespace
 - Build dynamic permission UIs
+- Filter by subject type for API key creation
 
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -1564,6 +1572,9 @@ func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsR
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.subject != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "subject", r.subject, "form", "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
