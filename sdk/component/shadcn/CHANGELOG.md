@@ -1,3 +1,19 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/shadcn@0.5.9...@omnibase/shadcn@0.6.0) (2026-01-01)
+
+
+### Features
+
+* **shadcn:** add permissions selector component and refactor role creator ([e3c3e9a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e3c3e9a1eef2aca9368368dedc578c9c4aa4fb9a))
+
+
+
+
+
 # @omnibase/shadcn
 
 ## 0.5.10

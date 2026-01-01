@@ -1,3 +1,24 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.5.0...@omnibase/nextjs@0.6.0) (2026-01-01)
+
+
+### Code Refactoring
+
+* **nextjs:** derive auth URL from api_url and remove server action exports ([cd4b975](https://github.com/PhoenixSolutionsGroup/omnibase/commit/cd4b97570d861ea2cfa4a4c60118a0d30ba1f212))
+
+
+### BREAKING CHANGES
+
+* **nextjs:** The /auth/permissions and /auth/tenants exports have been removed. Auth flow functions (getLoginFlow, getRegistrationFlow, etc.) now require an api_url parameter. Migration: pass process.env.NEXT_PUBLIC_OMNIBASE_API_URL as api_url to all auth flow functions.
+
+
+
+
+
 # @omnibase/nextjs
 
 ## 0.5.2

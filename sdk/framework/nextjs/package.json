@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/nextjs",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "OmniBase NextJS 13+ SDK",
   "files": [
     "dist/**/*"
@@ -38,8 +38,8 @@
     "tsup": "^8.5.0"
   },
   "peerDependencies": {
-    "typescript": "^5.9.2",
-    "next": "^15.5.4"
+    "next": "^15.5.4",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "@omnibase/core-js": "workspace:*",
