@@ -23,8 +23,8 @@
     "test:api:integration": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run --out cloud ./tests/api/k6/dist/index.js",
     "test:api:integration:local": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run ./tests/api/k6/dist/index.js",
     "release:version": "lerna version",
-    "release:publish": "lerna publish from-package",
-    "release": "lerna version && lerna publish from-package"
+    "release:publish": "bun publish --filter '@omnibase/*' --access public",
+    "release": "lerna version --yes && bun publish --filter '@omnibase/*' --access public"
   },
   "devDependencies": {
     "@types/bun": "latest",

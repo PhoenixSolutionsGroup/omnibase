@@ -19,3 +19,5 @@ test-reports/
 internal-docs
 __pycache__
 .hypothesis
+.test-env
+lerna-debug.log
