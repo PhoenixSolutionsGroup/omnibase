@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.6.0...@omnibase/nextjs@0.6.2) (2026-01-01)
+
+
+### Bug Fixes
+
+* workspace dep ([873ec22](https://github.com/PhoenixSolutionsGroup/omnibase/commit/873ec22664a213e0853fc3b80482c3f1c7a64012))
+
+
+
+
+
 # [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.5.0...@omnibase/nextjs@0.6.0) (2026-01-01)
 
 
