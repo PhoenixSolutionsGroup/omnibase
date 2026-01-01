@@ -4,8 +4,8 @@ set -e
 echo "🚀 Publishing Omnibase Core SDKs..."
 echo ""
 
-# Get the version from swagger.json
-VERSION=$(jq -r '.info.version' ../../apps/api/docs/swagger.json)
+# Get the version from openapi.yaml
+VERSION=$(grep '^\s*version:' ../../apps/api/docs/openapi.yaml | head -1 | sed 's/.*version: *//' | tr -d '"' | tr -d "'")
 echo "📦 Publishing version: $VERSION"
 echo ""
 
@@ -37,4 +37,4 @@ echo "🎉 All Core SDKs published successfully!"
 echo ""
 echo "Usage instructions:"
 echo "  - JavaScript: npm install @omnibase/core-js@$VERSION"
-echo "  - Go: go get github.com/yourusername/omni-base/sdk/core/go@v$VERSION"
+echo "  - Go: go get github.com/phoenixsolutionsgroup/omnibase/sdk/core/go@v$VERSION"

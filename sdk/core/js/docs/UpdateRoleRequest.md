@@ -16,7 +16,7 @@ import type { UpdateRoleRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "permissions": [project:*#view, project:*#edit],
+  "permissions": [tenant#read, tenant#write],
 } satisfies UpdateRoleRequest
 
 console.log(example)

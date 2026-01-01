@@ -11,12 +11,12 @@ Name | Type
 `_public` | boolean
 `taxIncludedInPrice` | boolean
 `amount` | number
-`currency` | string
-`interval` | string
+`currency` | [CurrencyCode](CurrencyCode.md)
+`interval` | [BillingInterval](BillingInterval.md)
 `intervalCount` | number
-`usageType` | string
+`usageType` | [UsageType](UsageType.md)
 `meter` | string
-`billingScheme` | string
+`billingScheme` | [PerUnitBillingScheme](PerUnitBillingScheme.md)
 `_default` | boolean
 `ui` | [PriceUI](PriceUI.md)
 
@@ -32,12 +32,12 @@ const example = {
   "_public": true,
   "taxIncludedInPrice": false,
   "amount": 1999,
-  "currency": usd,
-  "interval": month,
+  "currency": null,
+  "interval": null,
   "intervalCount": 1,
-  "usageType": licensed,
+  "usageType": null,
   "meter": api_requests,
-  "billingScheme": per_unit,
+  "billingScheme": null,
   "_default": false,
   "ui": null,
 } satisfies PerUnitPrice

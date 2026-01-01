@@ -1,4 +1,4 @@
-# @omnibase/core-js@0.9.15
+# @omnibase/core-js@0.9.18
 
 A TypeScript SDK client for the api.omnibase.tech API.
 
@@ -78,6 +78,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record metered usage
 *V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermissionoperation) | **POST** /api/v1/permissions/check | Check permission
 *V1PermissionsApi* | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship
+*V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
 *V1StorageApi* | [**deleteObject**](docs/V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage
 *V1StorageApi* | [**downloadFile**](docs/V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage
 *V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
@@ -117,11 +118,12 @@ All URIs are relative to *https://api.omnibase.tech*
 - [ArchiveAllStripeConfig200Response](docs/ArchiveAllStripeConfig200Response.md)
 - [BadRequest](docs/BadRequest.md)
 - [BadRequestResponse](docs/BadRequestResponse.md)
+- [BillingInterval](docs/BillingInterval.md)
 - [BillingStatusResponse](docs/BillingStatusResponse.md)
 - [CheckPermission200Response](docs/CheckPermission200Response.md)
 - [CheckPermissionRequest](docs/CheckPermissionRequest.md)
-- [CheckPermissionRequestOneOf](docs/CheckPermissionRequestOneOf.md)
-- [CheckPermissionRequestOneOf1](docs/CheckPermissionRequestOneOf1.md)
+- [CheckPermissionRequestWithSubjectId](docs/CheckPermissionRequestWithSubjectId.md)
+- [CheckPermissionRequestWithSubjectSet](docs/CheckPermissionRequestWithSubjectSet.md)
 - [CheckPermissionResponse](docs/CheckPermissionResponse.md)
 - [ConfigHistoryItem](docs/ConfigHistoryItem.md)
 - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
@@ -140,8 +142,8 @@ All URIs are relative to *https://api.omnibase.tech*
 - [CreatePortalResponse](docs/CreatePortalResponse.md)
 - [CreateRelationship200Response](docs/CreateRelationship200Response.md)
 - [CreateRelationshipRequest](docs/CreateRelationshipRequest.md)
-- [CreateRelationshipRequestOneOf](docs/CreateRelationshipRequestOneOf.md)
-- [CreateRelationshipRequestOneOf1](docs/CreateRelationshipRequestOneOf1.md)
+- [CreateRelationshipRequestWithSubjectId](docs/CreateRelationshipRequestWithSubjectId.md)
+- [CreateRelationshipRequestWithSubjectSet](docs/CreateRelationshipRequestWithSubjectSet.md)
 - [CreateRelationshipResponse](docs/CreateRelationshipResponse.md)
 - [CreateRole200Response](docs/CreateRole200Response.md)
 - [CreateRoleRequest](docs/CreateRoleRequest.md)
@@ -153,10 +155,16 @@ All URIs are relative to *https://api.omnibase.tech*
 - [CreateUser200Response](docs/CreateUser200Response.md)
 - [CreateUserRequest](docs/CreateUserRequest.md)
 - [CreateUserRequestName](docs/CreateUserRequestName.md)
+- [CurrencyCode](docs/CurrencyCode.md)
 - [DeleteEmailTemplate200Response](docs/DeleteEmailTemplate200Response.md)
 - [DeleteEmailTemplate200ResponseAllOfData](docs/DeleteEmailTemplate200ResponseAllOfData.md)
 - [DeleteObject200Response](docs/DeleteObject200Response.md)
 - [DeleteObjectRequest](docs/DeleteObjectRequest.md)
+- [DeleteRelationship200Response](docs/DeleteRelationship200Response.md)
+- [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
+- [DeleteRelationshipRequestWithSubjectId](docs/DeleteRelationshipRequestWithSubjectId.md)
+- [DeleteRelationshipRequestWithSubjectSet](docs/DeleteRelationshipRequestWithSubjectSet.md)
+- [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
 - [DeleteRole200Response](docs/DeleteRole200Response.md)
 - [DeleteRoleResponse](docs/DeleteRoleResponse.md)
 - [DeleteTenant200Response](docs/DeleteTenant200Response.md)
@@ -209,6 +217,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [NamespaceDeploymentResponse](docs/NamespaceDeploymentResponse.md)
 - [NotFound](docs/NotFound.md)
 - [NotFoundResponse](docs/NotFoundResponse.md)
+- [PerUnitBillingScheme](docs/PerUnitBillingScheme.md)
 - [PerUnitPrice](docs/PerUnitPrice.md)
 - [Price](docs/Price.md)
 - [PriceDisplay](docs/PriceDisplay.md)
@@ -248,7 +257,9 @@ All URIs are relative to *https://api.omnibase.tech*
 - [TenantUserResponse](docs/TenantUserResponse.md)
 - [Tier](docs/Tier.md)
 - [TierUpTo](docs/TierUpTo.md)
+- [TieredBillingScheme](docs/TieredBillingScheme.md)
 - [TieredPrice](docs/TieredPrice.md)
+- [TiersMode](docs/TiersMode.md)
 - [Unauthorized](docs/Unauthorized.md)
 - [UnauthorizedResponse](docs/UnauthorizedResponse.md)
 - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
@@ -258,6 +269,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [UploadFile200Response](docs/UploadFile200Response.md)
 - [UploadRequest](docs/UploadRequest.md)
 - [UploadResponse](docs/UploadResponse.md)
+- [UsageType](docs/UsageType.md)
 - [UserTenantListItem](docs/UserTenantListItem.md)
 - [WhoAmI200Response](docs/WhoAmI200Response.md)
 - [WhoAmIResponse](docs/WhoAmIResponse.md)
@@ -294,8 +306,8 @@ This TypeScript SDK client supports the [Fetch API](https://fetch.spec.whatwg.or
 and is automatically generated by the
 [OpenAPI Generator](https://openapi-generator.tech) project:
 
-- API version: `0.9.16`
-- Package version: `0.9.15`
+- API version: `0.9.18`
+- Package version: `0.9.18`
 - Generator version: `7.17.0`
 - Build package: `org.openapitools.codegen.languages.TypeScriptFetchClientCodegen`
 

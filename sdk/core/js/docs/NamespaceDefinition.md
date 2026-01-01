@@ -10,6 +10,7 @@ Name | Type
 `id` | string
 `namespace` | string
 `relations` | Array&lt;string&gt;
+`subjectRelations` | { [key: string]: Array&lt;string&gt;; }
 `updatedAt` | Date
 
 ## Example
@@ -22,6 +23,7 @@ const example = {
   "id": bfab650b-f834-4904-a4e8-41343fea86bc,
   "namespace": Tenant,
   "relations": [can_delete_tenant, can_invite_user, can_update_user_role],
+  "subjectRelations": {User=[can_delete_tenant, can_invite_user, can_rotate_keys], ApiKey=[can_rotate_keys, can_view_db_secret_key]},
   "updatedAt": 2025-11-10T00:33:08.720326Z,
 } satisfies NamespaceDefinition
 

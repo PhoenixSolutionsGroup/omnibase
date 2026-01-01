@@ -610,11 +610,11 @@ example().catch(console.error);
 
 ## getRoleDefinitions
 
-> GetRoleDefinitions200Response getRoleDefinitions()
+> GetRoleDefinitions200Response getRoleDefinitions(subject)
 
 Get namespace definitions
 
-Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs 
+Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
 
 ### Example
 
@@ -637,8 +637,13 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
+    subject: ApiKey,
+  } satisfies GetRoleDefinitionsRequest;
+
   try {
-    const data = await api.getRoleDefinitions();
+    const data = await api.getRoleDefinitions(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -651,7 +656,10 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **subject** | `string` | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 

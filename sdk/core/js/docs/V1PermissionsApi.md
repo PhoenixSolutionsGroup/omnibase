@@ -6,6 +6,7 @@ All URIs are relative to *https://api.omnibase.tech*
 |------------- | ------------- | -------------|
 | [**checkPermission**](V1PermissionsApi.md#checkpermissionoperation) | **POST** /api/v1/permissions/check | Check permission |
 | [**createRelationship**](V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship |
+| [**deleteRelationship**](V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship |
 
 
 
@@ -162,6 +163,85 @@ example().catch(console.error);
 | **401** | Not authenticated |  -  |
 | **404** | Not Found - Resource not found |  -  |
 | **500** | Failed to create relationship |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## deleteRelationship
+
+> DeleteRelationship200Response deleteRelationship(deleteRelationshipRequest)
+
+Delete relationship
+
+Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide either &#x60;subject_id&#x60; or &#x60;subject_set&#x60; (not both). The request uses oneOf to enforce this constraint at the schema level.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1PermissionsApi,
+} from '@omnibase/core-js';
+import type { DeleteRelationshipOperationRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PermissionsApi(config);
+
+  const body = {
+    // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
+    deleteRelationshipRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"can_invite_user","subject_id":"550e8400-e29b-41d4-a716-446655440000"},
+  } satisfies DeleteRelationshipOperationRequest;
+
+  try {
+    const data = await api.deleteRelationship(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **deleteRelationshipRequest** | [DeleteRelationshipRequest](DeleteRelationshipRequest.md) | Relationship deletion request with either subject_id or subject_set | |
+
+### Return type
+
+[**DeleteRelationship200Response**](DeleteRelationship200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Relationship deleted successfully |  -  |
+| **400** | Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided |  -  |
+| **401** | Not authenticated |  -  |
+| **404** | Not Found - Resource not found |  -  |
+| **500** | Failed to delete relationship |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

@@ -10,10 +10,10 @@ Name | Type
 `_public` | boolean
 `taxIncludedInPrice` | boolean
 `amount` | number
-`currency` | string
-`interval` | string
+`currency` | [CurrencyCode](CurrencyCode.md)
+`interval` | [BillingInterval](BillingInterval.md)
 `intervalCount` | number
-`usageType` | string
+`usageType` | [UsageType](UsageType.md)
 `meter` | string
 `billingScheme` | string
 `tiersMode` | string
@@ -33,10 +33,10 @@ const example = {
   "_public": true,
   "taxIncludedInPrice": false,
   "amount": 1999,
-  "currency": usd,
-  "interval": month,
+  "currency": null,
+  "interval": null,
   "intervalCount": 1,
-  "usageType": licensed,
+  "usageType": null,
   "meter": api_requests,
   "billingScheme": per_unit,
   "tiersMode": graduated,

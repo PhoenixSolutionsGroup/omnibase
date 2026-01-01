@@ -10,13 +10,13 @@ Name | Type
 `stripeId` | string
 `_public` | boolean
 `taxIncludedInPrice` | boolean
-`currency` | string
-`interval` | string
+`currency` | [CurrencyCode](CurrencyCode.md)
+`interval` | [BillingInterval](BillingInterval.md)
 `intervalCount` | number
-`usageType` | string
+`usageType` | [UsageType](UsageType.md)
 `meter` | string
-`billingScheme` | string
-`tiersMode` | string
+`billingScheme` | [TieredBillingScheme](TieredBillingScheme.md)
+`tiersMode` | [TiersMode](TiersMode.md)
 `tiers` | [Array&lt;Tier&gt;](Tier.md)
 `_default` | boolean
 `ui` | [PriceUI](PriceUI.md)
@@ -32,13 +32,13 @@ const example = {
   "stripeId": price_1SRiyyCJIZaBlhY1NpAJFhNU,
   "_public": true,
   "taxIncludedInPrice": false,
-  "currency": usd,
-  "interval": month,
+  "currency": null,
+  "interval": null,
   "intervalCount": 1,
-  "usageType": licensed,
+  "usageType": null,
   "meter": api_requests,
-  "billingScheme": tiered,
-  "tiersMode": graduated,
+  "billingScheme": null,
+  "tiersMode": null,
   "tiers": null,
   "_default": false,
   "ui": null,

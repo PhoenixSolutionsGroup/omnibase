@@ -18,7 +18,7 @@ import type { CreateRoleRequest } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "roleName": test_project_viewer,
-  "permissions": [project:*#view, tenant#read],
+  "permissions": [tenant#read, tenant#manage_projects],
 } satisfies CreateRoleRequest
 
 console.log(example)
