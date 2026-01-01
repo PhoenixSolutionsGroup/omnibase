@@ -1,7 +1,8 @@
 import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
-import { resolveEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { logger } from "../utils/logger";
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -35,16 +36,15 @@ async function makeApiRequest(
   body?: any,
   envOverride?: string
 ): Promise<ApiResponse> {
-  const envConfig = resolveEnvironment(envOverride);
-  const url = `${envConfig.apiUrl}${endpoint}`;
+  const envConfig = await selectEnvironment(envOverride);
+  const url = `${envConfig.omnibaseApiUrl}${endpoint}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  // Add API key if available
-  if (envConfig.apiKey) {
-    headers["X-Service-Key"] = envConfig.apiKey;
+  if (envConfig.omnibaseServiceKey) {
+    headers["X-Service-Key"] = envConfig.omnibaseServiceKey;
   }
 
   const options: RequestInit = {
@@ -63,7 +63,7 @@ async function makeApiRequest(
     if (!response.ok) {
       return {
         success: false,
-        error: data.error || `HTTP ${response.status}: ${response.statusText}`,
+        error: data.error || `${response.status} - ${response.statusText}`,
       };
     }
 
@@ -93,14 +93,13 @@ function findConfigFiles(dir: string): string[] {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      // Recurse into subdirectories
       files.push(...findConfigFiles(fullPath));
     } else if (entry.isFile() && entry.name.endsWith(".config.json")) {
       files.push(fullPath);
     }
   }
 
-  return files.sort(); // Deterministic order
+  return files.sort();
 }
 
 function mergeConfigs(paymentsDir: string): any {
@@ -110,23 +109,19 @@ function mergeConfigs(paymentsDir: string): any {
     products: [],
   };
 
-  // Recursively find all *.config.json files
   const configFiles = findConfigFiles(paymentsDir);
 
   for (const file of configFiles) {
     const config = JSON.parse(fs.readFileSync(file, "utf8"));
 
-    // Use version from first config file if available
     if (config.version && merged.version === "1.0.0") {
       merged.version = config.version;
     }
 
-    // Merge meters
     if (config.meters) {
       (merged.meters as any[]).push(...config.meters);
     }
 
-    // Merge products (with price merging support)
     if (config.products) {
       for (const product of config.products) {
         const existing = (merged.products as any[]).find(
@@ -134,10 +129,8 @@ function mergeConfigs(paymentsDir: string): any {
         );
 
         if (existing) {
-          // Merge prices into existing product
           existing.prices.push(...product.prices);
         } else {
-          // Add new product
           (merged.products as any[]).push(product);
         }
       }
@@ -161,23 +154,51 @@ function loadStripeConfig(): any {
   return mergeConfigs(configPath);
 }
 
+/**
+ * Push Stripe configuration to API (exported for sync command)
+ */
+export async function pushStripeConfig(envOverride?: string): Promise<void> {
+  logger.start("Loading stripe.config.json...");
+  const config = loadStripeConfig();
+
+  logger.succeed("Successfully loaded config");
+  logger.start("Pushing to Stripe...");
+
+  const response = await makeApiRequest(
+    "/api/v1/stripe/admin/config",
+    "POST",
+    config,
+    envOverride
+  );
+
+  if (response.success) {
+    logger.succeed("Stripe configuration uploaded successfully");
+    if (response.data?.details) {
+      response.data.details.forEach((detail: string) => {
+        logger.log(`   - ${detail}`);
+      });
+    }
+  } else {
+    throw new Error(`Stripe upload failed: ${response.error}`);
+  }
+}
+
 export function addStripeCommands(program: Command): void {
   const stripe = program
     .command("stripe")
     .description("Manage Stripe configuration");
 
-  // Validate config command
   stripe
     .command("validate")
     .description("Validate the local stripe.config.json file")
     .option("--env <environment>", "Override environment for this command")
     .action(async (options) => {
       try {
-        console.log("🔍 Loading stripe.config.json...");
+        logger.start("Loading stripe.config.json...");
         const config = loadStripeConfig();
 
-        console.log("✅ Successfully loaded config");
-        console.log("🚀 Validating with API...");
+        logger.succeed("Successfully loaded config");
+        logger.start("Validating with API...");
 
         const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(
@@ -188,33 +209,28 @@ export function addStripeCommands(program: Command): void {
         );
 
         if (response.success) {
-          console.log("✅ Configuration is valid!");
+          logger.succeed("Configuration is valid!");
         } else {
-          console.error("❌ Validation failed:");
-          console.error(response.error);
+          logger.fail(`Validation failed: ${response.error}`);
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // Upload config command
   stripe
     .command("push")
     .description("Push the local stripe.config.json to Stripe")
     .option("--env <environment>", "Override environment for this command")
     .action(async (options) => {
       try {
-        console.log("🔍 Loading stripe.config.json...");
+        logger.start("Loading stripe.config.json...");
         const config = loadStripeConfig();
 
-        console.log("✅ Successfully loaded config");
-        console.log("🚀 Pushing to Stripe...");
+        logger.succeed("Successfully loaded config");
+        logger.start("Pushing to Stripe...");
 
         const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(
@@ -225,28 +241,24 @@ export function addStripeCommands(program: Command): void {
         );
 
         if (response.success) {
-          console.log("✅ Configuration uploaded successfully!");
+          logger.succeed("Configuration uploaded successfully!");
           if (response.data?.details) {
-            console.log("\n📋 Details:");
+            logger.newline();
+            logger.log("Details:");
             response.data.details.forEach((detail: string) => {
-              console.log(`  • ${detail}`);
+              logger.log(`  - ${detail}`);
             });
           }
         } else {
-          console.error("❌ Upload failed:");
-          console.error(response.error);
+          logger.fail(`Upload failed: ${response.error}`);
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // Get config command
   stripe
     .command("get")
     .description("Get the current Stripe configuration")
@@ -254,7 +266,7 @@ export function addStripeCommands(program: Command): void {
     .option("--output <file>", "Save output to file")
     .action(async (options) => {
       try {
-        console.log("🔍 Fetching current Stripe configuration...");
+        logger.start("Fetching current Stripe configuration...");
 
         const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(
@@ -265,7 +277,7 @@ export function addStripeCommands(program: Command): void {
         );
 
         if (response.success) {
-          console.log("✅ Configuration retrieved successfully!");
+          logger.succeed("Configuration retrieved successfully!");
 
           const configData = {
             id: response.data.id,
@@ -280,26 +292,22 @@ export function addStripeCommands(program: Command): void {
               options.output,
               JSON.stringify(configData, null, 2)
             );
-            console.log(`💾 Configuration saved to: ${options.output}`);
+            logger.log(`Configuration saved to: ${options.output}`);
           } else {
-            console.log("\n📋 Current Configuration:");
-            console.log(JSON.stringify(configData, null, 2));
+            logger.newline();
+            logger.log("Current Configuration:");
+            logger.log(JSON.stringify(configData, null, 2));
           }
         } else {
-          console.error("❌ Failed to retrieve configuration:");
-          console.error(response.error);
+          logger.fail(`Failed to retrieve configuration: ${response.error}`);
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // Get config history command
   stripe
     .command("history")
     .description("Get the Stripe configuration history")
@@ -313,7 +321,7 @@ export function addStripeCommands(program: Command): void {
     .option("--output <file>", "Save output to file")
     .action(async (options) => {
       try {
-        console.log("🔍 Fetching Stripe configuration history...");
+        logger.start("Fetching Stripe configuration history...");
 
         const envOverride = options.env || program.opts().env;
         const queryParams = new URLSearchParams({
@@ -330,56 +338,56 @@ export function addStripeCommands(program: Command): void {
 
         if (response.success) {
           const historyData = response.data as ConfigHistoryResponse;
-          console.log("✅ Configuration history retrieved successfully!");
+          logger.succeed("Configuration history retrieved successfully!");
 
           if (options.output) {
             fs.writeFileSync(
               options.output,
               JSON.stringify(historyData, null, 2)
             );
-            console.log(`💾 History saved to: ${options.output}`);
+            logger.log(`History saved to: ${options.output}`);
           } else {
-            console.log(
-              `\n📋 Configuration History (${historyData.pagination.total} total):`
+            logger.newline();
+            logger.log(
+              `Configuration History (${historyData.pagination.total} total):`
             );
-            console.log(
-              `📄 Page ${historyData.pagination.page} of ${historyData.pagination.total_pages}`
+            logger.log(
+              `Page ${historyData.pagination.page} of ${historyData.pagination.total_pages}`
             );
 
             historyData.configs.forEach((config, index) => {
-              console.log(`\n${index + 1}. Config ID: ${config.id}`);
-              console.log(`   Version: ${config.version}`);
-              console.log(
+              logger.newline();
+              logger.log(`${index + 1}. Config ID: ${config.id}`);
+              logger.log(`   Version: ${config.version}`);
+              logger.log(
                 `   Created: ${new Date(config.created_at).toLocaleString()}`
               );
-              console.log(
+              logger.log(
                 `   Updated: ${new Date(config.updated_at).toLocaleString()}`
               );
             });
 
             if (historyData.pagination.has_next) {
-              console.log(
-                `\n💡 Use --offset ${
+              logger.newline();
+              logger.log(
+                `Tip: Use --offset ${
                   parseInt(options.offset) + parseInt(options.limit)
                 } to see more results`
               );
             }
           }
         } else {
-          console.error("❌ Failed to retrieve configuration history:");
-          console.error(response.error);
+          logger.fail(
+            `Failed to retrieve configuration history: ${response.error}`
+          );
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // Pull config command
   stripe
     .command("pull")
     .description("Pull the current Stripe configuration from Stripe API")
@@ -390,7 +398,7 @@ export function addStripeCommands(program: Command): void {
     )
     .action(async (options) => {
       try {
-        console.log("🔍 Pulling configuration from Stripe...");
+        logger.start("Pulling configuration from Stripe...");
 
         const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(
@@ -401,7 +409,7 @@ export function addStripeCommands(program: Command): void {
         );
 
         if (response.success) {
-          console.log("✅ Configuration pulled successfully from Stripe!");
+          logger.succeed("Configuration pulled successfully from Stripe!");
 
           const projectRoot = findOmnibaseRoot();
           const outputPath =
@@ -417,31 +425,28 @@ export function addStripeCommands(program: Command): void {
           const configData = response.data;
 
           fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
-          console.log(`💾 Configuration saved to: ${outputPath}`);
+          logger.log(`Configuration saved to: ${outputPath}`);
 
-          console.log("\n📋 Summary:");
-          console.log(`  • Version: ${configData.version}`);
-          console.log(`  • Products: ${configData.products?.length || 0}`);
-          console.log(`  • Meters: ${configData.meters?.length || 0}`);
+          logger.newline();
+          logger.log("Summary:");
+          logger.log(`  Version: ${configData.version}`);
+          logger.log(`  Products: ${configData.products?.length || 0}`);
+          logger.log(`  Meters: ${configData.meters?.length || 0}`);
 
-          console.log(
-            "\n💡 Tip: Review the pulled configuration and commit changes if needed"
+          logger.newline();
+          logger.log(
+            "Tip: Review the pulled configuration and commit changes if needed"
           );
         } else {
-          console.error("❌ Failed to pull configuration:");
-          console.error(response.error);
+          logger.fail(`Failed to pull configuration: ${response.error}`);
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // Reset command - Archive all Stripe resources and clear local config
   stripe
     .command("reset")
     .description("Archive all Stripe resources and clear local config")
@@ -450,7 +455,6 @@ export function addStripeCommands(program: Command): void {
     .action(async (options) => {
       try {
         if (!options.yes) {
-          // Simple confirmation prompt without external dependencies
           const readline = await import("readline");
           const rl = readline.createInterface({
             input: process.stdin,
@@ -459,7 +463,7 @@ export function addStripeCommands(program: Command): void {
 
           const answer = await new Promise<string>((resolve) => {
             rl.question(
-              "⚠️  Are you sure you want to archive ALL Stripe resources and clear the local config? This action cannot be undone. (y/N): ",
+              "Are you sure you want to archive ALL Stripe resources and clear the local config? This action cannot be undone. (y/N): ",
               resolve
             );
           });
@@ -467,13 +471,13 @@ export function addStripeCommands(program: Command): void {
           rl.close();
 
           if (answer.toLowerCase() !== "y" && answer.toLowerCase() !== "yes") {
-            console.log("🚫 Operation cancelled.");
+            logger.warn("Operation cancelled.");
             return;
           }
         }
 
-        console.log(
-          "🔄 Archiving all Stripe resources and clearing local config..."
+        logger.start(
+          "Archiving all Stripe resources and clearing local config..."
         );
 
         const envOverride = options.env || program.opts().env;
@@ -487,55 +491,45 @@ export function addStripeCommands(program: Command): void {
         if (response.success) {
           const data = response.data;
 
-          console.log("✅ Successfully completed Stripe reset!");
-          console.log();
+          logger.succeed("Successfully completed Stripe reset!");
+          logger.newline();
 
           if (data.total_archived > 0) {
-            console.log("📊 Summary:");
-            console.log(`  • Total archived: ${data.total_archived}`);
-            console.log(`  • Total errors: ${data.total_errors}`);
-            console.log();
+            logger.log("Summary:");
+            logger.log(`  Total archived: ${data.total_archived}`);
+            logger.log(`  Total errors: ${data.total_errors}`);
+            logger.newline();
 
             if (data.archived_items && data.archived_items.length > 0) {
-              console.log("✅ Archived items:");
+              logger.log("Archived items:");
               data.archived_items.forEach((item: string) => {
-                console.log(`  • ${item}`);
+                logger.log(`  - ${item}`);
               });
-              console.log();
+              logger.newline();
             }
 
             if (data.archive_errors && data.archive_errors.length > 0) {
-              console.log("❌ Errors:");
+              logger.log("Errors:");
               data.archive_errors.forEach((error: string) => {
-                console.log(`  • ${error}`);
+                logger.log(`  - ${error}`);
               });
-              console.log();
+              logger.newline();
             }
           } else {
-            console.log("ℹ️  No active Stripe resources found to archive.");
+            logger.info("No active Stripe resources found to archive.");
           }
 
           if (data.warning) {
-            console.log(`⚠️  ${data.warning}`);
+            logger.warn(data.warning);
           }
 
-          console.log("✅ Local config has been cleared successfully.");
+          logger.succeed("Local config has been cleared successfully.");
         } else {
-          console.error("❌ Failed to reset Stripe configuration");
-          if (response.error) {
-            console.error(`Error: ${response.error}`);
-          }
+          logger.fail(`Failed to reset Stripe configuration: ${response.error}`);
           process.exit(1);
         }
       } catch (error) {
-        console.error("❌ Error during Stripe reset:");
-
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-        } else {
-          console.error("An unknown error occurred");
-        }
-
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });

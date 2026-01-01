@@ -3,7 +3,10 @@ import * as fs from "fs";
 import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
-import { findOmnibaseRoot, resolveEnvironment } from "../utils/environment";
+import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
+import { logger } from "../utils/logger";
+import { handleCommandError } from "../utils/errors";
+import { getCommandContextWithEnv } from "../utils/context";
 
 /**
  * Add database commands to the CLI
@@ -29,9 +32,7 @@ export function addDbCommands(program: Command): void {
       try {
         await createMigration(options.dir, options.name);
       } catch (error) {
-        console.error("❌ Failed to create migration:");
-        console.error(error instanceof Error ? error.message : error);
-        process.exit(1);
+        handleCommandError(error);
       }
     });
 
@@ -45,21 +46,69 @@ export function addDbCommands(program: Command): void {
     )
     .action(async (options) => {
       try {
-        const parentOptions = program.opts();
-        const env = resolveEnvironment(parentOptions.env);
+        const ctx = await getCommandContextWithEnv(program);
+        logger.info(`Using environment: ${ctx.env.name}`);
 
-        if (!env.apiKey) {
+        if (!ctx.env.omnibaseServiceKey) {
           throw new Error(
-            "OMNIBASE_API_KEY not found in environment configuration"
+            "OMNIBASE_SERVICE_KEY not found in environment configuration"
           );
         }
 
-        await applyMigrations(env.apiUrl, env.apiKey, options.dir);
+        await applyMigrations(ctx.env.omnibaseApiUrl, ctx.env.omnibaseServiceKey, options.dir);
       } catch (error) {
-        console.error("❌ Migration failed:");
-        console.log(error);
-        console.error(error instanceof Error ? error.message : error);
-        process.exit(1);
+        handleCommandError(error);
+      }
+    });
+
+  migrate
+    .command("reset")
+    .description("Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)")
+    .option(
+      "-d, --dir <directory>",
+      "Directory containing migration files",
+      "omnibase/db"
+    )
+    .option("-y, --yes", "Skip confirmation prompt")
+    .action(async (options) => {
+      try {
+        const ctx = await getCommandContextWithEnv(program);
+        logger.info(`Using environment: ${ctx.env.name}`);
+
+        if (!ctx.env.omnibaseServiceKey) {
+          throw new Error(
+            "OMNIBASE_SERVICE_KEY not found in environment configuration"
+          );
+        }
+
+        // Confirm with user unless --yes flag is provided
+        if (!options.yes) {
+          const readline = await import("readline");
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          });
+
+          const confirmed = await new Promise<boolean>((resolve) => {
+            rl.question(
+              "\x1b[31mWARNING: This will DROP ALL TABLES and re-apply migrations.\x1b[0m\nAll data will be lost. Are you sure? (yes/no): ",
+              (answer) => {
+                resolve(answer.toLowerCase() === "yes");
+              }
+            );
+          });
+
+          rl.close();
+
+          if (!confirmed) {
+            logger.info("Reset cancelled");
+            return;
+          }
+        }
+
+        await resetMigrations(ctx.env.omnibaseApiUrl, ctx.env.omnibaseServiceKey, options.dir);
+      } catch (error) {
+        handleCommandError(error);
       }
     });
 
@@ -78,14 +127,12 @@ export function addDbCommands(program: Command): void {
     )
     .action(async (options) => {
       try {
-        const parentOptions = program.opts();
-        const env = resolveEnvironment(parentOptions.env);
+        const ctx = await getCommandContextWithEnv(program);
+        logger.info(`Using environment: ${ctx.env.name}`);
 
-        await generateTypes(env, options.output, options.schema);
+        await generateTypes(ctx.env, options.output, options.schema);
       } catch (error) {
-        console.error("❌ Type generation failed:");
-        console.error(error instanceof Error ? error.message : error);
-        process.exit(1);
+        handleCommandError(error);
       }
     });
 }
@@ -103,7 +150,7 @@ async function createMigration(
   // Ensure migrations directory exists
   if (!fs.existsSync(migrationsPath)) {
     fs.mkdirSync(migrationsPath, { recursive: true });
-    console.log(`📁 Created migrations directory: ${migrationsPath}`);
+    logger.info(`Created migrations directory: ${migrationsPath}`);
   }
 
   // Get migration name from user if not provided
@@ -155,9 +202,22 @@ async function createMigration(
 
   fs.writeFileSync(filePath, template);
 
-  console.log(`✅ Created migration file: ${filename}`);
-  console.log(`📍 Location: ${filePath}`);
-  console.log(`\n💡 Edit the file to add your SQL migration commands`);
+  logger.succeed(`Created migration file: ${filename}`);
+  logger.log(`   Location: ${filePath}`);
+  logger.log(`   Edit the file to add your SQL migration commands`);
+}
+
+/**
+ * Push database migrations (exported for sync command)
+ */
+export async function pushDbMigrations(envOverride?: string): Promise<void> {
+  const env = await selectEnvironment(envOverride);
+
+  if (!env.omnibaseServiceKey) {
+    throw new Error("OMNIBASE_SERVICE_KEY not found in environment configuration");
+  }
+
+  await applyMigrations(env.omnibaseApiUrl, env.omnibaseServiceKey, "omnibase/db");
 }
 
 /**
@@ -192,8 +252,8 @@ async function applyMigrations(
     );
   }
 
-  console.log(`📦 Found ${sqlFiles.length} migration file(s):`);
-  sqlFiles.forEach((file) => console.log(`   - ${file}`));
+  logger.log(`Found ${sqlFiles.length} migration file(s):`);
+  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
 
   // Create zip file
   const zip = new AdmZip();
@@ -204,7 +264,7 @@ async function applyMigrations(
 
   // Generate zip buffer
   const zipBuffer = zip.toBuffer();
-  console.log(`📦 Created migration archive (${zipBuffer.length} bytes)`);
+  logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
   // Use axios and form-data (same as permissions.ts)
   const FormData = require("form-data");
@@ -218,7 +278,7 @@ async function applyMigrations(
 
   // Send to API
   const endpoint = `${apiUrl}/api/v1/database/migrations`;
-  console.log(`🚀 Uploading migrations to ${endpoint}...`);
+  logger.start(`Uploading migrations to ${endpoint}...`);
 
   try {
     const headers: Record<string, string> = {
@@ -231,9 +291,94 @@ async function applyMigrations(
 
     const response = await axios.post(endpoint, formData, { headers });
 
-    console.log(
-      `✅ ${response.data.message || "Migrations applied successfully"}`
+    logger.succeed(response.data.message || "Migrations applied successfully");
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes("fetch")) {
+        throw new Error(
+          `Failed to connect to API at ${apiUrl}\n` +
+            `Please ensure the API is running and accessible.\n` +
+            `Original error: ${error.message}`
+        );
+      }
+      throw error;
+    }
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+/**
+ * Reset database by dropping all tables and re-applying migrations
+ */
+async function resetMigrations(
+  apiUrl: string,
+  apiKey: string,
+  migrationsDir: string
+): Promise<void> {
+  const projectRoot = findOmnibaseRoot();
+  const migrationsPath = path.join(projectRoot, migrationsDir);
+
+  // Verify migrations directory exists
+  if (!fs.existsSync(migrationsPath)) {
+    throw new Error(
+      `Migrations directory not found: ${migrationsPath}\n` +
+        `Please ensure the directory exists and contains .sql migration files.`
     );
+  }
+
+  // Get all .sql files from the directory
+  const sqlFiles = fs
+    .readdirSync(migrationsPath)
+    .filter((file) => file.endsWith(".sql"))
+    .sort();
+
+  if (sqlFiles.length === 0) {
+    throw new Error(
+      `No .sql files found in ${migrationsPath}\n` +
+        `Please add migration files (e.g., 001-seed.sql, 002-rls.sql)`
+    );
+  }
+
+  logger.log(`Found ${sqlFiles.length} migration file(s):`);
+  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
+
+  // Create zip file
+  const zip = new AdmZip();
+  for (const file of sqlFiles) {
+    const filePath = path.join(migrationsPath, file);
+    zip.addLocalFile(filePath);
+  }
+
+  // Generate zip buffer
+  const zipBuffer = zip.toBuffer();
+  logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
+
+  // Use axios and form-data
+  const FormData = require("form-data");
+  const axios = require("axios");
+
+  const formData = new FormData();
+  formData.append("migrations", zipBuffer, {
+    filename: "migrations.zip",
+    contentType: "application/zip",
+  });
+
+  // Send to API reset endpoint
+  const endpoint = `${apiUrl}/api/v1/database/migrations/reset`;
+  logger.start(`Resetting database and applying migrations to ${endpoint}...`);
+
+  try {
+    const headers: Record<string, string> = {
+      ...formData.getHeaders(),
+    };
+
+    if (apiKey) {
+      headers["X-Service-Key"] = apiKey;
+    }
+
+    const response = await axios.post(endpoint, formData, { headers });
+
+    logger.succeed(response.data.message || "Database reset and migrations applied successfully");
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes("fetch")) {
@@ -263,8 +408,8 @@ async function generateTypes(
   // Get typegen API URL from environment config or default to localhost
   const typegenApiUrl = env.typegenApiUrl;
 
-  console.log(`🔍 Fetching schema types from ${typegenApiUrl}...`);
-  console.log(`📊 Included schemas: ${schemas}`);
+  logger.start(`Fetching schema types from ${typegenApiUrl}...`);
+  logger.log(`   Included schemas: ${schemas}`);
 
   try {
     // Call postgres-meta typegen endpoint
@@ -282,16 +427,16 @@ async function generateTypes(
     // Ensure output directory exists
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
-      console.log(`📁 Created types directory: ${outputDir}`);
+      logger.info(`Created types directory: ${outputDir}`);
     }
 
     // Write types to file
     fs.writeFileSync(fullOutputPath, response.data);
 
-    console.log(`✅ Generated TypeScript types`);
-    console.log(`📍 Location: ${fullOutputPath}`);
-    console.log(
-      `\n💡 Import these types in your application to get type-safe database access`
+    logger.succeed(`Generated TypeScript types`);
+    logger.log(`   Location: ${fullOutputPath}`);
+    logger.log(
+      `   Import these types in your application to get type-safe database access`
     );
   } catch (error) {
     if (error instanceof Error) {

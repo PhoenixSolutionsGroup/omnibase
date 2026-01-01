@@ -1,43 +1,77 @@
 import axios, { AxiosInstance } from "axios";
-import { resolveEnvironment } from "./environment";
+import { EnvironmentConfig } from "./environment";
 import { getActiveProfile } from "./credentials";
 
-export function createApiClient(envFlag?: string): AxiosInstance {
-  // 1. Resolve Environment (Cloud vs Local)
-  const envConfig = resolveEnvironment(envFlag);
-
-  // 2. Get Active Profile (if available)
+/**
+ * Create API client for core OmniBase operations.
+ * Used for: database, permissions, stripe, email operations.
+ * Uses: OMNIBASE_API_URL
+ */
+export function createOmnibaseClient(env: EnvironmentConfig): AxiosInstance {
   const profile = getActiveProfile();
 
-  // 3. Construct Headers
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  // Add API Key (Service Key)
-  if (envConfig.apiKey) {
-    headers["X-Service-Key"] = envConfig.apiKey;
+  if (env.omnibaseServiceKey) {
+    headers["X-Service-Key"] = env.omnibaseServiceKey;
   }
 
-  // Add Project ID (from env config)
-  if (envConfig.projectId) {
-    headers["X-Project-ID"] = envConfig.projectId;
+  if (env.projectId) {
+    headers["X-Project-ID"] = env.projectId;
   }
 
-  // Add Tenant ID (from active profile, if not local)
-  if (envConfig.name !== "local" && profile?.tenant_id) {
+  if (env.name !== "local" && profile?.tenant_id) {
     headers["X-Tenant-ID"] = profile.tenant_id;
   }
 
-  // Add API Key for Auth (X-Api-Key Header)
-  // Used for authenticated cloud calls (anything not local)
-  if (envConfig.name !== "local" && profile?.api_key) {
+  if (env.name !== "local" && profile?.api_key) {
     headers["X-Api-Key"] = profile.api_key;
   }
 
-  // 4. Create Axios Instance
   return axios.create({
-    baseURL: envConfig.managedHostingUrl || envConfig.apiUrl,
+    baseURL: env.omnibaseApiUrl,
+    headers,
+  });
+}
+
+/**
+ * Create API client for managed hosting operations.
+ * Used for: workers deployment, cloud auth verification.
+ * Uses: MANAGED_HOSTING_API_URL
+ * Throws if MANAGED_HOSTING_API_URL is not configured.
+ */
+export function createManagedHostingClient(
+  env: EnvironmentConfig
+): AxiosInstance {
+  const profile = getActiveProfile();
+
+  if (!env.managedHostingApiUrl) {
+    throw new Error(
+      `MANAGED_HOSTING_API_URL is required for '${env.name}' environment. ` +
+        `This is needed for cloud operations like worker deployment.`
+    );
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (env.projectId) {
+    headers["X-Project-ID"] = env.projectId;
+  }
+
+  if (profile?.tenant_id) {
+    headers["X-Tenant-ID"] = profile.tenant_id;
+  }
+
+  if (profile?.api_key) {
+    headers["X-Api-Key"] = profile.api_key;
+  }
+
+  return axios.create({
+    baseURL: env.managedHostingApiUrl,
     headers,
   });
 }

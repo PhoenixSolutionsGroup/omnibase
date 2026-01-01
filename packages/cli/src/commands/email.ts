@@ -1,7 +1,8 @@
 import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
-import { resolveEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { logger } from "../utils/logger";
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -15,16 +16,15 @@ async function makeApiRequest(
   body?: any,
   envOverride?: string
 ): Promise<ApiResponse> {
-  const envConfig = resolveEnvironment(envOverride);
-  const url = `${envConfig.apiUrl}${endpoint}`;
+  const envConfig = await selectEnvironment(envOverride);
+  const url = `${envConfig.omnibaseApiUrl}${endpoint}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  // Add API key if available
-  if (envConfig.apiKey) {
-    headers["X-Service-Key"] = envConfig.apiKey;
+  if (envConfig.omnibaseServiceKey) {
+    headers["X-Service-Key"] = envConfig.omnibaseServiceKey;
   }
 
   const options: RequestInit = {
@@ -43,7 +43,7 @@ async function makeApiRequest(
     if (!response.ok) {
       return {
         success: false,
-        error: data.error || `HTTP ${response.status}: ${response.statusText}`,
+        error: data.error || `${response.status} - ${response.statusText}`,
       };
     }
 
@@ -77,7 +77,6 @@ function loadEmailTemplates(
   const files = fs.readdirSync(templatesPath);
   const htmlFiles = files.filter((file) => file.endsWith(".html"));
 
-  // If fileName is specified, filter to just that file
   const filesToProcess = fileName
     ? htmlFiles.filter(
         (file) => file === `${fileName}.html` || file === fileName
@@ -95,10 +94,8 @@ function loadEmailTemplates(
     const filePath = path.join(templatesPath, file);
     const htmlContent = fs.readFileSync(filePath, "utf8");
 
-    // Extract template type from filename (remove .html extension)
     const templateType = file.replace(".html", "");
 
-    // Use filename as subject (this matches your requirement: filename -> subject)
     const subject = templateType
       .replace(/-/g, " ")
       .replace(/\b\w/g, (l) => l.toUpperCase());
@@ -112,10 +109,53 @@ function loadEmailTemplates(
   return templates;
 }
 
+/**
+ * Push email templates to API (exported for sync command)
+ */
+export async function pushEmailTemplates(envOverride?: string): Promise<void> {
+  logger.start("Loading email templates...");
+  const templates = loadEmailTemplates();
+
+  logger.succeed(`Found ${templates.size} template(s) to upload`);
+
+  let successCount = 0;
+  let errorCount = 0;
+  const errors: string[] = [];
+
+  for (const [type, template] of templates.entries()) {
+    logger.start(`Uploading template: ${type}...`);
+
+    const response = await makeApiRequest(
+      "/api/v1/email/templates",
+      "POST",
+      {
+        type,
+        subject: template.subject,
+        html_body: template.htmlBody,
+      },
+      envOverride
+    );
+
+    if (response.success) {
+      logger.succeed(`Uploaded: ${type}`);
+      successCount++;
+    } else {
+      logger.fail(`Failed to upload ${type}: ${response.error}`);
+      errors.push(`${type}: ${response.error}`);
+      errorCount++;
+    }
+  }
+
+  logger.log(`Email templates: ${successCount} successful, ${errorCount} failed`);
+
+  if (errors.length > 0) {
+    throw new Error(`Email upload failed for: ${errors.join(", ")}`);
+  }
+}
+
 export function addEmailCommands(program: Command): void {
   const email = program.command("email").description("Manage email templates");
 
-  // Push email templates command
   email
     .command("push [filename]")
     .description(
@@ -124,10 +164,10 @@ export function addEmailCommands(program: Command): void {
     .option("--env <environment>", "Override environment for this command")
     .action(async (filename: string | undefined, options) => {
       try {
-        console.log("🔍 Loading email templates...");
+        logger.start("Loading email templates...");
         const templates = loadEmailTemplates(filename);
 
-        console.log(`✅ Found ${templates.size} template(s) to upload`);
+        logger.succeed(`Found ${templates.size} template(s) to upload`);
 
         const envOverride = options.env || program.opts().env;
         let successCount = 0;
@@ -135,7 +175,7 @@ export function addEmailCommands(program: Command): void {
         const errors: string[] = [];
 
         for (const [type, template] of templates.entries()) {
-          console.log(`📤 Uploading template: ${type}...`);
+          logger.start(`Uploading template: ${type}...`);
 
           const response = await makeApiRequest(
             "/api/v1/email/templates",
@@ -149,36 +189,34 @@ export function addEmailCommands(program: Command): void {
           );
 
           if (response.success) {
-            console.log(`  ✅ Successfully uploaded: ${type}`);
+            logger.succeed(`Uploaded: ${type}`);
             successCount++;
           } else {
-            console.error(`  ❌ Failed to upload ${type}: ${response.error}`);
+            logger.fail(`Failed to upload ${type}: ${response.error}`);
             errors.push(`${type}: ${response.error}`);
             errorCount++;
           }
         }
 
-        console.log("\n📊 Summary:");
-        console.log(`  ✅ Successful: ${successCount}`);
-        console.log(`  ❌ Failed: ${errorCount}`);
+        logger.newline();
+        logger.log("Summary:");
+        logger.log(`  Successful: ${successCount}`);
+        logger.log(`  Failed: ${errorCount}`);
 
         if (errors.length > 0) {
-          console.log("\n❌ Errors:");
+          logger.newline();
+          logger.log("Errors:");
           errors.forEach((error) => {
-            console.log(`  • ${error}`);
+            logger.log(`  - ${error}`);
           });
           process.exit(1);
         }
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });
 
-  // List email templates command
   email
     .command("list")
     .description("List all email templates in the project")
@@ -187,10 +225,8 @@ export function addEmailCommands(program: Command): void {
         const templatesPath = getEmailTemplatesPath();
 
         if (!fs.existsSync(templatesPath)) {
-          console.log(
-            `No email templates directory found at: ${templatesPath}`
-          );
-          console.log("💡 Tip: Create the directory and add .html templates");
+          logger.warn(`No email templates directory found at: ${templatesPath}`);
+          logger.log("Tip: Create the directory and add .html templates");
           return;
         }
 
@@ -198,20 +234,18 @@ export function addEmailCommands(program: Command): void {
         const htmlFiles = files.filter((file) => file.endsWith(".html"));
 
         if (htmlFiles.length === 0) {
-          console.log("No email templates found");
+          logger.warn("No email templates found");
           return;
         }
 
-        console.log(`📧 Found ${htmlFiles.length} email template(s):\n`);
+        logger.log(`Found ${htmlFiles.length} email template(s):`);
+        logger.newline();
         htmlFiles.forEach((file, index) => {
           const templateType = file.replace(".html", "");
-          console.log(`  ${index + 1}. ${templateType} (${file})`);
+          logger.log(`  ${index + 1}. ${templateType} (${file})`);
         });
       } catch (error) {
-        console.error(
-          "❌ Error:",
-          error instanceof Error ? error.message : error
-        );
+        logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);
       }
     });

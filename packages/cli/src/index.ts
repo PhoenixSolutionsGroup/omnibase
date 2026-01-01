@@ -10,12 +10,15 @@ import { addStripeCommands } from "./commands/stripe";
 import { addEmailCommands } from "./commands/email";
 import { addDbCommands } from "./commands/db";
 import { addAuthCommands } from "./commands/auth";
-import { addWorkersCommands } from "./commands/workers";
+import { addCloudCommands } from "./commands/cloud";
+import { addSyncCommands } from "./commands/sync";
+import { addRestartCommands } from "./commands/restart";
 import {
-  resolveEnvironment,
   findOmnibaseRoot,
   getProjectName,
+  selectEnvironment,
 } from "./utils/environment";
+import { logger } from "./utils/logger";
 
 const program = new Command();
 
@@ -35,12 +38,10 @@ function createTemplateFiles(targetDir: string): void {
   const omnibaseDir = path.join(targetDir, "omnibase");
   const templateDir = path.join(__dirname, "..", "templates");
 
-  // Create omnibase directory
   if (!fs.existsSync(omnibaseDir)) {
     fs.mkdirSync(omnibaseDir, { recursive: true });
   }
 
-  // Copy entire templates directory contents to omnibase/
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
 }
 
@@ -52,8 +53,7 @@ async function runDockerCompose(
   try {
     const projectRoot = findOmnibaseRoot();
 
-    // Resolve environment (flag > default > local)
-    const envConfig = resolveEnvironment(envOverride);
+    const envConfig = await selectEnvironment(envOverride);
     const envPath = path.join(
       projectRoot,
       "omnibase",
@@ -61,12 +61,9 @@ async function runDockerCompose(
       `.env.${envConfig.name}`
     );
 
-    // Determine which docker-compose file to use based on --mode flag
-    // Default to production (official images) unless explicitly set to 'dev'
     const composeFileName =
       composeMode === "dev" ? "docker-compose.dev.yml" : "docker-compose.yml";
 
-    // Construct the path to docker-compose file (in docker/ directory)
     const dockerComposePath = path.join(
       __dirname,
       "..",
@@ -74,17 +71,14 @@ async function runDockerCompose(
       composeFileName
     );
 
-    // Check if docker-compose.yml exists
     if (!fs.existsSync(dockerComposePath)) {
       throw new Error(
         `docker-compose.yml not found at: ${dockerComposePath}\nMake sure you're in a valid omnibase project directory.`
       );
     }
 
-    // Get project name for Docker Compose namespacing
     const projectName = getProjectName();
 
-    // Prepare docker compose command with env file
     const cmdArgs = [
       "compose",
       "--project-name",
@@ -96,10 +90,9 @@ async function runDockerCompose(
       ...args,
     ];
 
-    console.log(`Using project name: ${projectName}`);
-    console.log(`Using environment: ${envConfig.name}`);
+    logger.log(`Using project name: ${projectName}`);
+    logger.log(`Using environment: ${envConfig.name}`);
 
-    // Execute docker compose command with OMNIBASE_PROJECT_DIR and OMNIBASE_ENV_FILE set
     execSync(`docker ${cmdArgs.join(" ")}`, {
       stdio: "ignore",
       cwd: projectRoot,
@@ -125,23 +118,22 @@ program
     const omnibaseDir = path.join(currentDir, "omnibase");
 
     if (fs.existsSync(omnibaseDir)) {
-      console.log("⚠ omnibase directory already exists");
-      console.log(
+      logger.warn("omnibase directory already exists");
+      logger.log(
         "  Remove the existing omnibase directory if you want to reinitialize"
       );
       return;
     }
 
-    console.log("Initializing omnibase project...");
+    logger.start("Initializing omnibase project...");
     createTemplateFiles(currentDir);
-    console.log("");
-    console.log("✓ Project initialized successfully");
-    console.log("");
-    console.log("Next steps:");
-    console.log("  1. Organize the template files in omnibase/ as needed");
-    console.log("  2. Edit the .env files with your configuration");
-    console.log("  3. Edit stripe.config.json with your Stripe products");
-    console.log("  4. Run 'omnibase start' to begin development");
+    logger.succeed("Project initialized successfully");
+    logger.newline();
+    logger.log("Next steps:");
+    logger.log("  1. Organize the template files in omnibase/ as needed");
+    logger.log("  2. Edit the .env files with your configuration");
+    logger.log("  3. Edit stripe.config.json with your Stripe products");
+    logger.log("  4. Run 'omnibase start' to begin development");
   });
 
 program
@@ -152,9 +144,11 @@ program
     try {
       const globalOptions = program.opts();
       const args = cmdOptions.build ? ["up", "-d", "--build"] : ["up", "-d"];
-      await runDockerCompose(globalOptions.env, globalOptions.mode, ...args);
+      logger.start("Starting services...");
+      await runDockerCompose("local", globalOptions.mode, ...args);
+      logger.succeed("Services started");
     } catch (error) {
-      console.error("✗ Error:", error instanceof Error ? error.message : error);
+      logger.fail(error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -165,9 +159,11 @@ program
   .action(async () => {
     try {
       const options = program.opts();
-      await runDockerCompose(options.env, options.mode, "down");
+      logger.start("Stopping services...");
+      await runDockerCompose("local", options.mode, "down");
+      logger.succeed("Services stopped");
     } catch (error) {
-      console.error("✗ Error:", error instanceof Error ? error.message : error);
+      logger.fail(error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
   });
@@ -175,7 +171,7 @@ program
 // Add environment commands
 addEnvironmentCommands(program);
 
-// Add permissions commands (now environment-aware)
+// Add permissions commands
 addPermissionsCommands(program);
 
 // Add auth commands
@@ -187,10 +183,16 @@ addStripeCommands(program);
 // Add email commands
 addEmailCommands(program);
 
-// Add database commands (includes migrations and typegen)
+// Add database commands
 addDbCommands(program);
 
-// Add workers commands
-addWorkersCommands(program);
+// Add cloud commands
+addCloudCommands(program);
+
+// Add sync commands
+addSyncCommands(program);
+
+// Add restart commands
+addRestartCommands(program);
 
 program.parse();

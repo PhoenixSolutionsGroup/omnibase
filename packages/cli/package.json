@@ -26,13 +26,15 @@
   "author": "Phoenix Solutions Group",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/prompts": "^8.1.0",
     "@ory/client": "^1.14.3",
     "axios": "^1.6.0",
     "chalk": "^5.6.2",
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "form-data": "^4.0.0",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "ora": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

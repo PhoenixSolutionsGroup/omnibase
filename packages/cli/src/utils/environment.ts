@@ -1,14 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
 import { config } from "dotenv";
+import { select } from "@inquirer/prompts";
 import { getActiveProfile } from "./credentials";
 
 export interface EnvironmentConfig {
   name: string;
-  apiUrl: string;
-  apiKey?: string;
+  omnibaseApiUrl: string;
+  omnibaseServiceKey?: string;
   projectId?: string;
-  managedHostingUrl?: string;
+  managedHostingApiUrl?: string;
   stripeSecretKey?: string;
   stripePublishableKey?: string;
   stripeWebhookSecret?: string;
@@ -146,14 +147,15 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
   const envConfig = config({ path: envPath });
   const env = envConfig.parsed || {};
 
-  if (!env.API_URL) throw new Error("API_URL not set");
+  if (!env.OMNIBASE_API_URL) throw new Error("OMNIBASE_API_URL not set");
 
   return {
     name: environmentName,
-    apiUrl: env.API_URL,
-    apiKey: env.OMNIBASE_API_KEY,
+    omnibaseApiUrl: env.OMNIBASE_API_URL,
+    omnibaseServiceKey: env.OMNIBASE_SERVICE_KEY,
     projectId: env.OMNIBASE_PROJECT_ID,
-    managedHostingUrl: env.MANAGED_HOSTING_URL,
+    managedHostingApiUrl:
+      env.MANAGED_HOSTING_API_URL || "https://api.omnibase.com",
     stripeSecretKey: env.STRIPE_SECRET_KEY,
     stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY,
     stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
@@ -162,40 +164,65 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
 }
 
 /**
- * Resolve environment with priority: flag > default > local
+ * Select environment interactively if no flag provided
+ * Use this for remote commands (db push, permissions push, sync, etc.)
  */
-export function resolveEnvironment(envFlag?: string): EnvironmentConfig {
-  try {
-    let envName = "local";
-    if (envFlag) {
-      envName = envFlag;
-    } else {
-      const config = loadOmnibaseConfig();
-      envName = config.defaultEnvironment || "local";
-    }
+export async function selectEnvironment(
+  envFlag?: string
+): Promise<EnvironmentConfig> {
+  // If user explicitly specified an environment, use it directly
+  if (envFlag) {
+    const envConfig = loadEnvironment(envFlag);
 
-    const envConfig = loadEnvironment(envName);
-
-    // If not local, enrich with active profile API key
-    if (envName !== "local") {
-      const profile = getActiveProfile();
-      if (profile) {
-        return {
-          ...envConfig,
-          profileApiKey: profile.api_key,
-        };
-      }
+    const profile = getActiveProfile();
+    if (profile) {
+      return {
+        ...envConfig,
+        profileApiKey: profile.api_key,
+      };
     }
 
     return envConfig;
-  } catch (error) {
-    // Fallback to local
-    try {
-      return loadEnvironment("local");
-    } catch (fallbackError) {
-      throw new Error(
-        `Could not load any environment. Please ensure you have a .env.local file in omnibase/environments/`
-      );
-    }
   }
+
+  // No flag provided - show interactive picker
+  const available = getAvailableEnvironments();
+
+  if (available.length === 0) {
+    throw new Error(
+      "No environment files found in omnibase/environments/\n" +
+        "Create a .env.local or .env.dev file to get started."
+    );
+  }
+
+  if (available.length === 1) {
+    // Only one environment, use it directly
+    return loadEnvironment(available[0]);
+  }
+
+  available.sort((a, b) => {
+    if (a === "local") return -1;
+    if (b === "local") return 1;
+    return a.localeCompare(b);
+  });
+
+  const selectedEnv = await select({
+    message: "Select environment:",
+    choices: available.map((env) => ({
+      name: env,
+      value: env,
+    })),
+  });
+
+  const envConfig = loadEnvironment(selectedEnv);
+
+  const profile = getActiveProfile();
+  if (profile) {
+    return {
+      ...envConfig,
+      profileApiKey: profile.api_key,
+    };
+  }
+
+  return envConfig;
 }

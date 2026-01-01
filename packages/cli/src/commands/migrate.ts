@@ -3,7 +3,9 @@ import * as fs from "fs";
 import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
-import { findOmnibaseRoot, resolveEnvironment } from "../utils/environment";
+import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
+import { logger } from "../utils/logger";
+import { handleCommandError } from "../utils/errors";
 
 /**
  * Add migration commands to the CLI
@@ -26,9 +28,7 @@ export function addMigrationCommands(program: Command): void {
       try {
         await createMigration(options.dir, options.name);
       } catch (error) {
-        console.error("❌ Failed to create migration:");
-        console.error(error instanceof Error ? error.message : error);
-        process.exit(1);
+        handleCommandError(error);
       }
     });
 
@@ -43,19 +43,21 @@ export function addMigrationCommands(program: Command): void {
     .action(async (options) => {
       try {
         const parentOptions = program.opts();
-        const env = resolveEnvironment(parentOptions.env);
+        const env = await selectEnvironment(parentOptions.env);
 
-        if (!env.apiKey) {
+        if (!env.omnibaseServiceKey) {
           throw new Error(
-            "OMNIBASE_API_KEY not found in environment configuration"
+            "OMNIBASE_SERVICE_KEY not found in environment configuration"
           );
         }
 
-        await applyMigrations(env.apiUrl, env.apiKey, options.dir);
+        await applyMigrations(
+          env.omnibaseApiUrl,
+          env.omnibaseServiceKey,
+          options.dir
+        );
       } catch (error) {
-        console.error("❌ Migration failed:");
-        console.error(error instanceof Error ? error.message : error);
-        process.exit(1);
+        handleCommandError(error);
       }
     });
 }
@@ -73,7 +75,7 @@ async function createMigration(
   // Ensure migrations directory exists
   if (!fs.existsSync(migrationsPath)) {
     fs.mkdirSync(migrationsPath, { recursive: true });
-    console.log(`📁 Created migrations directory: ${migrationsPath}`);
+    logger.info(`Created migrations directory: ${migrationsPath}`);
   }
 
   // Get migration name from user if not provided
@@ -125,9 +127,9 @@ async function createMigration(
 
   fs.writeFileSync(filePath, template);
 
-  console.log(`✅ Created migration file: ${filename}`);
-  console.log(`📍 Location: ${filePath}`);
-  console.log(`\n💡 Edit the file to add your SQL migration commands`);
+  logger.succeed(`Created migration file: ${filename}`);
+  logger.log(`   Location: ${filePath}`);
+  logger.log(`   Edit the file to add your SQL migration commands`);
 }
 
 /**
@@ -162,8 +164,8 @@ async function applyMigrations(
     );
   }
 
-  console.log(`📦 Found ${sqlFiles.length} migration file(s):`);
-  sqlFiles.forEach((file) => console.log(`   - ${file}`));
+  logger.log(`Found ${sqlFiles.length} migration file(s):`);
+  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
 
   // Create zip file
   const zip = new AdmZip();
@@ -174,9 +176,9 @@ async function applyMigrations(
 
   // Generate zip buffer
   const zipBuffer = zip.toBuffer();
-  console.log(`📦 Created migration archive (${zipBuffer.length} bytes)`);
+  logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
-  // Use axios and form-data (same as permissions.ts)
+  // Use axios and form-data
   const FormData = require("form-data");
   const axios = require("axios");
 
@@ -188,7 +190,7 @@ async function applyMigrations(
 
   // Send to API
   const endpoint = `${apiUrl}/api/v1/database/migrations`;
-  console.log(`🚀 Uploading migrations to ${endpoint}...`);
+  logger.start(`Uploading migrations to ${endpoint}...`);
 
   try {
     const headers: Record<string, string> = {
@@ -201,9 +203,7 @@ async function applyMigrations(
 
     const response = await axios.post(endpoint, formData, { headers });
 
-    console.log(
-      `✅ ${response.data.message || "Migrations applied successfully"}`
-    );
+    logger.succeed(response.data.message || "Migrations applied successfully");
   } catch (error) {
     if (error instanceof Error) {
       if (error.message.includes("fetch")) {
