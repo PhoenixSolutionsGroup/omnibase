@@ -167,7 +167,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "view_users",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkViewUsersResponse.response, {
@@ -183,7 +187,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "delete_tenant",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkDeleteTenantResponse.response, {
@@ -199,7 +207,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserBeforeResponse.response, {
@@ -242,7 +254,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserAfterAddResponse.response, {
@@ -283,7 +299,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserAfterRemoveResponse.response, {
@@ -300,7 +320,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "view_users",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkRetainedPermissionResponse.response, {
@@ -317,7 +341,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invalid_permission_xyz",
-    subject_id: owner.id,
+    subject_set: {
+      namespace: "User",
+      object: owner.id,
+      relation: "",
+    },
   });
 
   check(checkInvalidPermissionResponse.response, {
@@ -335,7 +363,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: "00000000-0000-0000-0000-000000000000",
     relation: "view_users",
-    subject_id: owner.id,
+    subject_set: {
+      namespace: "User",
+      object: owner.id,
+      relation: "",
+    },
   });
 
   check(checkInvalidTenantResponse.response, {
@@ -352,7 +384,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "delete_tenant",
-    subject_id: owner.id,
+    subject_set: {
+      namespace: "User",
+      object: owner.id,
+      relation: "",
+    },
   });
 
   check(checkOwnerDeleteTenantResponse.response, {
@@ -369,7 +405,11 @@ export async function checkPermissions() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "view_users",
-    subject_id: owner.id,
+    subject_set: {
+      namespace: "User",
+      object: owner.id,
+      relation: "",
+    },
   });
 
   check(responseFormatCheck.response, {

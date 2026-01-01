@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.9.16
+ * Service version: 0.9.17
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -165,18 +165,34 @@ export interface ListTenantsResponse {
 }
 
 export type CreateUserRequestName = {
-  /** User's first name */
+  /**
+   * User's first name (letters, spaces, hyphens, dots, apostrophes only)
+   * @minLength 1
+   * @maxLength 100
+   * @pattern ^[a-zA-Z\s\-\.']+$
+   */
   first: string;
-  /** User's last name */
+  /**
+   * User's last name (letters, spaces, hyphens, dots, apostrophes only)
+   * @minLength 1
+   * @maxLength 100
+   * @pattern ^[a-zA-Z\s\-\.']+$
+   */
   last: string;
 };
 
 export interface CreateUserRequest {
-  /** User's email address */
+  /**
+   * User's email address (RFC 5322 compliant)
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+   */
   email: string;
   /**
-   * User's password (minimum 8 characters)
+   * User's password (8-72 printable ASCII characters, bcrypt compatible)
    * @minLength 8
+   * @maxLength 72
+   * @pattern ^[ -~]+$
    */
   password: string;
   name: CreateUserRequestName;
@@ -398,6 +414,29 @@ export interface RecordUsageRequest {
 }
 
 /**
+ * Check permission request using a direct subject identifier
+ */
+export interface CheckPermissionRequestWithSubjectId {
+  /**
+   * The namespace of the permission check
+   * @minLength 1
+   */
+  namespace: string;
+  /**
+   * The object to check permissions on
+   * @minLength 1
+   */
+  object: string;
+  /**
+   * The relation/permission to check
+   * @minLength 1
+   */
+  relation: string;
+  /** Direct subject identifier */
+  subject_id: string;
+}
+
+/**
  * Subject set representation for permission checks and relationship creation
  */
 export interface SubjectSetRequest {
@@ -415,27 +454,10 @@ export interface SubjectSetRequest {
   relation?: string;
 }
 
-export type CheckPermissionRequestOneOf = {
-  /**
-   * The namespace of the permission check
-   * @minLength 1
-   */
-  namespace: string;
-  /**
-   * The object to check permissions on
-   * @minLength 1
-   */
-  object: string;
-  /**
-   * The relation/permission to check
-   * @minLength 1
-   */
-  relation: string;
-  /** Direct subject identifier */
-  subject_id: string;
-};
-
-export type CheckPermissionRequestOneOfTwo = {
+/**
+ * Check permission request using a subject set
+ */
+export interface CheckPermissionRequestWithSubjectSet {
   /**
    * The namespace of the permission check
    * @minLength 1
@@ -452,14 +474,14 @@ export type CheckPermissionRequestOneOfTwo = {
    */
   relation: string;
   subject_set: SubjectSetRequest;
-};
+}
 
 /**
  * Check permission request. Must provide exactly one of subject_id or subject_set.
  */
 export type CheckPermissionRequest =
-  | CheckPermissionRequestOneOf
-  | CheckPermissionRequestOneOfTwo;
+  | CheckPermissionRequestWithSubjectId
+  | CheckPermissionRequestWithSubjectSet;
 
 /**
  * Permission check result
@@ -469,7 +491,10 @@ export interface CheckPermissionResponse {
   allowed: boolean;
 }
 
-export type CreateRelationshipRequestOneOf = {
+/**
+ * Create relationship request using a direct subject identifier
+ */
+export interface CreateRelationshipRequestWithSubjectId {
   /** The namespace for the relationship */
   namespace: string;
   /** The object in the relationship */
@@ -478,9 +503,12 @@ export type CreateRelationshipRequestOneOf = {
   relation: string;
   /** Direct subject identifier */
   subject_id: string;
-};
+}
 
-export type CreateRelationshipRequestOneOfTwo = {
+/**
+ * Create relationship request using a subject set
+ */
+export interface CreateRelationshipRequestWithSubjectSet {
   /** The namespace for the relationship */
   namespace: string;
   /** The object in the relationship */
@@ -488,14 +516,14 @@ export type CreateRelationshipRequestOneOfTwo = {
   /** The relation type */
   relation: string;
   subject_set: SubjectSetRequest;
-};
+}
 
 /**
  * Create relationship request. Must provide exactly one of subject_id or subject_set.
  */
 export type CreateRelationshipRequest =
-  | CreateRelationshipRequestOneOf
-  | CreateRelationshipRequestOneOfTwo;
+  | CreateRelationshipRequestWithSubjectId
+  | CreateRelationshipRequestWithSubjectSet;
 
 /**
  * Subject set representation in Keto relationship tuples
@@ -533,6 +561,48 @@ export interface CreateRelationshipResponse {
   relationship: Relationship;
 }
 
+/**
+ * Delete relationship request using a direct subject identifier
+ */
+export interface DeleteRelationshipRequestWithSubjectId {
+  /** The namespace for the relationship */
+  namespace: string;
+  /** The object in the relationship */
+  object: string;
+  /** The relation type */
+  relation: string;
+  /** Direct subject identifier */
+  subject_id: string;
+}
+
+/**
+ * Delete relationship request using a subject set
+ */
+export interface DeleteRelationshipRequestWithSubjectSet {
+  /** The namespace for the relationship */
+  namespace: string;
+  /** The object in the relationship */
+  object: string;
+  /** The relation type */
+  relation: string;
+  subject_set: SubjectSetRequest;
+}
+
+/**
+ * Delete relationship request. Must provide exactly one of subject_id or subject_set.
+ */
+export type DeleteRelationshipRequest =
+  | DeleteRelationshipRequestWithSubjectId
+  | DeleteRelationshipRequestWithSubjectSet;
+
+/**
+ * Relationship deletion result
+ */
+export interface DeleteRelationshipResponse {
+  /** Success message */
+  message: string;
+}
+
 export interface NamespaceDeploymentResponse {
   /** Success message */
   message: string;
@@ -552,7 +622,12 @@ export interface NamespaceDeploymentResponse {
 export type UploadRequestMetadata = { [key: string]: unknown };
 
 export interface UploadRequest {
-  /** Storage path for the file (user-controlled directory structure) */
+  /**
+   * Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+   * @minLength 1
+   * @maxLength 1024
+   * @pattern ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+   */
   path: string;
   /** Optional custom metadata for the file */
   metadata?: UploadRequestMetadata;
@@ -576,7 +651,12 @@ export interface ForbiddenResponse {
 }
 
 export interface DownloadRequest {
-  /** Path of the file to download */
+  /**
+   * Path of the file to download. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+   * @minLength 1
+   * @maxLength 1024
+   * @pattern ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+   */
   path: string;
 }
 
@@ -586,7 +666,12 @@ export interface DownloadResponse {
 }
 
 export interface DeleteObjectRequest {
-  /** Path of the file to delete */
+  /**
+   * Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+   * @minLength 1
+   * @maxLength 1024
+   * @pattern ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+   */
   path: string;
 }
 
@@ -678,6 +763,60 @@ export interface MeterWithStripeID {
   stripe_id?: string | null;
 }
 
+/**
+ * Three-letter ISO currency code (lowercase)
+ */
+export type CurrencyCode = (typeof CurrencyCode)[keyof typeof CurrencyCode];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CurrencyCode = {
+  usd: "usd",
+  eur: "eur",
+  gbp: "gbp",
+  cad: "cad",
+  aud: "aud",
+  jpy: "jpy",
+  inr: "inr",
+  brl: "brl",
+  mxn: "mxn",
+  sgd: "sgd",
+  hkd: "hkd",
+  nzd: "nzd",
+  chf: "chf",
+  sek: "sek",
+  dkk: "dkk",
+  nok: "nok",
+  pln: "pln",
+  czk: "czk",
+  ils: "ils",
+  zar: "zar",
+} as const;
+
+/**
+ * Billing interval for recurring prices
+ */
+export type BillingInterval =
+  (typeof BillingInterval)[keyof typeof BillingInterval];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BillingInterval = {
+  day: "day",
+  week: "week",
+  month: "month",
+  year: "year",
+} as const;
+
+/**
+ * Usage type for recurring prices
+ */
+export type UsageType = (typeof UsageType)[keyof typeof UsageType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsageType = {
+  licensed: "licensed",
+  metered: "metered",
+} as const;
+
 export type TierUpTo = number | "inf";
 
 export interface Tier {
@@ -730,32 +869,6 @@ export interface PriceUI {
   limits?: PriceLimit[];
 }
 
-/**
- * Billing interval
- */
-export type PriceWithStripeIDInterval =
-  (typeof PriceWithStripeIDInterval)[keyof typeof PriceWithStripeIDInterval];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PriceWithStripeIDInterval = {
-  day: "day",
-  week: "week",
-  month: "month",
-  year: "year",
-} as const;
-
-/**
- * Usage type for recurring prices
- */
-export type PriceWithStripeIDUsageType =
-  (typeof PriceWithStripeIDUsageType)[keyof typeof PriceWithStripeIDUsageType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PriceWithStripeIDUsageType = {
-  licensed: "licensed",
-  metered: "metered",
-} as const;
-
 export interface PriceWithStripeID {
   /**
    * Price identifier (config ID)
@@ -777,19 +890,11 @@ export interface PriceWithStripeID {
    * @minimum 0
    */
   amount?: number;
-  /**
-   * Three-letter ISO currency code (lowercase)
-   * @minLength 3
-   * @maxLength 3
-   * @pattern ^[a-z]{3}$
-   */
-  currency: string;
-  /** Billing interval */
-  interval?: PriceWithStripeIDInterval;
+  currency: CurrencyCode;
+  interval?: BillingInterval;
   /** Number of intervals between billings */
   interval_count?: number;
-  /** Usage type for recurring prices */
-  usage_type?: PriceWithStripeIDUsageType;
+  usage_type?: UsageType;
   /** Meter ID for metered pricing */
   meter?: string;
   /**
@@ -909,6 +1014,8 @@ export interface Meter {
    * @minLength 1
    */
   id: string;
+  /** Original Stripe ID for migration support (optional, used to link existing Stripe meters) */
+  stripe_id?: string;
   /**
    * Human-readable meter name
    * @minLength 1
@@ -925,71 +1032,19 @@ export interface Meter {
 }
 
 /**
- * Three-letter ISO currency code (lowercase)
+ * Billing scheme type for per-unit pricing
  */
-export type PerUnitPriceCurrency =
-  (typeof PerUnitPriceCurrency)[keyof typeof PerUnitPriceCurrency];
+export type PerUnitBillingScheme =
+  (typeof PerUnitBillingScheme)[keyof typeof PerUnitBillingScheme];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PerUnitPriceCurrency = {
-  usd: "usd",
-  eur: "eur",
-  gbp: "gbp",
-  cad: "cad",
-  aud: "aud",
-  jpy: "jpy",
-  inr: "inr",
-  brl: "brl",
-  mxn: "mxn",
-  sgd: "sgd",
-  hkd: "hkd",
-  nzd: "nzd",
-  chf: "chf",
-  sek: "sek",
-  dkk: "dkk",
-  nok: "nok",
-  pln: "pln",
-  czk: "czk",
-  ils: "ils",
-  zar: "zar",
-} as const;
-
-/**
- * Billing interval for recurring prices (required when usage_type is metered)
- */
-export type PerUnitPriceInterval =
-  (typeof PerUnitPriceInterval)[keyof typeof PerUnitPriceInterval];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PerUnitPriceInterval = {
-  day: "day",
-  week: "week",
-  month: "month",
-  year: "year",
-} as const;
-
-/**
- * Usage type for recurring prices (when set to metered, interval and meter are required)
- */
-export type PerUnitPriceUsageType =
-  (typeof PerUnitPriceUsageType)[keyof typeof PerUnitPriceUsageType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PerUnitPriceUsageType = {
-  licensed: "licensed",
-  metered: "metered",
-} as const;
-
-/**
- * Billing scheme type
- */
-export type PerUnitPriceBillingScheme =
-  (typeof PerUnitPriceBillingScheme)[keyof typeof PerUnitPriceBillingScheme];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PerUnitPriceBillingScheme = {
+export const PerUnitBillingScheme = {
   per_unit: "per_unit",
 } as const;
+
+export type PerUnitPriceInterval = BillingInterval & unknown;
+
+export type PerUnitPriceUsageType = UsageType & unknown;
 
 export type PerUnitPrice =
   | (unknown & {
@@ -998,6 +1053,8 @@ export type PerUnitPrice =
        * @minLength 1
        */
       id: string;
+      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+      stripe_id?: string;
       /**
        * Whether price is visible in public API (null/true = public, false = enterprise only)
        * @nullable
@@ -1013,21 +1070,17 @@ export type PerUnitPrice =
        * @minimum 1
        */
       amount: number;
-      /** Three-letter ISO currency code (lowercase) */
-      currency: PerUnitPriceCurrency;
-      /** Billing interval for recurring prices (required when usage_type is metered) */
+      currency: CurrencyCode;
       interval?: PerUnitPriceInterval;
       /** Number of intervals between billings (default 1) */
       interval_count?: number;
-      /** Usage type for recurring prices (when set to metered, interval and meter are required) */
       usage_type?: PerUnitPriceUsageType;
       /**
        * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
        * @minLength 1
        */
       meter?: string;
-      /** Billing scheme type */
-      billing_scheme?: PerUnitPriceBillingScheme;
+      billing_scheme?: PerUnitBillingScheme;
       /** Mark as default price for the product */
       default?: boolean;
       ui?: PriceUI;
@@ -1038,6 +1091,8 @@ export type PerUnitPrice =
        * @minLength 1
        */
       id: string;
+      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+      stripe_id?: string;
       /**
        * Whether price is visible in public API (null/true = public, false = enterprise only)
        * @nullable
@@ -1053,63 +1108,47 @@ export type PerUnitPrice =
        * @minimum 1
        */
       amount: number;
-      /** Three-letter ISO currency code (lowercase) */
-      currency: PerUnitPriceCurrency;
-      /** Billing interval for recurring prices (required when usage_type is metered) */
+      currency: CurrencyCode;
       interval?: PerUnitPriceInterval;
       /** Number of intervals between billings (default 1) */
       interval_count?: number;
-      /** Usage type for recurring prices (when set to metered, interval and meter are required) */
       usage_type?: PerUnitPriceUsageType;
       /**
        * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
        * @minLength 1
        */
       meter?: string;
-      /** Billing scheme type */
-      billing_scheme?: PerUnitPriceBillingScheme;
+      billing_scheme?: PerUnitBillingScheme;
       /** Mark as default price for the product */
       default?: boolean;
       ui?: PriceUI;
     });
 
 /**
- * Billing interval for recurring prices (required when usage_type is metered)
+ * Billing scheme type for tiered pricing
  */
-export type TieredPriceInterval =
-  (typeof TieredPriceInterval)[keyof typeof TieredPriceInterval];
+export type TieredBillingScheme =
+  (typeof TieredBillingScheme)[keyof typeof TieredBillingScheme];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TieredPriceInterval = {
-  day: "day",
-  week: "week",
-  month: "month",
-  year: "year",
+export const TieredBillingScheme = {
+  tiered: "tiered",
 } as const;
 
 /**
- * Usage type for recurring prices (when set to metered, interval and meter are required)
+ * Tiers mode for tiered pricing
  */
-export type TieredPriceUsageType =
-  (typeof TieredPriceUsageType)[keyof typeof TieredPriceUsageType];
+export type TiersMode = (typeof TiersMode)[keyof typeof TiersMode];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TieredPriceUsageType = {
-  licensed: "licensed",
-  metered: "metered",
-} as const;
-
-/**
- * Tiers mode
- */
-export type TieredPriceTiersMode =
-  (typeof TieredPriceTiersMode)[keyof typeof TieredPriceTiersMode];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TieredPriceTiersMode = {
+export const TiersMode = {
   graduated: "graduated",
   volume: "volume",
 } as const;
+
+export type TieredPriceInterval = BillingInterval & unknown;
+
+export type TieredPriceUsageType = UsageType & unknown;
 
 export type TieredPrice =
   | (unknown & {
@@ -1118,6 +1157,8 @@ export type TieredPrice =
        * @minLength 1
        */
       id: string;
+      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+      stripe_id?: string;
       /**
        * Whether price is visible in public API (null/true = public, false = enterprise only)
        * @nullable
@@ -1128,28 +1169,18 @@ export type TieredPrice =
        * @nullable
        */
       tax_included_in_price?: boolean | null;
-      /**
-       * Three-letter ISO currency code (lowercase)
-       * @minLength 3
-       * @maxLength 3
-       * @pattern ^[a-z]{3}$
-       */
-      currency: string;
-      /** Billing interval for recurring prices (required when usage_type is metered) */
+      currency: CurrencyCode;
       interval?: TieredPriceInterval;
       /** Number of intervals between billings (default 1) */
       interval_count?: number;
-      /** Usage type for recurring prices (when set to metered, interval and meter are required) */
       usage_type?: TieredPriceUsageType;
       /**
        * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
        * @minLength 1
        */
       meter?: string;
-      /** Billing scheme type (must be 'tiered') */
-      billing_scheme: "tiered";
-      /** Tiers mode */
-      tiers_mode: TieredPriceTiersMode;
+      billing_scheme: TieredBillingScheme;
+      tiers_mode: TiersMode;
       /**
        * Pricing tiers
        * @minItems 1
@@ -1165,6 +1196,8 @@ export type TieredPrice =
        * @minLength 1
        */
       id: string;
+      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+      stripe_id?: string;
       /**
        * Whether price is visible in public API (null/true = public, false = enterprise only)
        * @nullable
@@ -1175,28 +1208,18 @@ export type TieredPrice =
        * @nullable
        */
       tax_included_in_price?: boolean | null;
-      /**
-       * Three-letter ISO currency code (lowercase)
-       * @minLength 3
-       * @maxLength 3
-       * @pattern ^[a-z]{3}$
-       */
-      currency: string;
-      /** Billing interval for recurring prices (required when usage_type is metered) */
+      currency: CurrencyCode;
       interval?: TieredPriceInterval;
       /** Number of intervals between billings (default 1) */
       interval_count?: number;
-      /** Usage type for recurring prices (when set to metered, interval and meter are required) */
       usage_type?: TieredPriceUsageType;
       /**
        * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
        * @minLength 1
        */
       meter?: string;
-      /** Billing scheme type (must be 'tiered') */
-      billing_scheme: "tiered";
-      /** Tiers mode */
-      tiers_mode: TieredPriceTiersMode;
+      billing_scheme: TieredBillingScheme;
+      tiers_mode: TiersMode;
       /**
        * Pricing tiers
        * @minItems 1
@@ -1227,6 +1250,8 @@ export interface Product {
    * @minLength 1
    */
   id: string;
+  /** Original Stripe ID for migration support (optional, used to link existing Stripe products) */
+  stripe_id?: string;
   /**
    * Product name
    * @minLength 1
@@ -1458,7 +1483,10 @@ export interface TenantUserResponse {
  * Request to update a user's role
  */
 export interface UpdateTenantUserRoleRequest {
-  /** New role to assign */
+  /**
+   * New role to assign
+   * @minLength 1
+   */
   role: string;
   /** Target user ID */
   user_id: string;
@@ -1557,6 +1585,11 @@ export interface DeleteRoleResponse {
 }
 
 /**
+ * Maps subject types to their allowed relations
+ */
+export type NamespaceDefinitionSubjectRelations = { [key: string]: string[] };
+
+/**
  * Definition of a permission namespace
  */
 export interface NamespaceDefinition {
@@ -1566,6 +1599,8 @@ export interface NamespaceDefinition {
   namespace: string;
   /** Available relations in this namespace */
   relations: string[];
+  /** Maps subject types to their allowed relations */
+  subject_relations?: NamespaceDefinitionSubjectRelations;
   /** Timestamp when definition was last updated */
   updated_at: string;
 }
@@ -1669,7 +1704,10 @@ export interface RemoveSubscriptionResponse {
 export interface CreateTenantUserInviteRequest {
   /** Email address of the user to invite */
   email: string;
-  /** Role to assign to the invited user */
+  /**
+   * Role to assign to the invited user
+   * @minLength 1
+   */
   role: string;
   /** Base URL for the invite acceptance page */
   invite_url: string;
@@ -1748,7 +1786,7 @@ export interface BillingStatusResponse {
 /**
  * Bad Request - Invalid request parameters
  */
-export type BadRequestErrorResponse = BadRequestResponse;
+export type BadRequestErrorResponse = BadRequestResponse | string;
 
 /**
  * Unauthorized - Authentication required
@@ -1878,6 +1916,13 @@ export type CheckPermission200AllOf = {
 };
 
 export type CheckPermission200 = SuccessResponse & CheckPermission200AllOf;
+
+export type DeleteRelationship200AllOf = {
+  data?: DeleteRelationshipResponse;
+};
+
+export type DeleteRelationship200 = SuccessResponse &
+  DeleteRelationship200AllOf;
 
 export type CreateRelationship200AllOf = {
   data?: CreateRelationshipResponse;
@@ -2160,6 +2205,13 @@ export type DeleteRole200AllOf = {
 
 export type DeleteRole200 = SuccessResponse & DeleteRole200AllOf;
 
+export type GetRoleDefinitionsParams = {
+  /**
+   * Filter to only return relations that accept this subject type (e.g., "ApiKey", "User")
+   */
+  subject?: string;
+};
+
 export type GetRoleDefinitions200AllOf = {
   data?: NamespaceDefinitionsResponse;
 };
@@ -2277,13 +2329,13 @@ Requires valid session via Cookie or X-Session-Token header.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/session`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2319,13 +2371,13 @@ Lighter alternative to full session when you only need user profile data.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/identity`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2360,13 +2412,13 @@ The logout URL handles clearing session cookies automatically.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/logout`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2399,13 +2451,13 @@ Quick auth checks for route guards without fetching full session data.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/whoami`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2439,13 +2491,13 @@ Determine which tenant context to use for API calls and data filtering.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/active-tenant`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2479,7 +2531,7 @@ Display tenant switcher UI or list all organizations the user belongs to.
  */
   listTenants(
     headers?: ListTenantsHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: ListTenants200;
@@ -2487,7 +2539,7 @@ Display tenant switcher UI or list all organizations the user belongs to.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/tenants`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("GET", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -2498,7 +2550,7 @@ Display tenant switcher UI or list all organizations the user belongs to.
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -2533,7 +2585,7 @@ This is an admin endpoint that requires service key authentication.
  */
   createUser(
     createUserRequest: CreateUserRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateUser200;
@@ -2541,7 +2593,7 @@ This is an admin endpoint that requires service key authentication.
     const url = new URL(this.cleanBaseUrl + `/api/v1/auth/users`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -2553,7 +2605,7 @@ This is an admin endpoint that requires service key authentication.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -2587,7 +2639,7 @@ Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `00
  */
   uploadDatabaseMigrations(
     uploadDatabaseMigrationsBody: UploadDatabaseMigrationsBody,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: MigrationSuccessResponse;
@@ -2598,7 +2650,7 @@ Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `00
     const url = new URL(this.cleanBaseUrl + `/api/v1/database/migrations`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("POST", url.toString(), formData.body(), {
       ...mergedRequestParameters,
@@ -2640,13 +2692,13 @@ Returns array of all templates with their type, subject, and HTML body.
     const url = new URL(this.cleanBaseUrl + `/api/v1/email/templates`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2680,7 +2732,7 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
  */
   createOrUpdateEmailTemplate(
     createEmailTemplateRequest: CreateEmailTemplateRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateOrUpdateEmailTemplate200;
@@ -2688,7 +2740,7 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
     const url = new URL(this.cleanBaseUrl + `/api/v1/email/templates`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -2700,7 +2752,7 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -2732,7 +2784,7 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
  */
   deleteEmailTemplate(
     type: string,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DeleteEmailTemplate200;
@@ -2740,13 +2792,13 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
     const url = new URL(this.cleanBaseUrl + `/api/v1/email/templates/${type}`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "DELETE",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2829,13 +2881,13 @@ Session authentication via JWT token sent in subscription messages.
     const url = new URL(this.cleanBaseUrl + `/api/v1/events`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -2866,7 +2918,7 @@ Optional cookie authentication. If authenticated and user has a Stripe customer 
  */
   createCheckout(
     createCheckoutRequest: CreateCheckoutRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateCheckout200;
@@ -2874,7 +2926,7 @@ Optional cookie authentication. If authenticated and user has a Stripe customer 
     const url = new URL(this.cleanBaseUrl + `/api/v1/payments/checkout`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -2886,7 +2938,7 @@ Optional cookie authentication. If authenticated and user has a Stripe customer 
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -2922,7 +2974,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
  */
   createCustomerPortal(
     createPortalRequest: CreatePortalRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateCustomerPortal200;
@@ -2930,7 +2982,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
     const url = new URL(this.cleanBaseUrl + `/api/v1/payments/portal`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -2942,7 +2994,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -2978,7 +3030,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
  */
   recordUsage(
     recordUsageRequest: RecordUsageRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: SuccessResponse;
@@ -2986,7 +3038,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
     const url = new URL(this.cleanBaseUrl + `/api/v1/payments/usage`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -2998,7 +3050,7 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -3032,7 +3084,7 @@ to enforce this constraint at the schema level.
  */
   checkPermission(
     checkPermissionRequest: CheckPermissionRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CheckPermission200;
@@ -3040,7 +3092,7 @@ to enforce this constraint at the schema level.
     const url = new URL(this.cleanBaseUrl + `/api/v1/permissions/check`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3052,7 +3104,63 @@ to enforce this constraint at the schema level.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Deletes a relationship tuple from Ory Keto.
+
+## Authentication
+Requires session authentication.
+
+## Request Format
+Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
+to enforce this constraint at the schema level.
+
+## Use Cases
+- Remove resource links from tenants
+- Revoke user assignments from projects
+- Delete permission relationships
+
+ * @summary Delete relationship
+ */
+  deleteRelationship(
+    deleteRelationshipRequest: DeleteRelationshipRequest,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: DeleteRelationship200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/permissions/relationships`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "DELETE",
+      url.toString(),
+      JSON.stringify(deleteRelationshipRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+        },
+      }
     );
     let data;
 
@@ -3086,17 +3194,17 @@ to enforce this constraint at the schema level.
  */
   createRelationship(
     createRelationshipRequest: CreateRelationshipRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateRelationship200;
   } {
     const url = new URL(
-      this.cleanBaseUrl + `/api/v1/permissions/relationships`,
+      this.cleanBaseUrl + `/api/v1/permissions/relationships`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3108,7 +3216,7 @@ to enforce this constraint at the schema level.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -3161,7 +3269,7 @@ If managed hosting is enabled, this endpoint will also trigger a restart of the 
  */
   deployPermissionNamespaces(
     deployPermissionNamespacesBody: DeployPermissionNamespacesBody,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DeployPermissionNamespaces200;
@@ -3172,7 +3280,7 @@ If managed hosting is enabled, this endpoint will also trigger a restart of the 
     const url = new URL(this.cleanBaseUrl + `/api/v1/permissions/namespaces`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("POST", url.toString(), formData.body(), {
       ...mergedRequestParameters,
@@ -3218,7 +3326,7 @@ Presigned URLs are valid for 15 minutes after generation.
   uploadFile(
     uploadRequest: UploadRequest,
     headers?: UploadFileHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: UploadFile200;
@@ -3226,7 +3334,7 @@ Presigned URLs are valid for 15 minutes after generation.
     const url = new URL(this.cleanBaseUrl + `/api/v1/storage/upload`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3242,10 +3350,10 @@ Presigned URLs are valid for 15 minutes after generation.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -3283,7 +3391,7 @@ Presigned URLs are valid for 15 minutes after generation.
   downloadFile(
     downloadRequest: DownloadRequest,
     headers?: DownloadFileHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DownloadFile200;
@@ -3291,7 +3399,7 @@ Presigned URLs are valid for 15 minutes after generation.
     const url = new URL(this.cleanBaseUrl + `/api/v1/storage/download`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3307,10 +3415,10 @@ Presigned URLs are valid for 15 minutes after generation.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -3346,7 +3454,7 @@ Users must have DELETE permission based on their custom RLS policies.
   deleteObject(
     deleteObjectRequest: DeleteObjectRequest,
     headers?: DeleteObjectHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DeleteObject200;
@@ -3354,7 +3462,7 @@ Users must have DELETE permission based on their custom RLS policies.
     const url = new URL(this.cleanBaseUrl + `/api/v1/storage/object`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "DELETE",
@@ -3370,10 +3478,10 @@ Users must have DELETE permission based on their custom RLS policies.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -3405,13 +3513,13 @@ Users must have DELETE permission based on their custom RLS policies.
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/schema`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3446,13 +3554,13 @@ No authentication required for public endpoint.
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/config`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3487,13 +3595,13 @@ Requires admin JWT token.
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/admin/config`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3523,7 +3631,7 @@ Requires admin JWT token.
  */
   updateStripeConfig(
     stripeConfigUpdateRequest: StripeConfigUpdateRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: SuccessResponse;
@@ -3531,7 +3639,7 @@ Requires admin JWT token.
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/admin/config`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3543,7 +3651,7 @@ Requires admin JWT token.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -3572,7 +3680,7 @@ Requires admin JWT token.
  */
   getStripeConfigHistory(
     params?: GetStripeConfigHistoryParams,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: GetStripeConfigHistory200;
@@ -3580,11 +3688,11 @@ Requires admin JWT token.
     const url = new URL(
       this.cleanBaseUrl +
         `/api/v1/stripe/admin/config/history` +
-        `?${new URLSearchParams(params).toString()}`,
+        `?${new URLSearchParams(params).toString()}`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("GET", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -3617,17 +3725,17 @@ Requires admin JWT token.
  */
   validateStripeConfig(
     stripeConfigValidateRequest: StripeConfigValidateRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: SuccessResponse;
   } {
     const url = new URL(
-      this.cleanBaseUrl + `/api/v1/stripe/admin/config/validate`,
+      this.cleanBaseUrl + `/api/v1/stripe/admin/config/validate`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3639,7 +3747,7 @@ Requires admin JWT token.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -3674,13 +3782,13 @@ Requires admin JWT token.
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/admin/config/pull`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3716,17 +3824,17 @@ This is a destructive operation that will archive ALL active Stripe resources.
     data: ArchiveAllStripeConfig200;
   } {
     const url = new URL(
-      this.cleanBaseUrl + `/api/v1/stripe/admin/config/archive-all`,
+      this.cleanBaseUrl + `/api/v1/stripe/admin/config/archive-all`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3756,23 +3864,23 @@ No authentication required for public endpoint.
  */
   convertStripeIDToConfigID(
     stripeId: string,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: ConvertStripeIDToConfigID200;
   } {
     const url = new URL(
-      this.cleanBaseUrl + `/api/v1/stripe/convert/stripe-id/${stripeId}`,
+      this.cleanBaseUrl + `/api/v1/stripe/convert/stripe-id/${stripeId}`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -3792,7 +3900,7 @@ No authentication required for public endpoint.
 
 ## Authentication
 - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
-- **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID headers
 
 ## Service Key Usage
 When using service key authentication, provide the user_id via the X-User-ID header.
@@ -3811,7 +3919,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
   createTenant(
     createTenantRequest: CreateTenantRequest,
     headers?: CreateTenantHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateTenant200;
@@ -3819,7 +3927,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -3835,10 +3943,10 @@ The user_id must be a valid UUID matching an existing Kratos identity.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -3870,7 +3978,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
  */
   deleteTenant(
     headers?: DeleteTenantHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DeleteTenant200;
@@ -3878,7 +3986,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("DELETE", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -3889,7 +3997,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -3922,7 +4030,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
   switchActiveTenant(
     switchTenantRequest: SwitchTenantRequest,
     headers?: SwitchActiveTenantHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: SwitchActiveTenant200;
@@ -3930,7 +4038,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/switch-active`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "PUT",
@@ -3946,10 +4054,10 @@ The user_id must be a valid UUID matching an existing Kratos identity.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -3980,7 +4088,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
  */
   listTenantUsers(
     headers?: ListTenantUsersHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: ListTenantUsers200;
@@ -3988,7 +4096,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/users`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("GET", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -3999,7 +4107,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -4037,7 +4145,7 @@ Requires JWT token with `remove_user` permission.
  */
   removeTenantUser(
     deleteTenantUserRequest: DeleteTenantUserRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: SuccessResponse;
@@ -4045,7 +4153,7 @@ Requires JWT token with `remove_user` permission.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/users`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "DELETE",
@@ -4057,7 +4165,7 @@ Requires JWT token with `remove_user` permission.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -4095,7 +4203,7 @@ Requires JWT token with `remove_user` permission.
   updateTenantUserRole(
     updateTenantUserRoleRequest: UpdateTenantUserRoleRequest,
     headers?: UpdateTenantUserRoleHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: UpdateTenantUserRole200;
@@ -4103,7 +4211,7 @@ Requires JWT token with `remove_user` permission.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/users`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "PUT",
@@ -4119,10 +4227,10 @@ Requires JWT token with `remove_user` permission.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -4153,7 +4261,7 @@ Requires JWT token with `remove_user` permission.
  */
   listRoles(
     headers?: ListRolesHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: ListRoles200;
@@ -4161,7 +4269,7 @@ Requires JWT token with `remove_user` permission.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/roles`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("GET", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -4172,7 +4280,7 @@ Requires JWT token with `remove_user` permission.
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -4211,7 +4319,7 @@ Permissions should be in the format: `namespace:resource#relation`
   createRole(
     createRoleRequest: CreateRoleRequest,
     headers?: CreateRoleHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateRole200;
@@ -4219,7 +4327,7 @@ Permissions should be in the format: `namespace:resource#relation`
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/roles`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -4235,10 +4343,10 @@ Permissions should be in the format: `namespace:resource#relation`
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -4274,7 +4382,7 @@ Permissions should be in the format: `namespace:resource#relation`
     roleId: string,
     updateRoleRequest: UpdateRoleRequest,
     headers?: UpdateRoleHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: UpdateRole200;
@@ -4282,7 +4390,7 @@ Permissions should be in the format: `namespace:resource#relation`
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/roles/${roleId}`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "PUT",
@@ -4298,10 +4406,10 @@ Permissions should be in the format: `namespace:resource#relation`
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -4333,7 +4441,7 @@ Permissions should be in the format: `namespace:resource#relation`
   deleteRole(
     roleId: string,
     headers?: DeleteRoleHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: DeleteRole200;
@@ -4341,7 +4449,7 @@ Permissions should be in the format: `namespace:resource#relation`
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/roles/${roleId}`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("DELETE", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -4352,7 +4460,7 @@ Permissions should be in the format: `namespace:resource#relation`
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -4379,26 +4487,29 @@ Requires JWT token with appropriate permissions.
 - Discover available permission namespaces
 - List relations for each namespace
 - Build dynamic permission UIs
+- Filter by subject type for API key creation
 
  * @summary Get namespace definitions
  */
-  getRoleDefinitions(requestParameters?: Params): {
+  getRoleDefinitions(
+    params?: GetRoleDefinitionsParams,
+    requestParameters?: Params
+  ): {
     response: Response;
     data: GetRoleDefinitions200;
   } {
     const url = new URL(
-      this.cleanBaseUrl + `/api/v1/tenants/roles/definitions`,
+      this.cleanBaseUrl +
+        `/api/v1/tenants/roles/definitions` +
+        `?${new URLSearchParams(params).toString()}`
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
-    const response = http.request(
-      "GET",
-      url.toString(),
-      undefined,
-      mergedRequestParameters,
-    );
+    const response = http.request("GET", url.toString(), undefined, {
+      ...mergedRequestParameters,
+    });
     let data;
 
     try {
@@ -4432,13 +4543,13 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/subscriptions`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -4483,7 +4594,7 @@ Requires JWT token with tenant context.
  */
   addSubscription(
     addSubscriptionRequest: AddSubscriptionRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: AddSubscription200;
@@ -4491,7 +4602,7 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/subscriptions`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -4503,7 +4614,7 @@ Requires JWT token with tenant context.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -4549,7 +4660,7 @@ Requires JWT token with tenant context.
  */
   removeSubscription(
     removeSubscriptionRequest: RemoveSubscriptionRequest,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: RemoveSubscription200;
@@ -4557,7 +4668,7 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/subscriptions`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "DELETE",
@@ -4569,7 +4680,7 @@ Requires JWT token with tenant context.
           ...mergedRequestParameters?.headers,
           "Content-Type": "application/json",
         },
-      },
+      }
     );
     let data;
 
@@ -4605,7 +4716,7 @@ Requires JWT token with tenant context.
   createInvite(
     createTenantUserInviteRequest: CreateTenantUserInviteRequest,
     headers?: CreateInviteHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: CreateInvite200;
@@ -4613,7 +4724,7 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/invites`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "POST",
@@ -4629,10 +4740,10 @@ Requires JWT token with tenant context.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -4667,7 +4778,7 @@ Requires JWT token with tenant context.
   acceptInvite(
     acceptInviteRequest: AcceptInviteRequest,
     headers?: AcceptInviteHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: AcceptInvite200;
@@ -4675,7 +4786,7 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/invites/accept`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "PUT",
@@ -4691,10 +4802,10 @@ Requires JWT token with tenant context.
             Object.entries(headers || {}).map(([key, value]) => [
               key,
               String(value),
-            ]),
+            ])
           ),
         },
-      },
+      }
     );
     let data;
 
@@ -4725,7 +4836,7 @@ Requires JWT token with tenant context.
  */
   getTenantJWT(
     headers?: GetTenantJWTHeaders,
-    requestParameters?: Params,
+    requestParameters?: Params
   ): {
     response: Response;
     data: GetTenantJWT200;
@@ -4733,7 +4844,7 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/jwt`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request("GET", url.toString(), undefined, {
       ...mergedRequestParameters,
@@ -4744,7 +4855,7 @@ Requires JWT token with tenant context.
           Object.entries(headers || {}).map(([key, value]) => [
             key,
             String(value),
-          ]),
+          ])
         ),
       },
     });
@@ -4781,13 +4892,13 @@ Requires JWT token with tenant context.
     const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/billing-status`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
-      this.commonRequestParameters,
+      this.commonRequestParameters
     );
     const response = http.request(
       "GET",
       url.toString(),
       undefined,
-      mergedRequestParameters,
+      mergedRequestParameters
     );
     let data;
 
@@ -4811,7 +4922,7 @@ Requires JWT token with tenant context.
    */
   private _mergeRequestParameters(
     requestParameters?: Params,
-    commonRequestParameters?: Params,
+    commonRequestParameters?: Params
   ): Params {
     return {
       ...commonRequestParameters, // Default to common parameters

@@ -179,7 +179,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "view_users",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkViewUsersResponse.response, {
@@ -194,7 +198,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserBeforeResponse.response, {
@@ -290,7 +298,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserAfterResponse.response, {
@@ -357,7 +369,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserRevokedResponse.response, {
@@ -433,7 +449,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "view_users",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkViewUsersNoPermResponse.response, {
@@ -447,7 +467,11 @@ export async function rbacEnforcement() {
     namespace: "Tenant",
     object: tenant.id,
     relation: "invite_user",
-    subject_id: member.id,
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
   });
 
   check(checkInviteUserNoPermResponse.response, {
