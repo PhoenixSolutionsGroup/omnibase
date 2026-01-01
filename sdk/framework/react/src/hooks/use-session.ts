@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@omnibase/core-js/auth";
+import type { Session } from "@ory/client";
 import { useAuth } from "@/context/provider";
 
 /**
