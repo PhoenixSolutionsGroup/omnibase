@@ -23,7 +23,7 @@ wait_for_api_health() {
         attempt=$((attempt + 1))
         echo "Health check attempt $attempt/$max_attempts: $health_url" >&2
         
-        if curl -f -s --connect-timeout 2 --max-time 5 -o /dev/null "$health_url" 2>/dev/null; then
+        if curl -f -s --connect-timeout 2 --max-time 5 -H "X-Service-Key: ${JWT_SECRET}" -o /dev/null "$health_url" 2>/dev/null; then
             echo "✓ rest-api is healthy" >&2
             return 0
         else
@@ -89,7 +89,7 @@ download_templates() {
             url="${API_URL}/api/v1/email/templates/${template_name}/${template_type}"
             output="$template_dir/$template_name/valid/$filename"
             
-            if curl -f -s --connect-timeout 2 --max-time 5 -o "$output" "$url" 2>/dev/null; then
+            if curl -f -s --connect-timeout 2 --max-time 5 -H "X-Service-Key: ${SERVICE_KEY}" -o "$output" "$url" 2>/dev/null; then
                 echo "✓ Downloaded: $template_name/$template_type" >&2
             else
                 echo "✗ Failed to download $template_name/$template_type (will use Auth defaults)" >&2
