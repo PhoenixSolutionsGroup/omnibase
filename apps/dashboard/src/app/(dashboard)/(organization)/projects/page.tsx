@@ -9,6 +9,8 @@ export default async function ProjectsPage() {
     .from("projects")
     .select("id, name, provisioning_type, created_at")
     .eq("branch_name", "main")
+    .neq("status", "failed")
+    .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
   if (error) {

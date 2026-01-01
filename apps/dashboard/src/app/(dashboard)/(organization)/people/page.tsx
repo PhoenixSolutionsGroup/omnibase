@@ -2,14 +2,16 @@ import React from "react";
 import { UserInvite, RoleCreator } from "@omnibase/shadcn";
 import { getAllProjects } from "@/utils/get-project";
 import { createTenantsServerClient } from "@/lib/server";
+import { CreateInviteRequest } from "@omnibase/core-js";
 
-async function inviteUser(data: { email: string; role: string }) {
+async function inviteUser(invite: CreateInviteRequest) {
   "use server";
+  const data = invite.createTenantUserInviteRequest;
   const client = await createTenantsServerClient();
   const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL!;
 
   await client.createInvite({
-    request: {
+    createTenantUserInviteRequest: {
       email: data.email,
       role: data.role,
       inviteUrl: `${websiteUrl}/auth/onboarding`,
@@ -17,23 +19,23 @@ async function inviteUser(data: { email: string; role: string }) {
   });
 }
 
-async function createRole(role: { role_name: string; permissions: any }) {
+async function createRole(role: { role_name: string; permissions: string[] }) {
   "use server";
   const client = await createTenantsServerClient();
   await client.createRole({
-    request: {
+    createRoleRequest: {
       permissions: role.permissions,
       roleName: role.role_name,
     },
   });
 }
 
-async function updateRole(role: { role_id: string; permissions: any }) {
+async function updateRole(role: { role_id: string; permissions: string[] }) {
   "use server";
   const client = await createTenantsServerClient();
   await client.updateRole({
     roleId: role.role_id,
-    request: {
+    updateRoleRequest: {
       permissions: role.permissions,
     },
   });
@@ -47,7 +49,9 @@ export default async function Page() {
     return;
   }
 
-  const { data: definitionsData } = await client.getRoleDefinitions();
+  const { data: definitionsData } = await client.getRoleDefinitions({
+    subject: "User",
+  });
   if (!definitionsData) {
     return;
   }

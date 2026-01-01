@@ -9,7 +9,7 @@ async function removeUser(user_id: string) {
   "use server";
   const tenant = await createTenantsServerClient();
   await tenant.removeTenantUser({
-    request: {
+    deleteTenantUserRequest: {
       userId: user_id,
     },
   });
@@ -19,7 +19,7 @@ async function updateUserRole(user_id: string, role: string) {
   "use server";
   const tenant = await createTenantsServerClient();
   await tenant.updateTenantUserRole({
-    request: {
+    updateTenantUserRoleRequest: {
       role,
       userId: user_id,
     },

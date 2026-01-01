@@ -19,12 +19,7 @@ import {
 import { ProjectDropdown } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
 import { Separator } from "@/components/ui/separator";
-
-interface Project {
-  id: string;
-  name: string;
-  group_id: string;
-}
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 
 interface ProjectContext {
   projectGroupId: string;

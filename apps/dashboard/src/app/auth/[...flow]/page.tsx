@@ -76,11 +76,11 @@ export default function page({ params, searchParams }: any) {
 
                     const client = await createTenantsServerClient();
                     const { data } = await client.createTenant({
-                      request: {
+                      createTenantRequest: {
                         name: organizationName,
                         billingEmail: billingEmail,
-                        userId: session.identity?.id!,
                       },
+                      xUserId: session.identity?.id!,
                     });
 
                     if (!data) {
@@ -102,7 +102,7 @@ export default function page({ params, searchParams }: any) {
 
                     const client = await createTenantsServerClient();
                     const { data } = await client.acceptInvite({
-                      request: {
+                      acceptInviteRequest: {
                         token,
                       },
                     });

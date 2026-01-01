@@ -1,23 +1,21 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/utils/get-project";
-import { LogsClient } from "./logs-client";
+import { ObservabilityClient } from "./observability-client";
 
-interface LogsPageProps {
+interface ObservabilityPageProps {
   params: Promise<{
     project_group_id: string;
     project_branch: string;
   }>;
   searchParams: Promise<{
-    service_type?: string;
-    limit?: string;
-    time_range?: string;
+    dashboard?: string;
   }>;
 }
 
-export default async function LogsPage({
+export default async function ObservabilityPage({
   params,
   searchParams,
-}: LogsPageProps) {
+}: ObservabilityPageProps) {
   const { project_group_id, project_branch } = await params;
   const project = await getProject(project_group_id, project_branch);
 
@@ -25,22 +23,15 @@ export default async function LogsPage({
     notFound();
   }
 
-  const {
-    service_type: activeService = "all",
-    limit: limitParam = "100",
-    time_range: timeRange = "7d",
-  } = await searchParams;
-  const limit = parseInt(limitParam, 10) || 100;
+  const { dashboard = "project-dashboard" } = await searchParams;
 
   return (
-    <LogsClient
+    <ObservabilityClient
       projectId={project.id}
       projectName={project.name}
       projectGroupId={project_group_id}
       projectBranch={project_branch}
-      activeService={activeService}
-      limit={limit}
-      timeRange={timeRange}
+      dashboardUID={dashboard}
     />
   );
 }

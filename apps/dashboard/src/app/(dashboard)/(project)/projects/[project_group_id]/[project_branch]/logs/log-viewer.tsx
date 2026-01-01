@@ -18,6 +18,34 @@ const MANAGED_HOSTING_API_URL = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
 if (!MANAGED_HOSTING_API_URL)
   throw new Error("NEXT_PUBLIC_MANAGED_HOSTING_API_URL must be set");
 
+// Service type labels and colors
+const SERVICE_CONFIG: Record<string, { label: string; className: string }> = {
+  all: { label: "All", className: "bg-gray-100 text-gray-700 border-gray-200" },
+  api: { label: "API", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  "auth-pub": { label: "Auth Pub", className: "bg-green-50 text-green-700 border-green-200" },
+  "auth-adm": { label: "Auth Adm", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  "perm-read": { label: "Perm Read", className: "bg-purple-50 text-purple-700 border-purple-200" },
+  "perm-write": { label: "Perm Write", className: "bg-violet-50 text-violet-700 border-violet-200" },
+  postgrest: { label: "PostgREST", className: "bg-orange-50 text-orange-700 border-orange-200" },
+};
+
+const getServiceTypeBadge = (serviceType?: string) => {
+  if (!serviceType) return null;
+
+  const config = SERVICE_CONFIG[serviceType] || {
+    label: serviceType,
+    className: "bg-gray-100 text-gray-700 border-gray-200",
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium border whitespace-nowrap ${config.className}`}
+    >
+      {config.label}
+    </span>
+  );
+};
+
 // GCP Cloud Logging severity levels with subtle styling
 const getSeverityBadge = (severity?: string) => {
   if (!severity) return null;
@@ -124,7 +152,7 @@ export function LogViewer({
       const endTime = oldestTimestamp.toISOString();
 
       const url = new URL(
-        `${MANAGED_HOSTING_API_URL}/api/v1/projects/${projectId}/logs`,
+        `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
         window.location.origin
       );
       url.searchParams.set("service_type", serviceType);
@@ -171,7 +199,7 @@ export function LogViewer({
       const startTime = new Date(newestTimestamp.getTime() + 1).toISOString();
 
       const url = new URL(
-        `${MANAGED_HOSTING_API_URL}/api/v1/projects/${projectId}/logs`,
+        `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
         window.location.origin
       );
       url.searchParams.set("service_type", serviceType);
@@ -234,6 +262,11 @@ export function LogViewer({
               <th className="px-0 py-2 text-left text-sm font-medium">
                 Severity
               </th>
+              {serviceType === "all" && (
+                <th className="px-2 py-2 text-left text-sm font-medium">
+                  Service
+                </th>
+              )}
               <th className="px-3 py-2 text-left text-sm font-medium w-56">
                 Timestamp
               </th>
@@ -261,6 +294,11 @@ export function LogViewer({
                   <td className="px-0 py-2">
                     {getSeverityBadge(log.severity)}
                   </td>
+                  {serviceType === "all" && (
+                    <td className="px-2 py-2">
+                      {getServiceTypeBadge(log.service_type)}
+                    </td>
+                  )}
                   <td className="px-3 py-2 w-56">
                     <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
                       {formatTimestamp(log.timestamp)}
@@ -274,10 +312,40 @@ export function LogViewer({
                 </tr>
                 {expandedRows.has(index) && (
                   <tr key={`${index}-expanded`}>
-                    <td colSpan={4} className="px-4 pb-3 bg-muted/30">
-                      <pre className="text-xs font-mono bg-muted text-foreground p-4 rounded overflow-x-auto border">
-                        {JSON.stringify(log, null, 2)}
-                      </pre>
+                    <td colSpan={serviceType === "all" ? 5 : 4} className="px-4 pb-3 bg-muted/30">
+                      {/* Raw Log Line */}
+                      {log.metadata?.raw_line && (
+                        <div className="mb-3">
+                          <div className="text-xs font-semibold text-muted-foreground mb-1">
+                            Raw Log:
+                          </div>
+                          <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
+                            {typeof log.metadata.raw_line === "string"
+                              ? (() => {
+                                  try {
+                                    return JSON.stringify(
+                                      JSON.parse(log.metadata.raw_line),
+                                      null,
+                                      2
+                                    );
+                                  } catch {
+                                    return log.metadata.raw_line;
+                                  }
+                                })()
+                              : JSON.stringify(log.metadata.raw_line, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+
+                      {/* Full Log Entry */}
+                      <div>
+                        <div className="text-xs font-semibold text-muted-foreground mb-1">
+                          Full Log Entry:
+                        </div>
+                        <pre className="text-xs font-mono bg-muted text-foreground p-3 rounded overflow-x-auto border">
+                          {JSON.stringify(log, null, 2)}
+                        </pre>
+                      </div>
                     </td>
                   </tr>
                 )}

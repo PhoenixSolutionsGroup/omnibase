@@ -195,7 +195,7 @@ export function ProjectDashboardClient({
       const logPromises = serviceTypes.map(async (serviceType) => {
         try {
           const url = new URL(
-            `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/logs`
+            `${MANAGED_HOSTING_API_URL}/api/v1/logs/${project.id}`
           );
           url.searchParams.set("service_type", serviceType);
           url.searchParams.set("severity", "WARNING");

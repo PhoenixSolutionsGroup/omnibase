@@ -25,6 +25,7 @@ export const getAllProjects = cache(async () => {
   const { data: projects, error } = await db
     .from("projects")
     .select("*")
+    .in("status", ["active", "provisioning"])
     .order("created_at", { ascending: false });
 
   if (error) {

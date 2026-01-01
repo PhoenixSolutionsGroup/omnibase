@@ -11,12 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Project {
-  id: string;
-  name: string;
-  group_id: string;
-}
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 
 interface ProjectDropdownProps {
   projectGroupId: string;
@@ -74,7 +69,10 @@ export function ProjectDropdown({
       <SelectContent>
         {projects.length > 0 ? (
           projects.map((project) => (
-            <SelectItem key={project.group_id} value={project.group_id}>
+            <SelectItem
+              key={project.project_group_id}
+              value={project.project_group_id}
+            >
               <div className="flex items-center gap-2">
                 <FolderGit2 className="h-4 w-4" />
                 <span>{project.name}</span>

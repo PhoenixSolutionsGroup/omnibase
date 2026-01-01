@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import {
   Card,
   CardContent,
@@ -52,11 +53,18 @@ type DedicatedProvider = {
   };
 };
 
+type DatabaseProvider = {
+  id: string;
+  name: string;
+  regions: string[];
+};
+
 type DeploymentOptions = {
   shared_deployments: SharedTier[];
   dedicated_deployments: {
     can_provision: boolean;
     providers: DedicatedProvider[];
+    database_providers: DatabaseProvider[];
   };
 };
 
@@ -71,6 +79,8 @@ type FormData = {
   dedicated_provider: string;
   dedicated_region: string;
   dedicated_machine_type: string;
+  database_provider: string;
+  database_region: string;
   serverless_config: Record<
     string,
     {
@@ -111,6 +121,8 @@ export function ProvisioningForm({
     dedicated_provider: "",
     dedicated_region: "",
     dedicated_machine_type: "",
+    database_provider: "",
+    database_region: "",
     serverless_config: {},
   });
 
@@ -157,17 +169,58 @@ export function ProvisioningForm({
     (p) => p.id === formData.dedicated_provider
   );
 
+  const selectedDatabaseProvider =
+    options?.dedicated_deployments.database_providers.find(
+      (p) => p.id === formData.database_provider
+    );
+
+  // Filter database providers based on compute type
+  // vps_postgres only available for VPS, neon available for both
+  const availableDatabaseProviders =
+    options?.dedicated_deployments.database_providers.filter((dbProvider) => {
+      if (!selectedProvider) return true;
+      if (selectedProvider.type === "serverless") {
+        return dbProvider.id !== "vps_postgres";
+      }
+      return true; // VPS can use any database provider
+    }) ?? [];
+
+  // Set database defaults when compute provider changes
+  React.useEffect(() => {
+    if (selectedProvider) {
+      const defaultDbProvider =
+        selectedProvider.type === "vps" ? "vps_postgres" : "neon";
+      const dbProviderData =
+        options?.dedicated_deployments.database_providers.find(
+          (p) => p.id === defaultDbProvider
+        );
+      const defaultRegion =
+        dbProviderData?.regions.length ? dbProviderData.regions[0] : "";
+
+      setFormData((prev) => ({
+        ...prev,
+        database_provider: defaultDbProvider,
+        database_region: defaultRegion,
+      }));
+    }
+  }, [selectedProvider?.id]);
+
   // Initialize serverless config defaults when provider changes
   React.useEffect(() => {
     if (
       selectedProvider?.type === "serverless" &&
       selectedProvider.resource_config
     ) {
+      const { options } = selectedProvider.resource_config;
+      // Default to 2 vCPU and 4GB RAM, or closest available
+      const defaultVcpu = options.vcpu.includes(2) ? 2 : options.vcpu[Math.floor(options.vcpu.length / 2)];
+      const defaultMemory = options.memory_mb.includes(4096) ? 4096 : options.memory_mb[Math.floor(options.memory_mb.length / 2)];
+
       const defaults: Record<string, any> = {};
       selectedProvider.resource_config.services.forEach((service) => {
         defaults[service] = {
-          vcpu: 1,
-          memory_mb: 512,
+          vcpu: defaultVcpu,
+          memory_mb: defaultMemory,
           min_scale: 0,
           max_scale: 1,
         };
@@ -213,12 +266,10 @@ export function ProvisioningForm({
         payload.providers = {
           compute: providerConfig,
           database: {
-            provider:
-              selectedProvider?.type === "serverless" ? "neon" : "vps_postgres",
-            region:
-              selectedProvider?.type === "serverless"
-                ? "aws-us-east-1"
-                : "auto",
+            provider: formData.database_provider,
+            region: selectedDatabaseProvider?.regions.length
+              ? formData.database_region
+              : "auto",
           },
           storage: {
             provider:
@@ -521,6 +572,64 @@ export function ProvisioningForm({
                 </div>
               )}
 
+              {/* Database Provider Selection */}
+              {selectedProvider && (
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Database Provider</Label>
+                    <Select
+                      value={formData.database_provider}
+                      onValueChange={(v) => {
+                        const dbProvider = availableDatabaseProviders.find(
+                          (p) => p.id === v
+                        );
+                        setFormData({
+                          ...formData,
+                          database_provider: v,
+                          database_region: dbProvider?.regions[0] ?? "",
+                        });
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select database" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableDatabaseProviders.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Only show region selector if provider has regions */}
+                  {selectedDatabaseProvider &&
+                    selectedDatabaseProvider.regions.length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Database Region</Label>
+                        <Select
+                          value={formData.database_region}
+                          onValueChange={(v) =>
+                            setFormData({ ...formData, database_region: v })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select region" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedDatabaseProvider.regions.map((region) => (
+                              <SelectItem key={region} value={region}>
+                                {region}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                </div>
+              )}
+
               {/* Serverless Specific: Resource Sliders */}
               {selectedProvider?.type === "serverless" &&
                 selectedProvider.resource_config && (
@@ -530,98 +639,172 @@ export function ProvisioningForm({
                       <h4 className="font-semibold">Service Configuration</h4>
                     </div>
 
-                    {selectedProvider.resource_config.services.map(
-                      (service) => (
-                        <div
-                          key={service}
-                          className="space-y-4 border-b pb-4 last:border-0"
-                        >
-                          <h5 className="text-sm font-medium uppercase text-muted-foreground">
-                            {service}
-                          </h5>
-                          <div className="grid gap-4 md:grid-cols-2">
-                            {/* vCPU Selection */}
-                            <div className="space-y-2">
-                              <Label>vCPU</Label>
-                              <Select
-                                value={formData.serverless_config[
-                                  service
-                                ]?.vcpu?.toString()}
-                                onValueChange={(val) => {
-                                  const newConfig = {
-                                    ...formData.serverless_config,
-                                  };
-                                  if (!newConfig[service])
-                                    newConfig[service] = {
-                                      vcpu: 0,
-                                      memory_mb: 0,
-                                      min_scale: 0,
-                                      max_scale: 0,
-                                    };
-                                  newConfig[service].vcpu = parseFloat(val);
-                                  setFormData({
-                                    ...formData,
-                                    serverless_config: newConfig,
-                                  });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select vCPU" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {selectedProvider.resource_config?.options.vcpu.map(
-                                    (v) => (
-                                      <SelectItem key={v} value={v.toString()}>
-                                        {v} vCPU
-                                      </SelectItem>
-                                    )
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
+                    {/* Set All Services Controls */}
+                    <div className="space-y-4 rounded-md bg-muted/50 p-4 mb-6">
+                      <h5 className="text-sm font-medium">Set All Services</h5>
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {/* Set All vCPU */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label>vCPU (All)</Label>
+                          </div>
+                          <Select
+                            onValueChange={(v) => {
+                              const vcpu = Number(v);
+                              const newConfig = { ...formData.serverless_config };
+                              selectedProvider.resource_config!.services.forEach((service) => {
+                                if (newConfig[service]) {
+                                  newConfig[service] = { ...newConfig[service], vcpu };
+                                }
+                              });
+                              setFormData({ ...formData, serverless_config: newConfig });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select vCPU for all" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {selectedProvider.resource_config!.options.vcpu.map((vcpu) => (
+                                <SelectItem key={vcpu} value={String(vcpu)}>
+                                  {vcpu} vCPU
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                            {/* Memory Selection */}
-                            <div className="space-y-2">
-                              <Label>Memory (MB)</Label>
-                              <Select
-                                value={formData.serverless_config[
-                                  service
-                                ]?.memory_mb?.toString()}
-                                onValueChange={(val) => {
-                                  const newConfig = {
-                                    ...formData.serverless_config,
-                                  };
-                                  if (!newConfig[service])
-                                    newConfig[service] = {
-                                      vcpu: 0,
-                                      memory_mb: 0,
-                                      min_scale: 0,
-                                      max_scale: 0,
+                        {/* Set All Memory */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label>Memory (All)</Label>
+                          </div>
+                          <Select
+                            onValueChange={(v) => {
+                              const memory_mb = Number(v);
+                              const newConfig = { ...formData.serverless_config };
+                              selectedProvider.resource_config!.services.forEach((service) => {
+                                if (newConfig[service]) {
+                                  newConfig[service] = { ...newConfig[service], memory_mb };
+                                }
+                              });
+                              setFormData({ ...formData, serverless_config: newConfig });
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select memory for all" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {selectedProvider.resource_config!.options.memory_mb.map((mb) => (
+                                <SelectItem key={mb} value={String(mb)}>
+                                  {mb >= 1024 ? `${mb / 1024} GB` : `${mb} MB`}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedProvider.resource_config.services.map(
+                      (service) => {
+                        const vcpuOptions = selectedProvider.resource_config!.options.vcpu;
+                        const memoryOptions = selectedProvider.resource_config!.options.memory_mb;
+                        const currentVcpu = formData.serverless_config[service]?.vcpu ?? vcpuOptions[0];
+                        const currentMemory = formData.serverless_config[service]?.memory_mb ?? memoryOptions[0];
+                        const vcpuIndex = vcpuOptions.indexOf(currentVcpu);
+                        const memoryIndex = memoryOptions.indexOf(currentMemory);
+
+                        const formatMemory = (mb: number) => {
+                          if (mb >= 1024) return `${mb / 1024} GB`;
+                          return `${mb} MB`;
+                        };
+
+                        return (
+                          <div
+                            key={service}
+                            className="space-y-4 border-b pb-4 last:border-0"
+                          >
+                            <h5 className="text-sm font-medium uppercase text-muted-foreground">
+                              {service}
+                            </h5>
+                            <div className="grid gap-6 md:grid-cols-2">
+                              {/* vCPU Slider */}
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <Label>vCPU</Label>
+                                  <span className="text-sm font-medium bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    {currentVcpu} vCPU
+                                  </span>
+                                </div>
+                                <Slider
+                                  value={[vcpuIndex >= 0 ? vcpuIndex : 0]}
+                                  min={0}
+                                  max={vcpuOptions.length - 1}
+                                  step={1}
+                                  onValueChange={(vals) => {
+                                    const newConfig = {
+                                      ...formData.serverless_config,
                                     };
-                                  newConfig[service].memory_mb = parseInt(val);
-                                  setFormData({
-                                    ...formData,
-                                    serverless_config: newConfig,
-                                  });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select Memory" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {selectedProvider.resource_config?.options.memory_mb.map(
-                                    (m) => (
-                                      <SelectItem key={m} value={m.toString()}>
-                                        {m} MB
-                                      </SelectItem>
-                                    )
-                                  )}
-                                </SelectContent>
-                              </Select>
+                                    if (!newConfig[service])
+                                      newConfig[service] = {
+                                        vcpu: 0,
+                                        memory_mb: 0,
+                                        min_scale: 0,
+                                        max_scale: 0,
+                                      };
+                                    newConfig[service].vcpu = vcpuOptions[vals[0]];
+                                    setFormData({
+                                      ...formData,
+                                      serverless_config: newConfig,
+                                    });
+                                  }}
+                                />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                  <span>{vcpuOptions[0]}</span>
+                                  <span>{vcpuOptions[vcpuOptions.length - 1]}</span>
+                                </div>
+                              </div>
+
+                              {/* Memory Slider */}
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <Label>Memory</Label>
+                                  <span className="text-sm font-medium bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    {formatMemory(currentMemory)}
+                                  </span>
+                                </div>
+                                <Slider
+                                  value={[memoryIndex >= 0 ? memoryIndex : 0]}
+                                  min={0}
+                                  max={memoryOptions.length - 1}
+                                  step={1}
+                                  onValueChange={(vals) => {
+                                    const newConfig = {
+                                      ...formData.serverless_config,
+                                    };
+                                    if (!newConfig[service])
+                                      newConfig[service] = {
+                                        vcpu: 0,
+                                        memory_mb: 0,
+                                        min_scale: 0,
+                                        max_scale: 0,
+                                      };
+                                    newConfig[service].memory_mb = memoryOptions[vals[0]];
+                                    setFormData({
+                                      ...formData,
+                                      serverless_config: newConfig,
+                                    });
+                                  }}
+                                />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                  <span>{formatMemory(memoryOptions[0])}</span>
+                                  <span>{formatMemory(memoryOptions[memoryOptions.length - 1])}</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )
+                        );
+                      }
                     )}
                   </div>
                 )}

@@ -19,7 +19,7 @@ async function createCustomerPortal() {
   const currentUrl = `${protocol}://${host}`;
 
   const { data: portal } = await payments.createCustomerPortal({
-    request: {
+    createPortalRequest: {
       returnUrl: currentUrl,
     },
   });
@@ -38,7 +38,7 @@ async function createCheckout(id: string) {
   const currentUrl = `${protocol}://${host}`;
 
   const { data } = await payments.createCheckout({
-    request: {
+    createCheckoutRequest: {
       priceId: id,
       successUrl: `${currentUrl}/subscriptions?success=true`,
       cancelUrl: `${currentUrl}/subscriptions`,

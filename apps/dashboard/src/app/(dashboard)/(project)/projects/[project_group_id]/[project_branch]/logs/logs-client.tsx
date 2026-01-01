@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { LogViewer } from "./log-viewer";
 import { LimitSelector } from "./limit-selector";
+import { TimeRangeSelector } from "./time-range-selector";
 import { Loader2 } from "lucide-react";
 
 interface Log {
@@ -22,6 +23,7 @@ interface LogsResponse {
 
 // Map of service types to readable labels
 const SERVICE_LABELS: Record<string, string> = {
+  all: "All Services",
   "auth-pub": "Auth Public",
   "auth-adm": "Auth Admin",
   "perm-read": "Permissions Read",
@@ -31,6 +33,7 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 const SERVICE_ORDER = [
+  "all",
   "api",
   "auth-pub",
   "auth-adm",
@@ -46,6 +49,7 @@ interface LogsClientProps {
   projectBranch: string;
   activeService: string;
   limit: number;
+  timeRange: string;
 }
 
 const MANAGED_HOSTING_API_URL = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
@@ -59,6 +63,7 @@ export function LogsClient({
   projectBranch,
   activeService,
   limit,
+  timeRange,
 }: LogsClientProps) {
   const [logsData, setLogsData] = useState<LogsResponse | null>(null);
   const [logsError, setLogsError] = useState<string | null>(null);
@@ -70,6 +75,25 @@ export function LogsClient({
     key: serviceKey,
     label: SERVICE_LABELS[serviceKey] || serviceKey,
   }));
+
+  // Convert time range to start_time
+  const getStartTime = (range: string): string => {
+    const now = new Date();
+    switch (range) {
+      case "1h":
+        return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+      case "6h":
+        return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
+      case "24h":
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+      case "7d":
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      case "30d":
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      default:
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    }
+  };
 
   // Fetch logs on mount and when dependencies change
   useEffect(() => {
@@ -85,12 +109,13 @@ export function LogsClient({
 
       try {
         const url = new URL(
-          `${MANAGED_HOSTING_API_URL}/api/v1/projects/${projectId}/logs`,
+          `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
           window.location.origin
         );
         url.searchParams.set("service_type", activeService);
         url.searchParams.set("limit", limit.toString());
         url.searchParams.set("tail", "true");
+        url.searchParams.set("start_time", getStartTime(timeRange));
 
         const response = await fetch(url.toString(), {
           credentials: "include",
@@ -98,6 +123,7 @@ export function LogsClient({
 
         if (response.ok) {
           const data = await response.json();
+          console.log(data, url.toString());
           setLogsData(data);
           setLastFetch(Date.now());
         } else {
@@ -117,7 +143,7 @@ export function LogsClient({
     };
 
     fetchLogs();
-  }, [projectId, activeService, limit]);
+  }, [projectId, activeService, limit, timeRange]);
 
   return (
     <div className="p-6 space-y-6">
@@ -143,6 +169,14 @@ export function LogsClient({
             {service.label}
           </a>
         ))}
+
+        <TimeRangeSelector
+          project_branch={projectBranch}
+          project_group_id={projectGroupId}
+          activeService={activeService}
+          limit={limit}
+          currentRange={timeRange}
+        />
 
         <LimitSelector
           project_branch={projectBranch}

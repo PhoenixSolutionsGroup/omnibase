@@ -72,8 +72,18 @@ app.post("/api/health-check", async (c) => {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
 
-          const responseData = await response.json();
-          console.log(responseData);
+          if (url.includes("postgrest")) {
+            return {
+              url,
+              status: response.ok
+                ? "healthy"
+                : response.status == 404
+                ? "healthy"
+                : "unhealthy",
+              responseTime,
+              statusCode: response.status,
+            };
+          }
           return {
             url,
             status: response.ok ? "healthy" : "unhealthy",
@@ -84,6 +94,7 @@ app.post("/api/health-check", async (c) => {
           const endTime = Date.now();
           const responseTime = endTime - startTime;
 
+          console.warn(error);
           return {
             url,
             status: "error",

@@ -9,11 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          expires_at: string | null;
+          id: string;
+          is_active: boolean;
+          key_hash: string;
+          key_prefix: string;
+          last_used_at: string | null;
+          name: string;
+          scopes: Json | null;
+          tenant_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          expires_at?: string | null;
+          id?: string;
+          is_active?: boolean;
+          key_hash: string;
+          key_prefix: string;
+          last_used_at?: string | null;
+          name: string;
+          scopes?: Json | null;
+          tenant_id: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          expires_at?: string | null;
+          id?: string;
+          is_active?: boolean;
+          key_hash?: string;
+          key_prefix?: string;
+          last_used_at?: string | null;
+          name?: string;
+          scopes?: Json | null;
+          tenant_id?: string;
+        };
+        Relationships: [];
+      };
       projects: {
         Row: {
           api_service_key_encrypted: string | null;
           api_url: string | null;
           auth_admin_url: string | null;
+          auth_oauth_config_encrypted: string | null;
           auth_public_url: string | null;
           branch_name: string;
           cloud_run_service_resource_names: Json | null;
@@ -30,6 +73,8 @@ export type Database = {
           database_username: string | null;
           dedicated_vps_id: string | null;
           email_provider: string | null;
+          env_config_base_encrypted: string | null;
+          env_config_encrypted: string | null;
           error_message: string | null;
           id: string;
           is_default_branch: boolean;
@@ -46,8 +91,11 @@ export type Database = {
             | Database["public"]["Enums"]["provisioning_type"]
             | null;
           status: Database["public"]["Enums"]["project_status"];
+          storage_access_key: string | null;
           storage_bucket_name: string | null;
+          storage_endpoint: string | null;
           storage_provider: string | null;
+          storage_secret_key_encrypted: string | null;
           stripe_customer_id: string | null;
           stripe_onboarding_complete: boolean;
           suspension_reason: string | null;
@@ -60,6 +108,7 @@ export type Database = {
           api_service_key_encrypted?: string | null;
           api_url?: string | null;
           auth_admin_url?: string | null;
+          auth_oauth_config_encrypted?: string | null;
           auth_public_url?: string | null;
           branch_name: string;
           cloud_run_service_resource_names?: Json | null;
@@ -76,6 +125,8 @@ export type Database = {
           database_username?: string | null;
           dedicated_vps_id?: string | null;
           email_provider?: string | null;
+          env_config_base_encrypted?: string | null;
+          env_config_encrypted?: string | null;
           error_message?: string | null;
           id?: string;
           is_default_branch?: boolean;
@@ -92,8 +143,11 @@ export type Database = {
             | Database["public"]["Enums"]["provisioning_type"]
             | null;
           status?: Database["public"]["Enums"]["project_status"];
+          storage_access_key?: string | null;
           storage_bucket_name?: string | null;
+          storage_endpoint?: string | null;
           storage_provider?: string | null;
+          storage_secret_key_encrypted?: string | null;
           stripe_customer_id?: string | null;
           stripe_onboarding_complete?: boolean;
           suspension_reason?: string | null;
@@ -106,6 +160,7 @@ export type Database = {
           api_service_key_encrypted?: string | null;
           api_url?: string | null;
           auth_admin_url?: string | null;
+          auth_oauth_config_encrypted?: string | null;
           auth_public_url?: string | null;
           branch_name?: string;
           cloud_run_service_resource_names?: Json | null;
@@ -122,6 +177,8 @@ export type Database = {
           database_username?: string | null;
           dedicated_vps_id?: string | null;
           email_provider?: string | null;
+          env_config_base_encrypted?: string | null;
+          env_config_encrypted?: string | null;
           error_message?: string | null;
           id?: string;
           is_default_branch?: boolean;
@@ -138,8 +195,11 @@ export type Database = {
             | Database["public"]["Enums"]["provisioning_type"]
             | null;
           status?: Database["public"]["Enums"]["project_status"];
+          storage_access_key?: string | null;
           storage_bucket_name?: string | null;
+          storage_endpoint?: string | null;
           storage_provider?: string | null;
+          storage_secret_key_encrypted?: string | null;
           stripe_customer_id?: string | null;
           stripe_onboarding_complete?: boolean;
           suspension_reason?: string | null;
@@ -156,21 +216,6 @@ export type Database = {
             referencedColumns: ["id"];
           }
         ];
-      };
-      schema_migrations: {
-        Row: {
-          dirty: boolean;
-          version: number;
-        };
-        Insert: {
-          dirty: boolean;
-          version: number;
-        };
-        Update: {
-          dirty?: boolean;
-          version?: number;
-        };
-        Relationships: [];
       };
       usage_metrics: {
         Row: {

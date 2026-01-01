@@ -1,4 +1,4 @@
-import { Context, Namespace, SubjectSet } from "./types";
+import { Context, Namespace } from "./types";
 
 export class User implements Namespace {}
 
@@ -13,16 +13,19 @@ export class Tenant implements Namespace {
     can_remove_owner_role: User[];
     can_remove_user: User[];
     can_view_users: User[];
-    can_view_db_secret_key: User[];
-    can_rotate_keys: User[];
-    can_view_database_password: User[];
-    can_view_database_connection_string: User[];
-    can_view_postmark_server_token: User[];
     can_update_roles: User[];
-    can_view_api_service_key: User[];
     can_create_api_keys: User[];
     can_view_api_keys: User[];
     can_revoke_api_keys: User[];
+    can_rotate_keys: (User | ApiKey)[];
+    can_view_db_secret_key: (User | ApiKey)[];
+    can_view_database_password: (User | ApiKey)[];
+    can_view_database_connection_string: (User | ApiKey)[];
+    can_view_postmark_server_token: (User | ApiKey)[];
+    can_view_api_service_key: (User | ApiKey)[];
+    can_update_project_env: (User | ApiKey)[];
+    can_view_project_env: (User | ApiKey)[];
+    can_view_storage_credentials: (User | ApiKey)[];
   };
 
   permits = {
@@ -61,5 +64,14 @@ export class Tenant implements Namespace {
 
     revoke_api_keys: (ctx: Context): boolean =>
       this.related.can_revoke_api_keys.includes(ctx.subject),
+
+    update_project_env: (ctx: Context): boolean =>
+      this.related.can_update_project_env.includes(ctx.subject),
+
+    view_project_env: (ctx: Context): boolean =>
+      this.related.can_view_project_env.includes(ctx.subject),
+
+    view_storage_credentials: (ctx: Context): boolean =>
+      this.related.can_view_storage_credentials.includes(ctx.subject),
   };
 }

@@ -10,7 +10,7 @@ export async function fetchProjectSecretKey(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -51,7 +51,7 @@ export async function fetchProjectSecretKey(projectId: string) {
 
     return {
       success: true,
-      serviceKey: data.service_key,
+      serviceKey: data.api_service_key,
     };
   } catch (error) {
     console.error("Error fetching secret key:", error);
@@ -70,7 +70,7 @@ export async function fetchDatabasePassword(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -130,7 +130,7 @@ export async function fetchDatabaseConnectionString(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -191,7 +191,7 @@ export async function fetchPostmarkServerToken(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -251,7 +251,7 @@ export async function fetchAPIServiceKey(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -311,7 +311,7 @@ export async function rotateProjectKeys(projectId: string) {
     .join("; ");
 
   const apiUrl =
-    process.env.NEXT_PUBLIC_MANAGED_HOSTING_URL || "http://localhost:8002";
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
 
   try {
     const response = await fetch(
@@ -349,6 +349,69 @@ export async function rotateProjectKeys(projectId: string) {
     };
   } catch (error) {
     console.error("Error rotating keys:", error);
+    return {
+      success: false,
+      error: "Failed to connect to the server",
+    };
+  }
+}
+
+export async function fetchStorageCredentials(projectId: string) {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
+
+  const apiUrl =
+    process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL || "http://localhost:8002";
+
+  try {
+    const response = await fetch(
+      `${apiUrl}/api/v1/projects/${projectId}/storage-credentials`,
+      {
+        method: "GET",
+        headers: {
+          Cookie: cookieHeader,
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+
+      if (response.status === 403) {
+        return {
+          success: false,
+          error: "You do not have permission to view the storage credentials",
+        };
+      }
+
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: "Storage credentials not yet provisioned",
+        };
+      }
+
+      return {
+        success: false,
+        error: error.message || "Failed to fetch storage credentials",
+      };
+    }
+
+    const data = await response.json();
+
+    return {
+      success: true,
+      accessKey: data.access_key,
+      secretKey: data.secret_key,
+      endpoint: data.endpoint,
+      bucketName: data.bucket_name,
+    };
+  } catch (error) {
+    console.error("Error fetching storage credentials:", error);
     return {
       success: false,
       error: "Failed to connect to the server",

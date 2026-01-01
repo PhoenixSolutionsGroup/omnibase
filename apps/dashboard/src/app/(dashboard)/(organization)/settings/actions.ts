@@ -27,14 +27,25 @@ interface CreateAPIKeyResponse {
   expires_at?: string;
 }
 
-export async function createAPIKey(name: string, expiresAt?: string) {
+export interface Permission {
+  namespace: string;
+  relation: string;
+  objectId?: string;
+}
+
+export async function createAPIKey(
+  name: string,
+  permissions: Permission[],
+  expiresAt?: string
+) {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore
     .getAll()
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join("; ");
 
-  const body: { name: string; expires_at?: string } = { name };
+  const body: { name: string; permissions: Permission[]; expires_at?: string } =
+    { name, permissions };
   if (expiresAt) {
     body.expires_at = expiresAt;
   }

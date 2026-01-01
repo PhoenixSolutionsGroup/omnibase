@@ -62,6 +62,11 @@ export default async function ProjectLayout({
 
   const branchNames = branches?.map((b) => b.branch_name || "main") || ["main"];
 
+  const { data: projects } = await db
+    .from("projects")
+    .select("*")
+    .in("status", ["active", "provisioning"]);
+
   // Fetch organization name from tenants table
   const { data: tenantData } = await (db as any)
     .schema("auth")
@@ -82,6 +87,7 @@ export default async function ProjectLayout({
         projectName: project.name,
         branches: branchNames,
       }}
+      projects={projects || undefined}
     >
       {children}
     </UnifiedLayoutClient>
