@@ -6,8 +6,11 @@
   "scripts": {
     "generate:openapi": "redocly bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml",
     "generate:k6": "openapi-to-k6 ./apps/api/docs/openapi.yaml ./tests/api/k6/sdk.ts",
-    "generate:sdk:js": "cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g typescript-fetch -o ../../sdk/core/js --additional-properties=supportsES6=true,npmName=@omnibase/core-js,npmVersion=0.9.15",
-    "generate:sdk:go": "cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g go -o ../../sdk/core/go --additional-properties=packageName=omnibase --git-user-id=phoenixsolutionsgroup --git-repo-id=omnibase/sdk/core/go",
+    "clean:sdk:js": "rm -rf sdk/core/js/src sdk/core/js/*.ts sdk/core/js/*.json sdk/core/js/*.md",
+    "clean:sdk:go": "rm -rf sdk/core/go/*.go sdk/core/go/docs sdk/core/go/api sdk/core/go/test",
+    "clean:sdk": "bun run clean:sdk:js && bun run clean:sdk:go",
+    "generate:sdk:js": "bun run clean:sdk:js && cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g typescript-fetch -o ../../sdk/core/js --additional-properties=supportsES6=true,npmName=@omnibase/core-js",
+    "generate:sdk:go": "bun run clean:sdk:go && cd apps/api && openapi-generator-cli generate -i docs/openapi.yaml -g go -o ../../sdk/core/go --additional-properties=packageName=omnibase --git-user-id=phoenixsolutionsgroup --git-repo-id=omnibase/sdk/core/go",
     "generate:sdk": "bun run generate:openapi && bun run generate:sdk:js && bun run generate:sdk:go",
     "publish:sdk:core": "cd sdk/core && ./publish.sh",
     "test:api:contract:setup": "./tests/api/contract/scripts/setup-test-env.sh",
@@ -16,23 +19,22 @@
     "test:api:contract:spec": "bun run test:api:contract:setup && (source $PWD/tests/api/contract/.test-env && cd tests/api/contract && schemathesis run ../../../apps/api/docs/openapi.yaml --report junit,har --report-dir ./test-reports; EXIT_CODE=$?; bun run test:api:cleanup; exit $EXIT_CODE)",
     "test:api:contract": "bun run test:api:contract:spec && bun run test:api:contract:results",
     "build:k6": "bun build ./tests/api/k6/index.ts --outdir ./tests/api/k6/dist --target=node --format=esm --external k6",
-    "test:api:performance": "bun run build:k6 && export $(cat ./tests/api/k6/.env | xargs) && k6 run --vus 100 --duration 30s --out cloud ./tests/api/k6/dist/index.js",
-    "test:api:integration": "bun run build:k6 && export $(cat ./tests/api/k6/.env | xargs) && k6 run --out cloud ./tests/api/k6/dist/index.js",
-    "test:api:integration:local": "bun run build:k6 && k6 run ./tests/api/k6/dist/index.js"
-
+    "test:api:performance": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run --vus 100 --duration 30s --out cloud ./tests/api/k6/dist/index.js",
+    "test:api:integration": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run --out cloud ./tests/api/k6/dist/index.js",
+    "test:api:integration:local": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run ./tests/api/k6/dist/index.js",
+    "release:version": "lerna version",
+    "release:publish": "lerna publish from-package",
+    "release": "lerna version && lerna publish from-package"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "lerna": "^9.0.3"
   },
   "workspaces": [
     "sdk/*/*",
     "tests/test-apps/*",
     "packages/*"
   ],
-  "resolutions": {
-    "find-up": "5.0.0"
-  },
   "peerDependencies": {
     "typescript": "^5"
   },
