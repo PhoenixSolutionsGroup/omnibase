@@ -1,5 +1,11 @@
 # @omnibase/nextjs
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated auth url to get derived from api_url
+
 ## 0.5.0
 
 ### Minor Changes

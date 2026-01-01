@@ -13,7 +13,7 @@ import type {
   RegistrationFlow,
   SettingsFlow,
   VerificationFlow,
-} from "@omnibase/core-js/auth";
+} from "@ory/client";
 
 /**
  * Maps auth flow types to their corresponding React component functions
@@ -146,6 +146,8 @@ export interface FlowRouterProps {
    * @defaultValue "/"
    */
   returnTo?: string;
+  /**  The OmniBase API URL (e.g., 'https://api.example.com') */
+  api_url: string;
 }
 
 /**
@@ -210,6 +212,7 @@ export async function FlowRouter({
   url,
   returnTo = "/",
   searchParams,
+  api_url,
 }: FlowRouterProps) {
   const { flow } = await params;
   const flowType = flow[0] as keyof FlowMap;
@@ -219,7 +222,7 @@ export async function FlowRouter({
   if (componentFunction) {
     if (flowType === "onboarding") return componentFunction(null);
     // Get the flow object using our getFlow function
-    const flowObject = await getFlow(flowType, { url, searchParams });
+    const flowObject = await getFlow(flowType, { url, searchParams, api_url });
 
     if (flowObject) {
       // Call the component function with the flow object

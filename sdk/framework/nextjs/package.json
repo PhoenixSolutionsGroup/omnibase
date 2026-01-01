@@ -1,13 +1,13 @@
 {
   "name": "@omnibase/nextjs",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "OmniBase NextJS 13+ SDK",
   "files": [
     "dist/**/*"
   ],
   "type": "module",
   "scripts": {
-    "build": "tsup src/middleware/index.ts src/tenants/index.ts src/permissions/index.ts src/auth/index.ts --format cjs,esm --dts",
+    "build": "tsup src/middleware/index.ts src/tenants/index.ts --format cjs,esm --dts",
     "prepublishOnly": "bun run build"
   },
   "exports": {
@@ -15,16 +15,6 @@
       "import": "./dist/middleware/index.js",
       "require": "./dist/middleware/index.cjs",
       "types": "./dist/middleware/index.d.ts"
-    },
-    "./auth": {
-      "import": "./dist/auth/index.js",
-      "require": "./dist/auth/index.cjs",
-      "types": "./dist/auth/index.d.ts"
-    },
-    "./permissions": {
-      "import": "./dist/permissions/index.js",
-      "require": "./dist/permissions/index.cjs",
-      "types": "./dist/permissions/index.d.ts"
     },
     "./tenants": {
       "import": "./dist/tenants/index.js",

@@ -1,4 +1,4 @@
-import type { Session } from "@omnibase/core-js/auth";
+import type { Session } from "@ory/client";
 import { NextRequest, NextResponse } from "next/server";
 
 /**

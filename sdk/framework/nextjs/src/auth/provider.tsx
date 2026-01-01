@@ -5,7 +5,7 @@ import {
   type SessionProviderProps,
 } from "@ory/elements-react/client";
 import { getServerSession as getServerSessionOry } from "@ory/nextjs/app";
-import type { Session } from "@omnibase/core-js/auth";
+import type { Session } from "@ory/client";
 
 /**
  * Fetches the current session on the server side

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { OmnibaseMiddlewareConfig } from "./middleware";
-import type { Session } from "@omnibase/core-js/auth";
+import type { Session } from "@ory/client";
 
 /**
  * Validates tenant membership for authenticated users

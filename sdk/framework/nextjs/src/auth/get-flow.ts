@@ -7,11 +7,6 @@ import {
   getLogoutFlow as logoutFlow,
 } from "@ory/nextjs/app";
 
-// Environment variable polyfill for Ory SDK
-if (typeof globalThis !== "undefined" && !process.env.NEXT_PUBLIC_ORY_SDK_URL) {
-  process.env.NEXT_PUBLIC_ORY_SDK_URL = process.env.OMNIBASE_AUTH_URL;
-}
-
 import type {
   LoginFlow,
   LogoutFlow,
@@ -19,20 +14,28 @@ import type {
   RegistrationFlow,
   SettingsFlow,
   VerificationFlow,
-} from "@omnibase/core-js/auth";
+} from "@ory/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+const configureAuthProxy = (api_url: string) => {
+  const authProxyUrl = `${api_url.replace(/\/$/, "")}/api/v1/auth/proxy`;
+  if (!process.env.NEXT_PUBLIC_ORY_SDK_URL) {
+    process.env.NEXT_PUBLIC_ORY_SDK_URL = authProxyUrl;
+  }
+};
 
 /**
  * Properties required for retrieving authentication flows
  *
  * Configuration object used to fetch authentication flow data from Ory Kratos.
- * This type is used by all flow retrieval functions to specify the UI URL and
- * pass along search parameters that contain flow state.
+ * This type is used by all flow retrieval functions to specify the API URL,
+ * UI URL, and pass along search parameters that contain flow state.
  *
  * @example
  * ```typescript
  * const props: GetFlowProps = {
+ *   api_url: process.env.NEXT_PUBLIC_OMNIBASE_API_URL!,
  *   url: '/auth/login',
  *   searchParams: Promise.resolve({ flow: 'abc123' })
  * };
@@ -43,6 +46,8 @@ import { redirect } from "next/navigation";
  * @group Flow Retrieval
  */
 export type GetFlowProps = {
+  /** The OmniBase API URL (e.g., 'https://api.example.com') */
+  api_url: string;
   /** The UI URL for the specific authentication flow (e.g., '/auth/login') */
   url: string;
   /** Promise resolving to search parameters from the request, containing flow ID and state */
@@ -70,6 +75,7 @@ export type GetFlowProps = {
  * import { getLoginFlow } from '@omnibase/nextjs/auth';
  *
  * const flow = await getLoginFlow({
+ *   api_url: process.env.NEXT_PUBLIC_OMNIBASE_API_URL!,
  *   url: '/auth/login',
  *   searchParams: Promise.resolve({ flow: 'abc123' })
  * });
@@ -86,6 +92,7 @@ export type GetFlowProps = {
 export const getLoginFlow = async (
   props: GetFlowProps
 ): Promise<LoginFlow | null> => {
+  configureAuthProxy(props.api_url);
   const flow = await loginFlow(
     { project: { login_ui_url: props.url } },
     props.searchParams
@@ -129,6 +136,7 @@ export const getLoginFlow = async (
 export const getRecoveryFlow = async (
   props: GetFlowProps
 ): Promise<RecoveryFlow | null> => {
+  configureAuthProxy(props.api_url);
   const flow = await recoveryFlow(
     {
       project: { recovery_ui_url: props.url },
@@ -174,6 +182,7 @@ export const getRecoveryFlow = async (
 export const getRegistrationFlow = async (
   props: GetFlowProps
 ): Promise<RegistrationFlow | null> => {
+  configureAuthProxy(props.api_url);
   const flow = await registrationFlow(
     {
       project: { registration_ui_url: props.url },
@@ -219,6 +228,7 @@ export const getRegistrationFlow = async (
 export const getSettingsFlow = async (
   props: GetFlowProps
 ): Promise<SettingsFlow | null> => {
+  configureAuthProxy(props.api_url);
   const flow = await settingsFlow(
     {
       project: { settings_ui_url: props.url },
@@ -264,6 +274,7 @@ export const getSettingsFlow = async (
 export const getVerificationFlow = async (
   props: GetFlowProps
 ): Promise<VerificationFlow | null> => {
+  configureAuthProxy(props.api_url);
   const flow = await verificationFlow(
     {
       project: { verification_ui_url: props.url },
@@ -314,7 +325,10 @@ export type LogoutFlowReturnType = {
  * import { getLogoutFlow } from '@omnibase/nextjs/auth';
  *
  * export default async function LogoutButton() {
- *   const logoutFlow = await getLogoutFlow({ returnTo: '/' });
+ *   const logoutFlow = await getLogoutFlow({
+ *     api_url: process.env.NEXT_PUBLIC_OMNIBASE_API_URL!,
+ *     returnTo: '/'
+ *   });
  *
  *   if (!logoutFlow) {
  *     return <div>Unable to logout</div>;
@@ -333,10 +347,13 @@ export type LogoutFlowReturnType = {
  * @group Flow Retrieval
  */
 export const getLogoutFlow = async ({
+  api_url,
   returnTo,
 }: {
+  api_url: string;
   returnTo: string;
 }): Promise<LogoutFlowReturnType | null> => {
+  configureAuthProxy(api_url);
   const flow: LogoutFlow = await logoutFlow({ returnTo });
   if (!flow) return null;
   else
