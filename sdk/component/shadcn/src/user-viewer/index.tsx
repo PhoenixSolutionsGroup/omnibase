@@ -28,10 +28,10 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, UserX } from "lucide-react";
-import type { TenantsTenantUserResponse } from "@omnibase/core-js";
+import type { TenantUserResponse } from "@omnibase/core-js";
 
 interface UserViewerProps {
-  users: TenantsTenantUserResponse[];
+  users: TenantUserResponse[];
   availableRoles: string[];
   canEditUsers: boolean;
   onRoleUpdate?: (userId: string, newRole: string) => void | Promise<void>;

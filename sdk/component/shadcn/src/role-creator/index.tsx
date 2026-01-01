@@ -11,18 +11,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import type { ModelsNamespaceDefinition, ModelsRole } from "@omnibase/core-js";
-
-interface NamespaceMapEntry {
-  id: string;
-  label: string;
-}
+import type { NamespaceDefinition, Role } from "@omnibase/core-js";
+import {
+  PermissionsSelector,
+  type PermissionRow,
+  type NamespaceMapEntry,
+  generateId,
+  buildPermissionString,
+} from "../permissions-selector";
 
 interface RoleCreatorProps {
-  definitions: ModelsNamespaceDefinition[];
-  roles: ModelsRole[];
+  definitions: NamespaceDefinition[];
+  roles: Role[];
   namespaceMap?: Record<string, NamespaceMapEntry[]>;
   onRoleCreate?: (roleData: {
     role_name: string;
@@ -43,38 +44,48 @@ export function RoleCreator({
   onRoleUpdate,
 }: RoleCreatorProps) {
   const [roleName, setRoleName] = useState("");
-  const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(
-    new Set()
-  );
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
+  const [permissionRows, setPermissionRows] = useState<PermissionRow[]>([
+    { id: generateId(), namespace: "", relation: "", objectId: "" },
+  ]);
 
-  // Separate tenant and fine-grained namespaces
-  const { tenantNamespace, fineGrainedNamespaces } = useMemo(() => {
-    const tenant = definitions.find(
-      (def) => def.namespace.toLowerCase() === "tenant"
-    );
-    const fineGrained = definitions.filter(
-      (def) => def.namespace.toLowerCase() !== "tenant"
-    );
-
-    return {
-      tenantNamespace: tenant,
-      fineGrainedNamespaces: fineGrained,
-    };
-  }, [definitions]);
-
-  // Get role suggestions
   const roleSuggestions = useMemo(() => {
     return roles.map((role) => role.roleName);
   }, [roles]);
 
-  // Handle role name input
+  const parsePermissionString = (
+    perm: string
+  ): { namespace: string; relation: string; objectId: string } => {
+    const hashIndex = perm.indexOf("#");
+    if (hashIndex === -1) return { namespace: "", relation: "", objectId: "" };
+
+    const relation = perm.substring(hashIndex + 1);
+    const leftPart = perm.substring(0, hashIndex);
+
+    const colonIndex = leftPart.indexOf(":");
+    if (colonIndex === -1) {
+      const namespace =
+        definitions.find(
+          (d) => d.namespace.toLowerCase() === leftPart.toLowerCase()
+        )?.namespace || leftPart;
+      return { namespace, relation, objectId: "" };
+    }
+
+    const nsLower = leftPart.substring(0, colonIndex);
+    const objectId = leftPart.substring(colonIndex + 1);
+    const namespace =
+      definitions.find(
+        (d) => d.namespace.toLowerCase() === nsLower.toLowerCase()
+      )?.namespace || nsLower;
+
+    return { namespace, relation, objectId };
+  };
+
   const handleRoleNameChange = (value: string) => {
     setRoleName(value);
 
-    // Check if this is an existing role
     const existingRole = roles.find(
       (role) => role.roleName.toLowerCase() === value.toLowerCase()
     );
@@ -83,49 +94,43 @@ export function RoleCreator({
       setIsEditMode(true);
       setEditingRoleId(existingRole.id);
 
-      // Pre-fill permissions
-      const permissions = new Set<string>();
-      existingRole.permissions.forEach((perm) => {
-        permissions.add(perm);
+      const rows: PermissionRow[] = existingRole.permissions.map((perm) => {
+        const parsed = parsePermissionString(perm);
+        return {
+          id: generateId(),
+          namespace: parsed.namespace,
+          relation: parsed.relation,
+          objectId: parsed.objectId,
+        };
       });
-      setSelectedPermissions(permissions);
+
+      if (rows.length === 0) {
+        rows.push({
+          id: generateId(),
+          namespace: "",
+          relation: "",
+          objectId: "",
+        });
+      }
+
+      setPermissionRows(rows);
     } else {
       setIsEditMode(false);
       setEditingRoleId(null);
     }
   };
 
-  // Build permission string
-  const buildPermissionString = (
-    namespace: string,
-    relation: string,
-    resourceId?: string
-  ): string => {
-    if (resourceId) {
-      return `${namespace.toLowerCase()}:${resourceId}#${relation}`;
-    }
-
-    return `${namespace.toLowerCase()}#${relation}`;
+  const buildPermissions = (): string[] => {
+    return permissionRows
+      .filter((row) => row.namespace && row.relation)
+      .map((row) => buildPermissionString(row))
+      .filter((perm) => perm !== "");
   };
 
-  // Toggle permission
-  const togglePermission = (permissionString: string) => {
-    const newPermissions = new Set(selectedPermissions);
-
-    if (newPermissions.has(permissionString)) {
-      newPermissions.delete(permissionString);
-    } else {
-      newPermissions.add(permissionString);
-    }
-
-    setSelectedPermissions(newPermissions);
-  };
-
-  // Handle form submission
   const handleSubmit = () => {
     if (!roleName.trim()) return;
 
-    const permissionsArray = Array.from(selectedPermissions);
+    const permissionsArray = buildPermissions();
 
     if (isEditMode && editingRoleId) {
       onRoleUpdate?.({
@@ -141,10 +146,11 @@ export function RoleCreator({
     }
   };
 
-  // Reset form
   const handleReset = () => {
     setRoleName("");
-    setSelectedPermissions(new Set());
+    setPermissionRows([
+      { id: generateId(), namespace: "", relation: "", objectId: "" },
+    ]);
     setIsEditMode(false);
     setEditingRoleId(null);
   };
@@ -174,7 +180,6 @@ export function RoleCreator({
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           />
 
-          {/* Role Suggestions Dropdown */}
           {showSuggestions && roleSuggestions.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-48 overflow-y-auto">
               {roleSuggestions
@@ -198,7 +203,7 @@ export function RoleCreator({
 
           {isEditMode && (
             <p className="text-xs text-amber-600 dark:text-amber-400">
-              ⚠ Editing existing role - changes will update all users with this
+              Editing existing role - changes will update all users with this
               role
             </p>
           )}
@@ -206,209 +211,19 @@ export function RoleCreator({
 
         <Separator />
 
-        {/* Tenant Permissions Section */}
-        {tenantNamespace && (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">
-                Organization Permissions
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Tenant-wide permissions that apply across the entire
-                organization
-              </p>
-            </div>
+        {/* Permissions */}
+        <div className="space-y-4">
+          <Label>Permissions</Label>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4">
-              {tenantNamespace.relations.map((relation) => {
-                const permissionString = buildPermissionString(
-                  tenantNamespace.namespace,
-                  relation
-                );
-                const isChecked = selectedPermissions.has(permissionString);
-
-                return (
-                  <div
-                    key={permissionString}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={permissionString}
-                      checked={isChecked}
-                      onCheckedChange={() => togglePermission(permissionString)}
-                    />
-                    <Label
-                      htmlFor={permissionString}
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      {relation.replace(/_/g, " ")}
-                    </Label>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Fine-Grained Permissions Section */}
-        {fineGrainedNamespaces.length > 0 && (
-          <>
-            <Separator />
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Fine-Grained Permissions
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Resource-specific permissions that require an object ID
-                </p>
-              </div>
-
-              {fineGrainedNamespaces.map((namespace) => {
-                const namespaceLower = namespace.namespace.toLowerCase();
-                const resourceMap = namespaceMap[namespaceLower] || [];
-
-                return (
-                  <div key={namespace.id} className="space-y-4">
-                    <div className="pl-4">
-                      <h4 className="text-md font-medium capitalize">
-                        {namespace.namespace}
-                      </h4>
-
-                      {resourceMap.length > 0 ? (
-                        <div className="mt-4 space-y-6">
-                          {resourceMap.map((resource) => (
-                            <div
-                              key={resource.id}
-                              className="border rounded-lg p-4 space-y-3 bg-muted/30"
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-sm">
-                                  {resource.label}
-                                </span>
-                                <span className="text-xs text-muted-foreground font-mono">
-                                  {resource.id}
-                                </span>
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {namespace.relations.map((relation) => {
-                                  const permissionString =
-                                    buildPermissionString(
-                                      namespace.namespace,
-                                      relation,
-                                      resource.id
-                                    );
-                                  const isChecked =
-                                    selectedPermissions.has(permissionString);
-
-                                  return (
-                                    <div
-                                      key={permissionString}
-                                      className="flex items-center space-x-2"
-                                    >
-                                      <Checkbox
-                                        id={permissionString}
-                                        checked={isChecked}
-                                        onCheckedChange={() =>
-                                          togglePermission(permissionString)
-                                        }
-                                      />
-                                      <Label
-                                        htmlFor={permissionString}
-                                        className="text-sm font-normal cursor-pointer"
-                                      >
-                                        {relation.replace(/_/g, " ")}
-                                      </Label>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="mt-3 p-4 border-2 border-dashed rounded-lg text-center">
-                          <p className="text-sm text-muted-foreground">
-                            No {namespace.namespace.toLowerCase()} resources
-                            available
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Use wildcard permissions (e.g., {namespaceLower}
-                            :*#permission) for all resources
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Wildcard Permissions Option */}
-                      <div className="mt-4 space-y-2">
-                        <Label className="text-sm font-medium">
-                          Wildcard Permissions (All {namespace.namespace}s)
-                        </Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {namespace.relations.map((relation) => {
-                            const permissionString = buildPermissionString(
-                              namespace.namespace,
-                              relation,
-                              "*"
-                            );
-                            const isChecked =
-                              selectedPermissions.has(permissionString);
-
-                            return (
-                              <div
-                                key={permissionString}
-                                className="flex items-center space-x-2"
-                              >
-                                <Checkbox
-                                  id={permissionString}
-                                  checked={isChecked}
-                                  onCheckedChange={() =>
-                                    togglePermission(permissionString)
-                                  }
-                                />
-                                <Label
-                                  htmlFor={permissionString}
-                                  className="text-sm font-normal cursor-pointer"
-                                >
-                                  {relation.replace(/_/g, " ")} (all)
-                                </Label>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
+          <PermissionsSelector
+            definitions={definitions}
+            namespaceMap={namespaceMap}
+            initialPermissions={permissionRows}
+            onPermissionsChange={setPermissionRows}
+          />
+        </div>
 
         <Separator />
-
-        {/* Selected Permissions Preview */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">
-            Selected Permissions ({selectedPermissions.size})
-          </Label>
-          {selectedPermissions.size > 0 ? (
-            <div className="p-4 bg-muted rounded-md max-h-40 overflow-y-auto">
-              <ul className="space-y-1 text-xs font-mono">
-                {Array.from(selectedPermissions).map((perm) => (
-                  <li key={perm} className="text-muted-foreground">
-                    {perm}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground italic">
-              No permissions selected
-            </p>
-          )}
-        </div>
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-3">
@@ -417,7 +232,7 @@ export function RoleCreator({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!roleName.trim() || selectedPermissions.size === 0}
+            disabled={!roleName.trim() || buildPermissions().length === 0}
           >
             {isEditMode ? "Update Role" : "Create Role"}
           </Button>

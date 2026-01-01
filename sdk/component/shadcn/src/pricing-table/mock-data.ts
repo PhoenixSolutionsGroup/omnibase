@@ -1,4 +1,4 @@
-import type { Product } from "@omnibase/core-js/stripe";
+import type { Product } from "@omnibase/core-js";
 
 export const mockProducts: Product[] = [
   {
@@ -7,7 +7,7 @@ export const mockProducts: Product[] = [
     description: "Perfect for individuals and small teams",
     type: "service",
     ui: {
-      display_name: "Starter",
+      displayName: "Starter",
       tagline: "Perfect for getting started",
       features: [
         "Up to 5 team members",
@@ -15,8 +15,8 @@ export const mockProducts: Product[] = [
         "Email support",
         "Basic analytics",
       ],
-      cta_text: "Start Free Trial",
-      sort_order: 1,
+      ctaText: "Start Free Trial",
+      sortOrder: 1,
     },
     prices: [
       {
@@ -25,8 +25,8 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Monthly",
-          billing_period: "per month",
+          displayName: "Monthly",
+          billingPeriod: "per month",
           limits: [
             {
               text: "1,000 API calls included",
@@ -42,9 +42,9 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "year",
         ui: {
-          display_name: "Yearly",
-          billing_period: "per year",
-          price_display: {
+          displayName: "Yearly",
+          billingPeriod: "per year",
+          priceDisplay: {
             suffix: "(2 months free!)",
           },
           limits: [
@@ -64,7 +64,7 @@ export const mockProducts: Product[] = [
     description: "For growing businesses that need advanced features",
     type: "service",
     ui: {
-      display_name: "Professional",
+      displayName: "Professional",
       tagline: "For growing businesses",
       features: [
         "Unlimited team members",
@@ -74,9 +74,9 @@ export const mockProducts: Product[] = [
         "API access",
       ],
       badge: "Most Popular",
-      cta_text: "Upgrade Now",
+      ctaText: "Upgrade Now",
       highlighted: true,
-      sort_order: 2,
+      sortOrder: 2,
     },
     prices: [
       {
@@ -85,8 +85,8 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Monthly",
-          billing_period: "per month",
+          displayName: "Monthly",
+          billingPeriod: "per month",
           features: ["Monthly reports", "Standard SLA"],
           limits: [
             {
@@ -108,11 +108,11 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "year",
         ui: {
-          display_name: "Yearly",
-          billing_period: "per year",
-          price_display: {
+          displayName: "Yearly",
+          billingPeriod: "per year",
+          priceDisplay: {
             suffix: "(Save 17%!)",
-            show_currency: true,
+            showCurrency: true,
           },
           features: ["Annual reports", "Enhanced SLA"],
           limits: [
@@ -137,7 +137,7 @@ export const mockProducts: Product[] = [
     description: "Advanced features for established businesses",
     type: "service",
     ui: {
-      display_name: "Business",
+      displayName: "Business",
       tagline: "For established businesses",
       features: [
         "Unlimited everything",
@@ -146,8 +146,8 @@ export const mockProducts: Product[] = [
         "Custom integrations",
         "White-label options",
       ],
-      cta_text: "Choose Business",
-      sort_order: 3,
+      ctaText: "Choose Business",
+      sortOrder: 3,
     },
     prices: [
       {
@@ -156,8 +156,8 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Monthly",
-          billing_period: "per month",
+          displayName: "Monthly",
+          billingPeriod: "per month",
           features: ["Monthly business reviews", "Premium SLA"],
           limits: [
             {
@@ -179,11 +179,11 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "year",
         ui: {
-          display_name: "Yearly",
-          billing_period: "per year",
-          price_display: {
+          displayName: "Yearly",
+          billingPeriod: "per year",
+          priceDisplay: {
             suffix: "(Save 20%!)",
-            show_currency: true,
+            showCurrency: true,
           },
           features: ["Quarterly business reviews", "Premium+ SLA"],
           limits: [
@@ -208,7 +208,7 @@ export const mockProducts: Product[] = [
     description: "High-performance solution for scaling companies",
     type: "service",
     ui: {
-      display_name: "Scale",
+      displayName: "Scale",
       tagline: "For scaling companies",
       features: [
         "Unlimited everything",
@@ -219,8 +219,8 @@ export const mockProducts: Product[] = [
         "Advanced security",
       ],
       badge: "High Performance",
-      cta_text: "Scale Now",
-      sort_order: 4,
+      ctaText: "Scale Now",
+      sortOrder: 4,
     },
     prices: [
       {
@@ -229,8 +229,8 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Monthly",
-          billing_period: "per month",
+          displayName: "Monthly",
+          billingPeriod: "per month",
           features: ["Weekly check-ins", "Enterprise SLA"],
           limits: [
             {
@@ -252,11 +252,11 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "year",
         ui: {
-          display_name: "Yearly",
-          billing_period: "per year",
-          price_display: {
+          displayName: "Yearly",
+          billingPeriod: "per year",
+          priceDisplay: {
             suffix: "(Save 25%!)",
-            show_currency: true,
+            showCurrency: true,
           },
           features: ["Monthly strategic reviews", "Enterprise+ SLA"],
           limits: [
@@ -280,7 +280,7 @@ export const mockProducts: Product[] = [
       "Custom solutions for large organizations with dedicated support",
     type: "service",
     ui: {
-      display_name: "Enterprise",
+      displayName: "Enterprise",
       tagline: "Custom solutions for enterprises",
       features: [
         "Unlimited everything",
@@ -291,9 +291,9 @@ export const mockProducts: Product[] = [
         "White-glove onboarding",
       ],
       badge: "Enterprise",
-      cta_text: "Contact Sales",
+      ctaText: "Contact Sales",
       highlighted: false,
-      sort_order: 5,
+      sortOrder: 5,
     },
     prices: [
       {
@@ -302,12 +302,12 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Custom Pricing",
-          price_display: {
-            custom_text: "Contact us",
-            show_currency: false,
+          displayName: "Custom Pricing",
+          priceDisplay: {
+            customText: "Contact us",
+            showCurrency: false,
           },
-          billing_period: "custom terms",
+          billingPeriod: "custom terms",
           features: ["Custom contract terms", "Dedicated infrastructure"],
           limits: [
             {
@@ -328,11 +328,11 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Enterprise Starter",
-          billing_period: "per month",
-          price_display: {
+          displayName: "Enterprise Starter",
+          billingPeriod: "per month",
+          priceDisplay: {
             suffix: "(minimum commitment)",
-            show_currency: true,
+            showCurrency: true,
           },
           features: ["12-month minimum", "Standard enterprise features"],
           limits: [
@@ -362,7 +362,7 @@ export const mockProducts: Product[] = [
     description: "Perfect for individual developers and small projects",
     type: "service",
     ui: {
-      display_name: "Developer",
+      displayName: "Developer",
       tagline: "Perfect for developers",
       features: [
         "1 developer seat",
@@ -371,8 +371,8 @@ export const mockProducts: Product[] = [
         "Basic integrations",
         "Documentation access",
       ],
-      cta_text: "Start Building",
-      sort_order: 0,
+      ctaText: "Start Building",
+      sortOrder: 0,
     },
     prices: [
       {
@@ -381,12 +381,12 @@ export const mockProducts: Product[] = [
         currency: "usd",
         interval: "month",
         ui: {
-          display_name: "Free",
-          price_display: {
-            custom_text: "Free",
-            show_currency: false,
+          displayName: "Free",
+          priceDisplay: {
+            customText: "Free",
+            showCurrency: false,
           },
-          billing_period: "forever",
+          billingPeriod: "forever",
           limits: [
             {
               text: "100 API calls included",

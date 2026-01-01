@@ -5,3 +5,4 @@ export * from "./tenant-creator";
 export * from "./user-invite";
 export * from "./role-creator";
 export * from "./user-viewer";
+export * from "./permissions-selector";

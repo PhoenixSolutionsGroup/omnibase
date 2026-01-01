@@ -1,40 +1,40 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SwitchActiveTenant } from ".";
-import type { Tenant } from "@omnibase/core-js/tenants";
+import type { Tenant } from "@omnibase/core-js";
 
 // Mock tenants data
 const mockTenants: Tenant[] = [
   {
     id: "tenant_1",
     name: "Acme Corporation",
-    stripe_customer_id: "cus_acme123",
+    stripeCustomerId: "cus_acme123",
     type: "business",
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z",
+    createdAt: new Date("2024-01-15T10:30:00Z"),
+    updatedAt: new Date("2024-01-15T10:30:00Z"),
   },
   {
     id: "tenant_2",
     name: "TechStart Inc",
-    stripe_customer_id: "cus_tech456",
+    stripeCustomerId: "cus_tech456",
     type: "startup",
-    created_at: "2024-02-20T14:45:00Z",
-    updated_at: "2024-02-20T14:45:00Z",
+    createdAt: new Date("2024-02-20T14:45:00Z"),
+    updatedAt: new Date("2024-02-20T14:45:00Z"),
   },
   {
     id: "tenant_3",
     name: "Global Enterprises",
-    stripe_customer_id: "cus_global789",
+    stripeCustomerId: "cus_global789",
     type: "enterprise",
-    created_at: "2024-03-10T09:15:00Z",
-    updated_at: "2024-03-10T09:15:00Z",
+    createdAt: new Date("2024-03-10T09:15:00Z"),
+    updatedAt: new Date("2024-03-10T09:15:00Z"),
   },
   {
     id: "tenant_4",
     name: "Creative Studio",
-    stripe_customer_id: "cus_creative101",
+    stripeCustomerId: "cus_creative101",
     type: "creative",
-    created_at: "2024-04-05T16:20:00Z",
-    updated_at: "2024-04-05T16:20:00Z",
+    createdAt: new Date("2024-04-05T16:20:00Z"),
+    updatedAt: new Date("2024-04-05T16:20:00Z"),
   },
 ];
 
@@ -120,26 +120,26 @@ export const ManyTenants: Story = {
       {
         id: "tenant_5",
         name: "Another Company Ltd",
-        stripe_customer_id: "cus_another202",
+        stripeCustomerId: "cus_another202",
         type: "business",
-        created_at: "2024-05-01T12:00:00Z",
-        updated_at: "2024-05-01T12:00:00Z",
+        createdAt: new Date("2024-05-01T12:00:00Z"),
+        updatedAt: new Date("2024-05-01T12:00:00Z"),
       },
       {
         id: "tenant_6",
         name: "Small Business Co",
-        stripe_customer_id: "cus_small303",
+        stripeCustomerId: "cus_small303",
         type: "small_business",
-        created_at: "2024-05-15T08:30:00Z",
-        updated_at: "2024-05-15T08:30:00Z",
+        createdAt: new Date("2024-05-15T08:30:00Z"),
+        updatedAt: new Date("2024-05-15T08:30:00Z"),
       },
       {
         id: "tenant_7",
         name: "Consulting Group",
-        stripe_customer_id: "cus_consult404",
+        stripeCustomerId: "cus_consult404",
         type: "consulting",
-        created_at: "2024-06-01T17:45:00Z",
-        updated_at: "2024-06-01T17:45:00Z",
+        createdAt: new Date("2024-06-01T17:45:00Z"),
+        updatedAt: new Date("2024-06-01T17:45:00Z"),
       },
     ],
     currentTenantId: "tenant_3",

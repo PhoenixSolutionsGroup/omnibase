@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Check, Star, ChevronLeft, ChevronRight } from "lucide-react";
-import type { ModelsPrice, ModelsProduct } from "@omnibase/core-js";
+import type { Price, Product } from "@omnibase/core-js";
 
 export interface PricingTableProps {
-  products: ModelsProduct[];
+  products: Product[];
   selectedPriceId?: string;
   onPriceSelect?: (priceId: string, productId: string) => void;
   className?: string;
@@ -33,11 +33,12 @@ const getCurrencySymbol = (currency: string): string => {
   return symbols[currency] || currency;
 };
 
-const formatPrice = (price: ModelsPrice): string => {
+const formatPrice = (price: Price): string => {
   const priceUI = price.ui || {};
   if (priceUI.priceDisplay?.customText) return priceUI.priceDisplay.customText;
-  if (!price.amount || price.amount === 0) return "Free";
-  const amount = price.amount / 100;
+
+  if (!(price as any).amount || (price as any).amount === 0) return "Free";
+  const amount = (price as any).amount / 100;
   const currency = (price.currency || "USD").toUpperCase();
   let formattedPrice =
     priceUI.priceDisplay?.showCurrency !== false
@@ -48,7 +49,7 @@ const formatPrice = (price: ModelsPrice): string => {
   return formattedPrice;
 };
 
-const formatBillingPeriod = (price: ModelsPrice): string => {
+const formatBillingPeriod = (price: Price): string => {
   const priceUI = price.ui || {};
   if (priceUI.billingPeriod) return priceUI.billingPeriod;
   if (price.interval) {
@@ -66,10 +67,10 @@ function PricingCard({
   onPriceSelect,
   displayedPrice,
 }: {
-  product: ModelsProduct;
+  product: Product;
   isSelected: boolean;
   onPriceSelect?: (priceId: string, productId: string) => void;
-  displayedPrice: ModelsPrice;
+  displayedPrice: Price;
 }) {
   const ui = product.ui || {};
   const isHighlighted = ui.highlighted;
@@ -146,7 +147,7 @@ function PricingCard({
                       {displayedPrice.ui.features.map(
                         (feature: string, index: number) => (
                           <li key={index} className="flex items-start gap-2">
-                            <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                            <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-0" />
                             <span className="text-sm">{feature}</span>
                           </li>
                         )
@@ -222,11 +223,11 @@ export function PricingTable({
     [products]
   );
 
-  const getDisplayedPrice = (product: ModelsProduct) =>
+  const getDisplayedPrice = (product: Product) =>
     product.prices.find((price) => price.interval === selectedInterval) ||
     product.prices[0];
 
-  const renderCard = (product: ModelsProduct) => {
+  const renderCard = (product: Product) => {
     const displayedPrice = getDisplayedPrice(product);
     return (
       <PricingCard

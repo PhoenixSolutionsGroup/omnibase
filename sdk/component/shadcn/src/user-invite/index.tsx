@@ -18,13 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TenantsCreateTenantUserInviteRequest } from "@omnibase/core-js";
+import type { CreateInviteRequest } from "@omnibase/core-js";
 
 interface UserInviteProps {
   roles: string[];
-  onInvite?: (
-    inviteData: TenantsCreateTenantUserInviteRequest
-  ) => void | Promise<void>;
+  onInvite?: (inviteData: CreateInviteRequest) => void | Promise<void>;
 }
 
 export function UserInvite({ roles, onInvite }: UserInviteProps) {
@@ -57,10 +55,12 @@ export function UserInvite({ roles, onInvite }: UserInviteProps) {
     setIsSubmitting(true);
 
     try {
-      const inviteData: TenantsCreateTenantUserInviteRequest = {
-        email: email.trim(),
-        role: selectedRole,
-        inviteUrl: "",
+      const inviteData: CreateInviteRequest = {
+        createTenantUserInviteRequest: {
+          email: email.trim(),
+          role: selectedRole,
+          inviteUrl: "",
+        },
       };
 
       await onInvite?.(inviteData);
