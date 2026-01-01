@@ -22,8 +22,8 @@
     "test:api:performance": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run --vus 100 --duration 30s --out cloud ./tests/api/k6/dist/index.js",
     "test:api:integration": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run --out cloud ./tests/api/k6/dist/index.js",
     "test:api:integration:local": "bun run build:k6 && export $(grep -v '^#' ./tests/api/k6/.env | xargs) && k6 run ./tests/api/k6/dist/index.js",
-    "release:version": "lerna version",
-    "release:publish": "lerna exec --no-bail -- bun publish --access public",
+    "version": "lerna version",
+    "publish": "lerna exec --no-bail -- bun publish --access public",
     "release": "lerna version --yes && lerna exec --no-bail -- bun publish --access public"
   },
   "devDependencies": {
