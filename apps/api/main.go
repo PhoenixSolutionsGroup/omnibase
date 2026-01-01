@@ -3,6 +3,7 @@ package main
 import (
 	"api/internal/config"
 	"api/internal/handlers"
+	v1 "api/internal/handlers/v1"
 	"api/internal/logger"
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
@@ -82,6 +83,10 @@ func main() {
 	logger.Logger.Info("Initializing v1 API routes")
 	v1_group := r.Group("/api/v1")
 	v1_routes.InitRoutes(v1_group)
+
+	logger.Logger.Info("Setting up auth proxy fallback routes")
+	authProxyHandler := v1.NewAuthProxyHandler(cfg)
+	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
 
 	logger.Logger.Info("Starting HTTP server", "port", cfg.Port)
 	if err := r.Run(":" + cfg.Port); err != nil {

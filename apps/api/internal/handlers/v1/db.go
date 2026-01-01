@@ -227,7 +227,184 @@ func (h *MigrationHandler) extractZip(zipFile io.Reader, migrationsDir string) e
 	return nil
 }
 
+// HandleMigrationsReset drops all tables and re-applies migrations from scratch
+// This is intended for development use only
+func (h *MigrationHandler) HandleMigrationsReset(c *gin.Context) {
+	logger.Logger.Info("Starting database reset and migration process")
+
+	// Create temporary migration directory with timestamp in system temp directory
+	timestamp := time.Now().UnixNano()
+	migrationsDir := filepath.Join(os.TempDir(), fmt.Sprintf("%d-migrations", timestamp))
+	logger.Logger.Debug("Created temporary migration directory path", "path", migrationsDir)
+
+	// Ensure cleanup happens regardless of success or failure
+	defer func() {
+		logger.Logger.Debug("Cleaning up temporary migration directory", "path", migrationsDir)
+		os.RemoveAll(migrationsDir)
+	}()
+
+	// Create the temporary directory
+	if err := os.MkdirAll(migrationsDir, 0755); err != nil {
+		logger.Logger.Error("Failed to create migrations directory", "path", migrationsDir, "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Failed to create migrations directory: %v", err),
+		})
+		return
+	}
+
+	// Get zip file
+	fileHeader, err := c.FormFile("migrations")
+	if err != nil {
+		logger.Logger.Warn("No migrations zip file provided in request", "error", err)
+		c.JSON(http.StatusBadRequest, MigrationErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "No migrations zip file provided",
+		})
+		return
+	}
+	logger.Logger.Info("Received migration zip file", "filename", fileHeader.Filename, "size", fileHeader.Size)
+
+	// Validate that file is not empty
+	if fileHeader.Size == 0 {
+		logger.Logger.Warn("Empty file provided", "filename", fileHeader.Filename)
+		c.JSON(http.StatusBadRequest, MigrationErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Empty file provided",
+		})
+		return
+	}
+
+	zipFile, err := fileHeader.Open()
+	if err != nil {
+		logger.Logger.Error("Failed to open zip file", "filename", fileHeader.Filename, "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to open zip file",
+		})
+		return
+	}
+	defer zipFile.Close()
+
+	// Extract zip to migrations directory
+	logger.Logger.Info("Extracting migration files from zip")
+	if err := h.extractZip(zipFile, migrationsDir); err != nil {
+		logger.Logger.Error("Failed to extract zip file", "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Failed to extract zip: %v", err),
+		})
+		return
+	}
+	logger.Logger.Info("Successfully extracted migration files")
+
+	// Drop all tables and reset migration state
+	logger.Logger.Info("Dropping all tables in public schema")
+	if err := h.dropAllTables(); err != nil {
+		logger.Logger.Error("Failed to drop tables", "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Failed to drop tables: %v", err),
+		})
+		return
+	}
+
+	// Apply migrations
+	logger.Logger.Info("Applying migrations to database")
+	if err := h.applyMigrations(migrationsDir); err != nil {
+		logger.Logger.Error("Migration application failed", "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: fmt.Sprintf("Migration failed: %v", err),
+		})
+		return
+	}
+
+	logger.Logger.Info("Database reset and migrations applied successfully")
+	c.JSON(http.StatusOK, MigrationSuccessResponse{
+		Status:  http.StatusOK,
+		Message: "Database reset and migrations applied successfully",
+	})
+}
+
+// dropUserTables drops only user-created tables in the public schema and the migration tracking table
+// System tables (Ory Kratos, Keto, etc.) in other schemas are preserved
+func (h *MigrationHandler) dropAllTables() error {
+	logger.Logger.Trace("Starting user table drop process (public schema only)")
+
+	// Drop migration tracking table first
+	logger.Logger.Debug("Dropping migration tracking table")
+	if err := h.db.Exec(`DROP TABLE IF EXISTS "migrations"."schema_migrations" CASCADE`).Error; err != nil {
+		logger.Logger.Error("Failed to drop migration tracking table", "error", err)
+		return fmt.Errorf("failed to drop migration tracking table: %w", err)
+	}
+
+	// Drop migrations schema if it exists
+	if err := h.db.Exec(`DROP SCHEMA IF EXISTS "migrations" CASCADE`).Error; err != nil {
+		logger.Logger.Error("Failed to drop migrations schema", "error", err)
+		return fmt.Errorf("failed to drop migrations schema: %w", err)
+	}
+
+	// Get all user tables ONLY in public schema (excludes system schemas like kratos, keto, etc.)
+	var tables []string
+	query := `
+		SELECT tablename
+		FROM pg_tables
+		WHERE schemaname = 'public'
+		AND tableowner = current_user
+	`
+	if err := h.db.Raw(query).Scan(&tables).Error; err != nil {
+		logger.Logger.Error("Failed to list tables in public schema", "error", err)
+		return fmt.Errorf("failed to list tables: %w", err)
+	}
+
+	logger.Logger.Info("Found user tables to drop in public schema", "count", len(tables), "tables", tables)
+
+	// Drop each table in public schema only
+	for _, table := range tables {
+		dropSQL := fmt.Sprintf(`DROP TABLE IF EXISTS "public"."%s" CASCADE`, table)
+		logger.Logger.Debug("Dropping table from public schema", "table", table)
+		if err := h.db.Exec(dropSQL).Error; err != nil {
+			logger.Logger.Error("Failed to drop table", "table", table, "error", err)
+			return fmt.Errorf("failed to drop table %s: %w", table, err)
+		}
+	}
+
+	// Drop any custom enum types ONLY in public schema
+	var types []string
+	typeQuery := `
+		SELECT t.typname
+		FROM pg_type t
+		JOIN pg_namespace n ON t.typnamespace = n.oid
+		WHERE n.nspname = 'public'
+		AND t.typtype = 'e'
+		AND t.typowner = (SELECT oid FROM pg_roles WHERE rolname = current_user)
+	`
+	if err := h.db.Raw(typeQuery).Scan(&types).Error; err != nil {
+		logger.Logger.Warn("Failed to list custom types in public schema", "error", err)
+	} else {
+		for _, typeName := range types {
+			dropTypeSQL := fmt.Sprintf(`DROP TYPE IF EXISTS "public"."%s" CASCADE`, typeName)
+			logger.Logger.Debug("Dropping type from public schema", "type", typeName)
+			if err := h.db.Exec(dropTypeSQL).Error; err != nil {
+				logger.Logger.Warn("Failed to drop type", "type", typeName, "error", err)
+			}
+		}
+	}
+
+	logger.Logger.Info("Successfully dropped all user tables and types in public schema")
+	return nil
+}
+
 func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
+	logger.Logger.Trace("Ensuring migrations schema exists")
+
+	// Ensure migrations schema exists for tracking table
+	if err := h.db.Exec(`CREATE SCHEMA IF NOT EXISTS "migrations"`).Error; err != nil {
+		logger.Logger.Error("Failed to create migrations schema", "error", err)
+		return fmt.Errorf("failed to create migrations schema: %w", err)
+	}
+
 	logger.Logger.Trace("Building migration DSN")
 
 	// Build DSN with x-no-lock=true to disable advisory locks

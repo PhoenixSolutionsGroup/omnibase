@@ -4,6 +4,7 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/models"
+	services_v1 "api/internal/service/v1"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -55,7 +56,8 @@ func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
 	logger.Logger.Debug("Fetching tenant users", "tenant_id", tenantID, "requesting_user_id", userID)
 
 	// Check if current user can view members in this tenant
-	canView, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "view_users", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canView, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "view_users", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -118,7 +120,8 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	}
 
 	// Check if current user can manage members in this tenant
-	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_user", currentUserID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: currentUserID, Relation: ""}
+	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_user", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", currentUserID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -132,7 +135,7 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 
 	// If target user is an owner, check for remove_owner_role permission
 	if targetUser.Role == "owner" {
-		canRemoveOwner, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", currentUserID)
+		canRemoveOwner, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", subject)
 		if err != nil {
 			logger.Logger.Error("Failed to check remove_owner_role permission", "error", err, "tenant_id", tenantID, "user_id", currentUserID)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -189,7 +192,8 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 
 	// Delete all Keto relationships for this role's permissions
 	logger.Logger.Debug("Deleting Keto relationships", "permissions_count", len(role.Permissions))
-	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", req.TargetUserID)
+	targetSubject := services_v1.SubjectSet{Namespace: "User", Object: req.TargetUserID, Relation: ""}
+	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", &targetSubject)
 	if err != nil {
 		logger.Logger.Error("Failed to list relation tuples", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to list all relationship tuples: %w", err))
@@ -197,15 +201,18 @@ func (h *TenantHandler) DeleteTenantUser(ctx *gin.Context) {
 	}
 
 	for _, tuple := range tuples {
+		if tuple.SubjectSet == nil {
+			continue
+		}
 		err := h.keto.DeleteRelationTuple(
 			ctx.Request.Context(),
 			tuple.Namespace,
 			tuple.Object,
 			tuple.Relation,
-			tuple.SubjectID,
+			*tuple.SubjectSet,
 		)
 		if err != nil {
-			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation, "subject_id", tuple.SubjectID)
+			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed when deleting relation tuple: %w", err))
 			return
 		}
@@ -248,7 +255,8 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 	logger.Logger.Debug("Attempting to update tenant user role", "tenant_id", tenantID, "target_user_id", req.TargetUserID, "new_role", req.Role, "requesting_user_id", userID)
 
 	// Check if current user can manage members in this tenant
-	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canManage, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -271,7 +279,7 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 
 	// If promoting to owner, check for update_user_role_to_owner permission
 	if req.Role == "owner" {
-		canPromote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role_to_owner", userID)
+		canPromote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "update_user_role_to_owner", subject)
 		if err != nil {
 			logger.Logger.Error("Failed to check update_user_role_to_owner permission", "error", err, "tenant_id", tenantID, "user_id", userID)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -286,7 +294,7 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 
 	// If demoting from owner, check for remove_owner_role permission
 	if previousRole == "owner" && req.Role != "owner" {
-		canDemote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", userID)
+		canDemote, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "remove_owner_role", subject)
 		if err != nil {
 			logger.Logger.Error("Failed to check remove_owner_role permission", "error", err, "tenant_id", tenantID, "user_id", userID)
 			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
@@ -343,7 +351,8 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 
 	// Delete all Keto relationships for the old role
 	logger.Logger.Debug("Removing old role permissions", "role_name", previousRole, "permissions_count", len(oldRole.Permissions))
-	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", req.TargetUserID)
+	targetSubject := services_v1.SubjectSet{Namespace: "User", Object: req.TargetUserID, Relation: ""}
+	tuples, err := h.keto.ListRelationTuples(ctx.Request.Context(), "Tenant", tenantID, "", &targetSubject)
 	if err != nil {
 		logger.Logger.Error("Failed to list relation tuples", "error", err, "tenant_id", tenantID, "target_user_id", req.TargetUserID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to list relationship tuples: %w", err))
@@ -351,15 +360,18 @@ func (h *TenantHandler) UpdateTenantUserRole(ctx *gin.Context) {
 	}
 
 	for _, tuple := range tuples {
+		if tuple.SubjectSet == nil {
+			continue
+		}
 		err := h.keto.DeleteRelationTuple(
 			ctx.Request.Context(),
 			tuple.Namespace,
 			tuple.Object,
 			tuple.Relation,
-			tuple.SubjectID,
+			*tuple.SubjectSet,
 		)
 		if err != nil {
-			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation, "subject_id", tuple.SubjectID)
+			logger.Logger.Error("Failed to delete relation tuple", "error", err, "namespace", tuple.Namespace, "object", tuple.Object, "relation", tuple.Relation)
 			// Continue on error to try to clean up as much as possible
 		}
 	}

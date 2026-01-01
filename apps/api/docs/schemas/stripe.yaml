@@ -1,5 +1,73 @@
 components:
   schemas:
+    # Shared Enums
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO currency code (lowercase)
+      enum:
+        - usd
+        - eur
+        - gbp
+        - cad
+        - aud
+        - jpy
+        - inr
+        - brl
+        - mxn
+        - sgd
+        - hkd
+        - nzd
+        - chf
+        - sek
+        - dkk
+        - nok
+        - pln
+        - czk
+        - ils
+        - zar
+      example: "usd"
+
+    BillingInterval:
+      type: string
+      description: Billing interval for recurring prices
+      enum:
+        - day
+        - week
+        - month
+        - year
+      example: "month"
+
+    UsageType:
+      type: string
+      description: Usage type for recurring prices
+      enum:
+        - licensed
+        - metered
+      example: "licensed"
+
+    PerUnitBillingScheme:
+      type: string
+      description: Billing scheme type for per-unit pricing
+      enum:
+        - per_unit
+      default: "per_unit"
+      example: "per_unit"
+
+    TieredBillingScheme:
+      type: string
+      description: Billing scheme type for tiered pricing
+      enum:
+        - tiered
+      example: "tiered"
+
+    TiersMode:
+      type: string
+      description: Tiers mode for tiered pricing
+      enum:
+        - graduated
+        - volume
+      example: "graduated"
+
     # Main Configuration Models
     StripeConfiguration:
       type: object
@@ -168,62 +236,26 @@ components:
           description: Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
           example: 1999
         currency:
-          type: string
-          description: Three-letter ISO currency code (lowercase)
-          enum:
-            - usd
-            - eur
-            - gbp
-            - cad
-            - aud
-            - jpy
-            - inr
-            - brl
-            - mxn
-            - sgd
-            - hkd
-            - nzd
-            - chf
-            - sek
-            - dkk
-            - nok
-            - pln
-            - czk
-            - ils
-            - zar
-          example: "usd"
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval for recurring prices (required when usage_type is metered)
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: "month"
+          allOf:
+            - $ref: '#/components/schemas/BillingInterval'
+            - description: Billing interval for recurring prices (required when usage_type is metered)
         interval_count:
           type: integer
           description: Number of intervals between billings (default 1)
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices (when set to metered, interval and meter are required)
-          enum:
-            - licensed
-            - metered
-          example: "licensed"
+          allOf:
+            - $ref: '#/components/schemas/UsageType'
+            - description: Usage type for recurring prices (when set to metered, interval and meter are required)
         meter:
           type: string
           minLength: 1
           description: Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
           example: "api_requests"
         billing_scheme:
-          type: string
-          description: Billing scheme type
-          enum:
-            - per_unit
-          default: "per_unit"
-          example: "per_unit"
+          $ref: '#/components/schemas/PerUnitBillingScheme'
         default:
           type: boolean
           description: Mark as default price for the product
@@ -268,49 +300,28 @@ components:
           description: Whether tax is included in the price (null/false = exclusive)
           example: false
         currency:
-          type: string
-          minLength: 3
-          maxLength: 3
-          pattern: '^[a-z]{3}$'
-          description: Three-letter ISO currency code (lowercase)
-          example: "usd"
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval for recurring prices (required when usage_type is metered)
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: "month"
+          allOf:
+            - $ref: '#/components/schemas/BillingInterval'
+            - description: Billing interval for recurring prices (required when usage_type is metered)
         interval_count:
           type: integer
           description: Number of intervals between billings (default 1)
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices (when set to metered, interval and meter are required)
-          enum:
-            - licensed
-            - metered
-          example: "licensed"
+          allOf:
+            - $ref: '#/components/schemas/UsageType'
+            - description: Usage type for recurring prices (when set to metered, interval and meter are required)
         meter:
           type: string
           minLength: 1
           description: Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
           example: "api_requests"
         billing_scheme:
-          type: string
-          description: Billing scheme type (must be 'tiered')
-          const: "tiered"
-          example: "tiered"
+          $ref: '#/components/schemas/TieredBillingScheme'
         tiers_mode:
-          type: string
-          description: Tiers mode
-          enum:
-            - graduated
-            - volume
-          example: "graduated"
+          $ref: '#/components/schemas/TiersMode'
         tiers:
           type: array
           description: Pricing tiers
@@ -360,32 +371,15 @@ components:
           description: Price amount in smallest currency unit
           example: 1999
         currency:
-          type: string
-          minLength: 3
-          maxLength: 3
-          pattern: '^[a-z]{3}$'
-          description: Three-letter ISO currency code (lowercase)
-          example: "usd"
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: "month"
+          $ref: '#/components/schemas/BillingInterval'
         interval_count:
           type: integer
           description: Number of intervals between billings
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices
-          enum:
-            - licensed
-            - metered
-          example: "licensed"
+          $ref: '#/components/schemas/UsageType'
         meter:
           type: string
           description: Meter ID for metered pricing

@@ -4,6 +4,7 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/models"
+	services_v1 "api/internal/service/v1"
 	"fmt"
 	"time"
 
@@ -187,7 +188,8 @@ func (h *TenantHandler) CreateTenantUserInvite(ctx *gin.Context) {
 	}
 
 	// Check if user can invite others to this tenant
-	canInvite, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "invite_user", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canInvite, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "invite_user", subject)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return

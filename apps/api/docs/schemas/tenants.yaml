@@ -172,6 +172,16 @@ components:
           items:
             type: string
           example: ["can_delete_tenant", "can_invite_user", "can_update_user_role"]
+        subject_relations:
+          type: object
+          description: Maps subject types to their allowed relations
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            User: ["can_delete_tenant", "can_invite_user", "can_rotate_keys"]
+            ApiKey: ["can_rotate_keys", "can_view_db_secret_key"]
         updated_at:
           type: string
           format: date-time
@@ -492,7 +502,7 @@ components:
           items:
             type: string
             minLength: 1
-          example: ["project:*#view", "tenant#read"]
+          example: ["tenant#read", "tenant#manage_projects"]
 
     UpdateRoleRequest:
       type: object
@@ -505,7 +515,7 @@ components:
           description: Updated list of permissions
           items:
             type: string
-          example: ["project:*#view", "project:*#edit"]
+          example: ["tenant#read", "tenant#write"]
 
     DeleteRoleResponse:
       type: object
@@ -518,25 +528,39 @@ components:
           description: Success message
           example: "Role deleted successfully"
 
-    AssignRoleRequest:
+    # Named variants for AssignRoleRequest
+    AssignRoleRequestWithRoleId:
       type: object
+      description: Assign role request using role ID
+      required:
+        - role_id
+      properties:
+        role_id:
+          type: string
+          format: uuid
+          minLength: 1
+          description: Role ID to assign
+          example: "role_test_123"
+      additionalProperties: false
+
+    AssignRoleRequestWithRoleName:
+      type: object
+      description: Assign role request using role name
+      required:
+        - role_name
+      properties:
+        role_name:
+          type: string
+          minLength: 1
+          description: Role name to assign
+          example: "member"
+      additionalProperties: false
+
+    AssignRoleRequest:
       description: Request to assign a role to a user. Must provide EITHER role_id OR role_name, not both.
       oneOf:
-        - required: [role_id]
-          properties:
-            role_id:
-              type: string
-              format: uuid
-              minLength: 1
-              description: Role ID to assign (provide either role_id or role_name, not both)
-              example: "role_test_123"
-        - required: [role_name]
-          properties:
-            role_name:
-              type: string
-              minLength: 1
-              description: Role name to assign (provide either role_id or role_name, not both)
-              example: "member"
+        - $ref: '#/components/schemas/AssignRoleRequestWithRoleId'
+        - $ref: '#/components/schemas/AssignRoleRequestWithRoleName'
 
     AssignRoleResponse:
       type: object

@@ -106,6 +106,100 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/InternalServerErrorResponse'
 
   /api/v1/permissions/relationships:
+    delete:
+      operationId: deleteRelationship
+      summary: Delete relationship
+      description: |
+        Deletes a relationship tuple from Ory Keto.
+
+        ## Authentication
+        Requires session authentication.
+
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
+        to enforce this constraint at the schema level.
+
+        ## Use Cases
+        - Remove resource links from tenants
+        - Revoke user assignments from projects
+        - Delete permission relationships
+      tags:
+        - V1 Permissions
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        description: Relationship deletion request with either subject_id or subject_set
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/permissions.yaml#/components/schemas/DeleteRelationshipRequest'
+            examples:
+              withSubjectId:
+                summary: Delete relationship with subject_id
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_invite_user
+                  subject_id: 550e8400-e29b-41d4-a716-446655440000
+              withSubjectSet:
+                summary: Delete relationship with subject_set
+                value:
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
+                  subject_set:
+                    namespace: Tenant
+                    object: tenant_456
+      responses:
+        '200':
+          description: Relationship deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/permissions.yaml#/components/schemas/DeleteRelationshipResponse'
+              example:
+                status: 200
+                data:
+                  message: Relationship deleted successfully
+        '400':
+          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
+              examples:
+                bothSubjects:
+                  summary: Both subject_id and subject_set provided
+                  value:
+                    status: 400
+                    error: "Provide either subject_id or subject_set, not both"
+                neitherSubject:
+                  summary: Neither subject_id nor subject_set provided
+                  value:
+                    status: 400
+                    error: "Either subject_id or subject_set must be provided"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/UnauthorizedResponse'
+        '404':
+          $ref: "../schemas/errors.yaml#/components/responses/NotFoundError"
+        '500':
+          description: Failed to delete relationship
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerErrorResponse'
     post:
       operationId: createRelationship
       summary: Create relationship

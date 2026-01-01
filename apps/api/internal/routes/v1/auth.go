@@ -14,7 +14,15 @@ func SetUpAuthRoutes(router *gin.RouterGroup) {
 	cfg := config.New()
 
 	authHandler := v1.NewAuthHandler(cfg)
+	authProxyHandler := v1.NewAuthProxyHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
+
+	router.Any("/proxy/*path", authProxyHandler.ProxyPublic)
+
+	adminProxyGroup := router.Group("/admin/proxy")
+	adminProxyGroup.Use(authMiddleware.RequireAuthHeaders())
+	adminProxyGroup.Use(authMiddleware.RequireServiceKey())
+	adminProxyGroup.Any("/*path", authProxyHandler.ProxyAdmin)
 
 	router.Use(authMiddleware.RequireAuthHeaders())
 

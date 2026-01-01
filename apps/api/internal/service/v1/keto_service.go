@@ -16,6 +16,13 @@ type KetoService struct {
 	client   *http.Client
 }
 
+// SubjectSet represents a Keto subject set (namespace + object + optional relation)
+type SubjectSet struct {
+	Namespace string `json:"namespace"`
+	Object    string `json:"object"`
+	Relation  string `json:"relation"`
+}
+
 func NewKetoService(readURL, writeURL string) *KetoService {
 	logger.Logger.Info("Initializing Keto service", "readURL", readURL, "writeURL", writeURL)
 	return &KetoService{
@@ -26,19 +33,22 @@ func NewKetoService(readURL, writeURL string) *KetoService {
 }
 
 // CheckPermission checks if a subject has a relation to an object
-func (k *KetoService) CheckPermission(ctx context.Context, namespace, object, relation, subject string) (bool, error) {
+func (k *KetoService) CheckPermission(ctx context.Context, namespace, object, relation string, subject SubjectSet) (bool, error) {
 	logger.Logger.Debug("Checking permission",
 		"namespace", namespace,
 		"object", object,
 		"relation", relation,
-		"subject", subject)
+		"subject_namespace", subject.Namespace,
+		"subject_object", subject.Object)
 
-	// Build query parameters
+	// Build query parameters with subject_set
 	params := url.Values{}
 	params.Add("namespace", namespace)
 	params.Add("object", object)
 	params.Add("relation", relation)
-	params.Add("subject_id", subject)
+	params.Add("subject_set.namespace", subject.Namespace)
+	params.Add("subject_set.object", subject.Object)
+	params.Add("subject_set.relation", subject.Relation)
 
 	// Make request to Keto read API - using the correct endpoint from docs
 	checkURL := fmt.Sprintf("%s/relation-tuples/check?%s", k.readURL, params.Encode())
@@ -66,11 +76,11 @@ func (k *KetoService) CheckPermission(ctx context.Context, namespace, object, re
 			logger.Logger.Error("Failed to decode permission check response", "error", err)
 			return false, fmt.Errorf("failed to decode response: %w", err)
 		}
-		logger.Logger.Info("Permission check completed", "allowed", result.Allowed, "subject", subject)
+		logger.Logger.Info("Permission check completed", "allowed", result.Allowed, "subject_object", subject.Object)
 		return result.Allowed, nil
 	} else if resp.StatusCode == 403 {
 		// 403 means permission denied (not allowed)
-		logger.Logger.Debug("Permission denied by Keto", "subject", subject, "object", object)
+		logger.Logger.Debug("Permission denied by Keto", "subject_object", subject.Object, "object", object)
 		return false, nil
 	} else {
 		logger.Logger.Error("Permission check failed", "statusCode", resp.StatusCode)
@@ -78,19 +88,24 @@ func (k *KetoService) CheckPermission(ctx context.Context, namespace, object, re
 	}
 }
 
-// CreateRelationTuple creates a new relation tuple
-func (k *KetoService) CreateRelationTuple(ctx context.Context, namespace, object, relation, subject string) error {
+// CreateRelationTuple creates a new relation tuple with subject_set
+func (k *KetoService) CreateRelationTuple(ctx context.Context, namespace, object, relation string, subject SubjectSet) error {
 	logger.Logger.Info("Creating relation tuple",
 		"namespace", namespace,
 		"object", object,
 		"relation", relation,
-		"subject", subject)
+		"subject_namespace", subject.Namespace,
+		"subject_object", subject.Object)
 
-	relationTuple := map[string]string{
-		"namespace":  namespace,
-		"object":     object,
-		"relation":   relation,
-		"subject_id": subject,
+	relationTuple := map[string]interface{}{
+		"namespace": namespace,
+		"object":    object,
+		"relation":  relation,
+		"subject_set": map[string]string{
+			"namespace": subject.Namespace,
+			"object":    subject.Object,
+			"relation":  subject.Relation,
+		},
 	}
 
 	payload, err := json.Marshal(relationTuple)
@@ -121,7 +136,8 @@ func (k *KetoService) CreateRelationTuple(ctx context.Context, namespace, object
 		logger.Logger.Info("Relation tuple created successfully",
 			"namespace", namespace,
 			"object", object,
-			"subject", subject)
+			"subject_namespace", subject.Namespace,
+			"subject_object", subject.Object)
 		return nil
 	} else {
 		logger.Logger.Error("Failed to create relation tuple", "statusCode", resp.StatusCode)
@@ -130,19 +146,22 @@ func (k *KetoService) CreateRelationTuple(ctx context.Context, namespace, object
 }
 
 // DeleteRelationTuple deletes a relation tuple
-func (k *KetoService) DeleteRelationTuple(ctx context.Context, namespace, object, relation, subject string) error {
+func (k *KetoService) DeleteRelationTuple(ctx context.Context, namespace, object, relation string, subject SubjectSet) error {
 	logger.Logger.Info("Deleting relation tuple",
 		"namespace", namespace,
 		"object", object,
 		"relation", relation,
-		"subject", subject)
+		"subject_namespace", subject.Namespace,
+		"subject_object", subject.Object)
 
-	// Build query parameters
+	// Build query parameters with subject_set
 	params := url.Values{}
 	params.Add("namespace", namespace)
 	params.Add("object", object)
 	params.Add("relation", relation)
-	params.Add("subject_id", subject)
+	params.Add("subject_set.namespace", subject.Namespace)
+	params.Add("subject_set.object", subject.Object)
+	params.Add("subject_set.relation", subject.Relation)
 
 	deleteURL := fmt.Sprintf("%s/admin/relation-tuples?%s", k.writeURL, params.Encode())
 	req, err := http.NewRequestWithContext(ctx, "DELETE", deleteURL, nil)
@@ -167,25 +186,25 @@ func (k *KetoService) DeleteRelationTuple(ctx context.Context, namespace, object
 	logger.Logger.Info("Relation tuple deleted successfully",
 		"namespace", namespace,
 		"object", object,
-		"subject", subject)
+		"subject_namespace", subject.Namespace,
+		"subject_object", subject.Object)
 	return nil
 }
 
 // RelationTuple represents a Keto relation tuple
 type RelationTuple struct {
-	Namespace string `json:"namespace"`
-	Object    string `json:"object"`
-	Relation  string `json:"relation"`
-	SubjectID string `json:"subject_id"`
+	Namespace  string      `json:"namespace"`
+	Object     string      `json:"object"`
+	Relation   string      `json:"relation"`
+	SubjectSet *SubjectSet `json:"subject_set,omitempty"`
 }
 
 // ListRelationTuples lists relation tuples with optional filters
-func (k *KetoService) ListRelationTuples(ctx context.Context, namespace, object, relation, subject string) ([]RelationTuple, error) {
+func (k *KetoService) ListRelationTuples(ctx context.Context, namespace, object, relation string, subject *SubjectSet) ([]RelationTuple, error) {
 	logger.Logger.Debug("Listing relation tuples",
 		"namespace", namespace,
 		"object", object,
-		"relation", relation,
-		"subject", subject)
+		"relation", relation)
 
 	// Build query parameters - namespace is required according to docs
 	params := url.Values{}
@@ -198,8 +217,10 @@ func (k *KetoService) ListRelationTuples(ctx context.Context, namespace, object,
 	if relation != "" {
 		params.Add("relation", relation)
 	}
-	if subject != "" {
-		params.Add("subject_id", subject)
+	if subject != nil {
+		params.Add("subject_set.namespace", subject.Namespace)
+		params.Add("subject_set.object", subject.Object)
+		params.Add("subject_set.relation", subject.Relation)
 	}
 
 	// Using correct endpoint from docs

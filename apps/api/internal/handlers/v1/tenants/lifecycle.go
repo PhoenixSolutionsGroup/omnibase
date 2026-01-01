@@ -4,6 +4,7 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/models"
+	services_v1 "api/internal/service/v1"
 	"errors"
 	"fmt"
 	"time"
@@ -187,7 +188,8 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 	}
 
 	// Check if user has permission to delete this tenant
-	canDelete, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "delete_tenant", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canDelete, err := h.keto.CheckPermission(ctx.Request.Context(), "Tenant", tenantID, "delete_tenant", subject)
 	if err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to check permissions: %w", err))
 		return

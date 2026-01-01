@@ -121,6 +121,12 @@ func (s *RolesService) createKetoRelationship(ctx context.Context, permission, u
 		// project:uuid#relation
 		namespace = strings.Title(resourceParts[0])
 		resourceID = resourceParts[1]
+
+		if strings.Contains(resourceID, "*") {
+			logger.Logger.Error("Wildcard permissions are not supported", "permission", permission)
+			return fmt.Errorf("wildcard permissions are not supported: %s", permission)
+		}
+
 		logger.Logger.Debug("Resource-specific permission",
 			"namespace", namespace,
 			"relation", relation,
@@ -133,5 +139,11 @@ func (s *RolesService) createKetoRelationship(ctx context.Context, permission, u
 		"relation", relation,
 		"user_id", userID)
 
-	return s.keto.CreateRelationTuple(ctx, namespace, resourceID, relation, userID)
+	subject := SubjectSet{
+		Namespace: "User",
+		Object:    userID,
+		Relation:  "",
+	}
+
+	return s.keto.CreateRelationTuple(ctx, namespace, resourceID, relation, subject)
 }

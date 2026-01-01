@@ -24,54 +24,63 @@ components:
         - namespace
         - object
 
+    # Named variants for CheckPermissionRequest
+    CheckPermissionRequestWithSubjectId:
+      type: object
+      description: Check permission request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: The namespace of the permission check
+        object:
+          type: string
+          minLength: 1
+          description: The object to check permissions on
+        relation:
+          type: string
+          minLength: 1
+          description: The relation/permission to check
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
+
+    CheckPermissionRequestWithSubjectSet:
+      type: object
+      description: Check permission request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: The namespace of the permission check
+        object:
+          type: string
+          minLength: 1
+          description: The object to check permissions on
+        relation:
+          type: string
+          minLength: 1
+          description: The relation/permission to check
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
+
     CheckPermissionRequest:
       description: Check permission request. Must provide exactly one of subject_id or subject_set.
       oneOf:
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_id
-          properties:
-            namespace:
-              type: string
-              minLength: 1
-              description: The namespace of the permission check
-            object:
-              type: string
-              minLength: 1
-              description: The object to check permissions on
-            relation:
-              type: string
-              minLength: 1
-              description: The relation/permission to check
-            subject_id:
-              type: string
-              description: Direct subject identifier
-          additionalProperties: false
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_set
-          properties:
-            namespace:
-              type: string
-              minLength: 1
-              description: The namespace of the permission check
-            object:
-              type: string
-              minLength: 1
-              description: The object to check permissions on
-            relation:
-              type: string
-              minLength: 1
-              description: The relation/permission to check
-            subject_set:
-              $ref: '#/components/schemas/SubjectSetRequest'
-          additionalProperties: false
+        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectId'
+        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectSet'
 
     CheckPermissionResponse:
       type: object
@@ -84,48 +93,57 @@ components:
       required:
         - allowed
 
+    # Named variants for CreateRelationshipRequest
+    CreateRelationshipRequestWithSubjectId:
+      type: object
+      description: Create relationship request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
+
+    CreateRelationshipRequestWithSubjectSet:
+      type: object
+      description: Create relationship request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
+
     CreateRelationshipRequest:
       description: Create relationship request. Must provide exactly one of subject_id or subject_set.
       oneOf:
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_id
-          properties:
-            namespace:
-              type: string
-              description: The namespace for the relationship
-            object:
-              type: string
-              description: The object in the relationship
-            relation:
-              type: string
-              description: The relation type
-            subject_id:
-              type: string
-              description: Direct subject identifier
-          additionalProperties: false
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_set
-          properties:
-            namespace:
-              type: string
-              description: The namespace for the relationship
-            object:
-              type: string
-              description: The object in the relationship
-            relation:
-              type: string
-              description: The relation type
-            subject_set:
-              $ref: '#/components/schemas/SubjectSetRequest'
-          additionalProperties: false
+        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectId'
+        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectSet'
 
     CreateRelationshipResponse:
       type: object
@@ -140,6 +158,69 @@ components:
       required:
         - message
         - relationship
+
+    # Named variants for DeleteRelationshipRequest
+    DeleteRelationshipRequestWithSubjectId:
+      type: object
+      description: Delete relationship request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
+
+    DeleteRelationshipRequestWithSubjectSet:
+      type: object
+      description: Delete relationship request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
+
+    DeleteRelationshipRequest:
+      description: Delete relationship request. Must provide exactly one of subject_id or subject_set.
+      oneOf:
+        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectId'
+        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectSet'
+
+    DeleteRelationshipResponse:
+      type: object
+      description: Relationship deletion result
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Relationship deleted successfully
+      required:
+        - message
 
     Relationship:
       type: object

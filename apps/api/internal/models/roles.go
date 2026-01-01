@@ -1,10 +1,37 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"time"
 
 	"github.com/lib/pq"
 )
+
+// SubjectRelationsData maps subject types to their allowed relations
+// e.g. {"User": ["can_delete", "can_invite"], "ApiKey": ["can_rotate_keys"]}
+type SubjectRelationsData map[string][]string
+
+func (s SubjectRelationsData) Value() (driver.Value, error) {
+	if s == nil {
+		return nil, nil
+	}
+	return json.Marshal(s)
+}
+
+func (s *SubjectRelationsData) Scan(value interface{}) error {
+	if value == nil {
+		*s = nil
+		return nil
+	}
+
+	bytes, ok := value.([]byte)
+	if !ok {
+		return nil
+	}
+
+	return json.Unmarshal(bytes, s)
+}
 
 type RoleTemplate struct {
 	ID          string         `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"7bde7bd1-9be9-42f5-bc4b-be9f24cde432"`
@@ -44,10 +71,11 @@ func (Role) TableName() string {
 }
 
 type NamespaceDefinition struct {
-	ID        string         `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"bfab650b-f834-4904-a4e8-41343fea86bc"`
-	Namespace string         `gorm:"type:text;unique;not null" json:"namespace" binding:"required" example:"Tenant"`
-	Relations pq.StringArray `gorm:"type:text[]" json:"relations" binding:"required" example:"can_delete_tenant,can_invite_user,can_update_user_role"`
-	UpdatedAt time.Time      `json:"updated_at" binding:"required" example:"2025-11-10T00:33:08.720326Z"`
+	ID               string               `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"bfab650b-f834-4904-a4e8-41343fea86bc"`
+	Namespace        string               `gorm:"type:text;unique;not null" json:"namespace" binding:"required" example:"Tenant"`
+	Relations        pq.StringArray       `gorm:"type:text[]" json:"relations" binding:"required" example:"can_delete_tenant,can_invite_user,can_update_user_role"`
+	SubjectRelations SubjectRelationsData `gorm:"type:jsonb" json:"subject_relations,omitempty" example:"{\"User\":[\"can_delete_tenant\"],\"ApiKey\":[\"can_rotate_keys\"]}"`
+	UpdatedAt        time.Time            `json:"updated_at" binding:"required" example:"2025-11-10T00:33:08.720326Z"`
 }
 
 func (NamespaceDefinition) TableName() string {

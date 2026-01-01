@@ -24,5 +24,8 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Registering POST /migrations route with migration handler")
 	router.POST("/migrations", databaseHandler.HandleMigrations)
 
+	logger.Logger.Info("Registering POST /migrations/reset route for database reset")
+	router.POST("/migrations/reset", databaseHandler.HandleMigrationsReset)
+
 	logger.Logger.Info("Database routes registration completed")
 }

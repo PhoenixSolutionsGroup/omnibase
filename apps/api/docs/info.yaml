@@ -2,7 +2,7 @@ openapi: 3.1.0
 
 info:
   title: Omnibase REST API
-  version: 0.9.16
+  version: 0.9.18
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 

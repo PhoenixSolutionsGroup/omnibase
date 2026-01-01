@@ -13,8 +13,9 @@ import (
 )
 
 type ParsedNamespaceDefinition struct {
-	Namespace string   `json:"namespace"`
-	Relations []string `json:"relations"`
+	Namespace        string              `json:"namespace"`
+	Relations        []string            `json:"relations"`
+	SubjectRelations map[string][]string `json:"subject_relations"` // subject -> relations that accept this subject
 }
 
 type ParsedRoleConfig struct {
@@ -140,7 +141,8 @@ func (s *NamespaceParserService) ParseRolesConfig(zipBytes []byte) (*RolesConfig
 	return nil, nil
 }
 
-// parseNamespaceContent extracts namespace and User[] relations from TypeScript
+// parseNamespaceContent extracts namespace definitions from TypeScript
+// Parses relations with any subject type: "relation: Subject[]" or "relation: (Subject1 | Subject2)[]"
 func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedNamespaceDefinition {
 	logger.Logger.Debug("Parsing namespace content", "content_preview", content[:min(200, len(content))])
 
@@ -173,6 +175,12 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 	}
 
 	var allDefinitions []ParsedNamespaceDefinition
+
+	// Regex patterns for relation extraction
+	// Matches: "relationName: SubjectType[]"
+	singleSubjectRegex := regexp.MustCompile(`(\w+):\s*(\w+)\[\]`)
+	// Matches: "relationName: (SubjectType1 | SubjectType2 | ...)[]"
+	unionSubjectRegex := regexp.MustCompile(`(\w+):\s*\(([^)]+)\)\[\]`)
 
 	// Match each related block to its class
 	for i, relatedMatch := range relatedMatches {
@@ -215,37 +223,95 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 			continue
 		}
 
-		// Extract only User[] relations from the related block
-		relationRegex := regexp.MustCompile(`(\w+):\s*User\[\]`)
-		relationMatches := relationRegex.FindAllStringSubmatch(relatedBlock, -1)
+		// Build subject -> relations map
+		subjectRelations := make(map[string][]string)
+		var allRelations []string
 
-		logger.Logger.Debug("Searching for User[] relations", "class", belongsToClass, "matches_found", len(relationMatches))
+		// First, extract union type relations: "(User | ApiKey)[]"
+		unionMatches := unionSubjectRegex.FindAllStringSubmatch(relatedBlock, -1)
+		processedRelations := make(map[string]bool)
 
-		var relations []string
-		for _, match := range relationMatches {
-			if len(match) >= 2 {
-				relation := match[1]
-				logger.Logger.Debug("Extracted relation", "class", belongsToClass, "relation", relation)
-				relations = append(relations, relation)
+		for _, match := range unionMatches {
+			if len(match) >= 3 {
+				relationName := match[1]
+				subjectsStr := match[2]
+				processedRelations[relationName] = true
+
+				// Parse subjects from union: "User | ApiKey" -> ["User", "ApiKey"]
+				subjects := s.parseUnionSubjects(subjectsStr)
+
+				logger.Logger.Debug("Extracted union relation",
+					"class", belongsToClass,
+					"relation", relationName,
+					"subjects", subjects)
+
+				allRelations = append(allRelations, relationName)
+				for _, subject := range subjects {
+					subjectRelations[subject] = append(subjectRelations[subject], relationName)
+				}
 			}
 		}
 
-		if len(relations) > 0 {
+		// Then, extract single subject relations: "User[]"
+		singleMatches := singleSubjectRegex.FindAllStringSubmatch(relatedBlock, -1)
+		for _, match := range singleMatches {
+			if len(match) >= 3 {
+				relationName := match[1]
+				subject := match[2]
+
+				// Skip if already processed as union type
+				if processedRelations[relationName] {
+					continue
+				}
+
+				logger.Logger.Debug("Extracted single-subject relation",
+					"class", belongsToClass,
+					"relation", relationName,
+					"subject", subject)
+
+				allRelations = append(allRelations, relationName)
+				subjectRelations[subject] = append(subjectRelations[subject], relationName)
+			}
+		}
+
+		if len(allRelations) > 0 {
 			logger.Logger.Info("Successfully parsed namespace",
 				"namespace", belongsToClass,
-				"relations", relations)
+				"relations_count", len(allRelations),
+				"subject_count", len(subjectRelations))
+
+			for subject, relations := range subjectRelations {
+				logger.Logger.Debug("Subject relations",
+					"namespace", belongsToClass,
+					"subject", subject,
+					"relations", relations)
+			}
 
 			allDefinitions = append(allDefinitions, ParsedNamespaceDefinition{
-				Namespace: belongsToClass,
-				Relations: relations,
+				Namespace:        belongsToClass,
+				Relations:        allRelations,
+				SubjectRelations: subjectRelations,
 			})
 		} else {
-			logger.Logger.Warn("No User[] relations found in related block", "class", belongsToClass)
+			logger.Logger.Warn("No relations found in related block", "class", belongsToClass)
 		}
 	}
 
 	logger.Logger.Info("Parsing complete", "total_namespaces_found", len(allDefinitions))
 	return allDefinitions
+}
+
+// parseUnionSubjects parses "User | ApiKey | Foo" into ["User", "ApiKey", "Foo"]
+func (s *NamespaceParserService) parseUnionSubjects(unionStr string) []string {
+	var subjects []string
+	parts := strings.Split(unionStr, "|")
+	for _, part := range parts {
+		subject := strings.TrimSpace(part)
+		if subject != "" {
+			subjects = append(subjects, subject)
+		}
+	}
+	return subjects
 }
 
 func min(a, b int) int {

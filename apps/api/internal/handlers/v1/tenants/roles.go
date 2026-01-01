@@ -47,8 +47,11 @@ type NamespaceDefinitionsResponse struct {
 }
 
 // /api/v1/tenants/roles/definitions [get]
+// Query params:
+//   - subject: Filter to only return relations that accept this subject type (e.g., "ApiKey", "User")
 func (h *RolesHandler) GetDefinitions(c *gin.Context) {
-	logger.Logger.Info("Fetching namespace definitions")
+	subjectFilter := c.Query("subject")
+	logger.Logger.Info("Fetching namespace definitions", "subject_filter", subjectFilter)
 
 	var definitions []models.NamespaceDefinition
 	if err := h.db.Find(&definitions).Error; err != nil {
@@ -57,7 +60,28 @@ func (h *RolesHandler) GetDefinitions(c *gin.Context) {
 		return
 	}
 
-	logger.Logger.Info("Successfully fetched namespace definitions", "count", len(definitions))
+	// If subject filter is provided, filter relations by subject type
+	if subjectFilter != "" {
+		for i := range definitions {
+			if definitions[i].SubjectRelations != nil {
+				if relations, ok := definitions[i].SubjectRelations[subjectFilter]; ok {
+					definitions[i].Relations = relations
+				} else {
+					definitions[i].Relations = []string{}
+				}
+			}
+		}
+		// Remove definitions with no matching relations
+		filtered := make([]models.NamespaceDefinition, 0)
+		for _, def := range definitions {
+			if len(def.Relations) > 0 {
+				filtered = append(filtered, def)
+			}
+		}
+		definitions = filtered
+	}
+
+	logger.Logger.Info("Successfully fetched namespace definitions", "count", len(definitions), "subject_filter", subjectFilter)
 	handlers.NewSuccessResponse(c, NamespaceDefinitionsResponse{Definitions: definitions})
 }
 
@@ -114,7 +138,8 @@ func (h *RolesHandler) CreateRole(c *gin.Context) {
 	}
 
 	logger.Logger.Debug("Verifying user has create_roles permission", "user_id", userID)
-	canCreateRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "create_roles", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canCreateRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "create_roles", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("Failed to check permissions: %w", err))
@@ -199,7 +224,8 @@ func (h *RolesHandler) UpdateRole(c *gin.Context) {
 	}
 
 	logger.Logger.Debug("Verifying user has update_roles permission", "user_id", userID)
-	canUpdateRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "update_roles", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canUpdateRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "update_roles", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("Failed to check permissions: %w", err))
@@ -307,7 +333,8 @@ func (h *RolesHandler) DeleteRole(c *gin.Context) {
 	}
 
 	logger.Logger.Debug("Verifying user has delete_roles permission", "user_id", userID)
-	canDeleteRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "delete_roles", userID)
+	subject := services_v1.SubjectSet{Namespace: "User", Object: userID, Relation: ""}
+	canDeleteRoles, err := h.keto.CheckPermission(c.Request.Context(), "Tenant", tenantID, "delete_roles", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantID, "user_id", userID)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("Failed to check permissions: %w", err))
@@ -404,6 +431,12 @@ func (h *RolesHandler) createKetoRelationship(ctx context.Context, permission, u
 		// project:uuid#relation
 		namespace = strings.Title(resourceParts[0])
 		resourceID = resourceParts[1]
+
+		if strings.Contains(resourceID, "*") {
+			logger.Logger.Error("Wildcard permissions are not supported", "permission", permission)
+			return fmt.Errorf("wildcard permissions are not supported: %s", permission)
+		}
+
 		logger.Logger.Debug("Resource-specific permission",
 			"namespace", namespace,
 			"relation", relation,
@@ -416,7 +449,13 @@ func (h *RolesHandler) createKetoRelationship(ctx context.Context, permission, u
 		"relation", relation,
 		"user_id", userID)
 
-	return h.keto.CreateRelationTuple(ctx, namespace, resourceID, relation, userID)
+	subject := services_v1.SubjectSet{
+		Namespace: "User",
+		Object:    userID,
+		Relation:  "",
+	}
+
+	return h.keto.CreateRelationTuple(ctx, namespace, resourceID, relation, subject)
 }
 
 // deleteKetoRelationship parses permission format and deletes Keto relationship
@@ -442,6 +481,11 @@ func (h *RolesHandler) deleteKetoRelationship(ctx context.Context, permission, u
 	} else {
 		namespace = strings.Title(resourceParts[0])
 		resourceID = resourceParts[1]
+
+		if strings.Contains(resourceID, "*") {
+			logger.Logger.Error("Wildcard permissions are not supported", "permission", permission)
+			return fmt.Errorf("wildcard permissions are not supported: %s", permission)
+		}
 	}
 
 	logger.Logger.Info("Deleting Keto relation tuple",
@@ -450,7 +494,13 @@ func (h *RolesHandler) deleteKetoRelationship(ctx context.Context, permission, u
 		"relation", relation,
 		"user_id", userID)
 
-	return h.keto.DeleteRelationTuple(ctx, namespace, resourceID, relation, userID)
+	subject := services_v1.SubjectSet{
+		Namespace: "User",
+		Object:    userID,
+		Relation:  "",
+	}
+
+	return h.keto.DeleteRelationTuple(ctx, namespace, resourceID, relation, subject)
 }
 
 // assignRoleToUser is an internal helper that assigns a role to a user

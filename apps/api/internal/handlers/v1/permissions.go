@@ -309,3 +309,131 @@ func (h *PermissionsHandler) CreateRelationship(ctx *gin.Context) {
 		Relationship: *relationship,
 	})
 }
+
+// DeleteRelationshipRequest represents the request body for deleting relationships
+// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
+type DeleteRelationshipRequest struct {
+	// Namespace of the relationship
+	Namespace string `json:"namespace" binding:"required" example:"Project"`
+	// Object ID in the relationship
+	Object string `json:"object" binding:"required" example:"project_123"`
+	// Relation type
+	Relation string `json:"relation" binding:"required" example:"tenant"`
+	// Subject ID (user ID) - provide either this OR subject_set, not both
+	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
+	// Subject set - provide either this OR subject_id, not both
+	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
+}
+
+// DeleteRelationshipResponse represents the response for deleting relationships
+type DeleteRelationshipResponse struct {
+	// Success message
+	Message string `json:"message" binding:"required" example:"Relationship deleted successfully"`
+}
+
+// DeleteRelationship godoc
+// @Summary      Delete relationship
+// @Description  Deletes a relationship tuple from Ory Keto.
+// @Description
+// @Description  ## Authentication
+// @Description  Requires session authentication.
+// @Description
+// @Description  ## Request Format
+// @Description  Provide either `subject_id` or `subject_set` (not both).
+// @Description
+// @Description  ## Use Cases
+// @Description  - Remove resource links from tenants
+// @Description  - Revoke user assignments from projects
+// @Description  - Delete permission relationships
+// @Tags         V1 Permissions
+// @Accept       json
+// @Produce      json
+// @Param        body body DeleteRelationshipRequest true "Relationship deletion request"
+// @Success      200 {object} handlers.SuccessResponse{data=DeleteRelationshipResponse} "Relationship deleted successfully"
+// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation are required"
+// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
+// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to delete relationship"
+// @Security     CookieAuth,SessionTokenAuth
+// @Router       /api/v1/permissions/relationships [delete]
+// @ID           deleteRelationship
+func (h *PermissionsHandler) DeleteRelationship(ctx *gin.Context) {
+	logger.Logger.Debug("DeleteRelationship handler started")
+
+	var req DeleteRelationshipRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request body", "error", err)
+		handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Invalid request body: %s", err))
+		return
+	}
+
+	// Validate that exactly one of subject_id or subject_set is provided
+	if req.SubjectID != nil && req.SubjectSet != nil {
+		logger.Logger.Warn("Both subject_id and subject_set provided in relationship deletion")
+		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
+		return
+	}
+	if req.SubjectID == nil && req.SubjectSet == nil {
+		logger.Logger.Warn("Neither subject_id nor subject_set provided in relationship deletion")
+		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
+		return
+	}
+
+	logger.Logger.Debug("Deleting relationship via Keto SDK",
+		"namespace", req.Namespace,
+		"object", req.Object,
+		"relation", req.Relation,
+		"has_subject_id", req.SubjectID != nil,
+		"has_subject_set", req.SubjectSet != nil)
+
+	// Build the delete request
+	deleteReq := h.ketoWriteAPI.DeleteRelationships(ctx.Request.Context()).
+		Namespace(req.Namespace).
+		Object(req.Object).
+		Relation(req.Relation)
+
+	if req.SubjectID != nil {
+		deleteReq = deleteReq.SubjectId(*req.SubjectID)
+	}
+
+	if req.SubjectSet != nil {
+		deleteReq = deleteReq.SubjectSetNamespace(req.SubjectSet.Namespace).
+			SubjectSetObject(req.SubjectSet.Object)
+		if req.SubjectSet.Relation != "" {
+			deleteReq = deleteReq.SubjectSetRelation(req.SubjectSet.Relation)
+		}
+	}
+
+	// Execute the relationship deletion
+	resp, err := deleteReq.Execute()
+	if err != nil {
+		statusCode := 500
+		if resp != nil {
+			statusCode = resp.StatusCode
+		}
+
+		logger.Logger.Error("Failed to delete relationship",
+			"error", err,
+			"http_status", statusCode)
+
+		if statusCode == 404 {
+			handlers.NewNotFoundResponse(ctx, "Relationship not found")
+			return
+		}
+
+		if statusCode >= 400 && statusCode < 500 {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Relationship deletion failed: %s", err))
+		} else {
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to delete relationship: %w", err))
+		}
+		return
+	}
+
+	logger.Logger.Info("Relationship deleted successfully",
+		"namespace", req.Namespace,
+		"object", req.Object,
+		"relation", req.Relation)
+
+	handlers.NewSuccessResponse(ctx, DeleteRelationshipResponse{
+		Message: "Relationship deleted successfully",
+	})
+}

@@ -7,15 +7,11 @@ import (
 	"api/internal/logger"
 	"api/internal/models"
 	services_v1 "api/internal/service/v1"
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
@@ -179,19 +175,7 @@ func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 		}
 	}
 
-	// If managed mode, trigger Cloud Run service restart
 	isManaged := h.config.ManagedHostingConfig.IsManaged
-	if isManaged {
-		logger.Logger.Info("Triggering managed Keto service restart", "tenant_id", tenantID)
-		err := h.triggerManagedKetoRestart(tenantID)
-		if err != nil {
-			logger.Logger.Error("Failed to restart Keto service", "tenant_id", tenantID, "error", err)
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to restart Keto service: %w", err))
-			return
-		}
-		logger.Logger.Info("Keto service restart triggered successfully", "tenant_id", tenantID)
-	}
-
 	response := NamespaceDeploymentResponse{
 		Message:     "Namespaces deployed successfully",
 		TenantID:    tenantID,
@@ -210,53 +194,6 @@ func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 	handlers.NewSuccessResponse(c, response)
 }
 
-// triggerManagedKetoRestart calls managed-hosting API to restart permissions service
-func (h *KetoNamespacesHandler) triggerManagedKetoRestart(tenantID string) error {
-	logger.Logger.Debug("Preparing managed Keto restart request", "tenant_id", tenantID)
-	managedAPIURL := h.config.ManagedHostingConfig.ManagedHostingAPIURL
-
-	// Use new generic service restart endpoint
-	requestBody := map[string]string{
-		"service_name": "permissions",
-	}
-
-	bodyBytes, err := json.Marshal(requestBody)
-	if err != nil {
-		logger.Logger.Error("Failed to marshal request body", "error", err)
-		return fmt.Errorf("failed to marshal request body: %w", err)
-	}
-
-	restartURL := fmt.Sprintf("%s/internal/services/restart", managedAPIURL)
-	logger.Logger.Debug("Sending restart request", "url", restartURL, "tenant_id", tenantID)
-	req, err := http.NewRequest("POST", restartURL, bytes.NewBuffer(bodyBytes))
-	if err != nil {
-		logger.Logger.Error("Failed to create restart request", "error", err)
-		return err
-	}
-
-	// Service-to-service authentication
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Internal-Token", h.config.ManagedHostingConfig.InternalServiceToken)
-	req.Header.Set("X-Tenant-ID", tenantID)
-
-	client := &http.Client{Timeout: 60 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		logger.Logger.Error("Failed to execute restart request", "error", err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusPartialContent {
-		body, _ := io.ReadAll(resp.Body)
-		logger.Logger.Error("Managed API returned error", "status", resp.StatusCode, "response", string(body))
-		return fmt.Errorf("managed API returned status %d: %s", resp.StatusCode, string(body))
-	}
-
-	logger.Logger.Debug("Restart request completed successfully", "status", resp.StatusCode)
-	return nil
-}
-
 // storeDefinitions stores parsed namespace definitions in database
 func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.ParsedNamespaceDefinition) error {
 	logger.Logger.Debug("Storing namespace definitions", "count", len(definitions))
@@ -267,10 +204,15 @@ func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.Parse
 	}
 
 	for _, def := range definitions {
-		logger.Logger.Trace("Processing namespace definition", "namespace", def.Namespace, "relations_count", len(def.Relations))
+		logger.Logger.Trace("Processing namespace definition",
+			"namespace", def.Namespace,
+			"relations_count", len(def.Relations),
+			"subject_count", len(def.SubjectRelations))
+
 		dbDef := models.NamespaceDefinition{
-			Namespace: def.Namespace,
-			Relations: pq.StringArray(def.Relations),
+			Namespace:        def.Namespace,
+			Relations:        pq.StringArray(def.Relations),
+			SubjectRelations: models.SubjectRelationsData(def.SubjectRelations),
 		}
 
 		// Upsert
@@ -284,6 +226,7 @@ func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.Parse
 		if result.RowsAffected == 0 {
 			logger.Logger.Debug("Updating existing namespace definition", "namespace", def.Namespace)
 			dbDef.Relations = pq.StringArray(def.Relations)
+			dbDef.SubjectRelations = models.SubjectRelationsData(def.SubjectRelations)
 			if err := db.Save(&dbDef).Error; err != nil {
 				logger.Logger.Error("Failed to update namespace definition", "namespace", def.Namespace, "error", err)
 				return err

@@ -807,19 +807,28 @@ paths:
       summary: Get namespace definitions
       description: |
         Returns all available permission namespaces and their relations from the database.
-        
+
         ## Authentication
         Requires JWT token with appropriate permissions.
-        
+
         ## Use Cases
         - Discover available permission namespaces
         - List relations for each namespace
         - Build dynamic permission UIs
+        - Filter by subject type for API key creation
       operationId: getRoleDefinitions
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
         - ServiceKeyAuth: []
+      parameters:
+        - name: subject
+          in: query
+          required: false
+          description: Filter to only return relations that accept this subject type (e.g., "ApiKey", "User")
+          schema:
+            type: string
+            example: ApiKey
       responses:
         '200':
           description: Namespace definitions retrieved successfully

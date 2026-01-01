@@ -31,6 +31,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup) {
 
 	sessionOrServiceGroup.POST("/check", permissionsHandler.CheckPermission)
 	sessionOrServiceGroup.POST("/relationships", permissionsHandler.CreateRelationship)
+	sessionOrServiceGroup.DELETE("/relationships", permissionsHandler.DeleteRelationship)
 
 	// Namespace deployment endpoint - only register if handler initialized successfully
 	logger.Logger.Info("Registering POST /deploy route for namespace deployment (with service key auth)")

@@ -51,3 +51,65 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/database/migrations/reset:
+    post:
+      operationId: resetDatabaseMigrations
+      summary: Reset database and re-apply migrations
+      description: |
+        Drops all tables in the public schema and re-applies migrations from scratch.
+
+        **WARNING: This is a destructive operation intended for development use only.**
+        All data will be permanently lost.
+
+        ## Authentication
+        Requires service key authentication (typically used by CLI tools).
+
+        ## What Gets Dropped
+        - All tables in the `public` schema
+        - All custom enum types in the `public` schema
+        - The `migrations.schema_migrations` tracking table
+        - The `migrations` schema
+
+        ## Migration Format
+        Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
+        Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
+
+        ## Use Cases
+        - Development database reset via `omnibase db migrate reset`
+        - Clean slate testing
+        - Schema redesign during development
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - migrations
+              properties:
+                migrations:
+                  type: string
+                  format: binary
+                  description: Zip file containing SQL migration files
+      responses:
+        '200':
+          description: Database reset and migrations applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationSuccessResponse'
+        '400':
+          description: No migrations zip file provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationErrorResponse'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

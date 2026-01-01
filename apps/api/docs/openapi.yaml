@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Omnibase REST API
-  version: 0.9.16
+  version: 0.9.18
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -843,6 +843,100 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerErrorResponse'
   /api/v1/permissions/relationships:
+    delete:
+      operationId: deleteRelationship
+      summary: Delete relationship
+      description: |
+        Deletes a relationship tuple from Ory Keto.
+
+        ## Authentication
+        Requires session authentication.
+
+        ## Request Format
+        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
+        to enforce this constraint at the schema level.
+
+        ## Use Cases
+        - Remove resource links from tenants
+        - Revoke user assignments from projects
+        - Delete permission relationships
+      tags:
+        - V1 Permissions
+      security:
+        - CookieAuth: []
+          SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        description: Relationship deletion request with either subject_id or subject_set
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRelationshipRequest'
+            examples:
+              withSubjectId:
+                summary: Delete relationship with subject_id
+                value:
+                  namespace: Tenant
+                  object: tenant_test_123
+                  relation: can_invite_user
+                  subject_id: 550e8400-e29b-41d4-a716-446655440000
+              withSubjectSet:
+                summary: Delete relationship with subject_set
+                value:
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
+                  subject_set:
+                    namespace: Tenant
+                    object: tenant_456
+      responses:
+        '200':
+          description: Relationship deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DeleteRelationshipResponse'
+              example:
+                status: 200
+                data:
+                  message: Relationship deleted successfully
+        '400':
+          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+              examples:
+                bothSubjects:
+                  summary: Both subject_id and subject_set provided
+                  value:
+                    status: 400
+                    error: Provide either subject_id or subject_set, not both
+                neitherSubject:
+                  summary: Neither subject_id nor subject_set provided
+                  value:
+                    status: 400
+                    error: Either subject_id or subject_set must be provided
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          description: Failed to delete relationship
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
     post:
       operationId: createRelationship
       summary: Create relationship
@@ -2471,11 +2565,20 @@ paths:
         - Discover available permission namespaces
         - List relations for each namespace
         - Build dynamic permission UIs
+        - Filter by subject type for API key creation
       operationId: getRoleDefinitions
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
         - ServiceKeyAuth: []
+      parameters:
+        - name: subject
+          in: query
+          required: false
+          description: Filter to only return relations that accept this subject type (e.g., "ApiKey", "User")
+          schema:
+            type: string
+            example: ApiKey
       responses:
         '200':
           description: Namespace definitions retrieved successfully
@@ -3625,6 +3728,31 @@ components:
           minLength: 1
           description: The usage value to record (required, cannot be empty)
           example: '100'
+    CheckPermissionRequestWithSubjectId:
+      type: object
+      description: Check permission request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: The namespace of the permission check
+        object:
+          type: string
+          minLength: 1
+          description: The object to check permissions on
+        relation:
+          type: string
+          minLength: 1
+          description: The relation/permission to check
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
     SubjectSetRequest:
       type: object
       description: Subject set representation for permission checks and relationship creation
@@ -3646,54 +3774,35 @@ components:
       required:
         - namespace
         - object
+    CheckPermissionRequestWithSubjectSet:
+      type: object
+      description: Check permission request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          minLength: 1
+          description: The namespace of the permission check
+        object:
+          type: string
+          minLength: 1
+          description: The object to check permissions on
+        relation:
+          type: string
+          minLength: 1
+          description: The relation/permission to check
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
     CheckPermissionRequest:
       description: Check permission request. Must provide exactly one of subject_id or subject_set.
       oneOf:
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_id
-          properties:
-            namespace:
-              type: string
-              minLength: 1
-              description: The namespace of the permission check
-            object:
-              type: string
-              minLength: 1
-              description: The object to check permissions on
-            relation:
-              type: string
-              minLength: 1
-              description: The relation/permission to check
-            subject_id:
-              type: string
-              description: Direct subject identifier
-          additionalProperties: false
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_set
-          properties:
-            namespace:
-              type: string
-              minLength: 1
-              description: The namespace of the permission check
-            object:
-              type: string
-              minLength: 1
-              description: The object to check permissions on
-            relation:
-              type: string
-              minLength: 1
-              description: The relation/permission to check
-            subject_set:
-              $ref: '#/components/schemas/SubjectSetRequest'
-          additionalProperties: false
+        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectId'
+        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectSet'
     CheckPermissionResponse:
       type: object
       description: Permission check result
@@ -3704,48 +3813,54 @@ components:
           example: true
       required:
         - allowed
+    CreateRelationshipRequestWithSubjectId:
+      type: object
+      description: Create relationship request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
+    CreateRelationshipRequestWithSubjectSet:
+      type: object
+      description: Create relationship request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
     CreateRelationshipRequest:
       description: Create relationship request. Must provide exactly one of subject_id or subject_set.
       oneOf:
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_id
-          properties:
-            namespace:
-              type: string
-              description: The namespace for the relationship
-            object:
-              type: string
-              description: The object in the relationship
-            relation:
-              type: string
-              description: The relation type
-            subject_id:
-              type: string
-              description: Direct subject identifier
-          additionalProperties: false
-        - type: object
-          required:
-            - namespace
-            - object
-            - relation
-            - subject_set
-          properties:
-            namespace:
-              type: string
-              description: The namespace for the relationship
-            object:
-              type: string
-              description: The object in the relationship
-            relation:
-              type: string
-              description: The relation type
-            subject_set:
-              $ref: '#/components/schemas/SubjectSetRequest'
-          additionalProperties: false
+        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectId'
+        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectSet'
     SubjectSet:
       type: object
       description: Subject set representation in Keto relationship tuples
@@ -3797,6 +3912,64 @@ components:
       required:
         - message
         - relationship
+    DeleteRelationshipRequestWithSubjectId:
+      type: object
+      description: Delete relationship request using a direct subject identifier
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_id
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_id:
+          type: string
+          description: Direct subject identifier
+      additionalProperties: false
+    DeleteRelationshipRequestWithSubjectSet:
+      type: object
+      description: Delete relationship request using a subject set
+      required:
+        - namespace
+        - object
+        - relation
+        - subject_set
+      properties:
+        namespace:
+          type: string
+          description: The namespace for the relationship
+        object:
+          type: string
+          description: The object in the relationship
+        relation:
+          type: string
+          description: The relation type
+        subject_set:
+          $ref: '#/components/schemas/SubjectSetRequest'
+      additionalProperties: false
+    DeleteRelationshipRequest:
+      description: Delete relationship request. Must provide exactly one of subject_id or subject_set.
+      oneOf:
+        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectId'
+        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectSet'
+    DeleteRelationshipResponse:
+      type: object
+      description: Relationship deletion result
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Relationship deleted successfully
+      required:
+        - message
     NamespaceDeploymentResponse:
       type: object
       required:
@@ -4005,6 +4178,47 @@ components:
           nullable: true
           description: Actual Stripe meter ID
           example: mtr_1SRiyyCJIZaBlhY1
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO currency code (lowercase)
+      enum:
+        - usd
+        - eur
+        - gbp
+        - cad
+        - aud
+        - jpy
+        - inr
+        - brl
+        - mxn
+        - sgd
+        - hkd
+        - nzd
+        - chf
+        - sek
+        - dkk
+        - nok
+        - pln
+        - czk
+        - ils
+        - zar
+      example: usd
+    BillingInterval:
+      type: string
+      description: Billing interval for recurring prices
+      enum:
+        - day
+        - week
+        - month
+        - year
+      example: month
+    UsageType:
+      type: string
+      description: Usage type for recurring prices
+      enum:
+        - licensed
+        - metered
+      example: licensed
     Tier:
       type: object
       properties:
@@ -4117,32 +4331,15 @@ components:
           description: Price amount in smallest currency unit
           example: 1999
         currency:
-          type: string
-          minLength: 3
-          maxLength: 3
-          pattern: ^[a-z]{3}$
-          description: Three-letter ISO currency code (lowercase)
-          example: usd
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: month
+          $ref: '#/components/schemas/BillingInterval'
         interval_count:
           type: integer
           description: Number of intervals between billings
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices
-          enum:
-            - licensed
-            - metered
-          example: licensed
+          $ref: '#/components/schemas/UsageType'
         meter:
           type: string
           description: Meter ID for metered pricing
@@ -4348,6 +4545,13 @@ components:
           $ref: '#/components/schemas/MeterCustomerMapping'
         value_settings:
           $ref: '#/components/schemas/MeterValueSettings'
+    PerUnitBillingScheme:
+      type: string
+      description: Billing scheme type for per-unit pricing
+      enum:
+        - per_unit
+      default: per_unit
+      example: per_unit
     PerUnitPrice:
       type: object
       required:
@@ -4381,62 +4585,26 @@ components:
           description: Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
           example: 1999
         currency:
-          type: string
-          description: Three-letter ISO currency code (lowercase)
-          enum:
-            - usd
-            - eur
-            - gbp
-            - cad
-            - aud
-            - jpy
-            - inr
-            - brl
-            - mxn
-            - sgd
-            - hkd
-            - nzd
-            - chf
-            - sek
-            - dkk
-            - nok
-            - pln
-            - czk
-            - ils
-            - zar
-          example: usd
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval for recurring prices (required when usage_type is metered)
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: month
+          allOf:
+            - $ref: '#/components/schemas/BillingInterval'
+            - description: Billing interval for recurring prices (required when usage_type is metered)
         interval_count:
           type: integer
           description: Number of intervals between billings (default 1)
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices (when set to metered, interval and meter are required)
-          enum:
-            - licensed
-            - metered
-          example: licensed
+          allOf:
+            - $ref: '#/components/schemas/UsageType'
+            - description: Usage type for recurring prices (when set to metered, interval and meter are required)
         meter:
           type: string
           minLength: 1
           description: Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
           example: api_requests
         billing_scheme:
-          type: string
-          description: Billing scheme type
-          enum:
-            - per_unit
-          default: per_unit
-          example: per_unit
+          $ref: '#/components/schemas/PerUnitBillingScheme'
         default:
           type: boolean
           description: Mark as default price for the product
@@ -4451,6 +4619,19 @@ components:
         - required:
             - interval
             - meter
+    TieredBillingScheme:
+      type: string
+      description: Billing scheme type for tiered pricing
+      enum:
+        - tiered
+      example: tiered
+    TiersMode:
+      type: string
+      description: Tiers mode for tiered pricing
+      enum:
+        - graduated
+        - volume
+      example: graduated
     TieredPrice:
       type: object
       required:
@@ -4480,49 +4661,28 @@ components:
           description: Whether tax is included in the price (null/false = exclusive)
           example: false
         currency:
-          type: string
-          minLength: 3
-          maxLength: 3
-          pattern: ^[a-z]{3}$
-          description: Three-letter ISO currency code (lowercase)
-          example: usd
+          $ref: '#/components/schemas/CurrencyCode'
         interval:
-          type: string
-          description: Billing interval for recurring prices (required when usage_type is metered)
-          enum:
-            - day
-            - week
-            - month
-            - year
-          example: month
+          allOf:
+            - $ref: '#/components/schemas/BillingInterval'
+            - description: Billing interval for recurring prices (required when usage_type is metered)
         interval_count:
           type: integer
           description: Number of intervals between billings (default 1)
           example: 1
         usage_type:
-          type: string
-          description: Usage type for recurring prices (when set to metered, interval and meter are required)
-          enum:
-            - licensed
-            - metered
-          example: licensed
+          allOf:
+            - $ref: '#/components/schemas/UsageType'
+            - description: Usage type for recurring prices (when set to metered, interval and meter are required)
         meter:
           type: string
           minLength: 1
           description: Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
           example: api_requests
         billing_scheme:
-          type: string
-          description: Billing scheme type (must be 'tiered')
-          const: tiered
-          example: tiered
+          $ref: '#/components/schemas/TieredBillingScheme'
         tiers_mode:
-          type: string
-          description: Tiers mode
-          enum:
-            - graduated
-            - volume
-          example: graduated
+          $ref: '#/components/schemas/TiersMode'
         tiers:
           type: array
           description: Pricing tiers
@@ -5064,8 +5224,8 @@ components:
             type: string
             minLength: 1
           example:
-            - project:*#view
             - tenant#read
+            - tenant#manage_projects
     schemas-ConflictResponse:
       type: object
       description: 409 Conflict response when resource already exists
@@ -5093,8 +5253,8 @@ components:
           items:
             type: string
           example:
-            - project:*#view
-            - project:*#edit
+            - tenant#read
+            - tenant#write
     DeleteRoleResponse:
       type: object
       description: Response after deleting a role
@@ -5132,6 +5292,21 @@ components:
             - can_delete_tenant
             - can_invite_user
             - can_update_user_role
+        subject_relations:
+          type: object
+          description: Maps subject types to their allowed relations
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            User:
+              - can_delete_tenant
+              - can_invite_user
+              - can_rotate_keys
+            ApiKey:
+              - can_rotate_keys
+              - can_view_db_secret_key
         updated_at:
           type: string
           format: date-time
