@@ -36,7 +36,7 @@
     "react-dom": "^19.1.0"
   },
   "dependencies": {
-    "@omnibase/core-js": "^0.9.18",
+    "@omnibase/core-js": "workspace:*",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
