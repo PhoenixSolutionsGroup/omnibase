@@ -312,11 +312,13 @@ func (m *AuthMiddleware) RequireSession() gin.HandlerFunc {
 }
 
 // RequireServiceKey validates service-to-service authentication via X-Service-Key header.
-// Sets context: is_service_auth
-// Used for: Admin/backend operations that don't require tenant context
+// Sets context: is_service_auth, tenant_id (optional), user_id (optional)
+// Used for: Admin/backend operations with optional tenant context
 func (m *AuthMiddleware) RequireServiceKey() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		serviceKey := c.GetHeader("X-Service-Key")
+		tenantIDHeader := c.GetHeader("X-Tenant-Id")
+		userIDHeader := c.GetHeader("X-User-Id")
 
 		if serviceKey == "" || serviceKey != m.JWTSecret {
 			handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing service key")
@@ -324,7 +326,29 @@ func (m *AuthMiddleware) RequireServiceKey() gin.HandlerFunc {
 			return
 		}
 
-		logger.Logger.Debug("Service key authentication successful")
+		// Validate and set tenant ID if provided
+		if tenantIDHeader != "" {
+			_, err := uuid.Parse(tenantIDHeader)
+			if err != nil {
+				handlers.NewBadRequestResponse(c, "Invalid X-Tenant-Id header")
+				c.Abort()
+				return
+			}
+			c.Set("tenant_id", tenantIDHeader)
+		}
+
+		// Validate and set user ID if provided
+		if userIDHeader != "" {
+			_, err := uuid.Parse(userIDHeader)
+			if err != nil {
+				handlers.NewBadRequestResponse(c, "Invalid X-User-Id header")
+				c.Abort()
+				return
+			}
+			c.Set("user_id", userIDHeader)
+		}
+
+		logger.Logger.Debug("Service key authentication successful", "tenant_id", tenantIDHeader, "user_id", userIDHeader)
 		c.Set("is_service_auth", true)
 		c.Next()
 	}
