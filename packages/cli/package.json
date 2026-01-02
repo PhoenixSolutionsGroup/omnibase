@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OmniBase CLI - Manage Docker Compose services and environment configuration",
   "main": "dist/index.js",
   "bin": {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/cli@0.1.0...@omnibase/cli@0.2.0) (2026-01-02)
+
+
+### Features
+
+* **payments:** add webhook endpoint management to Stripe configuration ([ca36464](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ca36464567a79f6605eac4116fbaa1050c5620b4))
+
+
+
+
+
 # [0.1.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/cli@0.0.1...@omnibase/cli@0.1.0) (2026-01-01)
 
 
