@@ -39,5 +39,8 @@
   },
   "dependencies": {
     "@redocly/cli": "^2.14.2"
+  },
+  "overrides": {
+    "find-up": "5.0.0"
   }
 }
