@@ -36,7 +36,6 @@ type LogoutResponse struct {
 }
 
 // ActiveTenantResponse represents the active tenant response
-// @Description Response containing the user's active tenant information
 type ActiveTenantResponse struct {
 	Tenant *Tenant `json:"tenant,omitempty"`
 }

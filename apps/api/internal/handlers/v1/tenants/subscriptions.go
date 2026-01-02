@@ -9,26 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetTenantSubscriptions returns active Stripe subscriptions for the tenant
-// @Summary      Get tenant subscriptions
-// @Description  Returns all active Stripe subscriptions associated with the tenant's Stripe customer.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Display current subscriptions
-// @Description  - Billing overview
-// @Description  - Subscription management UI
-// @Tags         V1 Tenants
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=[]models.SubscriptionResponse} "Tenant subscriptions retrieved successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "User not authenticated"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "Tenant not found"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to fetch subscriptions"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/subscriptions [get]
-// @ID           listTenantSubscriptions
 func (h *TenantHandler) GetTenantSubscriptions(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 
@@ -68,26 +48,6 @@ func (h *TenantHandler) GetTenantSubscriptions(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, subscriptions)
 }
 
-// GetBillingStatus checks if the tenant has billing information configured
-// @Summary      Get billing status
-// @Description  Checks whether the tenant has billing information configured in Stripe and if it's active.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Check if billing setup is required
-// @Description  - Conditional feature access
-// @Description  - Payment method verification
-// @Tags         V1 Tenants
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=models.BillingStatusResponse} "Billing status retrieved successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "User not authenticated"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "Tenant not found"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to check billing status"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/billing-status [get]
-// @ID           getTenantBillingStatus
 func (h *TenantHandler) GetBillingStatus(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 
@@ -144,44 +104,6 @@ type AddSubscriptionResponse struct {
 	Message string `json:"message" example:"Subscription added successfully"`
 }
 
-// AddSubscription adds a Stripe subscription for a customer with a specific plan
-// @Summary      Add subscription
-// @Description  Adds a Stripe subscription for the authenticated tenant using the provided plan ID.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context.
-// @Description
-// @Description  ## Request Parameters
-// @Description  - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") that maps to a Stripe price
-// @Description  - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
-// @Description
-// @Description  ## Process Flow
-// @Description  1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
-// @Description  2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
-// @Description  3. Checks if subscription already exists for this plan to prevent duplicates
-// @Description  4. Creates the subscription in Stripe with the specified price
-// @Description  5. Returns the subscription ID and status
-// @Description
-// @Description  ## Notes
-// @Description  - If a subscription for this plan already exists, returns a 400 error
-// @Description  - The subscription is created immediately and begins billing
-// @Description
-// @Description  ## Use Cases
-// @Description  - Subscribe tenant to metered pricing plans (compute, storage, workers)
-// @Description  - Enable usage-based billing for resources
-// @Description  - Add additional services to tenant's billing
-// @Tags         V1 Tenants
-// @Accept       json
-// @Produce      json
-// @Param        request body AddSubscriptionRequest true "Subscription addition parameters"
-// @Success      200 {object} handlers.SuccessResponse{data=AddSubscriptionResponse} "Subscription added successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request payload, tenant missing Stripe customer ID, or subscription already exists"
-// @Failure      401 {object} handlers.UnauthorizedResponse "User not authenticated"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "Plan not found - no Stripe price mapping found for the provided plan_id"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create subscription or fetch tenant"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/subscriptions [post]
-// @ID           addSubscription
 func (h *TenantHandler) AddSubscription(ctx *gin.Context) {
 	logger.Logger.Info("AddSubscription handler started")
 
@@ -302,45 +224,6 @@ type RemoveSubscriptionResponse struct {
 	Message string `json:"message" example:"Subscription canceled successfully"`
 }
 
-// RemoveSubscription cancels a Stripe subscription for a customer immediately
-// @Summary      Remove subscription
-// @Description  Cancels a Stripe subscription immediately for the authenticated tenant based on the plan ID.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires JWT token with tenant context.
-// @Description
-// @Description  ## Request Parameters
-// @Description  - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") to identify which subscription to cancel
-// @Description  - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
-// @Description
-// @Description  ## Process Flow
-// @Description  1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
-// @Description  2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
-// @Description  3. Finds the active subscription matching the price_id for the customer
-// @Description  4. Cancels the subscription immediately in Stripe
-// @Description  5. Returns the cancellation confirmation
-// @Description
-// @Description  ## Notes
-// @Description  - The subscription is canceled immediately, not at the end of the billing period
-// @Description  - If no matching subscription is found, returns a 404 error
-// @Description  - Only active, trialing, or past_due subscriptions can be canceled
-// @Description
-// @Description  ## Use Cases
-// @Description  - Remove specific service subscriptions from tenant
-// @Description  - Downgrade by removing premium features
-// @Description  - Stop billing for unused resources
-// @Tags         V1 Tenants
-// @Accept       json
-// @Produce      json
-// @Param        request body RemoveSubscriptionRequest true "Subscription removal parameters"
-// @Success      200 {object} handlers.SuccessResponse{data=RemoveSubscriptionResponse} "Subscription canceled successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request payload or tenant missing Stripe customer ID"
-// @Failure      401 {object} handlers.UnauthorizedResponse "User not authenticated"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "No matching subscription found for the plan"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to cancel subscription or map plan_id"
-// @Security     CookieAuth,SessionTokenAuth,ServiceKeyAuth
-// @Router       /api/v1/tenants/subscriptions [delete]
-// @ID           removeSubscription
 func (h *TenantHandler) RemoveSubscription(ctx *gin.Context) {
 	logger.Logger.Info("RemoveSubscription handler started")
 

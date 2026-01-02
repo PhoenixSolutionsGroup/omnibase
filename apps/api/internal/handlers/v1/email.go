@@ -81,32 +81,6 @@ type CreateEmailTemplateRequest struct {
 	HTMLBody string `json:"html_body" binding:"required" example:"<h1>Welcome!</h1><p>Thanks for joining our test platform.</p>"`
 }
 
-// CreateOrUpdateTemplate godoc
-// @Summary      Create or update email template
-// @Description  Creates a new email template or updates an existing one based on template type.
-// @Description
-// @Description  ## Template Management
-// @Description  - If template type exists: updates subject and HTML body
-// @Description  - If template type is new: creates new template entry
-// @Description
-// @Description  ## Template Types
-// @Description  Template types are user-defined identifiers (e.g., "welcome", "password-reset", "invoice").
-// @Description
-// @Description  ## Use Cases
-// @Description  - Store custom email templates for transactional emails
-// @Description  - Update email content without code deployments
-// @Description  - Maintain versioned email templates
-// @Tags         V1 Configuration
-// @Accept       json
-// @Produce      json
-// @Param        body body CreateEmailTemplateRequest true "Email template data"
-// @Success      200 {object} handlers.SuccessResponse{data=object{message=string,template=models.EmailTemplate}} "Template created/updated successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create/update template"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/email/templates [post]
-// @ID           createOrUpdateEmailTemplate
 func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
 	logger.Logger.Info("Creating or updating email template")
 
@@ -165,25 +139,6 @@ func (h *EmailHandler) CreateOrUpdateTemplate(ctx *gin.Context) {
 	}
 }
 
-// GetTemplates godoc
-// @Summary      Get all email templates
-// @Description  Retrieves all email templates stored in the database.
-// @Description
-// @Description  ## Response
-// @Description  Returns array of all templates with their type, subject, and HTML body.
-// @Description
-// @Description  ## Use Cases
-// @Description  - List available email templates
-// @Description  - Display template management interface
-// @Description  - Audit email template inventory
-// @Tags         V1 Configuration
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=object{templates=[]models.EmailTemplate,count=int}} "Templates retrieved successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to fetch templates"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/email/templates [get]
-// @ID           getEmailTemplates
 func (h *EmailHandler) GetTemplates(ctx *gin.Context) {
 	logger.Logger.Info("Fetching all email templates")
 
@@ -202,29 +157,6 @@ func (h *EmailHandler) GetTemplates(ctx *gin.Context) {
 	})
 }
 
-// DeleteTemplate godoc
-// @Summary      Delete email template
-// @Description  Deletes an email template by its type identifier.
-// @Description
-// @Description  ## Deletion Process
-// @Description  - Searches for template by type
-// @Description  - Removes template from database if found
-// @Description  - Returns 404 if template doesn't exist
-// @Description
-// @Description  ## Use Cases
-// @Description  - Remove deprecated email templates
-// @Description  - Clean up test templates
-// @Description  - Template lifecycle management
-// @Tags         V1 Configuration
-// @Produce      json
-// @Param        type path string true "Template type identifier"
-// @Success      200 {object} handlers.SuccessResponse{data=object{message=string}} "Template deleted successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "Template not found"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to delete template"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/email/templates/{type} [delete]
-// @ID           deleteEmailTemplate
 func (h *EmailHandler) DeleteTemplate(ctx *gin.Context) {
 	templateType := ctx.Param("type")
 	logger.Logger.Info("Deleting email template", "type", templateType)
@@ -327,30 +259,6 @@ type SendEmailRequest struct {
 	Plain string `json:"plain" example:"Hello! Welcome to our platform."`
 }
 
-// SendEmail godoc
-// @Summary      Send an email
-// @Description  Sends an email to the specified recipient using the configured SMTP server.
-// @Description
-// @Description  ## Email Content
-// @Description  - Supports HTML body content
-// @Description  - Optional plain text version for email clients that don't support HTML
-// @Description  - If both HTML and plain text are provided, sends as multipart/alternative
-// @Description
-// @Description  ## Use Cases
-// @Description  - Send transactional emails
-// @Description  - Send notifications to users
-// @Description  - Custom email communications
-// @Tags         V1 Configuration
-// @Accept       json
-// @Produce      json
-// @Param        body body SendEmailRequest true "Email data"
-// @Success      200 {object} handlers.SuccessResponse{data=object{message=string}} "Email sent successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body or missing required fields"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to send email"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/email/send [post]
-// @ID           sendEmail
 func (h *EmailHandler) SendEmail(ctx *gin.Context) {
 	var request SendEmailRequest
 

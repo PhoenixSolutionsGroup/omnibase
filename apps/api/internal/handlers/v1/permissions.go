@@ -75,31 +75,6 @@ type CheckPermissionResponse struct {
 	Allowed bool `json:"allowed" binding:"required" example:"true"`
 }
 
-// CheckPermission godoc
-// @Summary      Check permission
-// @Description  Checks if a subject has a specific permission on an object using Ory Keto.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires session authentication.
-// @Description
-// @Description  ## Request Format
-// @Description  Provide either `subject_id` or `subject_set` (not both).
-// @Description
-// @Description  ## Use Cases
-// @Description  - Verify user permissions before performing actions
-// @Description  - Implement fine-grained access control
-// @Description  - Check role-based permissions
-// @Tags         V1 Permissions
-// @Accept       json
-// @Produce      json
-// @Param        body body CheckPermissionRequest true "Permission check request"
-// @Success      200 {object} handlers.SuccessResponse{data=CheckPermissionResponse} "Permission check result"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation cannot be empty"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to check permission"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/permissions/check [post]
-// @ID           checkPermission
 func (h *PermissionsHandler) CheckPermission(ctx *gin.Context) {
 	logger.Logger.Debug("CheckPermission handler started")
 
@@ -196,31 +171,6 @@ type CreateRelationshipResponse struct {
 	Relationship keto.Relationship `json:"relationship" binding:"required"`
 }
 
-// CreateRelationship godoc
-// @Summary      Create relationship
-// @Description  Creates a new relationship tuple in Ory Keto.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires session authentication.
-// @Description
-// @Description  ## Request Format
-// @Description  Provide either `subject_id` or `subject_set` (not both).
-// @Description
-// @Description  ## Use Cases
-// @Description  - Link resources to tenants
-// @Description  - Assign users to projects
-// @Description  - Create permission relationships
-// @Tags         V1 Permissions
-// @Accept       json
-// @Produce      json
-// @Param        body body CreateRelationshipRequest true "Relationship creation request"
-// @Success      200 {object} handlers.SuccessResponse{data=CreateRelationshipResponse} "Relationship created successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation are required"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create relationship"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/permissions/relationships [post]
-// @ID           createRelationship
 func (h *PermissionsHandler) CreateRelationship(ctx *gin.Context) {
 	logger.Logger.Debug("CreateRelationship handler started")
 
@@ -331,31 +281,6 @@ type DeleteRelationshipResponse struct {
 	Message string `json:"message" binding:"required" example:"Relationship deleted successfully"`
 }
 
-// DeleteRelationship godoc
-// @Summary      Delete relationship
-// @Description  Deletes a relationship tuple from Ory Keto.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires session authentication.
-// @Description
-// @Description  ## Request Format
-// @Description  Provide either `subject_id` or `subject_set` (not both).
-// @Description
-// @Description  ## Use Cases
-// @Description  - Remove resource links from tenants
-// @Description  - Revoke user assignments from projects
-// @Description  - Delete permission relationships
-// @Tags         V1 Permissions
-// @Accept       json
-// @Produce      json
-// @Param        body body DeleteRelationshipRequest true "Relationship deletion request"
-// @Success      200 {object} handlers.SuccessResponse{data=DeleteRelationshipResponse} "Relationship deleted successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request body - namespace, object, and relation are required"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Not authenticated"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to delete relationship"
-// @Security     CookieAuth,SessionTokenAuth
-// @Router       /api/v1/permissions/relationships [delete]
-// @ID           deleteRelationship
 func (h *PermissionsHandler) DeleteRelationship(ctx *gin.Context) {
 	logger.Logger.Debug("DeleteRelationship handler started")
 

@@ -49,20 +49,6 @@ func NewStripeHandler(cfg *config.Config) *StripeHandler {
 	}
 }
 
-// GetSchema returns the JSON schema for Stripe configuration
-// @Summary      Get Stripe config schema
-// @Description  Returns the JSON schema definition for validating Stripe configuration files.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Validate configuration before upload
-// @Description  - IDE autocomplete support
-// @Description  - Generate configuration templates
-// @Tags         V1 Configuration
-// @Produce      application/schema+json
-// @Success      200 {object} object "JSON schema for Stripe configuration"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to load schema"
-// @Router       /api/v1/stripe/schema [get]
-// @ID           getStripeConfigSchema
 func (h *StripeHandler) GetSchema(ctx *gin.Context) {
 	logger.Logger.Debug("Fetching stripe config schema")
 
@@ -118,23 +104,6 @@ type StripeIDConversionResponse struct {
 	HistoryCount int `json:"history_count" binding:"required" example:"1"`
 }
 
-// GetConfig returns the public Stripe configuration
-// @Summary      Get public Stripe config
-// @Description  Returns the current Stripe configuration with public prices only (filters out enterprise prices).
-// @Description
-// @Description  ## Authentication
-// @Description  No authentication required for public endpoint.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Display pricing to users
-// @Description  - Build subscription selection UI
-// @Description  - Public pricing pages
-// @Tags         V1 Stripe
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=StripeConfigResponse} "Stripe configuration retrieved successfully"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to retrieve configuration"
-// @Router       /api/v1/stripe/config [get]
-// @ID           getStripeConfig
 func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 	logger.Logger.Info("Fetching public stripe config")
 
@@ -172,25 +141,6 @@ func (h *StripeHandler) GetConfig(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, response)
 }
 
-// GetConfigAdmin returns the full config including enterprise prices (requires admin auth)
-// @Summary      Get full Stripe config (admin)
-// @Description  Returns the complete Stripe configuration including all prices (both public and enterprise).
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Admin configuration management
-// @Description  - Enterprise pricing display
-// @Description  - Configuration auditing
-// @Tags         V1 Stripe
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=StripeConfigResponse} "Full Stripe configuration retrieved successfully"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to retrieve configuration"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config [get]
-// @ID           getStripeConfigAdmin
 func (h *StripeHandler) GetConfigAdmin(ctx *gin.Context) {
 	logger.Logger.Info("Fetching full stripe config (admin)")
 
@@ -247,27 +197,6 @@ type StripeConfigValidateRequest struct {
 	Products []interface{} `json:"products" binding:"required"`
 }
 
-// UpdateConfig updates the Stripe configuration
-// @Summary      Update Stripe config
-// @Description  Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Deploy new pricing
-// @Description  - Update product definitions
-// @Description  - Modify metered billing settings
-// @Tags         V1 Configuration
-// @Accept       json
-// @Produce      json
-// @Param        config body StripeConfigUpdateRequest true "Stripe configuration data"
-// @Success      200 {object} handlers.SuccessResponse "Configuration updated successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid configuration, validation errors, or configuration data is required"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config [post]
-// @ID           updateStripeConfig
 func (h *StripeHandler) UpdateConfig(ctx *gin.Context) {
 	logger.Logger.Info("Received Stripe config update request")
 	var configData models.StripeConfigData
@@ -339,27 +268,6 @@ type ConfigHistoryResponse struct {
 	Pagination ConfigHistoryPagination `json:"pagination" binding:"required"`
 }
 
-// GetConfigHistory returns the configuration history with pagination
-// @Summary      Get config history
-// @Description  Returns paginated history of all Stripe configurations.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Query Parameters
-// @Description  - limit: Items per page (default: 10, max: 100, min: 1)
-// @Description  - offset: Number of items to skip (default: 0, min: 0)
-// @Tags         V1 Configuration
-// @Produce      json
-// @Param        limit query int false "Items per page" default(10) minimum(1) maximum(100)
-// @Param        offset query int false "Items to skip" default(0) minimum(0)
-// @Success      200 {object} handlers.SuccessResponse{data=ConfigHistoryResponse} "Configuration history retrieved successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid limit/offset parameters or unknown query parameter"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to retrieve history"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config/history [get]
-// @ID           getStripeConfigHistory
 func (h *StripeHandler) GetConfigHistory(ctx *gin.Context) {
 	logger.Logger.Info("Fetching stripe config history")
 
@@ -524,27 +432,6 @@ func parsePositiveInt(str string, maxValue int) (int, error) {
 	return result, nil
 }
 
-// ValidateConfig validates a Stripe configuration without saving it
-// @Summary      Validate Stripe config
-// @Description  Validates a Stripe configuration against the schema without saving or deploying it.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Pre-deployment validation
-// @Description  - Configuration testing
-// @Description  - Schema compliance checking
-// @Tags         V1 Configuration
-// @Accept       json
-// @Produce      json
-// @Param        config body StripeConfigValidateRequest true "Stripe configuration to validate"
-// @Success      200 {object} handlers.SuccessResponse "Configuration is valid"
-// @Failure      400 {object} handlers.BadRequestResponse "Configuration validation failed or version is required"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config/validate [post]
-// @ID           validateStripeConfig
 func (h *StripeHandler) ValidateConfig(ctx *gin.Context) {
 	logger.Logger.Info("Validating stripe config")
 
@@ -721,28 +608,6 @@ type ArchiveAllResponse struct {
 	Warning *string `json:"warning,omitempty" example:"Some items failed to archive - see archive_errors for details"`
 }
 
-// ArchiveAllConfig archives all active Stripe resources
-// @Summary      Archive all Stripe config
-// @Description  Archives all active products, prices, and meters in Stripe and clears the local configuration.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires admin JWT token.
-// @Description
-// @Description  ## Warning
-// @Description  This is a destructive operation that will archive ALL active Stripe resources.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Clean slate for new configuration
-// @Description  - Remove all test data
-// @Description  - Reset Stripe account
-// @Tags         V1 Configuration
-// @Produce      json
-// @Success      200 {object} handlers.SuccessResponse{data=ArchiveAllResponse} "Archive operation completed"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing admin token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to archive resources"
-// @Security     ServiceKeyAuth
-// @Router       /api/v1/stripe/admin/config/archive-all [post]
-// @ID           archiveAllStripeConfig
 func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 	logger.Logger.Info("Starting archive all stripe config operation")
 
@@ -1177,26 +1042,6 @@ func (h *StripeHandler) filterPublicPrices(config models.StripeConfiguration) mo
 	return filtered
 }
 
-// ConvertStripeIDToConfigID converts a Stripe ID to a config ID
-// @Summary      Convert Stripe ID to config ID
-// @Description  Converts a Stripe ID (product, price, or meter) to the corresponding config ID.
-// @Description
-// @Description  ## Authentication
-// @Description  No authentication required for public endpoint.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Webhook processing
-// @Description  - Subscription mapping
-// @Description  - Price lookups
-// @Tags         V1 Stripe
-// @Produce      json
-// @Param        stripe_id path string true "Stripe ID to convert"
-// @Success      200 {object} handlers.SuccessResponse{data=StripeIDConversionResponse} "Config ID found"
-// @Failure      400 {object} handlers.BadRequestResponse "Missing Stripe ID"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "Mapping not found"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to retrieve mapping"
-// @Router       /api/v1/stripe/convert/stripe-id/{stripe_id} [get]
-// @ID           convertStripeIDToConfigID
 func (h *StripeHandler) ConvertStripeIDToConfigID(ctx *gin.Context) {
 	stripeID := ctx.Param("stripe_id")
 
