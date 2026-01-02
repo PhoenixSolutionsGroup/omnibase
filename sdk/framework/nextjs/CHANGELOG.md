@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.6.4...@omnibase/nextjs@0.6.5) (2026-01-02)
+
+
+### Bug Fixes
+
+* remove api_url from FlowRouterProps interface ([af58e1f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/af58e1f6c004db0e7e3550360472b8ccd21dba0c))
+
+
+
+
+
 ## [0.6.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.6.3...@omnibase/nextjs@0.6.4) (2026-01-02)
 
 
