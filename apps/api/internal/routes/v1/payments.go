@@ -15,6 +15,8 @@ func SetUpPaymentRoutes(router *gin.RouterGroup) {
 	paymentsMiddleware := middleware.NewPaymentsMiddleware(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
+	invoicesRouter := router.Group("invoices")
+
 	// Apply authentication middleware (session or service key + tenant ID)
 	router.Use(authMiddleware.RequireSessionOrServiceKey())
 
@@ -26,9 +28,18 @@ func SetUpPaymentRoutes(router *gin.RouterGroup) {
 	)
 
 	router.POST("/checkout", paymentHandler.CreateCheckout)
-
 	router.POST("/usage", paymentHandler.RecordUsage)
-
 	router.POST("/portal", paymentHandler.CreateCustomerPortal)
 
+	invoicesRouter.Use(authMiddleware.RequireServiceKey())
+	invoicesRouter.Use(
+		paymentsMiddleware.GetCustomerIDFromTenant(),
+		paymentsMiddleware.GetCustomerIDFromHeader(),
+	)
+
+	invoicesRouter.POST("", paymentHandler.CreateInvoice)
+	invoicesRouter.GET("/:invoice_id", paymentHandler.GetInvoice)
+	invoicesRouter.PATCH("/:invoice_id", paymentHandler.UpdateInvoice)
+	invoicesRouter.POST("/:invoice_id/items", paymentHandler.AddInvoiceLineItem)
+	invoicesRouter.POST("/:invoice_id/finalize", paymentHandler.FinalizeInvoice)
 }

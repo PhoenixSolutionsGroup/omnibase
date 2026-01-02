@@ -37,4 +37,12 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 	adminGroup.POST("/config/validate", stripeHandler.ValidateConfig)
 
 	adminGroup.POST("/config/archive-all", stripeHandler.ArchiveAllConfig)
+
+	// Webhook endpoints (under /config, requires service key auth)
+	configGroup := router.Group("/config")
+	configGroup.Use(authMiddleware.RequireAuthHeaders())
+	configGroup.Use(authMiddleware.RequireServiceKey())
+
+	configGroup.GET("/webhook", stripeHandler.GetWebhookSecret)
+	configGroup.POST("/webhooks", stripeHandler.ConfigureWebhooks)
 }

@@ -1240,3 +1240,137 @@ func (h *StripeHandler) ConvertStripeIDToConfigID(ctx *gin.Context) {
 
 	handlers.NewSuccessResponse(ctx, response)
 }
+
+// WebhookEndpointConfig represents a single webhook endpoint configuration
+type WebhookEndpointConfig struct {
+	ID      string   `json:"id,omitempty"`
+	URL     string   `json:"url" binding:"required"`
+	Events  []string `json:"events" binding:"required"`
+	Connect bool     `json:"connect,omitempty"`
+}
+
+// WebhooksConfigRequest represents the request to configure multiple webhook endpoints
+type WebhooksConfigRequest struct {
+	Webhooks []WebhookEndpointConfig `json:"webhooks" binding:"required"`
+}
+
+// WebhookResult represents the result for a single webhook configuration
+type WebhookResult struct {
+	ID       string   `json:"id,omitempty"`
+	StripeID string   `json:"stripe_id"`
+	URL      string   `json:"url"`
+	Events   []string `json:"events"`
+	Connect  bool     `json:"connect"`
+	Secret   string   `json:"secret"`
+	Action   string   `json:"action"`
+}
+
+// WebhooksConfigResponse represents the response for multiple webhook configurations
+type WebhooksConfigResponse struct {
+	Webhooks []WebhookResult `json:"webhooks"`
+}
+
+// WebhookSecretResponse represents the webhook secret response
+type WebhookSecretResponse struct {
+	ID        string   `json:"id"`
+	StripeID  string   `json:"stripe_id"`
+	URL       string   `json:"url"`
+	Secret    string   `json:"secret"`
+	Events    []string `json:"events"`
+	Connect   bool     `json:"connect"`
+	CreatedAt string   `json:"created_at,omitempty"`
+	UpdatedAt string   `json:"updated_at,omitempty"`
+}
+
+// ConfigureWebhooks creates or updates multiple webhook endpoints in Stripe
+func (h *StripeHandler) ConfigureWebhooks(ctx *gin.Context) {
+	logger.Logger.Info("Received webhooks configuration request")
+
+	var req WebhooksConfigRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid webhooks config request", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Invalid request format")
+		return
+	}
+
+	if len(req.Webhooks) == 0 {
+		handlers.NewBadRequestResponse(ctx, "At least one webhook is required")
+		return
+	}
+
+	// Validate each webhook and check for duplicate IDs
+	seenIDs := make(map[string]bool)
+	var webhookConfigs []models.WebhookEndpointConfig
+	for i, webhook := range req.Webhooks {
+		if webhook.URL == "" {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Webhook %d: URL is required", i))
+			return
+		}
+		if len(webhook.Events) == 0 {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Webhook %d: At least one event is required", i))
+			return
+		}
+		if webhook.ID != "" {
+			if seenIDs[webhook.ID] {
+				handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Duplicate webhook ID: %s", webhook.ID))
+				return
+			}
+			seenIDs[webhook.ID] = true
+		}
+		webhookConfigs = append(webhookConfigs, models.WebhookEndpointConfig{
+			ID:      webhook.ID,
+			URL:     webhook.URL,
+			Events:  webhook.Events,
+			Connect: webhook.Connect,
+		})
+	}
+
+	// Process all webhooks together
+	serviceResults, err := h.service.ProcessWebhooksConfig(webhookConfigs)
+	if err != nil {
+		logger.Logger.Error("Failed to configure webhooks", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to configure webhooks: %s", err))
+		return
+	}
+
+	// Convert service results to handler results
+	var results []WebhookResult
+	for i, result := range serviceResults {
+		results = append(results, WebhookResult{
+			ID:       req.Webhooks[i].ID,
+			StripeID: result.StripeID,
+			URL:      result.URL,
+			Events:   result.Events,
+			Connect:  result.Connect,
+			Secret:   result.Secret,
+			Action:   result.Action,
+		})
+	}
+
+	handlers.NewSuccessResponse(ctx, WebhooksConfigResponse{Webhooks: results})
+}
+
+// GetWebhookSecret retrieves the webhook signing secret
+func (h *StripeHandler) GetWebhookSecret(ctx *gin.Context) {
+	logger.Logger.Info("Retrieving webhook secret")
+
+	webhook, err := h.service.GetWebhookSecret()
+	if err != nil {
+		logger.Logger.Error("Failed to retrieve webhook secret", "error", err)
+		handlers.NewNotFoundResponse(ctx, "No webhook configured")
+		return
+	}
+
+	response := WebhookSecretResponse{
+		ID:        webhook.ID.String(),
+		StripeID:  webhook.StripeID,
+		URL:       webhook.URL,
+		Secret:    webhook.Secret,
+		Events:    webhook.Events,
+		Connect:   webhook.Connect,
+		CreatedAt: webhook.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		UpdatedAt: webhook.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	handlers.NewSuccessResponse(ctx, response)
+}

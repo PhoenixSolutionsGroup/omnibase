@@ -6,10 +6,12 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	services_v1 "api/internal/service/v1"
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stripe/stripe-go/v82"
 	"gorm.io/gorm"
 )
 
@@ -78,29 +80,70 @@ type CreatePortalResponse struct {
 	URL string `json:"url" binding:"required" example:"https://billing.stripe.com/session/live_..."`
 }
 
-// CreateCheckout creates a Stripe Checkout Session for subscription or one-time payments
-// @Summary      Create checkout session
-// @Description  Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
-// @Description
-// @Description  ## Authentication
-// @Description  Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.
-// @Description
-// @Description  ## Use Cases
-// @Description  - Subscription sign-ups
-// @Description  - One-time purchases
-// @Description  - Trial period checkouts
-// @Description  - Promotional code redemption
-// @Tags         V1 Payments
-// @Accept       json
-// @Produce      json
-// @Param        request body CreateCheckoutRequest true "Checkout session parameters"
-// @Success      200 {object} handlers.SuccessResponse{data=CreateCheckoutResponse} "Checkout session created successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request payload - price_id, success_url, and cancel_url cannot be empty"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      404 {object} handlers.NotFoundErrorResponse "No Stripe price mapping found for the provided price_id"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create checkout session"
-// @Router       /api/v1/payments/checkout [post]
-// @ID           createCheckout
+// CreateInvoiceRequest represents the request to create a new invoice
+type CreateInvoiceRequest struct {
+	// Three-letter ISO currency code (required)
+	Currency string `json:"currency" binding:"required,len=3" example:"usd"`
+	// Whether to auto-advance the invoice (send immediately after finalization)
+	AutoAdvance bool `json:"auto_advance" example:"false"`
+	// Optional description for the invoice
+	Description string `json:"description,omitempty" example:"Monthly platform fees"`
+	// Optional metadata key-value pairs
+	Metadata map[string]string `json:"metadata,omitempty"`
+}
+
+// UpdateInvoiceRequest represents the request to update an invoice
+type UpdateInvoiceRequest struct {
+	// Optional description to set on the invoice
+	Description *string `json:"description,omitempty" example:"Monthly subscription - January 2025"`
+	// Optional metadata key-value pairs to add
+	Metadata map[string]string `json:"metadata,omitempty"`
+}
+
+// AddInvoiceLineItemRequest represents the request to add a line item to an invoice
+type AddInvoiceLineItemRequest struct {
+	// Amount in cents (required)
+	Amount int64 `json:"amount" binding:"required" example:"1000"`
+	// Description for the line item (required)
+	Description string `json:"description" binding:"required,min=1" example:"Platform fee"`
+	// Three-letter ISO currency code (required)
+	Currency string `json:"currency" binding:"required,len=3" example:"usd"`
+}
+
+// FinalizeInvoiceRequest represents the request to finalize an invoice
+type FinalizeInvoiceRequest struct {
+	// Whether to auto-advance the invoice (send immediately)
+	AutoAdvance bool `json:"auto_advance" example:"true"`
+}
+
+// InvoiceResponse represents the invoice response
+type InvoiceResponse struct {
+	// Stripe Invoice ID
+	ID string `json:"id" binding:"required" example:"in_1234567890"`
+	// Invoice status
+	Status string `json:"status" binding:"required" example:"draft"`
+	// Total amount in cents
+	AmountDue int64 `json:"amount_due" example:"2000"`
+	// Currency
+	Currency string `json:"currency" example:"usd"`
+	// Customer ID
+	CustomerID string `json:"customer_id" example:"cus_1234567890"`
+	// Invoice PDF URL (if available)
+	InvoicePDF string `json:"invoice_pdf,omitempty" example:"https://pay.stripe.com/invoice/..."`
+	// Hosted invoice URL
+	HostedInvoiceURL string `json:"hosted_invoice_url,omitempty" example:"https://invoice.stripe.com/i/..."`
+}
+
+// InvoiceLineItemResponse represents the invoice line item response
+type InvoiceLineItemResponse struct {
+	// Stripe Invoice Item ID
+	ID string `json:"id" binding:"required" example:"ii_1234567890"`
+	// Amount in cents
+	Amount int64 `json:"amount" example:"1000"`
+	// Description
+	Description string `json:"description" example:"Platform fee"`
+}
+
 func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 	logger.Logger.Info("CreateCheckout handler started")
 	var req CreateCheckoutRequest
@@ -160,33 +203,6 @@ func (h *PaymentsHandler) CreateCheckout(ctx *gin.Context) {
 	})
 }
 
-// RecordUsage records metered billing usage for the authenticated customer
-// @Summary      Record metered usage
-// @Description  Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-// @Description
-// @Description  ## Prerequisites
-// @Description  - User must be authenticated
-// @Description  - Tenant must have a Stripe customer ID configured
-// @Description  - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
-// @Description
-// @Description  ## Use Cases
-// @Description  - API request metering
-// @Description  - Compute time tracking
-// @Description  - Storage usage recording
-// @Description  - Any metered billing scenario
-// @Tags         V1 Payments
-// @Accept       json
-// @Produce      json
-// @Param        request body RecordUsageRequest true "Usage event parameters"
-// @Success      200 {object} handlers.SuccessResponse "Usage recorded successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request, empty fields, or stripe_customer_id not found in context"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to record usage"
-// @Router       /api/v1/payments/usage [post]
-// @ID           recordUsage
 func (h *PaymentsHandler) RecordUsage(ctx *gin.Context) {
 	logger.Logger.Info("RecordUsage handler started")
 	var req RecordUsageRequest
@@ -216,33 +232,6 @@ func (h *PaymentsHandler) RecordUsage(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, nil)
 }
 
-// CreateCustomerPortal creates a Stripe Customer Portal session
-// @Summary      Create customer portal session
-// @Description  Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
-// @Description
-// @Description  ## Authentication
-// @Description  Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-// @Description
-// @Description  ## Prerequisites
-// @Description  - User must be authenticated
-// @Description  - Tenant must have a Stripe customer ID configured
-// @Description  - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
-// @Description
-// @Description  ## Use Cases
-// @Description  - Subscription management
-// @Description  - Payment method updates
-// @Description  - Invoice history viewing
-// @Description  - Subscription cancellation
-// @Tags         V1 Payments
-// @Accept       json
-// @Produce      json
-// @Param        request body CreatePortalRequest true "Portal session parameters"
-// @Success      200 {object} handlers.SuccessResponse{data=CreatePortalResponse} "Portal session created successfully"
-// @Failure      400 {object} handlers.BadRequestResponse "Invalid request, empty return_url, or stripe_customer_id not found in context"
-// @Failure      401 {object} handlers.UnauthorizedResponse "Invalid or missing JWT token"
-// @Failure      500 {object} handlers.InternalServerErrorResponse "Failed to create portal session"
-// @Router       /api/v1/payments/portal [post]
-// @ID           createCustomerPortal
 func (h *PaymentsHandler) CreateCustomerPortal(ctx *gin.Context) {
 	logger.Logger.Info("CreateCustomerPortal handler started")
 	var req CreatePortalRequest
@@ -271,5 +260,183 @@ func (h *PaymentsHandler) CreateCustomerPortal(ctx *gin.Context) {
 	logger.Logger.Info("Customer portal session created successfully", "customer_id", customerID.(string), "session_url", session.URL)
 	handlers.NewSuccessResponse(ctx, &CreatePortalResponse{
 		URL: session.URL,
+	})
+}
+
+func (h *PaymentsHandler) CreateInvoice(ctx *gin.Context) {
+	var req CreateInvoiceRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
+		return
+	}
+
+	customerID, exists := ctx.Get("stripe_customer_id")
+	if !exists || customerID == nil {
+		logger.Logger.Warn("Missing stripe_customer_id in context")
+		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
+		return
+	}
+
+	logger.Logger.Debug("Creating invoice", "customer_id", customerID.(string), "currency", req.Currency)
+	inv, err := h.stripe.CreateInvoice(customerID.(string), req.Currency, req.AutoAdvance, req.Description, req.Metadata)
+	if err != nil {
+		logger.Logger.Error("Failed to create invoice", "customer_id", customerID.(string), "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create invoice: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice created successfully", "invoice_id", inv.ID, "customer_id", customerID.(string))
+	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+		ID:               inv.ID,
+		Status:           string(inv.Status),
+		AmountDue:        inv.AmountDue,
+		Currency:         string(inv.Currency),
+		CustomerID:       inv.Customer.ID,
+		InvoicePDF:       inv.InvoicePDF,
+		HostedInvoiceURL: inv.HostedInvoiceURL,
+	})
+}
+
+func (h *PaymentsHandler) GetInvoice(ctx *gin.Context) {
+	invoiceID := ctx.Param("invoice_id")
+	if invoiceID == "" {
+		logger.Logger.Warn("Missing invoice_id parameter")
+		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
+		return
+	}
+
+	logger.Logger.Debug("Getting invoice", "invoice_id", invoiceID)
+	inv, err := h.stripe.GetInvoice(invoiceID)
+	if err != nil {
+		logger.Logger.Error("Failed to get invoice", "invoice_id", invoiceID, "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to get invoice: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice retrieved successfully", "invoice_id", invoiceID, "status", inv.Status)
+	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+		ID:               inv.ID,
+		Status:           string(inv.Status),
+		AmountDue:        inv.AmountDue,
+		Currency:         string(inv.Currency),
+		CustomerID:       inv.Customer.ID,
+		InvoicePDF:       inv.InvoicePDF,
+		HostedInvoiceURL: inv.HostedInvoiceURL,
+	})
+}
+
+func (h *PaymentsHandler) UpdateInvoice(ctx *gin.Context) {
+	invoiceID := ctx.Param("invoice_id")
+	if invoiceID == "" {
+		logger.Logger.Warn("Missing invoice_id parameter")
+		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
+		return
+	}
+
+	var req UpdateInvoiceRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
+		return
+	}
+
+	logger.Logger.Debug("Updating invoice", "invoice_id", invoiceID)
+	inv, err := h.stripe.UpdateInvoice(invoiceID, req.Description, req.Metadata)
+	if err != nil {
+		logger.Logger.Error("Failed to update invoice", "invoice_id", invoiceID, "error", err)
+		// Check if this is a Stripe validation error (e.g., trying to update a finalized invoice)
+		var stripeErr *stripe.Error
+		if errors.As(err, &stripeErr) && stripeErr.Type == stripe.ErrorTypeInvalidRequest {
+			handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+			return
+		}
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update invoice: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice updated successfully", "invoice_id", invoiceID)
+	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+		ID:               inv.ID,
+		Status:           string(inv.Status),
+		AmountDue:        inv.AmountDue,
+		Currency:         string(inv.Currency),
+		CustomerID:       inv.Customer.ID,
+		InvoicePDF:       inv.InvoicePDF,
+		HostedInvoiceURL: inv.HostedInvoiceURL,
+	})
+}
+
+func (h *PaymentsHandler) AddInvoiceLineItem(ctx *gin.Context) {
+	invoiceID := ctx.Param("invoice_id")
+	if invoiceID == "" {
+		logger.Logger.Warn("Missing invoice_id parameter")
+		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
+		return
+	}
+
+	var req AddInvoiceLineItemRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
+		return
+	}
+
+	// Get customer_id from middleware context
+	customerID, exists := ctx.Get("stripe_customer_id")
+	if !exists || customerID == nil {
+		logger.Logger.Warn("Missing stripe_customer_id in context")
+		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
+		return
+	}
+
+	logger.Logger.Debug("Adding invoice line item", "invoice_id", invoiceID, "amount", req.Amount, "currency", req.Currency)
+	item, err := h.stripe.AddInvoiceLineItem(invoiceID, customerID.(string), req.Amount, req.Currency, req.Description)
+	if err != nil {
+		logger.Logger.Error("Failed to add invoice line item", "invoice_id", invoiceID, "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to add invoice line item: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice line item added successfully", "invoice_id", invoiceID, "item_id", item.ID)
+	handlers.NewSuccessResponse(ctx, &InvoiceLineItemResponse{
+		ID:          item.ID,
+		Amount:      item.Amount,
+		Description: item.Description,
+	})
+}
+
+func (h *PaymentsHandler) FinalizeInvoice(ctx *gin.Context) {
+	invoiceID := ctx.Param("invoice_id")
+	if invoiceID == "" {
+		logger.Logger.Warn("Missing invoice_id parameter")
+		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
+		return
+	}
+
+	var req FinalizeInvoiceRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
+		return
+	}
+
+	logger.Logger.Debug("Finalizing invoice", "invoice_id", invoiceID, "auto_advance", req.AutoAdvance)
+	inv, err := h.stripe.FinalizeInvoice(invoiceID, req.AutoAdvance)
+	if err != nil {
+		logger.Logger.Error("Failed to finalize invoice", "invoice_id", invoiceID, "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to finalize invoice: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice finalized successfully", "invoice_id", invoiceID, "status", inv.Status)
+	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+		ID:               inv.ID,
+		Status:           string(inv.Status),
+		AmountDue:        inv.AmountDue,
+		Currency:         string(inv.Currency),
+		CustomerID:       inv.Customer.ID,
+		InvoicePDF:       inv.InvoicePDF,
+		HostedInvoiceURL: inv.HostedInvoiceURL,
 	})
 }

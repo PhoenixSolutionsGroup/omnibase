@@ -47,12 +47,45 @@ func (StripeConfig) TableName() string {
 	return "stripe.stripe_configs"
 }
 
+// StripeWebhook represents a stored webhook endpoint configuration
+type StripeWebhook struct {
+	ID        uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
+	StripeID  string         `json:"stripe_id" gorm:"not null;uniqueIndex" binding:"required"` // Stripe webhook endpoint ID (we_xxx)
+	URL       string         `json:"url" gorm:"not null" binding:"required"`
+	Secret    string         `json:"secret" gorm:"not null" binding:"required"` // Webhook signing secret (whsec_xxx)
+	Events    pq.StringArray `json:"events" gorm:"type:text[];not null;default:'{}'" binding:"required"`
+	Connect   bool           `json:"connect" gorm:"not null;default:false"` // If true, listens to connected account events
+	ConfigID  *uuid.UUID     `json:"config_id,omitempty" gorm:"type:uuid;index"` // Optional link to StripeConfig
+	CreatedAt time.Time      `json:"created_at" binding:"required"`
+	UpdatedAt time.Time      `json:"updated_at" binding:"required"`
+}
+
+func (StripeWebhook) TableName() string {
+	return "stripe.stripe_webhooks"
+}
+
+func (s *StripeWebhook) BeforeCreate(tx *gorm.DB) error {
+	if s.ID == uuid.Nil {
+		s.ID = uuid.New()
+	}
+	return nil
+}
+
 // Parsed configuration structs that match the JSON schema
 
 type StripeConfiguration struct {
-	Version  string    `json:"version" validate:"required"`
-	Meters   []Meter   `json:"meters,omitempty" validate:"dive"`
-	Products []Product `json:"products" validate:"required,dive"`
+	Version  string                  `json:"version" validate:"required"`
+	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty" validate:"dive"`
+	Meters   []Meter                 `json:"meters,omitempty" validate:"dive"`
+	Products []Product               `json:"products" validate:"required,dive"`
+}
+
+// WebhookEndpointConfig represents a single webhook endpoint configuration from the config file
+type WebhookEndpointConfig struct {
+	ID      string   `json:"id,omitempty"`
+	URL     string   `json:"url" validate:"required"`
+	Events  []string `json:"events" validate:"required,min=1"`
+	Connect bool     `json:"connect,omitempty"`
 }
 
 type Product struct {

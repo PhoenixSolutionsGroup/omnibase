@@ -14,6 +14,8 @@ import (
 	portalsession "github.com/stripe/stripe-go/v82/billingportal/session"
 	checkoutsession "github.com/stripe/stripe-go/v82/checkout/session"
 	"github.com/stripe/stripe-go/v82/customer"
+	"github.com/stripe/stripe-go/v82/invoice"
+	"github.com/stripe/stripe-go/v82/invoiceitem"
 	"github.com/stripe/stripe-go/v82/paymentmethod"
 	"github.com/stripe/stripe-go/v82/price"
 	"github.com/stripe/stripe-go/v82/product"
@@ -25,6 +27,13 @@ type StripeService struct {
 	accountID string
 	feePct    float64
 	db        *gorm.DB
+}
+
+// applyConnectAccount sets the Connect account ID on Stripe params if configured
+func (s *StripeService) applyConnectAccount(params interface{ SetStripeAccount(string) }) {
+	if s.accountID != "" {
+		params.SetStripeAccount(s.accountID)
+	}
 }
 
 func NewStripeService(cfg *config.Config, db *gorm.DB) *StripeService {
@@ -42,10 +51,7 @@ func (s *StripeService) CreateStripeCustomer(email, name string) (string, error)
 		Email: stripe.String(email),
 		Name:  stripe.String(name),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	customer, err := customer.New(params)
 	if err != nil {
@@ -62,10 +68,7 @@ func (s *StripeService) ArchiveStripeCustomer(customerID string) error {
 
 	params := &stripe.CustomerParams{}
 	params.AddMetadata("archived", "true")
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	_, err := customer.Update(customerID, params)
 	if err != nil {
@@ -138,17 +141,15 @@ func (s *StripeService) CreateCheckoutSession(
 
 	// Add platform fee if in Connect mode (managed hosting)
 	if s.accountID != "" && s.feePct > 0 {
-		params.SetStripeAccount(s.accountID)
+		s.applyConnectAccount(params)
 
 		if mode == "subscription" {
-			// For subscriptions - use percentage
-			params.SubscriptionData = &stripe.CheckoutSessionSubscriptionDataParams{
-				ApplicationFeePercent: stripe.Float64(s.feePct),
+			if params.SubscriptionData == nil {
+				params.SubscriptionData = &stripe.CheckoutSessionSubscriptionDataParams{}
 			}
+			params.SubscriptionData.ApplicationFeePercent = stripe.Float64(s.feePct)
 		} else if mode == "payment" {
-			// For one-time payments - calculate fixed fee amount
 			feeAmount := int64(float64(priceObj.UnitAmount) * (s.feePct / 100))
-
 			params.PaymentIntentData = &stripe.CheckoutSessionPaymentIntentDataParams{
 				ApplicationFeeAmount: stripe.Int64(feeAmount),
 			}
@@ -167,10 +168,7 @@ func (s *StripeService) RecordUsage(meterEventName string, customerID string, va
 		},
 		Timestamp: stripe.Int64(time.Now().Unix()),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	_, err := meterevent.New(params)
 	return err
@@ -181,11 +179,7 @@ func (s *StripeService) CreatePortalSession(customerID string, returnURL string)
 		Customer:  stripe.String(customerID),
 		ReturnURL: stripe.String(returnURL),
 	}
-
-	// Add Connect account if in managed mode
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	return portalsession.New(params)
 }
@@ -210,9 +204,7 @@ func (s *StripeService) GetStripeIDByConfigID(configID string) (string, error) {
 
 func (s *StripeService) getPrice(priceID string) (*stripe.Price, error) {
 	params := &stripe.PriceParams{}
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 	return price.Get(priceID, params)
 }
 
@@ -221,10 +213,7 @@ func (s *StripeService) ArchiveStripeProduct(productID string) error {
 	params := &stripe.ProductParams{
 		Active: stripe.Bool(false),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	_, err := product.Update(productID, params)
 	if err != nil {
@@ -239,10 +228,7 @@ func (s *StripeService) ArchiveStripePrice(priceID string) error {
 	params := &stripe.PriceParams{
 		Active: stripe.Bool(false),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	_, err := price.Update(priceID, params)
 	if err != nil {
@@ -256,10 +242,7 @@ func (s *StripeService) ArchiveStripePrice(priceID string) error {
 // Idempotent: returns success if meter is already deactivated
 func (s *StripeService) ArchiveStripeMeter(meterID string) error {
 	params := &stripe.BillingMeterDeactivateParams{}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	_, err := meter.Deactivate(meterID, params)
 	if err != nil {
@@ -300,15 +283,10 @@ func (s *StripeService) ArchiveStripeMeter(meterID string) error {
 // GetTenantActiveSubscriptions retrieves active subscriptions for a tenant
 // Returns subscriptions with config_price_id instead of stripe_price_id
 func (s *StripeService) GetTenantActiveSubscriptions(stripeCustomerID string) ([]models.SubscriptionResponse, error) {
-	// Remove status filter to get ALL subscriptions, then filter manually
-	// Stripe's status filter doesn't include trialing when set to "active"
 	params := &stripe.SubscriptionListParams{
 		Customer: stripe.String(stripeCustomerID),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	logger.Logger.Debug("Fetching subscriptions from Stripe",
 		"customer_id", stripeCustomerID,
@@ -421,10 +399,7 @@ func (s *StripeService) CheckBillingStatus(stripeCustomerID string) (bool, error
 		Customer: stripe.String(stripeCustomerID),
 		Type:     stripe.String("card"),
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	iter := paymentmethod.List(params)
 	hasCard := iter.Next() // Returns true if at least one card exists
@@ -453,10 +428,7 @@ func (s *StripeService) CreateSubscription(customerID string, priceID string) (*
 			},
 		},
 	}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	logger.Logger.Debug("Creating Stripe subscription",
 		"customer_id", customerID,
@@ -483,10 +455,7 @@ func (s *StripeService) CreateSubscription(customerID string, priceID string) (*
 // CancelSubscription cancels a Stripe subscription immediately
 func (s *StripeService) CancelSubscription(subscriptionID string) (*stripe.Subscription, error) {
 	params := &stripe.SubscriptionCancelParams{}
-
-	if s.accountID != "" {
-		params.SetStripeAccount(s.accountID)
-	}
+	s.applyConnectAccount(params)
 
 	logger.Logger.Debug("Canceling Stripe subscription immediately",
 		"subscription_id", subscriptionID,
@@ -505,4 +474,137 @@ func (s *StripeService) CancelSubscription(subscriptionID string) (*stripe.Subsc
 		"status", sub.Status)
 
 	return sub, nil
+}
+
+// CreateInvoice creates a new draft invoice for a customer
+func (s *StripeService) CreateInvoice(customerID string, currency string, autoAdvance bool, description string, metadata map[string]string) (*stripe.Invoice, error) {
+	params := &stripe.InvoiceParams{
+		Customer:    stripe.String(customerID),
+		Currency:    stripe.String(currency),
+		AutoAdvance: stripe.Bool(autoAdvance),
+	}
+
+	if description != "" {
+		params.Description = stripe.String(description)
+	}
+
+	if metadata != nil {
+		for k, v := range metadata {
+			params.AddMetadata(k, v)
+		}
+	}
+
+	s.applyConnectAccount(params)
+
+	inv, err := invoice.New(params)
+	if err != nil {
+		logger.Logger.Error("Failed to create invoice",
+			"customer_id", customerID,
+			"error", err)
+		return nil, fmt.Errorf("failed to create invoice: %w", err)
+	}
+
+	logger.Logger.Debug("Invoice created",
+		"invoice_id", inv.ID,
+		"customer_id", customerID)
+
+	return inv, nil
+}
+
+// GetInvoice retrieves an invoice by ID
+func (s *StripeService) GetInvoice(invoiceID string) (*stripe.Invoice, error) {
+	params := &stripe.InvoiceParams{}
+	s.applyConnectAccount(params)
+
+	inv, err := invoice.Get(invoiceID, params)
+	if err != nil {
+		logger.Logger.Error("Failed to get invoice",
+			"invoice_id", invoiceID,
+			"error", err)
+		return nil, fmt.Errorf("failed to get invoice: %w", err)
+	}
+
+	return inv, nil
+}
+
+// UpdateInvoice updates invoice description and metadata
+func (s *StripeService) UpdateInvoice(invoiceID string, description *string, metadata map[string]string) (*stripe.Invoice, error) {
+	params := &stripe.InvoiceParams{}
+	s.applyConnectAccount(params)
+
+	if description != nil {
+		params.Description = description
+	}
+
+	if metadata != nil {
+		for k, v := range metadata {
+			params.AddMetadata(k, v)
+		}
+	}
+
+	inv, err := invoice.Update(invoiceID, params)
+	if err != nil {
+		logger.Logger.Error("Failed to update invoice",
+			"invoice_id", invoiceID,
+			"error", err)
+		return nil, fmt.Errorf("failed to update invoice: %w", err)
+	}
+
+	logger.Logger.Debug("Invoice updated",
+		"invoice_id", invoiceID)
+
+	return inv, nil
+}
+
+// AddInvoiceLineItem adds a line item to a draft invoice
+func (s *StripeService) AddInvoiceLineItem(invoiceID string, customerID string, amount int64, currency string, description string) (*stripe.InvoiceItem, error) {
+	params := &stripe.InvoiceItemParams{
+		Customer:    stripe.String(customerID),
+		Invoice:     stripe.String(invoiceID),
+		Amount:      stripe.Int64(amount),
+		Currency:    stripe.String(currency),
+		Description: stripe.String(description),
+	}
+	s.applyConnectAccount(params)
+
+	item, err := invoiceitem.New(params)
+	if err != nil {
+		logger.Logger.Error("Failed to add invoice line item",
+			"invoice_id", invoiceID,
+			"customer_id", customerID,
+			"amount", amount,
+			"error", err)
+		return nil, fmt.Errorf("failed to add invoice line item: %w", err)
+	}
+
+	logger.Logger.Debug("Invoice line item added",
+		"invoice_id", invoiceID,
+		"item_id", item.ID,
+		"amount", amount)
+
+	return item, nil
+}
+
+// FinalizeInvoice finalizes a draft invoice (optionally auto-advances to send)
+func (s *StripeService) FinalizeInvoice(invoiceID string, autoAdvance bool) (*stripe.Invoice, error) {
+	params := &stripe.InvoiceFinalizeInvoiceParams{
+		AutoAdvance: stripe.Bool(autoAdvance),
+	}
+	s.applyConnectAccount(params)
+
+	inv, err := invoice.FinalizeInvoice(invoiceID, params)
+	if err != nil {
+		logger.Logger.Error("Failed to finalize invoice",
+			"invoice_id", invoiceID,
+			"auto_advance", autoAdvance,
+			"error", err)
+		return nil, fmt.Errorf("failed to finalize invoice: %w", err)
+	}
+
+	logger.Logger.Info("Invoice finalized",
+		"invoice_id", invoiceID,
+		"status", inv.Status,
+		"auto_advance", autoAdvance)
+
+	return inv, nil
 }
