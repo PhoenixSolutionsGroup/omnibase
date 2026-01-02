@@ -131,3 +131,304 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/invoices:
+    post:
+      operationId: createInvoice
+      summary: Create invoice
+      description: |
+        Creates a new draft invoice for the specified customer.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Use Cases
+        - Creating invoices for platform fees
+        - Manual billing scenarios
+        - Custom invoice generation
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/CreateInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/invoices/{invoice_id}:
+    get:
+      operationId: getInvoice
+      summary: Get invoice
+      description: |
+        Retrieves a Stripe invoice by its ID.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Use Cases
+        - Webhook processing
+        - Invoice status checking
+        - Invoice data retrieval
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      responses:
+        '200':
+          description: Invoice retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+    patch:
+      operationId: updateInvoice
+      summary: Update invoice
+      description: |
+        Updates a draft invoice's description and metadata.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding custom descriptions
+        - Adding metadata for tracking
+        - Customizing invoice before sending
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/UpdateInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/invoices/{invoice_id}/items:
+    post:
+      operationId: addInvoiceLineItem
+      summary: Add invoice line item
+      description: |
+        Adds a new line item to a draft invoice.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding platform fees
+        - Adding additional charges
+        - Custom billing line items
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/AddInvoiceLineItemRequest'
+      responses:
+        '200':
+          description: Line item added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/invoices/{invoice_id}/finalize:
+    post:
+      operationId: finalizeInvoice
+      summary: Finalize invoice
+      description: |
+        Finalizes a draft invoice, optionally auto-advancing to send it immediately.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Approving invoices for sending
+        - Completing invoice preparation
+        - Triggering invoice emails
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/FinalizeInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice finalized successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

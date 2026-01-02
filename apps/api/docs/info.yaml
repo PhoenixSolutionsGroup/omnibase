@@ -103,7 +103,19 @@ paths:
   
   /api/v1/payments/usage:
     $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1usage'
-  
+
+  /api/v1/payments/invoices:
+    $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices'
+
+  /api/v1/payments/invoices/{invoice_id}:
+    $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}'
+
+  /api/v1/payments/invoices/{invoice_id}/items:
+    $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}~1items'
+
+  /api/v1/payments/invoices/{invoice_id}/finalize:
+    $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}~1finalize'
+
   # Permissions endpoints
   /api/v1/permissions/check:
     $ref: './paths/permissions.yaml#/paths/~1api~1v1~1permissions~1check'
@@ -148,7 +160,13 @@ paths:
   
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1convert~1stripe-id~1{stripe_id}'
-  
+
+  /api/v1/stripe/config/webhook:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhook'
+
+  /api/v1/stripe/config/webhooks:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhooks'
+
   # Tenant endpoints
   /api/v1/tenants:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants'
@@ -210,3 +228,5 @@ tags:
     description: Stripe configuration and management endpoints
   - name: V1 Tenants
     description: Tenant organization management endpoints
+  - name: V1 Webhooks
+    description: Webhook configuration and management endpoints

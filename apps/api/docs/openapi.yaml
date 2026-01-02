@@ -50,6 +50,8 @@ tags:
     description: Stripe configuration and management endpoints
   - name: V1 Tenants
     description: Tenant organization management endpoints
+  - name: V1 Webhooks
+    description: Webhook configuration and management endpoints
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -733,6 +735,303 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/payments/invoices:
+    post:
+      operationId: createInvoice
+      summary: Create invoice
+      description: |
+        Creates a new draft invoice for the specified customer.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Use Cases
+        - Creating invoices for platform fees
+        - Manual billing scenarios
+        - Custom invoice generation
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/payments/invoices/{invoice_id}:
+    get:
+      operationId: getInvoice
+      summary: Get invoice
+      description: |
+        Retrieves a Stripe invoice by its ID.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Use Cases
+        - Webhook processing
+        - Invoice status checking
+        - Invoice data retrieval
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      responses:
+        '200':
+          description: Invoice retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      operationId: updateInvoice
+      summary: Update invoice
+      description: |
+        Updates a draft invoice's description and metadata.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding custom descriptions
+        - Adding metadata for tracking
+        - Customizing invoice before sending
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/payments/invoices/{invoice_id}/items:
+    post:
+      operationId: addInvoiceLineItem
+      summary: Add invoice line item
+      description: |
+        Adds a new line item to a draft invoice.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding platform fees
+        - Adding additional charges
+        - Custom billing line items
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddInvoiceLineItemRequest'
+      responses:
+        '200':
+          description: Line item added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceLineItemResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/payments/invoices/{invoice_id}/finalize:
+    post:
+      operationId: finalizeInvoice
+      summary: Finalize invoice
+      description: |
+        Finalizes a draft invoice, optionally auto-advancing to send it immediately.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Approving invoices for sending
+        - Completing invoice preparation
+        - Triggering invoice emails
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalizeInvoiceRequest'
+      responses:
+        '200':
+          description: Invoice finalized successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1764,6 +2063,115 @@ paths:
                 $ref: '#/components/schemas/NotFound'
         '500':
           description: Failed to retrieve mapping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/webhook:
+    get:
+      tags:
+        - V1 Webhooks
+      summary: Get webhook secret
+      description: |
+        Retrieves the webhook signing secret for the most recent webhook configuration.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Retrieve signing secret for webhook signature verification
+        - Debug webhook configuration
+      operationId: getWebhookSecret
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Webhook secret retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WebhookSecretResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: No webhook configured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve webhook secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/webhooks:
+    post:
+      tags:
+        - V1 Webhooks
+      summary: Configure multiple webhook endpoints
+      description: |
+        Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
+        Webhooks not in the request will be deleted.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Connect Webhooks
+        Each webhook can have `connect: true` to listen to events from connected accounts.
+
+        ## URL Interpolation
+        URLs support `${VAR}` environment variable interpolation when using the CLI.
+        The CLI resolves these before sending to the API.
+
+        ## Use Cases
+        - Configure multiple webhooks for different environments
+        - Set up both account and Connect webhooks
+        - Declarative webhook configuration management
+      operationId: configureWebhooks
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhooksConfigRequest'
+      responses:
+        '200':
+          description: Webhooks configured successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WebhooksConfigResponse'
+        '400':
+          description: Invalid request - validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to configure webhooks
           content:
             application/json:
               schema:
@@ -3728,6 +4136,142 @@ components:
           minLength: 1
           description: The usage value to record (required, cannot be empty)
           example: '100'
+    CurrencyCode:
+      type: string
+      description: Three-letter ISO currency code (lowercase)
+      enum:
+        - usd
+        - eur
+        - gbp
+        - cad
+        - aud
+        - jpy
+        - inr
+        - brl
+        - mxn
+        - sgd
+        - hkd
+        - nzd
+        - chf
+        - sek
+        - dkk
+        - nok
+        - pln
+        - czk
+        - ils
+        - zar
+      example: usd
+    CreateInvoiceRequest:
+      type: object
+      required:
+        - currency
+      properties:
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        auto_advance:
+          type: boolean
+          description: Whether to auto-advance the invoice (send immediately after finalization)
+          example: false
+        description:
+          type: string
+          description: Optional description for the invoice
+          example: Monthly platform fees
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Optional metadata key-value pairs
+    InvoiceResponse:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          description: Stripe Invoice ID
+          example: in_1234567890
+        status:
+          type: string
+          description: Invoice status
+          example: draft
+        amount_due:
+          type: integer
+          format: int64
+          description: Total amount in cents
+          example: 2000
+        currency:
+          type: string
+          description: Currency
+          example: usd
+        customer_id:
+          type: string
+          description: Customer ID
+          example: cus_1234567890
+        invoice_pdf:
+          type: string
+          description: Invoice PDF URL (if available)
+          example: https://pay.stripe.com/invoice/...
+        hosted_invoice_url:
+          type: string
+          description: Hosted invoice URL
+          example: https://invoice.stripe.com/i/...
+    UpdateInvoiceRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Optional description to set on the invoice
+          example: Monthly subscription - January 2025
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Optional metadata key-value pairs to add
+    AddInvoiceLineItemRequest:
+      type: object
+      required:
+        - amount
+        - description
+        - currency
+      properties:
+        amount:
+          type: integer
+          format: int64
+          description: Amount in cents (required)
+          example: 1000
+        description:
+          type: string
+          minLength: 1
+          description: Description for the line item (required)
+          example: Platform fee
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+    InvoiceLineItemResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Stripe Invoice Item ID
+          example: ii_1234567890
+        amount:
+          type: integer
+          format: int64
+          description: Amount in cents
+          example: 1000
+        description:
+          type: string
+          description: Description
+          example: Platform fee
+    FinalizeInvoiceRequest:
+      type: object
+      properties:
+        auto_advance:
+          type: boolean
+          description: Whether to auto-advance the invoice (send immediately)
+          example: true
     CheckPermissionRequestWithSubjectId:
       type: object
       description: Check permission request using a direct subject identifier
@@ -4178,31 +4722,6 @@ components:
           nullable: true
           description: Actual Stripe meter ID
           example: mtr_1SRiyyCJIZaBlhY1
-    CurrencyCode:
-      type: string
-      description: Three-letter ISO currency code (lowercase)
-      enum:
-        - usd
-        - eur
-        - gbp
-        - cad
-        - aud
-        - jpy
-        - inr
-        - brl
-        - mxn
-        - sgd
-        - hkd
-        - nzd
-        - chf
-        - sek
-        - dkk
-        - nok
-        - pln
-        - czk
-        - ils
-        - zar
-      example: usd
     BillingInterval:
       type: string
       description: Billing interval for recurring prices
@@ -4999,6 +5518,144 @@ components:
       required:
         - status
         - error
+    WebhookSecretResponse:
+      type: object
+      required:
+        - id
+        - stripe_id
+        - url
+        - secret
+        - events
+        - connect
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Internal webhook ID
+          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
+        stripe_id:
+          type: string
+          description: Stripe webhook endpoint ID
+          example: we_1SRiyyCJIZaBlhY1
+        url:
+          type: string
+          description: Webhook endpoint URL
+          example: https://example.com/webhooks/stripe
+        secret:
+          type: string
+          description: Webhook signing secret
+          example: whsec_xxx
+        events:
+          type: array
+          description: List of subscribed event types
+          items:
+            type: string
+        connect:
+          type: boolean
+          description: Whether webhook listens to connected account events
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+    WebhookEndpointConfig:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        id:
+          type: string
+          description: Optional unique identifier for the webhook endpoint
+          example: account_events
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL (supports ${VAR} env var interpolation via CLI)
+          example: https://example.com/webhooks/stripe
+        events:
+          type: array
+          minItems: 1
+          description: List of Stripe event types to subscribe to
+          items:
+            type: string
+          example:
+            - invoice.paid
+            - customer.subscription.created
+        connect:
+          type: boolean
+          default: false
+          description: If true, listen to events from connected accounts (Stripe Connect)
+          example: false
+    WebhooksConfigRequest:
+      type: object
+      required:
+        - webhooks
+      properties:
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
+    WebhookResult:
+      type: object
+      required:
+        - stripe_id
+        - url
+        - events
+        - connect
+        - secret
+        - action
+      properties:
+        id:
+          type: string
+          description: Internal webhook ID
+          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
+        stripe_id:
+          type: string
+          description: Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx)
+          example: we_1SRiyyCJIZaBlhY1
+        url:
+          type: string
+          description: Webhook endpoint URL
+          example: https://example.com/webhooks/stripe
+        events:
+          type: array
+          description: List of subscribed event types
+          items:
+            type: string
+          example:
+            - invoice.paid
+        connect:
+          type: boolean
+          description: Whether webhook listens to connected account events
+          example: false
+        secret:
+          type: string
+          description: Webhook signing secret for signature verification
+          example: whsec_xxx
+        action:
+          type: string
+          description: Action performed on the webhook
+          enum:
+            - created
+            - updated
+            - unchanged
+          example: created
+    WebhooksConfigResponse:
+      type: object
+      required:
+        - webhooks
+      properties:
+        webhooks:
+          type: array
+          description: List of configured webhook endpoints with results
+          items:
+            $ref: '#/components/schemas/WebhookResult'
     CreateTenantRequest:
       type: object
       description: Request to create a new tenant
