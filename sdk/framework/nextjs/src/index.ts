@@ -55,6 +55,4 @@
 
 // Re-export all functionality from sub-modules
 export * from "./auth";
-export * from "./tenants";
 export * from "./middleware";
-export * from "./permissions";

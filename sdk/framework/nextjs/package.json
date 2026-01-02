@@ -7,19 +7,19 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "tsup src/middleware/index.ts src/tenants/index.ts --format cjs,esm --dts",
+    "build": "tsup src/middleware/index.ts src/auth/index.ts --format cjs,esm --dts",
     "prepublishOnly": "bun run build"
   },
   "exports": {
     "./middleware": {
+      "types": "./dist/middleware/index.d.ts",
       "import": "./dist/middleware/index.js",
-      "require": "./dist/middleware/index.cjs",
-      "types": "./dist/middleware/index.d.ts"
+      "require": "./dist/middleware/index.cjs"
     },
-    "./tenants": {
-      "import": "./dist/tenants/index.js",
-      "require": "./dist/tenants/index.cjs",
-      "types": "./dist/tenants/index.d.ts"
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "import": "./dist/auth/index.js",
+      "require": "./dist/auth/index.cjs"
     }
   },
   "keywords": [
