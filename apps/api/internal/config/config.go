@@ -17,6 +17,7 @@ type Config struct {
 	ManagedHostingConfig ManagedHostingConfig
 	PostgRESTURL         string
 	JWTSecret            string
+	EncryptionMasterKey  string
 }
 
 type ManagedHostingConfig struct {
@@ -120,8 +121,9 @@ func New() *Config {
 			InternalServiceToken: os.Getenv("INTERNAL_SERVICE_TOKEN"),
 			TenantID:             getEnvOrDefault("MANAGED_TENANT_ID", "local"),
 		},
-		PostgRESTURL: getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
-		JWTSecret:    os.Getenv("JWT_SECRET"),
+		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
+		JWTSecret:           os.Getenv("JWT_SECRET"),
+		EncryptionMasterKey: os.Getenv("ENCRYPTION_MASTER_KEY"),
 	}
 }
 
