@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.9.17
+ * Service version: 0.9.18
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -414,6 +414,104 @@ export interface RecordUsageRequest {
 }
 
 /**
+ * Three-letter ISO currency code (lowercase)
+ */
+export type CurrencyCode = (typeof CurrencyCode)[keyof typeof CurrencyCode];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CurrencyCode = {
+  usd: "usd",
+  eur: "eur",
+  gbp: "gbp",
+  cad: "cad",
+  aud: "aud",
+  jpy: "jpy",
+  inr: "inr",
+  brl: "brl",
+  mxn: "mxn",
+  sgd: "sgd",
+  hkd: "hkd",
+  nzd: "nzd",
+  chf: "chf",
+  sek: "sek",
+  dkk: "dkk",
+  nok: "nok",
+  pln: "pln",
+  czk: "czk",
+  ils: "ils",
+  zar: "zar",
+} as const;
+
+/**
+ * Optional metadata key-value pairs
+ */
+export type CreateInvoiceRequestMetadata = { [key: string]: string };
+
+export interface CreateInvoiceRequest {
+  currency: CurrencyCode;
+  /** Whether to auto-advance the invoice (send immediately after finalization) */
+  auto_advance?: boolean;
+  /** Optional description for the invoice */
+  description?: string;
+  /** Optional metadata key-value pairs */
+  metadata?: CreateInvoiceRequestMetadata;
+}
+
+export interface InvoiceResponse {
+  /** Stripe Invoice ID */
+  id: string;
+  /** Invoice status */
+  status: string;
+  /** Total amount in cents */
+  amount_due?: number;
+  /** Currency */
+  currency?: string;
+  /** Customer ID */
+  customer_id?: string;
+  /** Invoice PDF URL (if available) */
+  invoice_pdf?: string;
+  /** Hosted invoice URL */
+  hosted_invoice_url?: string;
+}
+
+/**
+ * Optional metadata key-value pairs to add
+ */
+export type UpdateInvoiceRequestMetadata = { [key: string]: string };
+
+export interface UpdateInvoiceRequest {
+  /** Optional description to set on the invoice */
+  description?: string;
+  /** Optional metadata key-value pairs to add */
+  metadata?: UpdateInvoiceRequestMetadata;
+}
+
+export interface AddInvoiceLineItemRequest {
+  /** Amount in cents (required) */
+  amount: number;
+  /**
+   * Description for the line item (required)
+   * @minLength 1
+   */
+  description: string;
+  currency: CurrencyCode;
+}
+
+export interface InvoiceLineItemResponse {
+  /** Stripe Invoice Item ID */
+  id: string;
+  /** Amount in cents */
+  amount?: number;
+  /** Description */
+  description?: string;
+}
+
+export interface FinalizeInvoiceRequest {
+  /** Whether to auto-advance the invoice (send immediately) */
+  auto_advance?: boolean;
+}
+
+/**
  * Check permission request using a direct subject identifier
  */
 export interface CheckPermissionRequestWithSubjectId {
@@ -762,35 +860,6 @@ export interface MeterWithStripeID {
    */
   stripe_id?: string | null;
 }
-
-/**
- * Three-letter ISO currency code (lowercase)
- */
-export type CurrencyCode = (typeof CurrencyCode)[keyof typeof CurrencyCode];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CurrencyCode = {
-  usd: "usd",
-  eur: "eur",
-  gbp: "gbp",
-  cad: "cad",
-  aud: "aud",
-  jpy: "jpy",
-  inr: "inr",
-  brl: "brl",
-  mxn: "mxn",
-  sgd: "sgd",
-  hkd: "hkd",
-  nzd: "nzd",
-  chf: "chf",
-  sek: "sek",
-  dkk: "dkk",
-  nok: "nok",
-  pln: "pln",
-  czk: "czk",
-  ils: "ils",
-  zar: "zar",
-} as const;
 
 /**
  * Billing interval for recurring prices
@@ -1410,6 +1479,79 @@ export interface NotFound {
   error: string;
 }
 
+export interface WebhookSecretResponse {
+  /** Internal webhook ID */
+  id: string;
+  /** Stripe webhook endpoint ID */
+  stripe_id: string;
+  /** Webhook endpoint URL */
+  url: string;
+  /** Webhook signing secret */
+  secret: string;
+  /** List of subscribed event types */
+  events: string[];
+  /** Whether webhook listens to connected account events */
+  connect: boolean;
+  /** Creation timestamp */
+  created_at?: string;
+  /** Last update timestamp */
+  updated_at?: string;
+}
+
+export interface WebhookEndpointConfig {
+  /** Optional unique identifier for the webhook endpoint */
+  id?: string;
+  /** Webhook endpoint URL (supports ${VAR} env var interpolation via CLI) */
+  url: string;
+  /**
+   * List of Stripe event types to subscribe to
+   * @minItems 1
+   */
+  events: string[];
+  /** If true, listen to events from connected accounts (Stripe Connect) */
+  connect?: boolean;
+}
+
+export interface WebhooksConfigRequest {
+  /** List of webhook endpoint configurations */
+  webhooks: WebhookEndpointConfig[];
+}
+
+/**
+ * Action performed on the webhook
+ */
+export type WebhookResultAction =
+  (typeof WebhookResultAction)[keyof typeof WebhookResultAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WebhookResultAction = {
+  created: "created",
+  updated: "updated",
+  unchanged: "unchanged",
+} as const;
+
+export interface WebhookResult {
+  /** Internal webhook ID */
+  id?: string;
+  /** Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx) */
+  stripe_id: string;
+  /** Webhook endpoint URL */
+  url: string;
+  /** List of subscribed event types */
+  events: string[];
+  /** Whether webhook listens to connected account events */
+  connect: boolean;
+  /** Webhook signing secret for signature verification */
+  secret: string;
+  /** Action performed on the webhook */
+  action: WebhookResultAction;
+}
+
+export interface WebhooksConfigResponse {
+  /** List of configured webhook endpoints with results */
+  webhooks: WebhookResult[];
+}
+
 /**
  * Request to create a new tenant
  */
@@ -1911,6 +2053,88 @@ export type CreateCustomerPortal200AllOf = {
 export type CreateCustomerPortal200 = SuccessResponse &
   CreateCustomerPortal200AllOf;
 
+export type CreateInvoiceHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+  /**
+   * Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+   */
+  "X-Stripe-Customer-Id"?: string;
+};
+
+export type CreateInvoice200AllOf = {
+  data?: InvoiceResponse;
+};
+
+export type CreateInvoice200 = SuccessResponse & CreateInvoice200AllOf;
+
+export type GetInvoiceHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+};
+
+export type GetInvoice200AllOf = {
+  data?: InvoiceResponse;
+};
+
+export type GetInvoice200 = SuccessResponse & GetInvoice200AllOf;
+
+export type UpdateInvoiceHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+};
+
+export type UpdateInvoice200AllOf = {
+  data?: InvoiceResponse;
+};
+
+export type UpdateInvoice200 = SuccessResponse & UpdateInvoice200AllOf;
+
+export type AddInvoiceLineItemHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+  /**
+   * Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+   */
+  "X-Stripe-Customer-Id"?: string;
+};
+
+export type AddInvoiceLineItem200AllOf = {
+  data?: InvoiceLineItemResponse;
+};
+
+export type AddInvoiceLineItem200 = SuccessResponse &
+  AddInvoiceLineItem200AllOf;
+
+export type FinalizeInvoiceHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+};
+
+export type FinalizeInvoice200AllOf = {
+  data?: InvoiceResponse;
+};
+
+export type FinalizeInvoice200 = SuccessResponse & FinalizeInvoice200AllOf;
+
 export type CheckPermission200AllOf = {
   data?: CheckPermissionResponse;
 };
@@ -2061,6 +2285,18 @@ export type ConvertStripeIDToConfigID200AllOf = {
 
 export type ConvertStripeIDToConfigID200 = SuccessResponse &
   ConvertStripeIDToConfigID200AllOf;
+
+export type GetWebhookSecret200AllOf = {
+  data?: WebhookSecretResponse;
+};
+
+export type GetWebhookSecret200 = SuccessResponse & GetWebhookSecret200AllOf;
+
+export type ConfigureWebhooks200AllOf = {
+  data?: WebhooksConfigResponse;
+};
+
+export type ConfigureWebhooks200 = SuccessResponse & ConfigureWebhooks200AllOf;
 
 export type CreateTenantHeaders = {
   /**
@@ -3066,6 +3302,320 @@ Requires cookie authentication with an associated Stripe customer ID (set via pa
   }
 
   /**
+ * Creates a new draft invoice for the specified customer.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Use Cases
+- Creating invoices for platform fees
+- Manual billing scenarios
+- Custom invoice generation
+
+ * @summary Create invoice
+ */
+  createInvoice(
+    createInvoiceRequest: CreateInvoiceRequest,
+    headers: CreateInvoiceHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: CreateInvoice200;
+  } {
+    const url = new URL(this.cleanBaseUrl + `/api/v1/payments/invoices`);
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(createInvoiceRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ])
+          ),
+        },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Retrieves a Stripe invoice by its ID.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Use Cases
+- Webhook processing
+- Invoice status checking
+- Invoice data retrieval
+
+ * @summary Get invoice
+ */
+  getInvoice(
+    invoiceId: string,
+    headers: GetInvoiceHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: GetInvoice200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/payments/invoices/${invoiceId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request("GET", url.toString(), undefined, {
+      ...mergedRequestParameters,
+      headers: {
+        ...mergedRequestParameters?.headers,
+        // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+        ...Object.fromEntries(
+          Object.entries(headers || {}).map(([key, value]) => [
+            key,
+            String(value),
+          ])
+        ),
+      },
+    });
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Updates a draft invoice's description and metadata.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding custom descriptions
+- Adding metadata for tracking
+- Customizing invoice before sending
+
+ * @summary Update invoice
+ */
+  updateInvoice(
+    invoiceId: string,
+    updateInvoiceRequest: UpdateInvoiceRequest,
+    headers: UpdateInvoiceHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: UpdateInvoice200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/payments/invoices/${invoiceId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "PATCH",
+      url.toString(),
+      JSON.stringify(updateInvoiceRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ])
+          ),
+        },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Adds a new line item to a draft invoice.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding platform fees
+- Adding additional charges
+- Custom billing line items
+
+ * @summary Add invoice line item
+ */
+  addInvoiceLineItem(
+    invoiceId: string,
+    addInvoiceLineItemRequest: AddInvoiceLineItemRequest,
+    headers: AddInvoiceLineItemHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: AddInvoiceLineItem200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/payments/invoices/${invoiceId}/items`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(addInvoiceLineItemRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ])
+          ),
+        },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Finalizes a draft invoice, optionally auto-advancing to send it immediately.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Approving invoices for sending
+- Completing invoice preparation
+- Triggering invoice emails
+
+ * @summary Finalize invoice
+ */
+  finalizeInvoice(
+    invoiceId: string,
+    finalizeInvoiceRequest: FinalizeInvoiceRequest,
+    headers: FinalizeInvoiceHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: FinalizeInvoice200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/payments/invoices/${invoiceId}/finalize`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(finalizeInvoiceRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ])
+          ),
+        },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
  * Checks if a subject has a specific permission on an object using Ory Keto.
 
 ## Authentication
@@ -3881,6 +4431,104 @@ No authentication required for public endpoint.
       url.toString(),
       undefined,
       mergedRequestParameters
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Retrieves the webhook signing secret for the most recent webhook configuration.
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- Retrieve signing secret for webhook signature verification
+- Debug webhook configuration
+
+ * @summary Get webhook secret
+ */
+  getWebhookSecret(requestParameters?: Params): {
+    response: Response;
+    data: GetWebhookSecret200;
+  } {
+    const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/config/webhook`);
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
+Webhooks not in the request will be deleted.
+
+## Authentication
+Requires service key authentication.
+
+## Connect Webhooks
+Each webhook can have `connect: true` to listen to events from connected accounts.
+
+## URL Interpolation
+URLs support `${VAR}` environment variable interpolation when using the CLI.
+The CLI resolves these before sending to the API.
+
+## Use Cases
+- Configure multiple webhooks for different environments
+- Set up both account and Connect webhooks
+- Declarative webhook configuration management
+
+ * @summary Configure multiple webhook endpoints
+ */
+  configureWebhooks(
+    webhooksConfigRequest: WebhooksConfigRequest,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: ConfigureWebhooks200;
+  } {
+    const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/config/webhooks`);
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(webhooksConfigRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+        },
+      }
     );
     let data;
 
