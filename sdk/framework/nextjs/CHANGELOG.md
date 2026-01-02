@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.6.3...@omnibase/nextjs@0.6.4) (2026-01-02)
+
+
+### Bug Fixes
+
+* env var issues ([bdfe006](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bdfe006ab5823f1b5595301dea2c049c55c51553))
+
+
+
+
+
 ## [0.6.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/@omnibase/nextjs@0.6.2...@omnibase/nextjs@0.6.3) (2026-01-02)
 
 **Note:** Version bump only for package @omnibase/nextjs
