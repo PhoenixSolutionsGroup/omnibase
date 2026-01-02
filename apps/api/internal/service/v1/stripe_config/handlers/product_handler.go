@@ -112,11 +112,7 @@ func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uu
 		productParams.Type = stripe.String(productConfig.Type)
 	}
 
-	// Add Connect account if in managed mode
-	if h.accountID != "" {
-		productParams.SetStripeAccount(h.accountID)
-		logger.Logger.Debug("Using Stripe Connect account", "accountID", h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, productParams)
 
 	logger.Logger.Info("Making Stripe API call to create product", "productID", productConfig.ID)
 	stripeProduct, err := product.New(productParams)
@@ -196,10 +192,7 @@ func (h *ProductHandler) UpdateProduct(update models.ProductUpdate, configID uui
 			details = append(details, "Updated description")
 		}
 
-		// Add Connect account if in managed mode
-		if h.accountID != "" {
-			updateParams.SetStripeAccount(h.accountID)
-		}
+		ApplyConnectAccount(h.accountID, updateParams)
 
 		logger.Logger.Info("Making Stripe API call to update product", "productID", update.ID)
 		_, err := product.Update(update.ID, updateParams)
@@ -234,9 +227,7 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 
 	// First get the product to retrieve its name
 	getParams := &stripe.ProductParams{}
-	if h.accountID != "" {
-		getParams.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, getParams)
 	logger.Logger.Debug("Getting product details before archival", "productID", productID)
 	stripeProduct, err := product.Get(productID, getParams)
 	if err != nil {
@@ -248,9 +239,7 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 	archiveParams := &stripe.ProductParams{
 		Active: stripe.Bool(false),
 	}
-	if h.accountID != "" {
-		archiveParams.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, archiveParams)
 
 	logger.Logger.Info("Making Stripe API call to archive product", "productID", productID)
 	_, err = product.Update(productID, archiveParams)
@@ -300,10 +289,7 @@ func (h *ProductHandler) unarchiveExistingProduct(productConfig models.Product, 
 		updateParams.Description = stripe.String(productConfig.Description)
 	}
 
-	// Add Connect account if in managed mode
-	if h.accountID != "" {
-		updateParams.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, updateParams)
 
 	logger.Logger.Info("Making Stripe API call to unarchive product", "productID", productConfig.ID)
 	stripeProduct, err := product.Update(productConfig.ID, updateParams)

@@ -104,11 +104,7 @@ func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, mete
 		}
 	}
 
-	// Add Connect account if in managed mode
-	if h.accountID != "" {
-		params.SetStripeAccount(h.accountID)
-		logger.Logger.Debug("Using Stripe Connect account", "accountID", h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, params)
 
 	logger.Logger.Info("Making Stripe API call to create meter", "meterID", meterConfig.ID)
 	result, err := meter.New(params)
@@ -135,9 +131,7 @@ func (h *MeterHandler) GetMeter(ctx context.Context, stripeID string) (*stripe.B
 	logger.Logger.Debug("Getting Stripe meter", "stripeID", stripeID)
 
 	params := &stripe.BillingMeterParams{}
-	if h.accountID != "" {
-		params.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, params)
 
 	logger.Logger.Info("Making Stripe API call to get meter", "stripeID", stripeID)
 	result, err := meter.Get(stripeID, params)
@@ -157,11 +151,7 @@ func (h *MeterHandler) UpdateMeter(ctx context.Context, stripeID string, meterCo
 	params := &stripe.BillingMeterParams{
 		DisplayName: stripe.String(meterConfig.DisplayName),
 	}
-
-	// Add Connect account if in managed mode
-	if h.accountID != "" {
-		params.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, params)
 
 	logger.Logger.Info("Making Stripe API call to update meter", "stripeID", stripeID)
 	_, err := meter.Update(stripeID, params)
@@ -179,9 +169,7 @@ func (h *MeterHandler) ListMeters(ctx context.Context) ([]*stripe.BillingMeter, 
 	logger.Logger.Debug("Listing Stripe meters")
 
 	params := &stripe.BillingMeterListParams{}
-	if h.accountID != "" {
-		params.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, params)
 
 	logger.Logger.Info("Making Stripe API call to list meters")
 	var meters []*stripe.BillingMeter
@@ -211,9 +199,7 @@ func (h *MeterHandler) DeactivateMeter(ctx context.Context, stripeID string) (*m
 	}
 
 	params := &stripe.BillingMeterDeactivateParams{}
-	if h.accountID != "" {
-		params.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, params)
 
 	logger.Logger.Info("Making Stripe API call to deactivate meter", "stripeID", stripeID)
 	_, err = meter.Deactivate(stripeID, params)

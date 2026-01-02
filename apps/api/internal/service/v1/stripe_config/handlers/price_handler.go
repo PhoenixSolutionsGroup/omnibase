@@ -181,10 +181,7 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 			}
 		}
 
-		// Add Connect account if in managed mode
-		if h.accountID != "" {
-			priceParams.SetStripeAccount(h.accountID)
-		}
+		ApplyConnectAccount(h.accountID, priceParams)
 
 		logger.Logger.Info("Making Stripe API call to create price",
 			"priceID", priceConfig.ID,
@@ -215,9 +212,7 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 			defaultParams := &stripe.ProductParams{
 				DefaultPrice: stripe.String(stripePrice.ID),
 			}
-			if h.accountID != "" {
-				defaultParams.SetStripeAccount(h.accountID)
-			}
+			ApplyConnectAccount(h.accountID, defaultParams)
 			_, err := product.Update(stripeProductID, defaultParams)
 			if err != nil {
 				logger.Logger.Error("Failed to set default price", "error", err, "priceID", priceConfig.ID)
@@ -379,10 +374,7 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 		}
 	}
 
-	// Add Connect account if in managed mode
-	if h.accountID != "" {
-		priceParams.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, priceParams)
 
 	logger.Logger.Info("Making Stripe API call to create price", "priceID", priceConfig.ID, "productID", productID)
 	stripePrice, err := price.New(priceParams)
@@ -406,9 +398,7 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 		defaultParams := &stripe.ProductParams{
 			DefaultPrice: stripe.String(stripePrice.ID),
 		}
-		if h.accountID != "" {
-			defaultParams.SetStripeAccount(h.accountID)
-		}
+		ApplyConnectAccount(h.accountID, defaultParams)
 		_, err := product.Update(productID, defaultParams)
 		if err != nil {
 			logger.Logger.Error("Failed to set default price", "error", err, "priceID", priceConfig.ID)
@@ -444,9 +434,7 @@ func (h *PriceHandler) ArchivePrice(priceConfigID string) error {
 	archiveParams := &stripe.PriceParams{
 		Active: stripe.Bool(false),
 	}
-	if h.accountID != "" {
-		archiveParams.SetStripeAccount(h.accountID)
-	}
+	ApplyConnectAccount(h.accountID, archiveParams)
 
 	logger.Logger.Info("Making Stripe API call to archive price", "stripeID", actualStripeID)
 	_, err = price.Update(actualStripeID, archiveParams)

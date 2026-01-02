@@ -79,6 +79,15 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 
 	logger.Logger.Debug("Configuration parsed successfully", "version", config.Version, "productCount", len(config.Products), "meterCount", len(config.Meters))
 
+	// Validate webhooks if present
+	if len(config.Webhooks) > 0 {
+		if err := v.validateWebhooks(config.Webhooks); err != nil {
+			logger.Logger.Error("Webhooks validation failed", "error", err)
+			return nil, fmt.Errorf("webhooks validation failed: %w", err)
+		}
+		logger.Logger.Debug("Webhooks validated successfully", "count", len(config.Webhooks))
+	}
+
 	// Validate meters if present
 	for i, meter := range config.Meters {
 		if err := v.validateMeter(meter); err != nil {
@@ -291,4 +300,52 @@ func (v *Validator) isValidAggregationFormula(formula string) bool {
 		}
 	}
 	return false
+}
+
+// validateWebhooks validates the webhooks array configuration
+func (v *Validator) validateWebhooks(webhooks []models.WebhookEndpointConfig) error {
+	logger.Logger.Trace("Validating webhooks configuration", "count", len(webhooks))
+
+	seenIDs := make(map[string]bool)
+	seenURLs := make(map[string]bool)
+
+	for i, webhook := range webhooks {
+		// Validate URL is required
+		if webhook.URL == "" {
+			return fmt.Errorf("webhook %d: url is required", i)
+		}
+
+		// Check for duplicate URLs
+		if seenURLs[webhook.URL] {
+			return fmt.Errorf("webhook %d: duplicate URL %s", i, webhook.URL)
+		}
+		seenURLs[webhook.URL] = true
+
+		// Validate ID uniqueness if provided
+		if webhook.ID != "" {
+			if seenIDs[webhook.ID] {
+				return fmt.Errorf("webhook %d: duplicate ID %s", i, webhook.ID)
+			}
+			seenIDs[webhook.ID] = true
+		}
+
+		// Validate events
+		if len(webhook.Events) == 0 {
+			return fmt.Errorf("webhook %d: at least one event is required", i)
+		}
+
+		// Check for duplicate events within this webhook
+		eventsSeen := make(map[string]bool)
+		for _, event := range webhook.Events {
+			if event == "" {
+				return fmt.Errorf("webhook %d: event cannot be empty", i)
+			}
+			if eventsSeen[event] {
+				return fmt.Errorf("webhook %d: duplicate event %s", i, event)
+			}
+			eventsSeen[event] = true
+		}
+	}
+
+	return nil
 }
