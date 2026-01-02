@@ -1,3 +1,6 @@
+// Must be first import - configures NEXT_PUBLIC_ORY_SDK_URL before @ory/* imports
+import "./config";
+
 /**
  * Authentication module for Next.js
  *

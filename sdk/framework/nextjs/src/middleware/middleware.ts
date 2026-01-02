@@ -102,12 +102,6 @@ export const createOmniBaseMiddleware = (
   api_url: string,
   config: OmnibaseMiddlewareConfig = defaultConfig
 ) => {
-  const authProxyUrl = `${api_url.replace(/\/$/, "")}/api/v1/auth/proxy`;
-
-  if (typeof globalThis !== "undefined" && !process.env.NEXT_PUBLIC_ORY_SDK_URL) {
-    process.env.NEXT_PUBLIC_ORY_SDK_URL = authProxyUrl;
-  }
-
   const oryMiddleware = createOryMiddleware({});
   return async (req: NextRequest) => {
     const session = await getServerSession();
