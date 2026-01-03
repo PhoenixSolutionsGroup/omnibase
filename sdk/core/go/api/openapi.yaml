@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.10.1
+  version: 0.10.2
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -905,6 +905,92 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Add invoice line item
+      tags:
+      - V1 Payments
+  /api/v1/payments/invoices/{invoice_id}/items/price:
+    post:
+      description: |
+        Adds a new line item to a draft invoice using a price ID and quantity.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Price ID Resolution
+        You must provide ONE of:
+        - `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
+        - `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding metered usage line items
+        - Adding subscription-based charges
+        - Billing for compute hours, storage, etc.
+      operationId: addInvoiceLineItemWithPriceId
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Used to look up the Stripe customer ID from
+          tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: "Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer.\
+          \ Required if X-Tenant-Id is not provided."
+        explode: false
+        in: header
+        name: X-Stripe-Customer-Id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Stripe Invoice ID
+        explode: false
+        in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddInvoiceLineItemWithPriceIDRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addInvoiceLineItem_200_response"
+          description: Line item added successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Add invoice line item with price ID
       tags:
       - V1 Payments
   /api/v1/payments/invoices/{invoice_id}/finalize:
@@ -4332,6 +4418,46 @@ components:
           type: string
       required:
       - id
+    AddInvoiceLineItemWithPriceIDRequest:
+      example:
+        metadata:
+          key: metadata
+        quantity: 720
+        price_id: hetzner_cx23_nbg1_hourly
+        description: VPS Compute - 720 hours
+        currency: usd
+        stripe_price_id: price_1ABC123
+      properties:
+        price_id:
+          description: "Config price ID (e.g., \"hetzner_cx23_nbg1_hourly\") - looked\
+            \ up via GetStripeIDByConfigID. Provide either this or stripe_price_id."
+          example: hetzner_cx23_nbg1_hourly
+          type: string
+        stripe_price_id:
+          description: "Raw Stripe price ID (e.g., \"price_1ABC...\") - used directly.\
+            \ Provide either this or price_id."
+          example: price_1ABC123
+          type: string
+        quantity:
+          description: Quantity of units (required)
+          example: 720
+          format: int64
+          type: integer
+        description:
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+          minLength: 1
+          type: string
+        currency:
+          $ref: "#/components/schemas/CurrencyCode"
+        metadata:
+          additionalProperties:
+            type: string
+          description: Optional metadata key-value pairs
+      required:
+      - currency
+      - description
+      - quantity
     FinalizeInvoiceRequest:
       example:
         auto_advance: true

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.10.1
+API version: 0.10.2
 Contact: support@omnibase.dev
 */
 
@@ -184,6 +184,216 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiAddInvoiceLineItemWithPriceIdRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	invoiceId string
+	addInvoiceLineItemWithPriceIDRequest *AddInvoiceLineItemWithPriceIDRequest
+	xTenantId *string
+	xStripeCustomerId *string
+}
+
+// Service key for authentication
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) XServiceKey(xServiceKey string) ApiAddInvoiceLineItemWithPriceIdRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest AddInvoiceLineItemWithPriceIDRequest) ApiAddInvoiceLineItemWithPriceIdRequest {
+	r.addInvoiceLineItemWithPriceIDRequest = &addInvoiceLineItemWithPriceIDRequest
+	return r
+}
+
+// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) XTenantId(xTenantId string) ApiAddInvoiceLineItemWithPriceIdRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) XStripeCustomerId(xStripeCustomerId string) ApiAddInvoiceLineItemWithPriceIdRequest {
+	r.xStripeCustomerId = &xStripeCustomerId
+	return r
+}
+
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) Execute() (*AddInvoiceLineItem200Response, *http.Response, error) {
+	return r.ApiService.AddInvoiceLineItemWithPriceIdExecute(r)
+}
+
+/*
+AddInvoiceLineItemWithPriceId Add invoice line item with price ID
+
+Adds a new line item to a draft invoice using a price ID and quantity.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Price ID Resolution
+You must provide ONE of:
+- `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
+- `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding metered usage line items
+- Adding subscription-based charges
+- Billing for compute hours, storage, etc.
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param invoiceId Stripe Invoice ID
+ @return ApiAddInvoiceLineItemWithPriceIdRequest
+*/
+func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceId(ctx context.Context, invoiceId string) ApiAddInvoiceLineItemWithPriceIdRequest {
+	return ApiAddInvoiceLineItemWithPriceIdRequest{
+		ApiService: a,
+		ctx: ctx,
+		invoiceId: invoiceId,
+	}
+}
+
+// Execute executes the request
+//  @return AddInvoiceLineItem200Response
+func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvoiceLineItemWithPriceIdRequest) (*AddInvoiceLineItem200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *AddInvoiceLineItem200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.AddInvoiceLineItemWithPriceId")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices/{invoice_id}/items/price"
+	localVarPath = strings.Replace(localVarPath, "{"+"invoice_id"+"}", url.PathEscape(parameterValueToString(r.invoiceId, "invoiceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+	if r.addInvoiceLineItemWithPriceIDRequest == nil {
+		return localVarReturnValue, nil, reportError("addInvoiceLineItemWithPriceIDRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xStripeCustomerId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.addInvoiceLineItemWithPriceIDRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v NotFoundResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

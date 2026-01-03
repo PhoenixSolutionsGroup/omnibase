@@ -5,6 +5,7 @@ All URIs are relative to *https://api.omnibase.tech*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AddInvoiceLineItem**](V1PaymentsAPI.md#AddInvoiceLineItem) | **Post** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item
+[**AddInvoiceLineItemWithPriceId**](V1PaymentsAPI.md#AddInvoiceLineItemWithPriceId) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID
 [**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create checkout session
 [**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create customer portal session
 [**CreateInvoice**](V1PaymentsAPI.md#CreateInvoice) | **Post** /api/v1/payments/invoices | Create invoice
@@ -72,6 +73,84 @@ Name | Type | Description  | Notes
  **xServiceKey** | **string** | Service key for authentication | 
 
  **addInvoiceLineItemRequest** | [**AddInvoiceLineItemRequest**](AddInvoiceLineItemRequest.md) |  | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | 
+ **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | 
+
+### Return type
+
+[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json, text/plain
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## AddInvoiceLineItemWithPriceId
+
+> AddInvoiceLineItem200Response AddInvoiceLineItemWithPriceId(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+
+Add invoice line item with price ID
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	xServiceKey := "xServiceKey_example" // string | Service key for authentication
+	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
+	addInvoiceLineItemWithPriceIDRequest := *openapiclient.NewAddInvoiceLineItemWithPriceIDRequest(int64(720), "VPS Compute - 720 hours", openapiclient.CurrencyCode("usd")) // AddInvoiceLineItemWithPriceIDRequest | 
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
+	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1PaymentsAPI.AddInvoiceLineItemWithPriceId(context.Background(), invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.AddInvoiceLineItemWithPriceId``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `AddInvoiceLineItemWithPriceId`: AddInvoiceLineItem200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.AddInvoiceLineItemWithPriceId`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**invoiceId** | **string** | Stripe Invoice ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiAddInvoiceLineItemWithPriceIdRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xServiceKey** | **string** | Service key for authentication | 
+
+ **addInvoiceLineItemWithPriceIDRequest** | [**AddInvoiceLineItemWithPriceIDRequest**](AddInvoiceLineItemWithPriceIDRequest.md) |  | 
  **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | 
  **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | 
 
