@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.10.0
+API version: 0.10.1
 Contact: support@omnibase.dev
 */
 
@@ -30,8 +30,8 @@ type PerUnitPrice struct {
 	Public *bool
 	// Whether tax is included in the price (null/false = exclusive)
 	TaxIncludedInPrice *bool
-	// Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
-	Amount int64
+	// Price amount (supports decimals for sub-cent hourly pricing)
+	Amount float64
 	Currency CurrencyCode
 	// Billing interval for recurring prices (required when usage_type is metered)
 	Interval *BillingInterval
@@ -53,7 +53,7 @@ type _PerUnitPrice PerUnitPrice
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPerUnitPrice(id string, amount int64, currency CurrencyCode) *PerUnitPrice {
+func NewPerUnitPrice(id string, amount float64, currency CurrencyCode) *PerUnitPrice {
 	this := PerUnitPrice{}
 	return &this
 }
@@ -189,9 +189,9 @@ func (o *PerUnitPrice) SetTaxIncludedInPrice(v bool) {
 }
 
 // GetAmount returns the Amount field value
-func (o *PerUnitPrice) GetAmount() int64 {
+func (o *PerUnitPrice) GetAmount() float64 {
 	if o == nil {
-		var ret int64
+		var ret float64
 		return ret
 	}
 
@@ -200,7 +200,7 @@ func (o *PerUnitPrice) GetAmount() int64 {
 
 // GetAmountOk returns a tuple with the Amount field value
 // and a boolean to check if the value has been set.
-func (o *PerUnitPrice) GetAmountOk() (*int64, bool) {
+func (o *PerUnitPrice) GetAmountOk() (*float64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -208,7 +208,7 @@ func (o *PerUnitPrice) GetAmountOk() (*int64, bool) {
 }
 
 // SetAmount sets field value
-func (o *PerUnitPrice) SetAmount(v int64) {
+func (o *PerUnitPrice) SetAmount(v float64) {
 	o.Amount = v
 }
 

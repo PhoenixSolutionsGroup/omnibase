@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **StripeId** | Pointer to **string** | Original Stripe ID for migration support (optional, used to link existing Stripe prices) | [optional] 
 **Public** | Pointer to **bool** | Whether price is visible in public API (null/true &#x3D; public, false &#x3D; enterprise only) | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price (null/false &#x3D; exclusive) | [optional] 
-**Amount** | **int64** | Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements | 
+**Amount** | **float64** | Price amount (supports decimals for sub-cent hourly pricing) | 
 **Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
 **Interval** | Pointer to [**BillingInterval**](BillingInterval.md) | Billing interval for recurring prices (required when usage_type is metered) | [optional] 
 **IntervalCount** | Pointer to **int32** | Number of intervals between billings (default 1) | [optional] 
@@ -24,7 +24,7 @@ Name | Type | Description | Notes
 
 ### NewPrice
 
-`func NewPrice(id string, amount int64, currency CurrencyCode, billingScheme TieredBillingScheme, tiersMode TiersMode, tiers []Tier, ) *Price`
+`func NewPrice(id string, amount float64, currency CurrencyCode, billingScheme TieredBillingScheme, tiersMode TiersMode, tiers []Tier, ) *Price`
 
 NewPrice instantiates a new Price object
 This constructor will assign default values to properties that have it defined,
@@ -136,20 +136,20 @@ HasTaxIncludedInPrice returns a boolean if a field has been set.
 
 ### GetAmount
 
-`func (o *Price) GetAmount() int64`
+`func (o *Price) GetAmount() float64`
 
 GetAmount returns the Amount field if non-nil, zero value otherwise.
 
 ### GetAmountOk
 
-`func (o *Price) GetAmountOk() (*int64, bool)`
+`func (o *Price) GetAmountOk() (*float64, bool)`
 
 GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAmount
 
-`func (o *Price) SetAmount(v int64)`
+`func (o *Price) SetAmount(v float64)`
 
 SetAmount sets Amount field to given value.
 

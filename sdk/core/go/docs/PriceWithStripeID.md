@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **Id** | **string** | Price identifier (config ID) | 
 **Public** | Pointer to **bool** | Whether price is visible in public API | [optional] 
 **TaxIncludedInPrice** | Pointer to **bool** | Whether tax is included in the price | [optional] 
-**Amount** | Pointer to **int64** | Price amount in smallest currency unit | [optional] 
+**Amount** | Pointer to **float64** | Price amount (supports decimals for sub-cent hourly pricing) | [optional] 
 **Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
 **Interval** | Pointer to [**BillingInterval**](BillingInterval.md) |  | [optional] 
 **IntervalCount** | Pointer to **int32** | Number of intervals between billings | [optional] 
@@ -111,20 +111,20 @@ HasTaxIncludedInPrice returns a boolean if a field has been set.
 
 ### GetAmount
 
-`func (o *PriceWithStripeID) GetAmount() int64`
+`func (o *PriceWithStripeID) GetAmount() float64`
 
 GetAmount returns the Amount field if non-nil, zero value otherwise.
 
 ### GetAmountOk
 
-`func (o *PriceWithStripeID) GetAmountOk() (*int64, bool)`
+`func (o *PriceWithStripeID) GetAmountOk() (*float64, bool)`
 
 GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAmount
 
-`func (o *PriceWithStripeID) SetAmount(v int64)`
+`func (o *PriceWithStripeID) SetAmount(v float64)`
 
 SetAmount sets Amount field to given value.
 

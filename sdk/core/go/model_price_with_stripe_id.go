@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.10.0
+API version: 0.10.1
 Contact: support@omnibase.dev
 */
 
@@ -28,8 +28,8 @@ type PriceWithStripeID struct {
 	Public *bool `json:"public,omitempty"`
 	// Whether tax is included in the price
 	TaxIncludedInPrice *bool `json:"tax_included_in_price,omitempty"`
-	// Price amount in smallest currency unit
-	Amount *int64 `json:"amount,omitempty"`
+	// Price amount (supports decimals for sub-cent hourly pricing)
+	Amount *float64 `json:"amount,omitempty"`
 	Currency CurrencyCode `json:"currency"`
 	Interval *BillingInterval `json:"interval,omitempty"`
 	// Number of intervals between billings
@@ -160,9 +160,9 @@ func (o *PriceWithStripeID) SetTaxIncludedInPrice(v bool) {
 }
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetAmount() int64 {
+func (o *PriceWithStripeID) GetAmount() float64 {
 	if o == nil || IsNil(o.Amount) {
-		var ret int64
+		var ret float64
 		return ret
 	}
 	return *o.Amount
@@ -170,7 +170,7 @@ func (o *PriceWithStripeID) GetAmount() int64 {
 
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetAmountOk() (*int64, bool) {
+func (o *PriceWithStripeID) GetAmountOk() (*float64, bool) {
 	if o == nil || IsNil(o.Amount) {
 		return nil, false
 	}
@@ -186,8 +186,8 @@ func (o *PriceWithStripeID) HasAmount() bool {
 	return false
 }
 
-// SetAmount gets a reference to the given int64 and assigns it to the Amount field.
-func (o *PriceWithStripeID) SetAmount(v int64) {
+// SetAmount gets a reference to the given float64 and assigns it to the Amount field.
+func (o *PriceWithStripeID) SetAmount(v float64) {
 	o.Amount = &v
 }
 

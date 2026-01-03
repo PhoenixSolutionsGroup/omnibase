@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.10.0
+  version: 0.10.1
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -4987,7 +4987,7 @@ components:
     PriceWithStripeID:
       example:
         interval_count: 1
-        amount: 1999
+        amount: 0.273
         tiers:
         - flat_amount: 0
           up_to: 100
@@ -5039,11 +5039,11 @@ components:
           type: boolean
           nullable: true
         amount:
-          description: Price amount in smallest currency unit
-          example: 1999
-          format: int64
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
+          format: double
           minimum: 0
-          type: integer
+          type: number
         currency:
           $ref: "#/components/schemas/CurrencyCode"
         interval:
@@ -5149,7 +5149,7 @@ components:
         type: service
         prices:
         - interval_count: 1
-          amount: 1999
+          amount: 0.273
           tiers:
           - flat_amount: 0
             up_to: 100
@@ -5185,7 +5185,7 @@ components:
           tax_included_in_price: false
           stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
         - interval_count: 1
-          amount: 1999
+          amount: 0.273
           tiers:
           - flat_amount: 0
             up_to: 100
@@ -5304,7 +5304,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -5340,7 +5340,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -5392,7 +5392,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -5428,7 +5428,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -5529,7 +5529,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -5565,7 +5565,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -5617,7 +5617,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -5653,7 +5653,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -5791,7 +5791,7 @@ components:
       anyOf: []
       example:
         interval_count: 1
-        amount: 1999
+        amount: 0.273
         meter: api_requests
         billing_scheme: per_unit
         default: false
@@ -5842,12 +5842,11 @@ components:
           type: boolean
           nullable: true
         amount:
-          description: "Price amount in smallest currency unit (e.g., cents) - minimum\
-            \ $0.01 per Stripe requirements"
-          example: 1999
-          format: int64
-          minimum: 1
-          type: integer
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
+          format: double
+          minimum: 0
+          type: number
         currency:
           $ref: "#/components/schemas/CurrencyCode"
         interval:
@@ -5986,7 +5985,7 @@ components:
         type: service
         prices:
         - interval_count: 1
-          amount: 1999
+          amount: 0.273
           meter: api_requests
           billing_scheme: per_unit
           default: false
@@ -6014,7 +6013,7 @@ components:
           tax_included_in_price: false
           stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
         - interval_count: 1
-          amount: 1999
+          amount: 0.273
           meter: api_requests
           billing_scheme: per_unit
           default: false
@@ -6125,7 +6124,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -6153,7 +6152,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -6197,7 +6196,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -6225,7 +6224,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -6340,7 +6339,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -6376,7 +6375,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -6428,7 +6427,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -6464,7 +6463,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -6624,7 +6623,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6660,7 +6659,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6712,7 +6711,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6748,7 +6747,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6831,7 +6830,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6867,7 +6866,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6919,7 +6918,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -6955,7 +6954,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -7053,7 +7052,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7081,7 +7080,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7125,7 +7124,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7153,7 +7152,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7246,7 +7245,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7274,7 +7273,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7318,7 +7317,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7346,7 +7345,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             meter: api_requests
             billing_scheme: per_unit
             default: false
@@ -7460,7 +7459,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -7496,7 +7495,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -7534,7 +7533,7 @@ components:
           stripe_id: prod_1SRiyyCJIZaBlhY1
         price:
           interval_count: 1
-          amount: 1999
+          amount: 0.273
           tiers:
           - flat_amount: 0
             up_to: 100
@@ -7613,7 +7612,7 @@ components:
           type: service
           prices:
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -7649,7 +7648,7 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
           - interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -9180,7 +9179,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -9216,7 +9215,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -9268,7 +9267,7 @@ components:
               type: service
               prices:
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -9304,7 +9303,7 @@ components:
                 tax_included_in_price: false
                 stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
               - interval_count: 1
-                amount: 1999
+                amount: 0.273
                 tiers:
                 - flat_amount: 0
                   up_to: 100
@@ -9397,7 +9396,7 @@ components:
                 type: service
                 prices:
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9433,7 +9432,7 @@ components:
                   tax_included_in_price: false
                   stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9485,7 +9484,7 @@ components:
                 type: service
                 prices:
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9521,7 +9520,7 @@ components:
                   tax_included_in_price: false
                   stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9604,7 +9603,7 @@ components:
                 type: service
                 prices:
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9640,7 +9639,7 @@ components:
                   tax_included_in_price: false
                   stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9692,7 +9691,7 @@ components:
                 type: service
                 prices:
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9728,7 +9727,7 @@ components:
                   tax_included_in_price: false
                   stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
                 - interval_count: 1
-                  amount: 1999
+                  amount: 0.273
                   tiers:
                   - flat_amount: 0
                     up_to: 100
@@ -9822,7 +9821,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               meter: api_requests
               billing_scheme: per_unit
               default: false
@@ -9850,7 +9849,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               meter: api_requests
               billing_scheme: per_unit
               default: false
@@ -9894,7 +9893,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               meter: api_requests
               billing_scheme: per_unit
               default: false
@@ -9922,7 +9921,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               meter: api_requests
               billing_scheme: per_unit
               default: false
@@ -9993,7 +9992,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -10029,7 +10028,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -10067,7 +10066,7 @@ components:
             stripe_id: prod_1SRiyyCJIZaBlhY1
           price:
             interval_count: 1
-            amount: 1999
+            amount: 0.273
             tiers:
             - flat_amount: 0
               up_to: 100
@@ -10128,7 +10127,7 @@ components:
             type: service
             prices:
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100
@@ -10164,7 +10163,7 @@ components:
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
-              amount: 1999
+              amount: 0.273
               tiers:
               - flat_amount: 0
                 up_to: 100

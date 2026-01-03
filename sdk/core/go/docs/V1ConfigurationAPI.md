@@ -553,7 +553,7 @@ import (
 )
 
 func main() {
-	stripeConfigUpdateRequest := *openapiclient.NewStripeConfigUpdateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", int64(1999), openapiclient.CurrencyCode("usd"))}})}) // StripeConfigUpdateRequest | 
+	stripeConfigUpdateRequest := *openapiclient.NewStripeConfigUpdateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", float64(0.273), openapiclient.CurrencyCode("usd"))}})}) // StripeConfigUpdateRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -685,7 +685,7 @@ import (
 )
 
 func main() {
-	stripeConfigValidateRequest := *openapiclient.NewStripeConfigValidateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", int64(1999), openapiclient.CurrencyCode("usd"))}})}) // StripeConfigValidateRequest | Stripe configuration to validate
+	stripeConfigValidateRequest := *openapiclient.NewStripeConfigValidateRequest("1.0.0", []openapiclient.Product{*openapiclient.NewProduct("basic_plan", "Basic Plan", []openapiclient.Price{openapiclient.Price{PerUnitPrice: openapiclient.NewPerUnitPrice("basic_monthly", float64(0.273), openapiclient.CurrencyCode("usd"))}})}) // StripeConfigValidateRequest | Stripe configuration to validate
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
