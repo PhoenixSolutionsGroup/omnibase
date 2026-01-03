@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.18
+API version: 0.10.0
 Contact: support@omnibase.dev
 */
 
@@ -17,11 +17,206 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 
 // V1PaymentsAPIService V1PaymentsAPI service
 type V1PaymentsAPIService service
+
+type ApiAddInvoiceLineItemRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	invoiceId string
+	addInvoiceLineItemRequest *AddInvoiceLineItemRequest
+	xTenantId *string
+	xStripeCustomerId *string
+}
+
+// Service key for authentication
+func (r ApiAddInvoiceLineItemRequest) XServiceKey(xServiceKey string) ApiAddInvoiceLineItemRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiAddInvoiceLineItemRequest) AddInvoiceLineItemRequest(addInvoiceLineItemRequest AddInvoiceLineItemRequest) ApiAddInvoiceLineItemRequest {
+	r.addInvoiceLineItemRequest = &addInvoiceLineItemRequest
+	return r
+}
+
+// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+func (r ApiAddInvoiceLineItemRequest) XTenantId(xTenantId string) ApiAddInvoiceLineItemRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+func (r ApiAddInvoiceLineItemRequest) XStripeCustomerId(xStripeCustomerId string) ApiAddInvoiceLineItemRequest {
+	r.xStripeCustomerId = &xStripeCustomerId
+	return r
+}
+
+func (r ApiAddInvoiceLineItemRequest) Execute() (*AddInvoiceLineItem200Response, *http.Response, error) {
+	return r.ApiService.AddInvoiceLineItemExecute(r)
+}
+
+/*
+AddInvoiceLineItem Add invoice line item
+
+Adds a new line item to a draft invoice.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding platform fees
+- Adding additional charges
+- Custom billing line items
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param invoiceId Stripe Invoice ID
+ @return ApiAddInvoiceLineItemRequest
+*/
+func (a *V1PaymentsAPIService) AddInvoiceLineItem(ctx context.Context, invoiceId string) ApiAddInvoiceLineItemRequest {
+	return ApiAddInvoiceLineItemRequest{
+		ApiService: a,
+		ctx: ctx,
+		invoiceId: invoiceId,
+	}
+}
+
+// Execute executes the request
+//  @return AddInvoiceLineItem200Response
+func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItemRequest) (*AddInvoiceLineItem200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *AddInvoiceLineItem200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.AddInvoiceLineItem")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices/{invoice_id}/items"
+	localVarPath = strings.Replace(localVarPath, "{"+"invoice_id"+"}", url.PathEscape(parameterValueToString(r.invoiceId, "invoiceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+	if r.addInvoiceLineItemRequest == nil {
+		return localVarReturnValue, nil, reportError("addInvoiceLineItemRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xStripeCustomerId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.addInvoiceLineItemRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
 
 type ApiCreateCheckoutRequest struct {
 	ctx context.Context
@@ -343,6 +538,517 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiCreateInvoiceRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	createInvoiceRequest *CreateInvoiceRequest
+	xTenantId *string
+	xStripeCustomerId *string
+}
+
+// Service key for authentication
+func (r ApiCreateInvoiceRequest) XServiceKey(xServiceKey string) ApiCreateInvoiceRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiCreateInvoiceRequest) CreateInvoiceRequest(createInvoiceRequest CreateInvoiceRequest) ApiCreateInvoiceRequest {
+	r.createInvoiceRequest = &createInvoiceRequest
+	return r
+}
+
+// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+func (r ApiCreateInvoiceRequest) XTenantId(xTenantId string) ApiCreateInvoiceRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+func (r ApiCreateInvoiceRequest) XStripeCustomerId(xStripeCustomerId string) ApiCreateInvoiceRequest {
+	r.xStripeCustomerId = &xStripeCustomerId
+	return r
+}
+
+func (r ApiCreateInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+	return r.ApiService.CreateInvoiceExecute(r)
+}
+
+/*
+CreateInvoice Create invoice
+
+Creates a new draft invoice for the specified customer.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Use Cases
+- Creating invoices for platform fees
+- Manual billing scenarios
+- Custom invoice generation
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiCreateInvoiceRequest
+*/
+func (a *V1PaymentsAPIService) CreateInvoice(ctx context.Context) ApiCreateInvoiceRequest {
+	return ApiCreateInvoiceRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return CreateInvoice200Response
+func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateInvoice200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateInvoice")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+	if r.createInvoiceRequest == nil {
+		return localVarReturnValue, nil, reportError("createInvoiceRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xStripeCustomerId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
+	}
+	// body params
+	localVarPostBody = r.createInvoiceRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiFinalizeInvoiceRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	invoiceId string
+	finalizeInvoiceRequest *FinalizeInvoiceRequest
+}
+
+// Service key for authentication
+func (r ApiFinalizeInvoiceRequest) XServiceKey(xServiceKey string) ApiFinalizeInvoiceRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiFinalizeInvoiceRequest) FinalizeInvoiceRequest(finalizeInvoiceRequest FinalizeInvoiceRequest) ApiFinalizeInvoiceRequest {
+	r.finalizeInvoiceRequest = &finalizeInvoiceRequest
+	return r
+}
+
+func (r ApiFinalizeInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+	return r.ApiService.FinalizeInvoiceExecute(r)
+}
+
+/*
+FinalizeInvoice Finalize invoice
+
+Finalizes a draft invoice, optionally auto-advancing to send it immediately.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Approving invoices for sending
+- Completing invoice preparation
+- Triggering invoice emails
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param invoiceId Stripe Invoice ID
+ @return ApiFinalizeInvoiceRequest
+*/
+func (a *V1PaymentsAPIService) FinalizeInvoice(ctx context.Context, invoiceId string) ApiFinalizeInvoiceRequest {
+	return ApiFinalizeInvoiceRequest{
+		ApiService: a,
+		ctx: ctx,
+		invoiceId: invoiceId,
+	}
+}
+
+// Execute executes the request
+//  @return CreateInvoice200Response
+func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateInvoice200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.FinalizeInvoice")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices/{invoice_id}/finalize"
+	localVarPath = strings.Replace(localVarPath, "{"+"invoice_id"+"}", url.PathEscape(parameterValueToString(r.invoiceId, "invoiceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+	if r.finalizeInvoiceRequest == nil {
+		return localVarReturnValue, nil, reportError("finalizeInvoiceRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	// body params
+	localVarPostBody = r.finalizeInvoiceRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetInvoiceRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	invoiceId string
+}
+
+// Service key for authentication
+func (r ApiGetInvoiceRequest) XServiceKey(xServiceKey string) ApiGetInvoiceRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiGetInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+	return r.ApiService.GetInvoiceExecute(r)
+}
+
+/*
+GetInvoice Get invoice
+
+Retrieves a Stripe invoice by its ID.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Use Cases
+- Webhook processing
+- Invoice status checking
+- Invoice data retrieval
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param invoiceId Stripe Invoice ID
+ @return ApiGetInvoiceRequest
+*/
+func (a *V1PaymentsAPIService) GetInvoice(ctx context.Context, invoiceId string) ApiGetInvoiceRequest {
+	return ApiGetInvoiceRequest{
+		ApiService: a,
+		ctx: ctx,
+		invoiceId: invoiceId,
+	}
+}
+
+// Execute executes the request
+//  @return CreateInvoice200Response
+func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateInvoice200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.GetInvoice")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices/{invoice_id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"invoice_id"+"}", url.PathEscape(parameterValueToString(r.invoiceId, "invoiceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiRecordUsageRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
@@ -431,6 +1137,175 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Suc
 	}
 	// body params
 	localVarPostBody = r.recordUsageRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v UnauthorizedResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiUpdateInvoiceRequest struct {
+	ctx context.Context
+	ApiService *V1PaymentsAPIService
+	xServiceKey *string
+	invoiceId string
+	updateInvoiceRequest *UpdateInvoiceRequest
+}
+
+// Service key for authentication
+func (r ApiUpdateInvoiceRequest) XServiceKey(xServiceKey string) ApiUpdateInvoiceRequest {
+	r.xServiceKey = &xServiceKey
+	return r
+}
+
+func (r ApiUpdateInvoiceRequest) UpdateInvoiceRequest(updateInvoiceRequest UpdateInvoiceRequest) ApiUpdateInvoiceRequest {
+	r.updateInvoiceRequest = &updateInvoiceRequest
+	return r
+}
+
+func (r ApiUpdateInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+	return r.ApiService.UpdateInvoiceExecute(r)
+}
+
+/*
+UpdateInvoice Update invoice
+
+Updates a draft invoice's description and metadata.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding custom descriptions
+- Adding metadata for tracking
+- Customizing invoice before sending
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param invoiceId Stripe Invoice ID
+ @return ApiUpdateInvoiceRequest
+*/
+func (a *V1PaymentsAPIService) UpdateInvoice(ctx context.Context, invoiceId string) ApiUpdateInvoiceRequest {
+	return ApiUpdateInvoiceRequest{
+		ApiService: a,
+		ctx: ctx,
+		invoiceId: invoiceId,
+	}
+}
+
+// Execute executes the request
+//  @return CreateInvoice200Response
+func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPatch
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateInvoice200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.UpdateInvoice")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/payments/invoices/{invoice_id}"
+	localVarPath = strings.Replace(localVarPath, "{"+"invoice_id"+"}", url.PathEscape(parameterValueToString(r.invoiceId, "invoiceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.xServiceKey == nil {
+		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
+	}
+	if r.updateInvoiceRequest == nil {
+		return localVarReturnValue, nil, reportError("updateInvoiceRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	// body params
+	localVarPostBody = r.updateInvoiceRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

@@ -13,7 +13,7 @@ info:
     - **Payments**: Stripe integration with version-controlled billing configs
     - **Storage**: S3-compatible object storage with RLS
     - **Email**: Transactional email service
-    - **Permissions**: Fine-grained access control via Ory Keto
+    - **Permissions**: Fine-grained access control
 
     ## Authentication
     Most endpoints require authentication via session cookies or JWT tokens.
@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.9.18
+  version: 0.10.0
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -53,6 +53,8 @@ tags:
   name: V1 Stripe
 - description: Tenant organization management endpoints
   name: V1 Tenants
+- description: Webhook configuration and management endpoints
+  name: V1 Webhooks
 paths:
   /api/v1/auth/session:
     get:
@@ -656,6 +658,308 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Record metered usage
+      tags:
+      - V1 Payments
+  /api/v1/payments/invoices:
+    post:
+      description: |
+        Creates a new draft invoice for the specified customer.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Use Cases
+        - Creating invoices for platform fees
+        - Manual billing scenarios
+        - Custom invoice generation
+      operationId: createInvoice
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Used to look up the Stripe customer ID from
+          tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: "Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer.\
+          \ Required if X-Tenant-Id is not provided."
+        explode: false
+        in: header
+        name: X-Stripe-Customer-Id
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvoiceRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createInvoice_200_response"
+          description: Invoice created successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Create invoice
+      tags:
+      - V1 Payments
+  /api/v1/payments/invoices/{invoice_id}:
+    get:
+      description: |
+        Retrieves a Stripe invoice by its ID.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Use Cases
+        - Webhook processing
+        - Invoice status checking
+        - Invoice data retrieval
+      operationId: getInvoice
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Stripe Invoice ID
+        explode: false
+        in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createInvoice_200_response"
+          description: Invoice retrieved successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Get invoice
+      tags:
+      - V1 Payments
+    patch:
+      description: |
+        Updates a draft invoice's description and metadata.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding custom descriptions
+        - Adding metadata for tracking
+        - Customizing invoice before sending
+      operationId: updateInvoice
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Stripe Invoice ID
+        explode: false
+        in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInvoiceRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createInvoice_200_response"
+          description: Invoice updated successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Update invoice
+      tags:
+      - V1 Payments
+  /api/v1/payments/invoices/{invoice_id}/items:
+    post:
+      description: |
+        Adds a new line item to a draft invoice.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding platform fees
+        - Adding additional charges
+        - Custom billing line items
+      operationId: addInvoiceLineItem
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Used to look up the Stripe customer ID from
+          tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: "Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer.\
+          \ Required if X-Tenant-Id is not provided."
+        explode: false
+        in: header
+        name: X-Stripe-Customer-Id
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Stripe Invoice ID
+        explode: false
+        in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddInvoiceLineItemRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/addInvoiceLineItem_200_response"
+          description: Line item added successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Add invoice line item
+      tags:
+      - V1 Payments
+  /api/v1/payments/invoices/{invoice_id}/finalize:
+    post:
+      description: |
+        Finalizes a draft invoice, optionally auto-advancing to send it immediately.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Approving invoices for sending
+        - Completing invoice preparation
+        - Triggering invoice emails
+      operationId: finalizeInvoice
+      parameters:
+      - description: Service key for authentication
+        explode: false
+        in: header
+        name: X-Service-Key
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Stripe Invoice ID
+        explode: false
+        in: path
+        name: invoice_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinalizeInvoiceRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createInvoice_200_response"
+          description: Invoice finalized successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Finalize invoice
       tags:
       - V1 Payments
   /api/v1/permissions/check:
@@ -1581,6 +1885,159 @@ paths:
       summary: Archive all Stripe config
       tags:
       - V1 Configuration
+  /api/v1/stripe/config/prices/{price_id}:
+    get:
+      description: |
+        Returns a specific price from the Stripe configuration by its config ID, along with its parent product.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch price details for checkout
+        - Display specific pricing information
+        - Subscription management
+      operationId: getPriceByID
+      parameters:
+      - description: Price config ID
+        explode: false
+        in: path
+        name: price_id
+        required: true
+        schema:
+          example: basic_monthly
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getPriceByID_200_response"
+          description: Price found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+          description: Missing price_id
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+          description: Price not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Failed to retrieve price
+      summary: Get price by ID
+      tags:
+      - V1 Stripe
+  /api/v1/stripe/config/products/{product_id}:
+    get:
+      description: |
+        Returns a specific product from the Stripe configuration by its config ID, including all its prices.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch product details
+        - Display product information with all price options
+        - Product catalog pages
+      operationId: getProductByID
+      parameters:
+      - description: Product config ID
+        explode: false
+        in: path
+        name: product_id
+        required: true
+        schema:
+          example: basic_plan
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getProductByID_200_response"
+          description: Product found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+          description: Missing product_id
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+          description: Product not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Failed to retrieve product
+      summary: Get product by ID
+      tags:
+      - V1 Stripe
+  /api/v1/stripe/config/meters/{meter_id}:
+    get:
+      description: |
+        Returns a specific billing meter from the Stripe configuration by its config ID.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch meter details for usage tracking
+        - Display metered billing information
+        - Usage reporting configuration
+      operationId: getMeterByID
+      parameters:
+      - description: Meter config ID
+        explode: false
+        in: path
+        name: meter_id
+        required: true
+        schema:
+          example: api_requests
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getMeterByID_200_response"
+          description: Meter found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+          description: Missing meter_id
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+          description: Meter not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Failed to retrieve meter
+      summary: Get meter by ID
+      tags:
+      - V1 Stripe
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     get:
       description: |
@@ -1632,6 +2089,105 @@ paths:
       summary: Convert Stripe ID to config ID
       tags:
       - V1 Stripe
+  /api/v1/stripe/config/webhook:
+    get:
+      description: |
+        Retrieves the webhook signing secret for the most recent webhook configuration.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Retrieve signing secret for webhook signature verification
+        - Debug webhook configuration
+      operationId: getWebhookSecret
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getWebhookSecret_200_response"
+          description: Webhook secret retrieved successfully
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+          description: Invalid or missing service key
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+          description: No webhook configured
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Failed to retrieve webhook secret
+      security:
+      - ServiceKeyAuth: []
+      summary: Get webhook secret
+      tags:
+      - V1 Webhooks
+  /api/v1/stripe/config/webhooks:
+    post:
+      description: |
+        Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
+        Webhooks not in the request will be deleted.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Connect Webhooks
+        Each webhook can have `connect: true` to listen to events from connected accounts.
+
+        ## URL Interpolation
+        URLs support `${VAR}` environment variable interpolation when using the CLI.
+        The CLI resolves these before sending to the API.
+
+        ## Use Cases
+        - Configure multiple webhooks for different environments
+        - Set up both account and Connect webhooks
+        - Declarative webhook configuration management
+      operationId: configureWebhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhooksConfigRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/configureWebhooks_200_response"
+          description: Webhooks configured successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+          description: Invalid request - validation errors
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+          description: Invalid or missing service key
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+          description: Failed to configure webhooks
+      security:
+      - ServiceKeyAuth: []
+      summary: Configure multiple webhook endpoints
+      tags:
+      - V1 Webhooks
   /api/v1/tenants:
     delete:
       description: |
@@ -3627,6 +4183,163 @@ components:
       required:
       - meter_event_name
       - value
+    CurrencyCode:
+      description: Three-letter ISO currency code (lowercase)
+      enum:
+      - usd
+      - eur
+      - gbp
+      - cad
+      - aud
+      - jpy
+      - inr
+      - brl
+      - mxn
+      - sgd
+      - hkd
+      - nzd
+      - chf
+      - sek
+      - dkk
+      - nok
+      - pln
+      - czk
+      - ils
+      - zar
+      example: usd
+      type: string
+    CreateInvoiceRequest:
+      example:
+        metadata:
+          key: metadata
+        auto_advance: false
+        description: Monthly platform fees
+        currency: usd
+      properties:
+        currency:
+          $ref: "#/components/schemas/CurrencyCode"
+        auto_advance:
+          description: Whether to auto-advance the invoice (send immediately after
+            finalization)
+          example: false
+          type: boolean
+        description:
+          description: Optional description for the invoice
+          example: Monthly platform fees
+          type: string
+        metadata:
+          additionalProperties:
+            type: string
+          description: Optional metadata key-value pairs
+      required:
+      - currency
+    InvoiceResponse:
+      example:
+        invoice_pdf: https://pay.stripe.com/invoice/...
+        hosted_invoice_url: https://invoice.stripe.com/i/...
+        amount_due: 2000
+        currency: usd
+        id: in_1234567890
+        customer_id: cus_1234567890
+        status: draft
+      properties:
+        id:
+          description: Stripe Invoice ID
+          example: in_1234567890
+          type: string
+        status:
+          description: Invoice status
+          example: draft
+          type: string
+        amount_due:
+          description: Total amount in cents
+          example: 2000
+          format: int64
+          type: integer
+        currency:
+          description: Currency
+          example: usd
+          type: string
+        customer_id:
+          description: Customer ID
+          example: cus_1234567890
+          type: string
+        invoice_pdf:
+          description: Invoice PDF URL (if available)
+          example: https://pay.stripe.com/invoice/...
+          type: string
+        hosted_invoice_url:
+          description: Hosted invoice URL
+          example: https://invoice.stripe.com/i/...
+          type: string
+      required:
+      - id
+      - status
+    UpdateInvoiceRequest:
+      example:
+        metadata:
+          key: metadata
+        description: Monthly subscription - January 2025
+      properties:
+        description:
+          description: Optional description to set on the invoice
+          example: Monthly subscription - January 2025
+          type: string
+        metadata:
+          additionalProperties:
+            type: string
+          description: Optional metadata key-value pairs to add
+    AddInvoiceLineItemRequest:
+      example:
+        amount: 1000
+        description: Platform fee
+        currency: usd
+      properties:
+        amount:
+          description: Amount in cents (required)
+          example: 1000
+          format: int64
+          type: integer
+        description:
+          description: Description for the line item (required)
+          example: Platform fee
+          minLength: 1
+          type: string
+        currency:
+          $ref: "#/components/schemas/CurrencyCode"
+      required:
+      - amount
+      - currency
+      - description
+    InvoiceLineItemResponse:
+      example:
+        amount: 1000
+        description: Platform fee
+        id: ii_1234567890
+      properties:
+        id:
+          description: Stripe Invoice Item ID
+          example: ii_1234567890
+          type: string
+        amount:
+          description: Amount in cents
+          example: 1000
+          format: int64
+          type: integer
+        description:
+          description: Description
+          example: Platform fee
+          type: string
+      required:
+      - id
+    FinalizeInvoiceRequest:
+      example:
+        auto_advance: true
+      properties:
+        auto_advance:
+          description: Whether to auto-advance the invoice (send immediately)
+          example: true
+          type: boolean
     CheckPermissionRequestWithSubjectId:
       additionalProperties: false
       description: Check permission request using a direct subject identifier
@@ -4154,31 +4867,6 @@ components:
       - display_name
       - event_name
       - id
-    CurrencyCode:
-      description: Three-letter ISO currency code (lowercase)
-      enum:
-      - usd
-      - eur
-      - gbp
-      - cad
-      - aud
-      - jpy
-      - inr
-      - brl
-      - mxn
-      - sgd
-      - hkd
-      - nzd
-      - chf
-      - sek
-      - dkk
-      - nok
-      - pln
-      - czk
-      - ils
-      - zar
-      example: usd
-      type: string
     BillingInterval:
       description: Billing interval for recurring prices
       enum:
@@ -6753,6 +7441,274 @@ components:
       - message
       - total_archived
       - total_errors
+    PriceResponse:
+      example:
+        product:
+          ui:
+            features:
+            - Unlimited projects
+            - Priority support
+            badge: Popular
+            cta_text: Get Started
+            highlighted: true
+            tagline: For growing teams
+            display_name: Professional
+            sort_order: 1
+          name: Basic Plan
+          description: Our basic subscription tier
+          id: basic_plan
+          type: service
+          prices:
+          - interval_count: 1
+            amount: 1999
+            tiers:
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            meter: api_requests
+            billing_scheme: per_unit
+            tiers_mode: graduated
+            default: false
+            public: true
+            ui:
+              billing_period: per month
+              features:
+              - Billed monthly
+              price_display:
+                show_currency: true
+                custom_text: Contact us
+                suffix: /mo
+              display_name: Monthly
+              limits:
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+            usage_type: licensed
+            currency: usd
+            interval: month
+            id: basic_monthly
+            tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          - interval_count: 1
+            amount: 1999
+            tiers:
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            meter: api_requests
+            billing_scheme: per_unit
+            tiers_mode: graduated
+            default: false
+            public: true
+            ui:
+              billing_period: per month
+              features:
+              - Billed monthly
+              price_display:
+                show_currency: true
+                custom_text: Contact us
+                suffix: /mo
+              display_name: Monthly
+              limits:
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+            usage_type: licensed
+            currency: usd
+            interval: month
+            id: basic_monthly
+            tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
+        price:
+          interval_count: 1
+          amount: 1999
+          tiers:
+          - flat_amount: 0
+            up_to: 100
+            unit_amount: 10
+          - flat_amount: 0
+            up_to: 100
+            unit_amount: 10
+          meter: api_requests
+          billing_scheme: per_unit
+          tiers_mode: graduated
+          default: false
+          public: true
+          ui:
+            billing_period: per month
+            features:
+            - Billed monthly
+            price_display:
+              show_currency: true
+              custom_text: Contact us
+              suffix: /mo
+            display_name: Monthly
+            limits:
+            - unit: requests
+              text: Up to 1000 API calls
+              value: 1000
+            - unit: requests
+              text: Up to 1000 API calls
+              value: 1000
+          usage_type: licensed
+          currency: usd
+          interval: month
+          id: basic_monthly
+          tax_included_in_price: false
+          stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+      properties:
+        price:
+          $ref: "#/components/schemas/PriceWithStripeID"
+        product:
+          $ref: "#/components/schemas/ProductWithStripeIDs"
+      required:
+      - price
+      - product
+    NotFound:
+      description: Not Found error response (404)
+      example:
+        error: Not Found
+        status: 404
+      properties:
+        status:
+          description: HTTP status code
+          example: 404
+          type: integer
+        error:
+          description: Error message
+          example: Not Found
+          type: string
+      required:
+      - error
+      - status
+    ProductResponse:
+      example:
+        product:
+          ui:
+            features:
+            - Unlimited projects
+            - Priority support
+            badge: Popular
+            cta_text: Get Started
+            highlighted: true
+            tagline: For growing teams
+            display_name: Professional
+            sort_order: 1
+          name: Basic Plan
+          description: Our basic subscription tier
+          id: basic_plan
+          type: service
+          prices:
+          - interval_count: 1
+            amount: 1999
+            tiers:
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            meter: api_requests
+            billing_scheme: per_unit
+            tiers_mode: graduated
+            default: false
+            public: true
+            ui:
+              billing_period: per month
+              features:
+              - Billed monthly
+              price_display:
+                show_currency: true
+                custom_text: Contact us
+                suffix: /mo
+              display_name: Monthly
+              limits:
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+            usage_type: licensed
+            currency: usd
+            interval: month
+            id: basic_monthly
+            tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          - interval_count: 1
+            amount: 1999
+            tiers:
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            meter: api_requests
+            billing_scheme: per_unit
+            tiers_mode: graduated
+            default: false
+            public: true
+            ui:
+              billing_period: per month
+              features:
+              - Billed monthly
+              price_display:
+                show_currency: true
+                custom_text: Contact us
+                suffix: /mo
+              display_name: Monthly
+              limits:
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+            usage_type: licensed
+            currency: usd
+            interval: month
+            id: basic_monthly
+            tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+          stripe_id: prod_1SRiyyCJIZaBlhY1
+      properties:
+        product:
+          $ref: "#/components/schemas/ProductWithStripeIDs"
+      required:
+      - product
+    MeterResponse:
+      example:
+        meter:
+          default_aggregation:
+            formula: sum
+          value_settings:
+            event_payload_key: value
+          event_name: api_request
+          id: api_requests
+          customer_mapping:
+            event_payload_key: customer_id
+            type: by_id
+          display_name: API Requests
+          stripe_id: mtr_1SRiyyCJIZaBlhY1
+      properties:
+        meter:
+          $ref: "#/components/schemas/MeterWithStripeID"
+      required:
+      - meter
     StripeIDConversionResponse:
       example:
         config_uuid: e056fa27-151d-4d25-b237-97e9de8d8dbf
@@ -6792,23 +7748,200 @@ components:
       - history_count
       - item_type
       - stripe_id
-    NotFound:
-      description: Not Found error response (404)
+    WebhookSecretResponse:
       example:
-        error: Not Found
-        status: 404
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+        secret: whsec_xxx
+        stripe_id: we_1SRiyyCJIZaBlhY1
+        url: https://example.com/webhooks/stripe
+        events:
+        - events
+        - events
+        connect: false
       properties:
-        status:
-          description: HTTP status code
-          example: 404
-          type: integer
-        error:
-          description: Error message
-          example: Not Found
+        id:
+          description: Internal webhook ID
+          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
+          format: uuid
+          type: string
+        stripe_id:
+          description: Stripe webhook endpoint ID
+          example: we_1SRiyyCJIZaBlhY1
+          type: string
+        url:
+          description: Webhook endpoint URL
+          example: https://example.com/webhooks/stripe
+          type: string
+        secret:
+          description: Webhook signing secret
+          example: whsec_xxx
+          type: string
+        events:
+          description: List of subscribed event types
+          items:
+            type: string
+          type: array
+        connect:
+          description: Whether webhook listens to connected account events
+          example: false
+          type: boolean
+        created_at:
+          description: Creation timestamp
+          format: date-time
+          type: string
+        updated_at:
+          description: Last update timestamp
+          format: date-time
           type: string
       required:
-      - error
-      - status
+      - connect
+      - events
+      - id
+      - secret
+      - stripe_id
+      - url
+    WebhookEndpointConfig:
+      example:
+        id: account_events
+        url: https://example.com/webhooks/stripe
+        events:
+        - invoice.paid
+        - customer.subscription.created
+        connect: false
+      properties:
+        id:
+          description: Optional unique identifier for the webhook endpoint
+          example: account_events
+          type: string
+        url:
+          description: "Webhook endpoint URL (supports ${VAR} env var interpolation\
+            \ via CLI)"
+          example: https://example.com/webhooks/stripe
+          format: uri
+          type: string
+        events:
+          description: List of Stripe event types to subscribe to
+          example:
+          - invoice.paid
+          - customer.subscription.created
+          items:
+            type: string
+          minItems: 1
+          type: array
+        connect:
+          default: false
+          description: "If true, listen to events from connected accounts (Stripe\
+            \ Connect)"
+          example: false
+          type: boolean
+      required:
+      - events
+      - url
+    WebhooksConfigRequest:
+      example:
+        webhooks:
+        - id: account_events
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          - customer.subscription.created
+          connect: false
+        - id: account_events
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          - customer.subscription.created
+          connect: false
+      properties:
+        webhooks:
+          description: List of webhook endpoint configurations
+          items:
+            $ref: "#/components/schemas/WebhookEndpointConfig"
+          type: array
+      required:
+      - webhooks
+    WebhookResult:
+      example:
+        action: created
+        id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+        secret: whsec_xxx
+        stripe_id: we_1SRiyyCJIZaBlhY1
+        url: https://example.com/webhooks/stripe
+        events:
+        - invoice.paid
+        connect: false
+      properties:
+        id:
+          description: Internal webhook ID
+          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
+          type: string
+        stripe_id:
+          description: Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx)
+          example: we_1SRiyyCJIZaBlhY1
+          type: string
+        url:
+          description: Webhook endpoint URL
+          example: https://example.com/webhooks/stripe
+          type: string
+        events:
+          description: List of subscribed event types
+          example:
+          - invoice.paid
+          items:
+            type: string
+          type: array
+        connect:
+          description: Whether webhook listens to connected account events
+          example: false
+          type: boolean
+        secret:
+          description: Webhook signing secret for signature verification
+          example: whsec_xxx
+          type: string
+        action:
+          description: Action performed on the webhook
+          enum:
+          - created
+          - updated
+          - unchanged
+          example: created
+          type: string
+      required:
+      - action
+      - connect
+      - events
+      - secret
+      - stripe_id
+      - url
+    WebhooksConfigResponse:
+      example:
+        webhooks:
+        - action: created
+          id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+          secret: whsec_xxx
+          stripe_id: we_1SRiyyCJIZaBlhY1
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          connect: false
+        - action: created
+          id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+          secret: whsec_xxx
+          stripe_id: we_1SRiyyCJIZaBlhY1
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          connect: false
+      properties:
+        webhooks:
+          description: List of configured webhook endpoints with results
+          items:
+            $ref: "#/components/schemas/WebhookResult"
+          type: array
+      required:
+      - webhooks
     CreateTenantRequest:
       description: Request to create a new tenant
       example:
@@ -7874,6 +9007,34 @@ components:
         data:
           url: https://billing.stripe.com/session/live_...
         status: 200
+    createInvoice_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/InvoiceResponse"
+      example:
+        data:
+          invoice_pdf: https://pay.stripe.com/invoice/...
+          hosted_invoice_url: https://invoice.stripe.com/i/...
+          amount_due: 2000
+          currency: usd
+          id: in_1234567890
+          customer_id: cus_1234567890
+          status: draft
+        status: 200
+    addInvoiceLineItem_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/InvoiceLineItemResponse"
+      example:
+        data:
+          amount: 1000
+          description: Platform fee
+          id: ii_1234567890
+        status: 200
     checkPermission_200_response:
       allOf:
       - $ref: "#/components/schemas/SuccessResponse"
@@ -8807,6 +9968,260 @@ components:
           message: Successfully archived all Stripe resources and cleared local config
           archive_errors: []
         status: 200
+    getPriceByID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/PriceResponse"
+      example:
+        data:
+          product:
+            ui:
+              features:
+              - Unlimited projects
+              - Priority support
+              badge: Popular
+              cta_text: Get Started
+              highlighted: true
+              tagline: For growing teams
+              display_name: Professional
+              sort_order: 1
+            name: Basic Plan
+            description: Our basic subscription tier
+            id: basic_plan
+            type: service
+            prices:
+            - interval_count: 1
+              amount: 1999
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              meter: api_requests
+              billing_scheme: per_unit
+              tiers_mode: graduated
+              default: false
+              public: true
+              ui:
+                billing_period: per month
+                features:
+                - Billed monthly
+                price_display:
+                  show_currency: true
+                  custom_text: Contact us
+                  suffix: /mo
+                display_name: Monthly
+                limits:
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+              usage_type: licensed
+              currency: usd
+              interval: month
+              id: basic_monthly
+              tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            - interval_count: 1
+              amount: 1999
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              meter: api_requests
+              billing_scheme: per_unit
+              tiers_mode: graduated
+              default: false
+              public: true
+              ui:
+                billing_period: per month
+                features:
+                - Billed monthly
+                price_display:
+                  show_currency: true
+                  custom_text: Contact us
+                  suffix: /mo
+                display_name: Monthly
+                limits:
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+              usage_type: licensed
+              currency: usd
+              interval: month
+              id: basic_monthly
+              tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            stripe_id: prod_1SRiyyCJIZaBlhY1
+          price:
+            interval_count: 1
+            amount: 1999
+            tiers:
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            - flat_amount: 0
+              up_to: 100
+              unit_amount: 10
+            meter: api_requests
+            billing_scheme: per_unit
+            tiers_mode: graduated
+            default: false
+            public: true
+            ui:
+              billing_period: per month
+              features:
+              - Billed monthly
+              price_display:
+                show_currency: true
+                custom_text: Contact us
+                suffix: /mo
+              display_name: Monthly
+              limits:
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+              - unit: requests
+                text: Up to 1000 API calls
+                value: 1000
+            usage_type: licensed
+            currency: usd
+            interval: month
+            id: basic_monthly
+            tax_included_in_price: false
+            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+        status: 200
+    getProductByID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/ProductResponse"
+      example:
+        data:
+          product:
+            ui:
+              features:
+              - Unlimited projects
+              - Priority support
+              badge: Popular
+              cta_text: Get Started
+              highlighted: true
+              tagline: For growing teams
+              display_name: Professional
+              sort_order: 1
+            name: Basic Plan
+            description: Our basic subscription tier
+            id: basic_plan
+            type: service
+            prices:
+            - interval_count: 1
+              amount: 1999
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              meter: api_requests
+              billing_scheme: per_unit
+              tiers_mode: graduated
+              default: false
+              public: true
+              ui:
+                billing_period: per month
+                features:
+                - Billed monthly
+                price_display:
+                  show_currency: true
+                  custom_text: Contact us
+                  suffix: /mo
+                display_name: Monthly
+                limits:
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+              usage_type: licensed
+              currency: usd
+              interval: month
+              id: basic_monthly
+              tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            - interval_count: 1
+              amount: 1999
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              meter: api_requests
+              billing_scheme: per_unit
+              tiers_mode: graduated
+              default: false
+              public: true
+              ui:
+                billing_period: per month
+                features:
+                - Billed monthly
+                price_display:
+                  show_currency: true
+                  custom_text: Contact us
+                  suffix: /mo
+                display_name: Monthly
+                limits:
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+                - unit: requests
+                  text: Up to 1000 API calls
+                  value: 1000
+              usage_type: licensed
+              currency: usd
+              interval: month
+              id: basic_monthly
+              tax_included_in_price: false
+              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+            stripe_id: prod_1SRiyyCJIZaBlhY1
+        status: 200
+    getMeterByID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/MeterResponse"
+      example:
+        data:
+          meter:
+            default_aggregation:
+              formula: sum
+            value_settings:
+              event_payload_key: value
+            event_name: api_request
+            id: api_requests
+            customer_mapping:
+              event_payload_key: customer_id
+              type: by_id
+            display_name: API Requests
+            stripe_id: mtr_1SRiyyCJIZaBlhY1
+        status: 200
     convertStripeIDToConfigID_200_response:
       allOf:
       - $ref: "#/components/schemas/SuccessResponse"
@@ -8820,6 +10235,51 @@ components:
           item_type: price
           history_count: 1
           stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
+        status: 200
+    getWebhookSecret_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/WebhookSecretResponse"
+      example:
+        data:
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+          secret: whsec_xxx
+          stripe_id: we_1SRiyyCJIZaBlhY1
+          url: https://example.com/webhooks/stripe
+          events:
+          - events
+          - events
+          connect: false
+        status: 200
+    configureWebhooks_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/WebhooksConfigResponse"
+      example:
+        data:
+          webhooks:
+          - action: created
+            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+            secret: whsec_xxx
+            stripe_id: we_1SRiyyCJIZaBlhY1
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            connect: false
+          - action: created
+            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
+            secret: whsec_xxx
+            stripe_id: we_1SRiyyCJIZaBlhY1
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            connect: false
         status: 200
     createTenant_200_response:
       allOf:

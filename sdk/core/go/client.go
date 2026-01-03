@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control via Ory Keto  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.9.18
+API version: 0.10.0
 Contact: support@omnibase.dev
 */
 
@@ -42,7 +42,7 @@ var (
 	queryDescape    = strings.NewReplacer( "%5B", "[", "%5D", "]" )
 )
 
-// APIClient manages communication with the Omnibase REST API API v0.9.18
+// APIClient manages communication with the Omnibase REST API API v0.10.0
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration
@@ -65,6 +65,8 @@ type APIClient struct {
 	V1StripeAPI *V1StripeAPIService
 
 	V1TenantsAPI *V1TenantsAPIService
+
+	V1WebhooksAPI *V1WebhooksAPIService
 }
 
 type service struct {
@@ -91,6 +93,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.V1StorageAPI = (*V1StorageAPIService)(&c.common)
 	c.V1StripeAPI = (*V1StripeAPIService)(&c.common)
 	c.V1TenantsAPI = (*V1TenantsAPIService)(&c.common)
+	c.V1WebhooksAPI = (*V1WebhooksAPIService)(&c.common)
 
 	return c
 }

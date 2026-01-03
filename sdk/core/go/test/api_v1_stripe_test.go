@@ -36,6 +36,48 @@ func Test_omnibase_V1StripeAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1StripeAPIService GetMeterByID", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var meterId string
+
+		resp, httpRes, err := apiClient.V1StripeAPI.GetMeterByID(context.Background(), meterId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1StripeAPIService GetPriceByID", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var priceId string
+
+		resp, httpRes, err := apiClient.V1StripeAPI.GetPriceByID(context.Background(), priceId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1StripeAPIService GetProductByID", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var productId string
+
+		resp, httpRes, err := apiClient.V1StripeAPI.GetProductByID(context.Background(), productId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1StripeAPIService GetStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test

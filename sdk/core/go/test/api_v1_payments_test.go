@@ -22,6 +22,20 @@ func Test_omnibase_V1PaymentsAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
+	t.Run("Test V1PaymentsAPIService AddInvoiceLineItem", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var invoiceId string
+
+		resp, httpRes, err := apiClient.V1PaymentsAPI.AddInvoiceLineItem(context.Background(), invoiceId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1PaymentsAPIService CreateCheckout", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -46,11 +60,65 @@ func Test_omnibase_V1PaymentsAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1PaymentsAPIService CreateInvoice", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1PaymentsAPI.CreateInvoice(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1PaymentsAPIService FinalizeInvoice", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var invoiceId string
+
+		resp, httpRes, err := apiClient.V1PaymentsAPI.FinalizeInvoice(context.Background(), invoiceId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1PaymentsAPIService GetInvoice", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var invoiceId string
+
+		resp, httpRes, err := apiClient.V1PaymentsAPI.GetInvoice(context.Background(), invoiceId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1PaymentsAPIService RecordUsage", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1PaymentsAPIService UpdateInvoice", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var invoiceId string
+
+		resp, httpRes, err := apiClient.V1PaymentsAPI.UpdateInvoice(context.Background(), invoiceId).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
