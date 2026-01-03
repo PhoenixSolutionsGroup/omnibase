@@ -5,6 +5,7 @@ All URIs are relative to *https://api.omnibase.tech*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**addInvoiceLineItem**](V1PaymentsApi.md#addinvoicelineitemoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item |
+| [**addInvoiceLineItemWithPriceId**](V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID |
 | [**createCheckout**](V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create checkout session |
 | [**createCustomerPortal**](V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create customer portal session |
 | [**createInvoice**](V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create invoice |
@@ -92,6 +93,89 @@ No authorization required
 | **200** | Line item added successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## addInvoiceLineItemWithPriceId
+
+> AddInvoiceLineItem200Response addInvoiceLineItemWithPriceId(xServiceKey, invoiceId, addInvoiceLineItemWithPriceIDRequest, xTenantId, xStripeCustomerId)
+
+Add invoice line item with price ID
+
+Adds a new line item to a draft invoice using a price ID and quantity.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - &#x60;X-Stripe-Customer-Id&#x60; header: Directly specify the Stripe customer ID - &#x60;X-Tenant-Id&#x60; header: Look up the Stripe customer ID from the tenant\&#39;s configuration  ## Price ID Resolution You must provide ONE of: - &#x60;price_id&#x60;: A config price ID (e.g., \&quot;hetzner_cx23_nbg1_hourly\&quot;) that will be looked up via the Stripe ID mapping table - &#x60;stripe_price_id&#x60;: A raw Stripe price ID (e.g., \&quot;price_1ABC...\&quot;) that will be used directly  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding metered usage line items - Adding subscription-based charges - Billing for compute hours, storage, etc. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1PaymentsApi,
+} from '@omnibase/core-js';
+import type { AddInvoiceLineItemWithPriceIdRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const api = new V1PaymentsApi();
+
+  const body = {
+    // string | Service key for authentication
+    xServiceKey: xServiceKey_example,
+    // string | Stripe Invoice ID
+    invoiceId: invoiceId_example,
+    // AddInvoiceLineItemWithPriceIDRequest
+    addInvoiceLineItemWithPriceIDRequest: ...,
+    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
+    xStripeCustomerId: xStripeCustomerId_example,
+  } satisfies AddInvoiceLineItemWithPriceIdRequest;
+
+  try {
+    const data = await api.addInvoiceLineItemWithPriceId(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
+| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
+| **addInvoiceLineItemWithPriceIDRequest** | [AddInvoiceLineItemWithPriceIDRequest](AddInvoiceLineItemWithPriceIDRequest.md) |  | |
+| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | [Optional] [Defaults to `undefined`] |
+| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | [Optional] [Defaults to `undefined`] |
+
+### Return type
+
+[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`, `text/plain`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Line item added successfully |  -  |
+| **400** | Bad Request - Invalid request parameters |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

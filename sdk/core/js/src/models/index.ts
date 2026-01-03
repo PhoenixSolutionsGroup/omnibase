@@ -6,6 +6,7 @@ export * from './AcceptInviteResponse';
 export * from './ActiveTenantResponse';
 export * from './AddInvoiceLineItem200Response';
 export * from './AddInvoiceLineItemRequest';
+export * from './AddInvoiceLineItemWithPriceIDRequest';
 export * from './AddSubscription200Response';
 export * from './AddSubscriptionRequest';
 export * from './AddSubscriptionResponse';
