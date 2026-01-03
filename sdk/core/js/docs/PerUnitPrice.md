@@ -31,7 +31,7 @@ const example = {
   "stripeId": price_1SRiyyCJIZaBlhY1NpAJFhNU,
   "_public": true,
   "taxIncludedInPrice": false,
-  "amount": 1999,
+  "amount": 0.273,
   "currency": null,
   "interval": null,
   "intervalCount": 1,

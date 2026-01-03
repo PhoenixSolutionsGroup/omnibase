@@ -8,3 +8,4 @@ export * from './V1PermissionsApi';
 export * from './V1StorageApi';
 export * from './V1StripeApi';
 export * from './V1TenantsApi';
+export * from './V1WebhooksApi';

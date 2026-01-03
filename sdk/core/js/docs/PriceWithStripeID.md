@@ -32,7 +32,7 @@ const example = {
   "id": basic_monthly,
   "_public": true,
   "taxIncludedInPrice": false,
-  "amount": 1999,
+  "amount": 0.273,
   "currency": null,
   "interval": null,
   "intervalCount": 1,

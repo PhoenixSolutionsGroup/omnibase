@@ -1,4 +1,4 @@
-# @omnibase/core-js@0.9.18
+# @omnibase/core-js@0.10.1
 
 A TypeScript SDK client for the api.omnibase.tech API.
 
@@ -73,9 +73,14 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1ConfigurationApi* | [**uploadDatabaseMigrations**](docs/V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations
 *V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config
 *V1EventsApi* | [**connectWebSocket**](docs/V1EventsApi.md#connectwebsocket) | **GET** /api/v1/events | WebSocket connection for real-time events
+*V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitemoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item
 *V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create checkout session
 *V1PaymentsApi* | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create customer portal session
+*V1PaymentsApi* | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create invoice
+*V1PaymentsApi* | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoiceoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize invoice
+*V1PaymentsApi* | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get invoice
 *V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record metered usage
+*V1PaymentsApi* | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update invoice
 *V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermissionoperation) | **POST** /api/v1/permissions/check | Check permission
 *V1PermissionsApi* | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship
 *V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
@@ -83,6 +88,9 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1StorageApi* | [**downloadFile**](docs/V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage
 *V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
 *V1StripeApi* | [**convertStripeIDToConfigID**](docs/V1StripeApi.md#convertstripeidtoconfigid) | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
+*V1StripeApi* | [**getMeterByID**](docs/V1StripeApi.md#getmeterbyid) | **GET** /api/v1/stripe/config/meters/{meter_id} | Get meter by ID
+*V1StripeApi* | [**getPriceByID**](docs/V1StripeApi.md#getpricebyid) | **GET** /api/v1/stripe/config/prices/{price_id} | Get price by ID
+*V1StripeApi* | [**getProductByID**](docs/V1StripeApi.md#getproductbyid) | **GET** /api/v1/stripe/config/products/{product_id} | Get product by ID
 *V1StripeApi* | [**getStripeConfig**](docs/V1StripeApi.md#getstripeconfig) | **GET** /api/v1/stripe/config | Get public Stripe config
 *V1StripeApi* | [**getStripeConfigAdmin**](docs/V1StripeApi.md#getstripeconfigadmin) | **GET** /api/v1/stripe/admin/config | Get full Stripe config (admin)
 *V1TenantsApi* | [**acceptInvite**](docs/V1TenantsApi.md#acceptinviteoperation) | **PUT** /api/v1/tenants/invites/accept | Accept tenant invite
@@ -103,6 +111,8 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1TenantsApi* | [**switchActiveTenant**](docs/V1TenantsApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch active tenant
 *V1TenantsApi* | [**updateRole**](docs/V1TenantsApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update role
 *V1TenantsApi* | [**updateTenantUserRole**](docs/V1TenantsApi.md#updatetenantuserroleoperation) | **PUT** /api/v1/tenants/users | Update user role
+*V1WebhooksApi* | [**configureWebhooks**](docs/V1WebhooksApi.md#configurewebhooks) | **POST** /api/v1/stripe/config/webhooks | Configure multiple webhook endpoints
+*V1WebhooksApi* | [**getWebhookSecret**](docs/V1WebhooksApi.md#getwebhooksecret) | **GET** /api/v1/stripe/config/webhook | Get webhook secret
 
 
 ### Models
@@ -111,6 +121,8 @@ All URIs are relative to *https://api.omnibase.tech*
 - [AcceptInviteRequest](docs/AcceptInviteRequest.md)
 - [AcceptInviteResponse](docs/AcceptInviteResponse.md)
 - [ActiveTenantResponse](docs/ActiveTenantResponse.md)
+- [AddInvoiceLineItem200Response](docs/AddInvoiceLineItem200Response.md)
+- [AddInvoiceLineItemRequest](docs/AddInvoiceLineItemRequest.md)
 - [AddSubscription200Response](docs/AddSubscription200Response.md)
 - [AddSubscriptionRequest](docs/AddSubscriptionRequest.md)
 - [AddSubscriptionResponse](docs/AddSubscriptionResponse.md)
@@ -128,6 +140,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [ConfigHistoryItem](docs/ConfigHistoryItem.md)
 - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
 - [ConfigHistoryResponse](docs/ConfigHistoryResponse.md)
+- [ConfigureWebhooks200Response](docs/ConfigureWebhooks200Response.md)
 - [ConflictResponse](docs/ConflictResponse.md)
 - [ConvertStripeIDToConfigID200Response](docs/ConvertStripeIDToConfigID200Response.md)
 - [CreateCheckout200Response](docs/CreateCheckout200Response.md)
@@ -136,6 +149,8 @@ All URIs are relative to *https://api.omnibase.tech*
 - [CreateCustomerPortal200Response](docs/CreateCustomerPortal200Response.md)
 - [CreateEmailTemplateRequest](docs/CreateEmailTemplateRequest.md)
 - [CreateInvite200Response](docs/CreateInvite200Response.md)
+- [CreateInvoice200Response](docs/CreateInvoice200Response.md)
+- [CreateInvoiceRequest](docs/CreateInvoiceRequest.md)
 - [CreateOrUpdateEmailTemplate200Response](docs/CreateOrUpdateEmailTemplate200Response.md)
 - [CreateOrUpdateEmailTemplate200ResponseAllOfData](docs/CreateOrUpdateEmailTemplate200ResponseAllOfData.md)
 - [CreatePortalRequest](docs/CreatePortalRequest.md)
@@ -176,19 +191,26 @@ All URIs are relative to *https://api.omnibase.tech*
 - [DownloadResponse](docs/DownloadResponse.md)
 - [EmailTemplate](docs/EmailTemplate.md)
 - [ErrorResponse](docs/ErrorResponse.md)
+- [FinalizeInvoiceRequest](docs/FinalizeInvoiceRequest.md)
 - [ForbiddenResponse](docs/ForbiddenResponse.md)
 - [GetActiveTenant200Response](docs/GetActiveTenant200Response.md)
 - [GetEmailTemplates200Response](docs/GetEmailTemplates200Response.md)
 - [GetEmailTemplates200ResponseAllOfData](docs/GetEmailTemplates200ResponseAllOfData.md)
 - [GetIdentity200Response](docs/GetIdentity200Response.md)
+- [GetMeterByID200Response](docs/GetMeterByID200Response.md)
+- [GetPriceByID200Response](docs/GetPriceByID200Response.md)
+- [GetProductByID200Response](docs/GetProductByID200Response.md)
 - [GetRoleDefinitions200Response](docs/GetRoleDefinitions200Response.md)
 - [GetSession200Response](docs/GetSession200Response.md)
 - [GetStripeConfig200Response](docs/GetStripeConfig200Response.md)
 - [GetStripeConfigHistory200Response](docs/GetStripeConfigHistory200Response.md)
 - [GetTenantBillingStatus200Response](docs/GetTenantBillingStatus200Response.md)
 - [GetTenantJWT200Response](docs/GetTenantJWT200Response.md)
+- [GetWebhookSecret200Response](docs/GetWebhookSecret200Response.md)
 - [InternalServerError](docs/InternalServerError.md)
 - [InternalServerErrorResponse](docs/InternalServerErrorResponse.md)
+- [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
+- [InvoiceResponse](docs/InvoiceResponse.md)
 - [JWTTokenResponse](docs/JWTTokenResponse.md)
 - [KratosIdentity](docs/KratosIdentity.md)
 - [KratosIdentityCredentials](docs/KratosIdentityCredentials.md)
@@ -208,6 +230,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [Meter](docs/Meter.md)
 - [MeterCustomerMapping](docs/MeterCustomerMapping.md)
 - [MeterDefaultAggregation](docs/MeterDefaultAggregation.md)
+- [MeterResponse](docs/MeterResponse.md)
 - [MeterValueSettings](docs/MeterValueSettings.md)
 - [MeterWithStripeID](docs/MeterWithStripeID.md)
 - [MigrationErrorResponse](docs/MigrationErrorResponse.md)
@@ -222,9 +245,11 @@ All URIs are relative to *https://api.omnibase.tech*
 - [Price](docs/Price.md)
 - [PriceDisplay](docs/PriceDisplay.md)
 - [PriceLimit](docs/PriceLimit.md)
+- [PriceResponse](docs/PriceResponse.md)
 - [PriceUI](docs/PriceUI.md)
 - [PriceWithStripeID](docs/PriceWithStripeID.md)
 - [Product](docs/Product.md)
+- [ProductResponse](docs/ProductResponse.md)
 - [ProductUI](docs/ProductUI.md)
 - [ProductWithStripeIDs](docs/ProductWithStripeIDs.md)
 - [PullStripeConfig200Response](docs/PullStripeConfig200Response.md)
@@ -262,6 +287,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [TiersMode](docs/TiersMode.md)
 - [Unauthorized](docs/Unauthorized.md)
 - [UnauthorizedResponse](docs/UnauthorizedResponse.md)
+- [UpdateInvoiceRequest](docs/UpdateInvoiceRequest.md)
 - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
 - [UpdateTenantUserRole200Response](docs/UpdateTenantUserRole200Response.md)
 - [UpdateTenantUserRoleRequest](docs/UpdateTenantUserRoleRequest.md)
@@ -271,6 +297,11 @@ All URIs are relative to *https://api.omnibase.tech*
 - [UploadResponse](docs/UploadResponse.md)
 - [UsageType](docs/UsageType.md)
 - [UserTenantListItem](docs/UserTenantListItem.md)
+- [WebhookEndpointConfig](docs/WebhookEndpointConfig.md)
+- [WebhookResult](docs/WebhookResult.md)
+- [WebhookSecretResponse](docs/WebhookSecretResponse.md)
+- [WebhooksConfigRequest](docs/WebhooksConfigRequest.md)
+- [WebhooksConfigResponse](docs/WebhooksConfigResponse.md)
 - [WhoAmI200Response](docs/WhoAmI200Response.md)
 - [WhoAmIResponse](docs/WhoAmIResponse.md)
 
@@ -306,8 +337,8 @@ This TypeScript SDK client supports the [Fetch API](https://fetch.spec.whatwg.or
 and is automatically generated by the
 [OpenAPI Generator](https://openapi-generator.tech) project:
 
-- API version: `0.9.18`
-- Package version: `0.9.18`
+- API version: `0.10.1`
+- Package version: `0.10.1`
 - Generator version: `7.17.0`
 - Build package: `org.openapitools.codegen.languages.TypeScriptFetchClientCodegen`
 
