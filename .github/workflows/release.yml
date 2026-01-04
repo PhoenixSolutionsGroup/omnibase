@@ -199,7 +199,7 @@ jobs:
         run: ./scripts/test-api.sh --local
 
       - name: Show service logs on failure
-        if: failure()
+        if: "!success()"
         run: |
           echo "=== API Logs (errors) ==="
           docker logs api-rest-api-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
