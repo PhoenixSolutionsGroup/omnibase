@@ -28,12 +28,29 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.21'
+          cache: true
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
+      - name: Cache bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            bun-${{ runner.os }}-
+
+      - name: Cache k6
+        id: cache-k6
+        uses: actions/cache@v4
+        with:
+          path: /usr/bin/k6
+          key: k6-${{ runner.os }}-latest
+
       - name: Install k6
+        if: steps.cache-k6.outputs.cache-hit != 'true'
         run: |
           sudo gpg -k
           sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
