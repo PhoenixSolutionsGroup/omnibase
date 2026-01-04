@@ -30,7 +30,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@redocly/cli": "^2.14.2"
+    "@redocly/cli": "^2.14.3"
   },
   "overrides": {
     "find-up": "5.0.0"
