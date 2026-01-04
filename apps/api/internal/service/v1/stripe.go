@@ -488,10 +488,8 @@ func (s *StripeService) CreateInvoice(customerID string, currency string, autoAd
 		params.Description = stripe.String(description)
 	}
 
-	if metadata != nil {
-		for k, v := range metadata {
-			params.AddMetadata(k, v)
-		}
+	for k, v := range metadata {
+		params.AddMetadata(k, v)
 	}
 
 	s.applyConnectAccount(params)
@@ -536,10 +534,8 @@ func (s *StripeService) UpdateInvoice(invoiceID string, description *string, met
 		params.Description = description
 	}
 
-	if metadata != nil {
-		for k, v := range metadata {
-			params.AddMetadata(k, v)
-		}
+	for k, v := range metadata {
+		params.AddMetadata(k, v)
 	}
 
 	inv, err := invoice.Update(invoiceID, params)
@@ -581,6 +577,45 @@ func (s *StripeService) AddInvoiceLineItem(invoiceID string, customerID string, 
 		"invoice_id", invoiceID,
 		"item_id", item.ID,
 		"amount", amount)
+
+	return item, nil
+}
+
+// AddInvoiceLineItemByPrice adds a line item to a draft invoice using a Stripe price ID and quantity
+func (s *StripeService) AddInvoiceLineItemByPrice(invoiceID string, customerID string, stripePriceID string, quantity int64, currency string, description string, metadata map[string]string) (*stripe.InvoiceItem, error) {
+	params := &stripe.InvoiceItemParams{
+		Customer:    stripe.String(customerID),
+		Invoice:     stripe.String(invoiceID),
+		Quantity:    stripe.Int64(quantity),
+		Currency:    stripe.String(currency),
+		Description: stripe.String(description),
+		Pricing: &stripe.InvoiceItemPricingParams{
+			Price: stripe.String(stripePriceID),
+		},
+	}
+
+	for k, v := range metadata {
+		params.AddMetadata(k, v)
+	}
+
+	s.applyConnectAccount(params)
+
+	item, err := invoiceitem.New(params)
+	if err != nil {
+		logger.Logger.Error("Failed to add invoice line item by price",
+			"invoice_id", invoiceID,
+			"customer_id", customerID,
+			"price_id", stripePriceID,
+			"quantity", quantity,
+			"error", err)
+		return nil, fmt.Errorf("failed to add invoice line item: %w", err)
+	}
+
+	logger.Logger.Debug("Invoice line item added by price",
+		"invoice_id", invoiceID,
+		"item_id", item.ID,
+		"price_id", stripePriceID,
+		"quantity", quantity)
 
 	return item, nil
 }

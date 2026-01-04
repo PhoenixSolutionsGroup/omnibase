@@ -41,5 +41,6 @@ func SetUpPaymentRoutes(router *gin.RouterGroup) {
 	invoicesRouter.GET("/:invoice_id", paymentHandler.GetInvoice)
 	invoicesRouter.PATCH("/:invoice_id", paymentHandler.UpdateInvoice)
 	invoicesRouter.POST("/:invoice_id/items", paymentHandler.AddInvoiceLineItem)
+	invoicesRouter.POST("/:invoice_id/items/price", paymentHandler.AddInvoiceLineItemWithPriceID)
 	invoicesRouter.POST("/:invoice_id/finalize", paymentHandler.FinalizeInvoice)
 }
