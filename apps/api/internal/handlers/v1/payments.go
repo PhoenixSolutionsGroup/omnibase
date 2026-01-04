@@ -50,6 +50,12 @@ func handleStripeError(ctx *gin.Context, err error) bool {
 		return false
 	}
 
+	// Check for rate limit errors first (HTTP 429)
+	if stripeErr.HTTPStatusCode == 429 {
+		handlers.NewTooManyRequestsResponse(ctx, stripeErr.Msg)
+		return true
+	}
+
 	switch stripeErr.Type {
 	case stripe.ErrorTypeInvalidRequest:
 		if strings.HasPrefix(stripeErr.Msg, "No such") {
@@ -62,7 +68,7 @@ func handleStripeError(ctx *gin.Context, err error) bool {
 		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
 		return true
 	case stripe.ErrorTypeIdempotency:
-		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		handlers.NewConflictResponse(ctx, stripeErr.Msg)
 		return true
 	case stripe.ErrorTypeAPI:
 		// API errors are server-side Stripe issues, not client errors

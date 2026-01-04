@@ -668,6 +668,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/portal:
@@ -714,6 +718,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/usage:
@@ -755,6 +761,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices:
@@ -820,6 +828,10 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}:
@@ -870,6 +882,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
     patch:
@@ -928,6 +942,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}/items:
@@ -1005,6 +1023,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}/items/price:
@@ -1087,6 +1109,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}/finalize:
@@ -1146,6 +1172,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '429':
+          $ref: '#/components/responses/TooManyRequestsError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/permissions/check:
@@ -4446,6 +4476,21 @@ components:
           type: string
           description: Stripe Checkout Session ID
           example: cs_test_a1b2c3d4e5f6
+    TooManyRequestsResponse:
+      type: object
+      description: Too Many Requests error response (429)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 429
+        error:
+          type: string
+          description: Error message
+          example: Too Many Requests
+      required:
+        - status
+        - error
     CreatePortalRequest:
       type: object
       required:
@@ -6817,6 +6862,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/NotFoundResponse'
+    TooManyRequestsError:
+      description: Too Many Requests - Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TooManyRequestsResponse'
     ForbiddenError:
       description: Forbidden - Insufficient permissions
       content:

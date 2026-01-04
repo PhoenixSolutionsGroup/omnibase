@@ -397,6 +397,16 @@ export interface CreateCheckoutResponse {
   session_id: string;
 }
 
+/**
+ * Too Many Requests error response (429)
+ */
+export interface TooManyRequestsResponse {
+  /** HTTP status code */
+  status: number;
+  /** Error message */
+  error: string;
+}
+
 export interface CreatePortalRequest {
   /**
    * URL to redirect to after leaving the portal (required, cannot be empty)
@@ -2147,6 +2157,11 @@ export type ConflictErrorResponse = ConflictResponse;
  * Not Found - Resource not found
  */
 export type NotFoundErrorResponse = NotFoundResponse;
+
+/**
+ * Too Many Requests - Rate limit exceeded
+ */
+export type TooManyRequestsErrorResponse = TooManyRequestsResponse;
 
 /**
  * Forbidden - Insufficient permissions

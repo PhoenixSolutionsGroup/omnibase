@@ -177,3 +177,22 @@ func NewConflictResponse(ctx *gin.Context, message string) {
 		Error:  message,
 	})
 }
+
+// TooManyRequestsResponse represents a 429 Too Many Requests error response
+type TooManyRequestsResponse struct {
+	// HTTP status code
+	Status int `json:"status" example:"429"`
+	// Error message
+	Error string `json:"error" example:"Too Many Requests"`
+}
+
+func NewTooManyRequestsResponse(ctx *gin.Context, message string) {
+	if message == "" {
+		message = "Too Many Requests"
+	}
+	logger.Logger.Warn("Rate limited", "status", http.StatusTooManyRequests, "path", ctx.Request.URL.Path, "message", message)
+	ctx.JSON(http.StatusTooManyRequests, TooManyRequestsResponse{
+		Status: http.StatusTooManyRequests,
+		Error:  message,
+	})
+}

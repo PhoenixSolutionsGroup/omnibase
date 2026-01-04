@@ -40,6 +40,10 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -87,6 +91,8 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -129,6 +135,8 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -195,6 +203,10 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -246,6 +258,8 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
     patch:
@@ -304,6 +318,10 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -382,6 +400,10 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -465,6 +487,10 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -525,5 +551,9 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '409':
+          $ref: '../schemas/errors.yaml#/components/responses/ConflictError'
+        '429':
+          $ref: '../schemas/errors.yaml#/components/responses/TooManyRequestsError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

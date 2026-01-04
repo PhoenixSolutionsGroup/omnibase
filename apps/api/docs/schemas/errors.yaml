@@ -178,6 +178,22 @@ components:
         - status
         - error
 
+    TooManyRequestsResponse:
+      type: object
+      description: Too Many Requests error response (429)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 429
+        error:
+          type: string
+          description: Error message
+          example: Too Many Requests
+      required:
+        - status
+        - error
+
   responses:
     BadRequestError:
       description: Bad Request - Invalid request parameters
@@ -217,7 +233,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ConflictResponse'
-    
+
+    TooManyRequestsError:
+      description: Too Many Requests - Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TooManyRequestsResponse'
+
     InternalServerError:
       description: Internal Server Error - Server encountered an error
       content:
