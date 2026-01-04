@@ -70,7 +70,8 @@ func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
 	}
 
 	// Query to join tenant_users with identities and extract traits
-	var users []TenantUserResponse
+	// Initialize as empty slice to ensure JSON response is [] not null when no users
+	users := []TenantUserResponse{}
 	err = h.db.Raw(`
 		SELECT
 			tu.user_id,
