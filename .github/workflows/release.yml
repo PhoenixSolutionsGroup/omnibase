@@ -126,6 +126,34 @@ jobs:
         working-directory: tests/api
         run: omnibase sync --env local all
 
+      - name: Wait for services after sync
+        run: |
+          echo "Waiting for services after sync..."
+
+          # Wait for Permissions (restarted during sync)
+          echo "Waiting for Permissions..."
+          for i in {1..30}; do
+            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
+              echo "Permissions is ready!"
+              break
+            fi
+            echo "Permissions attempt $i/30..."
+            sleep 2
+          done
+
+          # Verify API is still healthy
+          echo "Verifying API..."
+          for i in {1..10}; do
+            if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
+              echo "API is ready!"
+              break
+            fi
+            echo "API attempt $i/10..."
+            sleep 2
+          done
+
+          echo "All services ready!"
+
       - name: Run API tests
         env:
           API_URL: http://localhost:8080
@@ -234,7 +262,7 @@ jobs:
   release-npm:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [test, release-api]
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     permissions:
       contents: write
