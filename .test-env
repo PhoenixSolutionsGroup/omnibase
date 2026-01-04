@@ -1,7 +1,0 @@
-# Auto-generated test environment variables
-# Created: Fri 21 Nov 2025 22:39:22 AEDT
-export TEST_USER_ID="94750a47-1ac3-446b-8e66-70e540b29072"
-export TEST_TENANT_ID="25ce2bbe-3017-4d99-913f-9d6bc9d12c2d"
-export TEST_SERVICE_KEY="VERY_SECRET_KEY"
-export TEST_API_URL="http://127.0.0.1:8080"
-export TEST_KRATOS_ADMIN_URL="http://localhost:4434"
