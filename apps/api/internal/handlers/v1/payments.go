@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v82"
@@ -33,6 +34,43 @@ func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
 	return &PaymentsHandler{
 		stripe: stripe,
 		db:     db,
+	}
+}
+
+// isValidInvoiceID checks if the invoice ID has the correct Stripe format
+func isValidInvoiceID(invoiceID string) bool {
+	return strings.HasPrefix(invoiceID, "in_")
+}
+
+// handleStripeError processes Stripe errors and returns appropriate HTTP responses
+// Returns true if the error was handled, false otherwise
+func handleStripeError(ctx *gin.Context, err error) bool {
+	var stripeErr *stripe.Error
+	if !errors.As(err, &stripeErr) {
+		return false
+	}
+
+	switch stripeErr.Type {
+	case stripe.ErrorTypeInvalidRequest:
+		if strings.HasPrefix(stripeErr.Msg, "No such") {
+			handlers.NewNotFoundResponse(ctx, stripeErr.Msg)
+			return true
+		}
+		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeCard:
+		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeIdempotency:
+		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeAPI:
+		// API errors are server-side Stripe issues, not client errors
+		return false
+	default:
+		// For any other Stripe error types, treat as bad request
+		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
 	}
 }
 
@@ -114,6 +152,22 @@ type AddInvoiceLineItemRequest struct {
 type FinalizeInvoiceRequest struct {
 	// Whether to auto-advance the invoice (send immediately)
 	AutoAdvance bool `json:"auto_advance" example:"true"`
+}
+
+// AddInvoiceLineItemWithPriceIDRequest represents the request to add a line item using a price ID
+type AddInvoiceLineItemWithPriceIDRequest struct {
+	// Config price ID (e.g., "hetzner_cx23_nbg1_hourly") - looked up via GetStripeIDByConfigID
+	PriceID string `json:"price_id,omitempty" example:"hetzner_cx23_nbg1_hourly"`
+	// Raw Stripe price ID (e.g., "price_1ABC...") - used directly
+	StripePriceID string `json:"stripe_price_id,omitempty" example:"price_1ABC123"`
+	// Quantity of units (required)
+	Quantity int64 `json:"quantity" binding:"required" example:"720"`
+	// Description for the line item (required)
+	Description string `json:"description" binding:"required,min=1" example:"VPS Compute - 720 hours"`
+	// Three-letter ISO currency code (required)
+	Currency string `json:"currency" binding:"required,len=3" example:"usd"`
+	// Optional metadata key-value pairs
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 // InvoiceResponse represents the invoice response
@@ -282,6 +336,9 @@ func (h *PaymentsHandler) CreateInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.CreateInvoice(customerID.(string), req.Currency, req.AutoAdvance, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to create invoice", "customer_id", customerID.(string), "error", err)
+		if handleStripeError(ctx, err) {
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create invoice: %s", err))
 		return
 	}
@@ -305,11 +362,19 @@ func (h *PaymentsHandler) GetInvoice(ctx *gin.Context) {
 		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
 		return
 	}
+	if !isValidInvoiceID(invoiceID) {
+		logger.Logger.Warn("Invalid invoice_id format", "invoice_id", invoiceID)
+		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
+		return
+	}
 
 	logger.Logger.Debug("Getting invoice", "invoice_id", invoiceID)
 	inv, err := h.stripe.GetInvoice(invoiceID)
 	if err != nil {
 		logger.Logger.Error("Failed to get invoice", "invoice_id", invoiceID, "error", err)
+		if handleStripeError(ctx, err) {
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to get invoice: %s", err))
 		return
 	}
@@ -333,6 +398,11 @@ func (h *PaymentsHandler) UpdateInvoice(ctx *gin.Context) {
 		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
 		return
 	}
+	if !isValidInvoiceID(invoiceID) {
+		logger.Logger.Warn("Invalid invoice_id format", "invoice_id", invoiceID)
+		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
+		return
+	}
 
 	var req UpdateInvoiceRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -345,10 +415,7 @@ func (h *PaymentsHandler) UpdateInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.UpdateInvoice(invoiceID, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to update invoice", "invoice_id", invoiceID, "error", err)
-		// Check if this is a Stripe validation error (e.g., trying to update a finalized invoice)
-		var stripeErr *stripe.Error
-		if errors.As(err, &stripeErr) && stripeErr.Type == stripe.ErrorTypeInvalidRequest {
-			handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
+		if handleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update invoice: %s", err))
@@ -374,6 +441,11 @@ func (h *PaymentsHandler) AddInvoiceLineItem(ctx *gin.Context) {
 		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
 		return
 	}
+	if !isValidInvoiceID(invoiceID) {
+		logger.Logger.Warn("Invalid invoice_id format", "invoice_id", invoiceID)
+		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
+		return
+	}
 
 	var req AddInvoiceLineItemRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -394,6 +466,9 @@ func (h *PaymentsHandler) AddInvoiceLineItem(ctx *gin.Context) {
 	item, err := h.stripe.AddInvoiceLineItem(invoiceID, customerID.(string), req.Amount, req.Currency, req.Description)
 	if err != nil {
 		logger.Logger.Error("Failed to add invoice line item", "invoice_id", invoiceID, "error", err)
+		if handleStripeError(ctx, err) {
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to add invoice line item: %s", err))
 		return
 	}
@@ -413,6 +488,11 @@ func (h *PaymentsHandler) FinalizeInvoice(ctx *gin.Context) {
 		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
 		return
 	}
+	if !isValidInvoiceID(invoiceID) {
+		logger.Logger.Warn("Invalid invoice_id format", "invoice_id", invoiceID)
+		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
+		return
+	}
 
 	var req FinalizeInvoiceRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -425,6 +505,9 @@ func (h *PaymentsHandler) FinalizeInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.FinalizeInvoice(invoiceID, req.AutoAdvance)
 	if err != nil {
 		logger.Logger.Error("Failed to finalize invoice", "invoice_id", invoiceID, "error", err)
+		if handleStripeError(ctx, err) {
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to finalize invoice: %s", err))
 		return
 	}
@@ -438,5 +521,76 @@ func (h *PaymentsHandler) FinalizeInvoice(ctx *gin.Context) {
 		CustomerID:       inv.Customer.ID,
 		InvoicePDF:       inv.InvoicePDF,
 		HostedInvoiceURL: inv.HostedInvoiceURL,
+	})
+}
+
+func (h *PaymentsHandler) AddInvoiceLineItemWithPriceID(ctx *gin.Context) {
+	invoiceID := ctx.Param("invoice_id")
+	if invoiceID == "" {
+		logger.Logger.Warn("Missing invoice_id parameter")
+		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
+		return
+	}
+	if !isValidInvoiceID(invoiceID) {
+		logger.Logger.Warn("Invalid invoice_id format", "invoice_id", invoiceID)
+		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
+		return
+	}
+
+	var req AddInvoiceLineItemWithPriceIDRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		logger.Logger.Warn("Invalid request payload", "error", err)
+		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
+		return
+	}
+
+	// Validate: require either price_id OR stripe_price_id (not both, not neither)
+	if req.PriceID == "" && req.StripePriceID == "" {
+		handlers.NewBadRequestResponse(ctx, "Either price_id or stripe_price_id is required")
+		return
+	}
+	if req.PriceID != "" && req.StripePriceID != "" {
+		handlers.NewBadRequestResponse(ctx, "Provide only one of price_id or stripe_price_id, not both")
+		return
+	}
+
+	// Get customer_id from middleware context
+	customerID, exists := ctx.Get("stripe_customer_id")
+	if !exists || customerID == nil {
+		logger.Logger.Warn("Missing stripe_customer_id in context")
+		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
+		return
+	}
+
+	// Resolve the actual Stripe price ID
+	var stripePriceID string
+	if req.StripePriceID != "" {
+		stripePriceID = req.StripePriceID
+	} else {
+		resolvedID, err := h.stripe.GetStripeIDByConfigID(req.PriceID)
+		if err != nil {
+			logger.Logger.Warn("Config ID not found", "config_id", req.PriceID, "error", err)
+			handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
+			return
+		}
+		stripePriceID = resolvedID
+	}
+
+	logger.Logger.Debug("Adding invoice line item with price", "invoice_id", invoiceID, "price_id", stripePriceID, "quantity", req.Quantity)
+	item, err := h.stripe.AddInvoiceLineItemByPrice(invoiceID, customerID.(string), stripePriceID, req.Quantity, req.Currency, req.Description, req.Metadata)
+	if err != nil {
+		logger.Logger.Error("Failed to add invoice line item with price", "invoice_id", invoiceID, "error", err)
+		if handleStripeError(ctx, err) {
+			return
+		}
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to add invoice line item: %s", err))
+		return
+	}
+
+	logger.Logger.Info("Invoice line item with price added successfully", "invoice_id", invoiceID, "item_id", item.ID)
+	handlers.NewSuccessResponse(ctx, &InvoiceLineItemResponse{
+		ID:          item.ID,
+		Amount:      item.Amount,
+		Description: item.Description,
 	})
 }
