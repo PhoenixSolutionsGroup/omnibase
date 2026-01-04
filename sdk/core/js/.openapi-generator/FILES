@@ -91,6 +91,7 @@ docs/GetStripeConfig200Response.md
 docs/GetStripeConfigHistory200Response.md
 docs/GetTenantBillingStatus200Response.md
 docs/GetTenantJWT200Response.md
+docs/GetTenantSubscription200Response.md
 docs/GetWebhookSecret200Response.md
 docs/InternalServerError.md
 docs/InternalServerErrorResponse.md
@@ -300,6 +301,7 @@ src/models/GetStripeConfig200Response.ts
 src/models/GetStripeConfigHistory200Response.ts
 src/models/GetTenantBillingStatus200Response.ts
 src/models/GetTenantJWT200Response.ts
+src/models/GetTenantSubscription200Response.ts
 src/models/GetWebhookSecret200Response.ts
 src/models/InternalServerError.ts
 src/models/InternalServerErrorResponse.ts

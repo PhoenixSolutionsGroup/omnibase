@@ -142,6 +142,7 @@ Class | Method | HTTP request | Description
 *V1TenantsAPI* | [**GetRoleDefinitions**](docs/V1TenantsAPI.md#getroledefinitions) | **Get** /api/v1/tenants/roles/definitions | Get namespace definitions
 *V1TenantsAPI* | [**GetTenantBillingStatus**](docs/V1TenantsAPI.md#gettenantbillingstatus) | **Get** /api/v1/tenants/billing-status | Get billing status
 *V1TenantsAPI* | [**GetTenantJWT**](docs/V1TenantsAPI.md#gettenantjwt) | **Get** /api/v1/tenants/jwt | Get PostgREST JWT token
+*V1TenantsAPI* | [**GetTenantSubscription**](docs/V1TenantsAPI.md#gettenantsubscription) | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan
 *V1TenantsAPI* | [**ListRoles**](docs/V1TenantsAPI.md#listroles) | **Get** /api/v1/tenants/roles | List roles
 *V1TenantsAPI* | [**ListTenantSubscriptions**](docs/V1TenantsAPI.md#listtenantsubscriptions) | **Get** /api/v1/tenants/subscriptions | Get tenant subscriptions
 *V1TenantsAPI* | [**ListTenantUsers**](docs/V1TenantsAPI.md#listtenantusers) | **Get** /api/v1/tenants/users | Get tenant users
@@ -246,6 +247,7 @@ Class | Method | HTTP request | Description
  - [GetStripeConfigHistory200Response](docs/GetStripeConfigHistory200Response.md)
  - [GetTenantBillingStatus200Response](docs/GetTenantBillingStatus200Response.md)
  - [GetTenantJWT200Response](docs/GetTenantJWT200Response.md)
+ - [GetTenantSubscription200Response](docs/GetTenantSubscription200Response.md)
  - [GetWebhookSecret200Response](docs/GetWebhookSecret200Response.md)
  - [InternalServerError](docs/InternalServerError.md)
  - [InternalServerErrorResponse](docs/InternalServerErrorResponse.md)

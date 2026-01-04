@@ -90,6 +90,7 @@ export * from './GetStripeConfig200Response';
 export * from './GetStripeConfigHistory200Response';
 export * from './GetTenantBillingStatus200Response';
 export * from './GetTenantJWT200Response';
+export * from './GetTenantSubscription200Response';
 export * from './GetWebhookSecret200Response';
 export * from './InternalServerError';
 export * from './InternalServerErrorResponse';

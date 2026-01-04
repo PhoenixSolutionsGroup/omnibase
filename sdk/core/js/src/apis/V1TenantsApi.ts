@@ -34,6 +34,7 @@ import type {
   GetRoleDefinitions200Response,
   GetTenantBillingStatus200Response,
   GetTenantJWT200Response,
+  GetTenantSubscription200Response,
   ListRoles200Response,
   ListTenantSubscriptions200Response,
   ListTenantUsers200Response,
@@ -86,6 +87,8 @@ import {
     GetTenantBillingStatus200ResponseToJSON,
     GetTenantJWT200ResponseFromJSON,
     GetTenantJWT200ResponseToJSON,
+    GetTenantSubscription200ResponseFromJSON,
+    GetTenantSubscription200ResponseToJSON,
     ListRoles200ResponseFromJSON,
     ListRoles200ResponseToJSON,
     ListTenantSubscriptions200ResponseFromJSON,
@@ -156,6 +159,10 @@ export interface GetRoleDefinitionsRequest {
 export interface GetTenantJWTRequest {
     xUserId?: string;
     xTenantId?: string;
+}
+
+export interface GetTenantSubscriptionRequest {
+    configPriceId: string;
 }
 
 export interface ListRolesRequest {
@@ -695,6 +702,53 @@ export class V1TenantsApi extends runtime.BaseAPI {
      */
     async getTenantJWT(requestParameters: GetTenantJWTRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantJWT200Response> {
         const response = await this.getTenantJWTRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns a single subscription for the specified config_price_id (plan ID).  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if tenant has a specific subscription - Get subscription details for a specific plan - Retrieve Stripe subscription ID for a plan 
+     * Get tenant subscription by plan
+     */
+    async getTenantSubscriptionRaw(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantSubscription200Response>> {
+        if (requestParameters['configPriceId'] == null) {
+            throw new runtime.RequiredError(
+                'configPriceId',
+                'Required parameter "configPriceId" was null or undefined when calling getTenantSubscription().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/tenants/subscriptions/{config_price_id}`;
+        urlPath = urlPath.replace(`{${"config_price_id"}}`, encodeURIComponent(String(requestParameters['configPriceId'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantSubscription200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns a single subscription for the specified config_price_id (plan ID).  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if tenant has a specific subscription - Get subscription details for a specific plan - Retrieve Stripe subscription ID for a plan 
+     * Get tenant subscription by plan
+     */
+    async getTenantSubscription(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantSubscription200Response> {
+        const response = await this.getTenantSubscriptionRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

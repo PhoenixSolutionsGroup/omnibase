@@ -104,6 +104,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1TenantsApi* | [**getRoleDefinitions**](docs/V1TenantsApi.md#getroledefinitions) | **GET** /api/v1/tenants/roles/definitions | Get namespace definitions
 *V1TenantsApi* | [**getTenantBillingStatus**](docs/V1TenantsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get billing status
 *V1TenantsApi* | [**getTenantJWT**](docs/V1TenantsApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get PostgREST JWT token
+*V1TenantsApi* | [**getTenantSubscription**](docs/V1TenantsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan
 *V1TenantsApi* | [**listRoles**](docs/V1TenantsApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles
 *V1TenantsApi* | [**listTenantSubscriptions**](docs/V1TenantsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | Get tenant subscriptions
 *V1TenantsApi* | [**listTenantUsers**](docs/V1TenantsApi.md#listtenantusers) | **GET** /api/v1/tenants/users | Get tenant users
@@ -208,6 +209,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [GetStripeConfigHistory200Response](docs/GetStripeConfigHistory200Response.md)
 - [GetTenantBillingStatus200Response](docs/GetTenantBillingStatus200Response.md)
 - [GetTenantJWT200Response](docs/GetTenantJWT200Response.md)
+- [GetTenantSubscription200Response](docs/GetTenantSubscription200Response.md)
 - [GetWebhookSecret200Response](docs/GetWebhookSecret200Response.md)
 - [InternalServerError](docs/InternalServerError.md)
 - [InternalServerErrorResponse](docs/InternalServerErrorResponse.md)

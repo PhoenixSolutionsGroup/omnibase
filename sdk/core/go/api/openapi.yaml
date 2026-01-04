@@ -3292,6 +3292,67 @@ paths:
       summary: Add subscription
       tags:
       - V1 Tenants
+  /api/v1/tenants/subscriptions/{config_price_id}:
+    get:
+      description: |
+        Returns a single subscription for the specified config_price_id (plan ID).
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Check if tenant has a specific subscription
+        - Get subscription details for a specific plan
+        - Retrieve Stripe subscription ID for a plan
+      operationId: getTenantSubscription
+      parameters:
+      - description: The configuration price ID (plan ID) to look up
+        example: neon_compute_starter
+        explode: false
+        in: path
+        name: config_price_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTenantSubscription_200_response"
+          description: Subscription found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Missing config_price_id parameter
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Subscription not found for the specified plan
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Failed to fetch subscription
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Get tenant subscription by plan
+      tags:
+      - V1 Tenants
   /api/v1/tenants/invites:
     post:
       description: |
@@ -10636,6 +10697,25 @@ components:
           subscription_id: sub_test_123
           message: Subscription canceled successfully
           status: canceled
+        status: 200
+    getTenantSubscription_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/SubscriptionResponse"
+      example:
+        data:
+          subscription_id: sub_1234567890
+          is_legacy_price: false
+          cancel_at_period_end: false
+          canceled_at: 0
+          trial_start: 6
+          trial_end: 1
+          current_period_end: 1707999000
+          current_period_start: 1705320600
+          config_price_id: neon_compute_starter
+          status: active
         status: 200
     createInvite_200_response:
       allOf:

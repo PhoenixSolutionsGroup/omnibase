@@ -14,6 +14,7 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**getRoleDefinitions**](V1TenantsApi.md#getroledefinitions) | **GET** /api/v1/tenants/roles/definitions | Get namespace definitions |
 | [**getTenantBillingStatus**](V1TenantsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get billing status |
 | [**getTenantJWT**](V1TenantsApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get PostgREST JWT token |
+| [**getTenantSubscription**](V1TenantsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan |
 | [**listRoles**](V1TenantsApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles |
 | [**listTenantSubscriptions**](V1TenantsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | Get tenant subscriptions |
 | [**listTenantUsers**](V1TenantsApi.md#listtenantusers) | **GET** /api/v1/tenants/users | Get tenant users |
@@ -833,6 +834,85 @@ example().catch(console.error);
 | **401** | User not authenticated |  -  |
 | **403** | Forbidden - Insufficient permissions |  -  |
 | **500** | Failed to create JWT token |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## getTenantSubscription
+
+> GetTenantSubscription200Response getTenantSubscription(configPriceId)
+
+Get tenant subscription by plan
+
+Returns a single subscription for the specified config_price_id (plan ID).  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if tenant has a specific subscription - Get subscription details for a specific plan - Retrieve Stripe subscription ID for a plan 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1TenantsApi,
+} from '@omnibase/core-js';
+import type { GetTenantSubscriptionRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1TenantsApi(config);
+
+  const body = {
+    // string | The configuration price ID (plan ID) to look up
+    configPriceId: neon_compute_starter,
+  } satisfies GetTenantSubscriptionRequest;
+
+  try {
+    const data = await api.getTenantSubscription(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **configPriceId** | `string` | The configuration price ID (plan ID) to look up | [Defaults to `undefined`] |
+
+### Return type
+
+[**GetTenantSubscription200Response**](GetTenantSubscription200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Subscription found |  -  |
+| **400** | Missing config_price_id parameter |  -  |
+| **401** | User not authenticated |  -  |
+| **404** | Subscription not found for the specified plan |  -  |
+| **500** | Failed to fetch subscription |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

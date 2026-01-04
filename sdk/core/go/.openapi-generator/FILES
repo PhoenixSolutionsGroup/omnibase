@@ -103,6 +103,7 @@ docs/GetStripeConfig200Response.md
 docs/GetStripeConfigHistory200Response.md
 docs/GetTenantBillingStatus200Response.md
 docs/GetTenantJWT200Response.md
+docs/GetTenantSubscription200Response.md
 docs/GetWebhookSecret200Response.md
 docs/InternalServerError.md
 docs/InternalServerErrorResponse.md
@@ -303,6 +304,7 @@ model_get_stripe_config_200_response.go
 model_get_stripe_config_history_200_response.go
 model_get_tenant_billing_status_200_response.go
 model_get_tenant_jwt_200_response.go
+model_get_tenant_subscription_200_response.go
 model_get_webhook_secret_200_response.go
 model_internal_server_error.go
 model_internal_server_error_response.go

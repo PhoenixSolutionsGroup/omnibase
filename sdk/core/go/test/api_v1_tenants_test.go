@@ -144,6 +144,20 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1TenantsAPIService GetTenantSubscription", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var configPriceId string
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.GetTenantSubscription(context.Background(), configPriceId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1TenantsAPIService ListRoles", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
