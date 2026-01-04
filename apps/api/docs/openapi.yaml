@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Omnibase REST API
-  version: 0.9.18
+  version: 0.10.2
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -11,7 +11,7 @@ info:
     - **Payments**: Stripe integration with version-controlled billing configs
     - **Storage**: S3-compatible object storage with RLS
     - **Email**: Transactional email service
-    - **Permissions**: Fine-grained access control via Ory Keto
+    - **Permissions**: Fine-grained access control
 
     ## Authentication
     Most endpoints require authentication via session cookies or JWT tokens.
@@ -208,13 +208,26 @@ paths:
         Users can be members of multiple tenants but only one is active at a time.
         The active tenant determines which resources and data the user can access.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
         ## Use Case
         Determine which tenant context to use for API calls and data filtering.
       tags:
         - V1 Auth
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
           SessionTokenAuth: []
+        - ServiceKeyAuth: []
       responses:
         '200':
           description: Active tenant retrieved
@@ -399,6 +412,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       responses:
         '200':
           description: Templates retrieved successfully
@@ -447,6 +461,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       requestBody:
         required: true
         content:
@@ -506,6 +521,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       parameters:
         - name: type
           in: path
@@ -834,6 +850,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: ^in_[A-Za-z0-9]+$
           description: Stripe Invoice ID
       responses:
         '200':
@@ -851,6 +868,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
     patch:
@@ -883,6 +902,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: ^in_[A-Za-z0-9]+$
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -906,6 +926,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}/items:
@@ -957,6 +979,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: ^in_[A-Za-z0-9]+$
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -980,6 +1003,90 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/payments/invoices/{invoice_id}/items/price:
+    post:
+      operationId: addInvoiceLineItemWithPriceId
+      summary: Add invoice line item with price ID
+      description: |
+        Adds a new line item to a draft invoice using a price ID and quantity.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Price ID Resolution
+        You must provide ONE of:
+        - `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
+        - `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding metered usage line items
+        - Adding subscription-based charges
+        - Billing for compute hours, storage, etc.
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^in_[A-Za-z0-9]+$
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddInvoiceLineItemWithPriceIDRequest'
+      responses:
+        '200':
+          description: Line item added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/InvoiceLineItemResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/payments/invoices/{invoice_id}/finalize:
@@ -1013,6 +1120,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: ^in_[A-Za-z0-9]+$
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -1036,6 +1144,8 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/permissions/check:
@@ -2013,6 +2123,168 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/prices/{price_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get price by ID
+      description: |
+        Returns a specific price from the Stripe configuration by its config ID, along with its parent product.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch price details for checkout
+        - Display specific pricing information
+        - Subscription management
+      operationId: getPriceByID
+      parameters:
+        - name: price_id
+          in: path
+          description: Price config ID
+          required: true
+          schema:
+            type: string
+            example: basic_monthly
+      responses:
+        '200':
+          description: Price found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PriceResponse'
+        '400':
+          description: Missing price_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Price not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve price
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/products/{product_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get product by ID
+      description: |
+        Returns a specific product from the Stripe configuration by its config ID, including all its prices.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch product details
+        - Display product information with all price options
+        - Product catalog pages
+      operationId: getProductByID
+      parameters:
+        - name: product_id
+          in: path
+          description: Product config ID
+          required: true
+          schema:
+            type: string
+            example: basic_plan
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Missing product_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/meters/{meter_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get meter by ID
+      description: |
+        Returns a specific billing meter from the Stripe configuration by its config ID.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch meter details for usage tracking
+        - Display metered billing information
+        - Usage reporting configuration
+      operationId: getMeterByID
+      parameters:
+        - name: meter_id
+          in: path
+          description: Meter config ID
+          required: true
+          schema:
+            type: string
+            example: api_requests
+      responses:
+        '200':
+          description: Meter found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MeterResponse'
+        '400':
+          description: Missing meter_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Meter not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve meter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     get:
       tags:
@@ -2159,7 +2431,7 @@ paths:
                       data:
                         $ref: '#/components/schemas/WebhooksConfigResponse'
         '400':
-          description: Invalid request - validation errors
+          description: Invalid request - validation errors or invalid Stripe event types
           content:
             application/json:
               schema:
@@ -2170,6 +2442,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+        '409':
+          description: Conflict - duplicate webhook URL provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
         '500':
           description: Failed to configure webhooks
           content:
@@ -3224,6 +3502,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/tenants/subscriptions/{config_price_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant subscription by plan
+      description: |
+        Returns a single subscription for the specified config_price_id (plan ID).
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Check if tenant has a specific subscription
+        - Get subscription details for a specific plan
+        - Retrieve Stripe subscription ID for a plan
+      operationId: getTenantSubscription
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - name: config_price_id
+          in: path
+          required: true
+          description: The configuration price ID (plan ID) to look up
+          schema:
+            type: string
+          example: neon_compute_starter
+      responses:
+        '200':
+          description: Subscription found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Missing config_price_id parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Subscription not found for the specified plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to fetch subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/tenants/invites:
     post:
       tags:
@@ -3544,6 +3886,7 @@ components:
             - type: string
             - type: number
             - type: boolean
+            - type: 'null'
       required:
         - status
     TenantSettings:
@@ -3746,9 +4089,9 @@ components:
         email:
           type: string
           format: email
-          pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
-          maxLength: 255
-          description: User's email address (RFC 5322 compliant)
+          pattern: ^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\.[a-zA-Z0-9-]{1,63})*\.[a-zA-Z]{2,63}$
+          maxLength: 254
+          description: User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
           example: user@example.com
         password:
           type: string
@@ -4012,14 +4355,17 @@ components:
       properties:
         type:
           type: string
+          minLength: 1
           description: Template type identifier (e.g., "welcome", "password-reset")
           example: test_welcome
         subject:
           type: string
+          minLength: 1
           description: Email subject line
           example: Welcome to Test Platform
         html_body:
           type: string
+          minLength: 1
           description: HTML email body content
           example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
     ErrorResponse:
@@ -4165,6 +4511,7 @@ components:
       type: object
       required:
         - currency
+      additionalProperties: false
       properties:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
@@ -4180,7 +4527,12 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Optional metadata key-value pairs
+            maxLength: 500
+          propertyNames:
+            pattern: ^[a-zA-Z0-9_]+$
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
     InvoiceResponse:
       type: object
       required:
@@ -4218,6 +4570,7 @@ components:
           example: https://invoice.stripe.com/i/...
     UpdateInvoiceRequest:
       type: object
+      additionalProperties: false
       properties:
         description:
           type: string
@@ -4227,18 +4580,26 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Optional metadata key-value pairs to add
+            maxLength: 500
+          propertyNames:
+            pattern: ^[a-zA-Z0-9_]+$
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
     AddInvoiceLineItemRequest:
       type: object
       required:
         - amount
         - description
         - currency
+      additionalProperties: false
       properties:
         amount:
           type: integer
           format: int64
-          description: Amount in cents (required)
+          minimum: 1
+          maximum: 99999999999999
+          description: Amount in cents (required, must be positive, max ~$999B)
           example: 1000
         description:
           type: string
@@ -4265,6 +4626,87 @@ components:
           type: string
           description: Description
           example: Platform fee
+    AddInvoiceLineItemWithConfigPriceRequest:
+      type: object
+      required:
+        - price_id
+        - quantity
+        - description
+        - currency
+      additionalProperties: false
+      properties:
+        price_id:
+          type: string
+          minLength: 1
+          description: Config price ID (e.g., "hetzner_cx23_nbg1_hourly") - looked up via GetStripeIDByConfigID
+          example: hetzner_cx23_nbg1_hourly
+        quantity:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 99999999999999
+          description: Quantity of units (required, must be at least 1)
+          example: 720
+        description:
+          type: string
+          minLength: 1
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
+          propertyNames:
+            pattern: ^[a-zA-Z0-9_]+$
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+    AddInvoiceLineItemWithStripePriceRequest:
+      type: object
+      required:
+        - stripe_price_id
+        - quantity
+        - description
+        - currency
+      additionalProperties: false
+      properties:
+        stripe_price_id:
+          type: string
+          pattern: ^price_[A-Za-z0-9]+$
+          description: Raw Stripe price ID (e.g., "price_1ABC...") - used directly
+          example: price_1ABC123
+        quantity:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 99999999999999
+          description: Quantity of units (required, must be at least 1)
+          example: 720
+        description:
+          type: string
+          minLength: 1
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
+          propertyNames:
+            pattern: ^[a-zA-Z0-9_]+$
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+    AddInvoiceLineItemWithPriceIDRequest:
+      description: Add a line item using either a config price_id or raw stripe_price_id
+      oneOf:
+        - $ref: '#/components/schemas/AddInvoiceLineItemWithConfigPriceRequest'
+        - $ref: '#/components/schemas/AddInvoiceLineItemWithStripePriceRequest'
     FinalizeInvoiceRequest:
       type: object
       properties:
@@ -4368,15 +4810,19 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_id:
           type: string
+          minLength: 1
           description: Direct subject identifier
       additionalProperties: false
     CreateRelationshipRequestWithSubjectSet:
@@ -4390,12 +4836,15 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
@@ -4467,15 +4916,19 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_id:
           type: string
+          minLength: 1
           description: Direct subject identifier
       additionalProperties: false
     DeleteRelationshipRequestWithSubjectSet:
@@ -4489,12 +4942,15 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
@@ -4844,11 +5300,11 @@ components:
           description: Whether tax is included in the price
           example: false
         amount:
-          type: integer
-          format: int64
+          type: number
+          format: double
           minimum: 0
-          description: Price amount in smallest currency unit
-          example: 1999
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
         currency:
           $ref: '#/components/schemas/CurrencyCode'
         interval:
@@ -5098,11 +5554,11 @@ components:
           description: Whether tax is included in the price (null/false = exclusive)
           example: false
         amount:
-          type: integer
-          format: int64
-          minimum: 1
-          description: Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
-          example: 1999
+          type: number
+          format: double
+          minimum: 0
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
         currency:
           $ref: '#/components/schemas/CurrencyCode'
         interval:
@@ -5469,6 +5925,49 @@ components:
           nullable: true
           description: Warning message if there were errors
           example: Some items failed to archive - see archive_errors for details
+    PriceResponse:
+      type: object
+      required:
+        - price
+        - product
+      properties:
+        price:
+          $ref: '#/components/schemas/PriceWithStripeID'
+          description: The price with Stripe ID
+        product:
+          $ref: '#/components/schemas/ProductWithStripeIDs'
+          description: The parent product with Stripe IDs
+    NotFound:
+      type: object
+      description: Not Found error response (404)
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+          example: 404
+        error:
+          type: string
+          description: Error message
+          example: Not Found
+      required:
+        - status
+        - error
+    ProductResponse:
+      type: object
+      required:
+        - product
+      properties:
+        product:
+          $ref: '#/components/schemas/ProductWithStripeIDs'
+          description: The product with Stripe IDs
+    MeterResponse:
+      type: object
+      required:
+        - meter
+      properties:
+        meter:
+          $ref: '#/components/schemas/MeterWithStripeID'
+          description: The meter with Stripe ID
     StripeIDConversionResponse:
       type: object
       required:
@@ -5503,21 +6002,6 @@ components:
           type: integer
           description: Number of historical Stripe IDs for this config item
           example: 1
-    NotFound:
-      type: object
-      description: Not Found error response (404)
-      properties:
-        status:
-          type: integer
-          description: HTTP status code
-          example: 404
-        error:
-          type: string
-          description: Error message
-          example: Not Found
-      required:
-        - status
-        - error
     WebhookSecretResponse:
       type: object
       required:
@@ -5583,6 +6067,61 @@ components:
           description: List of Stripe event types to subscribe to
           items:
             type: string
+            enum:
+              - account.updated
+              - account.application.deauthorized
+              - account.external_account.created
+              - account.external_account.updated
+              - account.external_account.deleted
+              - payment_intent.created
+              - payment_intent.succeeded
+              - payment_intent.payment_failed
+              - payment_intent.canceled
+              - payment_intent.requires_action
+              - charge.succeeded
+              - charge.failed
+              - charge.refunded
+              - charge.captured
+              - charge.dispute.created
+              - charge.dispute.updated
+              - charge.dispute.closed
+              - customer.created
+              - customer.updated
+              - customer.deleted
+              - customer.subscription.created
+              - customer.subscription.updated
+              - customer.subscription.deleted
+              - customer.subscription.trial_will_end
+              - customer.subscription.paused
+              - customer.subscription.resumed
+              - invoice.created
+              - invoice.finalized
+              - invoice.paid
+              - invoice.payment_failed
+              - invoice.payment_action_required
+              - invoice.upcoming
+              - invoice.marked_uncollectible
+              - invoice.voided
+              - payout.created
+              - payout.paid
+              - payout.failed
+              - payout.canceled
+              - product.created
+              - product.updated
+              - product.deleted
+              - price.created
+              - price.updated
+              - price.deleted
+              - checkout.session.completed
+              - checkout.session.expired
+              - checkout.session.async_payment_succeeded
+              - checkout.session.async_payment_failed
+              - refund.created
+              - refund.updated
+              - payment_method.attached
+              - payment_method.detached
+              - transfer.created
+              - transfer.reversed
           example:
             - invoice.paid
             - customer.subscription.created
@@ -5598,7 +6137,8 @@ components:
       properties:
         webhooks:
           type: array
-          description: List of webhook endpoint configurations
+          description: List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
+          minItems: 1
           items:
             $ref: '#/components/schemas/WebhookEndpointConfig'
     WebhookResult:

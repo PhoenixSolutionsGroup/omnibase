@@ -93,6 +93,7 @@ components:
       type: object
       required:
         - currency
+      additionalProperties: false
       properties:
         currency:
           $ref: 'stripe.yaml#/components/schemas/CurrencyCode'
@@ -108,10 +109,16 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Optional metadata key-value pairs
+            maxLength: 500
+          propertyNames:
+            pattern: '^[a-zA-Z0-9_]+$'
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
 
     UpdateInvoiceRequest:
       type: object
+      additionalProperties: false
       properties:
         description:
           type: string
@@ -121,7 +128,12 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Optional metadata key-value pairs to add
+            maxLength: 500
+          propertyNames:
+            pattern: '^[a-zA-Z0-9_]+$'
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
 
     AddInvoiceLineItemRequest:
       type: object
@@ -129,11 +141,14 @@ components:
         - amount
         - description
         - currency
+      additionalProperties: false
       properties:
         amount:
           type: integer
           format: int64
-          description: Amount in cents (required)
+          minimum: 1
+          maximum: 99999999999999
+          description: Amount in cents (required, must be positive, max ~$999B)
           example: 1000
         description:
           type: string
@@ -142,6 +157,92 @@ components:
           example: Platform fee
         currency:
           $ref: 'stripe.yaml#/components/schemas/CurrencyCode'
+
+    # Line item request using config price ID
+    AddInvoiceLineItemWithConfigPriceRequest:
+      type: object
+      required:
+        - price_id
+        - quantity
+        - description
+        - currency
+      additionalProperties: false
+      properties:
+        price_id:
+          type: string
+          minLength: 1
+          description: Config price ID (e.g., "hetzner_cx23_nbg1_hourly") - looked up via GetStripeIDByConfigID
+          example: hetzner_cx23_nbg1_hourly
+        quantity:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 99999999999999
+          description: Quantity of units (required, must be at least 1)
+          example: 720
+        description:
+          type: string
+          minLength: 1
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+        currency:
+          $ref: 'stripe.yaml#/components/schemas/CurrencyCode'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
+          propertyNames:
+            pattern: '^[a-zA-Z0-9_]+$'
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+
+    # Line item request using raw Stripe price ID
+    AddInvoiceLineItemWithStripePriceRequest:
+      type: object
+      required:
+        - stripe_price_id
+        - quantity
+        - description
+        - currency
+      additionalProperties: false
+      properties:
+        stripe_price_id:
+          type: string
+          pattern: '^price_[A-Za-z0-9]+$'
+          description: Raw Stripe price ID (e.g., "price_1ABC...") - used directly
+          example: price_1ABC123
+        quantity:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 99999999999999
+          description: Quantity of units (required, must be at least 1)
+          example: 720
+        description:
+          type: string
+          minLength: 1
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+        currency:
+          $ref: 'stripe.yaml#/components/schemas/CurrencyCode'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
+          propertyNames:
+            pattern: '^[a-zA-Z0-9_]+$'
+            minLength: 1
+            maxLength: 40
+          description: Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+
+    AddInvoiceLineItemWithPriceIDRequest:
+      description: Add a line item using either a config price_id or raw stripe_price_id
+      oneOf:
+        - $ref: '#/components/schemas/AddInvoiceLineItemWithConfigPriceRequest'
+        - $ref: '#/components/schemas/AddInvoiceLineItemWithStripePriceRequest'
 
     FinalizeInvoiceRequest:
       type: object

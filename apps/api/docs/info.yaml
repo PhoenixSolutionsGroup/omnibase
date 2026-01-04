@@ -2,7 +2,7 @@ openapi: 3.1.0
 
 info:
   title: Omnibase REST API
-  version: 0.9.18
+  version: 0.10.2
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -12,7 +12,7 @@ info:
     - **Payments**: Stripe integration with version-controlled billing configs
     - **Storage**: S3-compatible object storage with RLS
     - **Email**: Transactional email service
-    - **Permissions**: Fine-grained access control via Ory Keto
+    - **Permissions**: Fine-grained access control
 
     ## Authentication
     Most endpoints require authentication via session cookies or JWT tokens.
@@ -113,6 +113,9 @@ paths:
   /api/v1/payments/invoices/{invoice_id}/items:
     $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}~1items'
 
+  /api/v1/payments/invoices/{invoice_id}/items/price:
+    $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}~1items~1price'
+
   /api/v1/payments/invoices/{invoice_id}/finalize:
     $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1invoices~1{invoice_id}~1finalize'
 
@@ -158,6 +161,15 @@ paths:
   /api/v1/stripe/admin/config/archive-all:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1config~1archive-all'
   
+  /api/v1/stripe/config/prices/{price_id}:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1prices~1{price_id}'
+
+  /api/v1/stripe/config/products/{product_id}:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1products~1{product_id}'
+
+  /api/v1/stripe/config/meters/{meter_id}:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1meters~1{meter_id}'
+
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1convert~1stripe-id~1{stripe_id}'
 
@@ -188,7 +200,10 @@ paths:
   
   /api/v1/tenants/subscriptions:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1subscriptions'
-  
+
+  /api/v1/tenants/subscriptions/{config_price_id}:
+    $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1subscriptions~1{config_price_id}'
+
   /api/v1/tenants/invites:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1invites'
   

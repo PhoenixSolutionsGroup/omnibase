@@ -1072,6 +1072,71 @@ paths:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
+  /api/v1/tenants/subscriptions/{config_price_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant subscription by plan
+      description: |
+        Returns a single subscription for the specified config_price_id (plan ID).
+
+        ## Authentication
+        Requires JWT token with tenant context.
+
+        ## Use Cases
+        - Check if tenant has a specific subscription
+        - Get subscription details for a specific plan
+        - Retrieve Stripe subscription ID for a plan
+      operationId: getTenantSubscription
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - name: config_price_id
+          in: path
+          required: true
+          description: The configuration price ID (plan ID) to look up
+          schema:
+            type: string
+          example: "neon_compute_starter"
+      responses:
+        '200':
+          description: Subscription found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/tenants.yaml#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Missing config_price_id parameter
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Subscription not found for the specified plan
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to fetch subscription
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+
   # ==================== Invitation Endpoints ====================
   
   /api/v1/tenants/invites:

@@ -105,15 +105,19 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_id:
           type: string
+          minLength: 1
           description: Direct subject identifier
       additionalProperties: false
 
@@ -128,12 +132,15 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
@@ -171,15 +178,19 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_id:
           type: string
+          minLength: 1
           description: Direct subject identifier
       additionalProperties: false
 
@@ -194,12 +205,15 @@ components:
       properties:
         namespace:
           type: string
+          minLength: 1
           description: The namespace for the relationship
         object:
           type: string
+          minLength: 1
           description: The object in the relationship
         relation:
           type: string
+          minLength: 1
           description: The relation type
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'

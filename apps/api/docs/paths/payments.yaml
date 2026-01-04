@@ -226,6 +226,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^in_[A-Za-z0-9]+$'
           description: Stripe Invoice ID
       responses:
         '200':
@@ -243,6 +244,8 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
     patch:
@@ -275,6 +278,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^in_[A-Za-z0-9]+$'
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -298,6 +302,8 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -350,6 +356,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^in_[A-Za-z0-9]+$'
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -373,6 +380,91 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/payments/invoices/{invoice_id}/items/price:
+    post:
+      operationId: addInvoiceLineItemWithPriceId
+      summary: Add invoice line item with price ID
+      description: |
+        Adds a new line item to a draft invoice using a price ID and quantity.
+
+        ## Authentication
+        Requires service key authentication via `X-Service-Key` header.
+
+        ## Customer Identification
+        You must provide the Stripe customer ID using ONE of:
+        - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+        - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+        ## Price ID Resolution
+        You must provide ONE of:
+        - `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
+        - `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
+
+        ## Prerequisites
+        - Invoice must be in draft status
+
+        ## Use Cases
+        - Adding metered usage line items
+        - Adding subscription-based charges
+        - Billing for compute hours, storage, etc.
+      tags:
+        - V1 Payments
+      parameters:
+        - name: X-Service-Key
+          in: header
+          required: true
+          description: Service key for authentication
+          schema:
+            type: string
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+          schema:
+            type: string
+        - name: invoice_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^in_[A-Za-z0-9]+$'
+          description: Stripe Invoice ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/payments.yaml#/components/schemas/AddInvoiceLineItemWithPriceIDRequest'
+      responses:
+        '200':
+          description: Line item added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
@@ -407,6 +499,7 @@ paths:
           required: true
           schema:
             type: string
+            pattern: '^in_[A-Za-z0-9]+$'
           description: Stripe Invoice ID
       requestBody:
         required: true
@@ -430,5 +523,7 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

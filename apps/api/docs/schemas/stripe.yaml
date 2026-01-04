@@ -230,11 +230,11 @@ components:
           description: Whether tax is included in the price (null/false = exclusive)
           example: false
         amount:
-          type: integer
-          format: int64
-          minimum: 1
-          description: Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
-          example: 1999
+          type: number
+          format: double
+          minimum: 0
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
         currency:
           $ref: '#/components/schemas/CurrencyCode'
         interval:
@@ -365,11 +365,11 @@ components:
           description: Whether tax is included in the price
           example: false
         amount:
-          type: integer
-          format: int64
+          type: number
+          format: double
           minimum: 0
-          description: Price amount in smallest currency unit
-          example: 1999
+          description: Price amount (supports decimals for sub-cent hourly pricing)
+          example: 0.273
         currency:
           $ref: '#/components/schemas/CurrencyCode'
         interval:
@@ -844,6 +844,38 @@ components:
           description: Warning message if there were errors
           example: "Some items failed to archive - see archive_errors for details"
 
+    # Single Item Response Models
+    PriceResponse:
+      type: object
+      required:
+        - price
+        - product
+      properties:
+        price:
+          $ref: '#/components/schemas/PriceWithStripeID'
+          description: The price with Stripe ID
+        product:
+          $ref: '#/components/schemas/ProductWithStripeIDs'
+          description: The parent product with Stripe IDs
+
+    ProductResponse:
+      type: object
+      required:
+        - product
+      properties:
+        product:
+          $ref: '#/components/schemas/ProductWithStripeIDs'
+          description: The product with Stripe IDs
+
+    MeterResponse:
+      type: object
+      required:
+        - meter
+      properties:
+        meter:
+          $ref: '#/components/schemas/MeterWithStripeID'
+          description: The meter with Stripe ID
+
     # Request Models
     StripeConfigUpdateRequest:
       type: object
@@ -899,7 +931,8 @@ components:
       properties:
         webhooks:
           type: array
-          description: List of webhook endpoint configurations
+          description: List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
+          minItems: 1
           items:
             $ref: '#/components/schemas/WebhookEndpointConfig'
 
@@ -924,6 +957,61 @@ components:
           description: List of Stripe event types to subscribe to
           items:
             type: string
+            enum:
+              - "account.updated"
+              - "account.application.deauthorized"
+              - "account.external_account.created"
+              - "account.external_account.updated"
+              - "account.external_account.deleted"
+              - "payment_intent.created"
+              - "payment_intent.succeeded"
+              - "payment_intent.payment_failed"
+              - "payment_intent.canceled"
+              - "payment_intent.requires_action"
+              - "charge.succeeded"
+              - "charge.failed"
+              - "charge.refunded"
+              - "charge.captured"
+              - "charge.dispute.created"
+              - "charge.dispute.updated"
+              - "charge.dispute.closed"
+              - "customer.created"
+              - "customer.updated"
+              - "customer.deleted"
+              - "customer.subscription.created"
+              - "customer.subscription.updated"
+              - "customer.subscription.deleted"
+              - "customer.subscription.trial_will_end"
+              - "customer.subscription.paused"
+              - "customer.subscription.resumed"
+              - "invoice.created"
+              - "invoice.finalized"
+              - "invoice.paid"
+              - "invoice.payment_failed"
+              - "invoice.payment_action_required"
+              - "invoice.upcoming"
+              - "invoice.marked_uncollectible"
+              - "invoice.voided"
+              - "payout.created"
+              - "payout.paid"
+              - "payout.failed"
+              - "payout.canceled"
+              - "product.created"
+              - "product.updated"
+              - "product.deleted"
+              - "price.created"
+              - "price.updated"
+              - "price.deleted"
+              - "checkout.session.completed"
+              - "checkout.session.expired"
+              - "checkout.session.async_payment_succeeded"
+              - "checkout.session.async_payment_failed"
+              - "refund.created"
+              - "refund.updated"
+              - "payment_method.attached"
+              - "payment_method.detached"
+              - "transfer.created"
+              - "transfer.reversed"
           example:
             - "invoice.paid"
             - "customer.subscription.created"

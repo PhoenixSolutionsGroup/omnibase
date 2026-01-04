@@ -347,6 +347,171 @@ paths:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
 
+  /api/v1/stripe/config/prices/{price_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get price by ID
+      description: |
+        Returns a specific price from the Stripe configuration by its config ID, along with its parent product.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch price details for checkout
+        - Display specific pricing information
+        - Subscription management
+      operationId: getPriceByID
+      parameters:
+        - name: price_id
+          in: path
+          description: Price config ID
+          required: true
+          schema:
+            type: string
+            example: "basic_monthly"
+      responses:
+        '200':
+          description: Price found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/PriceResponse'
+        '400':
+          description: Missing price_id
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '404':
+          description: Price not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve price
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/config/products/{product_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get product by ID
+      description: |
+        Returns a specific product from the Stripe configuration by its config ID, including all its prices.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch product details
+        - Display product information with all price options
+        - Product catalog pages
+      operationId: getProductByID
+      parameters:
+        - name: product_id
+          in: path
+          description: Product config ID
+          required: true
+          schema:
+            type: string
+            example: "basic_plan"
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/ProductResponse'
+        '400':
+          description: Missing product_id
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve product
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/config/meters/{meter_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get meter by ID
+      description: |
+        Returns a specific billing meter from the Stripe configuration by its config ID.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Use Cases
+        - Fetch meter details for usage tracking
+        - Display metered billing information
+        - Usage reporting configuration
+      operationId: getMeterByID
+      parameters:
+        - name: meter_id
+          in: path
+          description: Meter config ID
+          required: true
+          schema:
+            type: string
+            example: "api_requests"
+      responses:
+        '200':
+          description: Meter found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/MeterResponse'
+        '400':
+          description: Missing meter_id
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '404':
+          description: Meter not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to retrieve meter
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     get:
       tags:
@@ -495,7 +660,7 @@ paths:
                       data:
                         $ref: '../schemas/stripe.yaml#/components/schemas/WebhooksConfigResponse'
         '400':
-          description: Invalid request - validation errors
+          description: Invalid request - validation errors or invalid Stripe event types
           content:
             application/json:
               schema:
@@ -506,6 +671,12 @@ paths:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '409':
+          description: Conflict - duplicate webhook URL provided
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ConflictResponse'
         '500':
           description: Failed to configure webhooks
           content:

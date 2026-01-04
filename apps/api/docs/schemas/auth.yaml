@@ -69,9 +69,9 @@ components:
         email:
           type: string
           format: email
-          pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-          maxLength: 255
-          description: User's email address (RFC 5322 compliant)
+          pattern: '^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\.[a-zA-Z0-9-]{1,63})*\.[a-zA-Z]{2,63}$'
+          maxLength: 254
+          description: User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
           example: user@example.com
         password:
           type: string

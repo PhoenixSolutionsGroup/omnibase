@@ -46,14 +46,17 @@ components:
       properties:
         type:
           type: string
+          minLength: 1
           description: Template type identifier (e.g., "welcome", "password-reset")
           example: test_welcome
         subject:
           type: string
+          minLength: 1
           description: Email subject line
           example: Welcome to Test Platform
         html_body:
           type: string
+          minLength: 1
           description: HTML email body content
           example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
 

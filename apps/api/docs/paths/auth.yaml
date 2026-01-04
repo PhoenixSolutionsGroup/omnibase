@@ -155,13 +155,26 @@ paths:
         Users can be members of multiple tenants but only one is active at a time.
         The active tenant determines which resources and data the user can access.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
         ## Use Case
         Determine which tenant context to use for API calls and data filtering.
       tags:
         - V1 Auth
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
           SessionTokenAuth: []
+        - ServiceKeyAuth: []
       responses:
         '200':
           description: Active tenant retrieved

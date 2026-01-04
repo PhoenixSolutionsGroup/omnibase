@@ -18,6 +18,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       responses:
         '200':
           description: Templates retrieved successfully
@@ -67,6 +68,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       requestBody:
         required: true
         content:
@@ -127,6 +129,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       requestBody:
         required: true
         content:
@@ -177,6 +180,7 @@ paths:
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
+        - ServiceKeyAuth: []
       parameters:
         - name: type
           in: path
