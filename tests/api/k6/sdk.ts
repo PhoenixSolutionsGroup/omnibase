@@ -10,13 +10,13 @@
 - **Payments**: Stripe integration with version-controlled billing configs
 - **Storage**: S3-compatible object storage with RLS
 - **Email**: Transactional email service
-- **Permissions**: Fine-grained access control via Ory Keto
+- **Permissions**: Fine-grained access control
 
 ## Authentication
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.9.18
+ * Service version: 0.10.2
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -35,7 +35,8 @@ export type SuccessResponseData =
   | unknown[]
   | string
   | number
-  | boolean;
+  | boolean
+  | null;
 
 /**
  * Standard success response wrapper
@@ -183,9 +184,9 @@ export type CreateUserRequestName = {
 
 export interface CreateUserRequest {
   /**
-   * User's email address (RFC 5322 compliant)
-   * @maxLength 255
-   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+   * User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
+   * @maxLength 254
+   * @pattern ^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\.[a-zA-Z0-9-]{1,63})*\.[a-zA-Z]{2,63}$
    */
   email: string;
   /**
@@ -328,11 +329,20 @@ export interface EmailTemplate {
 }
 
 export interface CreateEmailTemplateRequest {
-  /** Template type identifier (e.g., "welcome", "password-reset") */
+  /**
+   * Template type identifier (e.g., "welcome", "password-reset")
+   * @minLength 1
+   */
   type: string;
-  /** Email subject line */
+  /**
+   * Email subject line
+   * @minLength 1
+   */
   subject: string;
-  /** HTML email body content */
+  /**
+   * HTML email body content
+   * @minLength 1
+   */
   html_body: string;
 }
 
@@ -443,7 +453,7 @@ export const CurrencyCode = {
 } as const;
 
 /**
- * Optional metadata key-value pairs
+ * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
  */
 export type CreateInvoiceRequestMetadata = { [key: string]: string };
 
@@ -453,7 +463,7 @@ export interface CreateInvoiceRequest {
   auto_advance?: boolean;
   /** Optional description for the invoice */
   description?: string;
-  /** Optional metadata key-value pairs */
+  /** Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) */
   metadata?: CreateInvoiceRequestMetadata;
 }
 
@@ -475,19 +485,23 @@ export interface InvoiceResponse {
 }
 
 /**
- * Optional metadata key-value pairs to add
+ * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
  */
 export type UpdateInvoiceRequestMetadata = { [key: string]: string };
 
 export interface UpdateInvoiceRequest {
   /** Optional description to set on the invoice */
   description?: string;
-  /** Optional metadata key-value pairs to add */
+  /** Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) */
   metadata?: UpdateInvoiceRequestMetadata;
 }
 
 export interface AddInvoiceLineItemRequest {
-  /** Amount in cents (required) */
+  /**
+   * Amount in cents (required, must be positive, max ~$999B)
+   * @minimum 1
+   * @maximum 99999999999999
+   */
   amount: number;
   /**
    * Description for the line item (required)
@@ -505,6 +519,71 @@ export interface InvoiceLineItemResponse {
   /** Description */
   description?: string;
 }
+
+/**
+ * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+ */
+export type AddInvoiceLineItemWithConfigPriceRequestMetadata = {
+  [key: string]: string;
+};
+
+export interface AddInvoiceLineItemWithConfigPriceRequest {
+  /**
+   * Config price ID (e.g., "hetzner_cx23_nbg1_hourly") - looked up via GetStripeIDByConfigID
+   * @minLength 1
+   */
+  price_id: string;
+  /**
+   * Quantity of units (required, must be at least 1)
+   * @minimum 1
+   * @maximum 99999999999999
+   */
+  quantity: number;
+  /**
+   * Description for the line item (required)
+   * @minLength 1
+   */
+  description: string;
+  currency: CurrencyCode;
+  /** Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) */
+  metadata?: AddInvoiceLineItemWithConfigPriceRequestMetadata;
+}
+
+/**
+ * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
+ */
+export type AddInvoiceLineItemWithStripePriceRequestMetadata = {
+  [key: string]: string;
+};
+
+export interface AddInvoiceLineItemWithStripePriceRequest {
+  /**
+   * Raw Stripe price ID (e.g., "price_1ABC...") - used directly
+   * @pattern ^price_[A-Za-z0-9]+$
+   */
+  stripe_price_id: string;
+  /**
+   * Quantity of units (required, must be at least 1)
+   * @minimum 1
+   * @maximum 99999999999999
+   */
+  quantity: number;
+  /**
+   * Description for the line item (required)
+   * @minLength 1
+   */
+  description: string;
+  currency: CurrencyCode;
+  /** Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) */
+  metadata?: AddInvoiceLineItemWithStripePriceRequestMetadata;
+}
+
+/**
+ * Add a line item using either a config price_id or raw stripe_price_id
+ */
+export type AddInvoiceLineItemWithPriceIDRequest =
+  | AddInvoiceLineItemWithConfigPriceRequest
+  | AddInvoiceLineItemWithStripePriceRequest;
 
 export interface FinalizeInvoiceRequest {
   /** Whether to auto-advance the invoice (send immediately) */
@@ -593,13 +672,25 @@ export interface CheckPermissionResponse {
  * Create relationship request using a direct subject identifier
  */
 export interface CreateRelationshipRequestWithSubjectId {
-  /** The namespace for the relationship */
+  /**
+   * The namespace for the relationship
+   * @minLength 1
+   */
   namespace: string;
-  /** The object in the relationship */
+  /**
+   * The object in the relationship
+   * @minLength 1
+   */
   object: string;
-  /** The relation type */
+  /**
+   * The relation type
+   * @minLength 1
+   */
   relation: string;
-  /** Direct subject identifier */
+  /**
+   * Direct subject identifier
+   * @minLength 1
+   */
   subject_id: string;
 }
 
@@ -607,11 +698,20 @@ export interface CreateRelationshipRequestWithSubjectId {
  * Create relationship request using a subject set
  */
 export interface CreateRelationshipRequestWithSubjectSet {
-  /** The namespace for the relationship */
+  /**
+   * The namespace for the relationship
+   * @minLength 1
+   */
   namespace: string;
-  /** The object in the relationship */
+  /**
+   * The object in the relationship
+   * @minLength 1
+   */
   object: string;
-  /** The relation type */
+  /**
+   * The relation type
+   * @minLength 1
+   */
   relation: string;
   subject_set: SubjectSetRequest;
 }
@@ -663,13 +763,25 @@ export interface CreateRelationshipResponse {
  * Delete relationship request using a direct subject identifier
  */
 export interface DeleteRelationshipRequestWithSubjectId {
-  /** The namespace for the relationship */
+  /**
+   * The namespace for the relationship
+   * @minLength 1
+   */
   namespace: string;
-  /** The object in the relationship */
+  /**
+   * The object in the relationship
+   * @minLength 1
+   */
   object: string;
-  /** The relation type */
+  /**
+   * The relation type
+   * @minLength 1
+   */
   relation: string;
-  /** Direct subject identifier */
+  /**
+   * Direct subject identifier
+   * @minLength 1
+   */
   subject_id: string;
 }
 
@@ -677,11 +789,20 @@ export interface DeleteRelationshipRequestWithSubjectId {
  * Delete relationship request using a subject set
  */
 export interface DeleteRelationshipRequestWithSubjectSet {
-  /** The namespace for the relationship */
+  /**
+   * The namespace for the relationship
+   * @minLength 1
+   */
   namespace: string;
-  /** The object in the relationship */
+  /**
+   * The object in the relationship
+   * @minLength 1
+   */
   object: string;
-  /** The relation type */
+  /**
+   * The relation type
+   * @minLength 1
+   */
   relation: string;
   subject_set: SubjectSetRequest;
 }
@@ -955,7 +1076,7 @@ export interface PriceWithStripeID {
    */
   tax_included_in_price?: boolean | null;
   /**
-   * Price amount in smallest currency unit
+   * Price amount (supports decimals for sub-cent hourly pricing)
    * @minimum 0
    */
   amount?: number;
@@ -1135,8 +1256,8 @@ export type PerUnitPrice =
        */
       tax_included_in_price?: boolean | null;
       /**
-       * Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
-       * @minimum 1
+       * Price amount (supports decimals for sub-cent hourly pricing)
+       * @minimum 0
        */
       amount: number;
       currency: CurrencyCode;
@@ -1173,8 +1294,8 @@ export type PerUnitPrice =
        */
       tax_included_in_price?: boolean | null;
       /**
-       * Price amount in smallest currency unit (e.g., cents) - minimum $0.01 per Stripe requirements
-       * @minimum 1
+       * Price amount (supports decimals for sub-cent hourly pricing)
+       * @minimum 0
        */
       amount: number;
       currency: CurrencyCode;
@@ -1443,6 +1564,33 @@ export interface ArchiveAllResponse {
   warning?: string | null;
 }
 
+export interface PriceResponse {
+  /** The price with Stripe ID */
+  price: PriceWithStripeID;
+  /** The parent product with Stripe IDs */
+  product: ProductWithStripeIDs;
+}
+
+/**
+ * Not Found error response (404)
+ */
+export interface NotFound {
+  /** HTTP status code */
+  status: number;
+  /** Error message */
+  error: string;
+}
+
+export interface ProductResponse {
+  /** The product with Stripe IDs */
+  product: ProductWithStripeIDs;
+}
+
+export interface MeterResponse {
+  /** The meter with Stripe ID */
+  meter: MeterWithStripeID;
+}
+
 /**
  * Item type (product, price, or meter)
  */
@@ -1469,16 +1617,6 @@ export interface StripeIDConversionResponse {
   history_count: number;
 }
 
-/**
- * Not Found error response (404)
- */
-export interface NotFound {
-  /** HTTP status code */
-  status: number;
-  /** Error message */
-  error: string;
-}
-
 export interface WebhookSecretResponse {
   /** Internal webhook ID */
   id: string;
@@ -1498,6 +1636,68 @@ export interface WebhookSecretResponse {
   updated_at?: string;
 }
 
+export type WebhookEndpointConfigEventsItem =
+  (typeof WebhookEndpointConfigEventsItem)[keyof typeof WebhookEndpointConfigEventsItem];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WebhookEndpointConfigEventsItem = {
+  accountupdated: "account.updated",
+  accountapplicationdeauthorized: "account.application.deauthorized",
+  accountexternal_accountcreated: "account.external_account.created",
+  accountexternal_accountupdated: "account.external_account.updated",
+  accountexternal_accountdeleted: "account.external_account.deleted",
+  payment_intentcreated: "payment_intent.created",
+  payment_intentsucceeded: "payment_intent.succeeded",
+  payment_intentpayment_failed: "payment_intent.payment_failed",
+  payment_intentcanceled: "payment_intent.canceled",
+  payment_intentrequires_action: "payment_intent.requires_action",
+  chargesucceeded: "charge.succeeded",
+  chargefailed: "charge.failed",
+  chargerefunded: "charge.refunded",
+  chargecaptured: "charge.captured",
+  chargedisputecreated: "charge.dispute.created",
+  chargedisputeupdated: "charge.dispute.updated",
+  chargedisputeclosed: "charge.dispute.closed",
+  customercreated: "customer.created",
+  customerupdated: "customer.updated",
+  customerdeleted: "customer.deleted",
+  customersubscriptioncreated: "customer.subscription.created",
+  customersubscriptionupdated: "customer.subscription.updated",
+  customersubscriptiondeleted: "customer.subscription.deleted",
+  customersubscriptiontrial_will_end: "customer.subscription.trial_will_end",
+  customersubscriptionpaused: "customer.subscription.paused",
+  customersubscriptionresumed: "customer.subscription.resumed",
+  invoicecreated: "invoice.created",
+  invoicefinalized: "invoice.finalized",
+  invoicepaid: "invoice.paid",
+  invoicepayment_failed: "invoice.payment_failed",
+  invoicepayment_action_required: "invoice.payment_action_required",
+  invoiceupcoming: "invoice.upcoming",
+  invoicemarked_uncollectible: "invoice.marked_uncollectible",
+  invoicevoided: "invoice.voided",
+  payoutcreated: "payout.created",
+  payoutpaid: "payout.paid",
+  payoutfailed: "payout.failed",
+  payoutcanceled: "payout.canceled",
+  productcreated: "product.created",
+  productupdated: "product.updated",
+  productdeleted: "product.deleted",
+  pricecreated: "price.created",
+  priceupdated: "price.updated",
+  pricedeleted: "price.deleted",
+  checkoutsessioncompleted: "checkout.session.completed",
+  checkoutsessionexpired: "checkout.session.expired",
+  checkoutsessionasync_payment_succeeded:
+    "checkout.session.async_payment_succeeded",
+  checkoutsessionasync_payment_failed: "checkout.session.async_payment_failed",
+  refundcreated: "refund.created",
+  refundupdated: "refund.updated",
+  payment_methodattached: "payment_method.attached",
+  payment_methoddetached: "payment_method.detached",
+  transfercreated: "transfer.created",
+  transferreversed: "transfer.reversed",
+} as const;
+
 export interface WebhookEndpointConfig {
   /** Optional unique identifier for the webhook endpoint */
   id?: string;
@@ -1507,13 +1707,16 @@ export interface WebhookEndpointConfig {
    * List of Stripe event types to subscribe to
    * @minItems 1
    */
-  events: string[];
+  events: WebhookEndpointConfigEventsItem[];
   /** If true, listen to events from connected accounts (Stripe Connect) */
   connect?: boolean;
 }
 
 export interface WebhooksConfigRequest {
-  /** List of webhook endpoint configurations */
+  /**
+   * List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
+   * @minItems 1
+   */
   webhooks: WebhookEndpointConfig[];
 }
 
@@ -1976,6 +2179,13 @@ export type WhoAmI200AllOf = {
 
 export type WhoAmI200 = SuccessResponse & WhoAmI200AllOf;
 
+export type GetActiveTenantHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+};
+
 export type GetActiveTenant200AllOf = {
   data?: ActiveTenantResponse;
 };
@@ -2121,6 +2331,28 @@ export type AddInvoiceLineItem200AllOf = {
 
 export type AddInvoiceLineItem200 = SuccessResponse &
   AddInvoiceLineItem200AllOf;
+
+export type AddInvoiceLineItemWithPriceIdHeaders = {
+  /**
+   * Service key for authentication
+   */
+  "X-Service-Key": string;
+  /**
+   * Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
+   */
+  "X-Stripe-Customer-Id"?: string;
+};
+
+export type AddInvoiceLineItemWithPriceId200AllOf = {
+  data?: InvoiceLineItemResponse;
+};
+
+export type AddInvoiceLineItemWithPriceId200 = SuccessResponse &
+  AddInvoiceLineItemWithPriceId200AllOf;
 
 export type FinalizeInvoiceHeaders = {
   /**
@@ -2278,6 +2510,24 @@ export type ArchiveAllStripeConfig200AllOf = {
 
 export type ArchiveAllStripeConfig200 = SuccessResponse &
   ArchiveAllStripeConfig200AllOf;
+
+export type GetPriceByID200AllOf = {
+  data?: PriceResponse;
+};
+
+export type GetPriceByID200 = SuccessResponse & GetPriceByID200AllOf;
+
+export type GetProductByID200AllOf = {
+  data?: ProductResponse;
+};
+
+export type GetProductByID200 = SuccessResponse & GetProductByID200AllOf;
+
+export type GetMeterByID200AllOf = {
+  data?: MeterResponse;
+};
+
+export type GetMeterByID200 = SuccessResponse & GetMeterByID200AllOf;
 
 export type ConvertStripeIDToConfigID200AllOf = {
   data?: StripeIDConversionResponse;
@@ -2474,6 +2724,13 @@ export type RemoveSubscription200AllOf = {
 
 export type RemoveSubscription200 = SuccessResponse &
   RemoveSubscription200AllOf;
+
+export type GetTenantSubscription200AllOf = {
+  data?: SubscriptionResponse;
+};
+
+export type GetTenantSubscription200 = SuccessResponse &
+  GetTenantSubscription200AllOf;
 
 export type CreateInviteHeaders = {
   /**
@@ -2715,12 +2972,19 @@ Quick auth checks for route guards without fetching full session data.
 Users can be members of multiple tenants but only one is active at a time.
 The active tenant determines which resources and data the user can access.
 
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
 ## Use Case
 Determine which tenant context to use for API calls and data filtering.
 
  * @summary Get active tenant
  */
-  getActiveTenant(requestParameters?: Params): {
+  getActiveTenant(
+    headers?: GetActiveTenantHeaders,
+    requestParameters?: Params
+  ): {
     response: Response;
     data: GetActiveTenant200;
   } {
@@ -2729,12 +2993,19 @@ Determine which tenant context to use for API calls and data filtering.
       requestParameters || {},
       this.commonRequestParameters
     );
-    const response = http.request(
-      "GET",
-      url.toString(),
-      undefined,
-      mergedRequestParameters
-    );
+    const response = http.request("GET", url.toString(), undefined, {
+      ...mergedRequestParameters,
+      headers: {
+        ...mergedRequestParameters?.headers,
+        // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+        ...Object.fromEntries(
+          Object.entries(headers || {}).map(([key, value]) => [
+            key,
+            String(value),
+          ])
+        ),
+      },
+    });
     let data;
 
     try {
@@ -3523,6 +3794,80 @@ You must provide the Stripe customer ID using ONE of:
       "POST",
       url.toString(),
       JSON.stringify(addInvoiceLineItemRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ])
+          ),
+        },
+      }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Adds a new line item to a draft invoice using a price ID and quantity.
+
+## Authentication
+Requires service key authentication via `X-Service-Key` header.
+
+## Customer Identification
+You must provide the Stripe customer ID using ONE of:
+- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
+- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
+
+## Price ID Resolution
+You must provide ONE of:
+- `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
+- `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
+
+## Prerequisites
+- Invoice must be in draft status
+
+## Use Cases
+- Adding metered usage line items
+- Adding subscription-based charges
+- Billing for compute hours, storage, etc.
+
+ * @summary Add invoice line item with price ID
+ */
+  addInvoiceLineItemWithPriceId(
+    invoiceId: string,
+    addInvoiceLineItemWithPriceIDRequest: AddInvoiceLineItemWithPriceIDRequest,
+    headers: AddInvoiceLineItemWithPriceIdHeaders,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: AddInvoiceLineItemWithPriceId200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/payments/invoices/${invoiceId}/items/price`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(addInvoiceLineItemWithPriceIDRequest),
       {
         ...mergedRequestParameters,
         headers: {
@@ -4382,6 +4727,144 @@ This is a destructive operation that will archive ALL active Stripe resources.
     );
     const response = http.request(
       "POST",
+      url.toString(),
+      undefined,
+      mergedRequestParameters
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a specific price from the Stripe configuration by its config ID, along with its parent product.
+
+## Authentication
+No authentication required for public endpoint.
+
+## Use Cases
+- Fetch price details for checkout
+- Display specific pricing information
+- Subscription management
+
+ * @summary Get price by ID
+ */
+  getPriceByID(
+    priceId: string,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: GetPriceByID200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/config/prices/${priceId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a specific product from the Stripe configuration by its config ID, including all its prices.
+
+## Authentication
+No authentication required for public endpoint.
+
+## Use Cases
+- Fetch product details
+- Display product information with all price options
+- Product catalog pages
+
+ * @summary Get product by ID
+ */
+  getProductByID(
+    productId: string,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: GetProductByID200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/config/products/${productId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a specific billing meter from the Stripe configuration by its config ID.
+
+## Authentication
+No authentication required for public endpoint.
+
+## Use Cases
+- Fetch meter details for usage tracking
+- Display metered billing information
+- Usage reporting configuration
+
+ * @summary Get meter by ID
+ */
+  getMeterByID(
+    meterId: string,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: GetMeterByID200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/config/meters/${meterId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "GET",
       url.toString(),
       undefined,
       mergedRequestParameters
@@ -5329,6 +5812,52 @@ Requires JWT token with tenant context.
           "Content-Type": "application/json",
         },
       }
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a single subscription for the specified config_price_id (plan ID).
+
+## Authentication
+Requires JWT token with tenant context.
+
+## Use Cases
+- Check if tenant has a specific subscription
+- Get subscription details for a specific plan
+- Retrieve Stripe subscription ID for a plan
+
+ * @summary Get tenant subscription by plan
+ */
+  getTenantSubscription(
+    configPriceId: string,
+    requestParameters?: Params
+  ): {
+    response: Response;
+    data: GetTenantSubscription200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/tenants/subscriptions/${configPriceId}`
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters
     );
     let data;
 
