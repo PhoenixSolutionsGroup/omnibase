@@ -126,20 +126,13 @@ jobs:
         working-directory: tests/api
         run: omnibase sync --env local all
 
+      - name: Restart auth and permissions
+        working-directory: tests/api
+        run: omnibase restart --mode dev --env local auth permissions
+
       - name: Wait for services after sync
         run: |
           echo "Waiting for services after sync..."
-
-          # Wait for Permissions (restarted during sync)
-          echo "Waiting for Permissions..."
-          for i in {1..30}; do
-            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
-              echo "Permissions is ready!"
-              break
-            fi
-            echo "Permissions attempt $i/30..."
-            sleep 2
-          done
 
           # Verify API is still healthy
           echo "Verifying API..."
@@ -149,6 +142,28 @@ jobs:
               break
             fi
             echo "API attempt $i/10..."
+            sleep 2
+          done
+
+          # Wait for Auth (restarted after sync)
+          echo "Waiting for Auth..."
+          for i in {1..30}; do
+            if curl -sf http://localhost:4433/health/alive > /dev/null 2>&1; then
+              echo "Auth is ready!"
+              break
+            fi
+            echo "Auth attempt $i/30..."
+            sleep 2
+          done
+
+          # Wait for Permissions (restarted after sync)
+          echo "Waiting for Permissions..."
+          for i in {1..30}; do
+            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
+              echo "Permissions is ready!"
+              break
+            fi
+            echo "Permissions attempt $i/30..."
             sleep 2
           done
 
