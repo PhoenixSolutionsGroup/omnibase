@@ -125,7 +125,7 @@ if [ "$RUN_K6" = true ]; then
 
   # Generate k6 SDK from OpenAPI spec
   echo -e "${BLUE}Generating k6 SDK...${NC}"
-  openapi-to-k6 ./apps/api/docs/openapi.yaml ./tests/api/k6/sdk.ts
+  npx openapi-to-k6 ./apps/api/docs/openapi.yaml ./tests/api/k6/sdk.ts
 
   # Build k6 tests
   echo -e "${BLUE}Building k6 tests...${NC}"

@@ -8,11 +8,13 @@
     "generate:k6": "./scripts/generate-k6-sdk.sh",
     "test:api": "./scripts/test-api.sh",
     "test:api:local": "./scripts/test-api.sh --local",
-    "test:api:k6": "./scripts/test-api.sh --k6-only",
-    "test:api:contract": "./scripts/test-api.sh --contract-only",
+    "test:api:k6": "./scripts/test-api.sh --k6-only --local",
+    "test:api:contract": "./scripts/test-api.sh --contract-only --local",
     "release:preview": "./scripts/preview-releases.sh"
   },
   "devDependencies": {
+    "@grafana/openapi-to-k6": "^0.3.2",
+    "@openapitools/openapi-generator-cli": "^2.27.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
