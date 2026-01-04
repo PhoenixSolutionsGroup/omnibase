@@ -1,7 +1,6 @@
 
-# AddInvoiceLineItemWithPriceIDRequest
+# AddInvoiceLineItemWithConfigPriceRequest
 
-Add a line item using either a config price_id or raw stripe_price_id
 
 ## Properties
 
@@ -12,12 +11,11 @@ Name | Type
 `description` | string
 `currency` | [CurrencyCode](CurrencyCode.md)
 `metadata` | { [key: string]: string; }
-`stripePriceId` | string
 
 ## Example
 
 ```typescript
-import type { AddInvoiceLineItemWithPriceIDRequest } from '@omnibase/core-js'
+import type { AddInvoiceLineItemWithConfigPriceRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
@@ -26,8 +24,7 @@ const example = {
   "description": VPS Compute - 720 hours,
   "currency": null,
   "metadata": null,
-  "stripePriceId": price_1ABC123,
-} satisfies AddInvoiceLineItemWithPriceIDRequest
+} satisfies AddInvoiceLineItemWithConfigPriceRequest
 
 console.log(example)
 
@@ -36,7 +33,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as AddInvoiceLineItemWithPriceIDRequest
+const exampleParsed = JSON.parse(exampleJSON) as AddInvoiceLineItemWithConfigPriceRequest
 console.log(exampleParsed)
 ```
 

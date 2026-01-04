@@ -38,7 +38,7 @@ export interface SuccessResponse {
      * @type {SuccessResponseData}
      * @memberof SuccessResponse
      */
-    data?: SuccessResponseData;
+    data?: SuccessResponseData | null;
 }
 
 /**

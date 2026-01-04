@@ -24,7 +24,7 @@ var _ MappedNullable = &SuccessResponse{}
 type SuccessResponse struct {
 	// HTTP status code
 	Status int32 `json:"status"`
-	Data *SuccessResponseData `json:"data,omitempty"`
+	Data NullableSuccessResponseData `json:"data,omitempty"`
 }
 
 type _SuccessResponse SuccessResponse
@@ -71,36 +71,46 @@ func (o *SuccessResponse) SetStatus(v int32) {
 	o.Status = v
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *SuccessResponse) GetData() SuccessResponseData {
-	if o == nil || IsNil(o.Data) {
+	if o == nil || IsNil(o.Data.Get()) {
 		var ret SuccessResponseData
 		return ret
 	}
-	return *o.Data
+	return *o.Data.Get()
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *SuccessResponse) GetDataOk() (*SuccessResponseData, bool) {
-	if o == nil || IsNil(o.Data) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Data, true
+	return o.Data.Get(), o.Data.IsSet()
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *SuccessResponse) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
+	if o != nil && o.Data.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given SuccessResponseData and assigns it to the Data field.
+// SetData gets a reference to the given NullableSuccessResponseData and assigns it to the Data field.
 func (o *SuccessResponse) SetData(v SuccessResponseData) {
-	o.Data = &v
+	o.Data.Set(&v)
+}
+// SetDataNil sets the value for Data to be an explicit nil
+func (o *SuccessResponse) SetDataNil() {
+	o.Data.Set(nil)
+}
+
+// UnsetData ensures that no value is present for Data, not even an explicit nil
+func (o *SuccessResponse) UnsetData() {
+	o.Data.Unset()
 }
 
 func (o SuccessResponse) MarshalJSON() ([]byte, error) {
@@ -114,8 +124,8 @@ func (o SuccessResponse) MarshalJSON() ([]byte, error) {
 func (o SuccessResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
+	if o.Data.IsSet() {
+		toSerialize["data"] = o.Data.Get()
 	}
 	return toSerialize, nil
 }

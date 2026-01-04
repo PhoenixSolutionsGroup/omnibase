@@ -82,7 +82,7 @@ Name | Type | Description  | Notes
 
 ## GetActiveTenant
 
-> GetActiveTenant200Response GetActiveTenant(ctx).Execute()
+> GetActiveTenant200Response GetActiveTenant(ctx).XUserId(xUserId).Execute()
 
 Get active tenant
 
@@ -101,10 +101,11 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).XUserId(xUserId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -116,12 +117,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetActiveTenantRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -129,7 +134,7 @@ Other parameters are passed through a pointer to a apiGetActiveTenantRequest str
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

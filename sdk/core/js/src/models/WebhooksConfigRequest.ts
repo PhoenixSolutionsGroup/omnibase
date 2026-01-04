@@ -28,7 +28,7 @@ import {
  */
 export interface WebhooksConfigRequest {
     /**
-     * List of webhook endpoint configurations
+     * List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
      * @type {Array<WebhookEndpointConfig>}
      * @memberof WebhooksConfigRequest
      */

@@ -28,7 +28,7 @@ import {
  */
 export interface CreateUserRequest {
     /**
-     * User's email address (RFC 5322 compliant)
+     * User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
      * @type {string}
      * @memberof CreateUserRequest
      */

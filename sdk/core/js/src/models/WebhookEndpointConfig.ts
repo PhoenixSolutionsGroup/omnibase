@@ -36,7 +36,7 @@ export interface WebhookEndpointConfig {
      * @type {Array<string>}
      * @memberof WebhookEndpointConfig
      */
-    events: Array<string>;
+    events: Array<WebhookEndpointConfigEventsEnum>;
     /**
      * If true, listen to events from connected accounts (Stripe Connect)
      * @type {boolean}
@@ -44,6 +44,69 @@ export interface WebhookEndpointConfig {
      */
     connect?: boolean;
 }
+
+
+/**
+ * @export
+ */
+export const WebhookEndpointConfigEventsEnum = {
+    AccountUpdated: 'account.updated',
+    AccountApplicationDeauthorized: 'account.application.deauthorized',
+    AccountExternalAccountCreated: 'account.external_account.created',
+    AccountExternalAccountUpdated: 'account.external_account.updated',
+    AccountExternalAccountDeleted: 'account.external_account.deleted',
+    PaymentIntentCreated: 'payment_intent.created',
+    PaymentIntentSucceeded: 'payment_intent.succeeded',
+    PaymentIntentPaymentFailed: 'payment_intent.payment_failed',
+    PaymentIntentCanceled: 'payment_intent.canceled',
+    PaymentIntentRequiresAction: 'payment_intent.requires_action',
+    ChargeSucceeded: 'charge.succeeded',
+    ChargeFailed: 'charge.failed',
+    ChargeRefunded: 'charge.refunded',
+    ChargeCaptured: 'charge.captured',
+    ChargeDisputeCreated: 'charge.dispute.created',
+    ChargeDisputeUpdated: 'charge.dispute.updated',
+    ChargeDisputeClosed: 'charge.dispute.closed',
+    CustomerCreated: 'customer.created',
+    CustomerUpdated: 'customer.updated',
+    CustomerDeleted: 'customer.deleted',
+    CustomerSubscriptionCreated: 'customer.subscription.created',
+    CustomerSubscriptionUpdated: 'customer.subscription.updated',
+    CustomerSubscriptionDeleted: 'customer.subscription.deleted',
+    CustomerSubscriptionTrialWillEnd: 'customer.subscription.trial_will_end',
+    CustomerSubscriptionPaused: 'customer.subscription.paused',
+    CustomerSubscriptionResumed: 'customer.subscription.resumed',
+    InvoiceCreated: 'invoice.created',
+    InvoiceFinalized: 'invoice.finalized',
+    InvoicePaid: 'invoice.paid',
+    InvoicePaymentFailed: 'invoice.payment_failed',
+    InvoicePaymentActionRequired: 'invoice.payment_action_required',
+    InvoiceUpcoming: 'invoice.upcoming',
+    InvoiceMarkedUncollectible: 'invoice.marked_uncollectible',
+    InvoiceVoided: 'invoice.voided',
+    PayoutCreated: 'payout.created',
+    PayoutPaid: 'payout.paid',
+    PayoutFailed: 'payout.failed',
+    PayoutCanceled: 'payout.canceled',
+    ProductCreated: 'product.created',
+    ProductUpdated: 'product.updated',
+    ProductDeleted: 'product.deleted',
+    PriceCreated: 'price.created',
+    PriceUpdated: 'price.updated',
+    PriceDeleted: 'price.deleted',
+    CheckoutSessionCompleted: 'checkout.session.completed',
+    CheckoutSessionExpired: 'checkout.session.expired',
+    CheckoutSessionAsyncPaymentSucceeded: 'checkout.session.async_payment_succeeded',
+    CheckoutSessionAsyncPaymentFailed: 'checkout.session.async_payment_failed',
+    RefundCreated: 'refund.created',
+    RefundUpdated: 'refund.updated',
+    PaymentMethodAttached: 'payment_method.attached',
+    PaymentMethodDetached: 'payment_method.detached',
+    TransferCreated: 'transfer.created',
+    TransferReversed: 'transfer.reversed'
+} as const;
+export type WebhookEndpointConfigEventsEnum = typeof WebhookEndpointConfigEventsEnum[keyof typeof WebhookEndpointConfigEventsEnum];
+
 
 /**
  * Check if a given object implements the WebhookEndpointConfig interface.

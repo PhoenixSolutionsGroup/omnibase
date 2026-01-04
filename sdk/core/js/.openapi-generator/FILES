@@ -7,7 +7,9 @@ docs/AcceptInviteResponse.md
 docs/ActiveTenantResponse.md
 docs/AddInvoiceLineItem200Response.md
 docs/AddInvoiceLineItemRequest.md
+docs/AddInvoiceLineItemWithConfigPriceRequest.md
 docs/AddInvoiceLineItemWithPriceIDRequest.md
+docs/AddInvoiceLineItemWithStripePriceRequest.md
 docs/AddSubscription200Response.md
 docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
@@ -217,7 +219,9 @@ src/models/AcceptInviteResponse.ts
 src/models/ActiveTenantResponse.ts
 src/models/AddInvoiceLineItem200Response.ts
 src/models/AddInvoiceLineItemRequest.ts
+src/models/AddInvoiceLineItemWithConfigPriceRequest.ts
 src/models/AddInvoiceLineItemWithPriceIDRequest.ts
+src/models/AddInvoiceLineItemWithStripePriceRequest.ts
 src/models/AddSubscription200Response.ts
 src/models/AddSubscriptionRequest.ts
 src/models/AddSubscriptionResponse.ts

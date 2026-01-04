@@ -13,280 +13,124 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
 	"fmt"
+	"gopkg.in/validator.v2"
 )
 
-// checks if the AddInvoiceLineItemWithPriceIDRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &AddInvoiceLineItemWithPriceIDRequest{}
-
-// AddInvoiceLineItemWithPriceIDRequest struct for AddInvoiceLineItemWithPriceIDRequest
+// AddInvoiceLineItemWithPriceIDRequest - Add a line item using either a config price_id or raw stripe_price_id
 type AddInvoiceLineItemWithPriceIDRequest struct {
-	// Config price ID (e.g., \"hetzner_cx23_nbg1_hourly\") - looked up via GetStripeIDByConfigID. Provide either this or stripe_price_id.
-	PriceId *string `json:"price_id,omitempty"`
-	// Raw Stripe price ID (e.g., \"price_1ABC...\") - used directly. Provide either this or price_id.
-	StripePriceId *string `json:"stripe_price_id,omitempty"`
-	// Quantity of units (required)
-	Quantity int64 `json:"quantity"`
-	// Description for the line item (required)
-	Description string `json:"description"`
-	Currency CurrencyCode `json:"currency"`
-	// Optional metadata key-value pairs
-	Metadata map[string]string `json:"metadata,omitempty"`
+	AddInvoiceLineItemWithConfigPriceRequest *AddInvoiceLineItemWithConfigPriceRequest
+	AddInvoiceLineItemWithStripePriceRequest *AddInvoiceLineItemWithStripePriceRequest
 }
 
-type _AddInvoiceLineItemWithPriceIDRequest AddInvoiceLineItemWithPriceIDRequest
-
-// NewAddInvoiceLineItemWithPriceIDRequest instantiates a new AddInvoiceLineItemWithPriceIDRequest object
-// This constructor will assign default values to properties that have it defined,
-// and makes sure properties required by API are set, but the set of arguments
-// will change when the set of required properties is changed
-func NewAddInvoiceLineItemWithPriceIDRequest(quantity int64, description string, currency CurrencyCode) *AddInvoiceLineItemWithPriceIDRequest {
-	this := AddInvoiceLineItemWithPriceIDRequest{}
-	this.Quantity = quantity
-	this.Description = description
-	this.Currency = currency
-	return &this
-}
-
-// NewAddInvoiceLineItemWithPriceIDRequestWithDefaults instantiates a new AddInvoiceLineItemWithPriceIDRequest object
-// This constructor will only assign default values to properties that have it defined,
-// but it doesn't guarantee that properties required by API are set
-func NewAddInvoiceLineItemWithPriceIDRequestWithDefaults() *AddInvoiceLineItemWithPriceIDRequest {
-	this := AddInvoiceLineItemWithPriceIDRequest{}
-	return &this
-}
-
-// GetPriceId returns the PriceId field value if set, zero value otherwise.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetPriceId() string {
-	if o == nil || IsNil(o.PriceId) {
-		var ret string
-		return ret
+// AddInvoiceLineItemWithConfigPriceRequestAsAddInvoiceLineItemWithPriceIDRequest is a convenience function that returns AddInvoiceLineItemWithConfigPriceRequest wrapped in AddInvoiceLineItemWithPriceIDRequest
+func AddInvoiceLineItemWithConfigPriceRequestAsAddInvoiceLineItemWithPriceIDRequest(v *AddInvoiceLineItemWithConfigPriceRequest) AddInvoiceLineItemWithPriceIDRequest {
+	return AddInvoiceLineItemWithPriceIDRequest{
+		AddInvoiceLineItemWithConfigPriceRequest: v,
 	}
-	return *o.PriceId
 }
 
-// GetPriceIdOk returns a tuple with the PriceId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetPriceIdOk() (*string, bool) {
-	if o == nil || IsNil(o.PriceId) {
-		return nil, false
+// AddInvoiceLineItemWithStripePriceRequestAsAddInvoiceLineItemWithPriceIDRequest is a convenience function that returns AddInvoiceLineItemWithStripePriceRequest wrapped in AddInvoiceLineItemWithPriceIDRequest
+func AddInvoiceLineItemWithStripePriceRequestAsAddInvoiceLineItemWithPriceIDRequest(v *AddInvoiceLineItemWithStripePriceRequest) AddInvoiceLineItemWithPriceIDRequest {
+	return AddInvoiceLineItemWithPriceIDRequest{
+		AddInvoiceLineItemWithStripePriceRequest: v,
 	}
-	return o.PriceId, true
 }
 
-// HasPriceId returns a boolean if a field has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) HasPriceId() bool {
-	if o != nil && !IsNil(o.PriceId) {
-		return true
-	}
 
-	return false
-}
-
-// SetPriceId gets a reference to the given string and assigns it to the PriceId field.
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetPriceId(v string) {
-	o.PriceId = &v
-}
-
-// GetStripePriceId returns the StripePriceId field value if set, zero value otherwise.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetStripePriceId() string {
-	if o == nil || IsNil(o.StripePriceId) {
-		var ret string
-		return ret
-	}
-	return *o.StripePriceId
-}
-
-// GetStripePriceIdOk returns a tuple with the StripePriceId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetStripePriceIdOk() (*string, bool) {
-	if o == nil || IsNil(o.StripePriceId) {
-		return nil, false
-	}
-	return o.StripePriceId, true
-}
-
-// HasStripePriceId returns a boolean if a field has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) HasStripePriceId() bool {
-	if o != nil && !IsNil(o.StripePriceId) {
-		return true
-	}
-
-	return false
-}
-
-// SetStripePriceId gets a reference to the given string and assigns it to the StripePriceId field.
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetStripePriceId(v string) {
-	o.StripePriceId = &v
-}
-
-// GetQuantity returns the Quantity field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetQuantity() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.Quantity
-}
-
-// GetQuantityOk returns a tuple with the Quantity field value
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetQuantityOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Quantity, true
-}
-
-// SetQuantity sets field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetQuantity(v int64) {
-	o.Quantity = v
-}
-
-// GetDescription returns the Description field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetDescription() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Description
-}
-
-// GetDescriptionOk returns a tuple with the Description field value
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetDescriptionOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Description, true
-}
-
-// SetDescription sets field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetDescription(v string) {
-	o.Description = v
-}
-
-// GetCurrency returns the Currency field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetCurrency() CurrencyCode {
-	if o == nil {
-		var ret CurrencyCode
-		return ret
-	}
-
-	return o.Currency
-}
-
-// GetCurrencyOk returns a tuple with the Currency field value
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetCurrencyOk() (*CurrencyCode, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Currency, true
-}
-
-// SetCurrency sets field value
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetCurrency(v CurrencyCode) {
-	o.Currency = v
-}
-
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetMetadata() map[string]string {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]string
-		return ret
-	}
-	return o.Metadata
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) GetMetadataOk() (map[string]string, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]string{}, false
-	}
-	return o.Metadata, true
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *AddInvoiceLineItemWithPriceIDRequest) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *AddInvoiceLineItemWithPriceIDRequest) SetMetadata(v map[string]string) {
-	o.Metadata = v
-}
-
-func (o AddInvoiceLineItemWithPriceIDRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
-func (o AddInvoiceLineItemWithPriceIDRequest) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
-	if !IsNil(o.PriceId) {
-		toSerialize["price_id"] = o.PriceId
-	}
-	if !IsNil(o.StripePriceId) {
-		toSerialize["stripe_price_id"] = o.StripePriceId
-	}
-	toSerialize["quantity"] = o.Quantity
-	toSerialize["description"] = o.Description
-	toSerialize["currency"] = o.Currency
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
-	return toSerialize, nil
-}
-
-func (o *AddInvoiceLineItemWithPriceIDRequest) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"quantity",
-		"description",
-		"currency",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
+// Unmarshal JSON data into one of the pointers in the struct
+func (dst *AddInvoiceLineItemWithPriceIDRequest) UnmarshalJSON(data []byte) error {
+	var err error
+	match := 0
+	// try to unmarshal data into AddInvoiceLineItemWithConfigPriceRequest
+	err = newStrictDecoder(data).Decode(&dst.AddInvoiceLineItemWithConfigPriceRequest)
+	if err == nil {
+		jsonAddInvoiceLineItemWithConfigPriceRequest, _ := json.Marshal(dst.AddInvoiceLineItemWithConfigPriceRequest)
+		if string(jsonAddInvoiceLineItemWithConfigPriceRequest) == "{}" { // empty struct
+			dst.AddInvoiceLineItemWithConfigPriceRequest = nil
+		} else {
+			if err = validator.Validate(dst.AddInvoiceLineItemWithConfigPriceRequest); err != nil {
+				dst.AddInvoiceLineItemWithConfigPriceRequest = nil
+			} else {
+				match++
+			}
 		}
+	} else {
+		dst.AddInvoiceLineItemWithConfigPriceRequest = nil
 	}
 
-	varAddInvoiceLineItemWithPriceIDRequest := _AddInvoiceLineItemWithPriceIDRequest{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAddInvoiceLineItemWithPriceIDRequest)
-
-	if err != nil {
-		return err
+	// try to unmarshal data into AddInvoiceLineItemWithStripePriceRequest
+	err = newStrictDecoder(data).Decode(&dst.AddInvoiceLineItemWithStripePriceRequest)
+	if err == nil {
+		jsonAddInvoiceLineItemWithStripePriceRequest, _ := json.Marshal(dst.AddInvoiceLineItemWithStripePriceRequest)
+		if string(jsonAddInvoiceLineItemWithStripePriceRequest) == "{}" { // empty struct
+			dst.AddInvoiceLineItemWithStripePriceRequest = nil
+		} else {
+			if err = validator.Validate(dst.AddInvoiceLineItemWithStripePriceRequest); err != nil {
+				dst.AddInvoiceLineItemWithStripePriceRequest = nil
+			} else {
+				match++
+			}
+		}
+	} else {
+		dst.AddInvoiceLineItemWithStripePriceRequest = nil
 	}
 
-	*o = AddInvoiceLineItemWithPriceIDRequest(varAddInvoiceLineItemWithPriceIDRequest)
+	if match > 1 { // more than 1 match
+		// reset to nil
+		dst.AddInvoiceLineItemWithConfigPriceRequest = nil
+		dst.AddInvoiceLineItemWithStripePriceRequest = nil
 
-	return err
+		return fmt.Errorf("data matches more than one schema in oneOf(AddInvoiceLineItemWithPriceIDRequest)")
+	} else if match == 1 {
+		return nil // exactly one match
+	} else { // no match
+		return fmt.Errorf("data failed to match schemas in oneOf(AddInvoiceLineItemWithPriceIDRequest)")
+	}
+}
+
+// Marshal data from the first non-nil pointers in the struct to JSON
+func (src AddInvoiceLineItemWithPriceIDRequest) MarshalJSON() ([]byte, error) {
+	if src.AddInvoiceLineItemWithConfigPriceRequest != nil {
+		return json.Marshal(&src.AddInvoiceLineItemWithConfigPriceRequest)
+	}
+
+	if src.AddInvoiceLineItemWithStripePriceRequest != nil {
+		return json.Marshal(&src.AddInvoiceLineItemWithStripePriceRequest)
+	}
+
+	return nil, nil // no data in oneOf schemas
+}
+
+// Get the actual instance
+func (obj *AddInvoiceLineItemWithPriceIDRequest) GetActualInstance() (interface{}) {
+	if obj == nil {
+		return nil
+	}
+	if obj.AddInvoiceLineItemWithConfigPriceRequest != nil {
+		return obj.AddInvoiceLineItemWithConfigPriceRequest
+	}
+
+	if obj.AddInvoiceLineItemWithStripePriceRequest != nil {
+		return obj.AddInvoiceLineItemWithStripePriceRequest
+	}
+
+	// all schemas are nil
+	return nil
+}
+
+// Get the actual instance value
+func (obj AddInvoiceLineItemWithPriceIDRequest) GetActualInstanceValue() (interface{}) {
+	if obj.AddInvoiceLineItemWithConfigPriceRequest != nil {
+		return *obj.AddInvoiceLineItemWithConfigPriceRequest
+	}
+
+	if obj.AddInvoiceLineItemWithStripePriceRequest != nil {
+		return *obj.AddInvoiceLineItemWithStripePriceRequest
+	}
+
+	// all schemas are nil
+	return nil
 }
 
 type NullableAddInvoiceLineItemWithPriceIDRequest struct {

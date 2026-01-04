@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   BadRequest,
   ConfigureWebhooks200Response,
+  ConflictResponse,
   GetWebhookSecret200Response,
   InternalServerError,
   NotFound,
@@ -28,6 +29,8 @@ import {
     BadRequestToJSON,
     ConfigureWebhooks200ResponseFromJSON,
     ConfigureWebhooks200ResponseToJSON,
+    ConflictResponseFromJSON,
+    ConflictResponseToJSON,
     GetWebhookSecret200ResponseFromJSON,
     GetWebhookSecret200ResponseToJSON,
     InternalServerErrorFromJSON,

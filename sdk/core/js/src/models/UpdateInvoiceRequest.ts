@@ -26,7 +26,7 @@ export interface UpdateInvoiceRequest {
      */
     description?: string;
     /**
-     * Optional metadata key-value pairs to add
+     * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
      * @type {{ [key: string]: string; }}
      * @memberof UpdateInvoiceRequest
      */

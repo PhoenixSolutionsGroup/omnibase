@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Webhooks** | [**[]WebhookEndpointConfig**](WebhookEndpointConfig.md) | List of webhook endpoint configurations | 
+**Webhooks** | [**[]WebhookEndpointConfig**](WebhookEndpointConfig.md) | List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed. | 
 
 ## Methods
 

@@ -19,7 +19,9 @@ docs/AcceptInviteResponse.md
 docs/ActiveTenantResponse.md
 docs/AddInvoiceLineItem200Response.md
 docs/AddInvoiceLineItemRequest.md
+docs/AddInvoiceLineItemWithConfigPriceRequest.md
 docs/AddInvoiceLineItemWithPriceIDRequest.md
+docs/AddInvoiceLineItemWithStripePriceRequest.md
 docs/AddSubscription200Response.md
 docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
@@ -220,7 +222,9 @@ model_accept_invite_response.go
 model_active_tenant_response.go
 model_add_invoice_line_item_200_response.go
 model_add_invoice_line_item_request.go
+model_add_invoice_line_item_with_config_price_request.go
 model_add_invoice_line_item_with_price_id_request.go
+model_add_invoice_line_item_with_stripe_price_request.go
 model_add_subscription_200_response.go
 model_add_subscription_request.go
 model_add_subscription_response.go

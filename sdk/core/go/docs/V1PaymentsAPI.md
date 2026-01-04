@@ -117,7 +117,7 @@ import (
 func main() {
 	xServiceKey := "xServiceKey_example" // string | Service key for authentication
 	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
-	addInvoiceLineItemWithPriceIDRequest := *openapiclient.NewAddInvoiceLineItemWithPriceIDRequest(int64(720), "VPS Compute - 720 hours", openapiclient.CurrencyCode("usd")) // AddInvoiceLineItemWithPriceIDRequest | 
+	addInvoiceLineItemWithPriceIDRequest := openapiclient.AddInvoiceLineItemWithPriceIDRequest{AddInvoiceLineItemWithConfigPriceRequest: openapiclient.NewAddInvoiceLineItemWithConfigPriceRequest("hetzner_cx23_nbg1_hourly", int64(720), "VPS Compute - 720 hours", openapiclient.CurrencyCode("usd"))} // AddInvoiceLineItemWithPriceIDRequest | 
 	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
 	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
 

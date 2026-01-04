@@ -21,8 +21,8 @@ var _ MappedNullable = &CreateUserRequest{}
 
 // CreateUserRequest struct for CreateUserRequest
 type CreateUserRequest struct {
-	// User's email address (RFC 5322 compliant)
-	Email string `json:"email" validate:"regexp=^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$"`
+	// User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
+	Email string `json:"email" validate:"regexp=^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\\\\.[a-zA-Z0-9-]{1,63})*\\\\.[a-zA-Z]{2,63}$"`
 	// User's password (8-72 printable ASCII characters, bcrypt compatible)
 	Password string `json:"password" validate:"regexp=^[ -~]+$"`
 	Name CreateUserRequestName `json:"name"`

@@ -22,7 +22,7 @@ var _ MappedNullable = &AddInvoiceLineItemRequest{}
 
 // AddInvoiceLineItemRequest struct for AddInvoiceLineItemRequest
 type AddInvoiceLineItemRequest struct {
-	// Amount in cents (required)
+	// Amount in cents (required, must be positive, max ~$999B)
 	Amount int64 `json:"amount"`
 	// Description for the line item (required)
 	Description string `json:"description"`

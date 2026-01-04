@@ -65,6 +65,11 @@ func StringAsSuccessResponseData(v *string) SuccessResponseData {
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *SuccessResponseData) UnmarshalJSON(data []byte) error {
 	var err error
+	// this object is nullable so check if the payload is null or empty string
+	if string(data) == "" || string(data) == "{}" {
+		return nil
+	}
+
 	match := 0
 	// try to unmarshal data into ArrayOfAny
 	err = newStrictDecoder(data).Decode(&dst.ArrayOfAny)

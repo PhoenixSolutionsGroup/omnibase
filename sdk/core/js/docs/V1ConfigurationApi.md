@@ -103,6 +103,8 @@ import type { CreateOrUpdateEmailTemplateRequest } from '@omnibase/core-js';
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
   const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
@@ -140,7 +142,7 @@ example().catch(console.error);
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -179,6 +181,8 @@ import type { DeleteEmailTemplateRequest } from '@omnibase/core-js';
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
   const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
@@ -216,7 +220,7 @@ example().catch(console.error);
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -330,6 +334,8 @@ import type { GetEmailTemplatesRequest } from '@omnibase/core-js';
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
   const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
@@ -359,7 +365,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

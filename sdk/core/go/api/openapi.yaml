@@ -186,9 +186,23 @@ paths:
         Users can be members of multiple tenants but only one is active at a time.
         The active tenant determines which resources and data the user can access.
 
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
+
         ## Use Case
         Determine which tenant context to use for API calls and data filtering.
       operationId: getActiveTenant
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -203,6 +217,7 @@ paths:
       security:
       - CookieAuth: []
         SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Get active tenant
       tags:
       - V1 Auth
@@ -369,6 +384,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Get all email templates
       tags:
       - V1 Configuration
@@ -418,6 +434,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Create or update email template
       tags:
       - V1 Configuration
@@ -464,6 +481,7 @@ paths:
       security:
       - CookieAuth: []
       - SessionTokenAuth: []
+      - ServiceKeyAuth: []
       summary: Delete email template
       tags:
       - V1 Configuration
@@ -756,6 +774,7 @@ paths:
         name: invoice_id
         required: true
         schema:
+          pattern: "^in_[A-Za-z0-9]+$"
           type: string
         style: simple
       responses:
@@ -769,6 +788,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Get invoice
@@ -804,6 +825,7 @@ paths:
         name: invoice_id
         required: true
         schema:
+          pattern: "^in_[A-Za-z0-9]+$"
           type: string
         style: simple
       requestBody:
@@ -823,6 +845,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Update invoice
@@ -883,6 +907,7 @@ paths:
         name: invoice_id
         required: true
         schema:
+          pattern: "^in_[A-Za-z0-9]+$"
           type: string
         style: simple
       requestBody:
@@ -902,6 +927,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Add invoice line item
@@ -967,6 +994,7 @@ paths:
         name: invoice_id
         required: true
         schema:
+          pattern: "^in_[A-Za-z0-9]+$"
           type: string
         style: simple
       requestBody:
@@ -1024,6 +1052,7 @@ paths:
         name: invoice_id
         required: true
         schema:
+          pattern: "^in_[A-Za-z0-9]+$"
           type: string
         style: simple
       requestBody:
@@ -1043,6 +1072,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Finalize invoice
@@ -2256,13 +2287,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadRequest"
-          description: Invalid request - validation errors
+          description: Invalid request - validation errors or invalid Stripe event
+            types
         "401":
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Unauthorized"
           description: Invalid or missing service key
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+          description: Conflict - duplicate webhook URL provided
         "500":
           content:
             application/json:
@@ -3949,11 +3987,13 @@ components:
         email: user@example.com
       properties:
         email:
-          description: User's email address (RFC 5322 compliant)
+          description: "User's email address (RFC 5321 compliant, local part max 64\
+            \ chars, each domain label max 63 chars)"
           example: user@example.com
           format: email
-          maxLength: 255
-          pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+          maxLength: 254
+          pattern: "^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9-]{1,63})*\\\
+            .[a-zA-Z]{2,63}$"
           type: string
         password:
           description: "User's password (8-72 printable ASCII characters, bcrypt compatible)"
@@ -4182,14 +4222,17 @@ components:
           description: "Template type identifier (e.g., \"welcome\", \"password-reset\"\
             )"
           example: test_welcome
+          minLength: 1
           type: string
         subject:
           description: Email subject line
           example: Welcome to Test Platform
+          minLength: 1
           type: string
         html_body:
           description: HTML email body content
           example: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
+          minLength: 1
           type: string
       required:
       - html_body
@@ -4356,6 +4399,7 @@ components:
       example: usd
       type: string
     CreateInvoiceRequest:
+      additionalProperties: false
       example:
         metadata:
           key: metadata
@@ -4376,8 +4420,10 @@ components:
           type: string
         metadata:
           additionalProperties:
+            maxLength: 500
             type: string
-          description: Optional metadata key-value pairs
+          description: "Optional metadata key-value pairs (keys must be alphanumeric/underscore,\
+            \ max 40 chars; values max 500 chars)"
       required:
       - currency
     InvoiceResponse:
@@ -4423,6 +4469,7 @@ components:
       - id
       - status
     UpdateInvoiceRequest:
+      additionalProperties: false
       example:
         metadata:
           key: metadata
@@ -4434,18 +4481,23 @@ components:
           type: string
         metadata:
           additionalProperties:
+            maxLength: 500
             type: string
-          description: Optional metadata key-value pairs to add
+          description: "Optional metadata key-value pairs (keys must be alphanumeric/underscore,\
+            \ max 40 chars; values max 500 chars)"
     AddInvoiceLineItemRequest:
+      additionalProperties: false
       example:
         amount: 1000
         description: Platform fee
         currency: usd
       properties:
         amount:
-          description: Amount in cents (required)
+          description: "Amount in cents (required, must be positive, max ~$999B)"
           example: 1000
           format: int64
+          maximum: 99999999999999
+          minimum: 1
           type: integer
         description:
           description: Description for the line item (required)
@@ -4479,7 +4531,8 @@ components:
           type: string
       required:
       - id
-    AddInvoiceLineItemWithPriceIDRequest:
+    AddInvoiceLineItemWithConfigPriceRequest:
+      additionalProperties: false
       example:
         metadata:
           key: metadata
@@ -4487,22 +4540,19 @@ components:
         price_id: hetzner_cx23_nbg1_hourly
         description: VPS Compute - 720 hours
         currency: usd
-        stripe_price_id: price_1ABC123
       properties:
         price_id:
           description: "Config price ID (e.g., \"hetzner_cx23_nbg1_hourly\") - looked\
-            \ up via GetStripeIDByConfigID. Provide either this or stripe_price_id."
+            \ up via GetStripeIDByConfigID"
           example: hetzner_cx23_nbg1_hourly
-          type: string
-        stripe_price_id:
-          description: "Raw Stripe price ID (e.g., \"price_1ABC...\") - used directly.\
-            \ Provide either this or price_id."
-          example: price_1ABC123
+          minLength: 1
           type: string
         quantity:
-          description: Quantity of units (required)
+          description: "Quantity of units (required, must be at least 1)"
           example: 720
           format: int64
+          maximum: 99999999999999
+          minimum: 1
           type: integer
         description:
           description: Description for the line item (required)
@@ -4513,12 +4563,53 @@ components:
           $ref: "#/components/schemas/CurrencyCode"
         metadata:
           additionalProperties:
+            maxLength: 500
             type: string
-          description: Optional metadata key-value pairs
+          description: "Optional metadata key-value pairs (keys must be alphanumeric/underscore,\
+            \ max 40 chars; values max 500 chars)"
+      required:
+      - currency
+      - description
+      - price_id
+      - quantity
+    AddInvoiceLineItemWithStripePriceRequest:
+      additionalProperties: false
+      properties:
+        stripe_price_id:
+          description: "Raw Stripe price ID (e.g., \"price_1ABC...\") - used directly"
+          example: price_1ABC123
+          pattern: "^price_[A-Za-z0-9]+$"
+          type: string
+        quantity:
+          description: "Quantity of units (required, must be at least 1)"
+          example: 720
+          format: int64
+          maximum: 99999999999999
+          minimum: 1
+          type: integer
+        description:
+          description: Description for the line item (required)
+          example: VPS Compute - 720 hours
+          minLength: 1
+          type: string
+        currency:
+          $ref: "#/components/schemas/CurrencyCode"
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: "Optional metadata key-value pairs (keys must be alphanumeric/underscore,\
+            \ max 40 chars; values max 500 chars)"
       required:
       - currency
       - description
       - quantity
+      - stripe_price_id
+    AddInvoiceLineItemWithPriceIDRequest:
+      description: Add a line item using either a config price_id or raw stripe_price_id
+      oneOf:
+      - $ref: "#/components/schemas/AddInvoiceLineItemWithConfigPriceRequest"
+      - $ref: "#/components/schemas/AddInvoiceLineItemWithStripePriceRequest"
     FinalizeInvoiceRequest:
       example:
         auto_advance: true
@@ -4628,15 +4719,19 @@ components:
       properties:
         namespace:
           description: The namespace for the relationship
+          minLength: 1
           type: string
         object:
           description: The object in the relationship
+          minLength: 1
           type: string
         relation:
           description: The relation type
+          minLength: 1
           type: string
         subject_id:
           description: Direct subject identifier
+          minLength: 1
           type: string
       required:
       - namespace
@@ -4649,12 +4744,15 @@ components:
       properties:
         namespace:
           description: The namespace for the relationship
+          minLength: 1
           type: string
         object:
           description: The object in the relationship
+          minLength: 1
           type: string
         relation:
           description: The relation type
+          minLength: 1
           type: string
         subject_set:
           $ref: "#/components/schemas/SubjectSetRequest"
@@ -4753,15 +4851,19 @@ components:
       properties:
         namespace:
           description: The namespace for the relationship
+          minLength: 1
           type: string
         object:
           description: The object in the relationship
+          minLength: 1
           type: string
         relation:
           description: The relation type
+          minLength: 1
           type: string
         subject_id:
           description: Direct subject identifier
+          minLength: 1
           type: string
       required:
       - namespace
@@ -4774,12 +4876,15 @@ components:
       properties:
         namespace:
           description: The namespace for the relationship
+          minLength: 1
           type: string
         object:
           description: The object in the relationship
+          minLength: 1
           type: string
         relation:
           description: The relation type
+          minLength: 1
           type: string
         subject_set:
           $ref: "#/components/schemas/SubjectSetRequest"
@@ -8013,6 +8118,61 @@ components:
           - invoice.paid
           - customer.subscription.created
           items:
+            enum:
+            - account.updated
+            - account.application.deauthorized
+            - account.external_account.created
+            - account.external_account.updated
+            - account.external_account.deleted
+            - payment_intent.created
+            - payment_intent.succeeded
+            - payment_intent.payment_failed
+            - payment_intent.canceled
+            - payment_intent.requires_action
+            - charge.succeeded
+            - charge.failed
+            - charge.refunded
+            - charge.captured
+            - charge.dispute.created
+            - charge.dispute.updated
+            - charge.dispute.closed
+            - customer.created
+            - customer.updated
+            - customer.deleted
+            - customer.subscription.created
+            - customer.subscription.updated
+            - customer.subscription.deleted
+            - customer.subscription.trial_will_end
+            - customer.subscription.paused
+            - customer.subscription.resumed
+            - invoice.created
+            - invoice.finalized
+            - invoice.paid
+            - invoice.payment_failed
+            - invoice.payment_action_required
+            - invoice.upcoming
+            - invoice.marked_uncollectible
+            - invoice.voided
+            - payout.created
+            - payout.paid
+            - payout.failed
+            - payout.canceled
+            - product.created
+            - product.updated
+            - product.deleted
+            - price.created
+            - price.updated
+            - price.deleted
+            - checkout.session.completed
+            - checkout.session.expired
+            - checkout.session.async_payment_succeeded
+            - checkout.session.async_payment_failed
+            - refund.created
+            - refund.updated
+            - payment_method.attached
+            - payment_method.detached
+            - transfer.created
+            - transfer.reversed
             type: string
           minItems: 1
           type: array
@@ -8042,9 +8202,11 @@ components:
           connect: false
       properties:
         webhooks:
-          description: List of webhook endpoint configurations
+          description: List of webhook endpoint configurations. Each webhook must
+            have a unique URL - duplicate URLs are not allowed.
           items:
             $ref: "#/components/schemas/WebhookEndpointConfig"
+          minItems: 1
           type: array
       required:
       - webhooks
@@ -10782,6 +10944,7 @@ components:
         status: 200
     SuccessResponse_data:
       description: Response data payload
+      nullable: true
       oneOf:
       - type: object
       - items: {}

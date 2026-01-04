@@ -76,8 +76,9 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Webhooks configured successfully |  -  |
-| **400** | Invalid request - validation errors |  -  |
+| **400** | Invalid request - validation errors or invalid Stripe event types |  -  |
 | **401** | Invalid or missing service key |  -  |
+| **409** | Conflict - duplicate webhook URL provided |  -  |
 | **500** | Failed to configure webhooks |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

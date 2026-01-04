@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Status** | **int32** | HTTP status code | 
-**Data** | Pointer to [**SuccessResponseData**](SuccessResponseData.md) |  | [optional] 
+**Data** | Pointer to [**NullableSuccessResponseData**](SuccessResponseData.md) |  | [optional] 
 
 ## Methods
 
@@ -71,6 +71,16 @@ SetData sets Data field to given value.
 
 HasData returns a boolean if a field has been set.
 
+### SetDataNil
+
+`func (o *SuccessResponse) SetDataNil(b bool)`
+
+ SetDataNil sets the value for Data to be an explicit nil
+
+### UnsetData
+`func (o *SuccessResponse) UnsetData()`
+
+UnsetData ensures that no value is present for Data, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

@@ -205,6 +205,13 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*CreateUse
 type ApiGetActiveTenantRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
+	xUserId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetActiveTenantRequest) XUserId(xUserId string) ApiGetActiveTenantRequest {
+	r.xUserId = &xUserId
+	return r
 }
 
 func (r ApiGetActiveTenantRequest) Execute() (*GetActiveTenant200Response, *http.Response, error) {
@@ -219,6 +226,10 @@ Returns the full tenant object for the user's currently active tenant.
 ## Tenant Context
 Users can be members of multiple tenants but only one is active at a time.
 The active tenant determines which resources and data the user can access.
+
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
 
 ## Use Case
 Determine which tenant context to use for API calls and data filtering.
@@ -271,6 +282,23 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
 	}
 	if r.ctx != nil {
 		// API Key Authentication

@@ -12,70 +12,27 @@
  * Do not edit the class manually.
  */
 
-import { mapValues } from '../runtime';
-import type { CurrencyCode } from './CurrencyCode';
+import type { AddInvoiceLineItemWithConfigPriceRequest } from './AddInvoiceLineItemWithConfigPriceRequest';
 import {
-    CurrencyCodeFromJSON,
-    CurrencyCodeFromJSONTyped,
-    CurrencyCodeToJSON,
-    CurrencyCodeToJSONTyped,
-} from './CurrencyCode';
+    instanceOfAddInvoiceLineItemWithConfigPriceRequest,
+    AddInvoiceLineItemWithConfigPriceRequestFromJSON,
+    AddInvoiceLineItemWithConfigPriceRequestFromJSONTyped,
+    AddInvoiceLineItemWithConfigPriceRequestToJSON,
+} from './AddInvoiceLineItemWithConfigPriceRequest';
+import type { AddInvoiceLineItemWithStripePriceRequest } from './AddInvoiceLineItemWithStripePriceRequest';
+import {
+    instanceOfAddInvoiceLineItemWithStripePriceRequest,
+    AddInvoiceLineItemWithStripePriceRequestFromJSON,
+    AddInvoiceLineItemWithStripePriceRequestFromJSONTyped,
+    AddInvoiceLineItemWithStripePriceRequestToJSON,
+} from './AddInvoiceLineItemWithStripePriceRequest';
 
 /**
- * 
+ * @type AddInvoiceLineItemWithPriceIDRequest
+ * Add a line item using either a config price_id or raw stripe_price_id
  * @export
- * @interface AddInvoiceLineItemWithPriceIDRequest
  */
-export interface AddInvoiceLineItemWithPriceIDRequest {
-    /**
-     * Config price ID (e.g., "hetzner_cx23_nbg1_hourly") - looked up via GetStripeIDByConfigID. Provide either this or stripe_price_id.
-     * @type {string}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    priceId?: string;
-    /**
-     * Raw Stripe price ID (e.g., "price_1ABC...") - used directly. Provide either this or price_id.
-     * @type {string}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    stripePriceId?: string;
-    /**
-     * Quantity of units (required)
-     * @type {number}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    quantity: number;
-    /**
-     * Description for the line item (required)
-     * @type {string}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    description: string;
-    /**
-     * 
-     * @type {CurrencyCode}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    currency: CurrencyCode;
-    /**
-     * Optional metadata key-value pairs
-     * @type {{ [key: string]: string; }}
-     * @memberof AddInvoiceLineItemWithPriceIDRequest
-     */
-    metadata?: { [key: string]: string; };
-}
-
-
-
-/**
- * Check if a given object implements the AddInvoiceLineItemWithPriceIDRequest interface.
- */
-export function instanceOfAddInvoiceLineItemWithPriceIDRequest(value: object): value is AddInvoiceLineItemWithPriceIDRequest {
-    if (!('quantity' in value) || value['quantity'] === undefined) return false;
-    if (!('description' in value) || value['description'] === undefined) return false;
-    if (!('currency' in value) || value['currency'] === undefined) return false;
-    return true;
-}
+export type AddInvoiceLineItemWithPriceIDRequest = AddInvoiceLineItemWithConfigPriceRequest | AddInvoiceLineItemWithStripePriceRequest;
 
 export function AddInvoiceLineItemWithPriceIDRequestFromJSON(json: any): AddInvoiceLineItemWithPriceIDRequest {
     return AddInvoiceLineItemWithPriceIDRequestFromJSONTyped(json, false);
@@ -85,18 +42,19 @@ export function AddInvoiceLineItemWithPriceIDRequestFromJSONTyped(json: any, ign
     if (json == null) {
         return json;
     }
-    return {
-        
-        'priceId': json['price_id'] == null ? undefined : json['price_id'],
-        'stripePriceId': json['stripe_price_id'] == null ? undefined : json['stripe_price_id'],
-        'quantity': json['quantity'],
-        'description': json['description'],
-        'currency': CurrencyCodeFromJSON(json['currency']),
-        'metadata': json['metadata'] == null ? undefined : json['metadata'],
-    };
+    if (typeof json !== 'object') {
+        return json;
+    }
+    if (instanceOfAddInvoiceLineItemWithConfigPriceRequest(json)) {
+        return AddInvoiceLineItemWithConfigPriceRequestFromJSONTyped(json, true);
+    }
+    if (instanceOfAddInvoiceLineItemWithStripePriceRequest(json)) {
+        return AddInvoiceLineItemWithStripePriceRequestFromJSONTyped(json, true);
+    }
+    return {} as any;
 }
 
-export function AddInvoiceLineItemWithPriceIDRequestToJSON(json: any): AddInvoiceLineItemWithPriceIDRequest {
+export function AddInvoiceLineItemWithPriceIDRequestToJSON(json: any): any {
     return AddInvoiceLineItemWithPriceIDRequestToJSONTyped(json, false);
 }
 
@@ -104,15 +62,15 @@ export function AddInvoiceLineItemWithPriceIDRequestToJSONTyped(value?: AddInvoi
     if (value == null) {
         return value;
     }
-
-    return {
-        
-        'price_id': value['priceId'],
-        'stripe_price_id': value['stripePriceId'],
-        'quantity': value['quantity'],
-        'description': value['description'],
-        'currency': CurrencyCodeToJSON(value['currency']),
-        'metadata': value['metadata'],
-    };
+    if (typeof value !== 'object') {
+        return value;
+    }
+    if (instanceOfAddInvoiceLineItemWithConfigPriceRequest(value)) {
+        return AddInvoiceLineItemWithConfigPriceRequestToJSON(value as AddInvoiceLineItemWithConfigPriceRequest);
+    }
+    if (instanceOfAddInvoiceLineItemWithStripePriceRequest(value)) {
+        return AddInvoiceLineItemWithStripePriceRequestToJSON(value as AddInvoiceLineItemWithStripePriceRequest);
+    }
+    return {};
 }
 

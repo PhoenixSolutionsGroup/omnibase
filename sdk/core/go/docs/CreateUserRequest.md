@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** | User&#39;s email address (RFC 5322 compliant) | 
+**Email** | **string** | User&#39;s email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars) | 
 **Password** | **string** | User&#39;s password (8-72 printable ASCII characters, bcrypt compatible) | 
 **Name** | [**CreateUserRequestName**](CreateUserRequestName.md) |  | 
 

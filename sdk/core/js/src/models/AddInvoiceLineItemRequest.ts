@@ -28,7 +28,7 @@ import {
  */
 export interface AddInvoiceLineItemRequest {
     /**
-     * Amount in cents (required)
+     * Amount in cents (required, must be positive, max ~$999B)
      * @type {number}
      * @memberof AddInvoiceLineItemRequest
      */

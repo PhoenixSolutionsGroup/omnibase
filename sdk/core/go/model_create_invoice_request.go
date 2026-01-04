@@ -27,7 +27,7 @@ type CreateInvoiceRequest struct {
 	AutoAdvance *bool `json:"auto_advance,omitempty"`
 	// Optional description for the invoice
 	Description *string `json:"description,omitempty"`
-	// Optional metadata key-value pairs
+	// Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
 	Metadata map[string]string `json:"metadata,omitempty"`
 }
 

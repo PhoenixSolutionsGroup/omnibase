@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
 **AutoAdvance** | Pointer to **bool** | Whether to auto-advance the invoice (send immediately after finalization) | [optional] 
 **Description** | Pointer to **string** | Optional description for the invoice | [optional] 
-**Metadata** | Pointer to **map[string]string** | Optional metadata key-value pairs | [optional] 
+**Metadata** | Pointer to **map[string]string** | Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) | [optional] 
 
 ## Methods
 

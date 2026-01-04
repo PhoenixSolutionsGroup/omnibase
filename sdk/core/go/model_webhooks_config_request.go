@@ -22,7 +22,7 @@ var _ MappedNullable = &WebhooksConfigRequest{}
 
 // WebhooksConfigRequest struct for WebhooksConfigRequest
 type WebhooksConfigRequest struct {
-	// List of webhook endpoint configurations
+	// List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
 	Webhooks []WebhookEndpointConfig `json:"webhooks"`
 }
 

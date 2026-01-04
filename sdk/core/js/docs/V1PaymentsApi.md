@@ -93,6 +93,7 @@ No authorization required
 | **200** | Line item added successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -472,6 +473,7 @@ No authorization required
 | **200** | Invoice finalized successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -545,6 +547,7 @@ No authorization required
 | **200** | Invoice retrieved successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -691,6 +694,7 @@ No authorization required
 | **200** | Invoice updated successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

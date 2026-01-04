@@ -91,11 +91,11 @@ example().catch(console.error);
 
 ## getActiveTenant
 
-> GetActiveTenant200Response getActiveTenant()
+> GetActiveTenant200Response getActiveTenant(xUserId)
 
 Get active tenant
 
-Returns the full tenant object for the user\&#39;s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Use Case Determine which tenant context to use for API calls and data filtering. 
+Returns the full tenant object for the user\&#39;s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering. 
 
 ### Example
 
@@ -109,6 +109,8 @@ import type { GetActiveTenantRequest } from '@omnibase/core-js';
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
   const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
@@ -116,8 +118,13 @@ async function example() {
   });
   const api = new V1AuthApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies GetActiveTenantRequest;
+
   try {
-    const data = await api.getActiveTenant();
+    const data = await api.getActiveTenant(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -130,7 +137,10 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -138,7 +148,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

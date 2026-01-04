@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | **int64** | Amount in cents (required) | 
+**Amount** | **int64** | Amount in cents (required, must be positive, max ~$999B) | 
 **Description** | **string** | Description for the line item (required) | 
 **Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
 

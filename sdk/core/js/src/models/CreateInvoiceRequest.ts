@@ -46,7 +46,7 @@ export interface CreateInvoiceRequest {
      */
     description?: string;
     /**
-     * Optional metadata key-value pairs
+     * Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
      * @type {{ [key: string]: string; }}
      * @memberof CreateInvoiceRequest
      */
