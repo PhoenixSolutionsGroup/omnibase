@@ -340,16 +340,13 @@ func (h *PermissionsHandler) DeleteRelationship(ctx *gin.Context) {
 			"error", err,
 			"http_status", statusCode)
 
-		if statusCode == 404 {
+		// Keto returns 400 when relationship doesn't exist, treat as 404
+		if statusCode == 404 || statusCode == 400 {
 			handlers.NewNotFoundResponse(ctx, "Relationship not found")
 			return
 		}
 
-		if statusCode >= 400 && statusCode < 500 {
-			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Relationship deletion failed: %s", err))
-		} else {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to delete relationship: %w", err))
-		}
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("failed to delete relationship: %w", err))
 		return
 	}
 
