@@ -103,7 +103,7 @@ type Price struct {
 	StripeID           string   `json:"stripe_id,omitempty"`             // Original Stripe ID for migration support
 	Public             *bool    `json:"public,omitempty"`                // nil = true (default), false = hidden from public API
 	TaxIncludedInPrice *bool    `json:"tax_included_in_price,omitempty"` // nil = false (default)
-	Amount             int64    `json:"amount,omitempty" validate:"min=0"`
+	Amount             float64  `json:"amount,omitempty" validate:"min=0"`
 	Currency           string   `json:"currency" validate:"required,len=3"`
 	Interval           string   `json:"interval,omitempty"`       // month, year, week, day
 	IntervalCount      int      `json:"interval_count,omitempty"` // default 1

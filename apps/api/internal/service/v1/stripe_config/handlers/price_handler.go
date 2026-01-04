@@ -103,7 +103,7 @@ func (h *PriceHandler) CreatePricesForProduct(productConfig models.Product, stri
 
 		// Set price amount (only for non-tiered pricing)
 		if priceConfig.BillingScheme != "tiered" {
-			priceParams.UnitAmount = stripe.Int64(priceConfig.Amount)
+			priceParams.UnitAmountDecimal = stripe.Float64(priceConfig.Amount)
 		}
 
 		// Set recurring parameters if applicable
@@ -294,7 +294,7 @@ func (h *PriceHandler) CreatePrice(priceConfig models.Price, productID string, c
 
 	// Set price amount (only for non-tiered pricing)
 	if priceConfig.BillingScheme != "tiered" {
-		priceParams.UnitAmount = stripe.Int64(priceConfig.Amount)
+		priceParams.UnitAmountDecimal = stripe.Float64(priceConfig.Amount)
 	}
 
 	if priceConfig.Interval != "" {
