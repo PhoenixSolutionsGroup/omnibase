@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "gcp_cloudrun_tier1",
+      "name": "GCP Cloud Run - Tier 1",
+      "description": "GCP Cloud Run serverless containers (US, Europe)",
+      "type": "good",
+      "prices": [
+        {
+          "id": "gcp_cloudrun_tier1_vcpu_second",
+          "currency": "usd",
+          "amount": 0.0054
+        },
+        {
+          "id": "gcp_cloudrun_tier1_gb_second",
+          "currency": "usd",
+          "amount": 0.000563
+        },
+        {
+          "id": "gcp_cloudrun_tier1_requests",
+          "currency": "usd",
+          "amount": 90
+        }
+      ]
+    },
+    {
+      "id": "gcp_cloudrun_tier2",
+      "name": "GCP Cloud Run - Tier 2",
+      "description": "GCP Cloud Run serverless containers (Asia-Pacific)",
+      "type": "good",
+      "prices": [
+        {
+          "id": "gcp_cloudrun_tier2_vcpu_second",
+          "currency": "usd",
+          "amount": 0.00756
+        },
+        {
+          "id": "gcp_cloudrun_tier2_gb_second",
+          "currency": "usd",
+          "amount": 0.000788
+        },
+        {
+          "id": "gcp_cloudrun_tier2_requests",
+          "currency": "usd",
+          "amount": 126
+        }
+      ]
+    }
+  ]
+}
