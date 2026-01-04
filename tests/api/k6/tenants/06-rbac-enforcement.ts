@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: RBAC Permission Enforcement
@@ -61,7 +61,7 @@ export async function rbacEnforcement() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -81,7 +81,7 @@ export async function rbacEnforcement() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -103,7 +103,7 @@ export async function rbacEnforcement() {
 
   const member = memberResponse.data.data;
   if (!member) {
-    console.error("Member creation failed");
+    logError("createMember", memberResponse.response);
     return;
   }
 
@@ -133,7 +133,7 @@ export async function rbacEnforcement() {
 
   const restrictedRole = createRestrictedRoleResponse.data.data;
   if (!restrictedRole) {
-    console.error("Restricted role creation failed");
+    logError("createRestrictedRole", createRestrictedRoleResponse.response);
     return;
   }
 
@@ -157,7 +157,7 @@ export async function rbacEnforcement() {
 
   const inviteData = inviteResponse.data.data;
   if (!inviteData?.invite) {
-    console.error("Invite creation failed");
+    logError("createInvite", inviteResponse.response);
     return;
   }
 
@@ -424,7 +424,7 @@ export async function rbacEnforcement() {
 
   const noPermRole = createNoPermRoleResponse.data.data;
   if (!noPermRole) {
-    console.error("No-permission role creation failed");
+    logError("createNoPermRole", createNoPermRoleResponse.response);
     return;
   }
 

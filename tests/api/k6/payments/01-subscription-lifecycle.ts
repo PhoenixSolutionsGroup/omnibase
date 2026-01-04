@@ -1,6 +1,6 @@
 import { check, sleep } from "k6";
 import http from "k6/http";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Payment/Subscription Lifecycle
@@ -56,7 +56,7 @@ export async function subscriptionLifecycle() {
 
   const user = authResponse.data.data;
   if (!user) {
-    console.error("User creation failed");
+    logError("createUser", authResponse.response);
     return;
   }
 
@@ -81,7 +81,7 @@ export async function subscriptionLifecycle() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -97,7 +97,7 @@ export async function subscriptionLifecycle() {
   });
 
   if (!tenant.stripe_customer_id) {
-    console.error("Stripe customer ID not created");
+    logError("stripeCustomerIdMissing", tenantResponse.response);
     return;
   }
 
@@ -217,10 +217,7 @@ export async function subscriptionLifecycle() {
 
   const subscriptionData = addSubscriptionResponse.data.data;
   if (!subscriptionData?.subscription_id) {
-    console.error(
-      "Subscription creation failed:",
-      addSubscriptionResponse.response.body
-    );
+    logError("addSubscription", addSubscriptionResponse.response);
     return;
   }
 

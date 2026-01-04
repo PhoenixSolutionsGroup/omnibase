@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, BASE_URL } from "../client";
+import { createClient, BASE_URL, logError } from "../client";
 import { OmnibaseRESTAPIClient } from "../sdk";
 
 /**
@@ -120,7 +120,7 @@ export async function authorization() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -140,7 +140,7 @@ export async function authorization() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -162,7 +162,7 @@ export async function authorization() {
 
   const member = memberResponse.data.data;
   if (!member) {
-    console.error("Member creation failed");
+    logError("createMember", memberResponse.response);
     return;
   }
 
@@ -185,7 +185,7 @@ export async function authorization() {
 
   const inviteData = inviteResponse.data.data;
   if (!inviteData?.invite) {
-    console.error("Member invite creation failed");
+    logError("createMemberInvite", inviteResponse.response);
     return;
   }
 
@@ -281,7 +281,7 @@ export async function authorization() {
 
   const testInviteData = testInviteResponse.data.data;
   if (!testInviteData?.invite) {
-    console.error("Test invite creation failed");
+    logError("createTestInvite", testInviteResponse.response);
     return;
   }
 
@@ -301,7 +301,7 @@ export async function authorization() {
 
   const testInviteUser = testInviteUserResponse.data.data;
   if (!testInviteUser) {
-    console.error("Test invite user creation failed");
+    logError("createTestInviteUser", testInviteUserResponse.response);
     return;
   }
 
@@ -417,7 +417,7 @@ export async function authorization() {
 
   const outsider = outsiderResponse.data.data;
   if (!outsider) {
-    console.error("Outsider user creation failed");
+    logError("createOutsiderUser", outsiderResponse.response);
     return;
   }
 

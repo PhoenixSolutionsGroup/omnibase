@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Role Management
@@ -48,7 +48,7 @@ export async function roleManagement() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -68,7 +68,7 @@ export async function roleManagement() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -90,7 +90,7 @@ export async function roleManagement() {
 
   const member = memberResponse.data.data;
   if (!member) {
-    console.error("Member creation failed");
+    logError("createMember", memberResponse.response);
     return;
   }
 
@@ -149,7 +149,7 @@ export async function roleManagement() {
 
   const customRole = createRoleResponse.data.data;
   if (!customRole) {
-    console.error("Custom role creation failed");
+    logError("createCustomRole", createRoleResponse.response);
     return;
   }
 
@@ -190,7 +190,7 @@ export async function roleManagement() {
 
   const inviteData = inviteResponse.data.data;
   if (!inviteData?.invite) {
-    console.error("Invite creation failed");
+    logError("createInvite", inviteResponse.response);
     return;
   }
 

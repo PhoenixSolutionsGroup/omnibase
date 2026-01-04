@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { client } from "../client";
+import { client, logError } from "../client";
 
 /**
  * Test Scenario: Webhook Configuration Lifecycle
@@ -62,10 +62,7 @@ export function webhookConfigLifecycle() {
 
   const webhooksData = singleWebhookResponse.data?.data?.webhooks;
   if (!webhooksData || webhooksData.length === 0) {
-    console.error(
-      "Webhook creation failed:",
-      singleWebhookResponse.response.body
-    );
+    logError("configureWebhooks", singleWebhookResponse.response);
     return;
   }
 

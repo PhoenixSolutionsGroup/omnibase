@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Cross-Tenant Data Isolation
@@ -52,7 +52,7 @@ export async function crossTenantIsolation() {
 
   const userA = userAResponse.data.data;
   if (!userA) {
-    console.error("User A creation failed");
+    logError("createUserA", userAResponse.response);
     return;
   }
 
@@ -72,7 +72,7 @@ export async function crossTenantIsolation() {
 
   const tenantAData = tenantAResponse.data.data;
   if (!tenantAData?.tenant) {
-    console.error("Tenant A creation failed");
+    logError("createTenantA", tenantAResponse.response);
     return;
   }
 
@@ -94,7 +94,7 @@ export async function crossTenantIsolation() {
 
   const userB = userBResponse.data.data;
   if (!userB) {
-    console.error("User B creation failed");
+    logError("createUserB", userBResponse.response);
     return;
   }
 
@@ -114,7 +114,7 @@ export async function crossTenantIsolation() {
 
   const tenantBData = tenantBResponse.data.data;
   if (!tenantBData?.tenant) {
-    console.error("Tenant B creation failed");
+    logError("createTenantB", tenantBResponse.response);
     return;
   }
 
@@ -221,7 +221,7 @@ export async function crossTenantIsolation() {
 
   const tenantARole = createTenantARoleResponse.data.data;
   if (!tenantARole) {
-    console.error("Tenant A role creation failed");
+    logError("createTenantARole", createTenantARoleResponse.response);
     return;
   }
 

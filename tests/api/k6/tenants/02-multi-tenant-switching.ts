@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Multi-Tenant User Journey & Switching
@@ -48,7 +48,7 @@ export async function multiTenantSwitching() {
 
   const user = authResponse.data.data;
   if (!user) {
-    console.error("User creation failed");
+    logError("createUser", authResponse.response);
     return;
   }
 
@@ -77,7 +77,7 @@ export async function multiTenantSwitching() {
 
   const tenant1Data = tenant1Response.data.data;
   if (!tenant1Data?.tenant) {
-    console.error("Tenant 1 creation failed");
+    logError("createTenant1", tenant1Response.response);
     return;
   }
 
@@ -105,7 +105,7 @@ export async function multiTenantSwitching() {
 
   const tenant2Data = tenant2Response.data.data;
   if (!tenant2Data?.tenant) {
-    console.error("Tenant 2 creation failed");
+    logError("createTenant2", tenant2Response.response);
     return;
   }
 
@@ -176,7 +176,7 @@ export async function multiTenantSwitching() {
 
   const switchedToTenant1Data = switchToTenant1Response.data.data;
   if (!switchedToTenant1Data?.token) {
-    console.error("Tenant switch failed");
+    logError("switchToTenant1", switchToTenant1Response.response);
     return;
   }
 
@@ -241,7 +241,7 @@ export async function multiTenantSwitching() {
 
   const switchedBackToTenant2Data = switchBackToTenant2Response.data.data;
   if (!switchedBackToTenant2Data?.token) {
-    console.error("Switch back failed");
+    logError("switchBackToTenant2", switchBackToTenant2Response.response);
     return;
   }
 

@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Complete Tenant Creation Lifecycle
@@ -45,7 +45,7 @@ export async function createTenant() {
 
   const user = authResponse.data.data;
   if (!user) {
-    console.error("User creation failed");
+    logError("createUser", authResponse.response);
     return;
   }
 
@@ -75,7 +75,7 @@ export async function createTenant() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 

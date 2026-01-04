@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 import http from "k6/http";
 
 /**
@@ -49,7 +49,7 @@ export async function fileOperations() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -69,7 +69,7 @@ export async function fileOperations() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -86,7 +86,7 @@ export async function fileOperations() {
 
   const ownerPostgrestTokenData = ownerPostgrestToken.data.data;
   if (!ownerPostgrestTokenData?.token) {
-    console.error("Owner get tenant JWT failed");
+    logError("getOwnerTenantJWT", ownerPostgrestToken.response);
     return;
   }
 
@@ -123,7 +123,7 @@ export async function fileOperations() {
 
   const uploadData = uploadResponse.data.data;
   if (!uploadData?.upload_url) {
-    console.error("Upload URL generation failed");
+    logError("uploadFile", uploadResponse.response);
     return;
   }
 
@@ -160,7 +160,7 @@ export async function fileOperations() {
 
   const downloadData = downloadResponse.data.data;
   if (!downloadData?.download_url) {
-    console.error("Download URL generation failed");
+    logError("downloadFile", downloadResponse.response);
     return;
   }
 
@@ -188,7 +188,7 @@ export async function fileOperations() {
 
   const member = memberResponse.data.data;
   if (!member) {
-    console.error("Member creation failed");
+    logError("createMember", memberResponse.response);
     return;
   }
 
@@ -211,7 +211,7 @@ export async function fileOperations() {
 
   const invite = inviteResponse.data.data?.invite;
   if (!invite?.token) {
-    console.error("Invite creation failed");
+    logError("createInvite", inviteResponse.response);
     return;
   }
 
@@ -239,7 +239,7 @@ export async function fileOperations() {
 
   const memberPostgrestTokenData = memberPostgrestToken.data.data;
   if (!memberPostgrestTokenData?.token) {
-    console.error("Member get tenant JWT failed");
+    logError("getMemberTenantJWT", memberPostgrestToken.response);
     return;
   }
 
@@ -420,7 +420,7 @@ export async function fileOperations() {
 
   const tenant2Owner = tenant2Response.data.data;
   if (!tenant2Owner) {
-    console.error("Tenant2 owner creation failed");
+    logError("createTenant2Owner", tenant2Response.response);
     return;
   }
 
@@ -440,7 +440,7 @@ export async function fileOperations() {
 
   const tenant2Data = tenant2CreateResponse.data.data;
   if (!tenant2Data?.tenant) {
-    console.error("Tenant2 creation failed");
+    logError("createTenant2", tenant2CreateResponse.response);
     return;
   }
 
@@ -457,7 +457,7 @@ export async function fileOperations() {
 
   const tenant2PostgrestTokenData = tenant2PostgrestToken.data.data;
   if (!tenant2PostgrestTokenData?.token) {
-    console.error("Tenant2 get tenant JWT failed");
+    logError("getTenant2TenantJWT", tenant2PostgrestToken.response);
     return;
   }
   // Upload file in tenant 2

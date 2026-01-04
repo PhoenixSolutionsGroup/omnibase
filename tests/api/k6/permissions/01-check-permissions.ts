@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Permission Check API
@@ -51,7 +51,7 @@ export async function checkPermissions() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -71,7 +71,7 @@ export async function checkPermissions() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -103,7 +103,7 @@ export async function checkPermissions() {
 
   const viewerRole = createRoleResponse.data.data;
   if (!viewerRole) {
-    console.error("Viewer role creation failed");
+    logError("createViewerRole", createRoleResponse.response);
     return;
   }
 
@@ -123,7 +123,7 @@ export async function checkPermissions() {
 
   const member = memberResponse.data.data;
   if (!member) {
-    console.error("Member creation failed");
+    logError("createMember", memberResponse.response);
     return;
   }
 
@@ -145,7 +145,7 @@ export async function checkPermissions() {
 
   const inviteData = inviteResponse.data.data;
   if (!inviteData?.invite) {
-    console.error("Invite creation failed");
+    logError("createInvite", inviteResponse.response);
     return;
   }
 

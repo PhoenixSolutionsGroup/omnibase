@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient } from "../client";
+import { createClient, logError } from "../client";
 
 /**
  * Test Scenario: Tenant User Invites
@@ -46,7 +46,7 @@ export async function userInvites() {
 
   const owner = ownerResponse.data.data;
   if (!owner) {
-    console.error("Owner creation failed");
+    logError("createOwner", ownerResponse.response);
     return;
   }
 
@@ -67,7 +67,7 @@ export async function userInvites() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -90,7 +90,7 @@ export async function userInvites() {
 
   const invitedUser = invitedUserResponse.data.data;
   if (!invitedUser) {
-    console.error("Invited user creation failed");
+    logError("createInvitedUser", invitedUserResponse.response);
     return;
   }
 
@@ -121,7 +121,7 @@ export async function userInvites() {
 
   const inviteData = inviteResponse.data.data;
   if (!inviteData?.invite) {
-    console.error("Invite creation failed");
+    logError("createInvite", inviteResponse.response);
     return;
   }
 
@@ -161,7 +161,7 @@ export async function userInvites() {
 
   const acceptData = acceptResponse.data.data;
   if (!acceptData?.token) {
-    console.error("Invite acceptance failed");
+    logError("acceptInvite", acceptResponse.response);
     return;
   }
 

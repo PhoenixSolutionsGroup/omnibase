@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, SERVICE_KEY } from "../client";
+import { createClient, SERVICE_KEY, logError } from "../client";
 
 /**
  * Test Scenario: Invoice Lifecycle
@@ -30,7 +30,7 @@ export async function invoiceLifecycle() {
 
   const user = authResponse.data.data;
   if (!user) {
-    console.error("User creation failed");
+    logError("createUser", authResponse.response);
     return;
   }
 
@@ -46,7 +46,7 @@ export async function invoiceLifecycle() {
 
   const tenantData = tenantResponse.data.data;
   if (!tenantData?.tenant) {
-    console.error("Tenant creation failed");
+    logError("createTenant", tenantResponse.response);
     return;
   }
 
@@ -61,7 +61,7 @@ export async function invoiceLifecycle() {
   });
 
   if (!tenant.stripe_customer_id) {
-    console.error("Stripe customer ID not created");
+    logError("stripeCustomerIdMissing", tenantResponse.response);
     return;
   }
 
@@ -91,7 +91,7 @@ export async function invoiceLifecycle() {
 
   const invoiceData = createInvoiceResponse.data.data;
   if (!invoiceData?.id) {
-    console.error("Failed to create invoice");
+    logError("createInvoice", createInvoiceResponse.response);
     return;
   }
 
