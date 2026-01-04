@@ -24,8 +24,8 @@ import { createClient } from "../client";
  * 2. Verify Stripe customer ID exists
  * 3. Attach test payment method directly via Stripe API
  * 4. Add subscription for specific plan
- * 5. Verify subscription active in response
- * 6. List tenant subscriptions
+ * 5. Get single subscription by plan ID (new endpoint)
+ * 6. List all tenant subscriptions
  * 7. Verify billing status shows active
  * 8. Cancel subscription
  * 9. Verify subscription canceled status
@@ -224,7 +224,43 @@ export async function subscriptionLifecycle() {
     return;
   }
 
-  // Step 5: List tenant subscriptions
+  // Step 5: Get single subscription by plan ID
+  const getTenantSubscriptionResponse = client.getTenantSubscription(planId, {
+    headers: {
+      "X-User-Id": user.id,
+      "X-Tenant-Id": tenant.id,
+    },
+  });
+
+  check(getTenantSubscriptionResponse.response, {
+    "get subscription: status is 200": (r) => r.status === 200,
+    "get subscription: returns correct subscription_id": (r) => {
+      const body = r.json() as any;
+      return body?.data?.subscription_id === subscriptionData.subscription_id;
+    },
+    "get subscription: returns correct config_price_id": (r) => {
+      const body = r.json() as any;
+      return body?.data?.config_price_id === planId;
+    },
+    "get subscription: includes is_legacy_price field": (r) => {
+      const body = r.json() as any;
+      return body?.data?.is_legacy_price !== undefined;
+    },
+  });
+
+  // Step 5a: Verify 404 for non-existent plan
+  const notFoundResponse = client.getTenantSubscription("non_existent_plan", {
+    headers: {
+      "X-User-Id": user.id,
+      "X-Tenant-Id": tenant.id,
+    },
+  });
+
+  check(notFoundResponse.response, {
+    "get non-existent subscription: returns 404": (r) => r.status === 404,
+  });
+
+  // Step 6: List all tenant subscriptions
   const listSubscriptionsResponse = client.listTenantSubscriptions({
     headers: {
       "X-User-Id": user.id,
@@ -251,7 +287,7 @@ export async function subscriptionLifecycle() {
     },
   });
 
-  // Step 6: Verify billing status shows active
+  // Step 7: Verify billing status shows active
   const billingStatusResponse = client.getTenantBillingStatus({
     headers: {
       "X-User-Id": user.id,
@@ -267,7 +303,7 @@ export async function subscriptionLifecycle() {
     },
   });
 
-  // Step 7: Cancel subscription
+  // Step 8: Cancel subscription
   const cancelSubscriptionResponse = client.removeSubscription(
     {
       plan_id: planId,
@@ -290,7 +326,7 @@ export async function subscriptionLifecycle() {
 
   sleep(1);
 
-  // Step 8: Verify subscription canceled status
+  // Step 9: Verify subscription canceled status
   const finalListResponse = client.listTenantSubscriptions({
     headers: {
       "X-User-Id": user.id,
