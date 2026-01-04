@@ -28,12 +28,12 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: "1.21"
           cache: true
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Cache bun dependencies
         uses: actions/cache@v4
@@ -85,15 +85,42 @@ jobs:
         working-directory: tests/api
         run: |
           omnibase start --mode dev &
-          echo "Waiting for API to be ready..."
+          echo "Waiting for services to be ready..."
+
+          # Wait for API
+          echo "Waiting for API..."
           for i in {1..60}; do
             if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
               echo "API is ready!"
               break
             fi
-            echo "Attempt $i/60..."
+            echo "API attempt $i/60..."
             sleep 5
           done
+
+          # Wait for Auth
+          echo "Waiting for Auth..."
+          for i in {1..60}; do
+            if curl -sf http://localhost:4433/health/alive > /dev/null 2>&1; then
+              echo "Auth is ready!"
+              break
+            fi
+            echo "Auth attempt $i/60..."
+            sleep 5
+          done
+
+          # Wait for Permissions
+          echo "Waiting for Permissions..."
+          for i in {1..60}; do
+            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
+              echo "Permissions is ready!"
+              break
+            fi
+            echo "Permissions attempt $i/60..."
+            sleep 5
+          done
+
+          echo "All services are ready!"
 
       - name: Sync test environment
         working-directory: tests/api
@@ -140,11 +167,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: "1.21"
 
       - uses: docker/setup-buildx-action@v3
 
@@ -241,7 +268,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Configure git
         run: |
