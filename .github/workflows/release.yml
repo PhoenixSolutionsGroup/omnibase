@@ -112,12 +112,23 @@ jobs:
           # Wait for Permissions
           echo "Waiting for Permissions..."
           for i in {1..60}; do
-            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
+            if curl -sf http://localhost:4466/health/ready > /dev/null 2>&1; then
               echo "Permissions is ready!"
               break
             fi
             echo "Permissions attempt $i/60..."
             sleep 5
+          done
+
+          # Verify Keto can actually handle API requests
+          echo "Verifying Keto API is functional..."
+          for i in {1..10}; do
+            if curl -sf "http://localhost:4466/relation-tuples?namespace=Tenant" > /dev/null 2>&1; then
+              echo "Keto API is responding!"
+              break
+            fi
+            echo "Keto API attempt $i/10..."
+            sleep 2
           done
 
           echo "All services are ready!"
@@ -159,11 +170,22 @@ jobs:
           # Wait for Permissions (restarted after sync)
           echo "Waiting for Permissions..."
           for i in {1..30}; do
-            if curl -sf http://localhost:4466/health/alive > /dev/null 2>&1; then
+            if curl -sf http://localhost:4466/health/ready > /dev/null 2>&1; then
               echo "Permissions is ready!"
               break
             fi
             echo "Permissions attempt $i/30..."
+            sleep 2
+          done
+
+          # Verify Keto can actually handle API requests
+          echo "Verifying Keto API is functional..."
+          for i in {1..10}; do
+            if curl -sf "http://localhost:4466/relation-tuples?namespace=Tenant" > /dev/null 2>&1; then
+              echo "Keto API is responding!"
+              break
+            fi
+            echo "Keto API attempt $i/10..."
             sleep 2
           done
 
