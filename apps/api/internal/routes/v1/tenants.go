@@ -26,7 +26,9 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	router.GET("/users", tenantHandler.GetTenantUsers)
 
-	router.GET("/subscriptions", tenantHandler.GetTenantSubscriptions)
+	router.GET("/subscriptions", tenantHandler.ListTenantSubscriptions)
+
+	router.GET("/subscriptions/:config_price_id", tenantHandler.GetTenantSubscription)
 
 	router.DELETE("/subscriptions", tenantHandler.RemoveSubscription)
 

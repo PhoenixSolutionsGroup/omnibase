@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *TenantHandler) GetTenantSubscriptions(ctx *gin.Context) {
+func (h *TenantHandler) ListTenantSubscriptions(ctx *gin.Context) {
 	tenantID := ctx.GetString("tenant_id")
 
 	if tenantID == "" {
@@ -46,6 +46,54 @@ func (h *TenantHandler) GetTenantSubscriptions(ctx *gin.Context) {
 
 	logger.Logger.Info("Successfully fetched tenant subscriptions", "tenant_id", tenantID, "subscription_count", len(subscriptions))
 	handlers.NewSuccessResponse(ctx, subscriptions)
+}
+
+func (h *TenantHandler) GetTenantSubscription(ctx *gin.Context) {
+	tenantID := ctx.GetString("tenant_id")
+	configPriceID := ctx.Param("config_price_id")
+
+	if tenantID == "" {
+		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
+		return
+	}
+
+	if configPriceID == "" {
+		handlers.NewBadRequestResponse(ctx, "config_price_id is required")
+		return
+	}
+
+	logger.Logger.Debug("Fetching tenant subscription", "tenant_id", tenantID, "config_price_id", configPriceID)
+
+	var tenant models.Tenant
+	if err := h.db.Where("id = ?", tenantID).First(&tenant).Error; err != nil {
+		logger.Logger.Error("Failed to fetch tenant", "error", err, "tenant_id", tenantID)
+		handlers.NewNotFoundResponse(ctx, "Tenant not found")
+		return
+	}
+
+	if tenant.StripeCustomerID == nil || *tenant.StripeCustomerID == "" {
+		logger.Logger.Debug("Tenant has no Stripe customer ID", "tenant_id", tenantID)
+		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No subscription found for plan: %s", configPriceID))
+		return
+	}
+
+	subscriptions, err := h.stripe.GetTenantActiveSubscriptions(*tenant.StripeCustomerID)
+	if err != nil {
+		logger.Logger.Error("Failed to fetch subscriptions from Stripe", "error", err, "tenant_id", tenantID, "stripe_customer_id", *tenant.StripeCustomerID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch subscriptions: %w", err))
+		return
+	}
+
+	for _, sub := range subscriptions {
+		if sub.ConfigPriceID == configPriceID {
+			logger.Logger.Info("Found subscription for plan", "tenant_id", tenantID, "config_price_id", configPriceID, "subscription_id", sub.SubscriptionID)
+			handlers.NewSuccessResponse(ctx, sub)
+			return
+		}
+	}
+
+	logger.Logger.Debug("No subscription found for plan", "tenant_id", tenantID, "config_price_id", configPriceID)
+	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No subscription found for plan: %s", configPriceID))
 }
 
 func (h *TenantHandler) GetBillingStatus(ctx *gin.Context) {
