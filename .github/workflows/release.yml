@@ -101,7 +101,7 @@ jobs:
           # Wait for Auth
           echo "Waiting for Auth..."
           for i in {1..60}; do
-            if curl -sf http://localhost:4433/health/alive > /dev/null 2>&1; then
+            if curl -sf http://localhost:4433/health/ready > /dev/null 2>&1; then
               echo "Auth is ready!"
               break
             fi
@@ -159,7 +159,7 @@ jobs:
           # Wait for Auth (restarted after sync)
           echo "Waiting for Auth..."
           for i in {1..30}; do
-            if curl -sf http://localhost:4433/health/alive > /dev/null 2>&1; then
+            if curl -sf http://localhost:4433/health/ready > /dev/null 2>&1; then
               echo "Auth is ready!"
               break
             fi
@@ -197,6 +197,18 @@ jobs:
           SERVICE_KEY: VERY_SECRET_KEY
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: ./scripts/test-api.sh --local
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo "=== API Logs (errors) ==="
+          docker logs api-rest-api-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
+          echo ""
+          echo "=== Permissions Logs (errors) ==="
+          docker logs api-permissions-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
+          echo ""
+          echo "=== Auth Logs (errors) ==="
+          docker logs api-auth-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
 
       - name: Stop OmniBase
         if: always()
