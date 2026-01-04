@@ -1,14 +1,20 @@
 {
+  "$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
   "version": "1.0.0",
-   "webhook": {
-    "events": [
-      "customer.subscription.created",
-      "customer.subscription.updated",
-      "customer.subscription.deleted",
-      "invoice.paid",
-      "invoice.payment_failed"
-    ]
-  },
+  "webhooks": [
+     {
+      "id": "subscription-events-3",
+      "connect": false,
+      "url": "https://some-endpoint-3.com/webhook",
+      "events": [
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+        "invoice.paid",
+        "invoice.payment_failed"
+      ]
+    }
+  ], 
   "products": [
     {
       "id": "prod_test_basic",

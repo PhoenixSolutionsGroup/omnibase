@@ -119,6 +119,13 @@ enabled = false
 include-name = "POST /api/v1/stripe/admin/config"
 enabled = false
 
+# Disable webhook config endpoint - Stripe has a hard limit of 16 test webhooks
+# and schemathesis creates random webhooks that exceed this limit
+# This is tested in k6 integration tests instead
+[[operations]]
+include-name = "POST /api/v1/stripe/config/webhooks"
+enabled = false
+
 # Accept 400 Bad Request for validation endpoint when fuzzer generates invalid cross-references
 # (e.g., meters referenced in prices that don't exist in meters array)
 # Limit examples due to complex schema causing slow test generation

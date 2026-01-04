@@ -14,6 +14,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// StripeWebhookInfo represents a webhook endpoint from Stripe API
+type StripeWebhookInfo struct {
+	ID      string
+	URL     string
+	Events  []string
+	Connect bool
+	Status  string
+}
+
 type WebhookHandler struct {
 	client            *stripe.Client
 	db                *gorm.DB
@@ -28,6 +37,45 @@ func NewWebhookHandler(client *stripe.Client, db *gorm.DB, accountID string, enc
 		accountID:         accountID,
 		encryptionService: encryptionService,
 	}
+}
+
+// ListStripeWebhooks fetches all webhook endpoints from Stripe API
+func (h *WebhookHandler) ListStripeWebhooks(ctx context.Context) ([]StripeWebhookInfo, error) {
+	logger.Logger.Debug("Fetching webhook endpoints from Stripe API")
+
+	params := &stripe.WebhookEndpointListParams{}
+	ApplyConnectAccount(h.accountID, params)
+
+	var webhooks []StripeWebhookInfo
+	iter := webhookendpoint.List(params)
+	for iter.Next() {
+		endpoint := iter.WebhookEndpoint()
+
+		// Convert enabled events to string slice
+		events := make([]string, len(endpoint.EnabledEvents))
+		for i, event := range endpoint.EnabledEvents {
+			events[i] = event
+		}
+
+		// Connect webhooks are identified by having an Application ID
+		isConnect := endpoint.Application != ""
+
+		webhooks = append(webhooks, StripeWebhookInfo{
+			ID:      endpoint.ID,
+			URL:     endpoint.URL,
+			Events:  events,
+			Connect: isConnect,
+			Status:  string(endpoint.Status),
+		})
+	}
+
+	if err := iter.Err(); err != nil {
+		logger.Logger.Error("Failed to list webhook endpoints from Stripe", "error", err)
+		return nil, fmt.Errorf("failed to list webhook endpoints: %w", err)
+	}
+
+	logger.Logger.Debug("Fetched webhook endpoints from Stripe", "count", len(webhooks))
+	return webhooks, nil
 }
 
 // WebhookResult contains the result of a webhook operation
@@ -266,18 +314,8 @@ func (h *WebhookHandler) GetLatestWebhookSecret(ctx context.Context) (*models.St
 func (h *WebhookHandler) DeleteWebhook(ctx context.Context, stripeID string) error {
 	logger.Logger.Info("Deleting Stripe webhook endpoint", "stripeID", stripeID)
 
-	params := &stripe.WebhookEndpointParams{}
-	ApplyConnectAccount(h.accountID, params)
-
-	_, err := webhookendpoint.Del(stripeID, params)
-	if err != nil {
-		// Check if webhook is already deleted
-		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
-			logger.Logger.Info("Webhook already deleted in Stripe", "stripeID", stripeID)
-		} else {
-			logger.Logger.Error("Failed to delete Stripe webhook endpoint", "error", err, "stripeID", stripeID)
-			return fmt.Errorf("failed to delete webhook endpoint: %w", err)
-		}
+	if err := h.deleteWebhookByStripeID(ctx, stripeID); err != nil {
+		return err
 	}
 
 	// Delete from database
@@ -290,14 +328,35 @@ func (h *WebhookHandler) DeleteWebhook(ctx context.Context, stripeID string) err
 	return nil
 }
 
+// deleteWebhookByStripeID deletes a webhook endpoint from Stripe only (not from database)
+// Used for cleaning up orphan webhooks that exist in Stripe but not in our database
+func (h *WebhookHandler) deleteWebhookByStripeID(ctx context.Context, stripeID string) error {
+	params := &stripe.WebhookEndpointParams{}
+	ApplyConnectAccount(h.accountID, params)
+
+	_, err := webhookendpoint.Del(stripeID, params)
+	if err != nil {
+		// Check if webhook is already deleted
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
+			logger.Logger.Info("Webhook already deleted in Stripe", "stripeID", stripeID)
+			return nil
+		}
+		logger.Logger.Error("Failed to delete Stripe webhook endpoint", "error", err, "stripeID", stripeID)
+		return fmt.Errorf("failed to delete webhook endpoint: %w", err)
+	}
+
+	return nil
+}
+
 // ProcessWebhooks processes an array of webhook configurations
 // It creates, updates, or deletes webhooks as needed to match the desired state
+// This includes cleaning up webhooks from Stripe that aren't defined in the config
 func (h *WebhookHandler) ProcessWebhooks(ctx context.Context, configID uuid.UUID, webhooks []models.WebhookEndpointConfig) ([]WebhookResult, error) {
 	logger.Logger.Info("Processing webhooks configuration",
 		"configID", configID,
 		"webhookCount", len(webhooks))
 
-	// Get existing webhooks for this config
+	// Get existing webhooks from database for this config
 	var existingWebhooks []models.StripeWebhook
 	if err := h.db.Where("config_id = ?", configID).Find(&existingWebhooks).Error; err != nil {
 		logger.Logger.Error("Failed to retrieve existing webhooks", "error", err)
@@ -310,15 +369,16 @@ func (h *WebhookHandler) ProcessWebhooks(ctx context.Context, configID uuid.UUID
 		existingByURL[existingWebhooks[i].URL] = &existingWebhooks[i]
 	}
 
-	// Track which existing webhooks are still in use
-	usedWebhookURLs := make(map[string]bool)
+	// Build set of desired webhook URLs from config
+	desiredURLs := make(map[string]bool)
+	for _, webhookConfig := range webhooks {
+		desiredURLs[webhookConfig.URL] = true
+	}
 
 	var results []WebhookResult
 
 	// Process each webhook configuration
 	for _, webhookConfig := range webhooks {
-		usedWebhookURLs[webhookConfig.URL] = true
-
 		if existing, found := existingByURL[webhookConfig.URL]; found {
 			// Update existing webhook
 			result, err := h.updateWebhook(ctx, existing, webhookConfig.URL, webhookConfig.Events, webhookConfig.Connect)
@@ -336,12 +396,28 @@ func (h *WebhookHandler) ProcessWebhooks(ctx context.Context, configID uuid.UUID
 		}
 	}
 
-	// Delete webhooks that are no longer in the configuration
+	// Delete webhooks from database that are no longer in the configuration
 	for _, existing := range existingWebhooks {
-		if !usedWebhookURLs[existing.URL] {
-			logger.Logger.Info("Deleting removed webhook", "stripeID", existing.StripeID, "url", existing.URL)
+		if !desiredURLs[existing.URL] {
+			logger.Logger.Info("Deleting removed webhook from database", "stripeID", existing.StripeID, "url", existing.URL)
 			if err := h.DeleteWebhook(ctx, existing.StripeID); err != nil {
 				logger.Logger.Warn("Failed to delete removed webhook", "error", err, "stripeID", existing.StripeID)
+			}
+		}
+	}
+
+	// Also clean up any webhooks in Stripe that aren't in our config
+	// This handles webhooks created outside our system or orphaned webhooks
+	stripeWebhooks, err := h.ListStripeWebhooks(ctx)
+	if err != nil {
+		logger.Logger.Warn("Failed to list Stripe webhooks for cleanup", "error", err)
+	} else {
+		for _, stripeWebhook := range stripeWebhooks {
+			if !desiredURLs[stripeWebhook.URL] {
+				logger.Logger.Info("Deleting orphaned webhook from Stripe", "stripeID", stripeWebhook.ID, "url", stripeWebhook.URL)
+				if err := h.deleteWebhookByStripeID(ctx, stripeWebhook.ID); err != nil {
+					logger.Logger.Warn("Failed to delete orphaned Stripe webhook", "error", err, "stripeID", stripeWebhook.ID)
+				}
 			}
 		}
 	}

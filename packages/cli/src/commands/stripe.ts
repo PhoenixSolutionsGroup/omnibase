@@ -2,7 +2,6 @@ import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
 import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
-import { createManagedHostingClient } from "../utils/api-client";
 import { logger } from "../utils/logger";
 
 interface ApiResponse<T = any> {
@@ -80,28 +79,6 @@ async function makeApiRequest(
   }
 }
 
-/**
- * Fetch the worker URL from managed-hosting API
- */
-async function fetchWorkerUrl(envOverride?: string): Promise<string | null> {
-  const envConfig = await selectEnvironment(envOverride);
-
-  if (!envConfig.projectId) {
-    logger.warn("OMNIBASE_PROJECT_ID not set, cannot fetch worker URL");
-    return null;
-  }
-
-  try {
-    const client = createManagedHostingClient(envConfig);
-    const response = await client.get(`/api/v1/projects/${envConfig.projectId}/worker-url`);
-    return response.data?.worker_url || null;
-  } catch (error: any) {
-    const message = error.response?.data?.error || error.message || "Unknown error";
-    logger.warn(`Failed to fetch worker URL: ${message}`);
-    return null;
-  }
-}
-
 function getStripeConfigPath(): string {
   const projectRoot = findOmnibaseRoot();
   return path.join(projectRoot, "omnibase", "payments");
@@ -125,9 +102,16 @@ function findConfigFiles(dir: string): string[] {
   return files.sort();
 }
 
+interface WebhookConfig {
+  id?: string;
+  url: string;
+  events: string[];
+  connect?: boolean;
+}
+
 interface MergedConfig {
   version: string;
-  webhook?: { events: string[] };
+  webhooks: WebhookConfig[];
   meters: any[];
   products: any[];
 }
@@ -135,6 +119,7 @@ interface MergedConfig {
 function mergeConfigs(paymentsDir: string): MergedConfig {
   const merged: MergedConfig = {
     version: "1.0.0",
+    webhooks: [],
     meters: [],
     products: [],
   };
@@ -148,17 +133,25 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
       merged.version = config.version;
     }
 
-    // Merge webhook config (only one webhook config should exist)
-    if (config.webhook) {
-      if (merged.webhook) {
-        // Merge events if webhook already exists
-        const existingEvents = new Set(merged.webhook.events);
-        for (const event of config.webhook.events) {
-          existingEvents.add(event);
+    // Merge webhooks array
+    if (config.webhooks && Array.isArray(config.webhooks)) {
+      for (const webhook of config.webhooks) {
+        const existing = merged.webhooks.find((w) => w.url === webhook.url);
+        if (existing) {
+          // Merge events if webhook with same URL already exists
+          const existingEvents = new Set(existing.events);
+          for (const event of webhook.events) {
+            existingEvents.add(event);
+          }
+          existing.events = Array.from(existingEvents);
+        } else {
+          merged.webhooks.push({
+            id: webhook.id,
+            url: webhook.url,
+            events: [...webhook.events],
+            connect: webhook.connect ?? false,
+          });
         }
-        merged.webhook.events = Array.from(existingEvents);
-      } else {
-        merged.webhook = { events: [...config.webhook.events] };
       }
     }
 
@@ -224,43 +217,25 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
     throw new Error(`Stripe upload failed: ${response.error}`);
   }
 
-  // Handle webhook configuration if present
-  if (config.webhook && config.webhook.events && config.webhook.events.length > 0) {
-    let finalUrl: string;
-    const explicitUrl = process.env.STRIPE_WEBHOOK_URL;
-
-    if (explicitUrl) {
-      // Use explicit URL as-is
-      finalUrl = explicitUrl.replace(/\/$/, "");
-    } else {
-      // Fallback: fetch worker URL and append /webhook/stripe
-      logger.start("Fetching worker URL...");
-      const workerUrl = await fetchWorkerUrl(envOverride);
-      if (!workerUrl) {
-        logger.warn("Webhook config found but no URL available. Set STRIPE_WEBHOOK_URL or deploy a worker first.");
-        return;
-      }
-      finalUrl = workerUrl.replace(/\/$/, "") + "/webhook/stripe";
-      logger.succeed(`Using worker URL: ${finalUrl}`);
-    }
-
-    logger.start(`Configuring webhook endpoint: ${finalUrl}`);
+  // Handle webhooks configuration if present
+  if (config.webhooks && config.webhooks.length > 0) {
+    logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
 
     const webhookResponse = await makeApiRequest(
-      "/api/v1/stripe/admin/webhook",
+      "/api/v1/stripe/config/webhooks",
       "POST",
-      {
-        url: finalUrl,
-        events: config.webhook.events,
-      },
+      { webhooks: config.webhooks },
       envOverride
     );
 
     if (webhookResponse.success) {
-      const data = webhookResponse.data?.data || webhookResponse.data;
-      logger.succeed(`Webhook ${data.action} successfully`);
-      if (data.secret && data.action === "created") {
-        logger.warn("Save webhook secret: " + data.secret);
+      const results = webhookResponse.data?.data?.webhooks || [];
+      logger.succeed(`Webhook configuration completed`);
+      for (const result of results) {
+        logger.log(`   - ${result.url}: ${result.action}`);
+        if (result.secret && result.action === "created") {
+          logger.warn(`     Save webhook secret: ${result.secret}`);
+        }
       }
     } else {
       throw new Error(`Webhook configuration failed: ${webhookResponse.error}`);
@@ -309,10 +284,6 @@ export function addStripeCommands(program: Command): void {
     .command("push")
     .description("Push the local config to Stripe")
     .option("--env <environment>", "Override environment for this command")
-    .option(
-      "--webhook-url <url>",
-      "Webhook URL (required if webhook config exists, or set STRIPE_WEBHOOK_URL)"
-    )
     .action(async (options) => {
       try {
         logger.start("Loading stripe.config.json...");
@@ -343,59 +314,32 @@ export function addStripeCommands(program: Command): void {
           process.exit(1);
         }
 
-        // Handle webhook configuration if present
-        if (
-          config.webhook &&
-          config.webhook.events &&
-          config.webhook.events.length > 0
-        ) {
+        // Handle webhooks configuration if present
+        if (config.webhooks && config.webhooks.length > 0) {
           logger.newline();
-
-          let finalWebhookUrl: string;
-          const explicitUrl = options.webhookUrl || process.env.STRIPE_WEBHOOK_URL;
-
-          if (explicitUrl) {
-            // Use explicit URL as-is
-            finalWebhookUrl = explicitUrl.replace(/\/$/, "");
-          } else {
-            // Fallback: fetch worker URL and append /webhook/stripe
-            logger.start("Fetching worker URL...");
-            const workerUrl = await fetchWorkerUrl(envOverride);
-            if (!workerUrl) {
-              logger.warn("Webhook config found but no URL available.");
-              logger.log(
-                "Provide --webhook-url flag, set STRIPE_WEBHOOK_URL, or deploy a worker first."
-              );
-              return;
-            }
-            finalWebhookUrl = workerUrl.replace(/\/$/, "") + "/webhook/stripe";
-            logger.succeed(`Using worker URL: ${finalWebhookUrl}`);
-          }
-
-          logger.start(`Configuring webhook endpoint: ${finalWebhookUrl}`);
+          logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
 
           const webhookResponse = await makeApiRequest(
-            "/api/v1/stripe/admin/webhook",
+            "/api/v1/stripe/config/webhooks",
             "POST",
-            {
-              url: finalWebhookUrl,
-              events: config.webhook.events,
-            },
+            { webhooks: config.webhooks },
             envOverride
           );
 
           if (webhookResponse.success) {
-            const data = webhookResponse.data?.data || webhookResponse.data;
-            logger.succeed(`Webhook ${data.action} successfully!`);
-            logger.log(`Stripe ID: ${data.stripe_id}`);
+            const results = webhookResponse.data?.data?.webhooks || [];
+            logger.succeed("Webhook configuration completed!");
 
-            if (data.secret && data.action === "created") {
-              logger.newline();
-              logger.warn("IMPORTANT: Save this webhook secret!");
-              logger.log(`Webhook Secret: ${data.secret}`);
-              logger.newline();
-              logger.log("Add to your environment:");
-              logger.log(`  STRIPE_WEBHOOK_SECRET=${data.secret}`);
+            for (const result of results) {
+              logger.log(`  - ${result.url}: ${result.action}`);
+              if (result.secret && result.action === "created") {
+                logger.newline();
+                logger.warn("IMPORTANT: Save this webhook secret!");
+                logger.log(`Webhook Secret: ${result.secret}`);
+                logger.newline();
+                logger.log("Add to your environment:");
+                logger.log(`  STRIPE_WEBHOOK_SECRET=${result.secret}`);
+              }
             }
           } else {
             logger.fail(
@@ -573,7 +517,7 @@ export function addStripeCommands(program: Command): void {
                   "pulled.config.json"
                 )
               : "stripe.config.json");
-          const configData = response.data;
+          const configData = response.data?.data || response.data;
 
           fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
           logger.log(`Configuration saved to: ${outputPath}`);
@@ -581,6 +525,7 @@ export function addStripeCommands(program: Command): void {
           logger.newline();
           logger.log("Summary:");
           logger.log(`  Version: ${configData.version}`);
+          logger.log(`  Webhooks: ${configData.webhooks?.length || 0}`);
           logger.log(`  Products: ${configData.products?.length || 0}`);
           logger.log(`  Meters: ${configData.meters?.length || 0}`);
 

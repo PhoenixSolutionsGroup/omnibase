@@ -22,6 +22,7 @@ import (
 	"github.com/stripe/stripe-go/v82/billing/meter"
 	"github.com/stripe/stripe-go/v82/price"
 	"github.com/stripe/stripe-go/v82/product"
+	"github.com/stripe/stripe-go/v82/webhookendpoint"
 )
 
 type StripeHandler struct {
@@ -562,6 +563,36 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		}
 	}
 
+	// Fetch webhooks from Stripe
+	logger.Logger.Debug("Fetching webhook endpoints from Stripe")
+	webhookParams := &stripe.WebhookEndpointListParams{}
+
+	var configWebhooks []models.WebhookEndpointConfig
+	webhookIter := webhookendpoint.List(webhookParams)
+	for webhookIter.Next() {
+		endpoint := webhookIter.WebhookEndpoint()
+
+		// Convert enabled events to string slice
+		events := make([]string, len(endpoint.EnabledEvents))
+		copy(events, endpoint.EnabledEvents)
+
+		// Connect webhooks are identified by having an Application ID
+		isConnect := endpoint.Application != ""
+
+		configWebhooks = append(configWebhooks, models.WebhookEndpointConfig{
+			ID:      endpoint.ID,
+			URL:     endpoint.URL,
+			Events:  events,
+			Connect: isConnect,
+		})
+	}
+	if err := webhookIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch webhooks from Stripe", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch webhooks: %s", err))
+		return
+	}
+	logger.Logger.Debug("Fetched webhooks from Stripe", "count", len(configWebhooks))
+
 	// Get the latest config version from database if available
 	version := "1.0.0" // default
 	var latestConfig models.StripeConfig
@@ -573,10 +604,14 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 
 	logger.Logger.Info("Successfully pulled stripe config from Stripe API",
 		"version", version,
+		"webhooks_count", len(configWebhooks),
 		"meters_count", len(configMeters),
 		"products_count", len(configProducts))
 
 	// Ensure arrays are never null
+	if configWebhooks == nil {
+		configWebhooks = []models.WebhookEndpointConfig{}
+	}
 	if configMeters == nil {
 		configMeters = []models.Meter{}
 	}
@@ -586,6 +621,7 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 
 	handlers.NewSuccessResponse(ctx, models.StripeConfiguration{
 		Version:  version,
+		Webhooks: configWebhooks,
 		Meters:   configMeters,
 		Products: configProducts,
 	})
