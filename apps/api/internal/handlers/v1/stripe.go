@@ -851,7 +851,7 @@ func (h *StripeHandler) convertStripePriceToConfig(stripePrice *stripe.Price) mo
 		"tiers_count", len(stripePrice.Tiers))
 
 	configPrice := models.Price{
-		Amount:   stripePrice.UnitAmount,
+		Amount:   float64(stripePrice.UnitAmount),
 		Currency: string(stripePrice.Currency),
 	}
 
@@ -1086,6 +1086,142 @@ func (h *StripeHandler) ConvertStripeIDToConfigID(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, response)
 }
 
+// PriceResponse represents a single price with its parent product context
+type PriceResponse struct {
+	// The price with Stripe ID
+	Price models.PriceWithStripeID `json:"price" binding:"required"`
+	// The parent product with Stripe IDs
+	Product models.ProductWithStripeIDs `json:"product" binding:"required"`
+}
+
+// ProductResponse represents a single product with Stripe IDs
+type ProductResponse struct {
+	// The product with Stripe IDs
+	Product models.ProductWithStripeIDs `json:"product" binding:"required"`
+}
+
+// MeterResponse represents a single meter with Stripe ID
+type MeterResponse struct {
+	// The meter with Stripe ID
+	Meter models.MeterWithStripeID `json:"meter" binding:"required"`
+}
+
+func (h *StripeHandler) GetPriceByID(ctx *gin.Context) {
+	priceID := ctx.Param("price_id")
+	if priceID == "" {
+		handlers.NewBadRequestResponse(ctx, "price_id is required")
+		return
+	}
+
+	logger.Logger.Debug("Fetching price by ID", "price_id", priceID)
+
+	var config *models.StripeConfig
+	if err := h.db.Order("created_at DESC").First(&config).Error; err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
+		return
+	}
+
+	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
+	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
+		return
+	}
+
+	configWithIDs := h.addStripeIDsToConfig(*parsedConfig, config.ID)
+
+	for _, product := range configWithIDs.Products {
+		for _, price := range product.Prices {
+			if price.ID == priceID {
+				logger.Logger.Info("Found price", "price_id", priceID, "product_id", product.ID)
+				handlers.NewSuccessResponse(ctx, PriceResponse{
+					Price:   price,
+					Product: product,
+				})
+				return
+			}
+		}
+	}
+
+	logger.Logger.Warn("Price not found", "price_id", priceID)
+	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Price not found: %s", priceID))
+}
+
+func (h *StripeHandler) GetProductByID(ctx *gin.Context) {
+	productID := ctx.Param("product_id")
+	if productID == "" {
+		handlers.NewBadRequestResponse(ctx, "product_id is required")
+		return
+	}
+
+	logger.Logger.Debug("Fetching product by ID", "product_id", productID)
+
+	var config *models.StripeConfig
+	if err := h.db.Order("created_at DESC").First(&config).Error; err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
+		return
+	}
+
+	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
+	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
+		return
+	}
+
+	configWithIDs := h.addStripeIDsToConfig(*parsedConfig, config.ID)
+
+	for _, product := range configWithIDs.Products {
+		if product.ID == productID {
+			logger.Logger.Info("Found product", "product_id", productID)
+			handlers.NewSuccessResponse(ctx, ProductResponse{Product: product})
+			return
+		}
+	}
+
+	logger.Logger.Warn("Product not found", "product_id", productID)
+	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Product not found: %s", productID))
+}
+
+func (h *StripeHandler) GetMeterByID(ctx *gin.Context) {
+	meterID := ctx.Param("meter_id")
+	if meterID == "" {
+		handlers.NewBadRequestResponse(ctx, "meter_id is required")
+		return
+	}
+
+	logger.Logger.Debug("Fetching meter by ID", "meter_id", meterID)
+
+	var config *models.StripeConfig
+	if err := h.db.Order("created_at DESC").First(&config).Error; err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
+		return
+	}
+
+	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
+	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
+		return
+	}
+
+	configWithIDs := h.addStripeIDsToConfig(*parsedConfig, config.ID)
+
+	for _, meter := range configWithIDs.Meters {
+		if meter.ID == meterID {
+			logger.Logger.Info("Found meter", "meter_id", meterID)
+			handlers.NewSuccessResponse(ctx, MeterResponse{Meter: meter})
+			return
+		}
+	}
+
+	logger.Logger.Warn("Meter not found", "meter_id", meterID)
+	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Meter not found: %s", meterID))
+}
+
 // WebhookEndpointConfig represents a single webhook endpoint configuration
 type WebhookEndpointConfig struct {
 	ID      string   `json:"id,omitempty"`
@@ -1143,17 +1279,29 @@ func (h *StripeHandler) ConfigureWebhooks(ctx *gin.Context) {
 		return
 	}
 
-	// Validate each webhook and check for duplicate IDs
+	// Validate each webhook and check for duplicate IDs and URLs
 	seenIDs := make(map[string]bool)
+	seenURLs := make(map[string]bool)
 	var webhookConfigs []models.WebhookEndpointConfig
 	for i, webhook := range req.Webhooks {
 		if webhook.URL == "" {
 			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Webhook %d: URL is required", i))
 			return
 		}
+		if seenURLs[webhook.URL] {
+			handlers.NewConflictResponse(ctx, fmt.Sprintf("Duplicate webhook URL: %s", webhook.URL))
+			return
+		}
+		seenURLs[webhook.URL] = true
 		if len(webhook.Events) == 0 {
 			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Webhook %d: At least one event is required", i))
 			return
+		}
+		for j, event := range webhook.Events {
+			if event == "" {
+				handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Webhook %d: Event %d cannot be empty", i, j))
+				return
+			}
 		}
 		if webhook.ID != "" {
 			if seenIDs[webhook.ID] {
@@ -1174,6 +1322,12 @@ func (h *StripeHandler) ConfigureWebhooks(ctx *gin.Context) {
 	serviceResults, err := h.service.ProcessWebhooksConfig(webhookConfigs)
 	if err != nil {
 		logger.Logger.Error("Failed to configure webhooks", "error", err)
+		// Check if this is a Stripe validation error (invalid_request_error)
+		errStr := err.Error()
+		if strings.Contains(errStr, "invalid_request_error") || strings.Contains(errStr, `"status":400`) {
+			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Failed to configure webhooks: %s", err))
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to configure webhooks: %s", err))
 		return
 	}
