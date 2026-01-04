@@ -56,9 +56,9 @@ services:
       - IDENTITY_SCHEMA_URL=http://rest-api:8080/api/v1/auth/identity-schema
 
       # Required - will fail if not set
-      - WEBSITE_URL=${WEBSITE_URL}
-      - COOKIE_SECRET=${COOKIE_SECRET}
-      - CIPHER_SECRET=${CIPHER_SECRET}
+      - WEBSITE_URL=${WEBSITE_URL:-http://127.0.0.1:3000}
+      - COOKIE_SECRET=${COOKIE_SECRET:-PLEASE-CHANGE-ME-I-AM-VERY-INSECURE}
+      - CIPHER_SECRET=${CIPHER_SECRET:-32-LONG-SECRET-NOT-SECURE-AT-ALL}
       - COOKIE_DOMAIN=${COOKIE_DOMAIN:-127.0.0.1}
 
       # Optional with defaults
