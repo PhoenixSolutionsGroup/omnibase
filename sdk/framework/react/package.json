@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/react",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "OmniBase React 19+ SDK",
   "files": [
     "dist/**/*"
