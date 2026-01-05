@@ -219,6 +219,7 @@ func (h *StripeHandler) UpdateConfig(ctx *gin.Context) {
 	response, err := h.service.ProcessConfigUpdate(configData)
 	if err != nil {
 		handlers.NewBadRequestResponse(ctx, err.Error())
+		return
 	}
 
 	if len(response.Errors) > 0 {
