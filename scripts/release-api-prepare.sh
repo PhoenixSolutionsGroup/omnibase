@@ -32,9 +32,7 @@ echo "Generating SDKs..."
 
 # Update JS SDK package.json version
 echo "Updating @omnibase/core-js version to $VERSION..."
-cd sdk/core/js
-npm version $VERSION --no-git-tag-version --allow-same-version
-cd "$PROJECT_ROOT"
+jq --arg v "$VERSION" '.version = $v' sdk/core/js/package.json > sdk/core/js/package.json.tmp && mv sdk/core/js/package.json.tmp sdk/core/js/package.json
 
 echo "========================================"
 echo "Prepare complete!"
