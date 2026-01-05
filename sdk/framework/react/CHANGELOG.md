@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.1...react-v0.3.2) (2026-01-05)
+
+
+### Bug Fixes
+
+* **release:** remove --provenance flag and use npm token auth ([5309948](https://github.com/PhoenixSolutionsGroup/omnibase/commit/53099480197916568874da3a982b55ce0c752a45))
+
 ## [0.3.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.0...react-v0.3.1) (2026-01-05)
 
 
