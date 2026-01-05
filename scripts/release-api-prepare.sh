@@ -24,11 +24,11 @@ sed -i "s/^\(  version: \).*/\1$VERSION/" apps/api/docs/info.yaml
 
 # Bundle OpenAPI spec
 echo "Bundling OpenAPI spec..."
-bun run generate:openapi
+./scripts/bundle-openapi.sh
 
 # Generate SDKs from OpenAPI
 echo "Generating SDKs..."
-bun run generate:sdk
+./scripts/generate-sdk.sh
 
 # Update JS SDK package.json version
 echo "Updating @omnibase/core-js version to $VERSION..."

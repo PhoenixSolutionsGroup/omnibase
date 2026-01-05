@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "generate:openapi": "./scripts/bundle-openapi.sh",
     "generate:sdk": "./scripts/generate-sdk.sh",
     "generate:k6": "./scripts/generate-k6-sdk.sh",
     "test:api": "./scripts/test-api.sh",
