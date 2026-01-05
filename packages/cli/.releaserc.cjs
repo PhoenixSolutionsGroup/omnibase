@@ -16,7 +16,7 @@ module.exports = {
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/exec', {
       prepareCmd: 'npm pkg set version=${nextRelease.version}',
-      publishCmd: 'bun publish --access public'
+      publishCmd: 'bun pm pack && npm publish *.tgz --provenance --access public && rm *.tgz'
     }],
     ['@semantic-release/git', {
       assets: ['CHANGELOG.md', 'package.json'],

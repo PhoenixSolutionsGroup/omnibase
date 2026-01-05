@@ -389,7 +389,6 @@ jobs:
         working-directory: ${{ matrix.package }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
 
   # ============================================
