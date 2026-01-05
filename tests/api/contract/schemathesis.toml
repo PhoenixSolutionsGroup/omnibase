@@ -2,8 +2,8 @@
 # See https://schemathesis.readthedocs.io/en/stable/reference/configuration.html
 
 request-timeout = 30.0          # 30 second timeout for API requests
-workers = 10                    # Number of parallel workers
-rate-limit = "100/s"            # 100 requests per second max
+workers = 16                    # Number of parallel workers
+rate-limit = "500/s"            # 500 requests per second max
 continue-on-failure = true      # Continue testing after failures for complete coverage
 
 # Authentication headers for all requests
