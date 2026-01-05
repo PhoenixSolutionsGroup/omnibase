@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
+import { config as dotenvConfig } from "dotenv";
 import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
 import { logger } from "../utils/logger";
 
@@ -109,6 +110,40 @@ interface WebhookConfig {
   connect?: boolean;
 }
 
+/**
+ * Load raw environment variables from .env file for variable expansion
+ */
+function loadRawEnv(envName: string): Record<string, string> {
+  const projectRoot = findOmnibaseRoot();
+  const envPath = path.join(
+    projectRoot,
+    "omnibase",
+    "environments",
+    `.env.${envName}`
+  );
+
+  if (!fs.existsSync(envPath)) {
+    return {};
+  }
+
+  const result = dotenvConfig({ path: envPath });
+  return result.parsed || {};
+}
+
+/**
+ * Expand ${VAR} patterns in a string using environment variables
+ */
+function expandEnvVars(str: string, env: Record<string, string>): string {
+  return str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
+    const value = env[varName];
+    if (value === undefined) {
+      logger.warn(`Environment variable ${varName} is not defined`);
+      return match; // Keep original if not found
+    }
+    return value;
+  });
+}
+
 interface MergedConfig {
   version: string;
   webhooks: WebhookConfig[];
@@ -196,6 +231,10 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
   logger.start("Loading stripe.config.json...");
   const config = loadStripeConfig();
 
+  // Get the environment name for loading raw env vars
+  const envConfig = await selectEnvironment(envOverride);
+  const rawEnv = loadRawEnv(envConfig.name);
+
   logger.succeed("Successfully loaded config");
   logger.start("Pushing to Stripe...");
 
@@ -221,10 +260,16 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
   if (config.webhooks && config.webhooks.length > 0) {
     logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
 
+    // Expand environment variables in webhook URLs
+    const expandedWebhooks = config.webhooks.map((webhook: WebhookConfig) => ({
+      ...webhook,
+      url: expandEnvVars(webhook.url, rawEnv),
+    }));
+
     const webhookResponse = await makeApiRequest(
       "/api/v1/stripe/config/webhooks",
       "POST",
-      { webhooks: config.webhooks },
+      { webhooks: expandedWebhooks },
       envOverride
     );
 
@@ -289,10 +334,13 @@ export function addStripeCommands(program: Command): void {
         logger.start("Loading stripe.config.json...");
         const config = loadStripeConfig();
 
+        const envOverride = options.env || program.opts().env;
+        const envConfig = await selectEnvironment(envOverride);
+        const rawEnv = loadRawEnv(envConfig.name);
+
         logger.succeed("Successfully loaded config");
         logger.start("Pushing products/prices/meters to Stripe...");
 
-        const envOverride = options.env || program.opts().env;
         const response = await makeApiRequest(
           "/api/v1/stripe/admin/config",
           "POST",
@@ -319,10 +367,16 @@ export function addStripeCommands(program: Command): void {
           logger.newline();
           logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
 
+          // Expand environment variables in webhook URLs
+          const expandedWebhooks = config.webhooks.map((webhook: WebhookConfig) => ({
+            ...webhook,
+            url: expandEnvVars(webhook.url, rawEnv),
+          }));
+
           const webhookResponse = await makeApiRequest(
             "/api/v1/stripe/config/webhooks",
             "POST",
-            { webhooks: config.webhooks },
+            { webhooks: expandedWebhooks },
             envOverride
           );
 
