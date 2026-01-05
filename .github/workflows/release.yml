@@ -288,6 +288,10 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         run: chmod +x scripts/*.sh
 
+      - name: Regenerate SDKs
+        if: steps.changes.outputs.has_changes == 'true'
+        run: bun run generate:sdk
+
       - name: Release API
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: apps/api
