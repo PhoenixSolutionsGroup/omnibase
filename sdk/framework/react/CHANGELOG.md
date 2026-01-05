@@ -1,3 +1,10 @@
+## [0.3.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.2...react-v0.3.3) (2026-01-05)
+
+
+### Bug Fixes
+
+* **release:** add repository field for npm provenance ([d042f55](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d042f55a39e996e6dbc172ffe102de200b81db0d))
+
 ## [0.3.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.1...react-v0.3.2) (2026-01-05)
 
 
