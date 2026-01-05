@@ -80,7 +80,9 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 	if req.BillingEmail != "" {
 		customerID, err := h.stripe.CreateStripeCustomer(req.BillingEmail, req.Name)
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create Stripe customer: %s", err))
+			if !handlers.HandleStripeError(ctx, err) {
+				handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create Stripe customer: %s", err))
+			}
 			return
 		}
 		stripeCustomerID = customerID

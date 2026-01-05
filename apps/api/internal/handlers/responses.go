@@ -2,9 +2,12 @@ package handlers
 
 import (
 	"api/internal/logger"
+	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stripe/stripe-go/v82"
 )
 
 // SuccessResponse represents a successful API response
@@ -195,4 +198,42 @@ func NewTooManyRequestsResponse(ctx *gin.Context, message string) {
 		Status: http.StatusTooManyRequests,
 		Error:  message,
 	})
+}
+
+// HandleStripeError processes Stripe errors and returns appropriate HTTP responses.
+// Returns true if the error was handled, false otherwise.
+func HandleStripeError(ctx *gin.Context, err error) bool {
+	var stripeErr *stripe.Error
+	if !errors.As(err, &stripeErr) {
+		return false
+	}
+
+	// Check for rate limit errors first (HTTP 429)
+	if stripeErr.HTTPStatusCode == 429 {
+		NewTooManyRequestsResponse(ctx, stripeErr.Msg)
+		return true
+	}
+
+	switch stripeErr.Type {
+	case stripe.ErrorTypeInvalidRequest:
+		if strings.HasPrefix(stripeErr.Msg, "No such") {
+			NewNotFoundResponse(ctx, stripeErr.Msg)
+			return true
+		}
+		NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeCard:
+		NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeIdempotency:
+		NewConflictResponse(ctx, stripeErr.Msg)
+		return true
+	case stripe.ErrorTypeAPI:
+		// API errors are server-side Stripe issues, not client errors
+		return false
+	default:
+		// For any other Stripe error types, treat as bad request
+		NewBadRequestResponse(ctx, stripeErr.Msg)
+		return true
+	}
 }

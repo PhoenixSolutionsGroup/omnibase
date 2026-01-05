@@ -6,13 +6,11 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	services_v1 "api/internal/service/v1"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v82"
 	"gorm.io/gorm"
 )
 
@@ -40,44 +38,6 @@ func NewPaymentsHandler(cfg *config.Config) *PaymentsHandler {
 // isValidInvoiceID checks if the invoice ID has the correct Stripe format
 func isValidInvoiceID(invoiceID string) bool {
 	return strings.HasPrefix(invoiceID, "in_")
-}
-
-// handleStripeError processes Stripe errors and returns appropriate HTTP responses
-// Returns true if the error was handled, false otherwise
-func handleStripeError(ctx *gin.Context, err error) bool {
-	var stripeErr *stripe.Error
-	if !errors.As(err, &stripeErr) {
-		return false
-	}
-
-	// Check for rate limit errors first (HTTP 429)
-	if stripeErr.HTTPStatusCode == 429 {
-		handlers.NewTooManyRequestsResponse(ctx, stripeErr.Msg)
-		return true
-	}
-
-	switch stripeErr.Type {
-	case stripe.ErrorTypeInvalidRequest:
-		if strings.HasPrefix(stripeErr.Msg, "No such") {
-			handlers.NewNotFoundResponse(ctx, stripeErr.Msg)
-			return true
-		}
-		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
-		return true
-	case stripe.ErrorTypeCard:
-		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
-		return true
-	case stripe.ErrorTypeIdempotency:
-		handlers.NewConflictResponse(ctx, stripeErr.Msg)
-		return true
-	case stripe.ErrorTypeAPI:
-		// API errors are server-side Stripe issues, not client errors
-		return false
-	default:
-		// For any other Stripe error types, treat as bad request
-		handlers.NewBadRequestResponse(ctx, stripeErr.Msg)
-		return true
-	}
 }
 
 // CreateCheckoutRequest represents the request to create a checkout session
@@ -342,7 +302,7 @@ func (h *PaymentsHandler) CreateInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.CreateInvoice(customerID.(string), req.Currency, req.AutoAdvance, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to create invoice", "customer_id", customerID.(string), "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create invoice: %s", err))
@@ -378,7 +338,7 @@ func (h *PaymentsHandler) GetInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.GetInvoice(invoiceID)
 	if err != nil {
 		logger.Logger.Error("Failed to get invoice", "invoice_id", invoiceID, "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to get invoice: %s", err))
@@ -421,7 +381,7 @@ func (h *PaymentsHandler) UpdateInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.UpdateInvoice(invoiceID, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to update invoice", "invoice_id", invoiceID, "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to update invoice: %s", err))
@@ -472,7 +432,7 @@ func (h *PaymentsHandler) AddInvoiceLineItem(ctx *gin.Context) {
 	item, err := h.stripe.AddInvoiceLineItem(invoiceID, customerID.(string), req.Amount, req.Currency, req.Description)
 	if err != nil {
 		logger.Logger.Error("Failed to add invoice line item", "invoice_id", invoiceID, "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to add invoice line item: %s", err))
@@ -511,7 +471,7 @@ func (h *PaymentsHandler) FinalizeInvoice(ctx *gin.Context) {
 	inv, err := h.stripe.FinalizeInvoice(invoiceID, req.AutoAdvance)
 	if err != nil {
 		logger.Logger.Error("Failed to finalize invoice", "invoice_id", invoiceID, "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to finalize invoice: %s", err))
@@ -586,7 +546,7 @@ func (h *PaymentsHandler) AddInvoiceLineItemWithPriceID(ctx *gin.Context) {
 	item, err := h.stripe.AddInvoiceLineItemByPrice(invoiceID, customerID.(string), stripePriceID, req.Quantity, req.Currency, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to add invoice line item with price", "invoice_id", invoiceID, "error", err)
-		if handleStripeError(ctx, err) {
+		if handlers.HandleStripeError(ctx, err) {
 			return
 		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to add invoice line item: %s", err))
