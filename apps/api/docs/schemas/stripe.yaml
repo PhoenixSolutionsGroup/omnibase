@@ -100,6 +100,11 @@ components:
           type: string
           description: Configuration version
           example: "1.0.0"
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters with Stripe IDs

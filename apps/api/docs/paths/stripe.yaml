@@ -287,7 +287,7 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfiguration'
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigurationWithIDs'
         '401':
           description: Invalid or missing admin token
           content:

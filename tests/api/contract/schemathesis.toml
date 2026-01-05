@@ -120,6 +120,12 @@ enabled = false
 include-name = "POST /api/v1/stripe/admin/config"
 enabled = false
 
+# Disable archive-all - takes 30-60 seconds to archive all Stripe resources
+# which exceeds test timeout
+[[operations]]
+include-name = "POST /api/v1/stripe/admin/config/archive-all"
+enabled = false
+
 # Disable webhook config endpoint - Stripe has a hard limit of 16 test webhooks
 # and schemathesis creates random webhooks that exceed this limit
 # This is tested in k6 integration tests instead
