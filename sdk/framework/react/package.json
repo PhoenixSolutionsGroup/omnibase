@@ -2,6 +2,10 @@
   "name": "@omnibase/react",
   "version": "0.3.2",
   "description": "OmniBase React 19+ SDK",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
+  },
   "files": [
     "dist/**/*"
   ],

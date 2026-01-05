@@ -2,6 +2,10 @@
   "name": "@omnibase/shadcn",
   "version": "0.6.2",
   "description": "OmniBase ShadCN UI Package",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
+  },
   "type": "module",
   "exports": {
     ".": {

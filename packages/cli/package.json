@@ -2,6 +2,10 @@
   "name": "@omnibase/cli",
   "version": "0.2.0",
   "description": "OmniBase CLI - Manage Docker Compose services and environment configuration",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
+  },
   "main": "dist/index.js",
   "bin": {
     "omnibase": "./dist/index.js"
