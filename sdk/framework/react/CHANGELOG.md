@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.0...react-v0.3.1) (2026-01-05)
+
+
+### Bug Fixes
+
+* **release:** use npm publish with OIDC provenance for trusted publishing ([f837221](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8372211e9d77ee1d7f2059cf1fbe76733b76104))
+
 # [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.2.2...react-v0.3.0) (2026-01-05)
 
 
