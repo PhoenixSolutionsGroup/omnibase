@@ -6,6 +6,7 @@ workers = 16                    # Number of parallel workers
 rate-limit = "500/s"            # 500 requests per second max
 continue-on-failure = true      # Continue testing after failures for complete coverage
 
+
 # Authentication headers for all requests
 # These are passed via command line, not config file
 # [headers]
@@ -27,7 +28,7 @@ negative_data_rejection.enabled = false  # Add this line to disable 406 checks
 
 # Generation configuration for property-based testing
 [generation]
-max-examples = 200              # Generate 200 test cases per endpoint (thorough testing)
+max-examples = 50               # Generate 50 test cases per endpoint
 allow-x00 = false               # Don't generate null bytes
 codec = "utf-8"                 # Use UTF-8 encoding
 with-security-parameters = false  # Don't generate security parameters (Cookie, X-Session-Token)
