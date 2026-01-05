@@ -25,6 +25,7 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
+          cache: true
 
       - uses: actions/setup-go@v5
         with:
@@ -35,29 +36,21 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Cache bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lockb') }}
-          restore-keys: |
-            bun-${{ runner.os }}-
-
-      - name: Cache k6
+      - name: Cache k6 binary
         id: cache-k6
         uses: actions/cache@v4
         with:
-          path: /usr/bin/k6
-          key: k6-${{ runner.os }}-latest
+          path: ~/k6
+          key: k6-${{ runner.os }}-v0.54.0
 
       - name: Install k6
         if: steps.cache-k6.outputs.cache-hit != 'true'
         run: |
-          sudo gpg -k
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
+          mkdir -p ~/k6
+          curl -L https://github.com/grafana/k6/releases/download/v0.54.0/k6-v0.54.0-linux-amd64.tar.gz | tar xz --strip-components=1 -C ~/k6
+
+      - name: Add k6 to PATH
+        run: echo "$HOME/k6" >> $GITHUB_PATH
 
       - name: Install schemathesis
         run: pip install schemathesis
