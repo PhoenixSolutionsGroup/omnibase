@@ -14,7 +14,10 @@ module.exports = {
     }],
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
-    '@semantic-release/npm',
+    ['@semantic-release/exec', {
+      prepareCmd: 'npm pkg set version=${nextRelease.version}',
+      publishCmd: 'bun publish --access public'
+    }],
     ['@semantic-release/git', {
       assets: ['CHANGELOG.md', 'package.json'],
       message: 'chore(react): release ${nextRelease.version} [skip ci]'

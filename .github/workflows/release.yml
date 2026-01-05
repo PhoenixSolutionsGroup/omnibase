@@ -359,7 +359,7 @@ jobs:
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
-            @semantic-release/npm
+            @semantic-release/exec
 
       - name: Check for changes
         id: changes
@@ -389,6 +389,7 @@ jobs:
         working-directory: ${{ matrix.package }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
 
   # ============================================
