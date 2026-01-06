@@ -1,0 +1,14 @@
+{
+  "title": "V1",
+  "pages": [
+    "auth",
+    "configuration",
+    "events",
+    "payments",
+    "permissions",
+    "storage",
+    "stripe",
+    "tenants",
+    "webhooks"
+  ]
+}

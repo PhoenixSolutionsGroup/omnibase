@@ -1,0 +1,12 @@
+{
+  "title": "Reference",
+  "description": "API and SDK documentation",
+  "root": true,
+  "icon": "Code",
+  "pages": [
+    "overview",
+    "api",
+    "sdk",
+    "cli"
+  ]
+}

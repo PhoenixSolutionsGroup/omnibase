@@ -1,4 +1,0 @@
-// @ts-check
-/** @type {import("@docusaurus/plugin-content-docs").SidebarsConfig} */
-const typedocSidebar = {items:[{type:"doc",id:"Framework SDKs/react/components/index",label:"components"},{type:"category",label:"Context",items:[{type:"category",label:"Context",items:[{type:"doc",id:"Framework SDKs/react/Context/type-aliases/AuthProviderProps",label:"AuthProviderProps"},{type:"doc",id:"Framework SDKs/react/Context/functions/AuthClientProvider",label:"AuthClientProvider"},{type:"doc",id:"Framework SDKs/react/Context/functions/useAuth",label:"useAuth"}]}],link:{type:"doc",id:"Framework SDKs/react/Context/index"}},{type:"category",label:"Hooks",items:[{type:"category",label:"Hooks",items:[{type:"doc",id:"Framework SDKs/react/Hooks/functions/useSession",label:"useSession"}]}],link:{type:"doc",id:"Framework SDKs/react/Hooks/index"}}]};
-module.exports = typedocSidebar.items;

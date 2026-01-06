@@ -6,6 +6,9 @@
   "scripts": {
     "generate:openapi": "./scripts/bundle-openapi.sh",
     "generate:sdk": "./scripts/generate-sdk.sh",
+    "generate:docs": "bun ./scripts/generate-docs.ts",
+    "generate:docs:typedoc": "bun ./scripts/generate-docs.ts --typedoc",
+    "generate:docs:openapi": "bun ./scripts/generate-docs.ts --openapi",
     "generate:k6": "./scripts/generate-k6-sdk.sh",
     "test:api": "./scripts/test-api.sh",
     "test:api:local": "./scripts/test-api.sh --local",
@@ -15,6 +18,9 @@
   },
   "devDependencies": {
     "@grafana/openapi-to-k6": "^0.3.2",
+    "fumadocs-openapi": "^10.2.3",
+    "typedoc": "^0.28.5",
+    "typedoc-plugin-markdown": "^4.6.3",
     "@openapitools/openapi-generator-cli": "^2.27.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
@@ -33,7 +39,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@redocly/cli": "^2.14.3"
+    "@redocly/cli": "^2.14.3",
+    "yaml": "^2.8.2"
   },
   "overrides": {
     "find-up": "5.0.0"
