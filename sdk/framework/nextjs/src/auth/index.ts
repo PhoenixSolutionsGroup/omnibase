@@ -1,6 +1,3 @@
-// Must be first import - configures NEXT_PUBLIC_ORY_SDK_URL before @ory/* imports
-import "./config";
-
 /**
  * Authentication module for Next.js
  *
@@ -70,9 +67,29 @@ import "./config";
  * }
  * ```
  *
+ * @groupDescription Session Management
+ * Server-side session handling for Next.js applications. These utilities enable
+ * secure session fetching and React Context integration for authentication state
+ * management across your component tree.
+ *
+ * @groupDescription Authentication
+ * Route protection utilities for securing pages and API routes that require
+ * an authenticated user session.
+ *
+ * @groupDescription Flow Routing
+ * Components and utilities for handling Ory Kratos authentication flows
+ * including login, registration, recovery, verification, and settings.
+ *
+ * @groupDescription Flow Retrieval
+ * Server-side functions for fetching authentication flow data from Ory Kratos.
+ * These functions handle the flow lifecycle and return typed flow objects.
+ *
  * @module Auth
  * @since 0.5.1
  */
+
+// Must be first import - configures NEXT_PUBLIC_ORY_SDK_URL before @ory/* imports
+import "./config";
 
 export * from "./provider";
 export * from "./flow-router";
