@@ -264,7 +264,8 @@ jobs:
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
-            @semantic-release/exec
+            @semantic-release/exec \
+            semantic-release-commit-filter
 
       - name: Check for API changes
         id: changes
@@ -359,7 +360,8 @@ jobs:
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
-            @semantic-release/exec
+            @semantic-release/exec \
+            semantic-release-commit-filter
 
       - name: Check for changes
         id: changes
@@ -442,7 +444,8 @@ jobs:
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
-            @semantic-release/exec
+            @semantic-release/exec \
+            semantic-release-commit-filter
 
       - name: Check for changes
         id: changes

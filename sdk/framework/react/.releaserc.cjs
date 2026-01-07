@@ -2,6 +2,9 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'react-v${version}',
   plugins: [
+    ['semantic-release-commit-filter', {
+      filterPaths: ['sdk/framework/react']
+    }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
       releaseRules: [

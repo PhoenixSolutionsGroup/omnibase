@@ -2,6 +2,10 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'api-v${version}',
   plugins: [
+    // Filter commits to only those affecting this package
+    ['semantic-release-commit-filter', {
+      filterPaths: ['apps/api']
+    }],
     // Analyze commits to determine version bump
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',

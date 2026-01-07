@@ -2,6 +2,9 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'auth-v${version}',
   plugins: [
+    ['semantic-release-commit-filter', {
+      filterPaths: ['docker/auth']
+    }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
       releaseRules: [

@@ -2,6 +2,9 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'permissions-v${version}',
   plugins: [
+    ['semantic-release-commit-filter', {
+      filterPaths: ['docker/permissions']
+    }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
       releaseRules: [

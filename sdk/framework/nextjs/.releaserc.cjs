@@ -2,6 +2,9 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'nextjs-v${version}',
   plugins: [
+    ['semantic-release-commit-filter', {
+      filterPaths: ['sdk/framework/nextjs']
+    }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
       releaseRules: [

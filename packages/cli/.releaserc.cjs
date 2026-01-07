@@ -2,6 +2,9 @@ module.exports = {
   branches: ['main'],
   tagFormat: 'cli-v${version}',
   plugins: [
+    ['semantic-release-commit-filter', {
+      filterPaths: ['packages/cli']
+    }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
       releaseRules: [
