@@ -14,6 +14,12 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d db"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   auth-migrate:
     image: phoenixsolutionsgroup/omnibase-auth:v0.1.2
@@ -28,8 +34,10 @@ services:
     networks:
       - app-network
     depends_on:
-      - postgres
-      - rest-api
+      postgres:
+        condition: service_healthy
+      rest-api:
+        condition: service_started
   auth:
     depends_on:
       - auth-migrate
@@ -128,7 +136,8 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -145,7 +154,8 @@ services:
       PGRST_JWT_SECRET: ${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
       PGRST_OPENAPI_SERVER_PROXY_URI: http://localhost:8001
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -156,7 +166,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -218,8 +229,10 @@ services:
     networks:
       - app-network
     depends_on:
-      - postgres
-      - rest-api
+      postgres:
+        condition: service_healthy
+      rest-api:
+        condition: service_started
 
   permissions:
     depends_on:
@@ -252,7 +265,8 @@ services:
       - PG_META_DB_PASSWORD=postgres
       - PG_META_DB_PORT=5432
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
 
