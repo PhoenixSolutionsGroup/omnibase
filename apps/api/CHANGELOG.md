@@ -1,3 +1,10 @@
+## [0.12.6](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.5...api-v0.12.6) (2026-01-07)
+
+
+### Bug Fixes
+
+* **ci:** update git-user-id to phoenixsolutionsgroup from PhoenixSolutionsGroup for go package ([a2f7c3e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a2f7c3e148f91b16ffa8cf15b703137af8f9fb1f))
+
 ## [0.12.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.4...api-v0.12.5) (2026-01-07)
 
 

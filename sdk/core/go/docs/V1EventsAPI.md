@@ -25,7 +25,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 )
 
 func main() {
