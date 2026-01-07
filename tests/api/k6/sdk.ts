@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.10.2
+ * Service version: 0.11.0
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -919,6 +919,82 @@ export interface InternalServerError {
   error: string;
 }
 
+export type WebhookEndpointConfigEventsItem =
+  (typeof WebhookEndpointConfigEventsItem)[keyof typeof WebhookEndpointConfigEventsItem];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WebhookEndpointConfigEventsItem = {
+  accountupdated: "account.updated",
+  accountapplicationdeauthorized: "account.application.deauthorized",
+  accountexternal_accountcreated: "account.external_account.created",
+  accountexternal_accountupdated: "account.external_account.updated",
+  accountexternal_accountdeleted: "account.external_account.deleted",
+  payment_intentcreated: "payment_intent.created",
+  payment_intentsucceeded: "payment_intent.succeeded",
+  payment_intentpayment_failed: "payment_intent.payment_failed",
+  payment_intentcanceled: "payment_intent.canceled",
+  payment_intentrequires_action: "payment_intent.requires_action",
+  chargesucceeded: "charge.succeeded",
+  chargefailed: "charge.failed",
+  chargerefunded: "charge.refunded",
+  chargecaptured: "charge.captured",
+  chargedisputecreated: "charge.dispute.created",
+  chargedisputeupdated: "charge.dispute.updated",
+  chargedisputeclosed: "charge.dispute.closed",
+  customercreated: "customer.created",
+  customerupdated: "customer.updated",
+  customerdeleted: "customer.deleted",
+  customersubscriptioncreated: "customer.subscription.created",
+  customersubscriptionupdated: "customer.subscription.updated",
+  customersubscriptiondeleted: "customer.subscription.deleted",
+  customersubscriptiontrial_will_end: "customer.subscription.trial_will_end",
+  customersubscriptionpaused: "customer.subscription.paused",
+  customersubscriptionresumed: "customer.subscription.resumed",
+  invoicecreated: "invoice.created",
+  invoicefinalized: "invoice.finalized",
+  invoicepaid: "invoice.paid",
+  invoicepayment_failed: "invoice.payment_failed",
+  invoicepayment_action_required: "invoice.payment_action_required",
+  invoiceupcoming: "invoice.upcoming",
+  invoicemarked_uncollectible: "invoice.marked_uncollectible",
+  invoicevoided: "invoice.voided",
+  payoutcreated: "payout.created",
+  payoutpaid: "payout.paid",
+  payoutfailed: "payout.failed",
+  payoutcanceled: "payout.canceled",
+  productcreated: "product.created",
+  productupdated: "product.updated",
+  productdeleted: "product.deleted",
+  pricecreated: "price.created",
+  priceupdated: "price.updated",
+  pricedeleted: "price.deleted",
+  checkoutsessioncompleted: "checkout.session.completed",
+  checkoutsessionexpired: "checkout.session.expired",
+  checkoutsessionasync_payment_succeeded:
+    "checkout.session.async_payment_succeeded",
+  checkoutsessionasync_payment_failed: "checkout.session.async_payment_failed",
+  refundcreated: "refund.created",
+  refundupdated: "refund.updated",
+  payment_methodattached: "payment_method.attached",
+  payment_methoddetached: "payment_method.detached",
+  transfercreated: "transfer.created",
+  transferreversed: "transfer.reversed",
+} as const;
+
+export interface WebhookEndpointConfig {
+  /** Optional unique identifier for the webhook endpoint */
+  id?: string;
+  /** Webhook endpoint URL (supports ${VAR} env var interpolation via CLI) */
+  url: string;
+  /**
+   * List of Stripe event types to subscribe to
+   * @minItems 1
+   */
+  events: WebhookEndpointConfigEventsItem[];
+  /** If true, listen to events from connected accounts (Stripe Connect) */
+  connect?: boolean;
+}
+
 /**
  * Aggregation formula for meter events
  */
@@ -1180,6 +1256,8 @@ export interface ProductWithStripeIDs {
 export interface StripeConfigurationWithIDs {
   /** Configuration version */
   version: string;
+  /** List of webhook endpoint configurations */
+  webhooks?: WebhookEndpointConfig[];
   /** List of billing meters with Stripe IDs */
   meters?: MeterWithStripeID[];
   /** List of products with Stripe IDs */
@@ -1547,15 +1625,6 @@ export interface StripeConfigValidateRequest {
   products: Product[];
 }
 
-export interface StripeConfiguration {
-  /** Configuration version in semantic versioning format */
-  version: string;
-  /** List of billing meters for metered pricing (required when any price uses usage_type metered) */
-  meters?: Meter[];
-  /** List of products with their prices */
-  products: Product[];
-}
-
 export interface ArchiveAllResponse {
   /** Success message */
   message: string;
@@ -1646,82 +1715,6 @@ export interface WebhookSecretResponse {
   updated_at?: string;
 }
 
-export type WebhookEndpointConfigEventsItem =
-  (typeof WebhookEndpointConfigEventsItem)[keyof typeof WebhookEndpointConfigEventsItem];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const WebhookEndpointConfigEventsItem = {
-  accountupdated: "account.updated",
-  accountapplicationdeauthorized: "account.application.deauthorized",
-  accountexternal_accountcreated: "account.external_account.created",
-  accountexternal_accountupdated: "account.external_account.updated",
-  accountexternal_accountdeleted: "account.external_account.deleted",
-  payment_intentcreated: "payment_intent.created",
-  payment_intentsucceeded: "payment_intent.succeeded",
-  payment_intentpayment_failed: "payment_intent.payment_failed",
-  payment_intentcanceled: "payment_intent.canceled",
-  payment_intentrequires_action: "payment_intent.requires_action",
-  chargesucceeded: "charge.succeeded",
-  chargefailed: "charge.failed",
-  chargerefunded: "charge.refunded",
-  chargecaptured: "charge.captured",
-  chargedisputecreated: "charge.dispute.created",
-  chargedisputeupdated: "charge.dispute.updated",
-  chargedisputeclosed: "charge.dispute.closed",
-  customercreated: "customer.created",
-  customerupdated: "customer.updated",
-  customerdeleted: "customer.deleted",
-  customersubscriptioncreated: "customer.subscription.created",
-  customersubscriptionupdated: "customer.subscription.updated",
-  customersubscriptiondeleted: "customer.subscription.deleted",
-  customersubscriptiontrial_will_end: "customer.subscription.trial_will_end",
-  customersubscriptionpaused: "customer.subscription.paused",
-  customersubscriptionresumed: "customer.subscription.resumed",
-  invoicecreated: "invoice.created",
-  invoicefinalized: "invoice.finalized",
-  invoicepaid: "invoice.paid",
-  invoicepayment_failed: "invoice.payment_failed",
-  invoicepayment_action_required: "invoice.payment_action_required",
-  invoiceupcoming: "invoice.upcoming",
-  invoicemarked_uncollectible: "invoice.marked_uncollectible",
-  invoicevoided: "invoice.voided",
-  payoutcreated: "payout.created",
-  payoutpaid: "payout.paid",
-  payoutfailed: "payout.failed",
-  payoutcanceled: "payout.canceled",
-  productcreated: "product.created",
-  productupdated: "product.updated",
-  productdeleted: "product.deleted",
-  pricecreated: "price.created",
-  priceupdated: "price.updated",
-  pricedeleted: "price.deleted",
-  checkoutsessioncompleted: "checkout.session.completed",
-  checkoutsessionexpired: "checkout.session.expired",
-  checkoutsessionasync_payment_succeeded:
-    "checkout.session.async_payment_succeeded",
-  checkoutsessionasync_payment_failed: "checkout.session.async_payment_failed",
-  refundcreated: "refund.created",
-  refundupdated: "refund.updated",
-  payment_methodattached: "payment_method.attached",
-  payment_methoddetached: "payment_method.detached",
-  transfercreated: "transfer.created",
-  transferreversed: "transfer.reversed",
-} as const;
-
-export interface WebhookEndpointConfig {
-  /** Optional unique identifier for the webhook endpoint */
-  id?: string;
-  /** Webhook endpoint URL (supports ${VAR} env var interpolation via CLI) */
-  url: string;
-  /**
-   * List of Stripe event types to subscribe to
-   * @minItems 1
-   */
-  events: WebhookEndpointConfigEventsItem[];
-  /** If true, listen to events from connected accounts (Stripe Connect) */
-  connect?: boolean;
-}
-
 export interface WebhooksConfigRequest {
   /**
    * List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
@@ -1795,6 +1788,20 @@ export interface CreateTenantResponse {
 export interface DeleteTenantResponse {
   /** Success message */
   message: string;
+}
+
+/**
+ * Response containing a tenant by ID
+ */
+export interface GetTenantByIDResponse {
+  tenant: Tenant;
+}
+
+/**
+ * Response containing a tenant by Stripe customer ID
+ */
+export interface GetTenantByStripeCustomerIDResponse {
+  tenant: Tenant;
 }
 
 /**
@@ -2514,7 +2521,7 @@ export type GetStripeConfigHistory200 = SuccessResponse &
   GetStripeConfigHistory200AllOf;
 
 export type PullStripeConfig200AllOf = {
-  data?: StripeConfiguration;
+  data?: StripeConfigurationWithIDs;
 };
 
 export type PullStripeConfig200 = SuccessResponse & PullStripeConfig200AllOf;
@@ -2592,6 +2599,19 @@ export type DeleteTenant200AllOf = {
 };
 
 export type DeleteTenant200 = SuccessResponse & DeleteTenant200AllOf;
+
+export type GetTenantByID200AllOf = {
+  data?: GetTenantByIDResponse;
+};
+
+export type GetTenantByID200 = SuccessResponse & GetTenantByID200AllOf;
+
+export type GetTenantByStripeCustomerID200AllOf = {
+  data?: GetTenantByStripeCustomerIDResponse;
+};
+
+export type GetTenantByStripeCustomerID200 = SuccessResponse &
+  GetTenantByStripeCustomerID200AllOf;
 
 export type SwitchActiveTenantHeaders = {
   /**
@@ -5147,6 +5167,99 @@ The user_id must be a valid UUID matching an existing Kratos identity.
         ),
       },
     });
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a tenant by its ID.
+
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key header
+
+## Use Cases
+- Direct tenant lookup by ID
+- Service-to-service tenant resolution
+- Webhook processing
+
+ * @summary Get tenant by ID
+ */
+  getTenantByID(
+    tenantId: string,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: GetTenantByID200;
+  } {
+    const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/${tenantId}`);
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters,
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Returns a tenant by its Stripe customer ID.
+
+## Authentication
+- **Session Auth**: Requires JWT token / Cookie Session
+- **Service Key Auth**: Requires X-Service-Key header
+
+## Use Cases
+- Stripe webhook processing
+- Payment event correlation
+- Invoice/subscription tenant resolution
+
+ * @summary Get tenant by Stripe customer ID
+ */
+  getTenantByStripeCustomerID(
+    stripeCustomerId: string,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: GetTenantByStripeCustomerID200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl +
+        `/api/v1/tenants/stripe-customer-id/${stripeCustomerId}`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters,
+    );
     let data;
 
     try {
