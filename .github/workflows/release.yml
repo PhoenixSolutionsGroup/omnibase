@@ -258,16 +258,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Install semantic-release plugins
-        run: |
-          npm install -g semantic-release
-          npm install --no-save --legacy-peer-deps \
-            @semantic-release/changelog \
-            @semantic-release/git \
-            @semantic-release/github \
-            @semantic-release/exec \
-            semantic-release-commit-filter
-
       - name: Check for API changes
         id: changes
         run: |
@@ -355,16 +345,6 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Install semantic-release plugins
-        run: |
-          npm install -g semantic-release
-          npm install --no-save --legacy-peer-deps \
-            @semantic-release/changelog \
-            @semantic-release/git \
-            @semantic-release/github \
-            @semantic-release/exec \
-            semantic-release-commit-filter
-
       - name: Check for changes
         id: changes
         run: |
@@ -424,6 +404,10 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           persist-credentials: true
 
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -435,20 +419,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Install dependencies
+        run: bun install
+
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Install semantic-release plugins
-        run: |
-          npm install -g semantic-release
-          npm install --no-save --legacy-peer-deps \
-            @semantic-release/changelog \
-            @semantic-release/git \
-            @semantic-release/github \
-            @semantic-release/exec \
-            semantic-release-commit-filter
 
       - name: Check for changes
         id: changes
