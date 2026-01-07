@@ -10,7 +10,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db:/docker-entrypoint-initdb.d
     networks:
       - app-network
     restart: unless-stopped
@@ -20,6 +19,17 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
+
+  db-migrate:
+    image: migrate/migrate:latest
+    volumes:
+      - ./db:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/db?sslmode=disable&x-migrations-table=migrations.init_migrations", "up"]
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   auth-migrate:
     image: phoenixsolutionsgroup/omnibase-auth:v0.1.2
@@ -34,8 +44,8 @@ services:
     networks:
       - app-network
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
       rest-api:
         condition: service_started
   auth:
@@ -136,8 +146,8 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - app-network
     restart: unless-stopped
@@ -154,8 +164,8 @@ services:
       PGRST_JWT_SECRET: ${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
       PGRST_OPENAPI_SERVER_PROXY_URI: http://localhost:8001
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - app-network
     restart: unless-stopped
@@ -166,8 +176,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - app-network
     restart: unless-stopped
@@ -229,8 +239,8 @@ services:
     networks:
       - app-network
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
       rest-api:
         condition: service_started
 
@@ -265,8 +275,8 @@ services:
       - PG_META_DB_PASSWORD=postgres
       - PG_META_DB_PORT=5432
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - app-network
 

@@ -1,11 +1,7 @@
 # Test overrides - local builds without hot-reload (runs Go binary directly)
 services:
-  postgres:
-    volumes:
-      # Override: no persistent volume for ephemeral test data
-      - ./db:/docker-entrypoint-initdb.d
-
   auth-migrate:
+    image: ""
     build:
       context: ../../../docker/auth
       dockerfile: Dockerfile
@@ -15,6 +11,7 @@ services:
         target: /etc/config/auth
 
   auth:
+    image: ""
     build:
       context: ../../../docker/auth
       dockerfile: Dockerfile
@@ -24,6 +21,7 @@ services:
         target: /etc/config/auth
 
   rest-api:
+    image: ""
     build:
       context: ../../../apps/api
       dockerfile: Dockerfile.test
@@ -31,11 +29,13 @@ services:
       - ../../../apps/api:/app
 
   permissions-migrate:
+    image: ""
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
 
   permissions:
+    image: ""
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
