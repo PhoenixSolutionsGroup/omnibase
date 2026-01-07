@@ -1,3 +1,10 @@
+## [0.12.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.1...api-v0.12.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* **release:** include generated SDK files in release commit ([41e87f5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/41e87f570c313eb674054da73e57a0273020ed05))
+
 ## [0.12.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.0...api-v0.12.1) (2026-01-07)
 
 
