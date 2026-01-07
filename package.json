@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "@grafana/openapi-to-k6": "^0.3.2",
+    "fumadocs-core": "^16.2.0",
     "fumadocs-openapi": "^10.2.3",
     "typedoc": "^0.28.5",
     "typedoc-plugin-markdown": "^4.6.3",
