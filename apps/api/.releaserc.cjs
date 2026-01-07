@@ -37,7 +37,8 @@ module.exports = {
       assets: [
         'CHANGELOG.md',
         'docs/info.yaml',
-        'docs/openapi.yaml'
+        'docs/openapi.yaml',
+        '../../sdk/core/**/*'
       ],
       message: 'chore(api): release ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
     }],
