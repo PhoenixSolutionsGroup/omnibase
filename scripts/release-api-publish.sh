@@ -24,10 +24,6 @@ cd sdk/core/js
 npm publish --access public
 cd "$PROJECT_ROOT"
 
-# Push release commit (includes SDK changes) to main before tagging
-echo "Pushing release commit to main..."
-git push origin main
-
 # Tag and push Go SDK
 echo "Tagging Go SDK with sdk/core/go/v$VERSION..."
 if git rev-parse "sdk/core/go/v$VERSION" >/dev/null 2>&1; then

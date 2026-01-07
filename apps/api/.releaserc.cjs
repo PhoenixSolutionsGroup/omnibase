@@ -33,12 +33,12 @@ module.exports = {
     }],
 
     // Commit changes back to repo
+    // Note: SDK files are staged in release-api-prepare.sh since ../../ glob patterns don't work
     ['@semantic-release/git', {
       assets: [
         'CHANGELOG.md',
         'docs/info.yaml',
-        'docs/openapi.yaml',
-        '../../sdk/core/**/*'
+        'docs/openapi.yaml'
       ],
       message: 'chore(api): release ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
     }],
