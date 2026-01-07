@@ -1,3 +1,10 @@
+## [0.12.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.3...api-v0.12.4) (2026-01-07)
+
+
+### Bug Fixes
+
+* **ci:** api redeploy ([add8bee](https://github.com/PhoenixSolutionsGroup/omnibase/commit/add8bee2728d92a6669d9fd416acdd5b3f785cc5))
+
 ## [0.12.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.2...api-v0.12.3) (2026-01-07)
 
 
