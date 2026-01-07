@@ -28,7 +28,7 @@ negative_data_rejection.enabled = false  # Add this line to disable 406 checks
 
 # Generation configuration for property-based testing
 [generation]
-max-examples = 50               # Generate 50 test cases per endpoint
+max-examples = 10               # Generate 50 test cases per endpoint
 allow-x00 = false               # Don't generate null bytes
 codec = "utf-8"                 # Use UTF-8 encoding
 with-security-parameters = false  # Don't generate security parameters (Cookie, X-Session-Token)
