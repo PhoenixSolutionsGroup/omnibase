@@ -77,7 +77,7 @@ jobs:
       - name: Start OmniBase
         working-directory: tests/api
         run: |
-          omnibase start --mode dev &
+          omnibase start --mode test &
           echo "Waiting for services to be ready..."
 
           # Wait for API
@@ -132,7 +132,7 @@ jobs:
 
       - name: Restart auth and permissions
         working-directory: tests/api
-        run: omnibase restart --mode dev --env local auth permissions
+        run: omnibase restart --mode test --env local auth permissions
 
       - name: Wait for services after sync
         run: |
