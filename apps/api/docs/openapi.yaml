@@ -2641,7 +2641,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /api/v1/tenants/{tenant_id}:
+  /api/v1/tenants/by-id/{tenant_id}:
     get:
       tags:
         - V1 Tenants
@@ -2707,7 +2707,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /api/v1/tenants/stripe-customer-id/{stripe_customer_id}:
+  /api/v1/tenants/by-stripe-customer/{stripe_customer_id}:
     get:
       tags:
         - V1 Tenants

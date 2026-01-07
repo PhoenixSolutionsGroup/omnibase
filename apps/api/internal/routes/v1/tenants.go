@@ -60,7 +60,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	router.DELETE("/roles/:role_id", rolesHandler.DeleteRole)
 
-	router.GET("/stripe-customer-id/:stripe_customer_id", tenantHandler.GetTenantByStripeCustomerID)
+	router.GET("/by-id/:tenant_id", tenantHandler.GetTenantByID)
 
-	router.GET("/:tenant_id", tenantHandler.GetTenantByID)
+	router.GET("/by-stripe-customer/:stripe_customer_id", tenantHandler.GetTenantByStripeCustomerID)
 }

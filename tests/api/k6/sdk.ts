@@ -5201,7 +5201,9 @@ The user_id must be a valid UUID matching an existing Kratos identity.
     response: Response;
     data: GetTenantByID200;
   } {
-    const url = new URL(this.cleanBaseUrl + `/api/v1/tenants/${tenantId}`);
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/tenants/by-id/${tenantId}`,
+    );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters,
@@ -5248,7 +5250,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
   } {
     const url = new URL(
       this.cleanBaseUrl +
-        `/api/v1/tenants/stripe-customer-id/${stripeCustomerId}`,
+        `/api/v1/tenants/by-stripe-customer/${stripeCustomerId}`,
     );
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
