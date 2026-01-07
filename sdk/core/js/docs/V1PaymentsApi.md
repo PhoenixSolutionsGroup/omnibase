@@ -94,6 +94,8 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -177,6 +179,8 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -248,6 +252,8 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -318,6 +324,7 @@ No authorization required
 | **200** | Portal session created successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -397,6 +404,8 @@ No authorization required
 | **200** | Invoice created successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -474,6 +483,8 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -548,6 +559,7 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -618,6 +630,7 @@ No authorization required
 | **200** | Usage recorded successfully |  -  |
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
@@ -695,6 +708,8 @@ No authorization required
 | **400** | Bad Request - Invalid request parameters |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **404** | Not Found - Resource not found |  -  |
+| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
+| **429** | Too Many Requests - Rate limit exceeded |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

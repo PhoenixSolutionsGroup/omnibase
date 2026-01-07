@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.10.2
+API version: 0.12.5
 Contact: support@omnibase.dev
 */
 
@@ -24,7 +24,7 @@ var _ MappedNullable = &PullStripeConfig200Response{}
 type PullStripeConfig200Response struct {
 	// HTTP status code
 	Status int32 `json:"status"`
-	Data *StripeConfiguration `json:"data,omitempty"`
+	Data *StripeConfigurationWithIDs `json:"data,omitempty"`
 }
 
 type _PullStripeConfig200Response PullStripeConfig200Response
@@ -72,9 +72,9 @@ func (o *PullStripeConfig200Response) SetStatus(v int32) {
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *PullStripeConfig200Response) GetData() StripeConfiguration {
+func (o *PullStripeConfig200Response) GetData() StripeConfigurationWithIDs {
 	if o == nil || IsNil(o.Data) {
-		var ret StripeConfiguration
+		var ret StripeConfigurationWithIDs
 		return ret
 	}
 	return *o.Data
@@ -82,7 +82,7 @@ func (o *PullStripeConfig200Response) GetData() StripeConfiguration {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PullStripeConfig200Response) GetDataOk() (*StripeConfiguration, bool) {
+func (o *PullStripeConfig200Response) GetDataOk() (*StripeConfigurationWithIDs, bool) {
 	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
@@ -98,8 +98,8 @@ func (o *PullStripeConfig200Response) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given StripeConfiguration and assigns it to the Data field.
-func (o *PullStripeConfig200Response) SetData(v StripeConfiguration) {
+// SetData gets a reference to the given StripeConfigurationWithIDs and assigns it to the Data field.
+func (o *PullStripeConfig200Response) SetData(v StripeConfigurationWithIDs) {
 	o.Data = &v
 }
 

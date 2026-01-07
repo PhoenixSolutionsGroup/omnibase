@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.10.2
+  version: 0.12.5
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -591,6 +591,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Create checkout session
@@ -632,6 +636,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Create customer portal session
@@ -673,6 +679,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Record metered usage
@@ -741,6 +749,10 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Create invoice
@@ -790,6 +802,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Get invoice
@@ -847,6 +861,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Update invoice
@@ -929,6 +947,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Add invoice line item
@@ -1016,6 +1038,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Add invoice line item with price ID
@@ -1074,6 +1100,10 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsError"
         "500":
           $ref: "#/components/responses/InternalServerError"
       summary: Finalize invoice
@@ -2466,6 +2496,131 @@ paths:
       summary: Create tenant
       tags:
       - V1 Tenants
+  /api/v1/tenants/by-id/{tenant_id}:
+    get:
+      description: |
+        Returns a tenant by its ID.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key header
+
+        ## Use Cases
+        - Direct tenant lookup by ID
+        - Service-to-service tenant resolution
+        - Webhook processing
+      operationId: getTenantByID
+      parameters:
+      - description: Tenant ID (UUID)
+        example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        explode: false
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTenantByID_200_response"
+          description: Tenant found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request - Invalid tenant_id
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Get tenant by ID
+      tags:
+      - V1 Tenants
+  /api/v1/tenants/by-stripe-customer/{stripe_customer_id}:
+    get:
+      description: |
+        Returns a tenant by its Stripe customer ID.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key header
+
+        ## Use Cases
+        - Stripe webhook processing
+        - Payment event correlation
+        - Invoice/subscription tenant resolution
+      operationId: getTenantByStripeCustomerID
+      parameters:
+      - description: Stripe customer ID
+        example: cus_TOWEstcga5ou7a
+        explode: false
+        in: path
+        name: stripe_customer_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getTenantByStripeCustomerID_200_response"
+          description: Tenant found
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request - Invalid stripe_customer_id
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: User not authenticated
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Tenant not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Get tenant by Stripe customer ID
+      tags:
+      - V1 Tenants
   /api/v1/tenants/switch-active:
     put:
       description: |
@@ -3697,6 +3852,12 @@ components:
           schema:
             $ref: "#/components/schemas/NotFoundResponse"
       description: Not Found - Resource not found
+    TooManyRequestsError:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TooManyRequestsResponse"
+      description: Too Many Requests - Rate limit exceeded
     ForbiddenError:
       content:
         application/json:
@@ -4331,6 +4492,23 @@ components:
       required:
       - session_id
       - url
+    TooManyRequestsResponse:
+      description: Too Many Requests error response (429)
+      example:
+        error: Too Many Requests
+        status: 429
+      properties:
+        status:
+          description: HTTP status code
+          example: 429
+          type: integer
+        error:
+          description: Error message
+          example: Too Many Requests
+          type: string
+      required:
+      - error
+      - status
     CreatePortalRequest:
       example:
         return_url: https://test.example.com/dashboard
@@ -5068,6 +5246,98 @@ components:
       required:
       - error
       - status
+    WebhookEndpointConfig:
+      example:
+        id: account_events
+        url: https://example.com/webhooks/stripe
+        events:
+        - invoice.paid
+        - customer.subscription.created
+        connect: false
+      properties:
+        id:
+          description: Optional unique identifier for the webhook endpoint
+          example: account_events
+          type: string
+        url:
+          description: "Webhook endpoint URL (supports ${VAR} env var interpolation\
+            \ via CLI)"
+          example: https://example.com/webhooks/stripe
+          format: uri
+          type: string
+        events:
+          description: List of Stripe event types to subscribe to
+          example:
+          - invoice.paid
+          - customer.subscription.created
+          items:
+            enum:
+            - account.updated
+            - account.application.deauthorized
+            - account.external_account.created
+            - account.external_account.updated
+            - account.external_account.deleted
+            - payment_intent.created
+            - payment_intent.succeeded
+            - payment_intent.payment_failed
+            - payment_intent.canceled
+            - payment_intent.requires_action
+            - charge.succeeded
+            - charge.failed
+            - charge.refunded
+            - charge.captured
+            - charge.dispute.created
+            - charge.dispute.updated
+            - charge.dispute.closed
+            - customer.created
+            - customer.updated
+            - customer.deleted
+            - customer.subscription.created
+            - customer.subscription.updated
+            - customer.subscription.deleted
+            - customer.subscription.trial_will_end
+            - customer.subscription.paused
+            - customer.subscription.resumed
+            - invoice.created
+            - invoice.finalized
+            - invoice.paid
+            - invoice.payment_failed
+            - invoice.payment_action_required
+            - invoice.upcoming
+            - invoice.marked_uncollectible
+            - invoice.voided
+            - payout.created
+            - payout.paid
+            - payout.failed
+            - payout.canceled
+            - product.created
+            - product.updated
+            - product.deleted
+            - price.created
+            - price.updated
+            - price.deleted
+            - checkout.session.completed
+            - checkout.session.expired
+            - checkout.session.async_payment_succeeded
+            - checkout.session.async_payment_failed
+            - refund.created
+            - refund.updated
+            - payment_method.attached
+            - payment_method.detached
+            - transfer.created
+            - transfer.reversed
+            type: string
+          minItems: 1
+          type: array
+        connect:
+          default: false
+          description: "If true, listen to events from connected accounts (Stripe\
+            \ Connect)"
+          example: false
+          type: boolean
+      required:
+      - events
+      - url
     MeterDefaultAggregation:
       example:
         formula: sum
@@ -5555,6 +5825,19 @@ components:
       - prices
     StripeConfigurationWithIDs:
       example:
+        webhooks:
+        - id: account_events
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          - customer.subscription.created
+          connect: false
+        - id: account_events
+          url: https://example.com/webhooks/stripe
+          events:
+          - invoice.paid
+          - customer.subscription.created
+          connect: false
         version: 1.0.0
         meters:
         - default_aggregation:
@@ -5761,6 +6044,11 @@ components:
           description: Configuration version
           example: 1.0.0
           type: string
+        webhooks:
+          description: List of webhook endpoint configurations
+          items:
+            $ref: "#/components/schemas/WebhookEndpointConfig"
+          type: array
         meters:
           description: List of billing meters with Stripe IDs
           items:
@@ -5780,6 +6068,19 @@ components:
         created_at: 2025-11-10T00:29:19Z
         id: e056fa27-151d-4d25-b237-97e9de8d8dbf
         config:
+          webhooks:
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
           version: 1.0.0
           meters:
           - default_aggregation:
@@ -6590,6 +6891,19 @@ components:
         created_at: 2025-11-10T00:29:19Z
         id: e056fa27-151d-4d25-b237-97e9de8d8dbf
         config:
+          webhooks:
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
           version: 1.0.0
           meters:
           - default_aggregation:
@@ -6874,6 +7188,19 @@ components:
           created_at: 2025-11-10T00:29:19Z
           id: e056fa27-151d-4d25-b237-97e9de8d8dbf
           config:
+            webhooks:
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
             version: 1.0.0
             meters:
             - default_aggregation:
@@ -7081,6 +7408,19 @@ components:
           created_at: 2025-11-10T00:29:19Z
           id: e056fa27-151d-4d25-b237-97e9de8d8dbf
           config:
+            webhooks:
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
             version: 1.0.0
             meters:
             - default_aggregation:
@@ -7494,196 +7834,6 @@ components:
       required:
       - products
       - version
-    StripeConfiguration:
-      example:
-        version: 1.0.0
-        meters:
-        - default_aggregation:
-            formula: sum
-          value_settings:
-            event_payload_key: value
-          event_name: api_request
-          id: api_requests
-          customer_mapping:
-            event_payload_key: customer_id
-            type: by_id
-          display_name: API Requests
-          stripe_id: mtr_1SRiyyCJIZaBlhY1
-        - default_aggregation:
-            formula: sum
-          value_settings:
-            event_payload_key: value
-          event_name: api_request
-          id: api_requests
-          customer_mapping:
-            event_payload_key: customer_id
-            type: by_id
-          display_name: API Requests
-          stripe_id: mtr_1SRiyyCJIZaBlhY1
-        products:
-        - ui:
-            features:
-            - Unlimited projects
-            - Priority support
-            badge: Popular
-            cta_text: Get Started
-            highlighted: true
-            tagline: For growing teams
-            display_name: Professional
-            sort_order: 1
-          name: Basic Plan
-          description: Our basic subscription tier
-          id: basic_plan
-          type: service
-          prices:
-          - interval_count: 1
-            amount: 0.273
-            meter: api_requests
-            billing_scheme: per_unit
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: ""
-            currency: usd
-            interval: ""
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-          - interval_count: 1
-            amount: 0.273
-            meter: api_requests
-            billing_scheme: per_unit
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: ""
-            currency: usd
-            interval: ""
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-          stripe_id: prod_1SRiyyCJIZaBlhY1
-        - ui:
-            features:
-            - Unlimited projects
-            - Priority support
-            badge: Popular
-            cta_text: Get Started
-            highlighted: true
-            tagline: For growing teams
-            display_name: Professional
-            sort_order: 1
-          name: Basic Plan
-          description: Our basic subscription tier
-          id: basic_plan
-          type: service
-          prices:
-          - interval_count: 1
-            amount: 0.273
-            meter: api_requests
-            billing_scheme: per_unit
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: ""
-            currency: usd
-            interval: ""
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-          - interval_count: 1
-            amount: 0.273
-            meter: api_requests
-            billing_scheme: per_unit
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: ""
-            currency: usd
-            interval: ""
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-          stripe_id: prod_1SRiyyCJIZaBlhY1
-      properties:
-        version:
-          description: Configuration version in semantic versioning format
-          example: 1.0.0
-          type: string
-        meters:
-          description: List of billing meters for metered pricing (required when any
-            price uses usage_type metered)
-          items:
-            $ref: "#/components/schemas/Meter"
-          type: array
-        products:
-          description: List of products with their prices
-          items:
-            $ref: "#/components/schemas/Product"
-          type: array
-      required:
-      - products
-      - version
     ArchiveAllResponse:
       example:
         total_archived: 15
@@ -8093,98 +8243,6 @@ components:
       - secret
       - stripe_id
       - url
-    WebhookEndpointConfig:
-      example:
-        id: account_events
-        url: https://example.com/webhooks/stripe
-        events:
-        - invoice.paid
-        - customer.subscription.created
-        connect: false
-      properties:
-        id:
-          description: Optional unique identifier for the webhook endpoint
-          example: account_events
-          type: string
-        url:
-          description: "Webhook endpoint URL (supports ${VAR} env var interpolation\
-            \ via CLI)"
-          example: https://example.com/webhooks/stripe
-          format: uri
-          type: string
-        events:
-          description: List of Stripe event types to subscribe to
-          example:
-          - invoice.paid
-          - customer.subscription.created
-          items:
-            enum:
-            - account.updated
-            - account.application.deauthorized
-            - account.external_account.created
-            - account.external_account.updated
-            - account.external_account.deleted
-            - payment_intent.created
-            - payment_intent.succeeded
-            - payment_intent.payment_failed
-            - payment_intent.canceled
-            - payment_intent.requires_action
-            - charge.succeeded
-            - charge.failed
-            - charge.refunded
-            - charge.captured
-            - charge.dispute.created
-            - charge.dispute.updated
-            - charge.dispute.closed
-            - customer.created
-            - customer.updated
-            - customer.deleted
-            - customer.subscription.created
-            - customer.subscription.updated
-            - customer.subscription.deleted
-            - customer.subscription.trial_will_end
-            - customer.subscription.paused
-            - customer.subscription.resumed
-            - invoice.created
-            - invoice.finalized
-            - invoice.paid
-            - invoice.payment_failed
-            - invoice.payment_action_required
-            - invoice.upcoming
-            - invoice.marked_uncollectible
-            - invoice.voided
-            - payout.created
-            - payout.paid
-            - payout.failed
-            - payout.canceled
-            - product.created
-            - product.updated
-            - product.deleted
-            - price.created
-            - price.updated
-            - price.deleted
-            - checkout.session.completed
-            - checkout.session.expired
-            - checkout.session.async_payment_succeeded
-            - checkout.session.async_payment_failed
-            - refund.created
-            - refund.updated
-            - payment_method.attached
-            - payment_method.detached
-            - transfer.created
-            - transfer.reversed
-            type: string
-          minItems: 1
-          type: array
-        connect:
-          default: false
-          description: "If true, listen to events from connected accounts (Stripe\
-            \ Connect)"
-          example: false
-          type: boolean
-      required:
-      - events
-      - url
     WebhooksConfigRequest:
       example:
         webhooks:
@@ -8350,6 +8408,44 @@ components:
           type: string
       required:
       - message
+    GetTenantByIDResponse:
+      description: Response containing a tenant by ID
+      example:
+        tenant:
+          stripe_customer_id: cus_TOWEstcga5ou7a
+          settings:
+            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+            allow_user_invites: true
+            max_members: 10
+          updated_at: 2025-11-10T00:42:29.440300172Z
+          name: Test Organization
+          created_at: 2025-11-10T00:42:29.440300124Z
+          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+          type: organization
+      properties:
+        tenant:
+          $ref: "#/components/schemas/Tenant"
+      required:
+      - tenant
+    GetTenantByStripeCustomerIDResponse:
+      description: Response containing a tenant by Stripe customer ID
+      example:
+        tenant:
+          stripe_customer_id: cus_TOWEstcga5ou7a
+          settings:
+            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+            allow_user_invites: true
+            max_members: 10
+          updated_at: 2025-11-10T00:42:29.440300172Z
+          name: Test Organization
+          created_at: 2025-11-10T00:42:29.440300124Z
+          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+          type: organization
+      properties:
+        tenant:
+          $ref: "#/components/schemas/Tenant"
+      required:
+      - tenant
     SwitchTenantRequest:
       description: Request to switch active tenant
       example:
@@ -9487,6 +9583,19 @@ components:
           created_at: 2025-11-10T00:29:19Z
           id: e056fa27-151d-4d25-b237-97e9de8d8dbf
           config:
+            webhooks:
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
+            - id: account_events
+              url: https://example.com/webhooks/stripe
+              events:
+              - invoice.paid
+              - customer.subscription.created
+              connect: false
             version: 1.0.0
             meters:
             - default_aggregation:
@@ -9704,6 +9813,19 @@ components:
             created_at: 2025-11-10T00:29:19Z
             id: e056fa27-151d-4d25-b237-97e9de8d8dbf
             config:
+              webhooks:
+              - id: account_events
+                url: https://example.com/webhooks/stripe
+                events:
+                - invoice.paid
+                - customer.subscription.created
+                connect: false
+              - id: account_events
+                url: https://example.com/webhooks/stripe
+                events:
+                - invoice.paid
+                - customer.subscription.created
+                connect: false
               version: 1.0.0
               meters:
               - default_aggregation:
@@ -9911,6 +10033,19 @@ components:
             created_at: 2025-11-10T00:29:19Z
             id: e056fa27-151d-4d25-b237-97e9de8d8dbf
             config:
+              webhooks:
+              - id: account_events
+                url: https://example.com/webhooks/stripe
+                events:
+                - invoice.paid
+                - customer.subscription.created
+                connect: false
+              - id: account_events
+                url: https://example.com/webhooks/stripe
+                events:
+                - invoice.paid
+                - customer.subscription.created
+                connect: false
               version: 1.0.0
               meters:
               - default_aggregation:
@@ -10126,9 +10261,22 @@ components:
       - $ref: "#/components/schemas/SuccessResponse"
       - properties:
           data:
-            $ref: "#/components/schemas/StripeConfiguration"
+            $ref: "#/components/schemas/StripeConfigurationWithIDs"
       example:
         data:
+          webhooks:
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
+          - id: account_events
+            url: https://example.com/webhooks/stripe
+            events:
+            - invoice.paid
+            - customer.subscription.created
+            connect: false
           version: 1.0.0
           meters:
           - default_aggregation:
@@ -10171,8 +10319,16 @@ components:
             prices:
             - interval_count: 1
               amount: 0.273
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
               meter: api_requests
               billing_scheme: per_unit
+              tiers_mode: graduated
               default: false
               public: true
               ui:
@@ -10191,16 +10347,24 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: ""
+              usage_type: licensed
               currency: usd
-              interval: ""
+              interval: month
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
               amount: 0.273
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
               meter: api_requests
               billing_scheme: per_unit
+              tiers_mode: graduated
               default: false
               public: true
               ui:
@@ -10219,9 +10383,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: ""
+              usage_type: licensed
               currency: usd
-              interval: ""
+              interval: month
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -10243,8 +10407,16 @@ components:
             prices:
             - interval_count: 1
               amount: 0.273
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
               meter: api_requests
               billing_scheme: per_unit
+              tiers_mode: graduated
               default: false
               public: true
               ui:
@@ -10263,16 +10435,24 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: ""
+              usage_type: licensed
               currency: usd
-              interval: ""
+              interval: month
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
             - interval_count: 1
               amount: 0.273
+              tiers:
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
+              - flat_amount: 0
+                up_to: 100
+                unit_amount: 10
               meter: api_requests
               billing_scheme: per_unit
+              tiers_mode: graduated
               default: false
               public: true
               ui:
@@ -10291,9 +10471,9 @@ components:
                 - unit: requests
                   text: Up to 1000 API calls
                   value: 1000
-              usage_type: ""
+              usage_type: licensed
               currency: usd
-              interval: ""
+              interval: month
               id: basic_monthly
               tax_included_in_price: false
               stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
@@ -10660,6 +10840,46 @@ components:
       example:
         data:
           message: Tenant deleted successfully
+        status: 200
+    getTenantByID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/GetTenantByIDResponse"
+      example:
+        data:
+          tenant:
+            stripe_customer_id: cus_TOWEstcga5ou7a
+            settings:
+              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+              allow_user_invites: true
+              max_members: 10
+            updated_at: 2025-11-10T00:42:29.440300172Z
+            name: Test Organization
+            created_at: 2025-11-10T00:42:29.440300124Z
+            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+            type: organization
+        status: 200
+    getTenantByStripeCustomerID_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/GetTenantByStripeCustomerIDResponse"
+      example:
+        data:
+          tenant:
+            stripe_customer_id: cus_TOWEstcga5ou7a
+            settings:
+              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+              allow_user_invites: true
+              max_members: 10
+            updated_at: 2025-11-10T00:42:29.440300172Z
+            name: Test Organization
+            created_at: 2025-11-10T00:42:29.440300124Z
+            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+            type: organization
         status: 200
     switchActiveTenant_200_response:
       allOf:

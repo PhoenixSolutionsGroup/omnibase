@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.10.2
+API version: 0.12.5
 Contact: support@omnibase.dev
 */
 
@@ -24,6 +24,8 @@ var _ MappedNullable = &StripeConfigurationWithIDs{}
 type StripeConfigurationWithIDs struct {
 	// Configuration version
 	Version string `json:"version"`
+	// List of webhook endpoint configurations
+	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty"`
 	// List of billing meters with Stripe IDs
 	Meters []MeterWithStripeID `json:"meters,omitempty"`
 	// List of products with Stripe IDs
@@ -73,6 +75,38 @@ func (o *StripeConfigurationWithIDs) GetVersionOk() (*string, bool) {
 // SetVersion sets field value
 func (o *StripeConfigurationWithIDs) SetVersion(v string) {
 	o.Version = v
+}
+
+// GetWebhooks returns the Webhooks field value if set, zero value otherwise.
+func (o *StripeConfigurationWithIDs) GetWebhooks() []WebhookEndpointConfig {
+	if o == nil || IsNil(o.Webhooks) {
+		var ret []WebhookEndpointConfig
+		return ret
+	}
+	return o.Webhooks
+}
+
+// GetWebhooksOk returns a tuple with the Webhooks field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *StripeConfigurationWithIDs) GetWebhooksOk() ([]WebhookEndpointConfig, bool) {
+	if o == nil || IsNil(o.Webhooks) {
+		return nil, false
+	}
+	return o.Webhooks, true
+}
+
+// HasWebhooks returns a boolean if a field has been set.
+func (o *StripeConfigurationWithIDs) HasWebhooks() bool {
+	if o != nil && !IsNil(o.Webhooks) {
+		return true
+	}
+
+	return false
+}
+
+// SetWebhooks gets a reference to the given []WebhookEndpointConfig and assigns it to the Webhooks field.
+func (o *StripeConfigurationWithIDs) SetWebhooks(v []WebhookEndpointConfig) {
+	o.Webhooks = v
 }
 
 // GetMeters returns the Meters field value if set, zero value otherwise.
@@ -142,6 +176,9 @@ func (o StripeConfigurationWithIDs) MarshalJSON() ([]byte, error) {
 func (o StripeConfigurationWithIDs) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["version"] = o.Version
+	if !IsNil(o.Webhooks) {
+		toSerialize["webhooks"] = o.Webhooks
+	}
 	if !IsNil(o.Meters) {
 		toSerialize["meters"] = o.Meters
 	}

@@ -104,6 +104,10 @@ docs/GetSession200Response.md
 docs/GetStripeConfig200Response.md
 docs/GetStripeConfigHistory200Response.md
 docs/GetTenantBillingStatus200Response.md
+docs/GetTenantByID200Response.md
+docs/GetTenantByIDResponse.md
+docs/GetTenantByStripeCustomerID200Response.md
+docs/GetTenantByStripeCustomerIDResponse.md
 docs/GetTenantJWT200Response.md
 docs/GetTenantSubscription200Response.md
 docs/GetWebhookSecret200Response.md
@@ -165,7 +169,6 @@ docs/SessionResponse.md
 docs/StripeConfigResponse.md
 docs/StripeConfigUpdateRequest.md
 docs/StripeConfigValidateRequest.md
-docs/StripeConfiguration.md
 docs/StripeConfigurationWithIDs.md
 docs/StripeIDConversionResponse.md
 docs/SubjectSet.md
@@ -185,6 +188,7 @@ docs/TierUpTo.md
 docs/TieredBillingScheme.md
 docs/TieredPrice.md
 docs/TiersMode.md
+docs/TooManyRequestsResponse.md
 docs/Unauthorized.md
 docs/UnauthorizedResponse.md
 docs/UpdateInvoiceRequest.md
@@ -307,6 +311,10 @@ model_get_session_200_response.go
 model_get_stripe_config_200_response.go
 model_get_stripe_config_history_200_response.go
 model_get_tenant_billing_status_200_response.go
+model_get_tenant_by_id_200_response.go
+model_get_tenant_by_id_response.go
+model_get_tenant_by_stripe_customer_id_200_response.go
+model_get_tenant_by_stripe_customer_id_response.go
 model_get_tenant_jwt_200_response.go
 model_get_tenant_subscription_200_response.go
 model_get_webhook_secret_200_response.go
@@ -368,7 +376,6 @@ model_session_response.go
 model_stripe_config_response.go
 model_stripe_config_update_request.go
 model_stripe_config_validate_request.go
-model_stripe_configuration.go
 model_stripe_configuration_with_ids.go
 model_stripe_id_conversion_response.go
 model_subject_set.go
@@ -388,6 +395,7 @@ model_tier_up_to.go
 model_tiered_billing_scheme.go
 model_tiered_price.go
 model_tiers_mode.go
+model_too_many_requests_response.go
 model_unauthorized.go
 model_unauthorized_response.go
 model_update_invoice_request.go

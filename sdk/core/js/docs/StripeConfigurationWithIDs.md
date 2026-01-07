@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `version` | string
+`webhooks` | [Array&lt;WebhookEndpointConfig&gt;](WebhookEndpointConfig.md)
 `meters` | [Array&lt;MeterWithStripeID&gt;](MeterWithStripeID.md)
 `products` | [Array&lt;ProductWithStripeIDs&gt;](ProductWithStripeIDs.md)
 
@@ -18,6 +19,7 @@ import type { StripeConfigurationWithIDs } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "version": 1.0.0,
+  "webhooks": null,
   "meters": null,
   "products": null,
 } satisfies StripeConfigurationWithIDs

@@ -1,4 +1,4 @@
-module github.com/phoenixsolutionsgroup/omnibase/sdk/core/go
+module github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go
 
 go 1.23
 

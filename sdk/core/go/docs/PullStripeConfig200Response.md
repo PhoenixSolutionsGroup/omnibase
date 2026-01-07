@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Status** | **int32** | HTTP status code | 
-**Data** | Pointer to [**StripeConfiguration**](StripeConfiguration.md) |  | [optional] 
+**Data** | Pointer to [**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md) |  | [optional] 
 
 ## Methods
 
@@ -48,20 +48,20 @@ SetStatus sets Status field to given value.
 
 ### GetData
 
-`func (o *PullStripeConfig200Response) GetData() StripeConfiguration`
+`func (o *PullStripeConfig200Response) GetData() StripeConfigurationWithIDs`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *PullStripeConfig200Response) GetDataOk() (*StripeConfiguration, bool)`
+`func (o *PullStripeConfig200Response) GetDataOk() (*StripeConfigurationWithIDs, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *PullStripeConfig200Response) SetData(v StripeConfiguration)`
+`func (o *PullStripeConfig200Response) SetData(v StripeConfigurationWithIDs)`
 
 SetData sets Data field to given value.
 

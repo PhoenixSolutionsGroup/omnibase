@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1StripeAPIService(t *testing.T) {

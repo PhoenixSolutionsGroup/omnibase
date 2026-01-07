@@ -1,3 +1,10 @@
+## [0.12.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.4...api-v0.12.5) (2026-01-07)
+
+
+### Bug Fixes
+
+* **release:** stage SDK files explicitly in prepare script ([c7cdc4d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c7cdc4d2475b8f255c592ed0826ba3108304a1b2))
+
 ## [0.12.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.3...api-v0.12.4) (2026-01-07)
 
 

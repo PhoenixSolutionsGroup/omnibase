@@ -92,6 +92,10 @@ docs/GetSession200Response.md
 docs/GetStripeConfig200Response.md
 docs/GetStripeConfigHistory200Response.md
 docs/GetTenantBillingStatus200Response.md
+docs/GetTenantByID200Response.md
+docs/GetTenantByIDResponse.md
+docs/GetTenantByStripeCustomerID200Response.md
+docs/GetTenantByStripeCustomerIDResponse.md
 docs/GetTenantJWT200Response.md
 docs/GetTenantSubscription200Response.md
 docs/GetWebhookSecret200Response.md
@@ -153,7 +157,6 @@ docs/SessionResponse.md
 docs/StripeConfigResponse.md
 docs/StripeConfigUpdateRequest.md
 docs/StripeConfigValidateRequest.md
-docs/StripeConfiguration.md
 docs/StripeConfigurationWithIDs.md
 docs/StripeIDConversionResponse.md
 docs/SubjectSet.md
@@ -173,6 +176,7 @@ docs/TierUpTo.md
 docs/TieredBillingScheme.md
 docs/TieredPrice.md
 docs/TiersMode.md
+docs/TooManyRequestsResponse.md
 docs/Unauthorized.md
 docs/UnauthorizedResponse.md
 docs/UpdateInvoiceRequest.md
@@ -304,6 +308,10 @@ src/models/GetSession200Response.ts
 src/models/GetStripeConfig200Response.ts
 src/models/GetStripeConfigHistory200Response.ts
 src/models/GetTenantBillingStatus200Response.ts
+src/models/GetTenantByID200Response.ts
+src/models/GetTenantByIDResponse.ts
+src/models/GetTenantByStripeCustomerID200Response.ts
+src/models/GetTenantByStripeCustomerIDResponse.ts
 src/models/GetTenantJWT200Response.ts
 src/models/GetTenantSubscription200Response.ts
 src/models/GetWebhookSecret200Response.ts
@@ -365,7 +373,6 @@ src/models/SessionResponse.ts
 src/models/StripeConfigResponse.ts
 src/models/StripeConfigUpdateRequest.ts
 src/models/StripeConfigValidateRequest.ts
-src/models/StripeConfiguration.ts
 src/models/StripeConfigurationWithIDs.ts
 src/models/StripeIDConversionResponse.ts
 src/models/SubjectSet.ts
@@ -385,6 +392,7 @@ src/models/TierUpTo.ts
 src/models/TieredBillingScheme.ts
 src/models/TieredPrice.ts
 src/models/TiersMode.ts
+src/models/TooManyRequestsResponse.ts
 src/models/Unauthorized.ts
 src/models/UnauthorizedResponse.ts
 src/models/UpdateInvoiceRequest.ts

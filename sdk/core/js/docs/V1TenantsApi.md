@@ -13,6 +13,8 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**deleteTenant**](V1TenantsApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete tenant |
 | [**getRoleDefinitions**](V1TenantsApi.md#getroledefinitions) | **GET** /api/v1/tenants/roles/definitions | Get namespace definitions |
 | [**getTenantBillingStatus**](V1TenantsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get billing status |
+| [**getTenantByID**](V1TenantsApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID |
+| [**getTenantByStripeCustomerID**](V1TenantsApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID |
 | [**getTenantJWT**](V1TenantsApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get PostgREST JWT token |
 | [**getTenantSubscription**](V1TenantsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan |
 | [**listRoles**](V1TenantsApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles |
@@ -752,6 +754,164 @@ This endpoint does not need any parameter.
 | **401** | User not authenticated |  -  |
 | **404** | Tenant not found |  -  |
 | **500** | Failed to check billing status |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## getTenantByID
+
+> GetTenantByID200Response getTenantByID(tenantId)
+
+Get tenant by ID
+
+Returns a tenant by its ID.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key header  ## Use Cases - Direct tenant lookup by ID - Service-to-service tenant resolution - Webhook processing 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1TenantsApi,
+} from '@omnibase/core-js';
+import type { GetTenantByIDRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1TenantsApi(config);
+
+  const body = {
+    // string | Tenant ID (UUID)
+    tenantId: 7d5da463-8351-4abe-870c-8ccdefc4d78c,
+  } satisfies GetTenantByIDRequest;
+
+  try {
+    const data = await api.getTenantByID(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **tenantId** | `string` | Tenant ID (UUID) | [Defaults to `undefined`] |
+
+### Return type
+
+[**GetTenantByID200Response**](GetTenantByID200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Tenant found |  -  |
+| **400** | Bad request - Invalid tenant_id |  -  |
+| **401** | User not authenticated |  -  |
+| **404** | Tenant not found |  -  |
+| **500** | Internal server error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## getTenantByStripeCustomerID
+
+> GetTenantByStripeCustomerID200Response getTenantByStripeCustomerID(stripeCustomerId)
+
+Get tenant by Stripe customer ID
+
+Returns a tenant by its Stripe customer ID.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key header  ## Use Cases - Stripe webhook processing - Payment event correlation - Invoice/subscription tenant resolution 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1TenantsApi,
+} from '@omnibase/core-js';
+import type { GetTenantByStripeCustomerIDRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1TenantsApi(config);
+
+  const body = {
+    // string | Stripe customer ID
+    stripeCustomerId: cus_TOWEstcga5ou7a,
+  } satisfies GetTenantByStripeCustomerIDRequest;
+
+  try {
+    const data = await api.getTenantByStripeCustomerID(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **stripeCustomerId** | `string` | Stripe customer ID | [Defaults to `undefined`] |
+
+### Return type
+
+[**GetTenantByStripeCustomerID200Response**](GetTenantByStripeCustomerID200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Tenant found |  -  |
+| **400** | Bad request - Invalid stripe_customer_id |  -  |
+| **401** | User not authenticated |  -  |
+| **404** | Tenant not found |  -  |
+| **500** | Internal server error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

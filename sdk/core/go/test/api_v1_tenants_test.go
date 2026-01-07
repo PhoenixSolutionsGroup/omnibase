@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func Test_omnibase_V1TenantsAPIService(t *testing.T) {
@@ -125,6 +125,34 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1TenantsAPIService GetTenantByID", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var tenantId string
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.GetTenantByID(context.Background(), tenantId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1TenantsAPIService GetTenantByStripeCustomerID", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var stripeCustomerId string
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.GetTenantByStripeCustomerID(context.Background(), stripeCustomerId).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

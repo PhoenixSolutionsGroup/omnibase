@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Version** | **string** | Configuration version | 
+**Webhooks** | Pointer to [**[]WebhookEndpointConfig**](WebhookEndpointConfig.md) | List of webhook endpoint configurations | [optional] 
 **Meters** | Pointer to [**[]MeterWithStripeID**](MeterWithStripeID.md) | List of billing meters with Stripe IDs | [optional] 
 **Products** | [**[]ProductWithStripeIDs**](ProductWithStripeIDs.md) | List of products with Stripe IDs | 
 
@@ -46,6 +47,31 @@ and a boolean to check if the value has been set.
 
 SetVersion sets Version field to given value.
 
+
+### GetWebhooks
+
+`func (o *StripeConfigurationWithIDs) GetWebhooks() []WebhookEndpointConfig`
+
+GetWebhooks returns the Webhooks field if non-nil, zero value otherwise.
+
+### GetWebhooksOk
+
+`func (o *StripeConfigurationWithIDs) GetWebhooksOk() (*[]WebhookEndpointConfig, bool)`
+
+GetWebhooksOk returns a tuple with the Webhooks field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetWebhooks
+
+`func (o *StripeConfigurationWithIDs) SetWebhooks(v []WebhookEndpointConfig)`
+
+SetWebhooks sets Webhooks field to given value.
+
+### HasWebhooks
+
+`func (o *StripeConfigurationWithIDs) HasWebhooks() bool`
+
+HasWebhooks returns a boolean if a field has been set.
 
 ### GetMeters
 

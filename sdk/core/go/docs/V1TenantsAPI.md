@@ -13,6 +13,8 @@ Method | HTTP request | Description
 [**DeleteTenant**](V1TenantsAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete tenant
 [**GetRoleDefinitions**](V1TenantsAPI.md#GetRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions | Get namespace definitions
 [**GetTenantBillingStatus**](V1TenantsAPI.md#GetTenantBillingStatus) | **Get** /api/v1/tenants/billing-status | Get billing status
+[**GetTenantByID**](V1TenantsAPI.md#GetTenantByID) | **Get** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
+[**GetTenantByStripeCustomerID**](V1TenantsAPI.md#GetTenantByStripeCustomerID) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
 [**GetTenantJWT**](V1TenantsAPI.md#GetTenantJWT) | **Get** /api/v1/tenants/jwt | Get PostgREST JWT token
 [**GetTenantSubscription**](V1TenantsAPI.md#GetTenantSubscription) | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan
 [**ListRoles**](V1TenantsAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles
@@ -43,7 +45,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -111,7 +113,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -177,7 +179,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -247,7 +249,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -317,7 +319,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -385,7 +387,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -459,7 +461,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -527,7 +529,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -593,7 +595,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -637,6 +639,146 @@ Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequ
 [[Back to README]](../README.md)
 
 
+## GetTenantByID
+
+> GetTenantByID200Response GetTenantByID(ctx, tenantId).Execute()
+
+Get tenant by ID
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	tenantId := "7d5da463-8351-4abe-870c-8ccdefc4d78c" // string | Tenant ID (UUID)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantByID(context.Background(), tenantId).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantByID``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetTenantByID`: GetTenantByID200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantByID`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**tenantId** | **string** | Tenant ID (UUID) | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetTenantByIDRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**GetTenantByID200Response**](GetTenantByID200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetTenantByStripeCustomerID
+
+> GetTenantByStripeCustomerID200Response GetTenantByStripeCustomerID(ctx, stripeCustomerId).Execute()
+
+Get tenant by Stripe customer ID
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	stripeCustomerId := "cus_TOWEstcga5ou7a" // string | Stripe customer ID
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantByStripeCustomerID(context.Background(), stripeCustomerId).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantByStripeCustomerID``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetTenantByStripeCustomerID`: GetTenantByStripeCustomerID200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantByStripeCustomerID`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**stripeCustomerId** | **string** | Stripe customer ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetTenantByStripeCustomerIDRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**GetTenantByStripeCustomerID200Response**](GetTenantByStripeCustomerID200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## GetTenantJWT
 
 > GetTenantJWT200Response GetTenantJWT(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
@@ -654,7 +796,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -722,7 +864,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -792,7 +934,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -858,7 +1000,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -919,7 +1061,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -987,7 +1129,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -1053,7 +1195,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -1119,7 +1261,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -1187,7 +1329,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {
@@ -1263,7 +1405,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+	openapiclient "github.com/PhoenixSolutionsGroup/omnibase/sdk/core/go"
 )
 
 func main() {

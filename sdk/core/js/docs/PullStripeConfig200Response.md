@@ -7,7 +7,7 @@
 Name | Type
 ------------ | -------------
 `status` | number
-`data` | [StripeConfiguration](StripeConfiguration.md)
+`data` | [StripeConfigurationWithIDs](StripeConfigurationWithIDs.md)
 
 ## Example
 
