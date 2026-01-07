@@ -1,3 +1,18 @@
+# [0.12.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.11.0...api-v0.12.0) (2026-01-07)
+
+
+### Bug Fixes
+
+* **release:** add repository field for npm provenance ([d042f55](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d042f55a39e996e6dbc172ffe102de200b81db0d))
+* **release:** remove --provenance flag and use npm token auth ([5309948](https://github.com/PhoenixSolutionsGroup/omnibase/commit/53099480197916568874da3a982b55ce0c752a45))
+* **release:** use bun publish to resolve workspace dependencies ([4885ee1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4885ee132f9f8735feba5e2d0c55cd8e9773631a))
+* **release:** use npm publish with OIDC provenance for trusted publishing ([f837221](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8372211e9d77ee1d7f2059cf1fbe76733b76104))
+
+
+### Features
+
+* **api:** add tenant lookup endpoints ([64d9850](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64d98500ba1a583d7bd40d8509d00c88ac50bbe6))
+
 # [0.11.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.10.2...api-v0.11.0) (2026-01-05)
 
 
