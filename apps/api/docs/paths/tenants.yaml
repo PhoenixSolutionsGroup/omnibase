@@ -2,8 +2,143 @@
 # OpenAPI 3.1.0 Path Definitions for Tenant-related endpoints
 
 paths:
+  # ==================== Lookup Endpoints ====================
+
+  /api/v1/tenants/{tenant_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant by ID
+      description: |
+        Returns a tenant by its ID.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key header
+
+        ## Use Cases
+        - Direct tenant lookup by ID
+        - Service-to-service tenant resolution
+        - Webhook processing
+      operationId: getTenantByID
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          description: Tenant ID (UUID)
+          schema:
+            type: string
+            format: uuid
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/tenants.yaml#/components/schemas/GetTenantByIDResponse'
+        '400':
+          description: Bad request - Invalid tenant_id
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+
+  /api/v1/tenants/stripe-customer-id/{stripe_customer_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant by Stripe customer ID
+      description: |
+        Returns a tenant by its Stripe customer ID.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token / Cookie Session
+        - **Service Key Auth**: Requires X-Service-Key header
+
+        ## Use Cases
+        - Stripe webhook processing
+        - Payment event correlation
+        - Invoice/subscription tenant resolution
+      operationId: getTenantByStripeCustomerID
+      parameters:
+        - name: stripe_customer_id
+          in: path
+          required: true
+          description: Stripe customer ID
+          schema:
+            type: string
+          example: "cus_TOWEstcga5ou7a"
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/tenants.yaml#/components/schemas/GetTenantByStripeCustomerIDResponse'
+        '400':
+          description: Bad request - Invalid stripe_customer_id
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+
   # ==================== Lifecycle Endpoints ====================
-  
+
   /api/v1/tenants:
     post:
       tags:

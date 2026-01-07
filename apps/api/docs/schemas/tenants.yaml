@@ -88,6 +88,24 @@ components:
         tenant:
           $ref: '#/components/schemas/Tenant'
 
+    GetTenantByIDResponse:
+      type: object
+      description: Response containing a tenant by ID
+      required:
+        - tenant
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+
+    GetTenantByStripeCustomerIDResponse:
+      type: object
+      description: Response containing a tenant by Stripe customer ID
+      required:
+        - tenant
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+
     ListTenantsResponse:
       type: object
       required:

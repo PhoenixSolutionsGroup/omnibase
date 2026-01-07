@@ -182,7 +182,13 @@ paths:
   # Tenant endpoints
   /api/v1/tenants:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants'
-  
+
+  /api/v1/tenants/{tenant_id}:
+    $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1{tenant_id}'
+
+  /api/v1/tenants/stripe-customer-id/{stripe_customer_id}:
+    $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1stripe-customer-id~1{stripe_customer_id}'
+
   /api/v1/tenants/switch-active:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants~1switch-active'
   
