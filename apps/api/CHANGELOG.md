@@ -1,3 +1,10 @@
+## [0.12.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.2...api-v0.12.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* **cli:** add test mode and refactor docker compose to base + override pattern ([713b302](https://github.com/PhoenixSolutionsGroup/omnibase/commit/713b3021f0f60d3b589afc38c12f0bc154674cdd))
+
 ## [0.12.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.1...api-v0.12.2) (2026-01-07)
 
 
