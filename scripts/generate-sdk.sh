@@ -88,7 +88,9 @@ if [ "$GENERATE_JS" = true ]; then
     -i docs/openapi.yaml \
     -g typescript-fetch \
     -o ../../sdk/core/js \
-    --additional-properties=supportsES6=true,npmName=@omnibase/core-js
+    --additional-properties=supportsES6=true,npmName=@omnibase/core-js \
+    --git-user-id=phoenixsolutionsgroup \
+    --git-repo-id=omnibase
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ JavaScript SDK generated${NC}"
 fi
