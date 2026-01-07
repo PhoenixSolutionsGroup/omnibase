@@ -103,7 +103,7 @@ if [ "$GENERATE_GO" = true ]; then
     -g go \
     -o ../../sdk/core/go \
     --additional-properties=packageName=omnibase \
-    --git-user-id=PhoenixSolutionsGroup \
+    --git-user-id=phoenixsolutionsgroup \
     --git-repo-id=omnibase/sdk/core/go
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ Go SDK generated${NC}"

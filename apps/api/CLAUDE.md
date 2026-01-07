@@ -250,6 +250,7 @@ Use URL-encoded paths (`~1` = `/`):
   $ref: './paths/your-module.yaml#/paths/~1api~1v1~1your-module~1endpoint'
 ```
 
+
 ## Logging
 
 Use structured logging with context values instead of code comments:
