@@ -1,8 +1,8 @@
-# Development overrides - local builds with hot-reload
+# Test overrides - local builds without hot-reload (runs Go binary directly)
 services:
   postgres:
     volumes:
-      # Override: no persistent volume for ephemeral dev data
+      # Override: no persistent volume for ephemeral test data
       - ./db:/docker-entrypoint-initdb.d
 
   auth-migrate:
@@ -26,7 +26,7 @@ services:
   rest-api:
     build:
       context: ../../../apps/api
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.test
     volumes:
       - ../../../apps/api:/app
 

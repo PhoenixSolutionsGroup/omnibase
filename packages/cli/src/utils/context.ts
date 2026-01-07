@@ -1,14 +1,16 @@
 import { Command } from "commander";
 import { selectEnvironment, EnvironmentConfig } from "./environment";
 
+export type ComposeMode = "dev" | "test" | "default";
+
 export interface CommandContext {
   environment: string;
-  mode: "dev" | "default";
+  mode: ComposeMode;
 }
 
 export interface CommandContextWithEnv {
   env: EnvironmentConfig;
-  mode: "dev" | "default";
+  mode: ComposeMode;
 }
 
 /**

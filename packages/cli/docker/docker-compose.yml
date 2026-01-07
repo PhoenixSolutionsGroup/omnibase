@@ -68,6 +68,7 @@ services:
 
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - API_URL=http://rest-api:8080
+      - SERVICE_KEY=VERY_SECRET_KEY
       - WAIT_FOR_API_HEALTH=true
       - APP_NAME=${APP_NAME:-"My App"}
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
@@ -218,6 +219,7 @@ services:
       - app-network
     depends_on:
       - postgres
+      - rest-api
 
   permissions:
     depends_on:

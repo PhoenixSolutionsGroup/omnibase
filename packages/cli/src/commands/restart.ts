@@ -79,6 +79,21 @@ const SERVICES: RestartableService[] = [
   },
 ];
 
+function getComposeFiles(mode: string): string[] {
+  const dockerDir = path.join(__dirname, "..", "..", "docker");
+  const baseFile = path.join(dockerDir, "docker-compose.yml");
+
+  const files = [baseFile];
+
+  if (mode === "dev") {
+    files.push(path.join(dockerDir, "docker-compose.dev.yml"));
+  } else if (mode === "test") {
+    files.push(path.join(dockerDir, "docker-compose.test.yml"));
+  }
+
+  return files;
+}
+
 async function restartLocalService(
   dockerService: string,
   env: EnvironmentConfig,
@@ -86,15 +101,8 @@ async function restartLocalService(
 ): Promise<boolean> {
   const projectRoot = findOmnibaseRoot();
   const projectName = getProjectName();
-  const composeFileName =
-    mode === "dev" ? "docker-compose.dev.yml" : "docker-compose.yml";
-  const dockerComposePath = path.join(
-    __dirname,
-    "..",
-    "..",
-    "docker",
-    composeFileName
-  );
+  const composeFiles = getComposeFiles(mode);
+  const composeArgs = composeFiles.map((f) => `-f ${f}`).join(" ");
 
   const envPath = path.join(
     projectRoot,
@@ -105,7 +113,7 @@ async function restartLocalService(
 
   try {
     await execAsync(
-      `docker compose --project-name ${projectName} -f ${dockerComposePath} --env-file ${envPath} restart ${dockerService}`,
+      `docker compose --project-name ${projectName} ${composeArgs} --env-file ${envPath} restart ${dockerService}`,
       {
         cwd: projectRoot,
         env: {

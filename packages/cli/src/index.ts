@@ -31,7 +31,7 @@ program
   .option("--env <environment>", "Override environment for this command")
   .option(
     "--mode <mode>",
-    "Docker compose mode: 'dev' or 'default' (default: default)"
+    "Docker compose mode: 'dev', 'test', or 'default' (default: default)"
   );
 
 function createTemplateFiles(targetDir: string): void {
@@ -43,6 +43,21 @@ function createTemplateFiles(targetDir: string): void {
   }
 
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
+}
+
+function getComposeFiles(composeMode?: string): string[] {
+  const dockerDir = path.join(__dirname, "..", "docker");
+  const baseFile = path.join(dockerDir, "docker-compose.yml");
+
+  const files = [baseFile];
+
+  if (composeMode === "dev") {
+    files.push(path.join(dockerDir, "docker-compose.dev.yml"));
+  } else if (composeMode === "test") {
+    files.push(path.join(dockerDir, "docker-compose.test.yml"));
+  }
+
+  return files;
 }
 
 async function runDockerCompose(
@@ -61,20 +76,14 @@ async function runDockerCompose(
       `.env.${envConfig.name}`
     );
 
-    const composeFileName =
-      composeMode === "dev" ? "docker-compose.dev.yml" : "docker-compose.yml";
+    const composeFiles = getComposeFiles(composeMode);
 
-    const dockerComposePath = path.join(
-      __dirname,
-      "..",
-      "docker",
-      composeFileName
-    );
-
-    if (!fs.existsSync(dockerComposePath)) {
-      throw new Error(
-        `docker-compose.yml not found at: ${dockerComposePath}\nMake sure you're in a valid omnibase project directory.`
-      );
+    for (const file of composeFiles) {
+      if (!fs.existsSync(file)) {
+        throw new Error(
+          `Compose file not found at: ${file}\nMake sure you're in a valid omnibase project directory.`
+        );
+      }
     }
 
     const projectName = getProjectName();
@@ -83,8 +92,7 @@ async function runDockerCompose(
       "compose",
       "--project-name",
       projectName,
-      "-f",
-      dockerComposePath,
+      ...composeFiles.flatMap((f) => ["-f", f]),
       "--env-file",
       envPath,
       ...args,
@@ -92,6 +100,7 @@ async function runDockerCompose(
 
     logger.log(`Using project name: ${projectName}`);
     logger.log(`Using environment: ${envConfig.name}`);
+    logger.log(`Using mode: ${composeMode || "default"}`);
 
     execSync(`docker ${cmdArgs.join(" ")}`, {
       stdio: "ignore",

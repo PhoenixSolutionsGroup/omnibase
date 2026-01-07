@@ -171,24 +171,23 @@ export class PermissionsCommand {
           const projectRoot = findOmnibaseRoot();
           const projectName = getProjectName();
           const composeMode = mode || "default";
-          const composeFileName =
-            composeMode === "dev"
-              ? "docker-compose.dev.yml"
-              : "docker-compose.yml";
-          const dockerComposePath = path.join(
-            __dirname,
-            "..",
-            "..",
-            "docker",
-            composeFileName
-          );
+          const dockerDir = path.join(__dirname, "..", "..", "docker");
+          const composeFiles = [
+            path.join(dockerDir, "docker-compose.yml"),
+            ...(composeMode === "dev"
+              ? [path.join(dockerDir, "docker-compose.dev.yml")]
+              : composeMode === "test"
+                ? [path.join(dockerDir, "docker-compose.test.yml")]
+                : []),
+          ];
+          const composeArgs = composeFiles.map((f) => `-f ${f}`).join(" ");
 
           const envConfig = await selectEnvironment("local");
           const envFilePath = this.getEnvFilePath(envConfig.name);
           const envVars = { ...process.env, OMNIBASE_ENV_FILE: envFilePath };
 
           execSync(
-            `docker compose --project-name ${projectName} -f ${dockerComposePath} restart permissions`,
+            `docker compose --project-name ${projectName} ${composeArgs} restart permissions`,
             { stdio: "ignore", cwd: projectRoot, env: envVars }
           );
           logger.log("   Permissions restarted successfully");
