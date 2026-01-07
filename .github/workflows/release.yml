@@ -260,7 +260,8 @@ jobs:
 
       - name: Install semantic-release plugins
         run: |
-          npm install -g semantic-release \
+          npm install -g semantic-release
+          npm install --no-save \
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
@@ -356,7 +357,8 @@ jobs:
 
       - name: Install semantic-release plugins
         run: |
-          npm install -g semantic-release \
+          npm install -g semantic-release
+          npm install --no-save \
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
@@ -440,7 +442,8 @@ jobs:
 
       - name: Install semantic-release plugins
         run: |
-          npm install -g semantic-release \
+          npm install -g semantic-release
+          npm install --no-save \
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
