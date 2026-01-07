@@ -89,7 +89,7 @@ if [ "$GENERATE_JS" = true ]; then
     -g typescript-fetch \
     -o ../../sdk/core/js \
     --additional-properties=supportsES6=true,npmName=@omnibase/core-js \
-    --git-user-id=phoenixsolutionsgroup \
+    --git-user-id=PhoenixSolutionsGroup \
     --git-repo-id=omnibase
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ JavaScript SDK generated${NC}"
@@ -103,7 +103,7 @@ if [ "$GENERATE_GO" = true ]; then
     -g go \
     -o ../../sdk/core/go \
     --additional-properties=packageName=omnibase \
-    --git-user-id=phoenixsolutionsgroup \
+    --git-user-id=PhoenixSolutionsGroup \
     --git-repo-id=omnibase/sdk/core/go
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ Go SDK generated${NC}"
