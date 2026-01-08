@@ -3,10 +3,33 @@ import * as fs from "fs";
 import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
+import axios from "axios";
+import FormData from "form-data";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
+import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
+import { V1ConfigurationApi, ResponseError } from "@omnibase/core-js";
+
+async function extractErrorMessage(error: unknown): Promise<string> {
+  if (error instanceof ResponseError) {
+    try {
+      const body = await error.response.json();
+      return (
+        body.error ||
+        body.message ||
+        `${error.response.status} - ${error.response.statusText}`
+      );
+    } catch {
+      return `${error.response.status} - ${error.response.statusText}`;
+    }
+  }
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.error || error.response?.data?.message || error.message;
+  }
+  return error instanceof Error ? error.message : "Unknown error occurred";
+}
 
 /**
  * Add database commands to the CLI
@@ -55,7 +78,7 @@ export function addDbCommands(program: Command): void {
           );
         }
 
-        await applyMigrations(ctx.env.omnibaseApiUrl, ctx.env.omnibaseServiceKey, options.dir);
+        await applyMigrations(ctx.env, options.dir);
       } catch (error) {
         handleCommandError(error);
       }
@@ -217,15 +240,14 @@ export async function pushDbMigrations(envOverride?: string): Promise<void> {
     throw new Error("OMNIBASE_SERVICE_KEY not found in environment configuration");
   }
 
-  await applyMigrations(env.omnibaseApiUrl, env.omnibaseServiceKey, "omnibase/db");
+  await applyMigrations(env, "omnibase/db");
 }
 
 /**
  * Apply migrations by zipping SQL files and sending to API
  */
 async function applyMigrations(
-  apiUrl: string,
-  apiKey: string,
+  env: { omnibaseApiUrl: string; omnibaseServiceKey?: string },
   migrationsDir: string
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
@@ -262,53 +284,34 @@ async function applyMigrations(
     zip.addLocalFile(filePath);
   }
 
-  // Generate zip buffer
+  // Generate zip buffer and convert to Blob
   const zipBuffer = zip.toBuffer();
   logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
-  // Use axios and form-data (same as permissions.ts)
-  const FormData = require("form-data");
-  const axios = require("axios");
+  const sdkConfig = createOmnibaseSDKConfig(env as any);
+  const configApi = new V1ConfigurationApi(sdkConfig);
 
-  const formData = new FormData();
-  formData.append("migrations", zipBuffer, {
-    filename: "migrations.zip",
-    contentType: "application/zip",
-  });
-
-  // Send to API
-  const endpoint = `${apiUrl}/api/v1/database/migrations`;
-  logger.start(`Uploading migrations to ${endpoint}...`);
+  logger.start(`Uploading migrations...`);
 
   try {
-    const headers: Record<string, string> = {
-      ...formData.getHeaders(),
-    };
+    const blob = new Blob([zipBuffer], { type: "application/zip" });
+    const response = await configApi.uploadDatabaseMigrations({
+      migrations: blob,
+    });
 
-    if (apiKey) {
-      headers["X-Service-Key"] = apiKey;
-    }
-
-    const response = await axios.post(endpoint, formData, { headers });
-
-    logger.succeed(response.data.message || "Migrations applied successfully");
+    logger.succeed(response.message || "Migrations applied successfully");
   } catch (error) {
-    if (error instanceof Error) {
-      if (error.message.includes("fetch")) {
-        throw new Error(
-          `Failed to connect to API at ${apiUrl}\n` +
-            `Please ensure the API is running and accessible.\n` +
-            `Original error: ${error.message}`
-        );
-      }
-      throw error;
-    }
-    throw new Error(`Unknown error occurred: ${error}`);
+    const errorMsg = await extractErrorMessage(error);
+    throw new Error(
+      `Failed to apply migrations: ${errorMsg}\n` +
+        `Please ensure the API is running and accessible.`
+    );
   }
 }
 
 /**
  * Reset database by dropping all tables and re-applying migrations
+ * Note: Reset endpoint not in SDK, using axios directly
  */
 async function resetMigrations(
   apiUrl: string,
@@ -353,10 +356,6 @@ async function resetMigrations(
   const zipBuffer = zip.toBuffer();
   logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
-  // Use axios and form-data
-  const FormData = require("form-data");
-  const axios = require("axios");
-
   const formData = new FormData();
   formData.append("migrations", zipBuffer, {
     filename: "migrations.zip",
@@ -365,7 +364,7 @@ async function resetMigrations(
 
   // Send to API reset endpoint
   const endpoint = `${apiUrl}/api/v1/database/migrations/reset`;
-  logger.start(`Resetting database and applying migrations to ${endpoint}...`);
+  logger.start(`Resetting database and applying migrations...`);
 
   try {
     const headers: Record<string, string> = {
@@ -380,29 +379,23 @@ async function resetMigrations(
 
     logger.succeed(response.data.message || "Database reset and migrations applied successfully");
   } catch (error) {
-    if (error instanceof Error) {
-      if (error.message.includes("fetch")) {
-        throw new Error(
-          `Failed to connect to API at ${apiUrl}\n` +
-            `Please ensure the API is running and accessible.\n` +
-            `Original error: ${error.message}`
-        );
-      }
-      throw error;
-    }
-    throw new Error(`Unknown error occurred: ${error}`);
+    const errorMsg = await extractErrorMessage(error);
+    throw new Error(
+      `Failed to reset database: ${errorMsg}\n` +
+        `Please ensure the API is running and accessible.`
+    );
   }
 }
 
 /**
  * Generate TypeScript types from database schema using postgres-meta
+ * Note: External service, not covered by SDK
  */
 async function generateTypes(
   env: { typegenApiUrl?: string },
   outputPath: string,
   schemas: string
 ): Promise<void> {
-  const axios = require("axios");
   const projectRoot = findOmnibaseRoot();
 
   // Get typegen API URL from environment config or default to localhost
@@ -439,13 +432,10 @@ async function generateTypes(
       `   Import these types in your application to get type-safe database access`
     );
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(
-        `Failed to generate types from ${typegenApiUrl}\n` +
-          `Please ensure postgres-meta is running and accessible.\n` +
-          `Original error: ${error.message}`
-      );
-    }
-    throw new Error(`Unknown error occurred: ${error}`);
+    const errorMsg = await extractErrorMessage(error);
+    throw new Error(
+      `Failed to generate types from ${typegenApiUrl}: ${errorMsg}\n` +
+        `Please ensure postgres-meta is running and accessible.`
+    );
   }
 }

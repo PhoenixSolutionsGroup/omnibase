@@ -14,10 +14,7 @@ import {
   getProjectName,
   EnvironmentConfig,
 } from "../utils/environment";
-import {
-  createManagedHostingClient,
-  createOmnibaseClient,
-} from "../utils/api-client";
+import { createManagedHostingClient } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { formatHttpError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";

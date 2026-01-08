@@ -3,81 +3,32 @@ import * as fs from "fs";
 import * as path from "path";
 import { config as dotenvConfig } from "dotenv";
 import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
+import {
+  V1ConfigurationApi,
+  V1StripeApi,
+  V1WebhooksApi,
+  ResponseError,
+  type StripeConfigUpdateRequest,
+  type WebhookEndpointConfig,
+  type GetStripeConfigHistory200Response,
+} from "@omnibase/core-js";
 
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-interface ConfigHistoryItem {
-  id: string;
-  config: any;
-  version: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface ConfigHistoryResponse {
-  configs: ConfigHistoryItem[];
-  pagination: {
-    total: number;
-    page: number;
-    per_page: number;
-    total_pages: number;
-    has_next: boolean;
-    has_prev: boolean;
-  };
-}
-
-async function makeApiRequest(
-  endpoint: string,
-  method: "GET" | "POST" = "GET",
-  body?: any,
-  envOverride?: string
-): Promise<ApiResponse> {
-  const envConfig = await selectEnvironment(envOverride);
-  const url = `${envConfig.omnibaseApiUrl}${endpoint}`;
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (envConfig.omnibaseServiceKey) {
-    headers["X-Service-Key"] = envConfig.omnibaseServiceKey;
-  }
-
-  const options: RequestInit = {
-    method,
-    headers,
-  };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  try {
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        error: data.error || `${response.status} - ${response.statusText}`,
-      };
+async function extractErrorMessage(error: unknown): Promise<string> {
+  if (error instanceof ResponseError) {
+    try {
+      const body = await error.response.json();
+      return (
+        body.error ||
+        body.message ||
+        `${error.response.status} - ${error.response.statusText}`
+      );
+    } catch {
+      return `${error.response.status} - ${error.response.statusText}`;
     }
-
-    return {
-      success: true,
-      data,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
   }
+  return error instanceof Error ? error.message : "Unknown error occurred";
 }
 
 function getStripeConfigPath(): string {
@@ -231,50 +182,53 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
   logger.start("Loading stripe.config.json...");
   const config = loadStripeConfig();
 
-  // Get the environment name for loading raw env vars
   const envConfig = await selectEnvironment(envOverride);
   const rawEnv = loadRawEnv(envConfig.name);
+  const sdkConfig = createOmnibaseSDKConfig(envConfig);
+  const configApi = new V1ConfigurationApi(sdkConfig);
+  const webhooksApi = new V1WebhooksApi(sdkConfig);
 
   logger.succeed("Successfully loaded config");
   logger.start("Pushing to Stripe...");
 
-  const response = await makeApiRequest(
-    "/api/v1/stripe/admin/config",
-    "POST",
-    config,
-    envOverride
-  );
+  try {
+    const response = await configApi.updateStripeConfig({
+      stripeConfigUpdateRequest: config as StripeConfigUpdateRequest,
+    });
 
-  if (response.success) {
     logger.succeed("Stripe configuration uploaded successfully");
-    if (response.data?.details) {
-      response.data.details.forEach((detail: string) => {
+    const responseData = response.data as { details?: string[] } | undefined;
+    if (responseData?.details) {
+      responseData.details.forEach((detail: string) => {
         logger.log(`   - ${detail}`);
       });
     }
-  } else {
-    throw new Error(`Stripe upload failed: ${response.error}`);
+  } catch (error) {
+    throw new Error(
+      `Stripe upload failed: ${await extractErrorMessage(error)}`
+    );
   }
 
   // Handle webhooks configuration if present
   if (config.webhooks && config.webhooks.length > 0) {
-    logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
-
-    // Expand environment variables in webhook URLs
-    const expandedWebhooks = config.webhooks.map((webhook: WebhookConfig) => ({
-      ...webhook,
-      url: expandEnvVars(webhook.url, rawEnv),
-    }));
-
-    const webhookResponse = await makeApiRequest(
-      "/api/v1/stripe/config/webhooks",
-      "POST",
-      { webhooks: expandedWebhooks },
-      envOverride
+    logger.start(
+      `Configuring ${config.webhooks.length} webhook endpoint(s)...`
     );
 
-    if (webhookResponse.success) {
-      const results = webhookResponse.data?.data?.webhooks || [];
+    // Expand environment variables in webhook URLs
+    const expandedWebhooks: WebhookEndpointConfig[] = config.webhooks.map(
+      (webhook: WebhookConfig) => ({
+        ...webhook,
+        url: expandEnvVars(webhook.url, rawEnv),
+      })
+    );
+
+    try {
+      const webhookResponse = await webhooksApi.configureWebhooks({
+        webhooksConfigRequest: { webhooks: expandedWebhooks },
+      });
+
+      const results = webhookResponse.data?.webhooks || [];
       logger.succeed(`Webhook configuration completed`);
       for (const result of results) {
         logger.log(`   - ${result.url}: ${result.action}`);
@@ -282,8 +236,10 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
           logger.warn(`     Save webhook secret: ${result.secret}`);
         }
       }
-    } else {
-      throw new Error(`Webhook configuration failed: ${webhookResponse.error}`);
+    } catch (error) {
+      throw new Error(
+        `Webhook configuration failed: ${await extractErrorMessage(error)}`
+      );
     }
   }
 }
@@ -306,21 +262,18 @@ export function addStripeCommands(program: Command): void {
         logger.start("Validating with API...");
 
         const envOverride = options.env || program.opts().env;
-        const response = await makeApiRequest(
-          "/api/v1/stripe/admin/config/validate",
-          "POST",
-          config,
-          envOverride
-        );
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
 
-        if (response.success) {
-          logger.succeed("Configuration is valid!");
-        } else {
-          logger.fail(`Validation failed: ${response.error}`);
-          process.exit(1);
-        }
+        await configApi.validateStripeConfig({
+          stripeConfigValidateRequest: config as StripeConfigUpdateRequest,
+        });
+
+        logger.succeed("Configuration is valid!");
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Validation failed: ${errorMsg}`);
         process.exit(1);
       }
     });
@@ -337,51 +290,56 @@ export function addStripeCommands(program: Command): void {
         const envOverride = options.env || program.opts().env;
         const envConfig = await selectEnvironment(envOverride);
         const rawEnv = loadRawEnv(envConfig.name);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
+        const webhooksApi = new V1WebhooksApi(sdkConfig);
 
         logger.succeed("Successfully loaded config");
         logger.start("Pushing products/prices/meters to Stripe...");
 
-        const response = await makeApiRequest(
-          "/api/v1/stripe/admin/config",
-          "POST",
-          config,
-          envOverride
-        );
+        try {
+          const response = await configApi.updateStripeConfig({
+            stripeConfigUpdateRequest: config as StripeConfigUpdateRequest,
+          });
 
-        if (response.success) {
           logger.succeed("Configuration uploaded successfully!");
-          if (response.data?.details) {
+          const responseData = response.data as
+            | { details?: string[] }
+            | undefined;
+          if (responseData?.details) {
             logger.newline();
             logger.log("Details:");
-            response.data.details.forEach((detail: string) => {
+            responseData.details.forEach((detail: string) => {
               logger.log(`  - ${detail}`);
             });
           }
-        } else {
-          logger.fail(`Upload failed: ${response.error}`);
+        } catch (error) {
+          const errorMsg = await extractErrorMessage(error);
+          logger.fail(`Upload failed: ${errorMsg}`);
           process.exit(1);
         }
 
         // Handle webhooks configuration if present
         if (config.webhooks && config.webhooks.length > 0) {
           logger.newline();
-          logger.start(`Configuring ${config.webhooks.length} webhook endpoint(s)...`);
-
-          // Expand environment variables in webhook URLs
-          const expandedWebhooks = config.webhooks.map((webhook: WebhookConfig) => ({
-            ...webhook,
-            url: expandEnvVars(webhook.url, rawEnv),
-          }));
-
-          const webhookResponse = await makeApiRequest(
-            "/api/v1/stripe/config/webhooks",
-            "POST",
-            { webhooks: expandedWebhooks },
-            envOverride
+          logger.start(
+            `Configuring ${config.webhooks.length} webhook endpoint(s)...`
           );
 
-          if (webhookResponse.success) {
-            const results = webhookResponse.data?.data?.webhooks || [];
+          // Expand environment variables in webhook URLs
+          const expandedWebhooks: WebhookEndpointConfig[] = config.webhooks.map(
+            (webhook: WebhookConfig) => ({
+              ...webhook,
+              url: expandEnvVars(webhook.url, rawEnv),
+            })
+          );
+
+          try {
+            const webhookResponse = await webhooksApi.configureWebhooks({
+              webhooksConfigRequest: { webhooks: expandedWebhooks },
+            });
+
+            const results = webhookResponse.data?.webhooks || [];
             logger.succeed("Webhook configuration completed!");
 
             for (const result of results) {
@@ -395,10 +353,9 @@ export function addStripeCommands(program: Command): void {
                 logger.log(`  STRIPE_WEBHOOK_SECRET=${result.secret}`);
               }
             }
-          } else {
-            logger.fail(
-              `Webhook configuration failed: ${webhookResponse.error}`
-            );
+          } catch (error) {
+            const errorMsg = await extractErrorMessage(error);
+            logger.fail(`Webhook configuration failed: ${errorMsg}`);
             process.exit(1);
           }
         }
@@ -418,41 +375,32 @@ export function addStripeCommands(program: Command): void {
         logger.start("Fetching current Stripe configuration...");
 
         const envOverride = options.env || program.opts().env;
-        const response = await makeApiRequest(
-          "/api/v1/stripe/config",
-          "GET",
-          undefined,
-          envOverride
-        );
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const stripeApi = new V1StripeApi(sdkConfig);
 
-        if (response.success) {
-          logger.succeed("Configuration retrieved successfully!");
+        const response = await stripeApi.getStripeConfig();
+        logger.succeed("Configuration retrieved successfully!");
 
-          const configData = {
-            id: response.data.id,
-            version: response.data.version,
-            created_at: response.data.created_at,
-            updated_at: response.data.updated_at,
-            config: response.data.config,
-          };
+        const configData = {
+          id: response.data?.id,
+          version: response.data?.version,
+          created_at: response.data?.createdAt,
+          updated_at: response.data?.updatedAt,
+          config: response.data?.config,
+        };
 
-          if (options.output) {
-            fs.writeFileSync(
-              options.output,
-              JSON.stringify(configData, null, 2)
-            );
-            logger.log(`Configuration saved to: ${options.output}`);
-          } else {
-            logger.newline();
-            logger.log("Current Configuration:");
-            logger.log(JSON.stringify(configData, null, 2));
-          }
+        if (options.output) {
+          fs.writeFileSync(options.output, JSON.stringify(configData, null, 2));
+          logger.log(`Configuration saved to: ${options.output}`);
         } else {
-          logger.fail(`Failed to retrieve configuration: ${response.error}`);
-          process.exit(1);
+          logger.newline();
+          logger.log("Current Configuration:");
+          logger.log(JSON.stringify(configData, null, 2));
         }
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Failed to retrieve configuration: ${errorMsg}`);
         process.exit(1);
       }
     });
@@ -473,66 +421,57 @@ export function addStripeCommands(program: Command): void {
         logger.start("Fetching Stripe configuration history...");
 
         const envOverride = options.env || program.opts().env;
-        const queryParams = new URLSearchParams({
-          limit: options.limit,
-          offset: options.offset,
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
+
+        const response = await configApi.getStripeConfigHistory({
+          limit: parseInt(options.limit),
+          offset: parseInt(options.offset),
         });
 
-        const response = await makeApiRequest(
-          `/api/v1/stripe/admin/config/history?${queryParams}`,
-          "GET",
-          undefined,
-          envOverride
-        );
+        logger.succeed("Configuration history retrieved successfully!");
+        const historyData = response.data;
 
-        if (response.success) {
-          const historyData = response.data as ConfigHistoryResponse;
-          logger.succeed("Configuration history retrieved successfully!");
+        if (options.output) {
+          fs.writeFileSync(
+            options.output,
+            JSON.stringify(historyData, null, 2)
+          );
+          logger.log(`History saved to: ${options.output}`);
+        } else {
+          logger.newline();
+          logger.log(
+            `Configuration History (${historyData?.pagination?.total || 0} total):`
+          );
+          logger.log(
+            `Page ${historyData?.pagination?.page || 1} of ${historyData?.pagination?.totalPages || 1}`
+          );
 
-          if (options.output) {
-            fs.writeFileSync(
-              options.output,
-              JSON.stringify(historyData, null, 2)
+          historyData?.configs?.forEach((config, index) => {
+            logger.newline();
+            logger.log(`${index + 1}. Config ID: ${config.id}`);
+            logger.log(`   Version: ${config.version}`);
+            logger.log(
+              `   Created: ${new Date(config.createdAt || "").toLocaleString()}`
             );
-            logger.log(`History saved to: ${options.output}`);
-          } else {
+            logger.log(
+              `   Updated: ${new Date(config.updatedAt || "").toLocaleString()}`
+            );
+          });
+
+          if (historyData?.pagination?.hasNext) {
             logger.newline();
             logger.log(
-              `Configuration History (${historyData.pagination.total} total):`
+              `Tip: Use --offset ${
+                parseInt(options.offset) + parseInt(options.limit)
+              } to see more results`
             );
-            logger.log(
-              `Page ${historyData.pagination.page} of ${historyData.pagination.total_pages}`
-            );
-
-            historyData.configs.forEach((config, index) => {
-              logger.newline();
-              logger.log(`${index + 1}. Config ID: ${config.id}`);
-              logger.log(`   Version: ${config.version}`);
-              logger.log(
-                `   Created: ${new Date(config.created_at).toLocaleString()}`
-              );
-              logger.log(
-                `   Updated: ${new Date(config.updated_at).toLocaleString()}`
-              );
-            });
-
-            if (historyData.pagination.has_next) {
-              logger.newline();
-              logger.log(
-                `Tip: Use --offset ${
-                  parseInt(options.offset) + parseInt(options.limit)
-                } to see more results`
-              );
-            }
           }
-        } else {
-          logger.fail(
-            `Failed to retrieve configuration history: ${response.error}`
-          );
-          process.exit(1);
         }
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Failed to retrieve configuration history: ${errorMsg}`);
         process.exit(1);
       }
     });
@@ -550,49 +489,43 @@ export function addStripeCommands(program: Command): void {
         logger.start("Pulling configuration from Stripe...");
 
         const envOverride = options.env || program.opts().env;
-        const response = await makeApiRequest(
-          "/api/v1/stripe/admin/config/pull",
-          "GET",
-          undefined,
-          envOverride
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
+
+        const response = await configApi.pullStripeConfig();
+        logger.succeed("Configuration pulled successfully from Stripe!");
+
+        const projectRoot = findOmnibaseRoot();
+        const outputPath =
+          options.output ||
+          (fs.existsSync(path.join(projectRoot, "omnibase", "stripe"))
+            ? path.join(
+                projectRoot,
+                "omnibase",
+                "stripe",
+                "pulled.config.json"
+              )
+            : "stripe.config.json");
+        const configData = response.data;
+
+        fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
+        logger.log(`Configuration saved to: ${outputPath}`);
+
+        logger.newline();
+        logger.log("Summary:");
+        logger.log(`  Version: ${configData?.version}`);
+        logger.log(`  Webhooks: ${configData?.webhooks?.length || 0}`);
+        logger.log(`  Products: ${configData?.products?.length || 0}`);
+        logger.log(`  Meters: ${configData?.meters?.length || 0}`);
+
+        logger.newline();
+        logger.log(
+          "Tip: Review the pulled configuration and commit changes if needed"
         );
-
-        if (response.success) {
-          logger.succeed("Configuration pulled successfully from Stripe!");
-
-          const projectRoot = findOmnibaseRoot();
-          const outputPath =
-            options.output ||
-            (fs.existsSync(path.join(projectRoot, "omnibase", "stripe"))
-              ? path.join(
-                  projectRoot,
-                  "omnibase",
-                  "stripe",
-                  "pulled.config.json"
-                )
-              : "stripe.config.json");
-          const configData = response.data?.data || response.data;
-
-          fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
-          logger.log(`Configuration saved to: ${outputPath}`);
-
-          logger.newline();
-          logger.log("Summary:");
-          logger.log(`  Version: ${configData.version}`);
-          logger.log(`  Webhooks: ${configData.webhooks?.length || 0}`);
-          logger.log(`  Products: ${configData.products?.length || 0}`);
-          logger.log(`  Meters: ${configData.meters?.length || 0}`);
-
-          logger.newline();
-          logger.log(
-            "Tip: Review the pulled configuration and commit changes if needed"
-          );
-        } else {
-          logger.fail(`Failed to pull configuration: ${response.error}`);
-          process.exit(1);
-        }
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Failed to pull configuration: ${errorMsg}`);
         process.exit(1);
       }
     });
@@ -611,29 +544,24 @@ export function addStripeCommands(program: Command): void {
         logger.start("Retrieving webhook secret...");
 
         const envOverride = options.env || program.opts().env;
-        const response = await makeApiRequest(
-          "/api/v1/stripe/admin/webhook/secret",
-          "GET",
-          undefined,
-          envOverride
-        );
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const webhooksApi = new V1WebhooksApi(sdkConfig);
 
-        if (response.success) {
-          const data = response.data?.data || response.data;
-          logger.succeed("Webhook secret retrieved successfully!");
-          logger.newline();
-          logger.log(`URL: ${data.url}`);
-          logger.log(`Stripe ID: ${data.stripe_id}`);
-          logger.log(`Secret: ${data.secret}`);
-          logger.newline();
-          logger.log("Environment variable:");
-          logger.log(`  STRIPE_WEBHOOK_SECRET=${data.secret}`);
-        } else {
-          logger.fail(`Failed to retrieve webhook secret: ${response.error}`);
-          process.exit(1);
-        }
+        const response = await webhooksApi.getWebhookSecret();
+        const data = response.data;
+
+        logger.succeed("Webhook secret retrieved successfully!");
+        logger.newline();
+        logger.log(`URL: ${data?.url}`);
+        logger.log(`Stripe ID: ${data?.stripeId}`);
+        logger.log(`Secret: ${data?.secret}`);
+        logger.newline();
+        logger.log("Environment variable:");
+        logger.log(`  STRIPE_WEBHOOK_SECRET=${data?.secret}`);
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Failed to retrieve webhook secret: ${errorMsg}`);
         process.exit(1);
       }
     });
@@ -672,57 +600,49 @@ export function addStripeCommands(program: Command): void {
         );
 
         const envOverride = options.env || program.opts().env;
-        const response = await makeApiRequest(
-          "/api/v1/stripe/admin/config/archive-all",
-          "POST",
-          {},
-          envOverride
-        );
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
 
-        if (response.success) {
-          const data = response.data;
+        const response = await configApi.archiveAllStripeConfig();
+        const data = response.data;
 
-          logger.succeed("Successfully completed Stripe reset!");
+        logger.succeed("Successfully completed Stripe reset!");
+        logger.newline();
+
+        if (data?.totalArchived && data.totalArchived > 0) {
+          logger.log("Summary:");
+          logger.log(`  Total archived: ${data.totalArchived}`);
+          logger.log(`  Total errors: ${data.totalErrors || 0}`);
           logger.newline();
 
-          if (data.total_archived > 0) {
-            logger.log("Summary:");
-            logger.log(`  Total archived: ${data.total_archived}`);
-            logger.log(`  Total errors: ${data.total_errors}`);
+          if (data.archivedItems && data.archivedItems.length > 0) {
+            logger.log("Archived items:");
+            data.archivedItems.forEach((item) => {
+              logger.log(`  - ${item}`);
+            });
             logger.newline();
-
-            if (data.archived_items && data.archived_items.length > 0) {
-              logger.log("Archived items:");
-              data.archived_items.forEach((item: string) => {
-                logger.log(`  - ${item}`);
-              });
-              logger.newline();
-            }
-
-            if (data.archive_errors && data.archive_errors.length > 0) {
-              logger.log("Errors:");
-              data.archive_errors.forEach((error: string) => {
-                logger.log(`  - ${error}`);
-              });
-              logger.newline();
-            }
-          } else {
-            logger.info("No active Stripe resources found to archive.");
           }
 
-          if (data.warning) {
-            logger.warn(data.warning);
+          if (data.archiveErrors && data.archiveErrors.length > 0) {
+            logger.log("Errors:");
+            data.archiveErrors.forEach((error) => {
+              logger.log(`  - ${error}`);
+            });
+            logger.newline();
           }
-
-          logger.succeed("Local config has been cleared successfully.");
         } else {
-          logger.fail(
-            `Failed to reset Stripe configuration: ${response.error}`
-          );
-          process.exit(1);
+          logger.info("No active Stripe resources found to archive.");
         }
+
+        if (data?.warning) {
+          logger.warn(data.warning);
+        }
+
+        logger.succeed("Local config has been cleared successfully.");
       } catch (error) {
-        logger.fail(error instanceof Error ? error.message : String(error));
+        const errorMsg = await extractErrorMessage(error);
+        logger.fail(`Failed to reset Stripe configuration: ${errorMsg}`);
         process.exit(1);
       }
     });

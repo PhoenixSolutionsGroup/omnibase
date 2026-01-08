@@ -31,6 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^8.1.0",
+    "@omnibase/core-js": "workspace:*",
     "@ory/client": "^1.14.3",
     "adm-zip": "^0.5.16",
     "axios": "^1.6.0",

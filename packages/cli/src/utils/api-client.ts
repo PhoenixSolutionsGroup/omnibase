@@ -1,22 +1,18 @@
 import axios, { AxiosInstance } from "axios";
 import { EnvironmentConfig } from "./environment";
 import { getActiveProfile } from "./credentials";
+import { Configuration } from "@omnibase/core-js";
 
 /**
- * Create API client for core OmniBase operations.
+ * Create SDK Configuration for core OmniBase operations.
  * Used for: database, permissions, stripe, email operations.
  * Uses: OMNIBASE_API_URL
  */
-export function createOmnibaseClient(env: EnvironmentConfig): AxiosInstance {
+export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
   const profile = getActiveProfile();
-
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-
-  if (env.omnibaseServiceKey) {
-    headers["X-Service-Key"] = env.omnibaseServiceKey;
-  }
 
   if (env.projectId) {
     headers["X-Project-ID"] = env.projectId;
@@ -30,9 +26,10 @@ export function createOmnibaseClient(env: EnvironmentConfig): AxiosInstance {
     headers["X-Api-Key"] = profile.api_key;
   }
 
-  return axios.create({
-    baseURL: env.omnibaseApiUrl,
+  return new Configuration({
+    basePath: env.omnibaseApiUrl,
     headers,
+    apiKey: env.omnibaseServiceKey ? () => env.omnibaseServiceKey! : undefined,
   });
 }
 

@@ -2,61 +2,24 @@ import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
 import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
+import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
+import { V1ConfigurationApi, ResponseError } from "@omnibase/core-js";
 
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-async function makeApiRequest(
-  endpoint: string,
-  method: "GET" | "POST" = "GET",
-  body?: any,
-  envOverride?: string
-): Promise<ApiResponse> {
-  const envConfig = await selectEnvironment(envOverride);
-  const url = `${envConfig.omnibaseApiUrl}${endpoint}`;
-
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (envConfig.omnibaseServiceKey) {
-    headers["X-Service-Key"] = envConfig.omnibaseServiceKey;
-  }
-
-  const options: RequestInit = {
-    method,
-    headers,
-  };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  try {
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        error: data.error || `${response.status} - ${response.statusText}`,
-      };
+async function extractErrorMessage(error: unknown): Promise<string> {
+  if (error instanceof ResponseError) {
+    try {
+      const body = await error.response.json();
+      return (
+        body.error ||
+        body.message ||
+        `${error.response.status} - ${error.response.statusText}`
+      );
+    } catch {
+      return `${error.response.status} - ${error.response.statusText}`;
     }
-
-    return {
-      success: true,
-      data,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
   }
+  return error instanceof Error ? error.message : "Unknown error occurred";
 }
 
 function getEmailTemplatesPath(): string {
@@ -116,6 +79,10 @@ export async function pushEmailTemplates(envOverride?: string): Promise<void> {
   logger.start("Loading email templates...");
   const templates = loadEmailTemplates();
 
+  const envConfig = await selectEnvironment(envOverride);
+  const sdkConfig = createOmnibaseSDKConfig(envConfig);
+  const configApi = new V1ConfigurationApi(sdkConfig);
+
   logger.succeed(`Found ${templates.size} template(s) to upload`);
 
   let successCount = 0;
@@ -125,23 +92,20 @@ export async function pushEmailTemplates(envOverride?: string): Promise<void> {
   for (const [type, template] of templates.entries()) {
     logger.start(`Uploading template: ${type}...`);
 
-    const response = await makeApiRequest(
-      "/api/v1/email/templates",
-      "POST",
-      {
-        type,
-        subject: template.subject,
-        html_body: template.htmlBody,
-      },
-      envOverride
-    );
-
-    if (response.success) {
+    try {
+      await configApi.createOrUpdateEmailTemplate({
+        createEmailTemplateRequest: {
+          type,
+          subject: template.subject,
+          htmlBody: template.htmlBody,
+        },
+      });
       logger.succeed(`Uploaded: ${type}`);
       successCount++;
-    } else {
-      logger.fail(`Failed to upload ${type}: ${response.error}`);
-      errors.push(`${type}: ${response.error}`);
+    } catch (error) {
+      const errorMsg = await extractErrorMessage(error);
+      logger.fail(`Failed to upload ${type}: ${errorMsg}`);
+      errors.push(`${type}: ${errorMsg}`);
       errorCount++;
     }
   }
@@ -167,9 +131,13 @@ export function addEmailCommands(program: Command): void {
         logger.start("Loading email templates...");
         const templates = loadEmailTemplates(filename);
 
+        const envOverride = options.env || program.opts().env;
+        const envConfig = await selectEnvironment(envOverride);
+        const sdkConfig = createOmnibaseSDKConfig(envConfig);
+        const configApi = new V1ConfigurationApi(sdkConfig);
+
         logger.succeed(`Found ${templates.size} template(s) to upload`);
 
-        const envOverride = options.env || program.opts().env;
         let successCount = 0;
         let errorCount = 0;
         const errors: string[] = [];
@@ -177,23 +145,20 @@ export function addEmailCommands(program: Command): void {
         for (const [type, template] of templates.entries()) {
           logger.start(`Uploading template: ${type}...`);
 
-          const response = await makeApiRequest(
-            "/api/v1/email/templates",
-            "POST",
-            {
-              type,
-              subject: template.subject,
-              html_body: template.htmlBody,
-            },
-            envOverride
-          );
-
-          if (response.success) {
+          try {
+            await configApi.createOrUpdateEmailTemplate({
+              createEmailTemplateRequest: {
+                type,
+                subject: template.subject,
+                htmlBody: template.htmlBody,
+              },
+            });
             logger.succeed(`Uploaded: ${type}`);
             successCount++;
-          } else {
-            logger.fail(`Failed to upload ${type}: ${response.error}`);
-            errors.push(`${type}: ${response.error}`);
+          } catch (error) {
+            const errorMsg = await extractErrorMessage(error);
+            logger.fail(`Failed to upload ${type}: ${errorMsg}`);
+            errors.push(`${type}: ${errorMsg}`);
             errorCount++;
           }
         }
