@@ -11,7 +11,7 @@
         {
           "id": "shared_compute_basic_hourly",
           "currency": "usd",
-          "amount": 0.273
+          "amount": 0
         },
         {
           "id": "shared_compute_pro_hourly",
