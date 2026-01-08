@@ -105,10 +105,10 @@ export function webhookConfigLifecycle() {
 
   check(updateWebhookResponse.response, {
     "update webhook: status is 200": (r) => r.status === 200,
-    "update webhook: action is updated or unchanged": (r) => {
+    "update webhook: action is updated or unchanged or created": (r) => {
       const body = r.json() as any;
       const action = body?.data?.webhooks?.[0]?.action;
-      return action === "updated" || action === "unchanged";
+      return action === "updated" || action === "unchanged" || action === "created";
     },
   });
 

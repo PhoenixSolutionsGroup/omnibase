@@ -356,70 +356,119 @@ func (h *WebhookHandler) ProcessWebhooks(ctx context.Context, configID uuid.UUID
 		"configID", configID,
 		"webhookCount", len(webhooks))
 
-	// Get existing webhooks from database for this config
-	var existingWebhooks []models.StripeWebhook
-	if err := h.db.Where("config_id = ?", configID).Find(&existingWebhooks).Error; err != nil {
-		logger.Logger.Error("Failed to retrieve existing webhooks", "error", err)
-		return nil, fmt.Errorf("failed to retrieve existing webhooks: %w", err)
-	}
-
-	// Create a map of existing webhooks by URL for quick lookup
-	existingByURL := make(map[string]*models.StripeWebhook)
-	for i := range existingWebhooks {
-		existingByURL[existingWebhooks[i].URL] = &existingWebhooks[i]
-	}
-
-	// Build set of desired webhook URLs from config
-	desiredURLs := make(map[string]bool)
-	for _, webhookConfig := range webhooks {
-		desiredURLs[webhookConfig.URL] = true
-	}
-
-	var results []WebhookResult
-
-	// Process each webhook configuration
-	for _, webhookConfig := range webhooks {
-		if existing, found := existingByURL[webhookConfig.URL]; found {
-			// Update existing webhook
-			result, err := h.updateWebhook(ctx, existing, webhookConfig.URL, webhookConfig.Events, webhookConfig.Connect)
-			if err != nil {
-				return nil, fmt.Errorf("failed to update webhook %s: %w", webhookConfig.URL, err)
-			}
-			results = append(results, *result)
-		} else {
-			// Create new webhook
-			result, err := h.createWebhook(ctx, configID, webhookConfig.URL, webhookConfig.Events, webhookConfig.Connect)
-			if err != nil {
-				return nil, fmt.Errorf("failed to create webhook %s: %w", webhookConfig.URL, err)
-			}
-			results = append(results, *result)
-		}
-	}
-
-	// Delete webhooks from database that are no longer in the configuration
-	for _, existing := range existingWebhooks {
-		if !desiredURLs[existing.URL] {
-			logger.Logger.Info("Deleting removed webhook from database", "stripeID", existing.StripeID, "url", existing.URL)
-			if err := h.DeleteWebhook(ctx, existing.StripeID); err != nil {
-				logger.Logger.Warn("Failed to delete removed webhook", "error", err, "stripeID", existing.StripeID)
-			}
-		}
-	}
-
-	// Also clean up any webhooks in Stripe that aren't in our config
-	// This handles webhooks created outside our system or orphaned webhooks
+	// Fetch all existing webhooks from Stripe
 	stripeWebhooks, err := h.ListStripeWebhooks(ctx)
 	if err != nil {
-		logger.Logger.Warn("Failed to list Stripe webhooks for cleanup", "error", err)
-	} else {
-		for _, stripeWebhook := range stripeWebhooks {
-			if !desiredURLs[stripeWebhook.URL] {
-				logger.Logger.Info("Deleting orphaned webhook from Stripe", "stripeID", stripeWebhook.ID, "url", stripeWebhook.URL)
-				if err := h.deleteWebhookByStripeID(ctx, stripeWebhook.ID); err != nil {
-					logger.Logger.Warn("Failed to delete orphaned Stripe webhook", "error", err, "stripeID", stripeWebhook.ID)
+		logger.Logger.Error("Failed to list Stripe webhooks", "error", err)
+		return nil, fmt.Errorf("failed to list Stripe webhooks: %w", err)
+	}
+
+	// Build a map of desired configs keyed by URL for quick lookup
+	desiredByURL := make(map[string]models.WebhookEndpointConfig)
+	for _, wc := range webhooks {
+		desiredByURL[wc.URL] = wc
+	}
+
+	// Group Stripe webhooks by URL
+	stripeByURL := make(map[string][]StripeWebhookInfo)
+	for _, sw := range stripeWebhooks {
+		stripeByURL[sw.URL] = append(stripeByURL[sw.URL], sw)
+	}
+
+	// CLEANUP PHASE: Delete orphans and duplicates before processing
+	for url, swList := range stripeByURL {
+		desiredConfig, isDesired := desiredByURL[url]
+
+		if !isDesired {
+			// URL not in desired config - delete all webhooks for this URL
+			for _, sw := range swList {
+				logger.Logger.Info("Deleting orphaned webhook from Stripe", "stripeID", sw.ID, "url", sw.URL)
+				if err := h.deleteWebhookByStripeID(ctx, sw.ID); err != nil {
+					logger.Logger.Warn("Failed to delete orphaned Stripe webhook", "error", err, "stripeID", sw.ID)
 				}
+				h.db.Where("stripe_id = ?", sw.ID).Delete(&models.StripeWebhook{})
+			}
+			continue
+		}
+
+		// URL is desired - find matching webhooks and handle duplicates
+		var matchingIdx = -1
+		for i, sw := range swList {
+			if eventsEqual(sw.Events, desiredConfig.Events) && sw.Connect == desiredConfig.Connect {
+				if matchingIdx == -1 {
+					matchingIdx = i // Keep the first match
+				} else {
+					// Duplicate - delete it
+					logger.Logger.Info("Deleting duplicate webhook from Stripe", "stripeID", sw.ID, "url", sw.URL)
+					if err := h.deleteWebhookByStripeID(ctx, sw.ID); err != nil {
+						logger.Logger.Warn("Failed to delete duplicate Stripe webhook", "error", err, "stripeID", sw.ID)
+					}
+					h.db.Where("stripe_id = ?", sw.ID).Delete(&models.StripeWebhook{})
+				}
+			} else {
+				// Same URL but different events/connect - delete it
+				logger.Logger.Info("Deleting webhook with mismatched config", "stripeID", sw.ID, "url", sw.URL)
+				if err := h.deleteWebhookByStripeID(ctx, sw.ID); err != nil {
+					logger.Logger.Warn("Failed to delete mismatched Stripe webhook", "error", err, "stripeID", sw.ID)
+				}
+				h.db.Where("stripe_id = ?", sw.ID).Delete(&models.StripeWebhook{})
 			}
 		}
+
+		// Update stripeByURL to only keep the matching webhook (if any)
+		if matchingIdx >= 0 {
+			stripeByURL[url] = []StripeWebhookInfo{swList[matchingIdx]}
+		} else {
+			delete(stripeByURL, url)
+		}
+	}
+
+	// PROCESSING PHASE: Create webhooks that don't exist, skip ones that do
+	var results []WebhookResult
+
+	for _, webhookConfig := range webhooks {
+		existingList := stripeByURL[webhookConfig.URL]
+
+		if len(existingList) > 0 {
+			// Webhook already exists with matching URL + events - skip
+			sw := existingList[0]
+			logger.Logger.Info("Webhook already exists in Stripe, skipping",
+				"stripeID", sw.ID,
+				"url", sw.URL)
+
+			// Ensure it's in our database
+			var dbWebhook models.StripeWebhook
+			err := h.db.Where("stripe_id = ?", sw.ID).First(&dbWebhook).Error
+			if err == gorm.ErrRecordNotFound {
+				dbWebhook = models.StripeWebhook{
+					StripeID: sw.ID,
+					URL:      sw.URL,
+					Events:   sw.Events,
+					Connect:  sw.Connect,
+					ConfigID: &configID,
+				}
+				if err := h.db.Create(&dbWebhook).Error; err != nil {
+					logger.Logger.Warn("Failed to import existing webhook to database", "error", err)
+				}
+			}
+
+			results = append(results, WebhookResult{
+				ID:       dbWebhook.ID.String(),
+				StripeID: sw.ID,
+				URL:      sw.URL,
+				Events:   sw.Events,
+				Connect:  sw.Connect,
+				Action:   "unchanged",
+			})
+			continue
+		}
+
+		// No matching webhook exists - create new one
+		result, err := h.createWebhook(ctx, configID, webhookConfig.URL, webhookConfig.Events, webhookConfig.Connect)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create webhook %s: %w", webhookConfig.URL, err)
+		}
+		results = append(results, *result)
 	}
 
 	logger.Logger.Info("Webhooks processing completed",
