@@ -231,6 +231,16 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 	logger.Logger.Debug("Getting product details before archival", "productID", productID)
 	stripeProduct, err := product.Get(productID, getParams)
 	if err != nil {
+		// If the product doesn't exist in Stripe (404), treat as already archived
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
+			logger.Logger.Info("Product not found in Stripe, treating as already archived", "productID", productID)
+			return &models.ProductChange{
+				ProductID:   productID,
+				ProductName: fmt.Sprintf("Product %s", productID),
+				Action:      "archived",
+				Details:     []string{fmt.Sprintf("Product %s not found in Stripe (already deleted/archived)", productID)},
+			}, nil
+		}
 		logger.Logger.Error("Failed to get product for archiving", "error", err, "productID", productID)
 		return nil, fmt.Errorf("failed to get product for archiving: %w", err)
 	}
