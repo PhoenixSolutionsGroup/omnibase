@@ -18,49 +18,52 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	rolesHandler := tenants.NewRolesHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
-	// Validate auth headers first (406 if missing), then authenticate (401 if invalid)
-	router.Use(authMiddleware.RequireAuthHeaders())
-	router.Use(authMiddleware.RequireSessionOrServiceKey())
+	// Service-key only routes (lookup endpoints for service-to-service calls)
+	serviceKeyOnly := router.Group("")
+	serviceKeyOnly.Use(authMiddleware.RequireServiceKey())
+	serviceKeyOnly.GET("/by-id/:tenant_id", tenantHandler.GetTenantByID)
+	serviceKeyOnly.GET("/by-stripe-customer/:stripe_customer_id", tenantHandler.GetTenantByStripeCustomerID)
 
-	router.GET("/jwt", tenantHandler.GetPostgRESTJWTToken)
+	// Routes that accept session OR service key auth
+	authenticated := router.Group("")
+	authenticated.Use(authMiddleware.RequireAuthHeaders())
+	authenticated.Use(authMiddleware.RequireSessionOrServiceKey())
 
-	router.GET("/users", tenantHandler.GetTenantUsers)
+	authenticated.GET("/jwt", tenantHandler.GetPostgRESTJWTToken)
 
-	router.GET("/subscriptions", tenantHandler.ListTenantSubscriptions)
+	authenticated.GET("/users", tenantHandler.GetTenantUsers)
 
-	router.GET("/subscriptions/:config_price_id", tenantHandler.GetTenantSubscription)
+	authenticated.GET("/subscriptions", tenantHandler.ListTenantSubscriptions)
 
-	router.DELETE("/subscriptions", tenantHandler.RemoveSubscription)
+	authenticated.GET("/subscriptions/:config_price_id", tenantHandler.GetTenantSubscription)
 
-	router.POST("/subscriptions", tenantHandler.AddSubscription)
+	authenticated.DELETE("/subscriptions", tenantHandler.RemoveSubscription)
 
-	router.GET("/billing-status", tenantHandler.GetBillingStatus)
+	authenticated.POST("/subscriptions", tenantHandler.AddSubscription)
 
-	router.POST("", tenantHandler.CreateTenant)
+	authenticated.GET("/billing-status", tenantHandler.GetBillingStatus)
 
-	router.POST("/invites", tenantHandler.CreateTenantUserInvite)
+	authenticated.POST("", tenantHandler.CreateTenant)
 
-	router.PUT("/users", tenantHandler.UpdateTenantUserRole)
+	authenticated.POST("/invites", tenantHandler.CreateTenantUserInvite)
 
-	router.PUT("/invites/accept", tenantHandler.AcceptInvite)
+	authenticated.PUT("/users", tenantHandler.UpdateTenantUserRole)
 
-	router.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
+	authenticated.PUT("/invites/accept", tenantHandler.AcceptInvite)
 
-	router.DELETE("", tenantHandler.DeleteTenant)
+	authenticated.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
 
-	router.DELETE("/users", tenantHandler.DeleteTenantUser)
+	authenticated.DELETE("", tenantHandler.DeleteTenant)
 
-	router.GET("/roles", rolesHandler.ListRoles)
+	authenticated.DELETE("/users", tenantHandler.DeleteTenantUser)
 
-	router.GET("/roles/definitions", rolesHandler.GetDefinitions)
+	authenticated.GET("/roles", rolesHandler.ListRoles)
 
-	router.POST("/roles", rolesHandler.CreateRole)
+	authenticated.GET("/roles/definitions", rolesHandler.GetDefinitions)
 
-	router.PUT("/roles/:role_id", rolesHandler.UpdateRole)
+	authenticated.POST("/roles", rolesHandler.CreateRole)
 
-	router.DELETE("/roles/:role_id", rolesHandler.DeleteRole)
+	authenticated.PUT("/roles/:role_id", rolesHandler.UpdateRole)
 
-	router.GET("/by-id/:tenant_id", tenantHandler.GetTenantByID)
-
-	router.GET("/by-stripe-customer/:stripe_customer_id", tenantHandler.GetTenantByStripeCustomerID)
+	authenticated.DELETE("/roles/:role_id", rolesHandler.DeleteRole)
 }

@@ -13,13 +13,12 @@ paths:
         Returns a tenant by its ID.
 
         ## Authentication
-        - **Session Auth**: Requires JWT token / Cookie Session
-        - **Service Key Auth**: Requires X-Service-Key header
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
         ## Use Cases
-        - Direct tenant lookup by ID
         - Service-to-service tenant resolution
         - Webhook processing
+        - Backend tenant lookup
       operationId: getTenantByID
       parameters:
         - name: tenant_id
@@ -31,8 +30,6 @@ paths:
             format: uuid
           example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
       security:
-        - CookieAuth: []
-        - SessionTokenAuth: []
         - ServiceKeyAuth: []
       responses:
         '200':
@@ -80,8 +77,7 @@ paths:
         Returns a tenant by its Stripe customer ID.
 
         ## Authentication
-        - **Session Auth**: Requires JWT token / Cookie Session
-        - **Service Key Auth**: Requires X-Service-Key header
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
         ## Use Cases
         - Stripe webhook processing
@@ -97,8 +93,6 @@ paths:
             type: string
           example: "cus_TOWEstcga5ou7a"
       security:
-        - CookieAuth: []
-        - SessionTokenAuth: []
         - ServiceKeyAuth: []
       responses:
         '200':

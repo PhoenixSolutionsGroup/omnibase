@@ -64,9 +64,7 @@ export async function tenantLookup() {
   const tenant = tenantData.tenant;
 
   // Test 1: Get tenant by ID - success case
-  const getByIdResponse = client.getTenantByID(tenant.id, {
-    "X-User-Id": user.id,
-  });
+  const getByIdResponse = client.getTenantByID(tenant.id);
 
   check(getByIdResponse.response, {
     "get by ID: status is 200": (r) => r.status === 200,
@@ -89,9 +87,7 @@ export async function tenantLookup() {
   }
 
   // Test 2: Get tenant by ID - invalid UUID
-  const invalidIdResponse = client.getTenantByID("not-a-valid-uuid", {
-    "X-User-Id": user.id,
-  });
+  const invalidIdResponse = client.getTenantByID("not-a-valid-uuid");
 
   check(invalidIdResponse.response, {
     "get by invalid ID: status is 400 or 404": (r) =>
@@ -100,10 +96,7 @@ export async function tenantLookup() {
 
   // Test 3: Get tenant by ID - non-existent tenant
   const nonExistentIdResponse = client.getTenantByID(
-    "00000000-0000-0000-0000-000000000000",
-    {
-      "X-User-Id": user.id,
-    }
+    "00000000-0000-0000-0000-000000000000"
   );
 
   check(nonExistentIdResponse.response, {
@@ -113,10 +106,7 @@ export async function tenantLookup() {
   // Test 4: Get tenant by Stripe customer ID - success case
   if (tenant.stripe_customer_id) {
     const getByStripeIdResponse = client.getTenantByStripeCustomerID(
-      tenant.stripe_customer_id,
-      {
-        "X-User-Id": user.id,
-      }
+      tenant.stripe_customer_id
     );
 
     check(getByStripeIdResponse.response, {
@@ -131,7 +121,9 @@ export async function tenantLookup() {
       },
       "get by Stripe ID: returns matching stripe_customer_id": (r) => {
         const body = r.json() as any;
-        return body?.data?.tenant?.stripe_customer_id === tenant.stripe_customer_id;
+        return (
+          body?.data?.tenant?.stripe_customer_id === tenant.stripe_customer_id
+        );
       },
     });
 
@@ -142,10 +134,7 @@ export async function tenantLookup() {
 
   // Test 5: Get tenant by Stripe customer ID - non-existent
   const nonExistentStripeIdResponse = client.getTenantByStripeCustomerID(
-    "cus_nonexistent123456",
-    {
-      "X-User-Id": user.id,
-    }
+    "cus_nonexistent123456"
   );
 
   check(nonExistentStripeIdResponse.response, {
