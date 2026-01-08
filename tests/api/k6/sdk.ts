@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.11.0
+ * Service version: 0.12.5
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -73,6 +73,16 @@ export interface Tenant {
    * @nullable
    */
   stripe_customer_id?: string | null;
+  /**
+   * Enterprise pricing template applied to this tenant
+   * @nullable
+   */
+  enterprise_template?: string | null;
+  /**
+   * Custom enterprise pricing ID for this tenant
+   * @nullable
+   */
+  enterprise_id?: string | null;
   /** Tenant type */
   type: string;
   /** Timestamp when tenant was created */
@@ -1187,6 +1197,10 @@ export interface PriceWithStripeID {
   tiers?: Tier[];
   /** Mark as default price */
   default?: boolean;
+  /** Enterprise template group for shared pricing tiers */
+  enterprise_template?: string;
+  /** Enterprise pricing group ID for tenant-specific pricing */
+  enterprise_id?: string;
   ui?: PriceUI;
   /**
    * Actual Stripe price ID (null for free prices)
@@ -1222,7 +1236,6 @@ export type ProductWithStripeIDsType =
 export const ProductWithStripeIDsType = {
   service: "service",
   good: "good",
-  metered: "metered",
 } as const;
 
 export interface ProductWithStripeIDs {
@@ -1361,6 +1374,10 @@ export type PerUnitPrice =
       billing_scheme?: PerUnitBillingScheme;
       /** Mark as default price for the product */
       default?: boolean;
+      /** Enterprise template group for shared pricing tiers */
+      enterprise_template?: string;
+      /** Enterprise pricing group ID for tenant-specific pricing */
+      enterprise_id?: string;
       ui?: PriceUI;
     })
   | (unknown & {
@@ -1399,6 +1416,10 @@ export type PerUnitPrice =
       billing_scheme?: PerUnitBillingScheme;
       /** Mark as default price for the product */
       default?: boolean;
+      /** Enterprise template group for shared pricing tiers */
+      enterprise_template?: string;
+      /** Enterprise pricing group ID for tenant-specific pricing */
+      enterprise_id?: string;
       ui?: PriceUI;
     });
 
@@ -1466,6 +1487,10 @@ export type TieredPrice =
       tiers: Tier[];
       /** Mark as default price for the product */
       default?: boolean;
+      /** Enterprise template group for shared pricing tiers */
+      enterprise_template?: string;
+      /** Enterprise pricing group ID for tenant-specific pricing */
+      enterprise_id?: string;
       ui?: PriceUI;
     })
   | (unknown & {
@@ -1505,6 +1530,10 @@ export type TieredPrice =
       tiers: Tier[];
       /** Mark as default price for the product */
       default?: boolean;
+      /** Enterprise template group for shared pricing tiers */
+      enterprise_template?: string;
+      /** Enterprise pricing group ID for tenant-specific pricing */
+      enterprise_id?: string;
       ui?: PriceUI;
     });
 
@@ -1519,7 +1548,6 @@ export type ProductType = (typeof ProductType)[keyof typeof ProductType];
 export const ProductType = {
   service: "service",
   good: "good",
-  metered: "metered",
 } as const;
 
 export interface Product {
@@ -1756,6 +1784,44 @@ export interface WebhookResult {
 export interface WebhooksConfigResponse {
   /** List of configured webhook endpoints with results */
   webhooks: WebhookResult[];
+}
+
+export interface ApplyEnterpriseTemplateRequest {
+  /** Tenant ID to apply enterprise pricing to */
+  tenant_id: string;
+  /**
+   * Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)
+   * @minLength 1
+   */
+  enterprise_template: string;
+}
+
+export interface EnterpriseApplyResponse {
+  /** Success message */
+  message: string;
+  /** Tenant ID that pricing was applied to */
+  tenant_id: string;
+  /** Number of subscription prices that were swapped */
+  prices_swapped: number;
+  /** Details of each price swap performed */
+  swapped_details?: string[];
+}
+
+export interface ApplyEnterpriseCustomRequest {
+  /** Tenant ID to apply enterprise pricing to */
+  tenant_id: string;
+  /**
+   * Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)
+   * @minLength 1
+   */
+  enterprise_id: string;
+}
+
+export interface EnterprisePricesResponse {
+  /** List of enterprise prices matching the query */
+  prices: PriceWithStripeID[];
+  /** Total number of prices returned */
+  count: number;
 }
 
 /**
@@ -2569,6 +2635,34 @@ export type ConfigureWebhooks200AllOf = {
 };
 
 export type ConfigureWebhooks200 = SuccessResponse & ConfigureWebhooks200AllOf;
+
+export type ApplyEnterpriseTemplate200AllOf = {
+  data?: EnterpriseApplyResponse;
+};
+
+export type ApplyEnterpriseTemplate200 = SuccessResponse &
+  ApplyEnterpriseTemplate200AllOf;
+
+export type ApplyEnterpriseCustom200AllOf = {
+  data?: EnterpriseApplyResponse;
+};
+
+export type ApplyEnterpriseCustom200 = SuccessResponse &
+  ApplyEnterpriseCustom200AllOf;
+
+export type GetEnterprisePricesByTemplate200AllOf = {
+  data?: EnterprisePricesResponse;
+};
+
+export type GetEnterprisePricesByTemplate200 = SuccessResponse &
+  GetEnterprisePricesByTemplate200AllOf;
+
+export type GetEnterprisePricesByID200AllOf = {
+  data?: EnterprisePricesResponse;
+};
+
+export type GetEnterprisePricesByID200 = SuccessResponse &
+  GetEnterprisePricesByID200AllOf;
 
 export type CreateTenantHeaders = {
   /**
@@ -5062,6 +5156,216 @@ The CLI resolves these before sending to the API.
   }
 
   /**
+ * Applies template-based enterprise pricing to a tenant. This swaps the tenant's
+active subscription prices to the corresponding enterprise template prices.
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- Apply pre-defined discount tiers to enterprise customers
+- Bulk pricing changes for enterprise accounts
+- Template-based enterprise onboarding
+
+## Flow
+1. Validates tenant exists and has Stripe customer ID
+2. Fetches all prices with matching `enterprise_template`
+3. Swaps subscription item prices to enterprise equivalents
+4. Updates tenant's `enterprise_template` field for future provisioning
+
+ * @summary Apply enterprise template pricing
+ */
+  applyEnterpriseTemplate(
+    applyEnterpriseTemplateRequest: ApplyEnterpriseTemplateRequest,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: ApplyEnterpriseTemplate200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/admin/enterprise/apply-template`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(applyEnterpriseTemplateRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant's
+active subscription prices to custom enterprise prices identified by enterprise_id.
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- Apply custom negotiated pricing for specific enterprise customers
+- Tenant-specific pricing overrides
+- Custom enterprise onboarding
+
+## Flow
+1. Validates tenant exists and has Stripe customer ID
+2. Fetches all prices with matching `enterprise_id`
+3. Swaps subscription item prices to enterprise equivalents
+4. Updates tenant's `enterprise_id` field for future provisioning
+
+ * @summary Apply custom enterprise pricing
+ */
+  applyEnterpriseCustom(
+    applyEnterpriseCustomRequest: ApplyEnterpriseCustomRequest,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: ApplyEnterpriseCustom200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/admin/enterprise/apply-custom`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(applyEnterpriseCustomRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Retrieves prices filtered by enterprise template.
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- List available enterprise prices for a template
+- Provisioning services for enterprise tenants
+
+ * @summary Get enterprise prices by template
+ */
+  getEnterprisePricesByTemplate(
+    template: string,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: GetEnterprisePricesByTemplate200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl +
+        `/api/v1/stripe/admin/enterprise/prices/by-template/${template}`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters,
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Retrieves prices filtered by enterprise ID.
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- View custom pricing for a specific enterprise
+- Provisioning services for enterprise tenants
+
+ * @summary Get enterprise prices by ID
+ */
+  getEnterprisePricesByID(
+    enterpriseId: string,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: GetEnterprisePricesByID200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl +
+        `/api/v1/stripe/admin/enterprise/prices/by-id/${enterpriseId}`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "GET",
+      url.toString(),
+      undefined,
+      mergedRequestParameters,
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
  * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.
 
 ## Authentication
@@ -5184,13 +5488,12 @@ The user_id must be a valid UUID matching an existing Kratos identity.
  * Returns a tenant by its ID.
 
 ## Authentication
-- **Session Auth**: Requires JWT token / Cookie Session
-- **Service Key Auth**: Requires X-Service-Key header
+- **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
 ## Use Cases
-- Direct tenant lookup by ID
 - Service-to-service tenant resolution
 - Webhook processing
+- Backend tenant lookup
 
  * @summary Get tenant by ID
  */
@@ -5231,8 +5534,7 @@ The user_id must be a valid UUID matching an existing Kratos identity.
  * Returns a tenant by its Stripe customer ID.
 
 ## Authentication
-- **Session Auth**: Requires JWT token / Cookie Session
-- **Service Key Auth**: Requires X-Service-Key header
+- **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
 ## Use Cases
 - Stripe webhook processing

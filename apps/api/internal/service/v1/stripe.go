@@ -643,3 +643,80 @@ func (s *StripeService) FinalizeInvoice(invoiceID string, autoAdvance bool) (*st
 
 	return inv, nil
 }
+
+// SwapSubscriptionItemPrice swaps a subscription item's price to a new price
+// Used for enterprise pricing transitions
+func (s *StripeService) SwapSubscriptionItemPrice(subscriptionID string, oldConfigPriceID string, newStripePriceID string) error {
+	// First, get the subscription to find the item with the old price
+	params := &stripe.SubscriptionParams{}
+	s.applyConnectAccount(params)
+
+	sub, err := subscription.Get(subscriptionID, params)
+	if err != nil {
+		return fmt.Errorf("failed to get subscription: %w", err)
+	}
+
+	// Find the subscription item with the old price
+	var targetItemID string
+	for _, item := range sub.Items.Data {
+		configID, _, err := s.GetConfigIDByStripeID(item.Price.ID)
+		if err != nil {
+			continue
+		}
+		if configID == oldConfigPriceID {
+			targetItemID = item.ID
+			break
+		}
+	}
+
+	if targetItemID == "" {
+		return fmt.Errorf("subscription item not found for price: %s", oldConfigPriceID)
+	}
+
+	// Update the subscription item with the new price
+	updateParams := &stripe.SubscriptionParams{
+		Items: []*stripe.SubscriptionItemsParams{
+			{
+				ID:    stripe.String(targetItemID),
+				Price: stripe.String(newStripePriceID),
+			},
+		},
+		ProrationBehavior: stripe.String("none"), // Don't prorate for enterprise switches
+	}
+	s.applyConnectAccount(updateParams)
+
+	_, err = subscription.Update(subscriptionID, updateParams)
+	if err != nil {
+		return fmt.Errorf("failed to update subscription item price: %w", err)
+	}
+
+	logger.Logger.Info("Subscription item price swapped",
+		"subscription_id", subscriptionID,
+		"old_config_price", oldConfigPriceID,
+		"new_stripe_price", newStripePriceID)
+
+	return nil
+}
+
+// GetSubscriptionItemByPrice finds a subscription item by its config price ID
+func (s *StripeService) GetSubscriptionItemByPrice(subscriptionID string, configPriceID string) (*stripe.SubscriptionItem, error) {
+	params := &stripe.SubscriptionParams{}
+	s.applyConnectAccount(params)
+
+	sub, err := subscription.Get(subscriptionID, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get subscription: %w", err)
+	}
+
+	for _, item := range sub.Items.Data {
+		configID, _, err := s.GetConfigIDByStripeID(item.Price.ID)
+		if err != nil {
+			continue
+		}
+		if configID == configPriceID {
+			return item, nil
+		}
+	}
+
+	return nil, fmt.Errorf("subscription item not found for price: %s", configPriceID)
+}

@@ -112,7 +112,9 @@ type Price struct {
 	BillingScheme      string   `json:"billing_scheme,omitempty"` // per_unit, tiered
 	TiersMode          string   `json:"tiers_mode,omitempty"`     // graduated, volume (required when billing_scheme is tiered)
 	Tiers              []Tier   `json:"tiers,omitempty"`
-	Default            bool     `json:"default,omitempty"` // mark as default price for the product
+	Default            bool     `json:"default,omitempty"`             // mark as default price for the product
+	EnterpriseTemplate string   `json:"enterprise_template,omitempty"` // enterprise template group (e.g., "tier1_10pct_off")
+	EnterpriseID       string   `json:"enterprise_id,omitempty"`       // enterprise pricing group ID (e.g., "acme_corp")
 	UI                 *PriceUI `json:"ui,omitempty"`
 }
 

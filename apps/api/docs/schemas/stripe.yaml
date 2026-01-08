@@ -148,7 +148,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: "service"
         prices:
           type: array
@@ -186,7 +185,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: "service"
         prices:
           type: array
@@ -265,6 +263,14 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: "tier1_10pct_off"
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: "acme_corp"
         ui:
           $ref: '#/components/schemas/PriceUI'
       anyOf:
@@ -337,6 +343,14 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: "tier1_10pct_off"
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: "acme_corp"
         ui:
           $ref: '#/components/schemas/PriceUI'
       anyOf:
@@ -408,6 +422,14 @@ components:
           type: boolean
           description: Mark as default price
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: "tier1_10pct_off"
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: "acme_corp"
         ui:
           $ref: '#/components/schemas/PriceUI'
         stripe_id:
@@ -1127,3 +1149,82 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
+
+    # Enterprise Pricing Models
+    ApplyEnterpriseTemplateRequest:
+      type: object
+      required:
+        - tenant_id
+        - enterprise_template
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        enterprise_template:
+          type: string
+          minLength: 1
+          description: Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)
+          example: "tier1_10pct_off"
+
+    ApplyEnterpriseCustomRequest:
+      type: object
+      required:
+        - tenant_id
+        - enterprise_id
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        enterprise_id:
+          type: string
+          minLength: 1
+          description: Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)
+          example: "acme_corp"
+
+    EnterpriseApplyResponse:
+      type: object
+      required:
+        - message
+        - tenant_id
+        - prices_swapped
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Enterprise pricing applied successfully"
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID that pricing was applied to
+          example: "7d5da463-8351-4abe-870c-8ccdefc4d78c"
+        prices_swapped:
+          type: integer
+          description: Number of subscription prices that were swapped
+          example: 3
+        swapped_details:
+          type: array
+          description: Details of each price swap performed
+          items:
+            type: string
+          example:
+            - "basic_monthly -> basic_monthly_tier1 (subscription: sub_123)"
+
+    EnterprisePricesResponse:
+      type: object
+      required:
+        - prices
+        - count
+      properties:
+        prices:
+          type: array
+          description: List of enterprise prices matching the query
+          items:
+            $ref: '#/components/schemas/PriceWithStripeID'
+        count:
+          type: integer
+          description: Total number of prices returned
+          example: 3

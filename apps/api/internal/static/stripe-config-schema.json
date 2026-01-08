@@ -60,9 +60,9 @@
         },
         "type": {
           "type": "string",
-          "enum": ["service", "good", "metered"],
+          "enum": ["service", "good"],
           "default": "service",
-          "description": "Type of product (service for subscriptions, good for one-time payments, metered for usage-based)"
+          "description": "Type of product (service for subscriptions, good for one-time payments)"
         },
         "prices": {
           "type": "array",
@@ -149,6 +149,16 @@
         "default": {
           "type": "boolean",
           "description": "Mark this price as the default price for the product"
+        },
+        "enterprise_template": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Enterprise template group (e.g., 'tier1_10pct_off', 'tier2_25pct_off')"
+        },
+        "enterprise_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Enterprise pricing group ID (e.g., 'acme_corp', 'bigtech_inc')"
         },
         "ui": {
           "$ref": "#/definitions/priceUI",

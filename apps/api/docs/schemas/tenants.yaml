@@ -28,6 +28,16 @@ components:
           nullable: true
           description: Stripe customer ID (nullable initially)
           example: "cus_TOWEstcga5ou7a"
+        enterprise_template:
+          type: string
+          nullable: true
+          description: Enterprise pricing template applied to this tenant
+          example: "tier1_10pct_off"
+        enterprise_id:
+          type: string
+          nullable: true
+          description: Custom enterprise pricing ID for this tenant
+          example: "acme_corp"
         type:
           type: string
           description: Tenant type

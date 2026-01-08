@@ -1,4 +1,4 @@
-import { PaymentTests } from "./payments";
+import { PaymentTests, EnterprisePricingTests } from "./payments";
 import { PermissionTests } from "./permissions";
 import { SecurityTests } from "./security";
 import { StorageTests } from "./storage";
@@ -16,4 +16,5 @@ export default async function () {
   await PermissionTests();
   await StorageTests();
   await PaymentTests();
+  await EnterprisePricingTests();
 }

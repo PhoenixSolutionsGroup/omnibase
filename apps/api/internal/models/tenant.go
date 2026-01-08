@@ -17,8 +17,10 @@ func (TenantSettings) TableName() string {
 type Tenant struct {
 	ID               string    `json:"id" db:"id" binding:"required" example:"7d5da463-8351-4abe-870c-8ccdefc4d78c"`
 	Name             string    `json:"name" db:"name" binding:"required" example:"Test Organization"`
-	StripeCustomerID *string   `json:"stripe_customer_id" db:"stripe_customer_id" example:"cus_TOWEstcga5ou7a"` // Nullable initially
-	Type             string    `json:"type" db:"type" binding:"required" example:"organization"`
+	StripeCustomerID   *string `json:"stripe_customer_id" db:"stripe_customer_id" example:"cus_TOWEstcga5ou7a"` // Nullable initially
+	EnterpriseTemplate *string `json:"enterprise_template,omitempty" db:"enterprise_template"`                  // e.g., "tier1_10pct_off"
+	EnterpriseID       *string `json:"enterprise_id,omitempty" db:"enterprise_id"`                              // e.g., "acme_corp"
+	Type               string  `json:"type" db:"type" binding:"required" example:"organization"`
 	CreatedAt        time.Time `json:"created_at" db:"created_at" binding:"required" example:"2025-11-10T00:42:29.440300124Z"`
 	UpdatedAt        time.Time `json:"updated_at" db:"updated_at" binding:"required" example:"2025-11-10T00:42:29.440300172Z"`
 

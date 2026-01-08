@@ -2484,6 +2484,238 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/apply-template:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Apply enterprise template pricing
+      description: |
+        Applies template-based enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to the corresponding enterprise template prices.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Apply pre-defined discount tiers to enterprise customers
+        - Bulk pricing changes for enterprise accounts
+        - Template-based enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_template`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_template` field for future provisioning
+      operationId: applyEnterpriseTemplate
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyEnterpriseTemplateRequest'
+      responses:
+        '200':
+          description: Enterprise template pricing applied successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterpriseApplyResponse'
+        '400':
+          description: Invalid request or tenant has no Stripe customer ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: Tenant or enterprise template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/apply-custom:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Apply custom enterprise pricing
+      description: |
+        Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to custom enterprise prices identified by enterprise_id.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Apply custom negotiated pricing for specific enterprise customers
+        - Tenant-specific pricing overrides
+        - Custom enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_id`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_id` field for future provisioning
+      operationId: applyEnterpriseCustom
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyEnterpriseCustomRequest'
+      responses:
+        '200':
+          description: Custom enterprise pricing applied successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterpriseApplyResponse'
+        '400':
+          description: Invalid request or tenant has no Stripe customer ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: Tenant or enterprise_id not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/prices/by-template/{template}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by template
+      description: |
+        Retrieves prices filtered by enterprise template.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - List available enterprise prices for a template
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByTemplate
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: template
+          in: path
+          description: Enterprise template to filter by
+          required: true
+          schema:
+            type: string
+            example: tier1_10pct_off
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by ID
+      description: |
+        Retrieves prices filtered by enterprise ID.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - View custom pricing for a specific enterprise
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByID
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: enterprise_id
+          in: path
+          description: Enterprise ID to filter by
+          required: true
+          schema:
+            type: string
+            example: acme_corp
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /api/v1/tenants:
     post:
       tags:
@@ -2650,13 +2882,12 @@ paths:
         Returns a tenant by its ID.
 
         ## Authentication
-        - **Session Auth**: Requires JWT token / Cookie Session
-        - **Service Key Auth**: Requires X-Service-Key header
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
         ## Use Cases
-        - Direct tenant lookup by ID
         - Service-to-service tenant resolution
         - Webhook processing
+        - Backend tenant lookup
       operationId: getTenantByID
       parameters:
         - name: tenant_id
@@ -2668,8 +2899,6 @@ paths:
             format: uuid
           example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
       security:
-        - CookieAuth: []
-        - SessionTokenAuth: []
         - ServiceKeyAuth: []
       responses:
         '200':
@@ -2716,8 +2945,7 @@ paths:
         Returns a tenant by its Stripe customer ID.
 
         ## Authentication
-        - **Session Auth**: Requires JWT token / Cookie Session
-        - **Service Key Auth**: Requires X-Service-Key header
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
 
         ## Use Cases
         - Stripe webhook processing
@@ -2733,8 +2961,6 @@ paths:
             type: string
           example: cus_TOWEstcga5ou7a
       security:
-        - CookieAuth: []
-        - SessionTokenAuth: []
         - ServiceKeyAuth: []
       responses:
         '200':
@@ -4095,6 +4321,16 @@ components:
           nullable: true
           description: Stripe customer ID (nullable initially)
           example: cus_TOWEstcga5ou7a
+        enterprise_template:
+          type: string
+          nullable: true
+          description: Enterprise pricing template applied to this tenant
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          nullable: true
+          description: Custom enterprise pricing ID for this tenant
+          example: acme_corp
         type:
           type: string
           description: Tenant type
@@ -5598,6 +5834,14 @@ components:
           type: boolean
           description: Mark as default price
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
         stripe_id:
@@ -5667,7 +5911,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: service
         prices:
           type: array
@@ -5849,6 +6092,14 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
       anyOf:
@@ -5933,6 +6184,14 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
       anyOf:
@@ -5978,7 +6237,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: service
         prices:
           type: array
@@ -6357,6 +6615,80 @@ components:
           description: List of configured webhook endpoints with results
           items:
             $ref: '#/components/schemas/WebhookResult'
+    ApplyEnterpriseTemplateRequest:
+      type: object
+      required:
+        - tenant_id
+        - enterprise_template
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        enterprise_template:
+          type: string
+          minLength: 1
+          description: Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)
+          example: tier1_10pct_off
+    EnterpriseApplyResponse:
+      type: object
+      required:
+        - message
+        - tenant_id
+        - prices_swapped
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: Enterprise pricing applied successfully
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID that pricing was applied to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        prices_swapped:
+          type: integer
+          description: Number of subscription prices that were swapped
+          example: 3
+        swapped_details:
+          type: array
+          description: Details of each price swap performed
+          items:
+            type: string
+          example:
+            - 'basic_monthly -> basic_monthly_tier1 (subscription: sub_123)'
+    ApplyEnterpriseCustomRequest:
+      type: object
+      required:
+        - tenant_id
+        - enterprise_id
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        enterprise_id:
+          type: string
+          minLength: 1
+          description: Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)
+          example: acme_corp
+    EnterprisePricesResponse:
+      type: object
+      required:
+        - prices
+        - count
+      properties:
+        prices:
+          type: array
+          description: List of enterprise prices matching the query
+          items:
+            $ref: '#/components/schemas/PriceWithStripeID'
+        count:
+          type: integer
+          description: Total number of prices returned
+          example: 3
     CreateTenantRequest:
       type: object
       description: Request to create a new tenant

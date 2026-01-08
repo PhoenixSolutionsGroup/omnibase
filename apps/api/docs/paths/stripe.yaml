@@ -683,3 +683,239 @@ paths:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/enterprise/apply-template:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Apply enterprise template pricing
+      description: |
+        Applies template-based enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to the corresponding enterprise template prices.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Apply pre-defined discount tiers to enterprise customers
+        - Bulk pricing changes for enterprise accounts
+        - Template-based enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_template`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_template` field for future provisioning
+      operationId: applyEnterpriseTemplate
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/stripe.yaml#/components/schemas/ApplyEnterpriseTemplateRequest'
+      responses:
+        '200':
+          description: Enterprise template pricing applied successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
+        '400':
+          description: Invalid request or tenant has no Stripe customer ID
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '404':
+          description: Tenant or enterprise template not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/enterprise/apply-custom:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Apply custom enterprise pricing
+      description: |
+        Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to custom enterprise prices identified by enterprise_id.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Apply custom negotiated pricing for specific enterprise customers
+        - Tenant-specific pricing overrides
+        - Custom enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_id`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_id` field for future provisioning
+      operationId: applyEnterpriseCustom
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/stripe.yaml#/components/schemas/ApplyEnterpriseCustomRequest'
+      responses:
+        '200':
+          description: Custom enterprise pricing applied successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
+        '400':
+          description: Invalid request or tenant has no Stripe customer ID
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '404':
+          description: Tenant or enterprise_id not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/enterprise/prices/by-template/{template}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by template
+      description: |
+        Retrieves prices filtered by enterprise template.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - List available enterprise prices for a template
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByTemplate
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: template
+          in: path
+          description: Enterprise template to filter by
+          required: true
+          schema:
+            type: string
+            example: "tier1_10pct_off"
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
+  /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by ID
+      description: |
+        Retrieves prices filtered by enterprise ID.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - View custom pricing for a specific enterprise
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByID
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: enterprise_id
+          in: path
+          description: Enterprise ID to filter by
+          required: true
+          schema:
+            type: string
+            example: "acme_corp"
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'

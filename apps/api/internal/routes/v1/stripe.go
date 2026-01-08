@@ -41,6 +41,13 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 
 	adminGroup.POST("/config/archive-all", stripeHandler.ArchiveAllConfig)
 
+	// Enterprise pricing endpoints
+	enterpriseGroup := adminGroup.Group("/enterprise")
+	enterpriseGroup.POST("/apply-template", stripeHandler.ApplyEnterpriseTemplate)
+	enterpriseGroup.POST("/apply-custom", stripeHandler.ApplyEnterpriseCustom)
+	enterpriseGroup.GET("/prices/by-template/:template", stripeHandler.GetPricesByTemplate)
+	enterpriseGroup.GET("/prices/by-id/:enterprise_id", stripeHandler.GetPricesByEnterpriseID)
+
 	// Webhook endpoints (under /config, requires service key auth)
 	configGroup := router.Group("/config")
 	configGroup.Use(authMiddleware.RequireAuthHeaders())

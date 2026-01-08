@@ -179,6 +179,18 @@ paths:
   /api/v1/stripe/config/webhooks:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhooks'
 
+  /api/v1/stripe/admin/enterprise/apply-template:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1apply-template'
+
+  /api/v1/stripe/admin/enterprise/apply-custom:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1apply-custom'
+
+  /api/v1/stripe/admin/enterprise/prices/by-template/{template}:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1prices~1by-template~1{template}'
+
+  /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1prices~1by-id~1{enterprise_id}'
+
   # Tenant endpoints
   /api/v1/tenants:
     $ref: './paths/tenants.yaml#/paths/~1api~1v1~1tenants'
