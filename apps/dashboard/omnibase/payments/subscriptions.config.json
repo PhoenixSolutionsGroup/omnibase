@@ -83,26 +83,6 @@
               }
             ]
           }
-        },
-        {
-          "id": "starter_yearly",
-          "amount": 19000,
-          "currency": "usd",
-          "interval": "year",
-          "ui": {
-            "display_name": "Yearly",
-            "billing_period": "per year",
-            "limits": [
-              {
-                "text": "Unlimited instances"
-              },
-              {
-                "text": "1.5% transaction fee",
-                "value": 1.5,
-                "unit": "percent"
-              }
-            ]
-          }
         }
       ]
     },
@@ -133,26 +113,6 @@
           "ui": {
             "display_name": "Monthly",
             "billing_period": "per month",
-            "limits": [
-              {
-                "text": "Unlimited instances"
-              },
-              {
-                "text": "0.75% transaction fee",
-                "value": 0.75,
-                "unit": "percent"
-              }
-            ]
-          }
-        },
-        {
-          "id": "pro_yearly",
-          "amount": 49000,
-          "currency": "usd",
-          "interval": "year",
-          "ui": {
-            "display_name": "Yearly",
-            "billing_period": "per year",
             "limits": [
               {
                 "text": "Unlimited instances"
@@ -204,26 +164,6 @@
               }
             ]
           }
-        },
-        {
-          "id": "team_yearly",
-          "amount": 149000,
-          "currency": "usd",
-          "interval": "year",
-          "ui": {
-            "display_name": "Yearly",
-            "billing_period": "per year",
-            "limits": [
-              {
-                "text": "Unlimited instances"
-              },
-              {
-                "text": "0.4% transaction fee",
-                "value": 0.4,
-                "unit": "percent"
-              }
-            ]
-          }
         }
       ]
     },
@@ -251,7 +191,6 @@
           "amount": 0,
           "currency": "usd",
           "interval": "month",
-          "public": false,
           "ui": {
             "display_name": "Custom",
             "billing_period": "Talk to Sales",
