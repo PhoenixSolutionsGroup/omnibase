@@ -82,7 +82,7 @@ async function makeApiRequest(
 
 function getStripeConfigPath(): string {
   const projectRoot = findOmnibaseRoot();
-  return path.join(projectRoot, "omnibase", "payments");
+  return path.join(projectRoot, "omnibase", "stripe");
 }
 
 function findConfigFiles(dir: string): string[] {
@@ -214,7 +214,7 @@ function loadStripeConfig(): any {
   const configPath = getStripeConfigPath();
 
   if (!fs.existsSync(configPath)) {
-    throw new Error(`Stripe payments directory not found at: ${configPath}`);
+    throw new Error(`Stripe config directory not found at: ${configPath}`);
   }
 
   if (!fs.statSync(configPath).isDirectory()) {
@@ -563,11 +563,11 @@ export function addStripeCommands(program: Command): void {
           const projectRoot = findOmnibaseRoot();
           const outputPath =
             options.output ||
-            (fs.existsSync(path.join(projectRoot, "omnibase", "payments"))
+            (fs.existsSync(path.join(projectRoot, "omnibase", "stripe"))
               ? path.join(
                   projectRoot,
                   "omnibase",
-                  "payments",
+                  "stripe",
                   "pulled.config.json"
                 )
               : "stripe.config.json");
