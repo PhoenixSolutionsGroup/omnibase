@@ -3,8 +3,6 @@ import * as fs from "fs";
 import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
-import axios from "axios";
-import FormData from "form-data";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
 import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
@@ -24,9 +22,6 @@ async function extractErrorMessage(error: unknown): Promise<string> {
     } catch {
       return `${error.response.status} - ${error.response.statusText}`;
     }
-  }
-  if (axios.isAxiosError(error)) {
-    return error.response?.data?.error || error.response?.data?.message || error.message;
   }
   return error instanceof Error ? error.message : "Unknown error occurred";
 }
@@ -311,7 +306,7 @@ async function applyMigrations(
 
 /**
  * Reset database by dropping all tables and re-applying migrations
- * Note: Reset endpoint not in SDK, using axios directly
+ * Note: Reset endpoint not in SDK, using native fetch
  */
 async function resetMigrations(
   apiUrl: string,
@@ -321,7 +316,6 @@ async function resetMigrations(
   const projectRoot = findOmnibaseRoot();
   const migrationsPath = path.join(projectRoot, migrationsDir);
 
-  // Verify migrations directory exists
   if (!fs.existsSync(migrationsPath)) {
     throw new Error(
       `Migrations directory not found: ${migrationsPath}\n` +
@@ -329,7 +323,6 @@ async function resetMigrations(
     );
   }
 
-  // Get all .sql files from the directory
   const sqlFiles = fs
     .readdirSync(migrationsPath)
     .filter((file) => file.endsWith(".sql"))
@@ -345,39 +338,41 @@ async function resetMigrations(
   logger.log(`Found ${sqlFiles.length} migration file(s):`);
   sqlFiles.forEach((file) => logger.log(`   - ${file}`));
 
-  // Create zip file
   const zip = new AdmZip();
   for (const file of sqlFiles) {
     const filePath = path.join(migrationsPath, file);
     zip.addLocalFile(filePath);
   }
 
-  // Generate zip buffer
   const zipBuffer = zip.toBuffer();
   logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
   const formData = new FormData();
-  formData.append("migrations", zipBuffer, {
-    filename: "migrations.zip",
-    contentType: "application/zip",
-  });
+  const blob = new Blob([zipBuffer], { type: "application/zip" });
+  formData.append("migrations", blob, "migrations.zip");
 
-  // Send to API reset endpoint
   const endpoint = `${apiUrl}/api/v1/database/migrations/reset`;
   logger.start(`Resetting database and applying migrations...`);
 
   try {
-    const headers: Record<string, string> = {
-      ...formData.getHeaders(),
-    };
-
+    const headers: Record<string, string> = {};
     if (apiKey) {
       headers["X-Service-Key"] = apiKey;
     }
 
-    const response = await axios.post(endpoint, formData, { headers });
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
 
-    logger.succeed(response.data.message || "Database reset and migrations applied successfully");
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.error || body.message || `${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    logger.succeed(data.message || "Database reset and migrations applied successfully");
   } catch (error) {
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
@@ -397,34 +392,34 @@ async function generateTypes(
   schemas: string
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
-
-  // Get typegen API URL from environment config or default to localhost
   const typegenApiUrl = env.typegenApiUrl;
 
   logger.start(`Fetching schema types from ${typegenApiUrl}...`);
   logger.log(`   Included schemas: ${schemas}`);
 
   try {
-    // Call postgres-meta typegen endpoint
     const url = `${typegenApiUrl}/generators/typescript?included_schemas=${schemas}`;
-    const response = await axios.get(url);
+    const response = await fetch(url);
 
-    if (!response.data) {
+    if (!response.ok) {
+      throw new Error(`${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.text();
+
+    if (!data) {
       throw new Error("No type definitions returned from postgres-meta");
     }
 
-    // Prepare output path
     const fullOutputPath = path.join(projectRoot, outputPath);
     const outputDir = path.dirname(fullOutputPath);
 
-    // Ensure output directory exists
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
       logger.info(`Created types directory: ${outputDir}`);
     }
 
-    // Write types to file
-    fs.writeFileSync(fullOutputPath, response.data);
+    fs.writeFileSync(fullOutputPath, data);
 
     logger.succeed(`Generated TypeScript types`);
     logger.log(`   Location: ${fullOutputPath}`);
