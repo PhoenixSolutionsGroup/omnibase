@@ -176,9 +176,6 @@ paths:
   /api/v1/stripe/config/webhook:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhook'
 
-  /api/v1/stripe/config/webhooks:
-    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhooks'
-
   /api/v1/stripe/admin/enterprise/apply-template:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1apply-template'
 

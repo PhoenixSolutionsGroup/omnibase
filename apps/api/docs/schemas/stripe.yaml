@@ -79,6 +79,11 @@ components:
           type: string
           description: Configuration version in semantic versioning format
           example: "1.0.0"
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters for metered pricing (required when any price uses usage_type metered)
@@ -273,14 +278,16 @@ components:
           example: "acme_corp"
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
 
     TieredPrice:
       type: object
@@ -353,14 +360,16 @@ components:
           example: "acme_corp"
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
 
     PriceWithStripeID:
       type: object
@@ -709,6 +718,181 @@ components:
           description: Last update timestamp
           example: "2025-11-10T00:29:19Z"
 
+    StripeConfigUpdateResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Status message describing the update result
+          example: "Configuration updated successfully"
+        changes:
+          $ref: '#/components/schemas/StripeConfigChanges'
+        config:
+          $ref: '#/components/schemas/StripeConfiguration'
+        errors:
+          type: array
+          description: List of validation errors (only present if validation failed)
+          items:
+            type: string
+          example: []
+
+    StripeConfigChanges:
+      type: object
+      description: Summary of changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Products that were created in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        updated:
+          type: array
+          description: Products that were updated in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        archived:
+          type: array
+          description: Products that were archived in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        meters:
+          $ref: '#/components/schemas/MeterChanges'
+        webhooks:
+          $ref: '#/components/schemas/WebhookChanges'
+
+    ProductChange:
+      type: object
+      required:
+        - product_id
+        - product_name
+        - action
+      properties:
+        product_id:
+          type: string
+          description: Product config ID
+          example: "basic_plan"
+        product_name:
+          type: string
+          description: Product name
+          example: "Basic Plan"
+        action:
+          type: string
+          description: Action performed on the product
+          enum:
+            - created
+            - created_local
+            - updated
+            - archived
+            - linked
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe product ID (if applicable)
+          example: "prod_123abc"
+        details:
+          type: array
+          description: Additional details about the changes
+          items:
+            type: string
+          example:
+            - "Price test_price created"
+            - "Price old_price archived"
+
+    MeterChanges:
+      type: object
+      description: Summary of meter changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Meters that were created in Stripe
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        updated:
+          type: array
+          description: Meters that were updated
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        archived:
+          type: array
+          description: Meters that were archived
+          items:
+            $ref: '#/components/schemas/MeterChange'
+
+    MeterChange:
+      type: object
+      required:
+        - meter_id
+        - display_name
+        - action
+      properties:
+        meter_id:
+          type: string
+          description: Meter config ID
+          example: "api_calls"
+        display_name:
+          type: string
+          description: Meter display name
+          example: "API Calls"
+        action:
+          type: string
+          description: Action performed on the meter
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe meter ID
+          example: "mtr_123abc"
+
+    WebhookChanges:
+      type: object
+      description: Summary of webhook changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Webhooks that were created in Stripe
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        updated:
+          type: array
+          description: Webhooks that were updated
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        unchanged:
+          type: array
+          description: Webhooks that were unchanged
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+
+    WebhookChange:
+      type: object
+      properties:
+        webhook_id:
+          type: string
+          description: Webhook ID (internal)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        url:
+          type: string
+          description: Webhook URL
+          example: "https://example.com/webhooks/stripe"
+        action:
+          type: string
+          description: Action performed on the webhook
+          enum:
+            - created
+            - updated
+            - unchanged
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe webhook endpoint ID
+          example: "we_123abc"
+
     ConfigHistoryResponse:
       type: object
       required:
@@ -915,6 +1099,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: '^\d+\.\d+\.\d+$'
           example: "1.0.0"
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)
@@ -938,6 +1127,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: '^\d+\.\d+\.\d+$'
           example: "1.0.0"
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)

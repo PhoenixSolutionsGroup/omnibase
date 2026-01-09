@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"api/internal/logger"
 	"api/internal/models"
@@ -109,6 +110,44 @@ func (h *MeterHandler) CreateMeter(ctx context.Context, configID uuid.UUID, mete
 	logger.Logger.Info("Making Stripe API call to create meter", "meterID", meterConfig.ID)
 	result, err := meter.New(params)
 	if err != nil {
+		// Check if meter already exists - handle idempotently
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceAlreadyExists {
+			logger.Logger.Info("Meter already exists in Stripe, finding existing meter", "meterID", meterConfig.ID, "eventName", meterConfig.EventName)
+			existingMeter, findErr := h.findMeterByEventName(meterConfig.EventName)
+			if findErr != nil {
+				logger.Logger.Error("Failed to find existing meter", "error", findErr, "eventName", meterConfig.EventName)
+				return "", fmt.Errorf("meter already exists but failed to find it: %w", findErr)
+			}
+			if existingMeter != nil {
+				logger.Logger.Info("Found existing meter, saving mapping", "meterID", meterConfig.ID, "stripeID", existingMeter.ID)
+				if configID != uuid.Nil && h.idMapper != nil {
+					if err := h.idMapper.SaveIDMapping(configID, meterConfig.ID, existingMeter.ID, "meter"); err != nil {
+						logger.Logger.Error("Failed to save meter ID mapping", "error", err, "meterID", meterConfig.ID)
+						return "", fmt.Errorf("failed to save meter ID mapping: %w", err)
+					}
+				}
+				return existingMeter.ID, nil
+			}
+		}
+		// Also check for the specific error message about active meter (case-insensitive)
+		if stripeErr, ok := err.(*stripe.Error); ok && strings.Contains(strings.ToLower(stripeErr.Msg), "active meter already exists") {
+			logger.Logger.Info("Active meter already exists, finding existing meter", "meterID", meterConfig.ID, "eventName", meterConfig.EventName)
+			existingMeter, findErr := h.findMeterByEventName(meterConfig.EventName)
+			if findErr != nil {
+				logger.Logger.Error("Failed to find existing meter", "error", findErr, "eventName", meterConfig.EventName)
+				return "", fmt.Errorf("meter already exists but failed to find it: %w", findErr)
+			}
+			if existingMeter != nil {
+				logger.Logger.Info("Found existing meter, saving mapping", "meterID", meterConfig.ID, "stripeID", existingMeter.ID)
+				if configID != uuid.Nil && h.idMapper != nil {
+					if err := h.idMapper.SaveIDMapping(configID, meterConfig.ID, existingMeter.ID, "meter"); err != nil {
+						logger.Logger.Error("Failed to save meter ID mapping", "error", err, "meterID", meterConfig.ID)
+						return "", fmt.Errorf("failed to save meter ID mapping: %w", err)
+					}
+				}
+				return existingMeter.ID, nil
+			}
+		}
 		logger.Logger.Error("Failed to create Stripe meter", "error", err, "meterID", meterConfig.ID)
 		return "", fmt.Errorf("failed to create meter %s: %w", meterConfig.ID, err)
 	}
@@ -262,4 +301,29 @@ func (h *MeterHandler) ValidateMetersExist(ctx context.Context, config models.St
 
 	logger.Logger.Debug("All meter references validated successfully")
 	return nil
+}
+
+// findMeterByEventName finds an existing meter by its event name
+func (h *MeterHandler) findMeterByEventName(eventName string) (*stripe.BillingMeter, error) {
+	logger.Logger.Debug("Finding meter by event name", "eventName", eventName)
+
+	params := &stripe.BillingMeterListParams{}
+	params.Filters.AddFilter("status", "", "active")
+	ApplyConnectAccount(h.accountID, params)
+
+	iter := meter.List(params)
+	for iter.Next() {
+		m := iter.BillingMeter()
+		if m.EventName == eventName {
+			logger.Logger.Debug("Found meter by event name", "eventName", eventName, "stripeID", m.ID)
+			return m, nil
+		}
+	}
+	if err := iter.Err(); err != nil {
+		logger.Logger.Error("Error listing meters", "error", err)
+		return nil, fmt.Errorf("failed to list meters: %w", err)
+	}
+
+	logger.Logger.Warn("Meter not found by event name", "eventName", eventName)
+	return nil, nil
 }

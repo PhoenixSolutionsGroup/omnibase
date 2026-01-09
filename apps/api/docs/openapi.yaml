@@ -1920,7 +1920,7 @@ paths:
         - V1 Configuration
       summary: Update Stripe config
       description: |
-        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
+        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.
 
         ## Authentication
         Requires admin JWT token.
@@ -1929,6 +1929,11 @@ paths:
         - Deploy new pricing
         - Update product definitions
         - Modify metered billing settings
+        - Configure webhook endpoints
+
+        ## Webhooks
+        Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted.
+        Each webhook can have `connect: true` to listen to events from connected accounts.
       operationId: updateStripeConfig
       security:
         - ServiceKeyAuth: []
@@ -1944,7 +1949,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StripeConfigUpdateResponse'
         '400':
           description: Invalid configuration, validation errors, or configuration data is required
           content:
@@ -2412,74 +2422,6 @@ paths:
                 $ref: '#/components/schemas/NotFound'
         '500':
           description: Failed to retrieve webhook secret
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServerError'
-  /api/v1/stripe/config/webhooks:
-    post:
-      tags:
-        - V1 Webhooks
-      summary: Configure multiple webhook endpoints
-      description: |
-        Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
-        Webhooks not in the request will be deleted.
-
-        ## Authentication
-        Requires service key authentication.
-
-        ## Connect Webhooks
-        Each webhook can have `connect: true` to listen to events from connected accounts.
-
-        ## URL Interpolation
-        URLs support `${VAR}` environment variable interpolation when using the CLI.
-        The CLI resolves these before sending to the API.
-
-        ## Use Cases
-        - Configure multiple webhooks for different environments
-        - Set up both account and Connect webhooks
-        - Declarative webhook configuration management
-      operationId: configureWebhooks
-      security:
-        - ServiceKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WebhooksConfigRequest'
-      responses:
-        '200':
-          description: Webhooks configured successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/WebhooksConfigResponse'
-        '400':
-          description: Invalid request - validation errors or invalid Stripe event types
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequest'
-        '401':
-          description: Invalid or missing service key
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
-        '409':
-          description: Conflict - duplicate webhook URL provided
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConflictResponse'
-        '500':
-          description: Failed to configure webhooks
           content:
             application/json:
               schema:
@@ -6102,14 +6044,16 @@ components:
           example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
     TieredBillingScheme:
       type: string
       description: Billing scheme type for tiered pricing
@@ -6194,14 +6138,16 @@ components:
           example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
     Price:
       oneOf:
         - $ref: '#/components/schemas/PerUnitPrice'
@@ -6257,6 +6203,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: ^\d+\.\d+\.\d+$
           example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)
@@ -6268,6 +6219,199 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Product'
+    ProductChange:
+      type: object
+      required:
+        - product_id
+        - product_name
+        - action
+      properties:
+        product_id:
+          type: string
+          description: Product config ID
+          example: basic_plan
+        product_name:
+          type: string
+          description: Product name
+          example: Basic Plan
+        action:
+          type: string
+          description: Action performed on the product
+          enum:
+            - created
+            - created_local
+            - updated
+            - archived
+            - linked
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe product ID (if applicable)
+          example: prod_123abc
+        details:
+          type: array
+          description: Additional details about the changes
+          items:
+            type: string
+          example:
+            - Price test_price created
+            - Price old_price archived
+    MeterChange:
+      type: object
+      required:
+        - meter_id
+        - display_name
+        - action
+      properties:
+        meter_id:
+          type: string
+          description: Meter config ID
+          example: api_calls
+        display_name:
+          type: string
+          description: Meter display name
+          example: API Calls
+        action:
+          type: string
+          description: Action performed on the meter
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe meter ID
+          example: mtr_123abc
+    MeterChanges:
+      type: object
+      description: Summary of meter changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Meters that were created in Stripe
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        updated:
+          type: array
+          description: Meters that were updated
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        archived:
+          type: array
+          description: Meters that were archived
+          items:
+            $ref: '#/components/schemas/MeterChange'
+    WebhookChange:
+      type: object
+      properties:
+        webhook_id:
+          type: string
+          description: Webhook ID (internal)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        url:
+          type: string
+          description: Webhook URL
+          example: https://example.com/webhooks/stripe
+        action:
+          type: string
+          description: Action performed on the webhook
+          enum:
+            - created
+            - updated
+            - unchanged
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe webhook endpoint ID
+          example: we_123abc
+    WebhookChanges:
+      type: object
+      description: Summary of webhook changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Webhooks that were created in Stripe
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        updated:
+          type: array
+          description: Webhooks that were updated
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        unchanged:
+          type: array
+          description: Webhooks that were unchanged
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+    StripeConfigChanges:
+      type: object
+      description: Summary of changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Products that were created in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        updated:
+          type: array
+          description: Products that were updated in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        archived:
+          type: array
+          description: Products that were archived in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        meters:
+          $ref: '#/components/schemas/MeterChanges'
+        webhooks:
+          $ref: '#/components/schemas/WebhookChanges'
+    StripeConfiguration:
+      type: object
+      required:
+        - version
+        - products
+      properties:
+        version:
+          type: string
+          description: Configuration version in semantic versioning format
+          example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
+        meters:
+          type: array
+          description: List of billing meters for metered pricing (required when any price uses usage_type metered)
+          items:
+            $ref: '#/components/schemas/Meter'
+        products:
+          type: array
+          description: List of products with their prices
+          items:
+            $ref: '#/components/schemas/Product'
+    StripeConfigUpdateResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Status message describing the update result
+          example: Configuration updated successfully
+        changes:
+          $ref: '#/components/schemas/StripeConfigChanges'
+        config:
+          $ref: '#/components/schemas/StripeConfiguration'
+        errors:
+          type: array
+          description: List of validation errors (only present if validation failed)
+          items:
+            type: string
+          example: []
     BadRequest:
       type: object
       description: Bad Request error response (400)
@@ -6377,6 +6521,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: ^\d+\.\d+\.\d+$
           example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)
@@ -6549,72 +6698,6 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
-    WebhooksConfigRequest:
-      type: object
-      required:
-        - webhooks
-      properties:
-        webhooks:
-          type: array
-          description: List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/WebhookEndpointConfig'
-    WebhookResult:
-      type: object
-      required:
-        - stripe_id
-        - url
-        - events
-        - connect
-        - secret
-        - action
-      properties:
-        id:
-          type: string
-          description: Internal webhook ID
-          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
-        stripe_id:
-          type: string
-          description: Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx)
-          example: we_1SRiyyCJIZaBlhY1
-        url:
-          type: string
-          description: Webhook endpoint URL
-          example: https://example.com/webhooks/stripe
-        events:
-          type: array
-          description: List of subscribed event types
-          items:
-            type: string
-          example:
-            - invoice.paid
-        connect:
-          type: boolean
-          description: Whether webhook listens to connected account events
-          example: false
-        secret:
-          type: string
-          description: Webhook signing secret for signature verification
-          example: whsec_xxx
-        action:
-          type: string
-          description: Action performed on the webhook
-          enum:
-            - created
-            - updated
-            - unchanged
-          example: created
-    WebhooksConfigResponse:
-      type: object
-      required:
-        - webhooks
-      properties:
-        webhooks:
-          type: array
-          description: List of configured webhook endpoints with results
-          items:
-            $ref: '#/components/schemas/WebhookResult'
     ApplyEnterpriseTemplateRequest:
       type: object
       required:

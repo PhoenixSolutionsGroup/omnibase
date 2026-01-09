@@ -80,16 +80,9 @@ func (h *ProductHandler) CreateProduct(productConfig models.Product, configID uu
 		}, nil
 	}
 
-	// Skip Stripe API for free products - store in DB only
+	// Skip Stripe API for free products - store in DB only, no Stripe ID mapping
 	if productConfig.ID == "free" {
 		logger.Logger.Debug("Skipping free product (local only)", "productID", productConfig.ID)
-		// Still save the ID mapping for consistency
-		if configID != uuid.Nil {
-			if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, productConfig.ID, "product"); err != nil {
-				return nil, fmt.Errorf("failed to save free product ID mapping: %w", err)
-			}
-		}
-
 		return &models.ProductChange{
 			ProductID:   productConfig.ID,
 			ProductName: productConfig.Name,
@@ -270,21 +263,14 @@ func (h *ProductHandler) ArchiveProduct(productID string) (*models.ProductChange
 func (h *ProductHandler) unarchiveExistingProduct(productConfig models.Product, configID uuid.UUID) (*models.ProductChange, error) {
 	logger.Logger.Info("Unarchiving existing product", "productID", productConfig.ID)
 
-	// Skip Stripe API for free products
+	// Skip Stripe API for free products - no Stripe ID mapping
 	if productConfig.ID == "free" {
 		logger.Logger.Debug("Skipping free product unarchival", "productID", productConfig.ID)
-		// Still save the ID mapping for consistency
-		if configID != uuid.Nil {
-			if err := h.idMapper.SaveIDMapping(configID, productConfig.ID, productConfig.ID, "product"); err != nil {
-				return nil, fmt.Errorf("failed to save free product ID mapping: %w", err)
-			}
-		}
-
 		return &models.ProductChange{
 			ProductID:   productConfig.ID,
 			ProductName: productConfig.Name,
-			Action:      "unarchived_local",
-			Details:     []string{fmt.Sprintf("Unarchived free product: %s (local only)", productConfig.ID)},
+			Action:      "created_local",
+			Details:     []string{fmt.Sprintf("Created free product: %s (local only)", productConfig.ID)},
 		}, nil
 	}
 
@@ -317,12 +303,12 @@ func (h *ProductHandler) unarchiveExistingProduct(productConfig models.Product, 
 		}
 	}
 
-	details := []string{fmt.Sprintf("Unarchived product: %s (config: %s)", stripeProduct.ID, productConfig.ID)}
+	details := []string{fmt.Sprintf("Created product: %s (config: %s)", stripeProduct.ID, productConfig.ID)}
 
 	return &models.ProductChange{
 		ProductID:   productConfig.ID,
 		ProductName: productConfig.Name,
-		Action:      "unarchived",
+		Action:      "created",
 		Details:     details,
 	}, nil
 }

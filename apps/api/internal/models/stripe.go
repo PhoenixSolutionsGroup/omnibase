@@ -93,7 +93,7 @@ type Product struct {
 	StripeID    string     `json:"stripe_id,omitempty"` // Original Stripe ID for migration support
 	Name        string     `json:"name" validate:"required"`
 	Description string     `json:"description,omitempty"`
-	Type        string     `json:"type,omitempty"` // service, good, metered
+	Type        string     `json:"type,omitempty"` // service, good
 	Prices      []Price    `json:"prices" validate:"required,dive"`
 	UI          *ProductUI `json:"ui,omitempty"`
 }
@@ -189,10 +189,11 @@ type StripeConfigResponse struct {
 }
 
 type StripeConfigChanges struct {
-	Created  []ProductChange `json:"created,omitempty"`
-	Updated  []ProductChange `json:"updated,omitempty"`
-	Archived []ProductChange `json:"archived,omitempty"`
-	Meters   *MeterChanges   `json:"meters,omitempty"`
+	Created  []ProductChange  `json:"created,omitempty"`
+	Updated  []ProductChange  `json:"updated,omitempty"`
+	Archived []ProductChange  `json:"archived,omitempty"`
+	Meters   *MeterChanges    `json:"meters,omitempty"`
+	Webhooks *WebhookChanges  `json:"webhooks,omitempty"`
 }
 
 type MeterChanges struct {
@@ -206,6 +207,19 @@ type MeterChange struct {
 	DisplayName string `json:"display_name"`
 	Action      string `json:"action"`
 	StripeID    string `json:"stripe_id,omitempty"`
+}
+
+type WebhookChanges struct {
+	Created   []WebhookChange `json:"created,omitempty"`
+	Updated   []WebhookChange `json:"updated,omitempty"`
+	Unchanged []WebhookChange `json:"unchanged,omitempty"`
+}
+
+type WebhookChange struct {
+	WebhookID string `json:"webhook_id,omitempty"`
+	URL       string `json:"url"`
+	Action    string `json:"action"`
+	StripeID  string `json:"stripe_id,omitempty"`
 }
 
 type ProductChange struct {

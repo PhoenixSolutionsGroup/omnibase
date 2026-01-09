@@ -48,11 +48,11 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 	enterpriseGroup.GET("/prices/by-template/:template", stripeHandler.GetPricesByTemplate)
 	enterpriseGroup.GET("/prices/by-id/:enterprise_id", stripeHandler.GetPricesByEnterpriseID)
 
-	// Webhook endpoints (under /config, requires service key auth)
+	// Webhook secret retrieval endpoint (under /config, requires service key auth)
+	// Note: Webhook configuration is now done via POST /admin/config with webhooks array
 	configGroup := router.Group("/config")
 	configGroup.Use(authMiddleware.RequireAuthHeaders())
 	configGroup.Use(authMiddleware.RequireServiceKey())
 
 	configGroup.GET("/webhook", stripeHandler.GetWebhookSecret)
-	configGroup.POST("/webhooks", stripeHandler.ConfigureWebhooks)
 }

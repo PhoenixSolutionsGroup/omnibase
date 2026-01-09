@@ -5,7 +5,6 @@ import (
 	"api/internal/models"
 	"context"
 	"fmt"
-	"reflect"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -18,6 +17,7 @@ type ConfigHandler struct {
 	productHandler ProductHandlerInterface
 	priceHandler   PriceHandlerInterface
 	meterHandler   MeterHandlerInterface
+	webhookHandler WebhookHandlerInterface
 }
 
 type ValidatorInterface interface {
@@ -46,6 +46,10 @@ type MeterHandlerInterface interface {
 	ValidateMetersExist(ctx context.Context, config models.StripeConfiguration) error
 }
 
+type WebhookHandlerInterface interface {
+	ProcessWebhooks(ctx context.Context, configID uuid.UUID, webhooks []models.WebhookEndpointConfig) ([]WebhookResult, error)
+}
+
 func NewConfigHandler(
 	db *gorm.DB,
 	validator ValidatorInterface,
@@ -53,6 +57,7 @@ func NewConfigHandler(
 	productHandler ProductHandlerInterface,
 	priceHandler PriceHandlerInterface,
 	meterHandler MeterHandlerInterface,
+	webhookHandler WebhookHandlerInterface,
 ) *ConfigHandler {
 	return &ConfigHandler{
 		db:             db,
@@ -61,6 +66,7 @@ func NewConfigHandler(
 		productHandler: productHandler,
 		priceHandler:   priceHandler,
 		meterHandler:   meterHandler,
+		webhookHandler: webhookHandler,
 	}
 }
 
@@ -116,16 +122,22 @@ func (h *ConfigHandler) ProcessConfigUpdate(configData models.StripeConfigData) 
 		}
 	}
 
-	// Check if configurations are identical
-	if reflect.DeepEqual(config, previousConfig) {
+	// Calculate differences between configurations
+	diff := h.differ.CalculateConfigDiff(previousConfig, config)
+
+	// Check if there are any actual changes (ignore version-only changes)
+	hasChanges := len(diff.NewProducts) > 0 ||
+		len(diff.UpdatedProducts) > 0 ||
+		len(diff.ArchivedProducts) > 0 ||
+		len(diff.NewMeters) > 0 ||
+		len(diff.ArchivedMeters) > 0
+
+	if !hasChanges {
 		return &models.StripeConfigResponse{
 			Message: "no change was made",
 			Config:  config,
 		}, nil
 	}
-
-	// Calculate differences between configurations
-	diff := h.differ.CalculateConfigDiff(previousConfig, config)
 
 	// Save the new configuration to database first to get the config ID
 	newStripeConfig := &models.StripeConfig{
@@ -141,6 +153,15 @@ func (h *ConfigHandler) ProcessConfigUpdate(configData models.StripeConfigData) 
 	changes, err := h.applyChangesToStripeWithMapping(diff, config, newStripeConfig.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply changes to Stripe: %w", err)
+	}
+
+	// Process webhooks if present in config
+	if len(config.Webhooks) > 0 && h.webhookHandler != nil {
+		webhookResults, err := h.webhookHandler.ProcessWebhooks(context.Background(), newStripeConfig.ID, config.Webhooks)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process webhooks: %w", err)
+		}
+		changes.Webhooks = convertWebhookResultsToChanges(webhookResults)
 	}
 
 	return &models.StripeConfigResponse{
@@ -204,6 +225,15 @@ func (h *ConfigHandler) handleFirstTimeSetup(config *models.StripeConfiguration,
 		changes.Created = append(changes.Created, *productChange)
 	}
 
+	// Process webhooks if present in config
+	if len(config.Webhooks) > 0 && h.webhookHandler != nil {
+		webhookResults, err := h.webhookHandler.ProcessWebhooks(context.Background(), newStripeConfig.ID, config.Webhooks)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process webhooks: %w", err)
+		}
+		changes.Webhooks = convertWebhookResultsToChanges(webhookResults)
+	}
+
 	return &models.StripeConfigResponse{
 		Message: "Initial Stripe configuration created successfully",
 		Changes: changes,
@@ -258,6 +288,8 @@ func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff,
 			if err != nil {
 				return nil, fmt.Errorf("failed to deactivate meter %s: %w", meterID, err)
 			}
+			// Set the config meter ID (DeactivateMeter only has stripe ID)
+			meterChange.MeterID = meterID
 			if changes.Meters != nil {
 				changes.Meters.Archived = append(changes.Meters.Archived, *meterChange)
 			}
@@ -373,4 +405,37 @@ func (h *ConfigHandler) getStripeIDForMeter(meterID string, configID uuid.UUID) 
 		return "", fmt.Errorf("meter ID mapping not found for %s: %w", meterID, err)
 	}
 	return mapping.StripeID, nil
+}
+
+// convertWebhookResultsToChanges converts webhook handler results to model changes
+func convertWebhookResultsToChanges(results []WebhookResult) *models.WebhookChanges {
+	if len(results) == 0 {
+		return nil
+	}
+
+	changes := &models.WebhookChanges{
+		Created:   []models.WebhookChange{},
+		Updated:   []models.WebhookChange{},
+		Unchanged: []models.WebhookChange{},
+	}
+
+	for _, result := range results {
+		change := models.WebhookChange{
+			WebhookID: result.ID,
+			URL:       result.URL,
+			Action:    result.Action,
+			StripeID:  result.StripeID,
+		}
+
+		switch result.Action {
+		case "created":
+			changes.Created = append(changes.Created, change)
+		case "updated":
+			changes.Updated = append(changes.Updated, change)
+		case "unchanged":
+			changes.Unchanged = append(changes.Unchanged, change)
+		}
+	}
+
+	return changes
 }

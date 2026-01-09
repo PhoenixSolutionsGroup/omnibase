@@ -88,6 +88,16 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		logger.Logger.Debug("Webhooks validated successfully", "count", len(config.Webhooks))
 	}
 
+	// Check for duplicate meter IDs
+	meterIDs := make(map[string]bool)
+	for _, meter := range config.Meters {
+		if meterIDs[meter.ID] {
+			logger.Logger.Error("Duplicate meter ID found", "meterID", meter.ID)
+			return nil, fmt.Errorf("duplicate meter ID: %s", meter.ID)
+		}
+		meterIDs[meter.ID] = true
+	}
+
 	// Validate meters if present
 	for i, meter := range config.Meters {
 		if err := v.validateMeter(meter); err != nil {
@@ -96,6 +106,28 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		}
 	}
 	logger.Logger.Debug("All meters validated successfully", "count", len(config.Meters))
+
+	// Check for duplicate product IDs
+	productIDs := make(map[string]bool)
+	for _, product := range config.Products {
+		if productIDs[product.ID] {
+			logger.Logger.Error("Duplicate product ID found", "productID", product.ID)
+			return nil, fmt.Errorf("duplicate product ID: %s", product.ID)
+		}
+		productIDs[product.ID] = true
+	}
+
+	// Check for duplicate price IDs across all products
+	priceIDs := make(map[string]bool)
+	for _, product := range config.Products {
+		for _, price := range product.Prices {
+			if priceIDs[price.ID] {
+				logger.Logger.Error("Duplicate price ID found", "priceID", price.ID)
+				return nil, fmt.Errorf("duplicate price ID: %s", price.ID)
+			}
+			priceIDs[price.ID] = true
+		}
+	}
 
 	// Validate each product
 	for i, product := range config.Products {
@@ -157,8 +189,8 @@ func (v *Validator) validatePrice(price models.Price, productType string) error 
 		return fmt.Errorf("price amount must not be set for tiered pricing (pricing is defined by tiers)")
 	}
 
-	if len(price.Currency) != 3 {
-		return fmt.Errorf("currency must be a 3-character ISO code")
+	if !v.isValidCurrency(price.Currency) {
+		return fmt.Errorf("invalid currency: %s (must be a supported ISO 4217 currency code)", price.Currency)
 	}
 
 	// For recurring prices, interval is required
@@ -193,6 +225,12 @@ func (v *Validator) validatePrice(price models.Price, productType string) error 
 		if len(price.Tiers) == 0 {
 			return fmt.Errorf("tiers are required when billing_scheme is tiered")
 		}
+		// Validate that the last tier has up_to = "inf"
+		lastTier := price.Tiers[len(price.Tiers)-1]
+		upToStr, isString := lastTier.UpTo.(string)
+		if !isString || upToStr != "inf" {
+			return fmt.Errorf("tiered pricing must have final tier with up_to: \"inf\"")
+		}
 	}
 
 	return nil
@@ -212,6 +250,19 @@ func (v *Validator) isValidInterval(interval string) bool {
 	validIntervals := []string{"day", "week", "month", "year"}
 	for _, valid := range validIntervals {
 		if strings.ToLower(interval) == valid {
+			return true
+		}
+	}
+	return false
+}
+
+func (v *Validator) isValidCurrency(currency string) bool {
+	validCurrencies := []string{
+		"usd", "eur", "gbp", "cad", "aud", "jpy", "inr", "brl", "mxn", "sgd",
+		"hkd", "nzd", "chf", "sek", "dkk", "nok", "pln", "czk", "ils", "zar",
+	}
+	for _, valid := range validCurrencies {
+		if strings.ToLower(currency) == valid {
 			return true
 		}
 	}

@@ -71,6 +71,8 @@ func NewStripeConfigService(cfg *config.Config) *StripeConfigService {
 	priceHandler := handlers.NewPriceHandler(idMapper, cfg.StripeConfig.StripeAccountID)
 	meterHandler := handlers.NewMeterHandler(stripeClient, idMapper, cfg.StripeConfig.StripeAccountID)
 
+	webhookHandler := handlers.NewWebhookHandler(stripeClient, db, cfg.StripeConfig.StripeAccountID, encryptionService)
+
 	configHandler := handlers.NewConfigHandler(
 		db,
 		validator,
@@ -78,9 +80,8 @@ func NewStripeConfigService(cfg *config.Config) *StripeConfigService {
 		productHandler,
 		priceHandler,
 		meterHandler,
+		webhookHandler,
 	)
-
-	webhookHandler := handlers.NewWebhookHandler(stripeClient, db, cfg.StripeConfig.StripeAccountID, encryptionService)
 
 	logger.Logger.Info("Stripe configuration service initialized successfully")
 	return &StripeConfigService{

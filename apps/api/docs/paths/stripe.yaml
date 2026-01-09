@@ -109,15 +109,20 @@ paths:
         - V1 Configuration
       summary: Update Stripe config
       description: |
-        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
-        
+        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Use Cases
         - Deploy new pricing
         - Update product definitions
         - Modify metered billing settings
+        - Configure webhook endpoints
+
+        ## Webhooks
+        Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted.
+        Each webhook can have `connect: true` to listen to events from connected accounts.
       operationId: updateStripeConfig
       security:
         - ServiceKeyAuth: []
@@ -133,7 +138,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigUpdateResponse'
         '400':
           description: Invalid configuration, validation errors, or configuration data is required
           content:
@@ -610,75 +620,6 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
         '500':
           description: Failed to retrieve webhook secret
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
-
-  /api/v1/stripe/config/webhooks:
-    post:
-      tags:
-        - V1 Webhooks
-      summary: Configure multiple webhook endpoints
-      description: |
-        Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
-        Webhooks not in the request will be deleted.
-
-        ## Authentication
-        Requires service key authentication.
-
-        ## Connect Webhooks
-        Each webhook can have `connect: true` to listen to events from connected accounts.
-
-        ## URL Interpolation
-        URLs support `${VAR}` environment variable interpolation when using the CLI.
-        The CLI resolves these before sending to the API.
-
-        ## Use Cases
-        - Configure multiple webhooks for different environments
-        - Set up both account and Connect webhooks
-        - Declarative webhook configuration management
-      operationId: configureWebhooks
-      security:
-        - ServiceKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '../schemas/stripe.yaml#/components/schemas/WebhooksConfigRequest'
-      responses:
-        '200':
-          description: Webhooks configured successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/WebhooksConfigResponse'
-        '400':
-          description: Invalid request - validation errors or invalid Stripe event types
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
-        '401':
-          description: Invalid or missing service key
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
-        '409':
-          description: Conflict - duplicate webhook URL provided
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/ConflictResponse'
-        '500':
-          description: Failed to configure webhooks
           content:
             application/json:
               schema:
