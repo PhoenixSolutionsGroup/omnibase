@@ -47,7 +47,7 @@ function createTemplateFiles(targetDir: string): void {
 
 function getComposeFiles(composeMode?: string): string[] {
   const dockerDir = path.join(__dirname, "..", "docker");
-  const baseFile = path.join(dockerDir, "docker-compose.yml");
+  const baseFile = path.join(dockerDir, "docker-compose.base.yml");
 
   const files = [baseFile];
 
@@ -55,6 +55,9 @@ function getComposeFiles(composeMode?: string): string[] {
     files.push(path.join(dockerDir, "docker-compose.dev.yml"));
   } else if (composeMode === "test") {
     files.push(path.join(dockerDir, "docker-compose.test.yml"));
+  } else {
+    // No mode specified - use local compose with persistent volumes
+    files.push(path.join(dockerDir, "docker-compose.local.yml"));
   }
 
   return files;
@@ -100,7 +103,7 @@ async function runDockerCompose(
 
     logger.log(`Using project name: ${projectName}`);
     logger.log(`Using environment: ${envConfig.name}`);
-    logger.log(`Using mode: ${composeMode || "default"}`);
+    logger.log(`Using mode: ${composeMode || "local"}`);
 
     execSync(`docker ${cmdArgs.join(" ")}`, {
       stdio: "ignore",
