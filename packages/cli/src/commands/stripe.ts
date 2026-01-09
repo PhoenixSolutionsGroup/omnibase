@@ -10,7 +10,8 @@ import {
   V1StripeApi,
   V1WebhooksApi,
   ResponseError,
-  type StripeConfigUpdateRequest,
+  StripeConfigUpdateRequestFromJSON,
+  StripeConfigValidateRequestFromJSON,
   type WebhookEndpointConfig,
   type GetStripeConfigHistory200Response,
 } from "@omnibase/core-js";
@@ -193,7 +194,7 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
 
   try {
     const response = await configApi.updateStripeConfig({
-      stripeConfigUpdateRequest: config as StripeConfigUpdateRequest,
+      stripeConfigUpdateRequest: StripeConfigUpdateRequestFromJSON(config),
     });
 
     logger.succeed("Stripe configuration uploaded successfully");
@@ -267,7 +268,7 @@ export function addStripeCommands(program: Command): void {
         const configApi = new V1ConfigurationApi(sdkConfig);
 
         await configApi.validateStripeConfig({
-          stripeConfigValidateRequest: config as StripeConfigUpdateRequest,
+          stripeConfigValidateRequest: StripeConfigValidateRequestFromJSON(config),
         });
 
         logger.succeed("Configuration is valid!");
@@ -299,7 +300,7 @@ export function addStripeCommands(program: Command): void {
 
         try {
           const response = await configApi.updateStripeConfig({
-            stripeConfigUpdateRequest: config as StripeConfigUpdateRequest,
+            stripeConfigUpdateRequest: StripeConfigUpdateRequestFromJSON(config),
           });
 
           logger.succeed("Configuration uploaded successfully!");
@@ -500,12 +501,7 @@ export function addStripeCommands(program: Command): void {
         const outputPath =
           options.output ||
           (fs.existsSync(path.join(projectRoot, "omnibase", "stripe"))
-            ? path.join(
-                projectRoot,
-                "omnibase",
-                "stripe",
-                "pulled.config.json"
-              )
+            ? path.join(projectRoot, "omnibase", "stripe", "pulled.config.json")
             : "stripe.config.json");
         const configData = response.data;
 

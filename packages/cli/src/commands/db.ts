@@ -4,11 +4,10 @@ import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
 import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
-import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
-import { V1ConfigurationApi, ResponseError } from "@omnibase/core-js";
+import { ResponseError } from "@omnibase/core-js";
 
 async function extractErrorMessage(error: unknown): Promise<string> {
   if (error instanceof ResponseError) {
@@ -240,6 +239,7 @@ export async function pushDbMigrations(envOverride?: string): Promise<void> {
 
 /**
  * Apply migrations by zipping SQL files and sending to API
+ * Note: Using native fetch instead of SDK because SDK doesn't include filename in FormData
  */
 async function applyMigrations(
   env: { omnibaseApiUrl: string; omnibaseServiceKey?: string },
@@ -248,7 +248,6 @@ async function applyMigrations(
   const projectRoot = findOmnibaseRoot();
   const migrationsPath = path.join(projectRoot, migrationsDir);
 
-  // Verify migrations directory exists
   if (!fs.existsSync(migrationsPath)) {
     throw new Error(
       `Migrations directory not found: ${migrationsPath}\n` +
@@ -256,7 +255,6 @@ async function applyMigrations(
     );
   }
 
-  // Get all .sql files from the directory
   const sqlFiles = fs
     .readdirSync(migrationsPath)
     .filter((file) => file.endsWith(".sql"))
@@ -272,29 +270,41 @@ async function applyMigrations(
   logger.log(`Found ${sqlFiles.length} migration file(s):`);
   sqlFiles.forEach((file) => logger.log(`   - ${file}`));
 
-  // Create zip file
   const zip = new AdmZip();
   for (const file of sqlFiles) {
     const filePath = path.join(migrationsPath, file);
     zip.addLocalFile(filePath);
   }
 
-  // Generate zip buffer and convert to Blob
   const zipBuffer = zip.toBuffer();
   logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
-  const sdkConfig = createOmnibaseSDKConfig(env as any);
-  const configApi = new V1ConfigurationApi(sdkConfig);
+  const formData = new FormData();
+  const blob = new Blob([zipBuffer], { type: "application/zip" });
+  formData.append("migrations", blob, "migrations.zip");
 
+  const endpoint = `${env.omnibaseApiUrl}/api/v1/database/migrations`;
   logger.start(`Uploading migrations...`);
 
   try {
-    const blob = new Blob([zipBuffer], { type: "application/zip" });
-    const response = await configApi.uploadDatabaseMigrations({
-      migrations: blob,
+    const headers: Record<string, string> = {};
+    if (env.omnibaseServiceKey) {
+      headers["X-Service-Key"] = env.omnibaseServiceKey;
+    }
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: formData,
     });
 
-    logger.succeed(response.message || "Migrations applied successfully");
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.error || body.message || `${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    logger.succeed(data.message || "Migrations applied successfully");
   } catch (error) {
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
