@@ -42,6 +42,7 @@ TEST_TENANT_ID=""
 RUN_K6=true
 RUN_CONTRACT=true
 LOCAL_MODE=false
+K6_SCENARIO=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -57,14 +58,23 @@ while [[ $# -gt 0 ]]; do
       RUN_K6=false
       shift
       ;;
+    --scenario)
+      K6_SCENARIO="$2"
+      shift 2
+      ;;
     --help)
-      echo "Usage: $0 [options]"
+      echo "Usage: $0 [options] [scenario]"
       echo ""
       echo "Options:"
-      echo "  --local          Run k6 locally (no cloud reporting)"
-      echo "  --k6-only        Only run k6 integration tests"
-      echo "  --contract-only  Only run schemathesis contract tests"
-      echo "  --help           Show this help message"
+      echo "  --local              Run k6 locally (no cloud reporting)"
+      echo "  --k6-only            Only run k6 integration tests"
+      echo "  --contract-only      Only run schemathesis contract tests"
+      echo "  --scenario <name>    Run specific k6 scenario (default: all)"
+      echo "  --help               Show this help message"
+      echo ""
+      echo "Scenarios:"
+      echo "  integration          Run all integration tests"
+      echo "  stripe_config_tests  Run only stripe config tests"
       echo ""
       echo "Environment variables (set in .env or export):"
       echo "  API_URL            API base URL (default: http://localhost:8080)"
@@ -74,9 +84,14 @@ while [[ $# -gt 0 ]]; do
       echo "Create a .env file in the repo root with these variables."
       exit 0
       ;;
-    *)
+    -*)
       echo -e "${RED}Unknown option: $1${NC}"
       exit 1
+      ;;
+    *)
+      # Positional argument - treat as scenario name
+      K6_SCENARIO="$1"
+      shift
       ;;
   esac
 done
@@ -131,11 +146,16 @@ if [ "$RUN_K6" = true ]; then
   echo -e "${BLUE}Building k6 tests...${NC}"
   bun build ./tests/api/k6/index.ts --outdir ./tests/api/k6/dist --target=node --format=esm --external k6
 
-  if [ "$LOCAL_MODE" = true ]; then
-    k6 run ./tests/api/k6/dist/index.js || K6_EXIT_CODE=$?
-  else
-    k6 run --out cloud ./tests/api/k6/dist/index.js || K6_EXIT_CODE=$?
+  # Build k6 args
+  K6_ARGS=""
+  if [ -n "$K6_SCENARIO" ]; then
+    K6_ARGS="-e K6_SCENARIO=$K6_SCENARIO"
   fi
+  if [ "$LOCAL_MODE" = false ]; then
+    K6_ARGS="$K6_ARGS --out cloud"
+  fi
+
+  k6 run $K6_ARGS ./tests/api/k6/dist/index.js || K6_EXIT_CODE=$?
 
   if [ $K6_EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}✓ k6 tests passed${NC}"

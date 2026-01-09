@@ -321,8 +321,6 @@ export async function subscriptionLifecycle() {
     },
   });
 
-  sleep(1);
-
   // Step 9: Verify subscription canceled status
   const finalListResponse = client.listTenantSubscriptions({
     headers: {

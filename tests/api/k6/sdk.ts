@@ -1337,91 +1337,48 @@ export type PerUnitPriceInterval = BillingInterval & unknown;
 
 export type PerUnitPriceUsageType = UsageType & unknown;
 
-export type PerUnitPrice =
-  | (unknown & {
-      /**
-       * Price identifier (config ID)
-       * @minLength 1
-       */
-      id: string;
-      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
-      stripe_id?: string;
-      /**
-       * Whether price is visible in public API (null/true = public, false = enterprise only)
-       * @nullable
-       */
-      public?: boolean | null;
-      /**
-       * Whether tax is included in the price (null/false = exclusive)
-       * @nullable
-       */
-      tax_included_in_price?: boolean | null;
-      /**
-       * Price amount (supports decimals for sub-cent hourly pricing)
-       * @minimum 0
-       */
-      amount: number;
-      currency: CurrencyCode;
-      interval?: PerUnitPriceInterval;
-      /** Number of intervals between billings (default 1) */
-      interval_count?: number;
-      usage_type?: PerUnitPriceUsageType;
-      /**
-       * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
-       * @minLength 1
-       */
-      meter?: string;
-      billing_scheme?: PerUnitBillingScheme;
-      /** Mark as default price for the product */
-      default?: boolean;
-      /** Enterprise template group for shared pricing tiers */
-      enterprise_template?: string;
-      /** Enterprise pricing group ID for tenant-specific pricing */
-      enterprise_id?: string;
-      ui?: PriceUI;
-    })
-  | (unknown & {
-      /**
-       * Price identifier (config ID)
-       * @minLength 1
-       */
-      id: string;
-      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
-      stripe_id?: string;
-      /**
-       * Whether price is visible in public API (null/true = public, false = enterprise only)
-       * @nullable
-       */
-      public?: boolean | null;
-      /**
-       * Whether tax is included in the price (null/false = exclusive)
-       * @nullable
-       */
-      tax_included_in_price?: boolean | null;
-      /**
-       * Price amount (supports decimals for sub-cent hourly pricing)
-       * @minimum 0
-       */
-      amount: number;
-      currency: CurrencyCode;
-      interval?: PerUnitPriceInterval;
-      /** Number of intervals between billings (default 1) */
-      interval_count?: number;
-      usage_type?: PerUnitPriceUsageType;
-      /**
-       * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
-       * @minLength 1
-       */
-      meter?: string;
-      billing_scheme?: PerUnitBillingScheme;
-      /** Mark as default price for the product */
-      default?: boolean;
-      /** Enterprise template group for shared pricing tiers */
-      enterprise_template?: string;
-      /** Enterprise pricing group ID for tenant-specific pricing */
-      enterprise_id?: string;
-      ui?: PriceUI;
-    });
+export interface PerUnitPrice {
+  /**
+   * Price identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+  stripe_id?: string;
+  /**
+   * Whether price is visible in public API (null/true = public, false = enterprise only)
+   * @nullable
+   */
+  public?: boolean | null;
+  /**
+   * Whether tax is included in the price (null/false = exclusive)
+   * @nullable
+   */
+  tax_included_in_price?: boolean | null;
+  /**
+   * Price amount (supports decimals for sub-cent hourly pricing)
+   * @minimum 0
+   */
+  amount: number;
+  currency: CurrencyCode;
+  interval?: PerUnitPriceInterval;
+  /** Number of intervals between billings (default 1) */
+  interval_count?: number;
+  usage_type?: PerUnitPriceUsageType;
+  /**
+   * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
+   * @minLength 1
+   */
+  meter?: string;
+  billing_scheme?: PerUnitBillingScheme;
+  /** Mark as default price for the product */
+  default?: boolean;
+  /** Enterprise template group for shared pricing tiers */
+  enterprise_template?: string;
+  /** Enterprise pricing group ID for tenant-specific pricing */
+  enterprise_id?: string;
+  ui?: PriceUI;
+}
 
 /**
  * Billing scheme type for tiered pricing
@@ -1449,93 +1406,49 @@ export type TieredPriceInterval = BillingInterval & unknown;
 
 export type TieredPriceUsageType = UsageType & unknown;
 
-export type TieredPrice =
-  | (unknown & {
-      /**
-       * Price identifier (config ID)
-       * @minLength 1
-       */
-      id: string;
-      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
-      stripe_id?: string;
-      /**
-       * Whether price is visible in public API (null/true = public, false = enterprise only)
-       * @nullable
-       */
-      public?: boolean | null;
-      /**
-       * Whether tax is included in the price (null/false = exclusive)
-       * @nullable
-       */
-      tax_included_in_price?: boolean | null;
-      currency: CurrencyCode;
-      interval?: TieredPriceInterval;
-      /** Number of intervals between billings (default 1) */
-      interval_count?: number;
-      usage_type?: TieredPriceUsageType;
-      /**
-       * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
-       * @minLength 1
-       */
-      meter?: string;
-      billing_scheme: TieredBillingScheme;
-      tiers_mode: TiersMode;
-      /**
-       * Pricing tiers
-       * @minItems 1
-       */
-      tiers: Tier[];
-      /** Mark as default price for the product */
-      default?: boolean;
-      /** Enterprise template group for shared pricing tiers */
-      enterprise_template?: string;
-      /** Enterprise pricing group ID for tenant-specific pricing */
-      enterprise_id?: string;
-      ui?: PriceUI;
-    })
-  | (unknown & {
-      /**
-       * Price identifier (config ID)
-       * @minLength 1
-       */
-      id: string;
-      /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
-      stripe_id?: string;
-      /**
-       * Whether price is visible in public API (null/true = public, false = enterprise only)
-       * @nullable
-       */
-      public?: boolean | null;
-      /**
-       * Whether tax is included in the price (null/false = exclusive)
-       * @nullable
-       */
-      tax_included_in_price?: boolean | null;
-      currency: CurrencyCode;
-      interval?: TieredPriceInterval;
-      /** Number of intervals between billings (default 1) */
-      interval_count?: number;
-      usage_type?: TieredPriceUsageType;
-      /**
-       * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
-       * @minLength 1
-       */
-      meter?: string;
-      billing_scheme: TieredBillingScheme;
-      tiers_mode: TiersMode;
-      /**
-       * Pricing tiers
-       * @minItems 1
-       */
-      tiers: Tier[];
-      /** Mark as default price for the product */
-      default?: boolean;
-      /** Enterprise template group for shared pricing tiers */
-      enterprise_template?: string;
-      /** Enterprise pricing group ID for tenant-specific pricing */
-      enterprise_id?: string;
-      ui?: PriceUI;
-    });
+export interface TieredPrice {
+  /**
+   * Price identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /** Original Stripe ID for migration support (optional, used to link existing Stripe prices) */
+  stripe_id?: string;
+  /**
+   * Whether price is visible in public API (null/true = public, false = enterprise only)
+   * @nullable
+   */
+  public?: boolean | null;
+  /**
+   * Whether tax is included in the price (null/false = exclusive)
+   * @nullable
+   */
+  tax_included_in_price?: boolean | null;
+  currency: CurrencyCode;
+  interval?: TieredPriceInterval;
+  /** Number of intervals between billings (default 1) */
+  interval_count?: number;
+  usage_type?: TieredPriceUsageType;
+  /**
+   * Meter ID for metered pricing (required when usage_type is metered, must reference a meter defined in the meters array)
+   * @minLength 1
+   */
+  meter?: string;
+  billing_scheme: TieredBillingScheme;
+  tiers_mode: TiersMode;
+  /**
+   * Pricing tiers
+   * @minItems 1
+   */
+  tiers: Tier[];
+  /** Mark as default price for the product */
+  default?: boolean;
+  /** Enterprise template group for shared pricing tiers */
+  enterprise_template?: string;
+  /** Enterprise pricing group ID for tenant-specific pricing */
+  enterprise_id?: string;
+  ui?: PriceUI;
+}
 
 export type Price = PerUnitPrice | TieredPrice;
 
@@ -1581,6 +1494,8 @@ export interface StripeConfigUpdateRequest {
    * @pattern ^\d+\.\d+\.\d+$
    */
   version: string;
+  /** List of webhook endpoint configurations (optional) */
+  webhooks?: WebhookEndpointConfig[];
   /** List of billing meters (optional array, items must be valid meter objects) */
   meters?: Meter[];
   /**
@@ -1588,6 +1503,141 @@ export interface StripeConfigUpdateRequest {
    * @minItems 1
    */
   products: Product[];
+}
+
+/**
+ * Action performed on the product
+ */
+export type ProductChangeAction =
+  (typeof ProductChangeAction)[keyof typeof ProductChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ProductChangeAction = {
+  created: "created",
+  created_local: "created_local",
+  updated: "updated",
+  archived: "archived",
+  linked: "linked",
+} as const;
+
+export interface ProductChange {
+  /** Product config ID */
+  product_id: string;
+  /** Product name */
+  product_name: string;
+  /** Action performed on the product */
+  action: ProductChangeAction;
+  /** Stripe product ID (if applicable) */
+  stripe_id?: string;
+  /** Additional details about the changes */
+  details?: string[];
+}
+
+/**
+ * Action performed on the meter
+ */
+export type MeterChangeAction =
+  (typeof MeterChangeAction)[keyof typeof MeterChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MeterChangeAction = {
+  created: "created",
+  updated: "updated",
+  archived: "archived",
+  linked: "linked",
+} as const;
+
+export interface MeterChange {
+  /** Meter config ID */
+  meter_id: string;
+  /** Meter display name */
+  display_name: string;
+  /** Action performed on the meter */
+  action: MeterChangeAction;
+  /** Stripe meter ID */
+  stripe_id?: string;
+}
+
+/**
+ * Summary of meter changes made during configuration update
+ */
+export interface MeterChanges {
+  /** Meters that were created in Stripe */
+  created?: MeterChange[];
+  /** Meters that were updated */
+  updated?: MeterChange[];
+  /** Meters that were archived */
+  archived?: MeterChange[];
+}
+
+/**
+ * Action performed on the webhook
+ */
+export type WebhookChangeAction =
+  (typeof WebhookChangeAction)[keyof typeof WebhookChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const WebhookChangeAction = {
+  created: "created",
+  updated: "updated",
+  unchanged: "unchanged",
+} as const;
+
+export interface WebhookChange {
+  /** Webhook ID (internal) */
+  webhook_id?: string;
+  /** Webhook URL */
+  url?: string;
+  /** Action performed on the webhook */
+  action?: WebhookChangeAction;
+  /** Stripe webhook endpoint ID */
+  stripe_id?: string;
+}
+
+/**
+ * Summary of webhook changes made during configuration update
+ */
+export interface WebhookChanges {
+  /** Webhooks that were created in Stripe */
+  created?: WebhookChange[];
+  /** Webhooks that were updated */
+  updated?: WebhookChange[];
+  /** Webhooks that were unchanged */
+  unchanged?: WebhookChange[];
+}
+
+/**
+ * Summary of changes made during configuration update
+ */
+export interface StripeConfigChanges {
+  /** Products that were created in Stripe */
+  created?: ProductChange[];
+  /** Products that were updated in Stripe */
+  updated?: ProductChange[];
+  /** Products that were archived in Stripe */
+  archived?: ProductChange[];
+  meters?: MeterChanges;
+  webhooks?: WebhookChanges;
+}
+
+export interface StripeConfiguration {
+  /** Configuration version in semantic versioning format */
+  version: string;
+  /** List of webhook endpoint configurations */
+  webhooks?: WebhookEndpointConfig[];
+  /** List of billing meters for metered pricing (required when any price uses usage_type metered) */
+  meters?: Meter[];
+  /** List of products with their prices */
+  products: Product[];
+}
+
+export interface StripeConfigUpdateResponse {
+  /** Status message describing the update result */
+  message: string;
+  changes?: StripeConfigChanges;
+  config?: StripeConfiguration;
+  /** List of validation errors (only present if validation failed) */
+  errors?: string[];
 }
 
 /**
@@ -1644,6 +1694,8 @@ export interface StripeConfigValidateRequest {
    * @pattern ^\d+\.\d+\.\d+$
    */
   version: string;
+  /** List of webhook endpoint configurations (optional) */
+  webhooks?: WebhookEndpointConfig[];
   /** List of billing meters (optional array, items must be valid meter objects) */
   meters?: Meter[];
   /**
@@ -1741,49 +1793,6 @@ export interface WebhookSecretResponse {
   created_at?: string;
   /** Last update timestamp */
   updated_at?: string;
-}
-
-export interface WebhooksConfigRequest {
-  /**
-   * List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
-   * @minItems 1
-   */
-  webhooks: WebhookEndpointConfig[];
-}
-
-/**
- * Action performed on the webhook
- */
-export type WebhookResultAction =
-  (typeof WebhookResultAction)[keyof typeof WebhookResultAction];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const WebhookResultAction = {
-  created: "created",
-  updated: "updated",
-  unchanged: "unchanged",
-} as const;
-
-export interface WebhookResult {
-  /** Internal webhook ID */
-  id?: string;
-  /** Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx) */
-  stripe_id: string;
-  /** Webhook endpoint URL */
-  url: string;
-  /** List of subscribed event types */
-  events: string[];
-  /** Whether webhook listens to connected account events */
-  connect: boolean;
-  /** Webhook signing secret for signature verification */
-  secret: string;
-  /** Action performed on the webhook */
-  action: WebhookResultAction;
-}
-
-export interface WebhooksConfigResponse {
-  /** List of configured webhook endpoints with results */
-  webhooks: WebhookResult[];
 }
 
 export interface ApplyEnterpriseTemplateRequest {
@@ -2565,6 +2574,13 @@ export type GetStripeConfigAdmin200AllOf = {
 export type GetStripeConfigAdmin200 = SuccessResponse &
   GetStripeConfigAdmin200AllOf;
 
+export type UpdateStripeConfig200AllOf = {
+  data?: StripeConfigUpdateResponse;
+};
+
+export type UpdateStripeConfig200 = SuccessResponse &
+  UpdateStripeConfig200AllOf;
+
 export type GetStripeConfigHistoryParams = {
   /**
    * Items per page
@@ -2629,12 +2645,6 @@ export type GetWebhookSecret200AllOf = {
 };
 
 export type GetWebhookSecret200 = SuccessResponse & GetWebhookSecret200AllOf;
-
-export type ConfigureWebhooks200AllOf = {
-  data?: WebhooksConfigResponse;
-};
-
-export type ConfigureWebhooks200 = SuccessResponse & ConfigureWebhooks200AllOf;
 
 export type ApplyEnterpriseTemplate200AllOf = {
   data?: EnterpriseApplyResponse;
@@ -4641,7 +4651,7 @@ Requires admin JWT token.
   }
 
   /**
- * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
+ * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.
 
 ## Authentication
 Requires admin JWT token.
@@ -4650,6 +4660,11 @@ Requires admin JWT token.
 - Deploy new pricing
 - Update product definitions
 - Modify metered billing settings
+- Configure webhook endpoints
+
+## Webhooks
+Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted.
+Each webhook can have `connect: true` to listen to events from connected accounts.
 
  * @summary Update Stripe config
  */
@@ -4658,7 +4673,7 @@ Requires admin JWT token.
     requestParameters?: Params,
   ): {
     response: Response;
-    data: SuccessResponse;
+    data: UpdateStripeConfig200;
   } {
     const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/admin/config`);
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -5083,64 +5098,6 @@ Requires service key authentication.
       url.toString(),
       undefined,
       mergedRequestParameters,
-    );
-    let data;
-
-    try {
-      data = response.json();
-    } catch {
-      data = response.body;
-    }
-    return {
-      response,
-      data,
-    };
-  }
-
-  /**
- * Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
-Webhooks not in the request will be deleted.
-
-## Authentication
-Requires service key authentication.
-
-## Connect Webhooks
-Each webhook can have `connect: true` to listen to events from connected accounts.
-
-## URL Interpolation
-URLs support `${VAR}` environment variable interpolation when using the CLI.
-The CLI resolves these before sending to the API.
-
-## Use Cases
-- Configure multiple webhooks for different environments
-- Set up both account and Connect webhooks
-- Declarative webhook configuration management
-
- * @summary Configure multiple webhook endpoints
- */
-  configureWebhooks(
-    webhooksConfigRequest: WebhooksConfigRequest,
-    requestParameters?: Params,
-  ): {
-    response: Response;
-    data: ConfigureWebhooks200;
-  } {
-    const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/config/webhooks`);
-    const mergedRequestParameters = this._mergeRequestParameters(
-      requestParameters || {},
-      this.commonRequestParameters,
-    );
-    const response = http.request(
-      "POST",
-      url.toString(),
-      JSON.stringify(webhooksConfigRequest),
-      {
-        ...mergedRequestParameters,
-        headers: {
-          ...mergedRequestParameters?.headers,
-          "Content-Type": "application/json",
-        },
-      },
     );
     let data;
 

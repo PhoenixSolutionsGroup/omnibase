@@ -14,6 +14,7 @@
     "test:api:local": "./scripts/test-api.sh --local",
     "test:api:k6": "./scripts/test-api.sh --k6-only --local",
     "test:api:contract": "./scripts/test-api.sh --contract-only --local",
+    "test:api:integration": "./scripts/test-api.sh --k6-only --local --scenario integration",
     "release:preview": "./scripts/preview-releases.sh"
   },
   "devDependencies": {

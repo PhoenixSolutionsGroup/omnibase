@@ -226,8 +226,6 @@ export async function enterprisePricingApplyTemplate() {
     return;
   }
 
-  sleep(1);
-
   // Step 6: Apply enterprise template pricing
   const applyTemplateResponse = client.applyEnterpriseTemplate({
     tenant_id: tenant.id,
@@ -413,8 +411,6 @@ export async function enterprisePricingApplyCustom() {
     logError("addSubscription", subscriptionResponse.response);
     return;
   }
-
-  sleep(1);
 
   // Step 6: Apply custom enterprise pricing (acme_corp)
   const applyCustomResponse = client.applyEnterpriseCustom({
