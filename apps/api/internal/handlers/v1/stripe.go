@@ -1017,7 +1017,7 @@ func (h *StripeHandler) addStripeIDsToConfig(config models.StripeConfiguration, 
 		}
 
 		// Get Stripe product ID
-		if productStripeID, err := h.service.GetStripeIDByConfigItemID(product.ID, "product"); err == nil && productStripeID != "" && productStripeID != product.ID {
+		if productStripeID, err := h.service.GetStripeIDByConfigItemID(product.ID, "product"); err == nil && productStripeID != "" {
 			productWithIDs.StripeID = &productStripeID
 		}
 
@@ -1030,7 +1030,7 @@ func (h *StripeHandler) addStripeIDsToConfig(config models.StripeConfiguration, 
 
 			// Get Stripe price ID - only if it's not a "free" price
 			if price.ID != "free" {
-				if priceStripeID, err := h.service.GetStripeIDByConfigItemID(price.ID, "price"); err == nil && priceStripeID != "" && priceStripeID != price.ID {
+				if priceStripeID, err := h.service.GetStripeIDByConfigItemID(price.ID, "price"); err == nil && priceStripeID != "" {
 					priceWithIDs.StripeID = &priceStripeID
 				}
 			}
