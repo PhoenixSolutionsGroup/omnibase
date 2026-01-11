@@ -5,7 +5,7 @@
       "name": "dashboard",
       "dependencies": {
         "@omnibase/core-js": "^0.9.18",
-        "@omnibase/nextjs": "^0.6.3",
+        "@omnibase/nextjs": "^0.6.5",
         "@omnibase/shadcn": "^0.6.2",
         "@radix-ui/react-checkbox": "^1.3.3",
         "@radix-ui/react-dialog": "^1.1.15",
