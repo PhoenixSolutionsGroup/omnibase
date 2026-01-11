@@ -404,7 +404,9 @@ export function ProjectDashboardClient({
                     Database Provider
                   </p>
                   <p className="mt-1 font-medium">
-                    {project.database_provider || "N/A"}
+                    {/* Fix: Database Provider */}
+                    {/* {project.database_provider || "N/A"} */}
+                    N/A
                   </p>
                 </div>
                 <div>
@@ -412,7 +414,9 @@ export function ProjectDashboardClient({
                     Compute Provider
                   </p>
                   <p className="mt-1 font-medium">
-                    {project.compute_provider || "N/A"}
+                    {/* Fix: Compute Provider */}
+                    {/* {project.compute_provider || "N/A"} */}
+                    N/A
                   </p>
                 </div>
                 <div>
@@ -420,17 +424,12 @@ export function ProjectDashboardClient({
                     Storage Provider
                   </p>
                   <p className="mt-1 font-medium">
-                    {project.storage_provider || "N/A"}
+                    {/* Fix: Storage Provider */}
+                    {/* {project.storage_provider || "N/A"} */}
+                    N/A
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Email Provider
-                  </p>
-                  <p className="mt-1 font-medium">
-                    {project.email_provider || "N/A"}
-                  </p>
-                </div>
+
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
                     Provisioning Type

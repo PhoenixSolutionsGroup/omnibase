@@ -99,7 +99,9 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       navigator.clipboard.writeText(envVars);
 
       if (!result?.success) {
-        toast.warning("OmniBase env copied with placeholder for unauthorized keys");
+        toast.warning(
+          "OmniBase env copied with placeholder for unauthorized keys"
+        );
       } else {
         toast.success("OmniBase environment variables copied to clipboard");
       }
@@ -116,7 +118,13 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 
     try {
       // Fetch all sensitive values in parallel
-      const [serviceKeyResult, dbPasswordResult, connStringResult, postmarkResult, storageResult] = await Promise.all([
+      const [
+        serviceKeyResult,
+        dbPasswordResult,
+        connStringResult,
+        postmarkResult,
+        storageResult,
+      ] = await Promise.all([
         fetchProjectSecretKey(project.id),
         fetchDatabasePassword(project.id),
         fetchDatabaseConnectionString(project.id),
@@ -125,7 +133,10 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       ]);
 
       // Helper to get value or UNAUTHORIZED
-      const getValue = (result: { success: boolean; [key: string]: any } | undefined, key: string) => {
+      const getValue = (
+        result: { success: boolean; [key: string]: any } | undefined,
+        key: string
+      ) => {
         if (result?.success && result[key]) {
           return result[key];
         }
@@ -138,39 +149,68 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       // OmniBase core
       envVars.push(`OMNIBASE_PROJECT_ID=${project.id}`);
       if (project.api_url) envVars.push(`OMNIBASE_API_URL=${project.api_url}`);
-      envVars.push(`OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`);
+      envVars.push(
+        `OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`
+      );
 
       // Auth
-      if (project.auth_public_url) envVars.push(`OMNIBASE_AUTH_URL=${project.auth_public_url}`);
-      if (project.auth_admin_url) envVars.push(`OMNIBASE_AUTH_ADMIN_URL=${project.auth_admin_url}`);
+      if (project.auth_public_url)
+        envVars.push(`OMNIBASE_AUTH_URL=${project.auth_public_url}`);
+      if (project.auth_admin_url)
+        envVars.push(`OMNIBASE_AUTH_ADMIN_URL=${project.auth_admin_url}`);
 
       // Database
-      if (project.postgrest_url) envVars.push(`OMNIBASE_POSTGREST_URL=${project.postgrest_url}`);
-      if (project.database_anon_key) envVars.push(`OMNIBASE_ANON_KEY=${project.database_anon_key}`);
-      if (project.database_host) envVars.push(`OMNIBASE_DATABASE_HOST=${project.database_host}`);
-      if (project.database_port) envVars.push(`OMNIBASE_DATABASE_PORT=${project.database_port}`);
-      if (project.database_name) envVars.push(`OMNIBASE_DATABASE_NAME=${project.database_name}`);
-      if (project.database_username) envVars.push(`OMNIBASE_DATABASE_USERNAME=${project.database_username}`);
-      envVars.push(`OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`);
-      envVars.push(`OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`);
+      if (project.postgrest_url)
+        envVars.push(`OMNIBASE_POSTGREST_URL=${project.postgrest_url}`);
+      if (project.database_anon_key)
+        envVars.push(`OMNIBASE_ANON_KEY=${project.database_anon_key}`);
+      if (project.database_host)
+        envVars.push(`OMNIBASE_DATABASE_HOST=${project.database_host}`);
+      if (project.database_port)
+        envVars.push(`OMNIBASE_DATABASE_PORT=${project.database_port}`);
+      if (project.database_name)
+        envVars.push(`OMNIBASE_DATABASE_NAME=${project.database_name}`);
+      if (project.database_username)
+        envVars.push(`OMNIBASE_DATABASE_USERNAME=${project.database_username}`);
+      envVars.push(
+        `OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`
+      );
+      envVars.push(
+        `OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`
+      );
 
       // Storage
-      if (project.storage_bucket_name) envVars.push(`OMNIBASE_STORAGE_BUCKET=${project.storage_bucket_name}`);
-      if (project.storage_endpoint) envVars.push(`OMNIBASE_STORAGE_ENDPOINT=${project.storage_endpoint}`);
-      if (project.storage_access_key) envVars.push(`OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`);
-      envVars.push(`OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`);
+      if (project.storage_bucket_name)
+        envVars.push(`OMNIBASE_STORAGE_BUCKET=${project.storage_bucket_name}`);
+      if (project.storage_endpoint)
+        envVars.push(`OMNIBASE_STORAGE_ENDPOINT=${project.storage_endpoint}`);
+      if (project.storage_access_key)
+        envVars.push(
+          `OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`
+        );
+      envVars.push(
+        `OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`
+      );
 
       // Email
-      if (project.postmark_server_id) envVars.push(`OMNIBASE_POSTMARK_SERVER_ID=${project.postmark_server_id}`);
-      envVars.push(`OMNIBASE_POSTMARK_SERVER_TOKEN=${getValue(postmarkResult, "token")}`);
+      if (project.postmark_server_id)
+        envVars.push(
+          `OMNIBASE_POSTMARK_SERVER_ID=${project.postmark_server_id}`
+        );
+      envVars.push(
+        `OMNIBASE_POSTMARK_SERVER_TOKEN=${getValue(postmarkResult, "token")}`
+      );
 
       // Worker
-      if (project.worker_url) envVars.push(`OMNIBASE_WORKER_URL=${project.worker_url}`);
+      if (project.worker_url)
+        envVars.push(`OMNIBASE_WORKER_URL=${project.worker_url}`);
 
       navigator.clipboard.writeText(envVars.join("\n"));
 
       if (hasUnauthorized) {
-        toast.warning("Environment variables copied. Some values show UNAUTHORIZED due to missing permissions.");
+        toast.warning(
+          "Environment variables copied. Some values show UNAUTHORIZED due to missing permissions."
+        );
       } else {
         toast.success("All environment variables copied to clipboard");
       }
@@ -304,7 +344,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       title: "API Endpoints",
       description: "Core API service URLs",
       icon: <Globe className="h-5 w-5 text-primary" />,
-      provider: project.compute_provider,
+      // TODO: Possibly add `provider` here that shows deployment type/name
       items: [
         { label: "API URL", value: project.api_url },
         {
@@ -329,7 +369,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       title: "Database",
       description: "Database connection information",
       icon: <Database className="h-5 w-5 text-primary" />,
-      provider: project.database_provider,
+      // TODO: Possibly add 'provider' here that shows database provider
       items: [
         { label: "PostgREST URL", value: project.postgrest_url },
         { label: "Anon Key", value: project.database_anon_key },
@@ -374,7 +414,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       title: "Storage",
       description: "Object storage configuration",
       icon: <Cloud className="h-5 w-5 text-primary" />,
-      provider: project.storage_provider,
+      // TODO: Possibly add 'provider' here that shows storage provider
       items: [
         { label: "Storage Bucket Name", value: project.storage_bucket_name },
         { label: "Storage Endpoint", value: project.storage_endpoint },
@@ -391,7 +431,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       title: "Email",
       description: "Email service configuration",
       icon: <Mail className="h-5 w-5 text-primary" />,
-      provider: project.email_provider,
       items: [
         { label: "Postmark Server ID", value: project.postmark_server_id },
         {
@@ -406,7 +445,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       title: "Infrastructure",
       description: "Hosting and infrastructure details",
       icon: <Boxes className="h-5 w-5 text-primary" />,
-      provider: project.compute_provider,
       items: [
         { label: "VPS Host ID", value: project.vps_host_id },
         { label: "Dedicated VPS ID", value: project.dedicated_vps_id },
@@ -503,13 +541,17 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={copyingEnv ? undefined : copyOmnibaseEnv}
-                      className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+                      className={
+                        copyingEnv ? "opacity-50 cursor-not-allowed" : ""
+                      }
                     >
                       Copy OmniBase Env
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={copyingEnv ? undefined : copyAllEnv}
-                      className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+                      className={
+                        copyingEnv ? "opacity-50 cursor-not-allowed" : ""
+                      }
                     >
                       Copy All Env Variables
                     </DropdownMenuItem>
