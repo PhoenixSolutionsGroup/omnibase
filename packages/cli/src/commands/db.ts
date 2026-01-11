@@ -3,11 +3,21 @@ import * as fs from "fs";
 import * as path from "path";
 // @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
-import { findOmnibaseRoot, selectEnvironment } from "../utils/environment";
+import {
+  EnvironmentConfig,
+  findOmnibaseRoot,
+  selectEnvironment,
+} from "../utils/environment";
+import { select } from "@inquirer/prompts";
 import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
-import { ResponseError } from "@omnibase/core-js";
+import { createOmnibaseSDKConfig } from "../utils/api-client";
+import {
+  GenerateDatabaseTypesLanguageEnum,
+  ResponseError,
+  V1ConfigurationApi,
+} from "@omnibase/core-js";
 
 async function extractErrorMessage(error: unknown): Promise<string> {
   if (error instanceof ResponseError) {
@@ -80,7 +90,9 @@ export function addDbCommands(program: Command): void {
 
   migrate
     .command("reset")
-    .description("Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)")
+    .description(
+      "Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)"
+    )
     .option(
       "-d, --dir <directory>",
       "Directory containing migration files",
@@ -123,7 +135,11 @@ export function addDbCommands(program: Command): void {
           }
         }
 
-        await resetMigrations(ctx.env.omnibaseApiUrl, ctx.env.omnibaseServiceKey, options.dir);
+        await resetMigrations(
+          ctx.env.omnibaseApiUrl,
+          ctx.env.omnibaseServiceKey,
+          options.dir
+        );
       } catch (error) {
         handleCommandError(error);
       }
@@ -131,23 +147,58 @@ export function addDbCommands(program: Command): void {
 
   // Typegen command
   db.command("typegen")
-    .description("Generate TypeScript types from database schema")
+    .description("Generate types from database schema")
     .option(
       "-o, --output <path>",
-      "Output file path",
-      "omnibase/types/database.ts"
+      "Output file path (default depends on language)"
     )
     .option(
       "-s, --schema <schemas>",
       "Comma-separated list of schemas to include",
       "public"
     )
+    .option("-l, --language <language>", "Target language: typescript, go, swift")
     .action(async (options) => {
       try {
         const ctx = await getCommandContextWithEnv(program);
         logger.info(`Using environment: ${ctx.env.name}`);
 
-        await generateTypes(ctx.env, options.output, options.schema);
+        const validLanguages: GenerateDatabaseTypesLanguageEnum[] = [
+          "typescript",
+          "go",
+          "swift",
+        ];
+
+        let language: GenerateDatabaseTypesLanguageEnum;
+
+        if (options.language) {
+          language = options.language as GenerateDatabaseTypesLanguageEnum;
+          if (!validLanguages.includes(language)) {
+            throw new Error(
+              `Unsupported language: ${language}. Supported: ${validLanguages.join(", ")}`
+            );
+          }
+        } else {
+          language = await select({
+            message: "Select target language:",
+            choices: validLanguages.map((lang) => ({
+              name: lang,
+              value: lang,
+            })),
+          });
+        }
+
+        const defaultOutputs: Record<
+          GenerateDatabaseTypesLanguageEnum,
+          string
+        > = {
+          typescript: "omnibase/types/omnibase.ts",
+          go: "omnibase/types/omnibase.go",
+          swift: "omnibase/types/Omnibase.swift",
+        };
+        const outputPath = options.output || defaultOutputs[language];
+
+        await generateTypes(ctx.env, outputPath, options.schema, language);
       } catch (error) {
         handleCommandError(error);
       }
@@ -231,7 +282,9 @@ export async function pushDbMigrations(envOverride?: string): Promise<void> {
   const env = await selectEnvironment(envOverride);
 
   if (!env.omnibaseServiceKey) {
-    throw new Error("OMNIBASE_SERVICE_KEY not found in environment configuration");
+    throw new Error(
+      "OMNIBASE_SERVICE_KEY not found in environment configuration"
+    );
   }
 
   await applyMigrations(env, "omnibase/db");
@@ -300,7 +353,11 @@ async function applyMigrations(
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
-      throw new Error(body.error || body.message || `${response.status} - ${response.statusText}`);
+      throw new Error(
+        body.error ||
+          body.message ||
+          `${response.status} - ${response.statusText}`
+      );
     }
 
     const data = await response.json();
@@ -378,11 +435,17 @@ async function resetMigrations(
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
-      throw new Error(body.error || body.message || `${response.status} - ${response.statusText}`);
+      throw new Error(
+        body.error ||
+          body.message ||
+          `${response.status} - ${response.statusText}`
+      );
     }
 
     const data = await response.json();
-    logger.succeed(data.message || "Database reset and migrations applied successfully");
+    logger.succeed(
+      data.message || "Database reset and migrations applied successfully"
+    );
   } catch (error) {
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
@@ -393,32 +456,30 @@ async function resetMigrations(
 }
 
 /**
- * Generate TypeScript types from database schema using postgres-meta
- * Note: External service, not covered by SDK
+ * Generate types from database schema via the API
  */
 async function generateTypes(
-  env: { typegenApiUrl?: string },
+  env: EnvironmentConfig,
   outputPath: string,
-  schemas: string
+  schemas: string,
+  language: GenerateDatabaseTypesLanguageEnum
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
-  const typegenApiUrl = env.typegenApiUrl;
 
-  logger.start(`Fetching schema types from ${typegenApiUrl}...`);
-  logger.log(`   Included schemas: ${schemas}`);
+  logger.start(`Generating ${language} types...`);
+  logger.log(`   Schemas: ${schemas}`);
 
   try {
-    const url = `${typegenApiUrl}/generators/typescript?included_schemas=${schemas}`;
-    const response = await fetch(url);
+    const config = createOmnibaseSDKConfig(env);
+    const api = new V1ConfigurationApi(config);
 
-    if (!response.ok) {
-      throw new Error(`${response.status} - ${response.statusText}`);
-    }
-
-    const data = await response.text();
+    const data = await api.generateDatabaseTypes({
+      schemas,
+      language,
+    });
 
     if (!data) {
-      throw new Error("No type definitions returned from postgres-meta");
+      throw new Error("No type definitions returned from API");
     }
 
     const fullOutputPath = path.join(projectRoot, outputPath);
@@ -431,16 +492,13 @@ async function generateTypes(
 
     fs.writeFileSync(fullOutputPath, data);
 
-    logger.succeed(`Generated TypeScript types`);
+    logger.succeed(`Generated ${language} types`);
     logger.log(`   Location: ${fullOutputPath}`);
-    logger.log(
-      `   Import these types in your application to get type-safe database access`
-    );
   } catch (error) {
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
-      `Failed to generate types from ${typegenApiUrl}: ${errorMsg}\n` +
-        `Please ensure postgres-meta is running and accessible.`
+      `Failed to generate types: ${errorMsg}\n` +
+        `Please ensure the API is running and accessible.`
     );
   }
 }

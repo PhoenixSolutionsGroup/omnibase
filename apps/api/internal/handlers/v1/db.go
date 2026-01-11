@@ -396,6 +396,65 @@ func (h *MigrationHandler) dropAllTables() error {
 	return nil
 }
 
+// HandleTypegen proxies the typegen request to postgres-meta and returns generated types
+func (h *MigrationHandler) HandleTypegen(c *gin.Context) {
+	schemas := c.DefaultQuery("schemas", "public")
+	language := c.DefaultQuery("language", "typescript")
+
+	supportedLanguages := map[string]bool{
+		"typescript": true,
+		"go":         true,
+		"swift":      true,
+	}
+
+	if !supportedLanguages[language] {
+		logger.Logger.Warn("Unsupported language requested", "language", language)
+		c.JSON(http.StatusBadRequest, MigrationErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: fmt.Sprintf("Unsupported language: %s. Supported: typescript, go, swift", language),
+		})
+		return
+	}
+
+	logger.Logger.Info("Generating types", "language", language, "schemas", schemas)
+
+	typegenURL := fmt.Sprintf("%s/generators/%s?included_schemas=%s", h.cfg.TypegenURL, language, schemas)
+
+	resp, err := http.Get(typegenURL)
+	if err != nil {
+		logger.Logger.Error("Failed to connect to typegen service", "error", err)
+		c.JSON(http.StatusBadGateway, MigrationErrorResponse{
+			Status:  http.StatusBadGateway,
+			Message: "Failed to connect to typegen service",
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		logger.Logger.Error("Typegen service returned error", "status", resp.StatusCode, "body", string(body))
+		c.JSON(resp.StatusCode, MigrationErrorResponse{
+			Status:  resp.StatusCode,
+			Message: fmt.Sprintf("Typegen service error: %s", string(body)),
+		})
+		return
+	}
+
+	types, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Logger.Error("Failed to read typegen response", "error", err)
+		c.JSON(http.StatusInternalServerError, MigrationErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "Failed to read typegen response",
+		})
+		return
+	}
+
+	logger.Logger.Info("Successfully generated types", "language", language)
+	c.Data(http.StatusOK, "text/plain; charset=utf-8", types)
+}
+
 func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
 	logger.Logger.Trace("Ensuring migrations schema exists")
 

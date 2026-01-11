@@ -52,6 +52,72 @@ paths:
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
+  /api/v1/database/typegen:
+    get:
+      operationId: generateDatabaseTypes
+      summary: Generate types from database schema
+      description: |
+        Generates type definitions from the database schema using postgres-meta.
+
+        ## Supported Languages
+        - `typescript` (default) - TypeScript type definitions
+        - `go` - Go struct definitions
+        - `swift` (beta) - Swift type definitions
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - CLI type generation via `omnibase db typegen`
+        - CI/CD pipeline type generation
+        - Programmatic type generation for SDKs
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: schemas
+          in: query
+          description: Comma-separated list of database schemas to include
+          required: false
+          schema:
+            type: string
+            default: public
+            example: public,auth
+        - name: language
+          in: query
+          description: Target language for type generation
+          required: false
+          schema:
+            type: string
+            enum: [typescript, go, swift]
+            default: typescript
+            example: typescript
+      responses:
+        '200':
+          description: Generated type definitions
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Type definitions as plain text
+        '400':
+          description: Unsupported language
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationErrorResponse'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '502':
+          description: Failed to connect to typegen service
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/database.yaml#/components/schemas/MigrationErrorResponse'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
   /api/v1/database/migrations/reset:
     post:
       operationId: resetDatabaseMigrations

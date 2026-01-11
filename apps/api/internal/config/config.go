@@ -16,8 +16,10 @@ type Config struct {
 	PermissionsConfig    PermissionsConfig
 	ManagedHostingConfig ManagedHostingConfig
 	PostgRESTURL         string
+	TypegenURL           string
 	JWTSecret            string
 	EncryptionMasterKey  string
+	EnablePprof          bool
 }
 
 type ManagedHostingConfig struct {
@@ -58,6 +60,7 @@ type StripeConfig struct {
 	StripeAccountID    string
 	PlatformFeePercent float64
 	WebhookSecret      string
+	APIBaseURL         string
 }
 
 type AuthConfig struct {
@@ -100,6 +103,7 @@ func New() *Config {
 			SecretKey:          os.Getenv("STRIPE_SECRET_KEY"),
 			StripeAccountID:    os.Getenv("STRIPE_ACCOUNT_ID"),
 			PlatformFeePercent: getFloat64Env("PLATFORM_FEE_PERCENT", 0),
+			APIBaseURL:         os.Getenv("STRIPE_API_URL"),
 		},
 		AuthConfig: AuthConfig{
 			AuthURL:      os.Getenv("AUTH_URL"),
@@ -122,8 +126,10 @@ func New() *Config {
 			TenantID:             getEnvOrDefault("MANAGED_TENANT_ID", "local"),
 		},
 		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
+		TypegenURL:          getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
 		JWTSecret:           os.Getenv("JWT_SECRET"),
 		EncryptionMasterKey: os.Getenv("ENCRYPTION_MASTER_KEY"),
+		EnablePprof:         os.Getenv("ENABLE_PPROF") == "true",
 	}
 }
 

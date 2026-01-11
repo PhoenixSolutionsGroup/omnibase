@@ -27,5 +27,8 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Registering POST /migrations/reset route for database reset")
 	router.POST("/migrations/reset", databaseHandler.HandleMigrationsReset)
 
+	logger.Logger.Info("Registering GET /typegen route for TypeScript type generation")
+	router.GET("/typegen", databaseHandler.HandleTypegen)
+
 	logger.Logger.Info("Database routes registration completed")
 }
