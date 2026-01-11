@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { Database } from "@/types/database";
+import { Database } from "@/types/omnibase";
 
 export type Project = Database["public"]["Tables"]["projects"]["Row"];
 
