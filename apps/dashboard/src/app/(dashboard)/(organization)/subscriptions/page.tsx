@@ -3,22 +3,20 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import React from "react";
 import { CustomerPortalButton } from "./customer-portal-button";
-import {
-  createPaymentsServerClient,
-  createStripeServerClient,
-  createTenantsServerClient,
-} from "@/lib/server";
+import { getOmnibaseConfiguration } from "@/lib/server";
+import { V1PaymentsApi, V1StripeApi, V1TenantsApi } from "@omnibase/core-js";
 
 async function createCustomerPortal() {
   "use server";
-  const payments = await createPaymentsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1PaymentsApi(config);
 
   const headersList = await headers();
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto");
   const currentUrl = `${protocol}://${host}`;
 
-  const { data: portal } = await payments.createCustomerPortal({
+  const { data: portal } = await client.createCustomerPortal({
     createPortalRequest: {
       returnUrl: currentUrl,
     },
@@ -30,14 +28,15 @@ async function createCustomerPortal() {
 
 async function createCheckout(id: string) {
   "use server";
-  const payments = await createPaymentsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1PaymentsApi(config);
 
   const headersList = await headers();
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto");
   const currentUrl = `${protocol}://${host}`;
 
-  const { data } = await payments.createCheckout({
+  const { data } = await client.createCheckout({
     createCheckoutRequest: {
       priceId: id,
       successUrl: `${currentUrl}/subscriptions?success=true`,
@@ -52,16 +51,17 @@ async function createCheckout(id: string) {
 }
 
 export default async function Page() {
-  const tenants = await createTenantsServerClient();
-  const stripe = await createStripeServerClient();
+  const config = await getOmnibaseConfiguration();
+  const tenantClient = new V1TenantsApi(config);
+  const stripeClient = new V1StripeApi(config);
 
-  const { data: configData } = await stripe.getStripeConfig();
+  const { data: configData } = await stripeClient.getStripeConfig();
   if (!configData) {
     throw new Error("Failed to fetch Stripe config");
   }
   const products = configData.config.products;
 
-  const { data: subscriptions } = await tenants.listTenantSubscriptions();
+  const { data: subscriptions } = await tenantClient.listTenantSubscriptions();
 
   let active_subscription_id = undefined;
 
@@ -84,7 +84,8 @@ export default async function Page() {
       </div>
       {products.length !== 0 && (
         <PricingTable
-          products={products}
+          // TODO: Fix `as any` type
+          products={products as any}
           selectedPriceId={active_subscription_id}
           showPricingToggle
           className="scale-[95%]"

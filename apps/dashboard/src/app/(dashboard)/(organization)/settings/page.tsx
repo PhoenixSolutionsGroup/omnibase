@@ -1,15 +1,16 @@
-import { createTenantsServerClient } from "@/lib/server";
+import { getOmnibaseConfiguration } from "@/lib/server";
 import { UserViewer } from "@omnibase/shadcn";
 import React from "react";
 import { DeleteSection } from "./delete-section";
 import { APIKeysSection } from "./api-keys-section";
 import { listAPIKeys } from "./actions";
-import { Role, TenantUserResponse } from "@omnibase/core-js";
+import { Role, TenantUserResponse, V1TenantsApi } from "@omnibase/core-js";
 
 async function removeUser(user_id: string) {
   "use server";
-  const tenant = await createTenantsServerClient();
-  await tenant.removeTenantUser({
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
+  await client.removeTenantUser({
     deleteTenantUserRequest: {
       userId: user_id,
     },
@@ -18,8 +19,9 @@ async function removeUser(user_id: string) {
 
 async function updateUserRole(user_id: string, role: string) {
   "use server";
-  const tenant = await createTenantsServerClient();
-  await tenant.updateTenantUserRole({
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
+  await client.updateTenantUserRole({
     updateTenantUserRoleRequest: {
       role,
       userId: user_id,
@@ -29,21 +31,23 @@ async function updateUserRole(user_id: string, role: string) {
 
 async function deleteTenantAction() {
   "use server";
-  const tenant = await createTenantsServerClient();
-  await tenant.deleteTenant({});
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
+  await client.deleteTenant({});
 }
 
 export default async function page() {
-  const tenant = await createTenantsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
 
   let users: TenantUserResponse[] = [];
   let roles: Role[] = [];
   try {
-    let { data: usersResp } = await tenant.listTenantUsers();
+    let { data: usersResp } = await client.listTenantUsers();
     if (!!usersResp) {
       users = usersResp;
     }
-    const { data: rolesResp } = await tenant.listRoles();
+    const { data: rolesResp } = await client.listRoles();
     if (!!rolesResp) {
       roles = rolesResp.roles;
     }

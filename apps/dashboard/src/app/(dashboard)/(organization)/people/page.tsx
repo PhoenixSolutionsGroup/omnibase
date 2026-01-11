@@ -1,13 +1,14 @@
 import React from "react";
 import { UserInvite, RoleCreator } from "@omnibase/shadcn";
 import { getAllProjects } from "@/utils/get-project";
-import { createTenantsServerClient } from "@/lib/server";
-import { CreateInviteRequest } from "@omnibase/core-js";
+import { getOmnibaseConfiguration } from "@/lib/server";
+import { CreateInviteRequest, V1TenantsApi } from "@omnibase/core-js";
 
 async function inviteUser(invite: CreateInviteRequest) {
   "use server";
   const data = invite.createTenantUserInviteRequest;
-  const client = await createTenantsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
   const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL!;
 
   await client.createInvite({
@@ -21,7 +22,8 @@ async function inviteUser(invite: CreateInviteRequest) {
 
 async function createRole(role: { role_name: string; permissions: string[] }) {
   "use server";
-  const client = await createTenantsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
   await client.createRole({
     createRoleRequest: {
       permissions: role.permissions,
@@ -32,7 +34,8 @@ async function createRole(role: { role_name: string; permissions: string[] }) {
 
 async function updateRole(role: { role_id: string; permissions: string[] }) {
   "use server";
-  const client = await createTenantsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
   await client.updateRole({
     roleId: role.role_id,
     updateRoleRequest: {
@@ -42,7 +45,8 @@ async function updateRole(role: { role_id: string; permissions: string[] }) {
 }
 
 export default async function Page() {
-  const client = await createTenantsServerClient();
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
 
   const { data: rolesData } = await client.listRoles();
   if (!rolesData) {

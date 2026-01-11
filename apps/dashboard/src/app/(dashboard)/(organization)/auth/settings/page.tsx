@@ -7,7 +7,8 @@ export default async function page({ searchParams }: any) {
   if (!flow) return null;
   return (
     <div className="my-8">
-      <SettingsForm flow={flow} />
+      {/* TODO: Fix `as any` type */}
+      <SettingsForm flow={flow as any} />
     </div>
   );
 }

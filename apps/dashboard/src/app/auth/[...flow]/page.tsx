@@ -10,31 +10,37 @@ import {
 } from "@omnibase/shadcn";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createTenantsServerClient } from "@/lib/server";
+import { getOmnibaseConfiguration } from "@/lib/server";
+import { V1TenantsApi } from "@omnibase/core-js";
 
+// TODO - Fix type definitions
 export default function page({ params, searchParams }: any) {
   return (
     <div className="mt-[20vh]">
       <FlowRouter
         flowMap={{
           login: (flow) => {
-            return <LoginForm flow={flow} register_url="/auth/registration" />;
+            return (
+              <LoginForm flow={flow as any} register_url="/auth/registration" />
+            );
           },
           registration: (flow) => {
-            return <RegistrationForm flow={flow} login_url="/auth/login" />;
+            return (
+              <RegistrationForm flow={flow as any} login_url="/auth/login" />
+            );
           },
           recovery: (flow) => {
-            return <RecoveryForm flow={flow} />;
+            return <RecoveryForm flow={flow as any} />;
           },
           settings: (flow) => {
             return (
               <div className="-mt-[10vh]">
-                <SettingsForm flow={flow} />
+                <SettingsForm flow={flow as any} />
               </div>
             );
           },
           verification: (flow) => {
-            return <VerificationForm flow={flow} />;
+            return <VerificationForm flow={flow as any} />;
           },
           onboarding: async () => {
             const session = await protectedRoute("/auth/login");
@@ -74,7 +80,8 @@ export default function page({ params, searchParams }: any) {
                       return;
                     }
 
-                    const client = await createTenantsServerClient();
+                    const config = await getOmnibaseConfiguration();
+                    const client = new V1TenantsApi(config);
                     const { data } = await client.createTenant({
                       createTenantRequest: {
                         name: organizationName,
@@ -93,14 +100,14 @@ export default function page({ params, searchParams }: any) {
                   },
                   async joinOrganizationAction(formData) {
                     "use server";
-                    console.log(formData);
                     const token = formData.get("token") as string | null;
 
                     if (!token) {
                       return;
                     }
 
-                    const client = await createTenantsServerClient();
+                    const config = await getOmnibaseConfiguration();
+                    const client = new V1TenantsApi(config);
                     const { data } = await client.acceptInvite({
                       acceptInviteRequest: {
                         token,

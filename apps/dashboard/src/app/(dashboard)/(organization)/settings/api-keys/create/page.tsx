@@ -1,10 +1,11 @@
-import { createTenantsServerClient } from "@/lib/server";
+import { getOmnibaseConfiguration } from "@/lib/server";
 import { getAllProjects } from "@/utils/get-project";
 import { CreateAPIKeyForm } from "./create-api-key-form";
+import { V1TenantsApi } from "@omnibase/core-js";
 
 export default async function Page() {
-  const client = await createTenantsServerClient();
-
+  const config = await getOmnibaseConfiguration();
+  const client = new V1TenantsApi(config);
   // Filter definitions to only show permissions that ApiKey can be granted
   const { data: definitionsData } = await client.getRoleDefinitions({
     subject: "ApiKey",
