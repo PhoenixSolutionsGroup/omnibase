@@ -20,7 +20,7 @@ export type Database = {
           key_prefix: string;
           last_used_at: string | null;
           name: string;
-          scopes: Json | null;
+          permissions: Json | null;
           tenant_id: string;
         };
         Insert: {
@@ -33,7 +33,7 @@ export type Database = {
           key_prefix: string;
           last_used_at?: string | null;
           name: string;
-          scopes?: Json | null;
+          permissions?: Json | null;
           tenant_id: string;
         };
         Update: {
@@ -46,7 +46,7 @@ export type Database = {
           key_prefix?: string;
           last_used_at?: string | null;
           name?: string;
-          scopes?: Json | null;
+          permissions?: Json | null;
           tenant_id?: string;
         };
         Relationships: [];
@@ -60,19 +60,20 @@ export type Database = {
           auth_public_url: string | null;
           branch_name: string;
           cloud_run_service_resource_names: Json | null;
-          compute_provider: string | null;
+          compute_deployment_id: string | null;
           created_at: string;
           database_anon_key: string | null;
           database_connection_string_encrypted: string | null;
+          database_deployment_id: string | null;
           database_host: string | null;
           database_name: string | null;
           database_password_encrypted: string | null;
           database_port: number | null;
-          database_provider: string | null;
           database_service_key_encrypted: string | null;
           database_username: string | null;
           dedicated_vps_id: string | null;
-          email_provider: string | null;
+          deprovisioned_at: string | null;
+          email_deployment_id: string | null;
           env_config_base_encrypted: string | null;
           env_config_encrypted: string | null;
           error_message: string | null;
@@ -93,8 +94,8 @@ export type Database = {
           status: Database["public"]["Enums"]["project_status"];
           storage_access_key: string | null;
           storage_bucket_name: string | null;
+          storage_deployment_id: string | null;
           storage_endpoint: string | null;
-          storage_provider: string | null;
           storage_secret_key_encrypted: string | null;
           stripe_customer_id: string | null;
           stripe_onboarding_complete: boolean;
@@ -103,6 +104,7 @@ export type Database = {
           updated_at: string;
           vps_host_id: string | null;
           worker_url: string | null;
+          workers_deployment_id: string | null;
         };
         Insert: {
           api_service_key_encrypted?: string | null;
@@ -112,19 +114,20 @@ export type Database = {
           auth_public_url?: string | null;
           branch_name: string;
           cloud_run_service_resource_names?: Json | null;
-          compute_provider?: string | null;
+          compute_deployment_id?: string | null;
           created_at?: string;
           database_anon_key?: string | null;
           database_connection_string_encrypted?: string | null;
+          database_deployment_id?: string | null;
           database_host?: string | null;
           database_name?: string | null;
           database_password_encrypted?: string | null;
           database_port?: number | null;
-          database_provider?: string | null;
           database_service_key_encrypted?: string | null;
           database_username?: string | null;
           dedicated_vps_id?: string | null;
-          email_provider?: string | null;
+          deprovisioned_at?: string | null;
+          email_deployment_id?: string | null;
           env_config_base_encrypted?: string | null;
           env_config_encrypted?: string | null;
           error_message?: string | null;
@@ -145,8 +148,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["project_status"];
           storage_access_key?: string | null;
           storage_bucket_name?: string | null;
+          storage_deployment_id?: string | null;
           storage_endpoint?: string | null;
-          storage_provider?: string | null;
           storage_secret_key_encrypted?: string | null;
           stripe_customer_id?: string | null;
           stripe_onboarding_complete?: boolean;
@@ -155,6 +158,7 @@ export type Database = {
           updated_at?: string;
           vps_host_id?: string | null;
           worker_url?: string | null;
+          workers_deployment_id?: string | null;
         };
         Update: {
           api_service_key_encrypted?: string | null;
@@ -164,19 +168,20 @@ export type Database = {
           auth_public_url?: string | null;
           branch_name?: string;
           cloud_run_service_resource_names?: Json | null;
-          compute_provider?: string | null;
+          compute_deployment_id?: string | null;
           created_at?: string;
           database_anon_key?: string | null;
           database_connection_string_encrypted?: string | null;
+          database_deployment_id?: string | null;
           database_host?: string | null;
           database_name?: string | null;
           database_password_encrypted?: string | null;
           database_port?: number | null;
-          database_provider?: string | null;
           database_service_key_encrypted?: string | null;
           database_username?: string | null;
           dedicated_vps_id?: string | null;
-          email_provider?: string | null;
+          deprovisioned_at?: string | null;
+          email_deployment_id?: string | null;
           env_config_base_encrypted?: string | null;
           env_config_encrypted?: string | null;
           error_message?: string | null;
@@ -197,8 +202,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["project_status"];
           storage_access_key?: string | null;
           storage_bucket_name?: string | null;
+          storage_deployment_id?: string | null;
           storage_endpoint?: string | null;
-          storage_provider?: string | null;
           storage_secret_key_encrypted?: string | null;
           stripe_customer_id?: string | null;
           stripe_onboarding_complete?: boolean;
@@ -207,6 +212,7 @@ export type Database = {
           updated_at?: string;
           vps_host_id?: string | null;
           worker_url?: string | null;
+          workers_deployment_id?: string | null;
         };
         Relationships: [
           {
@@ -214,7 +220,7 @@ export type Database = {
             columns: ["vps_host_id"];
             referencedRelation: "vps_hosts";
             referencedColumns: ["id"];
-          }
+          },
         ];
       };
       usage_metrics: {
@@ -284,6 +290,7 @@ export type Database = {
         Row: {
           created_at: string | null;
           current_tenants: number;
+          deployment_id: string | null;
           health_check_url: string | null;
           id: string;
           ip_address: string;
@@ -304,6 +311,7 @@ export type Database = {
         Insert: {
           created_at?: string | null;
           current_tenants?: number;
+          deployment_id?: string | null;
           health_check_url?: string | null;
           id?: string;
           ip_address: string;
@@ -324,6 +332,7 @@ export type Database = {
         Update: {
           created_at?: string | null;
           current_tenants?: number;
+          deployment_id?: string | null;
           health_check_url?: string | null;
           id?: string;
           ip_address?: string;
@@ -340,6 +349,51 @@ export type Database = {
           tier?: Database["public"]["Enums"]["vps_tier"];
           updated_at?: string | null;
           vcpus?: number;
+        };
+        Relationships: [];
+      };
+      webhook_registrations: {
+        Row: {
+          account_id: string;
+          active: boolean;
+          callback_url: string;
+          connect: boolean;
+          created_at: string;
+          events: string[];
+          id: string;
+          pseudo_id: string;
+          secret: string;
+          tenant_id: string;
+          updated_at: string;
+          webhook_id: string;
+        };
+        Insert: {
+          account_id: string;
+          active?: boolean;
+          callback_url: string;
+          connect?: boolean;
+          created_at?: string;
+          events: string[];
+          id?: string;
+          pseudo_id: string;
+          secret: string;
+          tenant_id: string;
+          updated_at?: string;
+          webhook_id: string;
+        };
+        Update: {
+          account_id?: string;
+          active?: boolean;
+          callback_url?: string;
+          connect?: boolean;
+          created_at?: string;
+          events?: string[];
+          id?: string;
+          pseudo_id?: string;
+          secret?: string;
+          tenant_id?: string;
+          updated_at?: string;
+          webhook_id?: string;
         };
         Relationships: [];
       };
@@ -415,7 +469,7 @@ export type Tables<
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -426,14 +480,14 @@ export type Tables<
     ? R
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-      DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-      DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R;
-    }
-    ? R
-    : never
-  : never;
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
+      }
+      ? R
+      : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
@@ -443,7 +497,7 @@ export type TablesInsert<
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -453,12 +507,12 @@ export type TablesInsert<
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-      Insert: infer I;
-    }
-    ? I
-    : never
-  : never;
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
+      }
+      ? I
+      : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
@@ -468,7 +522,7 @@ export type TablesUpdate<
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -478,12 +532,12 @@ export type TablesUpdate<
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-      Update: infer U;
-    }
-    ? U
-    : never
-  : never;
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
+      }
+      ? U
+      : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
@@ -493,14 +547,14 @@ export type Enums<
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never;
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
@@ -510,14 +564,14 @@ export type CompositeTypes<
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never;
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
 
 export const Constants = {
   public: {

@@ -1,4 +1,4 @@
-import { Database } from "@/types/database";
+import { Database } from "@/types/omnibase";
 import {
   Configuration,
   V1PaymentsApi,
