@@ -93,6 +93,12 @@ if [ "$GENERATE_JS" = true ]; then
     --git-repo-id=omnibase
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ JavaScript SDK generated${NC}"
+
+  echo -e "${BLUE}Building JavaScript SDK...${NC}"
+  cd sdk/core/js
+  bun run build
+  cd "$ROOT_DIR"
+  echo -e "${GREEN}✓ JavaScript SDK built${NC}"
 fi
 
 if [ "$GENERATE_GO" = true ]; then

@@ -1,4 +1,4 @@
-FROM oryd/keto:v0.12.0
+FROM oryd/keto:v25.4.0
 
 USER root
 

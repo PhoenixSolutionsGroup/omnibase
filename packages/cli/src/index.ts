@@ -31,7 +31,7 @@ program
   .option("--env <environment>", "Override environment for this command")
   .option(
     "--mode <mode>",
-    "Docker compose mode: 'dev', 'test', or 'default' (default: default)"
+    "Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)"
   );
 
 function createTemplateFiles(targetDir: string): void {
@@ -55,6 +55,8 @@ function getComposeFiles(composeMode?: string): string[] {
     files.push(path.join(dockerDir, "docker-compose.dev.yml"));
   } else if (composeMode === "test") {
     files.push(path.join(dockerDir, "docker-compose.test.yml"));
+  } else if (composeMode === "perf-test") {
+    files.push(path.join(dockerDir, "docker-compose.perf-test.yml"));
   } else {
     // No mode specified - use local compose with persistent volumes
     files.push(path.join(dockerDir, "docker-compose.local.yml"));

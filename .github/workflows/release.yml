@@ -189,7 +189,7 @@ jobs:
           API_URL: http://localhost:8080
           SERVICE_KEY: VERY_SECRET_KEY
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-        run: ./scripts/test-api.sh --local
+        run: bun run test:api:local integration
 
       - name: Show service logs on failure
         if: "!success()"
@@ -342,8 +342,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
+
+      - name: Generate and build core-js SDK
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
 
       - name: Check for changes
         id: changes

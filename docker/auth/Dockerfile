@@ -1,4 +1,4 @@
-FROM oryd/kratos:v1.3.0
+FROM oryd/kratos:v25.4.0
 
 # Install envsubst (part of gettext package) and curl for template downloads
 USER root

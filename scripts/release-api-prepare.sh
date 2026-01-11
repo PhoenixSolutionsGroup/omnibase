@@ -38,7 +38,7 @@ jq --arg v "$VERSION" '.version = $v' sdk/core/js/package.json > sdk/core/js/pac
 # Note: glob patterns with ../../ don't work in @semantic-release/git,
 # so we stage these files explicitly here
 echo "Staging SDK files for commit..."
-git add sdk/core/
+git add -f sdk/core/
 
 echo "========================================"
 echo "Prepare complete!"

@@ -1,4 +1,4 @@
-# Test overrides - local builds without hot-reload (runs Go binary directly)
+# Performance test overrides - uses stripe-mock for load testing without rate limits
 services:
   auth-migrate:
     image: ""
@@ -24,11 +24,26 @@ services:
     image: ""
     build:
       context: ../../../apps/api
-      dockerfile: Dockerfile.test
-    environment:
-      - ENABLE_PPROF=true
+      dockerfile: Dockerfile
     volumes:
       - ../../../apps/api:/app
+    environment:
+      - STRIPE_API_URL=http://stripe-mock:12111
+      - ENABLE_PPROF=true
+    depends_on:
+      - stripe-mock
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.25"
+
+  stripe-mock:
+    image: stripe/stripe-mock:latest
+    ports:
+      - "12111:12111"
+    networks:
+      - app-network
 
   permissions-migrate:
     image: ""

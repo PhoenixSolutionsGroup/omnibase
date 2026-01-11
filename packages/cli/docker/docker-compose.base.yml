@@ -2,6 +2,8 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:17-alpine
+    # Increase max_connections for stress testing (default is 100)
+    command: postgres -c max_connections=300
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: postgres
@@ -18,11 +20,40 @@ services:
       retries: 10
       start_period: 5s
 
+  # PgBouncer - Connection Pooler
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    ports:
+      - "6432:6432"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/db
+      AUTH_TYPE: scram-sha-256
+    volumes:
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432 -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
   db-migrate:
     image: migrate/migrate:latest
     volumes:
       - ./db:/migrations
-    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/db?sslmode=disable&x-migrations-table=migrations.init_migrations", "up"]
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:postgres@postgres:5432/db?sslmode=disable&x-migrations-table=migrations.init_migrations",
+        "up",
+      ]
     networks:
       - app-network
     depends_on:
@@ -50,15 +81,13 @@ services:
     depends_on:
       - auth-migrate
       - rest-api
+      - pgbouncer
     image: phoenixsolutionsgroup/omnibase-auth:v0.1.2
-    ports:
-      - "4433:4433" # public
-      - "4434:4434" # admin
     restart: unless-stopped
     env_file:
       - ${OMNIBASE_ENV_FILE}
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
+      - DSN=postgres://auth:auth@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
 
       # Required - will fail if not set
       - WEBSITE_URL=${WEBSITE_URL:-http://127.0.0.1:3000}
@@ -109,8 +138,8 @@ services:
   minio:
     image: minio/minio:latest
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000" # API
+      - "9001:9001" # Console
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
@@ -154,7 +183,7 @@ services:
     ports:
       - "8001:3000"
     environment:
-      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/db
+      PGRST_DB_URI: postgres://postgres:postgres@pgbouncer:6432/db
       PGRST_DB_SCHEMAS: public,auth,storage
       PGRST_DB_ANON_ROLE: anon_user
       PGRST_JWT_SECRET: ${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
@@ -162,6 +191,8 @@ services:
     depends_on:
       db-migrate:
         condition: service_completed_successfully
+      pgbouncer:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -174,6 +205,8 @@ services:
     depends_on:
       db-migrate:
         condition: service_completed_successfully
+      pgbouncer:
+        condition: service_healthy
     networks:
       - app-network
     restart: unless-stopped
@@ -183,9 +216,9 @@ services:
       - AUTH_URL=http://auth:4433
       - AUTH_ADMIN_URL=http://auth:4434
 
-      # Database
-      - DB_HOST=postgres
-      - DB_PORT=5432
+      # Database (via pgbouncer)
+      - DB_HOST=pgbouncer
+      - DB_PORT=6432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=db
@@ -243,13 +276,11 @@ services:
   permissions:
     depends_on:
       - permissions-migrate
+      - pgbouncer
     image: phoenixsolutionsgroup/omnibase-permissions:v0.1.1
-    ports:
-      - "4466:4466" # read API
-      - "4467:4467" # write API
     restart: unless-stopped
     environment:
-      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
+      - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
       - LOG_LEVEL=debug
       - NAMESPACE_BUCKET=dev
       - R2_ENDPOINT=http://minio:9000
@@ -262,8 +293,6 @@ services:
 
   postgres-type-gen:
     image: supabase/postgres-meta:canary-pr-971
-    ports:
-      - 8079:8080
     environment:
       - PG_META_DB_HOST=postgres
       - PG_META_DB_NAME=db

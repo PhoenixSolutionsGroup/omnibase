@@ -25,6 +25,8 @@ services:
     build:
       context: ../../../apps/api
       dockerfile: Dockerfile.dev
+    environment:
+      - ENABLE_PPROF=true
     volumes:
       - ../../../apps/api:/app
 
