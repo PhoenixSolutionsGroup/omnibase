@@ -1,6 +1,6 @@
 import { check, sleep } from "k6";
 import http from "k6/http";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Enterprise Pricing Lifecycle
@@ -80,8 +80,8 @@ export async function enterprisePricingGetPrices() {
 }
 
 export async function enterprisePricingApplyTemplate() {
-  const timestamp = Date.now();
-  const email = `test-enterprise-template-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-enterprise-template-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -108,7 +108,7 @@ export async function enterprisePricingApplyTemplate() {
   // Step 2: Create tenant with billing email
   const tenantResponse = client.createTenant(
     {
-      name: `Enterprise Template Test Org ${timestamp}`,
+      name: `Enterprise Template Test Org ${id}`,
       billing_email: email,
     },
     {
@@ -266,8 +266,8 @@ export async function enterprisePricingApplyTemplate() {
 }
 
 export async function enterprisePricingApplyCustom() {
-  const timestamp = Date.now();
-  const email = `test-enterprise-custom-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-enterprise-custom-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -294,7 +294,7 @@ export async function enterprisePricingApplyCustom() {
   // Step 2: Create tenant with billing email
   const tenantResponse = client.createTenant(
     {
-      name: `Enterprise Custom Test Org ${timestamp}`,
+      name: `Enterprise Custom Test Org ${id}`,
       billing_email: email,
     },
     {
@@ -466,8 +466,8 @@ export async function enterprisePricingValidation() {
 
   // Test 2: Apply template with non-existent template
   // First we need a valid tenant - create one
-  const timestamp = Date.now();
-  const email = `test-enterprise-validation-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-enterprise-validation-${id}@example.com`;
   const password = crypto.randomUUID();
 
   const authResponse = client.createUser({
@@ -487,7 +487,7 @@ export async function enterprisePricingValidation() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Validation Test Org ${timestamp}`,
+      name: `Validation Test Org ${id}`,
       billing_email: email,
     },
     {

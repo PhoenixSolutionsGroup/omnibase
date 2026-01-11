@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Role Management
@@ -26,9 +26,9 @@ import { createClient, logError } from "../client";
  * - RBAC flexibility and permission management
  */
 export async function roleManagement() {
-  const timestamp = Date.now();
-  const ownerEmail = `owner-${timestamp}@example.com`;
-  const memberEmail = `member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `owner-${id}@example.com`;
+  const memberEmail = `member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -54,7 +54,7 @@ export async function roleManagement() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Test Tenant ${timestamp}`,
+      name: `Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {
@@ -114,7 +114,7 @@ export async function roleManagement() {
   });
 
   // Step 4: Create custom role with specific permissions
-  const customRoleName = `custom_role_${timestamp}`;
+  const customRoleName = `custom_role_${id}`;
   const customRolePermissions = [
     "tenant#can_view_users",
     "tenant#can_invite_users",

@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Permission Check API
@@ -29,9 +29,9 @@ import { createClient, logError } from "../client";
  * - Response format is consistent
  */
 export async function checkPermissions() {
-  const timestamp = Date.now();
-  const ownerEmail = `perm-owner-${timestamp}@example.com`;
-  const memberEmail = `perm-member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `perm-owner-${id}@example.com`;
+  const memberEmail = `perm-member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -57,7 +57,7 @@ export async function checkPermissions() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Permission Test Tenant ${timestamp}`,
+      name: `Permission Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {
@@ -78,7 +78,7 @@ export async function checkPermissions() {
   const tenant = tenantData.tenant;
 
   // Step 2: Create custom role "viewer" with ONLY view_users permission
-  const viewerRoleName = `viewer_${timestamp}`;
+  const viewerRoleName = `viewer_${id}`;
   const createRoleResponse = client.createRole(
     {
       role_name: viewerRoleName,

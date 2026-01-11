@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, SERVICE_KEY, logError } from "../client";
+import { createClient, SERVICE_KEY, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Invoice Lifecycle
@@ -12,8 +12,8 @@ import { createClient, SERVICE_KEY, logError } from "../client";
  * 5. Finalize invoice for sending
  */
 export async function invoiceLifecycle() {
-  const timestamp = Date.now();
-  const email = `test-invoice-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-invoice-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -36,7 +36,7 @@ export async function invoiceLifecycle() {
 
   // Step 2: Create tenant with billing_email (triggers Stripe customer creation)
   const tenantResponse = client.createTenant(
-    { name: `Invoice Test Org ${timestamp}`, billing_email: email },
+    { name: `Invoice Test Org ${id}`, billing_email: email },
     { "X-User-Id": user.id }
   );
 
@@ -71,8 +71,8 @@ export async function invoiceLifecycle() {
     {
       currency: "usd",
       auto_advance: false,
-      description: `Test invoice ${timestamp}`,
-      metadata: { test_run: `${timestamp}` },
+      description: `Test invoice ${id}`,
+      metadata: { test_run: `${id}` },
     },
     { "X-Service-Key": SERVICE_KEY, "X-Tenant-Id": tenant.id }
   );
@@ -125,7 +125,7 @@ export async function invoiceLifecycle() {
       description: "Test invoice description",
       metadata: {
         test_key: "test_value",
-        order_id: `order_${timestamp}`,
+        order_id: `order_${id}`,
       },
     },
     { "X-Service-Key": SERVICE_KEY }

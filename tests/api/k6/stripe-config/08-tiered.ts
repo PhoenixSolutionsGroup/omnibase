@@ -64,7 +64,7 @@ export function createGraduatedTieredPrice() {
   check(result.data, {
     "graduated tiered: status is 200": (d) => d.status === 200,
     "graduated tiered: created product": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "tiered_product");
     },
   });
@@ -149,7 +149,7 @@ export function createVolumeTieredPrice() {
   check(result.data, {
     "volume tiered: status is 200": (d) => d.status === 200,
     "volume tiered: created product": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "volume_product");
     },
   });

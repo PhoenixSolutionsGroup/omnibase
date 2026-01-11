@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { client, logError } from "../client";
+import { client, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Webhook Configuration Lifecycle
@@ -20,8 +20,8 @@ import { client, logError } from "../client";
  * 6. Verify all webhooks configured correctly
  */
 export function webhookConfigLifecycle() {
-  const timestamp = Date.now();
-  const webhookUrl = `https://example.com/webhooks/test-${timestamp}`;
+  const id = uniqueId();
+  const webhookUrl = `https://example.com/webhooks/test-${id}`;
 
   // Step 1: Configure a single webhook endpoint using configureWebhooks
   const singleWebhookResponse = client.configureWebhooks({
@@ -113,7 +113,7 @@ export function webhookConfigLifecycle() {
   });
 
   // Step 4: Configure multiple webhooks including a Connect webhook
-  const connectWebhookUrl = `https://example.com/webhooks/connect-${timestamp}`;
+  const connectWebhookUrl = `https://example.com/webhooks/connect-${id}`;
 
   const multiWebhooksResponse = client.configureWebhooks({
     webhooks: [

@@ -70,15 +70,15 @@ export function detectNewProduct() {
   check(result.data, {
     "detect new product: status is 200": (d) => d.status === 200,
     "detect new product: product_b in created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "product_b");
     },
     "detect new product: product_a not in created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return !created.some((p) => p.product_id === "product_a");
     },
     "detect new product: product_b action is created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       const productB = created.find((p) => p.product_id === "product_b");
       return productB?.action === "created";
     },
@@ -147,11 +147,11 @@ export function detectNewPrice() {
   check(result.data, {
     "detect new price: status is 200": (d) => d.status === 200,
     "detect new price: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
     "detect new price: details mention new price": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       const product = updated.find((p) => p.product_id === "test_product");
       const details = product?.details ?? [];
       return details.some(
@@ -326,16 +326,16 @@ export function detectProductNameUpdate() {
   check(result.data, {
     "detect name update: status is 200": (d) => d.status === 200,
     "detect name update: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
     "detect name update: action is updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       const product = updated.find((p) => p.product_id === "test_product");
       return product?.action === "updated";
     },
     "detect name update: not in created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return !created.some((p) => p.product_id === "test_product");
     },
   });
@@ -403,7 +403,7 @@ export function detectProductDescriptionUpdate() {
   check(result.data, {
     "detect description update: status is 200": (d) => d.status === 200,
     "detect description update: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
   });
@@ -473,11 +473,11 @@ export function detectRemovedProduct() {
   check(result.data, {
     "detect removed product: status is 200": (d) => d.status === 200,
     "detect removed product: product_b in archived": (d) => {
-      const archived = d.data?.changes?.archived ?? [];
+      const archived = d.data?.changes?.products?.archived ?? [];
       return archived.some((p) => p.product_id === "product_b");
     },
     "detect removed product: product_a not in archived": (d) => {
-      const archived = d.data?.changes?.archived ?? [];
+      const archived = d.data?.changes?.products?.archived ?? [];
       return !archived.some((p) => p.product_id === "product_a");
     },
   });
@@ -550,11 +550,11 @@ export function detectRemovedPrice() {
   check(result.data, {
     "detect removed price: status is 200": (d) => d.status === 200,
     "detect removed price: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
     "detect removed price: details mention archived price": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       const product = updated.find((p) => p.product_id === "test_product");
       const details = product?.details ?? [];
       return details.some(
@@ -744,17 +744,17 @@ export function priceAmountChangeTriggersRecreation() {
   check(result.data, {
     "price amount change: status is 200": (d) => d.status === 200,
     "price amount change: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
     "price amount change: details mention archived": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       const product = updated.find((p) => p.product_id === "test_product");
       const details = product?.details ?? [];
       return details.some((dt) => dt.toLowerCase().includes("archived"));
     },
     "price amount change: details mention created": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       const product = updated.find((p) => p.product_id === "test_product");
       const details = product?.details ?? [];
       return details.some((dt) => dt.toLowerCase().includes("created"));
@@ -835,7 +835,7 @@ export function priceCurrencyChangeTriggersRecreation() {
   check(result.data, {
     "price currency change: status is 200": (d) => d.status === 200,
     "price currency change: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
   });
@@ -909,7 +909,7 @@ export function priceIntervalChangeTriggersRecreation() {
   check(result.data, {
     "price interval change: status is 200": (d) => d.status === 200,
     "price interval change: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
   });
@@ -1008,7 +1008,7 @@ export function priceUsageTypeChangeTriggersRecreation() {
   check(result.data, {
     "price usage_type change: status is 200": (d) => d.status === 200,
     "price usage_type change: product in updated": (d) => {
-      const updated = d.data?.changes?.updated ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       return updated.some((p) => p.product_id === "test_product");
     },
   });
@@ -1074,13 +1074,13 @@ export function noChangeOnIdenticalConfig() {
       return d.data?.message === "no change was made";
     },
     "no change: no created changes": (d) => {
-      return (d.data?.changes?.created?.length ?? 0) === 0;
+      return (d.data?.changes?.products?.created?.length ?? 0) === 0;
     },
     "no change: no updated changes": (d) => {
-      return (d.data?.changes?.updated?.length ?? 0) === 0;
+      return (d.data?.changes?.products?.updated?.length ?? 0) === 0;
     },
     "no change: no archived changes": (d) => {
-      return (d.data?.changes?.archived?.length ?? 0) === 0;
+      return (d.data?.changes?.products?.archived?.length ?? 0) === 0;
     },
   });
 

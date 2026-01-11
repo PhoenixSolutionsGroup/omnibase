@@ -1,7 +1,14 @@
 import type { Response } from "k6/http";
 import { OmnibaseRESTAPIClient } from "./sdk";
 
+declare const __VU: number;
+declare const __ITER: number;
+
 export const BASE_URL = __ENV.API_URL || "http://localhost:8080";
+
+export function uniqueId(): string {
+  return `${Date.now()}-${__VU}-${__ITER}`;
+}
 export const SERVICE_KEY = __ENV.SERVICE_KEY || "VERY_SECRET_KEY";
 
 export const client = new OmnibaseRESTAPIClient({

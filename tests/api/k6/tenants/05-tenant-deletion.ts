@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Tenant Deletion
@@ -24,9 +24,9 @@ import { createClient, logError } from "../client";
  * - Multi-user cleanup
  */
 export async function tenantDeletion() {
-  const timestamp = Date.now();
-  const ownerEmail = `owner-${timestamp}@example.com`;
-  const memberEmail = `member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `owner-${id}@example.com`;
+  const memberEmail = `member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -52,7 +52,7 @@ export async function tenantDeletion() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Test Tenant ${timestamp}`,
+      name: `Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {

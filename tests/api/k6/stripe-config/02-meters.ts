@@ -74,7 +74,7 @@ export function createConfigWithMeters() {
       return meters.some((m) => m.action === "created");
     },
     "create meters: product was created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "api_product");
     },
   });

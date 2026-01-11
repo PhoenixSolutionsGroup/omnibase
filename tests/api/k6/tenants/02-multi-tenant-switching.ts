@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Multi-Tenant User Journey & Switching
@@ -23,8 +23,8 @@ import { createClient, logError } from "../client";
  * - JWT token updates with tenant context
  */
 export async function multiTenantSwitching() {
-  const timestamp = Date.now();
-  const email = `test-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -55,7 +55,7 @@ export async function multiTenantSwitching() {
   // Step 2: Create first tenant
   const tenant1Response = client.createTenant(
     {
-      name: `Tenant One ${timestamp}`,
+      name: `Tenant One ${id}`,
       billing_email: email,
     },
     {
@@ -87,7 +87,7 @@ export async function multiTenantSwitching() {
   // Step 3: Create second tenant (should become active)
   const tenant2Response = client.createTenant(
     {
-      name: `Tenant Two ${timestamp}`,
+      name: `Tenant Two ${id}`,
       billing_email: email,
     },
     {

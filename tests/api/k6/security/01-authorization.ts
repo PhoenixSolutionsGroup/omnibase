@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, BASE_URL, logError } from "../client";
+import { createClient, BASE_URL, logError, uniqueId } from "../client";
 import { OmnibaseRESTAPIClient } from "../sdk";
 
 /**
@@ -28,9 +28,9 @@ import { OmnibaseRESTAPIClient } from "../sdk";
  * - Error responses include meaningful messages
  */
 export async function authorization() {
-  const timestamp = Date.now();
-  const ownerEmail = `auth-owner-${timestamp}@example.com`;
-  const memberEmail = `auth-member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `auth-owner-${id}@example.com`;
+  const memberEmail = `auth-member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -126,7 +126,7 @@ export async function authorization() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Auth Test Tenant ${timestamp}`,
+      name: `Auth Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {
@@ -220,7 +220,7 @@ export async function authorization() {
   // Step 7: Attempt to create custom role as member (should 403 - not owner/admin)
   const createRoleAsMemberResponse = client.createRole(
     {
-      role_name: `unauthorized_role_${timestamp}`,
+      role_name: `unauthorized_role_${id}`,
       permissions: ["Tenant#view_users"],
     },
     {
@@ -262,7 +262,7 @@ export async function authorization() {
 
   // Step 9-11: Test invite token expiration and reuse
   // Create a new invite for testing
-  const testInviteEmail = `test-invite-${timestamp}@example.com`;
+  const testInviteEmail = `test-invite-${id}@example.com`;
   const testInviteResponse = client.createInvite(
     {
       email: testInviteEmail,
@@ -346,7 +346,7 @@ export async function authorization() {
 
   // Step 12: Attempt to invite user without permission
   // Create a restrictive role with no invite permission
-  const restrictedRoleName = `no_invite_role_${timestamp}`;
+  const restrictedRoleName = `no_invite_role_${id}`;
   const createRestrictedRoleResponse = client.createRole(
     {
       role_name: restrictedRoleName,
@@ -381,7 +381,7 @@ export async function authorization() {
   // Attempt to create invite without permission
   const inviteWithoutPermissionResponse = client.createInvite(
     {
-      email: `no-perm-invite-${timestamp}@example.com`,
+      email: `no-perm-invite-${id}@example.com`,
       role: "member",
       invite_url: `http://localhost:3000/accept-invite`,
     },
@@ -401,7 +401,7 @@ export async function authorization() {
   });
 
   // Additional test: Attempt to access tenant JWT without being a member
-  const outsiderEmail = `outsider-${timestamp}@example.com`;
+  const outsiderEmail = `outsider-${id}@example.com`;
   const outsiderResponse = client.createUser({
     email: outsiderEmail,
     password: password,

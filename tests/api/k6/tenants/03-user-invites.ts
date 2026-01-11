@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Tenant User Invites
@@ -24,9 +24,9 @@ import { createClient, logError } from "../client";
  * - Multi-user tenant membership
  */
 export async function userInvites() {
-  const timestamp = Date.now();
-  const ownerEmail = `owner-${timestamp}@example.com`;
-  const invitedEmail = `invited-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `owner-${id}@example.com`;
+  const invitedEmail = `invited-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -53,7 +53,7 @@ export async function userInvites() {
   // Step 2: Create tenant
   const tenantResponse = client.createTenant(
     {
-      name: `Test Tenant ${timestamp}`,
+      name: `Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {

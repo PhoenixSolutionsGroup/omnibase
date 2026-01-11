@@ -53,14 +53,14 @@ export function createSimpleConfig() {
   check(result.data, {
     "create config: status is 200": (d) => d.status === 200,
     "create config: has changes.created": (d) => {
-      return (d.data?.changes?.created?.length ?? 0) > 0;
+      return (d.data?.changes?.products?.created?.length ?? 0) > 0;
     },
     "create config: product was created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "test_product");
     },
     "create config: action is created": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       const product = created.find((p) => p.product_id === "test_product");
       return product?.action === "created";
     },

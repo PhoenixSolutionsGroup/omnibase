@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: RBAC Permission Enforcement
@@ -39,9 +39,9 @@ import { createClient, logError } from "../client";
  * - Permission denials return appropriate error messages
  */
 export async function rbacEnforcement() {
-  const timestamp = Date.now();
-  const ownerEmail = `owner-${timestamp}@example.com`;
-  const memberEmail = `member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `owner-${id}@example.com`;
+  const memberEmail = `member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -67,7 +67,7 @@ export async function rbacEnforcement() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `RBAC Test Tenant ${timestamp}`,
+      name: `RBAC Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {
@@ -108,7 +108,7 @@ export async function rbacEnforcement() {
   }
 
   // Step 3: Create restrictive custom role with ONLY view_users permission
-  const restrictedRoleName = `viewer_only_${timestamp}`;
+  const restrictedRoleName = `viewer_only_${id}`;
   const createRestrictedRoleResponse = client.createRole(
     {
       role_name: restrictedRoleName,
@@ -230,7 +230,7 @@ export async function rbacEnforcement() {
   // Step 9: Attempt to create invite as member (should FAIL 403 - no permission)
   const createInviteFailResponse = client.createInvite(
     {
-      email: `another-${timestamp}@example.com`,
+      email: `another-${id}@example.com`,
       role: "member",
       invite_url: `http://localhost:3000/accept-invite`,
     },
@@ -315,7 +315,7 @@ export async function rbacEnforcement() {
   // Step 14: Attempt to create invite as member (should SUCCEED - now has permission)
   const createInviteSuccessResponse = client.createInvite(
     {
-      email: `invited-${timestamp}@example.com`,
+      email: `invited-${id}@example.com`,
       role: "member",
       invite_url: `http://localhost:3000/accept-invite`,
     },
@@ -337,7 +337,7 @@ export async function rbacEnforcement() {
   const createdInvite = createInviteSuccessResponse.data.data;
   check(createdInvite, {
     "created invite: has correct email": (d) =>
-      d?.invite?.email === `invited-${timestamp}@example.com`,
+      d?.invite?.email === `invited-${id}@example.com`,
     "created invite: has token": (d) => d?.invite?.token !== undefined,
   });
 
@@ -386,7 +386,7 @@ export async function rbacEnforcement() {
   // Step 19: Attempt to create another invite (should FAIL 403 - permission revoked)
   const createInviteRevokedResponse = client.createInvite(
     {
-      email: `another-invite-${timestamp}@example.com`,
+      email: `another-invite-${id}@example.com`,
       role: "member",
       invite_url: `http://localhost:3000/accept-invite`,
     },
@@ -406,7 +406,7 @@ export async function rbacEnforcement() {
   });
 
   // Step 20: Create role with NO permissions
-  const noPermissionsRoleName = `no_permissions_${timestamp}`;
+  const noPermissionsRoleName = `no_permissions_${id}`;
   const createNoPermRoleResponse = client.createRole(
     {
       role_name: noPermissionsRoleName,

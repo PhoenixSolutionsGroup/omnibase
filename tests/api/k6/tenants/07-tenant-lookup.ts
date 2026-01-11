@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Tenant Lookup Endpoints
@@ -15,8 +15,8 @@ import { createClient, logError } from "../client";
  * - Stripe webhook processing (lookup by Stripe customer ID)
  */
 export async function tenantLookup() {
-  const timestamp = Date.now();
-  const email = `test-lookup-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-lookup-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -43,7 +43,7 @@ export async function tenantLookup() {
   // Setup: Create tenant with billing_email (triggers Stripe customer creation)
   const tenantResponse = client.createTenant(
     {
-      name: `Lookup Test Org ${timestamp}`,
+      name: `Lookup Test Org ${id}`,
       billing_email: email,
     },
     {
@@ -78,7 +78,7 @@ export async function tenantLookup() {
     },
     "get by ID: returns correct name": (r) => {
       const body = r.json() as any;
-      return body?.data?.tenant?.name === `Lookup Test Org ${timestamp}`;
+      return body?.data?.tenant?.name === `Lookup Test Org ${id}`;
     },
   });
 

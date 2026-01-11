@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 import http from "k6/http";
 
 /**
@@ -27,9 +27,9 @@ import http from "k6/http";
  * - Presigned URLs work correctly
  */
 export async function fileOperations() {
-  const timestamp = Date.now();
-  const ownerEmail = `owner-${timestamp}@example.com`;
-  const memberEmail = `member-${timestamp}@example.com`;
+  const id = uniqueId();
+  const ownerEmail = `owner-${id}@example.com`;
+  const memberEmail = `member-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -55,7 +55,7 @@ export async function fileOperations() {
 
   const tenantResponse = client.createTenant(
     {
-      name: `Storage Test Tenant ${timestamp}`,
+      name: `Storage Test Tenant ${id}`,
       billing_email: ownerEmail,
     },
     {
@@ -91,8 +91,8 @@ export async function fileOperations() {
   }
 
   // Step 2: Upload file to tenant storage
-  const filePath = `test-files/document-${timestamp}.txt`;
-  const fileContent = `This is a test file created at ${timestamp}`;
+  const filePath = `test-files/document-${id}.txt`;
+  const fileContent = `This is a test file created at ${id}`;
 
   const uploadResponse = client.uploadFile(
     {
@@ -245,7 +245,7 @@ export async function fileOperations() {
 
   // Step 7: Member can upload files within the same tenant
   // (storage_objects_tenant_isolation policy allows all operations for tenant members)
-  const memberUploadPath = `test-files/member-document-${timestamp}.txt`;
+  const memberUploadPath = `test-files/member-document-${id}.txt`;
   const memberUploadResponse = client.uploadFile(
     {
       path: memberUploadPath,
@@ -286,8 +286,8 @@ export async function fileOperations() {
   });
 
   // Step 8b: Upload public file as owner
-  const publicFilePath = `public/document-${timestamp}.txt`;
-  const publicFileContent = `This is a public file created at ${timestamp}`;
+  const publicFilePath = `public/document-${id}.txt`;
+  const publicFileContent = `This is a public file created at ${id}`;
 
   const publicUploadResponse = client.uploadFile(
     {
@@ -404,7 +404,7 @@ export async function fileOperations() {
 
   // Step 11: Test cross-tenant file access denial
   // Create second tenant
-  const tenant2Email = `tenant2-${timestamp}@example.com`;
+  const tenant2Email = `tenant2-${id}@example.com`;
   const tenant2Response = client.createUser({
     email: tenant2Email,
     password: password,
@@ -426,7 +426,7 @@ export async function fileOperations() {
 
   const tenant2CreateResponse = client.createTenant(
     {
-      name: `Tenant 2 ${timestamp}`,
+      name: `Tenant 2 ${id}`,
       billing_email: tenant2Email,
     },
     {
@@ -461,7 +461,7 @@ export async function fileOperations() {
     return;
   }
   // Upload file in tenant 2
-  const tenant2FilePath = `tenant2-files/document-${timestamp}.txt`;
+  const tenant2FilePath = `tenant2-files/document-${id}.txt`;
   const tenant2UploadResponse = client.uploadFile(
     {
       path: tenant2FilePath,

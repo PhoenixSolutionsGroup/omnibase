@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Complete Tenant Creation Lifecycle
@@ -20,8 +20,8 @@ import { createClient, logError } from "../client";
  * - Active tenant context setting
  */
 export async function createTenant() {
-  const timestamp = Date.now();
-  const email = `test-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient()
 
@@ -53,7 +53,7 @@ export async function createTenant() {
   // Step 2: Create tenant with billing_email (triggers Stripe customer creation)
   const tenantResponse = client.createTenant(
     {
-      name: `Test Organization ${timestamp}`,
+      name: `Test Organization ${id}`,
       billing_email: email,
     },
     {
@@ -88,7 +88,7 @@ export async function createTenant() {
       return t.stripe_customer_id !== null && t.stripe_customer_id !== undefined;
     },
     "create tenant: has correct name": (t) => {
-      return t.name === `Test Organization ${timestamp}`;
+      return t.name === `Test Organization ${id}`;
     },
     "create tenant: has tenant_id": (t) => {
       return t.id !== undefined && t.id.length > 0;

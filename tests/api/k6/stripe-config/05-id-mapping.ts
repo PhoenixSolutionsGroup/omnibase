@@ -162,7 +162,7 @@ export function migrationWithStripeID() {
   check(result.data, {
     "migration: status is 200": (d) => d.status === 200,
     "migration: action is linked": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.action === "linked");
     },
   });
@@ -237,8 +237,8 @@ export function migrationSkipsExistingMapping() {
   check(result.data, {
     "skip existing: status is 200": (d) => d.status === 200,
     "skip existing: product in updated not created": (d) => {
-      const created = d.data?.changes?.created ?? [];
-      const updated = d.data?.changes?.updated ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
+      const updated = d.data?.changes?.products?.updated ?? [];
       // Should be an update, not a new creation with "linked" action
       const wasCreated = created.some(
         (p) => p.product_id === "existing_product"
@@ -286,7 +286,7 @@ export function freeProductLocalOnly() {
   check(result.data, {
     "free product: status is 200": (d) => d.status === 200,
     "free product: action is created_local": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.action === "created_local");
     },
   });
@@ -440,7 +440,7 @@ export function unarchiveExistingProduct() {
   check(result.data, {
     "unarchive: status is 200": (d) => d.status === 200,
     "unarchive: product was created or unarchived": (d) => {
-      const created = d.data?.changes?.created ?? [];
+      const created = d.data?.changes?.products?.created ?? [];
       return created.some((p) => p.product_id === "test_product");
     },
   });

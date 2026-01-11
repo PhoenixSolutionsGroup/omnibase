@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.12.5
+ * Service version: 0.12.6
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -1266,6 +1266,124 @@ export interface ProductWithStripeIDs {
   stripe_id?: string | null;
 }
 
+/**
+ * Duration for the coupon discount.
+- once: Discount applies to the first charge only
+- repeating: Discount applies for a specified number of months (requires duration_in_months)
+- forever: Discount applies indefinitely (only valid with percent_off, not amount_off)
+
+ */
+export type CouponDuration =
+  (typeof CouponDuration)[keyof typeof CouponDuration];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CouponDuration = {
+  once: "once",
+  repeating: "repeating",
+  forever: "forever",
+} as const;
+
+export type CouponWithStripeIDMetadata = { [key: string]: string };
+
+export interface CouponWithStripeID {
+  /**
+   * Coupon identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /** Coupon name */
+  name?: string;
+  /**
+   * Percentage discount
+   * @nullable
+   */
+  percent_off?: number | null;
+  /**
+   * Fixed amount discount
+   * @nullable
+   */
+  amount_off?: number | null;
+  /** Currency for amount_off */
+  currency?: string;
+  duration: CouponDuration;
+  /**
+   * Number of months for repeating duration
+   * @nullable
+   */
+  duration_in_months?: number | null;
+  /**
+   * Maximum redemptions
+   * @nullable
+   */
+  max_redemptions?: number | null;
+  /**
+   * Redemption deadline
+   * @nullable
+   */
+  redeem_by?: number | null;
+  /** Product IDs this coupon applies to */
+  applies_to?: string[];
+  metadata?: CouponWithStripeIDMetadata;
+  /**
+   * Actual Stripe coupon ID
+   * @nullable
+   */
+  stripe_id?: string | null;
+}
+
+export type PromotionCodeWithStripeIDMetadata = { [key: string]: string };
+
+export interface PromotionCodeWithStripeID {
+  /**
+   * Promotion code identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /**
+   * Customer-facing promotion code
+   * @minLength 1
+   */
+  code: string;
+  /**
+   * Reference to coupon ID
+   * @minLength 1
+   */
+  coupon: string;
+  /**
+   * Whether the promotion code is active
+   * @nullable
+   */
+  active?: boolean | null;
+  /**
+   * Maximum redemptions
+   * @nullable
+   */
+  max_redemptions?: number | null;
+  /**
+   * First-time customers only
+   * @nullable
+   */
+  first_time_transaction?: boolean | null;
+  /**
+   * Minimum order amount
+   * @nullable
+   */
+  minimum_amount?: number | null;
+  /** Currency for minimum_amount */
+  minimum_amount_currency?: string;
+  /**
+   * Expiration timestamp
+   * @nullable
+   */
+  expires_at?: number | null;
+  metadata?: PromotionCodeWithStripeIDMetadata;
+  /**
+   * Actual Stripe promotion code ID
+   * @nullable
+   */
+  stripe_id?: string | null;
+}
+
 export interface StripeConfigurationWithIDs {
   /** Configuration version */
   version: string;
@@ -1275,6 +1393,10 @@ export interface StripeConfigurationWithIDs {
   meters?: MeterWithStripeID[];
   /** List of products with Stripe IDs */
   products: ProductWithStripeIDs[];
+  /** List of coupons with Stripe IDs */
+  coupons?: CouponWithStripeID[];
+  /** List of promotion codes with Stripe IDs */
+  promotion_codes?: PromotionCodeWithStripeID[];
 }
 
 export interface StripeConfigResponse {
@@ -1488,6 +1610,111 @@ export interface Product {
   ui?: ProductUI;
 }
 
+/**
+ * Custom metadata for the coupon
+ */
+export type CouponMetadata = { [key: string]: string };
+
+export interface Coupon {
+  /**
+   * Coupon identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /** Original Stripe ID for migration support (optional, used to link existing Stripe coupons) */
+  stripe_id?: string;
+  /** Coupon name (displayed to customers) */
+  name?: string;
+  /**
+   * Percentage discount (0-100). Either percent_off or amount_off must be set, not both.
+   * @minimum 0
+   * @maximum 100
+   * @nullable
+   */
+  percent_off?: number | null;
+  /**
+   * Fixed amount discount in smallest currency unit. Either percent_off or amount_off must be set, not both. Note that amount_off coupons cannot use 'forever' duration (Stripe restriction).
+   * @nullable
+   */
+  amount_off?: number | null;
+  /** Currency for amount_off (required when amount_off is set) */
+  currency?: string;
+  duration: CouponDuration;
+  /**
+   * Number of months the discount applies (required when duration is repeating)
+   * @nullable
+   */
+  duration_in_months?: number | null;
+  /**
+   * Maximum number of times this coupon can be redeemed
+   * @nullable
+   */
+  max_redemptions?: number | null;
+  /**
+   * Unix timestamp after which the coupon can no longer be redeemed
+   * @nullable
+   */
+  redeem_by?: number | null;
+  /** List of product IDs this coupon applies to (empty = all products) */
+  applies_to?: string[];
+  /** Custom metadata for the coupon */
+  metadata?: CouponMetadata;
+}
+
+/**
+ * Custom metadata for the promotion code
+ */
+export type PromotionCodeMetadata = { [key: string]: string };
+
+export interface PromotionCode {
+  /**
+   * Promotion code identifier (config ID)
+   * @minLength 1
+   */
+  id: string;
+  /** Original Stripe ID for migration support */
+  stripe_id?: string;
+  /**
+   * Customer-facing promotion code
+   * @minLength 1
+   */
+  code: string;
+  /**
+   * Reference to coupon ID this promotion code applies
+   * @minLength 1
+   */
+  coupon: string;
+  /**
+   * Whether the promotion code is active (default true)
+   * @nullable
+   */
+  active?: boolean | null;
+  /**
+   * Maximum number of times this code can be redeemed
+   * @nullable
+   */
+  max_redemptions?: number | null;
+  /**
+   * Restrict to first-time customers only
+   * @nullable
+   */
+  first_time_transaction?: boolean | null;
+  /**
+   * Minimum order amount required (in smallest currency unit)
+   * @nullable
+   */
+  minimum_amount?: number | null;
+  /** Currency for minimum_amount */
+  minimum_amount_currency?: string;
+  /**
+   * Unix timestamp when the promotion code expires
+   * @nullable
+   */
+  expires_at?: number | null;
+  /** Custom metadata for the promotion code */
+  metadata?: PromotionCodeMetadata;
+}
+
 export interface StripeConfigUpdateRequest {
   /**
    * Configuration version (required, semantic version format)
@@ -1503,6 +1730,10 @@ export interface StripeConfigUpdateRequest {
    * @minItems 1
    */
   products: Product[];
+  /** List of discount coupons (optional) */
+  coupons?: Coupon[];
+  /** List of promotion codes that apply coupons (optional) */
+  promotion_codes?: PromotionCode[];
 }
 
 /**
@@ -1531,6 +1762,55 @@ export interface ProductChange {
   stripe_id?: string;
   /** Additional details about the changes */
   details?: string[];
+}
+
+/**
+ * Summary of product changes made during configuration update
+ */
+export interface ProductChanges {
+  /** Products that were created in Stripe */
+  created?: ProductChange[];
+  /** Products that were updated in Stripe */
+  updated?: ProductChange[];
+  /** Products that were archived in Stripe */
+  archived?: ProductChange[];
+}
+
+/**
+ * Action performed on the price
+ */
+export type PriceChangeAction =
+  (typeof PriceChangeAction)[keyof typeof PriceChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PriceChangeAction = {
+  created: "created",
+  updated: "updated",
+  archived: "archived",
+  linked: "linked",
+} as const;
+
+export interface PriceChange {
+  /** Price config ID */
+  price_id: string;
+  /** Parent product config ID */
+  product_id: string;
+  /** Action performed on the price */
+  action: PriceChangeAction;
+  /** Stripe price ID (if applicable) */
+  stripe_id?: string;
+}
+
+/**
+ * Summary of price changes made during configuration update
+ */
+export interface PriceChanges {
+  /** Prices that were created in Stripe */
+  created?: PriceChange[];
+  /** Prices that were updated in Stripe */
+  updated?: PriceChange[];
+  /** Prices that were archived in Stripe */
+  archived?: PriceChange[];
 }
 
 /**
@@ -1607,17 +1887,93 @@ export interface WebhookChanges {
 }
 
 /**
+ * Action performed on the coupon
+ */
+export type CouponChangeAction =
+  (typeof CouponChangeAction)[keyof typeof CouponChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CouponChangeAction = {
+  created: "created",
+  updated: "updated",
+  archived: "archived",
+  linked: "linked",
+  skipped: "skipped",
+  recreated: "recreated",
+} as const;
+
+export interface CouponChange {
+  /** Coupon config ID */
+  coupon_id: string;
+  /** Coupon name */
+  name: string;
+  /** Action performed on the coupon */
+  action: CouponChangeAction;
+  /** Stripe coupon ID */
+  stripe_id?: string;
+}
+
+/**
+ * Summary of coupon changes made during configuration update
+ */
+export interface CouponChanges {
+  /** Coupons that were created in Stripe */
+  created?: CouponChange[];
+  /** Coupons that were updated */
+  updated?: CouponChange[];
+  /** Coupons that were deleted */
+  archived?: CouponChange[];
+}
+
+/**
+ * Action performed on the promotion code
+ */
+export type PromotionCodeChangeAction =
+  (typeof PromotionCodeChangeAction)[keyof typeof PromotionCodeChangeAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PromotionCodeChangeAction = {
+  created: "created",
+  updated: "updated",
+  deactivated: "deactivated",
+  linked: "linked",
+  skipped: "skipped",
+  recreated: "recreated",
+} as const;
+
+export interface PromotionCodeChange {
+  /** Promotion code config ID */
+  promo_id: string;
+  /** Customer-facing promotion code */
+  code: string;
+  /** Action performed on the promotion code */
+  action: PromotionCodeChangeAction;
+  /** Stripe promotion code ID */
+  stripe_id?: string;
+}
+
+/**
+ * Summary of promotion code changes made during configuration update
+ */
+export interface PromotionCodeChanges {
+  /** Promotion codes that were created in Stripe */
+  created?: PromotionCodeChange[];
+  /** Promotion codes that were updated */
+  updated?: PromotionCodeChange[];
+  /** Promotion codes that were deactivated */
+  deactivated?: PromotionCodeChange[];
+}
+
+/**
  * Summary of changes made during configuration update
  */
 export interface StripeConfigChanges {
-  /** Products that were created in Stripe */
-  created?: ProductChange[];
-  /** Products that were updated in Stripe */
-  updated?: ProductChange[];
-  /** Products that were archived in Stripe */
-  archived?: ProductChange[];
+  products?: ProductChanges;
+  prices?: PriceChanges;
   meters?: MeterChanges;
   webhooks?: WebhookChanges;
+  coupons?: CouponChanges;
+  promotion_codes?: PromotionCodeChanges;
 }
 
 export interface StripeConfiguration {
@@ -1629,6 +1985,10 @@ export interface StripeConfiguration {
   meters?: Meter[];
   /** List of products with their prices */
   products: Product[];
+  /** List of discount coupons */
+  coupons?: Coupon[];
+  /** List of promotion codes that apply coupons */
+  promotion_codes?: PromotionCode[];
 }
 
 export interface StripeConfigUpdateResponse {
@@ -1703,6 +2063,10 @@ export interface StripeConfigValidateRequest {
    * @minItems 1
    */
   products: Product[];
+  /** List of discount coupons (optional) */
+  coupons?: Coupon[];
+  /** List of promotion codes that apply coupons (optional) */
+  promotion_codes?: PromotionCode[];
 }
 
 export interface ArchiveAllResponse {
@@ -1751,7 +2115,7 @@ export interface MeterResponse {
 }
 
 /**
- * Item type (product, price, or meter)
+ * Item type (product, price, meter, coupon, or promotion_code)
  */
 export type StripeIDConversionResponseItemType =
   (typeof StripeIDConversionResponseItemType)[keyof typeof StripeIDConversionResponseItemType];
@@ -1761,6 +2125,8 @@ export const StripeIDConversionResponseItemType = {
   product: "product",
   price: "price",
   meter: "meter",
+  coupon: "coupon",
+  promotion_code: "promotion_code",
 } as const;
 
 export interface StripeIDConversionResponse {
@@ -1768,7 +2134,7 @@ export interface StripeIDConversionResponse {
   stripe_id: string;
   /** Config ID */
   config_id: string;
-  /** Item type (product, price, or meter) */
+  /** Item type (product, price, meter, coupon, or promotion_code) */
   item_type: StripeIDConversionResponseItemType;
   /** Configuration UUID that this mapping belongs to */
   config_uuid: string;
@@ -1793,6 +2159,11 @@ export interface WebhookSecretResponse {
   created_at?: string;
   /** Last update timestamp */
   updated_at?: string;
+}
+
+export interface ListWebhooksResponse {
+  /** List of all configured webhooks */
+  webhooks: WebhookSecretResponse[];
 }
 
 export interface ApplyEnterpriseTemplateRequest {
@@ -2313,6 +2684,27 @@ export type UploadDatabaseMigrationsBody = {
   migrations: Blob;
 };
 
+export type GenerateDatabaseTypesParams = {
+  /**
+   * Comma-separated list of database schemas to include
+   */
+  schemas?: string;
+  /**
+   * Target language for type generation
+   */
+  language?: GenerateDatabaseTypesLanguage;
+};
+
+export type GenerateDatabaseTypesLanguage =
+  (typeof GenerateDatabaseTypesLanguage)[keyof typeof GenerateDatabaseTypesLanguage];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenerateDatabaseTypesLanguage = {
+  typescript: "typescript",
+  go: "go",
+  swift: "swift",
+} as const;
+
 export type GetEmailTemplates200AllOfData = {
   templates?: EmailTemplate[];
   count?: number;
@@ -2640,11 +3032,11 @@ export type ConvertStripeIDToConfigID200AllOf = {
 export type ConvertStripeIDToConfigID200 = SuccessResponse &
   ConvertStripeIDToConfigID200AllOf;
 
-export type GetWebhookSecret200AllOf = {
-  data?: WebhookSecretResponse;
+export type ListWebhooks200AllOf = {
+  data?: ListWebhooksResponse;
 };
 
-export type GetWebhookSecret200 = SuccessResponse & GetWebhookSecret200AllOf;
+export type ListWebhooks200 = SuccessResponse & ListWebhooks200AllOf;
 
 export type ApplyEnterpriseTemplate200AllOf = {
   data?: EnterpriseApplyResponse;
@@ -3304,6 +3696,56 @@ Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `00
         ...mergedRequestParameters?.headers,
         "Content-Type": "multipart/form-data; boundary=" + formData.boundary,
       },
+    });
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Generates type definitions from the database schema using postgres-meta.
+
+## Supported Languages
+- `typescript` (default) - TypeScript type definitions
+- `go` - Go struct definitions
+- `swift` (beta) - Swift type definitions
+
+## Authentication
+Requires service key authentication.
+
+## Use Cases
+- CLI type generation via `omnibase db typegen`
+- CI/CD pipeline type generation
+- Programmatic type generation for SDKs
+
+ * @summary Generate types from database schema
+ */
+  generateDatabaseTypes(
+    params?: GenerateDatabaseTypesParams,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: string;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl +
+        `/api/v1/database/typegen` +
+        `?${new URLSearchParams(params).toString()}`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request("GET", url.toString(), undefined, {
+      ...mergedRequestParameters,
     });
     let data;
 
@@ -5073,22 +5515,23 @@ No authentication required for public endpoint.
   }
 
   /**
- * Retrieves the webhook signing secret for the most recent webhook configuration.
+ * Retrieves all configured webhook endpoints with their signing secrets.
 
 ## Authentication
 Requires service key authentication.
 
 ## Use Cases
-- Retrieve signing secret for webhook signature verification
+- List all webhook configurations
+- Retrieve signing secrets for webhook signature verification
 - Debug webhook configuration
 
- * @summary Get webhook secret
+ * @summary List all webhooks
  */
-  getWebhookSecret(requestParameters?: Params): {
+  listWebhooks(requestParameters?: Params): {
     response: Response;
-    data: GetWebhookSecret200;
+    data: ListWebhooks200;
   } {
-    const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/config/webhook`);
+    const url = new URL(this.cleanBaseUrl + `/api/v1/stripe/admin/webhooks`);
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters,

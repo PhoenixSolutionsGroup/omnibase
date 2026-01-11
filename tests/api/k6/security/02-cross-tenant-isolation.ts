@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Cross-Tenant Data Isolation
@@ -30,9 +30,9 @@ import { createClient, logError } from "../client";
  * - Tenant isolation is maintained across all operations
  */
 export async function crossTenantIsolation() {
-  const timestamp = Date.now();
-  const userAEmail = `user-a-${timestamp}@example.com`;
-  const userBEmail = `user-b-${timestamp}@example.com`;
+  const id = uniqueId();
+  const userAEmail = `user-a-${id}@example.com`;
+  const userBEmail = `user-b-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -58,7 +58,7 @@ export async function crossTenantIsolation() {
 
   const tenantAResponse = client.createTenant(
     {
-      name: `Tenant A ${timestamp}`,
+      name: `Tenant A ${id}`,
       billing_email: userAEmail,
     },
     {
@@ -100,7 +100,7 @@ export async function crossTenantIsolation() {
 
   const tenantBResponse = client.createTenant(
     {
-      name: `Tenant B ${timestamp}`,
+      name: `Tenant B ${id}`,
       billing_email: userBEmail,
     },
     {
@@ -203,7 +203,7 @@ export async function crossTenantIsolation() {
   });
 
   // Step 9: Create role in Tenant A
-  const tenantARoleName = `tenant_a_role_${timestamp}`;
+  const tenantARoleName = `tenant_a_role_${id}`;
   const createTenantARoleResponse = client.createRole(
     {
       role_name: tenantARoleName,
@@ -258,7 +258,7 @@ export async function crossTenantIsolation() {
   // Step 12: User A attempts to invite someone to Tenant A using Tenant B context (should FAIL)
   const crossTenantInviteResponse = client.createInvite(
     {
-      email: `cross-tenant-${timestamp}@example.com`,
+      email: `cross-tenant-${id}@example.com`,
       role: "member",
       invite_url: `http://localhost:3000/accept-invite`,
     },

@@ -1,6 +1,6 @@
 import { check, sleep } from "k6";
 import http from "k6/http";
-import { createClient, logError } from "../client";
+import { createClient, logError, uniqueId } from "../client";
 
 /**
  * Test Scenario: Payment/Subscription Lifecycle
@@ -31,8 +31,8 @@ import { createClient, logError } from "../client";
  * 9. Verify subscription canceled status
  */
 export async function subscriptionLifecycle() {
-  const timestamp = Date.now();
-  const email = `test-payment-${timestamp}@example.com`;
+  const id = uniqueId();
+  const email = `test-payment-${id}@example.com`;
   const password = crypto.randomUUID();
   const client = createClient();
 
@@ -63,7 +63,7 @@ export async function subscriptionLifecycle() {
   // Step 2: Create tenant with billing_email (triggers Stripe customer creation)
   const tenantResponse = client.createTenant(
     {
-      name: `Payment Test Org ${timestamp}`,
+      name: `Payment Test Org ${id}`,
       billing_email: email,
     },
     {
