@@ -577,26 +577,27 @@ paths:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
 
-  /api/v1/stripe/config/webhook:
+  /api/v1/stripe/admin/webhooks:
     get:
       tags:
-        - V1 Webhooks
-      summary: Get webhook secret
+        - V1 Stripe
+      summary: List all webhooks
       description: |
-        Retrieves the webhook signing secret for the most recent webhook configuration.
+        Retrieves all configured webhook endpoints with their signing secrets.
 
         ## Authentication
         Requires service key authentication.
 
         ## Use Cases
-        - Retrieve signing secret for webhook signature verification
+        - List all webhook configurations
+        - Retrieve signing secrets for webhook signature verification
         - Debug webhook configuration
-      operationId: getWebhookSecret
+      operationId: listWebhooks
       security:
         - ServiceKeyAuth: []
       responses:
         '200':
-          description: Webhook secret retrieved successfully
+          description: Webhooks retrieved successfully
           content:
             application/json:
               schema:
@@ -605,21 +606,15 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/WebhookSecretResponse'
+                        $ref: '../schemas/stripe.yaml#/components/schemas/ListWebhooksResponse'
         '401':
           description: Invalid or missing service key
           content:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/Unauthorized'
-        '404':
-          description: No webhook configured
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
         '500':
-          description: Failed to retrieve webhook secret
+          description: Failed to retrieve webhooks
           content:
             application/json:
               schema:

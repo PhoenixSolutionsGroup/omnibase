@@ -82,7 +82,10 @@ paths:
   # Database endpoints
   /api/v1/database/migrations:
     $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations'
-  
+
+  /api/v1/database/typegen:
+    $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1typegen'
+
   # Email endpoints
   /api/v1/email/templates:
     $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1templates'
@@ -173,8 +176,8 @@ paths:
   /api/v1/stripe/convert/stripe-id/{stripe_id}:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1convert~1stripe-id~1{stripe_id}'
 
-  /api/v1/stripe/config/webhook:
-    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1webhook'
+  /api/v1/stripe/admin/webhooks:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1webhooks'
 
   /api/v1/stripe/admin/enterprise/apply-template:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1admin~1enterprise~1apply-template'

@@ -70,6 +70,8 @@ func NewStripeConfigService(cfg *config.Config) *StripeConfigService {
 	productHandler := handlers.NewProductHandler(idMapper, cfg.StripeConfig.StripeAccountID)
 	priceHandler := handlers.NewPriceHandler(idMapper, cfg.StripeConfig.StripeAccountID)
 	meterHandler := handlers.NewMeterHandler(stripeClient, idMapper, cfg.StripeConfig.StripeAccountID)
+	couponHandler := handlers.NewCouponHandler(idMapper, cfg.StripeConfig.StripeAccountID)
+	promoHandler := handlers.NewPromoHandler(idMapper, cfg.StripeConfig.StripeAccountID)
 
 	webhookHandler := handlers.NewWebhookHandler(stripeClient, db, cfg.StripeConfig.StripeAccountID, encryptionService)
 
@@ -81,6 +83,8 @@ func NewStripeConfigService(cfg *config.Config) *StripeConfigService {
 		priceHandler,
 		meterHandler,
 		webhookHandler,
+		couponHandler,
+		promoHandler,
 	)
 
 	logger.Logger.Info("Stripe configuration service initialized successfully")
@@ -238,10 +242,10 @@ func (s *StripeConfigService) processWebhooksManaged(ctx context.Context, config
 	return results, nil
 }
 
-// GetWebhookSecret retrieves the webhook secret for a config
-func (s *StripeConfigService) GetWebhookSecret() (*models.StripeWebhook, error) {
+// ListWebhooks retrieves all webhooks with decrypted secrets
+func (s *StripeConfigService) ListWebhooks() ([]models.StripeWebhook, error) {
 	ctx := context.Background()
-	return s.webhookHandler.GetLatestWebhookSecret(ctx)
+	return s.webhookHandler.ListAllWebhooks(ctx)
 }
 
 // GetWebhooksForConfig retrieves all webhooks for a given config

@@ -109,6 +109,39 @@ import {
   tiersModeCorrectlySet,
 } from "./08-tiered";
 
+import {
+  createConfigWithPercentOffCoupon,
+  createConfigWithAmountOffCoupon,
+  createConfigWithRepeatingCoupon,
+  verifyCouponHasStripeID,
+  createCouponWithAppliesTo,
+  createConfigWithPromotionCode,
+  verifyPromotionCodeHasStripeID,
+  createPromotionCodeWithRestrictions,
+  createMultiplePromoCodesForSameCoupon,
+  rejectCouponWithBothDiscountTypes,
+  rejectCouponWithNoDiscountType,
+  rejectInvalidPercentOff,
+  rejectAmountOffWithoutCurrency,
+  rejectAmountOffWithForeverDuration,
+  rejectRepeatingWithoutDurationInMonths,
+  rejectCouponWithInvalidAppliesTo,
+  rejectDuplicateCouponIDs,
+  rejectPromoCodeWithoutCouponRef,
+  rejectPromoCodeWithInvalidCouponRef,
+  rejectDuplicatePromoCodeIDs,
+  rejectDuplicatePromoCodes,
+  updateCouponMutableFields,
+  couponImmutableFieldChangeTriggersRecreation,
+  removeCoupon,
+  updatePromoCodeMutableFields,
+  deactivatePromotionCode,
+  deleteCouponCascadesToPromos,
+  recreateCouponCascadesToPromos,
+  pullConfigIncludesCouponsAndPromos,
+  noChangeOnIdenticalCouponsPromos,
+} from "./09-coupons-promos";
+
 /**
  * Stripe Config Integration Tests
  *
@@ -224,6 +257,38 @@ export async function StripeConfigTests() {
   verifyInfinityTier();
   pullConfigPreservesTiers();
   tiersModeCorrectlySet();
+
+  // 09-coupons-promos.ts - Coupon and promotion code tests
+  createConfigWithPercentOffCoupon();
+  createConfigWithAmountOffCoupon();
+  createConfigWithRepeatingCoupon();
+  verifyCouponHasStripeID();
+  createCouponWithAppliesTo();
+  createConfigWithPromotionCode();
+  verifyPromotionCodeHasStripeID();
+  createPromotionCodeWithRestrictions();
+  createMultiplePromoCodesForSameCoupon();
+  rejectCouponWithBothDiscountTypes();
+  rejectCouponWithNoDiscountType();
+  rejectInvalidPercentOff();
+  rejectAmountOffWithoutCurrency();
+  rejectAmountOffWithForeverDuration();
+  rejectRepeatingWithoutDurationInMonths();
+  rejectCouponWithInvalidAppliesTo();
+  rejectDuplicateCouponIDs();
+  rejectPromoCodeWithoutCouponRef();
+  rejectPromoCodeWithInvalidCouponRef();
+  rejectDuplicatePromoCodeIDs();
+  rejectDuplicatePromoCodes();
+  updateCouponMutableFields();
+  couponImmutableFieldChangeTriggersRecreation();
+  removeCoupon();
+  updatePromoCodeMutableFields();
+  deactivatePromotionCode();
+  deleteCouponCascadesToPromos();
+  recreateCouponCascadesToPromos();
+  pullConfigIncludesCouponsAndPromos();
+  noChangeOnIdenticalCouponsPromos();
 }
 
 export default StripeConfigTests;
@@ -237,3 +302,4 @@ export * from "./05-id-mapping";
 export * from "./06-admin";
 export * from "./07-lookups";
 export * from "./08-tiered";
+export * from "./09-coupons-promos";

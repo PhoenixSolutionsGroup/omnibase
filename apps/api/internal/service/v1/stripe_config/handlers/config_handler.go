@@ -18,6 +18,8 @@ type ConfigHandler struct {
 	priceHandler   PriceHandlerInterface
 	meterHandler   MeterHandlerInterface
 	webhookHandler WebhookHandlerInterface
+	couponHandler  CouponHandlerInterface
+	promoHandler   PromoHandlerInterface
 }
 
 type ValidatorInterface interface {
@@ -50,6 +52,21 @@ type WebhookHandlerInterface interface {
 	ProcessWebhooks(ctx context.Context, configID uuid.UUID, webhooks []models.WebhookEndpointConfig) ([]WebhookResult, error)
 }
 
+type CouponHandlerInterface interface {
+	CreateCoupon(couponConfig models.Coupon, configID uuid.UUID) (*models.CouponChange, error)
+	UpdateCoupon(update models.CouponUpdate) (*models.CouponChange, error)
+	DeleteCoupon(couponID string) (*models.CouponChange, error)
+	RecreateCoupon(couponConfig models.Coupon, configID uuid.UUID) (*models.CouponChange, string, error)
+}
+
+type PromoHandlerInterface interface {
+	CreatePromotionCode(promoConfig models.PromotionCode, configID uuid.UUID) (*models.PromotionCodeChange, error)
+	UpdatePromotionCode(update models.PromoCodeUpdate) (*models.PromotionCodeChange, error)
+	DeactivatePromotionCode(promoID string) (*models.PromotionCodeChange, error)
+	RecreatePromotionCode(promoConfig models.PromotionCode, configID uuid.UUID) (*models.PromotionCodeChange, error)
+	CreatePromotionCodeWithNewCoupon(promoConfig models.PromotionCode, newCouponStripeID string, configID uuid.UUID) (*models.PromotionCodeChange, error)
+}
+
 func NewConfigHandler(
 	db *gorm.DB,
 	validator ValidatorInterface,
@@ -58,6 +75,8 @@ func NewConfigHandler(
 	priceHandler PriceHandlerInterface,
 	meterHandler MeterHandlerInterface,
 	webhookHandler WebhookHandlerInterface,
+	couponHandler CouponHandlerInterface,
+	promoHandler PromoHandlerInterface,
 ) *ConfigHandler {
 	return &ConfigHandler{
 		db:             db,
@@ -67,6 +86,8 @@ func NewConfigHandler(
 		priceHandler:   priceHandler,
 		meterHandler:   meterHandler,
 		webhookHandler: webhookHandler,
+		couponHandler:  couponHandler,
+		promoHandler:   promoHandler,
 	}
 }
 
@@ -130,7 +151,13 @@ func (h *ConfigHandler) ProcessConfigUpdate(configData models.StripeConfigData) 
 		len(diff.UpdatedProducts) > 0 ||
 		len(diff.ArchivedProducts) > 0 ||
 		len(diff.NewMeters) > 0 ||
-		len(diff.ArchivedMeters) > 0
+		len(diff.ArchivedMeters) > 0 ||
+		len(diff.NewCoupons) > 0 ||
+		len(diff.UpdatedCoupons) > 0 ||
+		len(diff.ArchivedCoupons) > 0 ||
+		len(diff.NewPromotionCodes) > 0 ||
+		len(diff.UpdatedPromotionCodes) > 0 ||
+		len(diff.DeactivatedPromoCodes) > 0
 
 	if !hasChanges {
 		return &models.StripeConfigResponse{
@@ -173,7 +200,9 @@ func (h *ConfigHandler) ProcessConfigUpdate(configData models.StripeConfigData) 
 
 func (h *ConfigHandler) handleFirstTimeSetup(config *models.StripeConfiguration, configData models.StripeConfigData) (*models.StripeConfigResponse, error) {
 	changes := &models.StripeConfigChanges{
-		Created: []models.ProductChange{},
+		Products: &models.ProductChanges{
+			Created: []models.ProductChange{},
+		},
 	}
 
 	// Initialize meter changes if we have meters
@@ -222,7 +251,35 @@ func (h *ConfigHandler) handleFirstTimeSetup(config *models.StripeConfiguration,
 		if err != nil {
 			return nil, fmt.Errorf("failed to create product %s: %w", product.ID, err)
 		}
-		changes.Created = append(changes.Created, *productChange)
+		changes.Products.Created = append(changes.Products.Created, *productChange)
+	}
+
+	// Create all coupons in Stripe (after products, since coupons may reference products via applies_to)
+	if len(config.Coupons) > 0 && h.couponHandler != nil {
+		changes.Coupons = &models.CouponChanges{
+			Created: []models.CouponChange{},
+		}
+		for _, couponConfig := range config.Coupons {
+			couponChange, err := h.couponHandler.CreateCoupon(couponConfig, newStripeConfig.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create coupon %s: %w", couponConfig.ID, err)
+			}
+			changes.Coupons.Created = append(changes.Coupons.Created, *couponChange)
+		}
+	}
+
+	// Create all promotion codes in Stripe (after coupons, since promo codes reference coupons)
+	if len(config.PromotionCodes) > 0 && h.promoHandler != nil {
+		changes.PromotionCodes = &models.PromotionCodeChanges{
+			Created: []models.PromotionCodeChange{},
+		}
+		for _, promoConfig := range config.PromotionCodes {
+			promoChange, err := h.promoHandler.CreatePromotionCode(promoConfig, newStripeConfig.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create promotion code %s: %w", promoConfig.ID, err)
+			}
+			changes.PromotionCodes.Created = append(changes.PromotionCodes.Created, *promoChange)
+		}
 	}
 
 	// Process webhooks if present in config
@@ -262,9 +319,11 @@ func (h *ConfigHandler) createStripeProductWithMapping(productConfig models.Prod
 
 func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff, config *models.StripeConfiguration, configID uuid.UUID) (*models.StripeConfigChanges, error) {
 	changes := &models.StripeConfigChanges{
-		Created:  []models.ProductChange{},
-		Updated:  []models.ProductChange{},
-		Archived: []models.ProductChange{},
+		Products: &models.ProductChanges{
+			Created:  []models.ProductChange{},
+			Updated:  []models.ProductChange{},
+			Archived: []models.ProductChange{},
+		},
 	}
 
 	// Initialize meter changes if we have any meter operations
@@ -275,10 +334,67 @@ func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff,
 		}
 	}
 
-	// Deactivate archived meters first
+	// Initialize coupon changes if we have any coupon operations
+	if len(diff.NewCoupons) > 0 || len(diff.UpdatedCoupons) > 0 || len(diff.ArchivedCoupons) > 0 {
+		changes.Coupons = &models.CouponChanges{
+			Created:  []models.CouponChange{},
+			Updated:  []models.CouponChange{},
+			Archived: []models.CouponChange{},
+		}
+	}
+
+	// Initialize promotion code changes if we have any promo operations
+	if len(diff.NewPromotionCodes) > 0 || len(diff.UpdatedPromotionCodes) > 0 || len(diff.DeactivatedPromoCodes) > 0 {
+		changes.PromotionCodes = &models.PromotionCodeChanges{
+			Created:     []models.PromotionCodeChange{},
+			Updated:     []models.PromotionCodeChange{},
+			Deactivated: []models.PromotionCodeChange{},
+		}
+	}
+
+	// ============================================
+	// PHASE 1: Archives (reverse dependency order)
+	// Order: Promo Codes -> Coupons -> Products -> Meters
+	// ============================================
+
+	// 1. Deactivate promotion codes first (they depend on coupons)
+	if len(diff.DeactivatedPromoCodes) > 0 && h.promoHandler != nil {
+		for _, promoID := range diff.DeactivatedPromoCodes {
+			promoChange, err := h.promoHandler.DeactivatePromotionCode(promoID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to deactivate promotion code %s: %w", promoID, err)
+			}
+			if changes.PromotionCodes != nil {
+				changes.PromotionCodes.Deactivated = append(changes.PromotionCodes.Deactivated, *promoChange)
+			}
+		}
+	}
+
+	// 2. Delete archived coupons (they depend on products via applies_to)
+	if len(diff.ArchivedCoupons) > 0 && h.couponHandler != nil {
+		for _, couponID := range diff.ArchivedCoupons {
+			couponChange, err := h.couponHandler.DeleteCoupon(couponID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to delete coupon %s: %w", couponID, err)
+			}
+			if changes.Coupons != nil {
+				changes.Coupons.Archived = append(changes.Coupons.Archived, *couponChange)
+			}
+		}
+	}
+
+	// 3. Archive removed products
+	for _, productID := range diff.ArchivedProducts {
+		productChange, err := h.productHandler.ArchiveProduct(productID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to archive product %s: %w", productID, err)
+		}
+		changes.Products.Archived = append(changes.Products.Archived, *productChange)
+	}
+
+	// 4. Deactivate archived meters
 	if len(diff.ArchivedMeters) > 0 {
 		for _, meterID := range diff.ArchivedMeters {
-			// Find the Stripe ID for this meter
 			stripeID, err := h.getStripeIDForMeter(meterID, configID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to find Stripe ID for meter %s: %w", meterID, err)
@@ -288,7 +404,6 @@ func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff,
 			if err != nil {
 				return nil, fmt.Errorf("failed to deactivate meter %s: %w", meterID, err)
 			}
-			// Set the config meter ID (DeactivateMeter only has stripe ID)
 			meterChange.MeterID = meterID
 			if changes.Meters != nil {
 				changes.Meters.Archived = append(changes.Meters.Archived, *meterChange)
@@ -296,7 +411,12 @@ func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff,
 		}
 	}
 
-	// Create new meters (meters must exist before prices that reference them)
+	// ============================================
+	// PHASE 2: Creates/Updates (dependency order)
+	// Order: Meters -> Products -> Coupons -> Promo Codes
+	// ============================================
+
+	// 1. Create new meters (meters must exist before prices that reference them)
 	if len(diff.NewMeters) > 0 {
 		meterChanges, err := h.createMetersWithMapping(diff.NewMeters, configID)
 		if err != nil {
@@ -307,31 +427,144 @@ func (h *ConfigHandler) applyChangesToStripeWithMapping(diff *models.ConfigDiff,
 		}
 	}
 
-	// Create new products with proper config ID mapping
+	// 2. Create new products with proper config ID mapping
 	for _, product := range diff.NewProducts {
 		productChange, err := h.createStripeProductWithMapping(product, configID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create product %s: %w", product.ID, err)
 		}
-		changes.Created = append(changes.Created, *productChange)
+		changes.Products.Created = append(changes.Products.Created, *productChange)
 	}
 
-	// Update existing products
+	// 3. Update existing products
 	for _, update := range diff.UpdatedProducts {
 		productChange, err := h.updateStripeProductWithMapping(update, configID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update product %s: %w", update.ID, err)
 		}
-		changes.Updated = append(changes.Updated, *productChange)
+		changes.Products.Updated = append(changes.Products.Updated, *productChange)
 	}
 
-	// Archive removed products
-	for _, productID := range diff.ArchivedProducts {
-		productChange, err := h.productHandler.ArchiveProduct(productID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to archive product %s: %w", productID, err)
+	// 4. Handle coupon updates and creates
+	if h.couponHandler != nil {
+		// Handle coupon updates (check for immutable field changes requiring recreation)
+		for _, update := range diff.UpdatedCoupons {
+			requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool)
+
+			if requiresRecreate {
+				// Find the coupon config from the new config
+				var couponConfig *models.Coupon
+				for i := range config.Coupons {
+					if config.Coupons[i].ID == update.ID {
+						couponConfig = &config.Coupons[i]
+						break
+					}
+				}
+				if couponConfig == nil {
+					return nil, fmt.Errorf("coupon config not found for update: %s", update.ID)
+				}
+
+				// Recreate the coupon and handle cascade to promo codes
+				couponChange, newStripeID, err := h.couponHandler.RecreateCoupon(*couponConfig, configID)
+				if err != nil {
+					return nil, fmt.Errorf("failed to recreate coupon %s: %w", update.ID, err)
+				}
+				if changes.Coupons != nil {
+					changes.Coupons.Updated = append(changes.Coupons.Updated, *couponChange)
+				}
+
+				// Cascade: recreate all promo codes that reference this coupon
+				if h.promoHandler != nil {
+					for _, promo := range config.PromotionCodes {
+						if promo.Coupon == update.ID {
+							// Deactivate old promo code
+							h.promoHandler.DeactivatePromotionCode(promo.ID)
+							// Create new promo code with new coupon
+							promoChange, err := h.promoHandler.CreatePromotionCodeWithNewCoupon(promo, newStripeID, configID)
+							if err != nil {
+								return nil, fmt.Errorf("failed to recreate promotion code %s after coupon recreation: %w", promo.ID, err)
+							}
+							if changes.PromotionCodes == nil {
+								changes.PromotionCodes = &models.PromotionCodeChanges{
+									Updated: []models.PromotionCodeChange{},
+								}
+							}
+							changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *promoChange)
+						}
+					}
+				}
+			} else {
+				// Simple update (only mutable fields)
+				couponChange, err := h.couponHandler.UpdateCoupon(update)
+				if err != nil {
+					return nil, fmt.Errorf("failed to update coupon %s: %w", update.ID, err)
+				}
+				if changes.Coupons != nil {
+					changes.Coupons.Updated = append(changes.Coupons.Updated, *couponChange)
+				}
+			}
 		}
-		changes.Archived = append(changes.Archived, *productChange)
+
+		// Create new coupons
+		for _, coupon := range diff.NewCoupons {
+			couponChange, err := h.couponHandler.CreateCoupon(coupon, configID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create coupon %s: %w", coupon.ID, err)
+			}
+			if changes.Coupons != nil {
+				changes.Coupons.Created = append(changes.Coupons.Created, *couponChange)
+			}
+		}
+	}
+
+	// 5. Handle promotion code updates and creates
+	if h.promoHandler != nil {
+		// Handle promo code updates (check for immutable field changes requiring recreation)
+		for _, update := range diff.UpdatedPromotionCodes {
+			requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool)
+
+			if requiresRecreate {
+				// Find the promo config from the new config
+				var promoConfig *models.PromotionCode
+				for i := range config.PromotionCodes {
+					if config.PromotionCodes[i].ID == update.ID {
+						promoConfig = &config.PromotionCodes[i]
+						break
+					}
+				}
+				if promoConfig == nil {
+					return nil, fmt.Errorf("promotion code config not found for update: %s", update.ID)
+				}
+
+				promoChange, err := h.promoHandler.RecreatePromotionCode(*promoConfig, configID)
+				if err != nil {
+					return nil, fmt.Errorf("failed to recreate promotion code %s: %w", update.ID, err)
+				}
+				if changes.PromotionCodes != nil {
+					changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *promoChange)
+				}
+			} else {
+				// Simple update (only mutable fields)
+				promoChange, err := h.promoHandler.UpdatePromotionCode(update)
+				if err != nil {
+					return nil, fmt.Errorf("failed to update promotion code %s: %w", update.ID, err)
+				}
+				if changes.PromotionCodes != nil {
+					changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *promoChange)
+				}
+			}
+		}
+
+		// Create new promotion codes
+		for _, promo := range diff.NewPromotionCodes {
+			promoChange, err := h.promoHandler.CreatePromotionCode(promo, configID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create promotion code %s: %w", promo.ID, err)
+			}
+			if changes.PromotionCodes != nil {
+				changes.PromotionCodes.Created = append(changes.PromotionCodes.Created, *promoChange)
+			}
+		}
 	}
 
 	return changes, nil

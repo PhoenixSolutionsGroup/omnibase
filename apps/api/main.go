@@ -9,8 +9,10 @@ import (
 	v1_routes "api/internal/routes/v1"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/pprof"
 	"github.com/stripe/stripe-go/v82"
 )
 
@@ -22,6 +24,13 @@ func main() {
 
 	logger.Logger.Info("Configuring Stripe")
 	stripe.Key = cfg.StripeConfig.SecretKey
+	if cfg.StripeConfig.APIBaseURL != "" {
+		mockBackend := stripe.GetBackendWithConfig(stripe.APIBackend, &stripe.BackendConfig{
+			URL: stripe.String(cfg.StripeConfig.APIBaseURL),
+		})
+		stripe.SetBackend(stripe.APIBackend, mockBackend)
+		logger.Logger.Info("Using custom Stripe API URL", "url", cfg.StripeConfig.APIBaseURL)
+	}
 	logger.Logger.Debug("Stripe configured", "account_id", cfg.StripeConfig.StripeAccountID)
 
 	logger.Logger.Info("Initializing Gin router")
@@ -29,6 +38,11 @@ func main() {
 	r.RedirectTrailingSlash = false
 	r.RedirectFixedPath = false
 	r.HandleMethodNotAllowed = true
+
+	if cfg.EnablePprof {
+		logger.Logger.Warn("pprof endpoints enabled at /debug/pprof - do not expose in production")
+		pprof.Register(r)
+	}
 
 	// Add custom recovery middleware that returns JSON instead of plain text
 	r.Use(gin.CustomRecovery(func(c *gin.Context, err any) {

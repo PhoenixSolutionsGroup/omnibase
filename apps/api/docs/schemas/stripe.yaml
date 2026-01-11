@@ -69,6 +69,20 @@ components:
       example: "graduated"
 
     # Main Configuration Models
+    # Duration enum for coupons
+    CouponDuration:
+      type: string
+      description: |
+        Duration for the coupon discount.
+        - once: Discount applies to the first charge only
+        - repeating: Discount applies for a specified number of months (requires duration_in_months)
+        - forever: Discount applies indefinitely (only valid with percent_off, not amount_off)
+      enum:
+        - once
+        - repeating
+        - forever
+      example: "once"
+
     StripeConfiguration:
       type: object
       required:
@@ -94,6 +108,16 @@ components:
           description: List of products with their prices
           items:
             $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons
+          items:
+            $ref: '#/components/schemas/PromotionCode'
 
     StripeConfigurationWithIDs:
       type: object
@@ -120,6 +144,16 @@ components:
           description: List of products with Stripe IDs
           items:
             $ref: '#/components/schemas/ProductWithStripeIDs'
+        coupons:
+          type: array
+          description: List of coupons with Stripe IDs
+          items:
+            $ref: '#/components/schemas/CouponWithStripeID'
+        promotion_codes:
+          type: array
+          description: List of promotion codes with Stripe IDs
+          items:
+            $ref: '#/components/schemas/PromotionCodeWithStripeID'
 
     # Product Models
     Product:
@@ -586,6 +620,275 @@ components:
           description: Key in event payload containing the usage value (must be different from customer_mapping.event_payload_key)
           example: "value"
 
+    # Coupon Models
+    Coupon:
+      type: object
+      required:
+        - id
+        - duration
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Coupon identifier (config ID)
+          example: "launch_discount"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe coupons)
+          example: "coupon_1SRiyyCJIZaBlhY1"
+        name:
+          type: string
+          description: Coupon name (displayed to customers)
+          example: "Launch Discount"
+        percent_off:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          nullable: true
+          description: Percentage discount (0-100). Either percent_off or amount_off must be set, not both.
+          example: 20
+        amount_off:
+          type: integer
+          format: int64
+          nullable: true
+          description: Fixed amount discount in smallest currency unit. Either percent_off or amount_off must be set, not both. Note that amount_off coupons cannot use 'forever' duration (Stripe restriction).
+          example: 500
+        currency:
+          type: string
+          description: Currency for amount_off (required when amount_off is set)
+          example: "usd"
+        duration:
+          $ref: '#/components/schemas/CouponDuration'
+        duration_in_months:
+          type: integer
+          format: int64
+          nullable: true
+          description: Number of months the discount applies (required when duration is repeating)
+          example: 3
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum number of times this coupon can be redeemed
+          example: 100
+        redeem_by:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp after which the coupon can no longer be redeemed
+          example: 1735689600
+        applies_to:
+          type: array
+          description: List of product IDs this coupon applies to (empty = all products)
+          items:
+            type: string
+          example:
+            - "pro_plan"
+            - "enterprise_plan"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata for the coupon
+          example:
+            campaign: "launch_2025"
+
+    CouponWithStripeID:
+      type: object
+      required:
+        - id
+        - duration
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Coupon identifier (config ID)
+          example: "launch_discount"
+        name:
+          type: string
+          description: Coupon name
+          example: "Launch Discount"
+        percent_off:
+          type: number
+          format: double
+          nullable: true
+          description: Percentage discount
+          example: 20
+        amount_off:
+          type: integer
+          format: int64
+          nullable: true
+          description: Fixed amount discount
+          example: 500
+        currency:
+          type: string
+          description: Currency for amount_off
+          example: "usd"
+        duration:
+          $ref: '#/components/schemas/CouponDuration'
+        duration_in_months:
+          type: integer
+          format: int64
+          nullable: true
+          description: Number of months for repeating duration
+          example: 3
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum redemptions
+          example: 100
+        redeem_by:
+          type: integer
+          format: int64
+          nullable: true
+          description: Redemption deadline
+          example: 1735689600
+        applies_to:
+          type: array
+          description: Product IDs this coupon applies to
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        stripe_id:
+          type: string
+          nullable: true
+          description: Actual Stripe coupon ID
+          example: "coupon_1SRiyyCJIZaBlhY1"
+
+    # Promotion Code Models
+    PromotionCode:
+      type: object
+      required:
+        - id
+        - code
+        - coupon
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Promotion code identifier (config ID)
+          example: "promo_launch25"
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support
+          example: "promo_1SRiyyCJIZaBlhY1"
+        code:
+          type: string
+          minLength: 1
+          description: Customer-facing promotion code
+          example: "LAUNCH25"
+        coupon:
+          type: string
+          minLength: 1
+          description: Reference to coupon ID this promotion code applies
+          example: "launch_discount"
+        active:
+          type: boolean
+          nullable: true
+          description: Whether the promotion code is active (default true)
+          example: true
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum number of times this code can be redeemed
+          example: 100
+        first_time_transaction:
+          type: boolean
+          nullable: true
+          description: Restrict to first-time customers only
+          example: true
+        minimum_amount:
+          type: integer
+          format: int64
+          nullable: true
+          description: Minimum order amount required (in smallest currency unit)
+          example: 5000
+        minimum_amount_currency:
+          type: string
+          description: Currency for minimum_amount
+          example: "usd"
+        expires_at:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when the promotion code expires
+          example: 1735689600
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata for the promotion code
+
+    PromotionCodeWithStripeID:
+      type: object
+      required:
+        - id
+        - code
+        - coupon
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Promotion code identifier (config ID)
+          example: "promo_launch25"
+        code:
+          type: string
+          minLength: 1
+          description: Customer-facing promotion code
+          example: "LAUNCH25"
+        coupon:
+          type: string
+          minLength: 1
+          description: Reference to coupon ID
+          example: "launch_discount"
+        active:
+          type: boolean
+          nullable: true
+          description: Whether the promotion code is active
+          example: true
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum redemptions
+          example: 100
+        first_time_transaction:
+          type: boolean
+          nullable: true
+          description: First-time customers only
+          example: true
+        minimum_amount:
+          type: integer
+          format: int64
+          nullable: true
+          description: Minimum order amount
+          example: 5000
+        minimum_amount_currency:
+          type: string
+          description: Currency for minimum_amount
+          example: "usd"
+        expires_at:
+          type: integer
+          format: int64
+          nullable: true
+          description: Expiration timestamp
+          example: 1735689600
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        stripe_id:
+          type: string
+          nullable: true
+          description: Actual Stripe promotion code ID
+          example: "promo_1SRiyyCJIZaBlhY1"
+
     # UI Models
     ProductUI:
       type: object
@@ -742,6 +1045,23 @@ components:
       type: object
       description: Summary of changes made during configuration update
       properties:
+        products:
+          $ref: '#/components/schemas/ProductChanges'
+        prices:
+          $ref: '#/components/schemas/PriceChanges'
+        meters:
+          $ref: '#/components/schemas/MeterChanges'
+        webhooks:
+          $ref: '#/components/schemas/WebhookChanges'
+        coupons:
+          $ref: '#/components/schemas/CouponChanges'
+        promotion_codes:
+          $ref: '#/components/schemas/PromotionCodeChanges'
+
+    ProductChanges:
+      type: object
+      description: Summary of product changes made during configuration update
+      properties:
         created:
           type: array
           description: Products that were created in Stripe
@@ -757,10 +1077,6 @@ components:
           description: Products that were archived in Stripe
           items:
             $ref: '#/components/schemas/ProductChange'
-        meters:
-          $ref: '#/components/schemas/MeterChanges'
-        webhooks:
-          $ref: '#/components/schemas/WebhookChanges'
 
     ProductChange:
       type: object
@@ -799,6 +1115,55 @@ components:
           example:
             - "Price test_price created"
             - "Price old_price archived"
+
+    PriceChanges:
+      type: object
+      description: Summary of price changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Prices that were created in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+        updated:
+          type: array
+          description: Prices that were updated in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+        archived:
+          type: array
+          description: Prices that were archived in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+
+    PriceChange:
+      type: object
+      required:
+        - price_id
+        - product_id
+        - action
+      properties:
+        price_id:
+          type: string
+          description: Price config ID
+          example: "basic_monthly"
+        product_id:
+          type: string
+          description: Parent product config ID
+          example: "basic_plan"
+        action:
+          type: string
+          description: Action performed on the price
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe price ID (if applicable)
+          example: "price_123abc"
 
     MeterChanges:
       type: object
@@ -892,6 +1257,108 @@ components:
           type: string
           description: Stripe webhook endpoint ID
           example: "we_123abc"
+
+    CouponChanges:
+      type: object
+      description: Summary of coupon changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Coupons that were created in Stripe
+          items:
+            $ref: '#/components/schemas/CouponChange'
+        updated:
+          type: array
+          description: Coupons that were updated
+          items:
+            $ref: '#/components/schemas/CouponChange'
+        archived:
+          type: array
+          description: Coupons that were deleted
+          items:
+            $ref: '#/components/schemas/CouponChange'
+
+    CouponChange:
+      type: object
+      required:
+        - coupon_id
+        - name
+        - action
+      properties:
+        coupon_id:
+          type: string
+          description: Coupon config ID
+          example: "launch_discount"
+        name:
+          type: string
+          description: Coupon name
+          example: "Launch Discount"
+        action:
+          type: string
+          description: Action performed on the coupon
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+            - skipped
+            - recreated
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe coupon ID
+          example: "coupon_123abc"
+
+    PromotionCodeChanges:
+      type: object
+      description: Summary of promotion code changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Promotion codes that were created in Stripe
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+        updated:
+          type: array
+          description: Promotion codes that were updated
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+        deactivated:
+          type: array
+          description: Promotion codes that were deactivated
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+
+    PromotionCodeChange:
+      type: object
+      required:
+        - promo_id
+        - code
+        - action
+      properties:
+        promo_id:
+          type: string
+          description: Promotion code config ID
+          example: "promo_launch25"
+        code:
+          type: string
+          description: Customer-facing promotion code
+          example: "LAUNCH25"
+        action:
+          type: string
+          description: Action performed on the promotion code
+          enum:
+            - created
+            - updated
+            - deactivated
+            - linked
+            - skipped
+            - recreated
+          example: "created"
+        stripe_id:
+          type: string
+          description: Stripe promotion code ID
+          example: "promo_123abc"
 
     ConfigHistoryResponse:
       type: object
@@ -998,11 +1465,13 @@ components:
           example: "price_test_basic_monthly"
         item_type:
           type: string
-          description: Item type (product, price, or meter)
+          description: Item type (product, price, meter, coupon, or promotion_code)
           enum:
             - product
             - price
             - meter
+            - coupon
+            - promotion_code
           example: "price"
         config_uuid:
           type: string
@@ -1115,6 +1584,16 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons (optional)
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons (optional)
+          items:
+            $ref: '#/components/schemas/PromotionCode'
 
     StripeConfigValidateRequest:
       type: object
@@ -1143,6 +1622,16 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons (optional)
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons (optional)
+          items:
+            $ref: '#/components/schemas/PromotionCode'
 
     # Webhook Models
     WebhooksConfigRequest:
@@ -1343,6 +1832,17 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
+
+    ListWebhooksResponse:
+      type: object
+      required:
+        - webhooks
+      properties:
+        webhooks:
+          type: array
+          description: List of all configured webhooks
+          items:
+            $ref: '#/components/schemas/WebhookSecretResponse'
 
     # Enterprise Pricing Models
     ApplyEnterpriseTemplateRequest:

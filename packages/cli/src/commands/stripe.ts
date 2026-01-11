@@ -2,18 +2,19 @@ import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
 import { config as dotenvConfig } from "dotenv";
+import { checkbox } from "@inquirer/prompts";
 import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
 import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import {
   V1ConfigurationApi,
   V1StripeApi,
-  V1WebhooksApi,
   ResponseError,
   StripeConfigUpdateRequestFromJSON,
   StripeConfigValidateRequestFromJSON,
-  type WebhookEndpointConfig,
-  type GetStripeConfigHistory200Response,
+  type StripeConfigChanges,
+  type Configuration,
+  type WebhookSecretResponse,
 } from "@omnibase/core-js";
 
 async function extractErrorMessage(error: unknown): Promise<string> {
@@ -94,6 +95,161 @@ function expandEnvVars(str: string, env: Record<string, string>): string {
     }
     return value;
   });
+}
+
+/**
+ * Log configuration changes from the API response
+ */
+async function logConfigChanges(
+  changes: StripeConfigChanges | undefined,
+  sdkConfig: Configuration
+): Promise<void> {
+  if (!changes) return;
+
+  let hasChanges = false;
+
+  // Products
+  if (changes.products?.created?.length) {
+    hasChanges = true;
+    logger.log(`Products created: ${changes.products.created.length}`);
+    for (const p of changes.products.created) {
+      logger.log(`   - ${p.productName} (${p.productId})`);
+    }
+  }
+  if (changes.products?.updated?.length) {
+    hasChanges = true;
+    logger.log(`Products updated: ${changes.products.updated.length}`);
+    for (const p of changes.products.updated) {
+      logger.log(`   - ${p.productName} (${p.productId})`);
+    }
+  }
+  if (changes.products?.archived?.length) {
+    hasChanges = true;
+    logger.log(`Products archived: ${changes.products.archived.length}`);
+    for (const p of changes.products.archived) {
+      logger.log(`   - ${p.productName} (${p.productId})`);
+    }
+  }
+
+  // Prices
+  if (changes.prices?.created?.length) {
+    hasChanges = true;
+    logger.log(`Prices created: ${changes.prices.created.length}`);
+    for (const p of changes.prices.created) {
+      logger.log(`   - ${p.priceId} (product: ${p.productId})`);
+    }
+  }
+  if (changes.prices?.updated?.length) {
+    hasChanges = true;
+    logger.log(`Prices updated: ${changes.prices.updated.length}`);
+    for (const p of changes.prices.updated) {
+      logger.log(`   - ${p.priceId} (product: ${p.productId})`);
+    }
+  }
+  if (changes.prices?.archived?.length) {
+    hasChanges = true;
+    logger.log(`Prices archived: ${changes.prices.archived.length}`);
+    for (const p of changes.prices.archived) {
+      logger.log(`   - ${p.priceId} (product: ${p.productId})`);
+    }
+  }
+
+  // Meters
+  if (changes.meters?.created?.length) {
+    hasChanges = true;
+    logger.log(`Meters created: ${changes.meters.created.length}`);
+    for (const m of changes.meters.created) {
+      logger.log(`   - ${m.displayName} (${m.meterId})`);
+    }
+  }
+  if (changes.meters?.updated?.length) {
+    hasChanges = true;
+    logger.log(`Meters updated: ${changes.meters.updated.length}`);
+    for (const m of changes.meters.updated) {
+      logger.log(`   - ${m.displayName} (${m.meterId})`);
+    }
+  }
+  if (changes.meters?.archived?.length) {
+    hasChanges = true;
+    logger.log(`Meters archived: ${changes.meters.archived.length}`);
+    for (const m of changes.meters.archived) {
+      logger.log(`   - ${m.displayName} (${m.meterId})`);
+    }
+  }
+
+  // Coupons
+  if (changes.coupons?.created?.length) {
+    hasChanges = true;
+    logger.log(`Coupons created: ${changes.coupons.created.length}`);
+  }
+  if (changes.coupons?.updated?.length) {
+    hasChanges = true;
+    logger.log(`Coupons updated: ${changes.coupons.updated.length}`);
+  }
+  if (changes.coupons?.archived?.length) {
+    hasChanges = true;
+    logger.log(`Coupons archived: ${changes.coupons.archived.length}`);
+  }
+
+  // Promotion Codes
+  if (changes.promotionCodes?.created?.length) {
+    hasChanges = true;
+    logger.log(
+      `Promotion codes created: ${changes.promotionCodes.created.length}`
+    );
+  }
+  if (changes.promotionCodes?.updated?.length) {
+    hasChanges = true;
+    logger.log(
+      `Promotion codes updated: ${changes.promotionCodes.updated.length}`
+    );
+  }
+  if (changes.promotionCodes?.deactivated?.length) {
+    hasChanges = true;
+    logger.log(
+      `Promotion codes deactivated: ${changes.promotionCodes.deactivated.length}`
+    );
+  }
+
+  // Webhooks
+  if (changes.webhooks?.created?.length) {
+    hasChanges = true;
+    logger.log(`Webhooks created: ${changes.webhooks.created.length}`);
+    for (const w of changes.webhooks.created) {
+      logger.log(`   - ${w.url}`);
+    }
+
+    // Fetch and display webhook secrets for newly created webhooks
+    logger.newline();
+    logger.start("Retrieving webhook secrets...");
+    try {
+      const stripeApi = new V1StripeApi(sdkConfig);
+      const secretResponse = await stripeApi.listWebhooks();
+      const webhooks = secretResponse.data?.webhooks || [];
+      logger.succeed("Webhook secrets retrieved");
+      logger.newline();
+      logger.warn("IMPORTANT: Save these webhook secrets!");
+      for (const webhook of webhooks) {
+        logger.log(`  ${webhook.url}:`);
+        logger.log(`    STRIPE_WEBHOOK_SECRET=${webhook.secret}`);
+      }
+    } catch {
+      logger.warn(
+        "Could not retrieve webhook secrets. Run `omni stripe webhook secret` to get them."
+      );
+    }
+  }
+  if (changes.webhooks?.updated?.length) {
+    hasChanges = true;
+    logger.log(`Webhooks updated: ${changes.webhooks.updated.length}`);
+    for (const w of changes.webhooks.updated) {
+      logger.log(`   - ${w.url}`);
+    }
+  }
+
+  if (!hasChanges) {
+    logger.log("No changes detected");
+  }
 }
 
 interface MergedConfig {
@@ -187,7 +343,14 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
   const rawEnv = loadRawEnv(envConfig.name);
   const sdkConfig = createOmnibaseSDKConfig(envConfig);
   const configApi = new V1ConfigurationApi(sdkConfig);
-  const webhooksApi = new V1WebhooksApi(sdkConfig);
+
+  // Expand environment variables in webhook URLs before pushing
+  if (config.webhooks && Array.isArray(config.webhooks)) {
+    config.webhooks = config.webhooks.map((webhook: WebhookConfig) => ({
+      ...webhook,
+      url: expandEnvVars(webhook.url, rawEnv),
+    }));
+  }
 
   logger.succeed("Successfully loaded config");
   logger.start("Pushing to Stripe...");
@@ -198,50 +361,12 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
     });
 
     logger.succeed("Stripe configuration uploaded successfully");
-    const responseData = response.data as { details?: string[] } | undefined;
-    if (responseData?.details) {
-      responseData.details.forEach((detail: string) => {
-        logger.log(`   - ${detail}`);
-      });
-    }
+    logger.newline();
+    await logConfigChanges(response.data?.changes, sdkConfig);
   } catch (error) {
     throw new Error(
       `Stripe upload failed: ${await extractErrorMessage(error)}`
     );
-  }
-
-  // Handle webhooks configuration if present
-  if (config.webhooks && config.webhooks.length > 0) {
-    logger.start(
-      `Configuring ${config.webhooks.length} webhook endpoint(s)...`
-    );
-
-    // Expand environment variables in webhook URLs
-    const expandedWebhooks: WebhookEndpointConfig[] = config.webhooks.map(
-      (webhook: WebhookConfig) => ({
-        ...webhook,
-        url: expandEnvVars(webhook.url, rawEnv),
-      })
-    );
-
-    try {
-      const webhookResponse = await webhooksApi.configureWebhooks({
-        webhooksConfigRequest: { webhooks: expandedWebhooks },
-      });
-
-      const results = webhookResponse.data?.webhooks || [];
-      logger.succeed(`Webhook configuration completed`);
-      for (const result of results) {
-        logger.log(`   - ${result.url}: ${result.action}`);
-        if (result.secret && result.action === "created") {
-          logger.warn(`     Save webhook secret: ${result.secret}`);
-        }
-      }
-    } catch (error) {
-      throw new Error(
-        `Webhook configuration failed: ${await extractErrorMessage(error)}`
-      );
-    }
   }
 }
 
@@ -268,7 +393,8 @@ export function addStripeCommands(program: Command): void {
         const configApi = new V1ConfigurationApi(sdkConfig);
 
         await configApi.validateStripeConfig({
-          stripeConfigValidateRequest: StripeConfigValidateRequestFromJSON(config),
+          stripeConfigValidateRequest:
+            StripeConfigValidateRequestFromJSON(config),
         });
 
         logger.succeed("Configuration is valid!");
@@ -293,72 +419,31 @@ export function addStripeCommands(program: Command): void {
         const rawEnv = loadRawEnv(envConfig.name);
         const sdkConfig = createOmnibaseSDKConfig(envConfig);
         const configApi = new V1ConfigurationApi(sdkConfig);
-        const webhooksApi = new V1WebhooksApi(sdkConfig);
+
+        // Expand environment variables in webhook URLs before pushing
+        if (config.webhooks && Array.isArray(config.webhooks)) {
+          config.webhooks = config.webhooks.map((webhook: WebhookConfig) => ({
+            ...webhook,
+            url: expandEnvVars(webhook.url, rawEnv),
+          }));
+        }
 
         logger.succeed("Successfully loaded config");
-        logger.start("Pushing products/prices/meters to Stripe...");
+        logger.start("Pushing configuration to Stripe...");
 
         try {
           const response = await configApi.updateStripeConfig({
-            stripeConfigUpdateRequest: StripeConfigUpdateRequestFromJSON(config),
+            stripeConfigUpdateRequest:
+              StripeConfigUpdateRequestFromJSON(config),
           });
 
           logger.succeed("Configuration uploaded successfully!");
-          const responseData = response.data as
-            | { details?: string[] }
-            | undefined;
-          if (responseData?.details) {
-            logger.newline();
-            logger.log("Details:");
-            responseData.details.forEach((detail: string) => {
-              logger.log(`  - ${detail}`);
-            });
-          }
+          logger.newline();
+          await logConfigChanges(response.data?.changes, sdkConfig);
         } catch (error) {
           const errorMsg = await extractErrorMessage(error);
           logger.fail(`Upload failed: ${errorMsg}`);
           process.exit(1);
-        }
-
-        // Handle webhooks configuration if present
-        if (config.webhooks && config.webhooks.length > 0) {
-          logger.newline();
-          logger.start(
-            `Configuring ${config.webhooks.length} webhook endpoint(s)...`
-          );
-
-          // Expand environment variables in webhook URLs
-          const expandedWebhooks: WebhookEndpointConfig[] = config.webhooks.map(
-            (webhook: WebhookConfig) => ({
-              ...webhook,
-              url: expandEnvVars(webhook.url, rawEnv),
-            })
-          );
-
-          try {
-            const webhookResponse = await webhooksApi.configureWebhooks({
-              webhooksConfigRequest: { webhooks: expandedWebhooks },
-            });
-
-            const results = webhookResponse.data?.webhooks || [];
-            logger.succeed("Webhook configuration completed!");
-
-            for (const result of results) {
-              logger.log(`  - ${result.url}: ${result.action}`);
-              if (result.secret && result.action === "created") {
-                logger.newline();
-                logger.warn("IMPORTANT: Save this webhook secret!");
-                logger.log(`Webhook Secret: ${result.secret}`);
-                logger.newline();
-                logger.log("Add to your environment:");
-                logger.log(`  STRIPE_WEBHOOK_SECRET=${result.secret}`);
-              }
-            }
-          } catch (error) {
-            const errorMsg = await extractErrorMessage(error);
-            logger.fail(`Webhook configuration failed: ${errorMsg}`);
-            process.exit(1);
-          }
         }
       } catch (error) {
         logger.fail(error instanceof Error ? error.message : String(error));
@@ -533,31 +618,79 @@ export function addStripeCommands(program: Command): void {
 
   webhook
     .command("secret")
-    .description("Retrieve the webhook signing secret")
+    .description("Retrieve webhook signing secrets")
     .option("--env <environment>", "Override environment for this command")
     .action(async (options) => {
       try {
-        logger.start("Retrieving webhook secret...");
+        logger.start("Retrieving webhooks...");
 
         const envOverride = options.env || program.opts().env;
         const envConfig = await selectEnvironment(envOverride);
         const sdkConfig = createOmnibaseSDKConfig(envConfig);
-        const webhooksApi = new V1WebhooksApi(sdkConfig);
+        const stripeApi = new V1StripeApi(sdkConfig);
 
-        const response = await webhooksApi.getWebhookSecret();
-        const data = response.data;
+        const response = await stripeApi.listWebhooks();
+        const webhooks = response.data?.webhooks || [];
 
-        logger.succeed("Webhook secret retrieved successfully!");
-        logger.newline();
-        logger.log(`URL: ${data?.url}`);
-        logger.log(`Stripe ID: ${data?.stripeId}`);
-        logger.log(`Secret: ${data?.secret}`);
-        logger.newline();
-        logger.log("Environment variable:");
-        logger.log(`  STRIPE_WEBHOOK_SECRET=${data?.secret}`);
+        logger.succeed("Webhooks retrieved successfully!");
+
+        if (webhooks.length === 0) {
+          logger.newline();
+          logger.warn("No webhooks configured.");
+          logger.log(
+            "Configure webhooks in your stripe.config.json and run `omni stripe push`"
+          );
+          return;
+        }
+
+        let selectedWebhooks: WebhookSecretResponse[];
+
+        if (webhooks.length === 1) {
+          // Single webhook - display directly
+          selectedWebhooks = webhooks;
+        } else {
+          // Multiple webhooks - interactive selection
+          logger.newline();
+          const choices = webhooks.map((w) => ({
+            name: `${w.url} (${w.connect ? "connect" : "account"})`,
+            value: w,
+            checked: true,
+          }));
+
+          selectedWebhooks = await checkbox({
+            message: "Select webhooks to display:",
+            choices,
+          });
+
+          if (selectedWebhooks.length === 0) {
+            logger.warn("No webhooks selected");
+            return;
+          }
+        }
+
+        // Display selected webhooks
+        for (const webhook of selectedWebhooks) {
+          logger.newline();
+          logger.log("─".repeat(60));
+          logger.log(`URL: ${webhook.url}`);
+          logger.log(`Stripe ID: ${webhook.stripeId}`);
+          logger.log(`Connect: ${webhook.connect ? "Yes" : "No"}`);
+          logger.log(`Events: ${webhook.events?.join(", ") || "none"}`);
+          logger.log(`Secret: ${webhook.secret}`);
+          logger.newline();
+          logger.log("Environment variable:");
+          logger.log(`  STRIPE_WEBHOOK_SECRET=${webhook.secret}`);
+        }
       } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes("User force closed")
+        ) {
+          logger.warn("Selection cancelled");
+          return;
+        }
         const errorMsg = await extractErrorMessage(error);
-        logger.fail(`Failed to retrieve webhook secret: ${errorMsg}`);
+        logger.fail(`Failed to retrieve webhooks: ${errorMsg}`);
         process.exit(1);
       }
     });

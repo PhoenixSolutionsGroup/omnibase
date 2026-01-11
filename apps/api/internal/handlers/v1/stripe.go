@@ -20,8 +20,10 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/stripe/stripe-go/v82/billing/meter"
+	"github.com/stripe/stripe-go/v82/coupon"
 	"github.com/stripe/stripe-go/v82/price"
 	"github.com/stripe/stripe-go/v82/product"
+	"github.com/stripe/stripe-go/v82/promotioncode"
 	"github.com/stripe/stripe-go/v82/webhookendpoint"
 )
 
@@ -594,6 +596,53 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 	}
 	logger.Logger.Debug("Fetched webhooks from Stripe", "count", len(configWebhooks))
 
+	// Fetch coupons from Stripe
+	logger.Logger.Debug("Fetching coupons from Stripe")
+	couponParams := &stripe.CouponListParams{}
+
+	var configCoupons []models.Coupon
+	couponIter := coupon.List(couponParams)
+	for couponIter.Next() {
+		stripeCoupon := couponIter.Coupon()
+		configCoupon := h.convertStripeCouponToConfig(stripeCoupon)
+		configCoupon.ID = normalizeConfigID(stripeCoupon.Name)
+		if configCoupon.ID == "" {
+			configCoupon.ID = stripeCoupon.ID
+		}
+		configCoupon.StripeID = stripeCoupon.ID
+		configCoupons = append(configCoupons, configCoupon)
+	}
+	if err := couponIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch coupons from Stripe", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch coupons: %s", err))
+		return
+	}
+	logger.Logger.Debug("Fetched coupons from Stripe", "count", len(configCoupons))
+
+	// Fetch promotion codes from Stripe
+	logger.Logger.Debug("Fetching promotion codes from Stripe")
+	promoParams := &stripe.PromotionCodeListParams{}
+	promoParams.Filters.AddFilter("active", "", "true")
+
+	var configPromoCodes []models.PromotionCode
+	promoIter := promotioncode.List(promoParams)
+	for promoIter.Next() {
+		stripePromo := promoIter.PromotionCode()
+		configPromo := h.convertStripePromoCodeToConfig(stripePromo, configCoupons)
+		configPromo.ID = normalizeConfigID(stripePromo.Code)
+		if configPromo.ID == "" {
+			configPromo.ID = stripePromo.ID
+		}
+		configPromo.StripeID = stripePromo.ID
+		configPromoCodes = append(configPromoCodes, configPromo)
+	}
+	if err := promoIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch promotion codes from Stripe", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch promotion codes: %s", err))
+		return
+	}
+	logger.Logger.Debug("Fetched promotion codes from Stripe", "count", len(configPromoCodes))
+
 	// Get the latest config version from database if available
 	version := "1.0.0" // default
 	var latestConfig models.StripeConfig
@@ -607,7 +656,9 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 		"version", version,
 		"webhooks_count", len(configWebhooks),
 		"meters_count", len(configMeters),
-		"products_count", len(configProducts))
+		"products_count", len(configProducts),
+		"coupons_count", len(configCoupons),
+		"promo_codes_count", len(configPromoCodes))
 
 	// Ensure arrays are never null
 	if configWebhooks == nil {
@@ -619,12 +670,20 @@ func (h *StripeHandler) PullConfig(ctx *gin.Context) {
 	if configProducts == nil {
 		configProducts = []models.Product{}
 	}
+	if configCoupons == nil {
+		configCoupons = []models.Coupon{}
+	}
+	if configPromoCodes == nil {
+		configPromoCodes = []models.PromotionCode{}
+	}
 
 	handlers.NewSuccessResponse(ctx, models.StripeConfiguration{
-		Version:  version,
-		Webhooks: configWebhooks,
-		Meters:   configMeters,
-		Products: configProducts,
+		Version:        version,
+		Webhooks:       configWebhooks,
+		Meters:         configMeters,
+		Products:       configProducts,
+		Coupons:        configCoupons,
+		PromotionCodes: configPromoCodes,
 	})
 
 }
@@ -699,14 +758,78 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 	}
 	logger.Logger.Debug("Fetched prices for archival", "count", len(stripePrices))
 
+	// Fetch active promotion codes from Stripe
+	logger.Logger.Debug("Fetching active promotion codes from Stripe for deactivation")
+	promoParams := &stripe.PromotionCodeListParams{}
+	promoParams.Filters.AddFilter("active", "", "true")
+
+	var stripePromoCodes []*stripe.PromotionCode
+	promoIter := promotioncode.List(promoParams)
+	for promoIter.Next() {
+		stripePromoCodes = append(stripePromoCodes, promoIter.PromotionCode())
+	}
+	if err := promoIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch promotion codes for deactivation", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch promotion codes: %s", err))
+		return
+	}
+	logger.Logger.Debug("Fetched promotion codes for deactivation", "count", len(stripePromoCodes))
+
+	// Fetch coupons from Stripe
+	logger.Logger.Debug("Fetching coupons from Stripe for deletion")
+	couponParams := &stripe.CouponListParams{}
+
+	var stripeCoupons []*stripe.Coupon
+	couponIter := coupon.List(couponParams)
+	for couponIter.Next() {
+		stripeCoupons = append(stripeCoupons, couponIter.Coupon())
+	}
+	if err := couponIter.Err(); err != nil {
+		logger.Logger.Error("Failed to fetch coupons for deletion", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch coupons: %s", err))
+		return
+	}
+	logger.Logger.Debug("Fetched coupons for deletion", "count", len(stripeCoupons))
+
 	// Archive all fetched resources
 	logger.Logger.Info("Beginning archival process",
+		"promo_codes_to_deactivate", len(stripePromoCodes),
+		"coupons_to_delete", len(stripeCoupons),
 		"meters_to_archive", len(stripeMeters),
 		"prices_to_archive", len(stripePrices),
 		"products_to_archive", len(stripeProducts))
 
 	var archivedItems []string
 	var archiveErrors []string
+
+	// Deactivate promotion codes first (reverse dependency order)
+	logger.Logger.Debug("Deactivating promotion codes", "count", len(stripePromoCodes))
+	for _, stripePromo := range stripePromoCodes {
+		updateParams := &stripe.PromotionCodeParams{
+			Active: stripe.Bool(false),
+		}
+		_, err := promotioncode.Update(stripePromo.ID, updateParams)
+		if err != nil {
+			logger.Logger.Warn("Failed to deactivate promotion code", "promo_id", stripePromo.ID, "error", err)
+			archiveErrors = append(archiveErrors, fmt.Sprintf("promo_code %s: %v", stripePromo.ID, err))
+		} else {
+			logger.Logger.Debug("Deactivated promotion code", "promo_id", stripePromo.ID, "code", stripePromo.Code)
+			archivedItems = append(archivedItems, fmt.Sprintf("promo_code: %s (%s)", stripePromo.ID, stripePromo.Code))
+		}
+	}
+
+	// Delete coupons (before products since coupons may reference products via applies_to)
+	logger.Logger.Debug("Deleting coupons", "count", len(stripeCoupons))
+	for _, stripeCoupon := range stripeCoupons {
+		_, err := coupon.Del(stripeCoupon.ID, nil)
+		if err != nil {
+			logger.Logger.Warn("Failed to delete coupon", "coupon_id", stripeCoupon.ID, "error", err)
+			archiveErrors = append(archiveErrors, fmt.Sprintf("coupon %s: %v", stripeCoupon.ID, err))
+		} else {
+			logger.Logger.Debug("Deleted coupon", "coupon_id", stripeCoupon.ID, "name", stripeCoupon.Name)
+			archivedItems = append(archivedItems, fmt.Sprintf("coupon: %s (%s)", stripeCoupon.ID, stripeCoupon.Name))
+		}
+	}
 
 	// Archive meters
 	logger.Logger.Debug("Archiving meters", "count", len(stripeMeters))
@@ -755,9 +878,11 @@ func (h *StripeHandler) ArchiveAllConfig(ctx *gin.Context) {
 
 	// Create empty config data and save to database
 	emptyConfigData := models.StripeConfigData{
-		"version":  version,
-		"meters":   []interface{}{},
-		"products": []interface{}{},
+		"version":         version,
+		"meters":          []interface{}{},
+		"products":        []interface{}{},
+		"coupons":         []interface{}{},
+		"promotion_codes": []interface{}{},
 	}
 
 	// Process the empty config to store it in the database
@@ -983,6 +1108,94 @@ func (h *StripeHandler) convertStripePriceToConfig(stripePrice *stripe.Price) mo
 	return configPrice
 }
 
+func (h *StripeHandler) convertStripeCouponToConfig(stripeCoupon *stripe.Coupon) models.Coupon {
+	configCoupon := models.Coupon{
+		Name:     stripeCoupon.Name,
+		Duration: string(stripeCoupon.Duration),
+	}
+
+	if stripeCoupon.PercentOff > 0 {
+		percentOff := stripeCoupon.PercentOff
+		configCoupon.PercentOff = &percentOff
+	}
+
+	if stripeCoupon.AmountOff > 0 {
+		configCoupon.AmountOff = &stripeCoupon.AmountOff
+		configCoupon.Currency = string(stripeCoupon.Currency)
+	}
+
+	if stripeCoupon.DurationInMonths > 0 {
+		configCoupon.DurationInMonths = &stripeCoupon.DurationInMonths
+	}
+
+	if stripeCoupon.MaxRedemptions > 0 {
+		configCoupon.MaxRedemptions = &stripeCoupon.MaxRedemptions
+	}
+
+	if stripeCoupon.RedeemBy > 0 {
+		configCoupon.RedeemBy = &stripeCoupon.RedeemBy
+	}
+
+	if stripeCoupon.AppliesTo != nil && len(stripeCoupon.AppliesTo.Products) > 0 {
+		configCoupon.AppliesTo = stripeCoupon.AppliesTo.Products
+	}
+
+	if len(stripeCoupon.Metadata) > 0 {
+		configCoupon.Metadata = stripeCoupon.Metadata
+	}
+
+	return configCoupon
+}
+
+func (h *StripeHandler) convertStripePromoCodeToConfig(stripePromo *stripe.PromotionCode, configCoupons []models.Coupon) models.PromotionCode {
+	configPromo := models.PromotionCode{
+		Code: stripePromo.Code,
+	}
+
+	// Find the coupon config ID from the Stripe coupon ID
+	if stripePromo.Coupon != nil {
+		couponStripeID := stripePromo.Coupon.ID
+		// Try to find matching config coupon
+		for _, c := range configCoupons {
+			if c.StripeID == couponStripeID {
+				configPromo.Coupon = c.ID
+				break
+			}
+		}
+		// Fallback to Stripe ID if no config match found
+		if configPromo.Coupon == "" {
+			configPromo.Coupon = couponStripeID
+		}
+	}
+
+	configPromo.Active = &stripePromo.Active
+
+	if stripePromo.MaxRedemptions > 0 {
+		configPromo.MaxRedemptions = &stripePromo.MaxRedemptions
+	}
+
+	if stripePromo.Restrictions != nil {
+		if stripePromo.Restrictions.FirstTimeTransaction {
+			firstTime := true
+			configPromo.FirstTimeTransaction = &firstTime
+		}
+		if stripePromo.Restrictions.MinimumAmount > 0 {
+			configPromo.MinimumAmount = &stripePromo.Restrictions.MinimumAmount
+			configPromo.MinimumAmountCurrency = string(stripePromo.Restrictions.MinimumAmountCurrency)
+		}
+	}
+
+	if stripePromo.ExpiresAt > 0 {
+		configPromo.ExpiresAt = &stripePromo.ExpiresAt
+	}
+
+	if len(stripePromo.Metadata) > 0 {
+		configPromo.Metadata = stripePromo.Metadata
+	}
+
+	return configPromo
+}
+
 // addStripeIDsToConfig adds Stripe IDs to a configuration by looking up ID mappings
 func (h *StripeHandler) addStripeIDsToConfig(config models.StripeConfiguration, configID uuid.UUID) models.StripeConfigurationWithIDs {
 	// Process meters
@@ -1048,10 +1261,52 @@ func (h *StripeHandler) addStripeIDsToConfig(config models.StripeConfiguration, 
 		productsWithIDs = []models.ProductWithStripeIDs{}
 	}
 
+	// Process coupons
+	var couponsWithIDs []models.CouponWithStripeID
+	for _, cpn := range config.Coupons {
+		couponWithIDs := models.CouponWithStripeID{
+			Coupon: cpn,
+		}
+
+		// Get Stripe coupon ID
+		if couponStripeID, err := h.service.GetStripeIDByConfigItemID(cpn.ID, "coupon"); err == nil && couponStripeID != "" {
+			couponWithIDs.StripeID = &couponStripeID
+		}
+
+		couponsWithIDs = append(couponsWithIDs, couponWithIDs)
+	}
+
+	// Ensure coupons is always a valid slice, never null
+	if couponsWithIDs == nil {
+		couponsWithIDs = []models.CouponWithStripeID{}
+	}
+
+	// Process promotion codes
+	var promosWithIDs []models.PromotionCodeWithStripeID
+	for _, promo := range config.PromotionCodes {
+		promoWithIDs := models.PromotionCodeWithStripeID{
+			PromotionCode: promo,
+		}
+
+		// Get Stripe promotion code ID
+		if promoStripeID, err := h.service.GetStripeIDByConfigItemID(promo.ID, "promotion_code"); err == nil && promoStripeID != "" {
+			promoWithIDs.StripeID = &promoStripeID
+		}
+
+		promosWithIDs = append(promosWithIDs, promoWithIDs)
+	}
+
+	// Ensure promotion codes is always a valid slice, never null
+	if promosWithIDs == nil {
+		promosWithIDs = []models.PromotionCodeWithStripeID{}
+	}
+
 	return models.StripeConfigurationWithIDs{
-		Version:  config.Version,
-		Meters:   metersWithIDs,
-		Products: productsWithIDs,
+		Version:        config.Version,
+		Meters:         metersWithIDs,
+		Products:       productsWithIDs,
+		Coupons:        couponsWithIDs,
+		PromotionCodes: promosWithIDs,
 	}
 }
 
@@ -1300,6 +1555,11 @@ type WebhookSecretResponse struct {
 	UpdatedAt string   `json:"updated_at,omitempty"`
 }
 
+// ListWebhooksResponse represents the response for listing all webhooks
+type ListWebhooksResponse struct {
+	Webhooks []WebhookSecretResponse `json:"webhooks"`
+}
+
 // ConfigureWebhooks creates or updates multiple webhook endpoints in Stripe
 func (h *StripeHandler) ConfigureWebhooks(ctx *gin.Context) {
 	logger.Logger.Info("Received webhooks configuration request")
@@ -1386,27 +1646,35 @@ func (h *StripeHandler) ConfigureWebhooks(ctx *gin.Context) {
 	handlers.NewSuccessResponse(ctx, WebhooksConfigResponse{Webhooks: results})
 }
 
-// GetWebhookSecret retrieves the webhook signing secret
-func (h *StripeHandler) GetWebhookSecret(ctx *gin.Context) {
-	logger.Logger.Info("Retrieving webhook secret")
+// ListWebhooks retrieves all configured webhooks with their secrets
+func (h *StripeHandler) ListWebhooks(ctx *gin.Context) {
+	logger.Logger.Info("Listing all webhooks")
 
-	webhook, err := h.service.GetWebhookSecret()
+	webhooks, err := h.service.ListWebhooks()
 	if err != nil {
-		logger.Logger.Error("Failed to retrieve webhook secret", "error", err)
-		handlers.NewNotFoundResponse(ctx, "No webhook configured")
+		logger.Logger.Error("Failed to list webhooks", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to list webhooks: %s", err))
 		return
 	}
 
-	response := WebhookSecretResponse{
-		ID:        webhook.ID.String(),
-		StripeID:  webhook.StripeID,
-		URL:       webhook.URL,
-		Secret:    webhook.Secret,
-		Events:    webhook.Events,
-		Connect:   webhook.Connect,
-		CreatedAt: webhook.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		UpdatedAt: webhook.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	var response []WebhookSecretResponse
+	for _, webhook := range webhooks {
+		response = append(response, WebhookSecretResponse{
+			ID:        webhook.ID.String(),
+			StripeID:  webhook.StripeID,
+			URL:       webhook.URL,
+			Secret:    webhook.Secret,
+			Events:    webhook.Events,
+			Connect:   webhook.Connect,
+			CreatedAt: webhook.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+			UpdatedAt: webhook.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		})
 	}
 
-	handlers.NewSuccessResponse(ctx, response)
+	// Ensure response is never null
+	if response == nil {
+		response = []WebhookSecretResponse{}
+	}
+
+	handlers.NewSuccessResponse(ctx, ListWebhooksResponse{Webhooks: response})
 }

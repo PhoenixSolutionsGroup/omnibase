@@ -502,6 +502,30 @@ func (h *WebhookHandler) GetWebhooksForConfig(ctx context.Context, configID uuid
 	return webhooks, nil
 }
 
+// ListAllWebhooks retrieves all webhooks from the database with decrypted secrets
+func (h *WebhookHandler) ListAllWebhooks(ctx context.Context) ([]models.StripeWebhook, error) {
+	logger.Logger.Debug("Listing all webhooks")
+
+	var webhooks []models.StripeWebhook
+	if err := h.db.Order("created_at DESC").Find(&webhooks).Error; err != nil {
+		return nil, fmt.Errorf("failed to list webhooks: %w", err)
+	}
+
+	// Decrypt secrets
+	for i := range webhooks {
+		if h.encryptionService != nil && webhooks[i].Secret != "" {
+			decrypted, err := h.encryptionService.Decrypt(webhooks[i].Secret)
+			if err != nil {
+				logger.Logger.Warn("Failed to decrypt webhook secret", "error", err)
+			} else {
+				webhooks[i].Secret = decrypted
+			}
+		}
+	}
+
+	return webhooks, nil
+}
+
 // eventsEqual compares two event slices for equality
 func eventsEqual(a, b []string) bool {
 	if len(a) != len(b) {

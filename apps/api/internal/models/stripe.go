@@ -74,10 +74,12 @@ func (s *StripeWebhook) BeforeCreate(tx *gorm.DB) error {
 // Parsed configuration structs that match the JSON schema
 
 type StripeConfiguration struct {
-	Version  string                  `json:"version" validate:"required"`
-	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty" validate:"dive"`
-	Meters   []Meter                 `json:"meters,omitempty" validate:"dive"`
-	Products []Product               `json:"products" validate:"required,dive"`
+	Version        string                  `json:"version" validate:"required"`
+	Webhooks       []WebhookEndpointConfig `json:"webhooks,omitempty" validate:"dive"`
+	Meters         []Meter                 `json:"meters,omitempty" validate:"dive"`
+	Products       []Product               `json:"products" validate:"required,dive"`
+	Coupons        []Coupon                `json:"coupons,omitempty" validate:"dive"`
+	PromotionCodes []PromotionCode         `json:"promotion_codes,omitempty" validate:"dive"`
 }
 
 // WebhookEndpointConfig represents a single webhook endpoint configuration from the config file
@@ -137,9 +139,11 @@ type ProductWithStripeIDs struct {
 
 // StripeConfigurationWithIDs extends StripeConfiguration to include Stripe IDs
 type StripeConfigurationWithIDs struct {
-	Version  string                 `json:"version" validate:"required"`
-	Meters   []MeterWithStripeID    `json:"meters,omitempty" validate:"dive"`
-	Products []ProductWithStripeIDs `json:"products" validate:"required,dive"`
+	Version        string                      `json:"version" validate:"required"`
+	Meters         []MeterWithStripeID         `json:"meters,omitempty" validate:"dive"`
+	Products       []ProductWithStripeIDs      `json:"products" validate:"required,dive"`
+	Coupons        []CouponWithStripeID        `json:"coupons,omitempty" validate:"dive"`
+	PromotionCodes []PromotionCodeWithStripeID `json:"promotion_codes,omitempty" validate:"dive"`
 }
 
 type Tier struct {
@@ -189,11 +193,12 @@ type StripeConfigResponse struct {
 }
 
 type StripeConfigChanges struct {
-	Created  []ProductChange  `json:"created,omitempty"`
-	Updated  []ProductChange  `json:"updated,omitempty"`
-	Archived []ProductChange  `json:"archived,omitempty"`
-	Meters   *MeterChanges    `json:"meters,omitempty"`
-	Webhooks *WebhookChanges  `json:"webhooks,omitempty"`
+	Products       *ProductChanges        `json:"products,omitempty"`
+	Prices         *PriceChanges          `json:"prices,omitempty"`
+	Meters         *MeterChanges          `json:"meters,omitempty"`
+	Webhooks       *WebhookChanges        `json:"webhooks,omitempty"`
+	Coupons        *CouponChanges         `json:"coupons,omitempty"`
+	PromotionCodes *PromotionCodeChanges  `json:"promotion_codes,omitempty"`
 }
 
 type MeterChanges struct {
@@ -222,6 +227,38 @@ type WebhookChange struct {
 	StripeID  string `json:"stripe_id,omitempty"`
 }
 
+type CouponChanges struct {
+	Created  []CouponChange `json:"created,omitempty"`
+	Updated  []CouponChange `json:"updated,omitempty"`
+	Archived []CouponChange `json:"archived,omitempty"`
+}
+
+type CouponChange struct {
+	CouponID string `json:"coupon_id"`
+	Name     string `json:"name"`
+	Action   string `json:"action"`
+	StripeID string `json:"stripe_id,omitempty"`
+}
+
+type PromotionCodeChanges struct {
+	Created     []PromotionCodeChange `json:"created,omitempty"`
+	Updated     []PromotionCodeChange `json:"updated,omitempty"`
+	Deactivated []PromotionCodeChange `json:"deactivated,omitempty"`
+}
+
+type PromotionCodeChange struct {
+	PromoID  string `json:"promo_id"`
+	Code     string `json:"code"`
+	Action   string `json:"action"`
+	StripeID string `json:"stripe_id,omitempty"`
+}
+
+type ProductChanges struct {
+	Created  []ProductChange `json:"created,omitempty"`
+	Updated  []ProductChange `json:"updated,omitempty"`
+	Archived []ProductChange `json:"archived,omitempty"`
+}
+
 type ProductChange struct {
 	ProductID   string   `json:"product_id"`
 	ProductName string   `json:"product_name"`
@@ -229,14 +266,33 @@ type ProductChange struct {
 	Details     []string `json:"details,omitempty"`
 }
 
+type PriceChanges struct {
+	Created  []PriceChange `json:"created,omitempty"`
+	Updated  []PriceChange `json:"updated,omitempty"`
+	Archived []PriceChange `json:"archived,omitempty"`
+}
+
+type PriceChange struct {
+	PriceID   string `json:"price_id"`
+	ProductID string `json:"product_id"`
+	Action    string `json:"action"`
+	StripeID  string `json:"stripe_id,omitempty"`
+}
+
 // Diff detection structures
 
 type ConfigDiff struct {
-	NewProducts      []Product
-	UpdatedProducts  []ProductUpdate
-	ArchivedProducts []string
-	NewMeters        []Meter
-	ArchivedMeters   []string
+	NewProducts            []Product
+	UpdatedProducts        []ProductUpdate
+	ArchivedProducts       []string
+	NewMeters              []Meter
+	ArchivedMeters         []string
+	NewCoupons             []Coupon
+	UpdatedCoupons         []CouponUpdate
+	ArchivedCoupons        []string
+	NewPromotionCodes      []PromotionCode
+	UpdatedPromotionCodes  []PromoCodeUpdate
+	DeactivatedPromoCodes  []string
 }
 
 type ProductUpdate struct {
@@ -246,6 +302,16 @@ type ProductUpdate struct {
 	UpdatedPrices    []Price
 	ArchivedPrices   []string
 	RequiresRecreate bool
+}
+
+type CouponUpdate struct {
+	ID           string
+	FieldChanges map[string]interface{}
+}
+
+type PromoCodeUpdate struct {
+	ID           string
+	FieldChanges map[string]interface{}
 }
 
 // StripeIDMapping stores the relationship between config IDs and actual Stripe IDs
@@ -302,6 +368,49 @@ type MeterCustomerMapping struct {
 // MeterValueSettings defines how to extract usage values from events (optional, has defaults)
 type MeterValueSettings struct {
 	EventPayloadKey string `json:"event_payload_key" validate:"required"`
+}
+
+// Coupon represents a discount that can be applied to subscriptions
+type Coupon struct {
+	ID               string            `json:"id" validate:"required"`
+	StripeID         string            `json:"stripe_id,omitempty"`
+	Name             string            `json:"name,omitempty"`
+	PercentOff       *float64          `json:"percent_off,omitempty" validate:"omitempty,gte=0,lte=100"`
+	AmountOff        *int64            `json:"amount_off,omitempty" validate:"omitempty,gt=0"`
+	Currency         string            `json:"currency,omitempty"`
+	Duration         string            `json:"duration" validate:"required,oneof=once repeating forever"`
+	DurationInMonths *int64            `json:"duration_in_months,omitempty"`
+	MaxRedemptions   *int64            `json:"max_redemptions,omitempty"`
+	RedeemBy         *int64            `json:"redeem_by,omitempty"`
+	AppliesTo        []string          `json:"applies_to,omitempty"`
+	Metadata         map[string]string `json:"metadata,omitempty"`
+}
+
+// CouponWithStripeID extends Coupon to include the actual Stripe ID for API responses
+type CouponWithStripeID struct {
+	Coupon
+	StripeID *string `json:"stripe_id,omitempty"`
+}
+
+// PromotionCode represents a customer-facing code that applies a coupon
+type PromotionCode struct {
+	ID                    string            `json:"id" validate:"required"`
+	StripeID              string            `json:"stripe_id,omitempty"`
+	Code                  string            `json:"code" validate:"required"`
+	Coupon                string            `json:"coupon" validate:"required"`
+	Active                *bool             `json:"active,omitempty"`
+	MaxRedemptions        *int64            `json:"max_redemptions,omitempty"`
+	FirstTimeTransaction  *bool             `json:"first_time_transaction,omitempty"`
+	MinimumAmount         *int64            `json:"minimum_amount,omitempty"`
+	MinimumAmountCurrency string            `json:"minimum_amount_currency,omitempty"`
+	ExpiresAt             *int64            `json:"expires_at,omitempty"`
+	Metadata              map[string]string `json:"metadata,omitempty"`
+}
+
+// PromotionCodeWithStripeID extends PromotionCode to include the actual Stripe ID for API responses
+type PromotionCodeWithStripeID struct {
+	PromotionCode
+	StripeID *string `json:"stripe_id,omitempty"`
 }
 
 // SubscriptionResponse represents an active subscription for a tenant

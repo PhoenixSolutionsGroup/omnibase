@@ -59,6 +59,42 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		}
 	}
 
+	// Validate that coupons (if present) is not null (must be an array, even if empty)
+	if couponsValue, hasCoupons := configData["coupons"]; hasCoupons {
+		if couponsValue == nil {
+			logger.Logger.Error("Configuration coupons field is null")
+			return nil, fmt.Errorf("coupons must be an array, not null")
+		}
+		// Filter out empty objects from coupons array
+		if couponsArray, ok := couponsValue.([]interface{}); ok {
+			filteredCoupons := []interface{}{}
+			for _, c := range couponsArray {
+				if cMap, ok := c.(map[string]interface{}); ok && len(cMap) > 0 {
+					filteredCoupons = append(filteredCoupons, c)
+				}
+			}
+			configData["coupons"] = filteredCoupons
+		}
+	}
+
+	// Validate that promotion_codes (if present) is not null (must be an array, even if empty)
+	if promosValue, hasPromos := configData["promotion_codes"]; hasPromos {
+		if promosValue == nil {
+			logger.Logger.Error("Configuration promotion_codes field is null")
+			return nil, fmt.Errorf("promotion_codes must be an array, not null")
+		}
+		// Filter out empty objects from promotion_codes array
+		if promosArray, ok := promosValue.([]interface{}); ok {
+			filteredPromos := []interface{}{}
+			for _, p := range promosArray {
+				if pMap, ok := p.(map[string]interface{}); ok && len(pMap) > 0 {
+					filteredPromos = append(filteredPromos, p)
+				}
+			}
+			configData["promotion_codes"] = filteredPromos
+		}
+	}
+
 	configBytes, err := json.Marshal(configData)
 	if err != nil {
 		logger.Logger.Error("Failed to marshal config data", "error", err)
@@ -77,7 +113,7 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		return nil, fmt.Errorf("version is required")
 	}
 
-	logger.Logger.Debug("Configuration parsed successfully", "version", config.Version, "productCount", len(config.Products), "meterCount", len(config.Meters))
+	logger.Logger.Debug("Configuration parsed successfully", "version", config.Version, "productCount", len(config.Products), "meterCount", len(config.Meters), "couponCount", len(config.Coupons), "promoCount", len(config.PromotionCodes))
 
 	// Validate webhooks if present
 	if len(config.Webhooks) > 0 {
@@ -143,6 +179,51 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 		logger.Logger.Error("Meter reference validation failed", "error", err)
 		return nil, fmt.Errorf("meter reference validation failed: %w", err)
 	}
+
+	// Check for duplicate coupon IDs
+	couponIDs := make(map[string]bool)
+	for _, coupon := range config.Coupons {
+		if couponIDs[coupon.ID] {
+			logger.Logger.Error("Duplicate coupon ID found", "couponID", coupon.ID)
+			return nil, fmt.Errorf("duplicate coupon ID: %s", coupon.ID)
+		}
+		couponIDs[coupon.ID] = true
+	}
+
+	// Validate each coupon
+	for i, coupon := range config.Coupons {
+		if err := v.validateCoupon(coupon, productIDs); err != nil {
+			logger.Logger.Error("Coupon validation failed", "error", err, "couponIndex", i, "couponID", coupon.ID)
+			return nil, fmt.Errorf("coupon %d validation failed: %w", i, err)
+		}
+	}
+	logger.Logger.Debug("All coupons validated successfully", "count", len(config.Coupons))
+
+	// Check for duplicate promotion code IDs
+	promoIDs := make(map[string]bool)
+	promoCodes := make(map[string]bool)
+	for _, promo := range config.PromotionCodes {
+		if promoIDs[promo.ID] {
+			logger.Logger.Error("Duplicate promotion code ID found", "promoID", promo.ID)
+			return nil, fmt.Errorf("duplicate promotion code ID: %s", promo.ID)
+		}
+		promoIDs[promo.ID] = true
+
+		if promoCodes[promo.Code] {
+			logger.Logger.Error("Duplicate promotion code found", "code", promo.Code)
+			return nil, fmt.Errorf("duplicate promotion code: %s", promo.Code)
+		}
+		promoCodes[promo.Code] = true
+	}
+
+	// Validate each promotion code
+	for i, promo := range config.PromotionCodes {
+		if err := v.validatePromotionCode(promo, couponIDs); err != nil {
+			logger.Logger.Error("Promotion code validation failed", "error", err, "promoIndex", i, "promoID", promo.ID)
+			return nil, fmt.Errorf("promotion code %d validation failed: %w", i, err)
+		}
+	}
+	logger.Logger.Debug("All promotion codes validated successfully", "count", len(config.PromotionCodes))
 
 	logger.Logger.Info("Configuration validation completed successfully")
 	return &config, nil
@@ -395,6 +476,119 @@ func (v *Validator) validateWebhooks(webhooks []models.WebhookEndpointConfig) er
 				return fmt.Errorf("webhook %d: duplicate event %s", i, event)
 			}
 			eventsSeen[event] = true
+		}
+	}
+
+	return nil
+}
+
+// validateCoupon validates a coupon configuration
+func (v *Validator) validateCoupon(coupon models.Coupon, productIDs map[string]bool) error {
+	logger.Logger.Trace("Validating coupon", "couponID", coupon.ID)
+
+	if coupon.ID == "" {
+		return fmt.Errorf("coupon ID is required")
+	}
+
+	// Must have either percent_off or amount_off, but not both
+	hasPercentOff := coupon.PercentOff != nil
+	hasAmountOff := coupon.AmountOff != nil
+
+	if !hasPercentOff && !hasAmountOff {
+		return fmt.Errorf("coupon must have either percent_off or amount_off")
+	}
+
+	if hasPercentOff && hasAmountOff {
+		return fmt.Errorf("coupon cannot have both percent_off and amount_off")
+	}
+
+	// Validate percent_off range
+	if hasPercentOff && (*coupon.PercentOff < 0 || *coupon.PercentOff > 100) {
+		return fmt.Errorf("percent_off must be between 0 and 100")
+	}
+
+	// Validate amount_off is positive
+	if hasAmountOff && *coupon.AmountOff <= 0 {
+		return fmt.Errorf("amount_off must be greater than 0")
+	}
+
+	// If amount_off is set, currency is required
+	if hasAmountOff && coupon.Currency == "" {
+		return fmt.Errorf("currency is required when amount_off is set")
+	}
+
+	// Validate currency if provided
+	if coupon.Currency != "" && !v.isValidCurrency(coupon.Currency) {
+		return fmt.Errorf("invalid currency: %s", coupon.Currency)
+	}
+
+	// Validate duration
+	if coupon.Duration == "" {
+		return fmt.Errorf("duration is required")
+	}
+
+	validDurations := []string{"once", "repeating", "forever"}
+	isValidDuration := false
+	for _, d := range validDurations {
+		if coupon.Duration == d {
+			isValidDuration = true
+			break
+		}
+	}
+	if !isValidDuration {
+		return fmt.Errorf("invalid duration: %s (must be 'once', 'repeating', or 'forever')", coupon.Duration)
+	}
+
+	// duration_in_months is required when duration is "repeating"
+	if coupon.Duration == "repeating" {
+		if coupon.DurationInMonths == nil || *coupon.DurationInMonths <= 0 {
+			return fmt.Errorf("duration_in_months is required and must be positive when duration is 'repeating'")
+		}
+	}
+
+	// Stripe restriction: 'forever' duration is only allowed with percent_off coupons
+	if coupon.Duration == "forever" && hasAmountOff {
+		return fmt.Errorf("'forever' duration is only allowed with percent_off coupons, not amount_off")
+	}
+
+	// Validate applies_to references valid product IDs
+	for _, productID := range coupon.AppliesTo {
+		if !productIDs[productID] {
+			return fmt.Errorf("coupon applies_to references undefined product: %s", productID)
+		}
+	}
+
+	return nil
+}
+
+// validatePromotionCode validates a promotion code configuration
+func (v *Validator) validatePromotionCode(promo models.PromotionCode, couponIDs map[string]bool) error {
+	logger.Logger.Trace("Validating promotion code", "promoID", promo.ID)
+
+	if promo.ID == "" {
+		return fmt.Errorf("promotion code ID is required")
+	}
+
+	if promo.Code == "" {
+		return fmt.Errorf("promotion code is required")
+	}
+
+	if promo.Coupon == "" {
+		return fmt.Errorf("coupon reference is required")
+	}
+
+	// Validate coupon reference exists
+	if !couponIDs[promo.Coupon] {
+		return fmt.Errorf("promotion code references undefined coupon: %s", promo.Coupon)
+	}
+
+	// Validate minimum_amount_currency if minimum_amount is set
+	if promo.MinimumAmount != nil && *promo.MinimumAmount > 0 {
+		if promo.MinimumAmountCurrency == "" {
+			return fmt.Errorf("minimum_amount_currency is required when minimum_amount is set")
+		}
+		if !v.isValidCurrency(promo.MinimumAmountCurrency) {
+			return fmt.Errorf("invalid minimum_amount_currency: %s", promo.MinimumAmountCurrency)
 		}
 	}
 
