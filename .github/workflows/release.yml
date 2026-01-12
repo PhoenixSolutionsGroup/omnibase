@@ -55,11 +55,15 @@ jobs:
       - name: Install schemathesis
         run: pip install schemathesis
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
 
-      - name: Install CLI globally
-        run: bun link
+      - name: Build core-js SDK
+        run: bun run build
+        working-directory: sdk/core/js
+
+      - name: Build and install CLI globally
+        run: bun run build && bun link
         working-directory: packages/cli
 
       - name: Create test environment config
@@ -255,8 +259,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
+
+      - name: Build core-js SDK
+        run: bun run build
+        working-directory: sdk/core/js
 
       - name: Check for API changes
         id: changes
@@ -424,8 +432,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
 
       - name: Configure git
         run: |
