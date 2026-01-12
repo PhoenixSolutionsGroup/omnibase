@@ -85,51 +85,30 @@ jobs:
           omnibase start --mode test &
           echo "Waiting for services to be ready..."
 
-          # Wait for API
+          # Wait for API to be live first
           echo "Waiting for API..."
           for i in {1..60}; do
             if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
-              echo "API is ready!"
+              echo "API is live!"
               break
             fi
             echo "API attempt $i/60..."
             sleep 5
           done
 
-          # Wait for Auth
-          echo "Waiting for Auth..."
+          # Wait for all services to be ready (database, auth, permissions)
+          echo "Waiting for all services to be ready..."
           for i in {1..60}; do
-            if curl -sf http://localhost:4433/health/ready > /dev/null 2>&1; then
-              echo "Auth is ready!"
+            HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
+            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+              echo "All services are ready!"
+              echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
               break
             fi
-            echo "Auth attempt $i/60..."
+            echo "Services not ready yet (attempt $i/60)..."
+            echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
             sleep 5
           done
-
-          # Wait for Permissions
-          echo "Waiting for Permissions..."
-          for i in {1..60}; do
-            if curl -sf http://localhost:4466/health/ready > /dev/null 2>&1; then
-              echo "Permissions is ready!"
-              break
-            fi
-            echo "Permissions attempt $i/60..."
-            sleep 5
-          done
-
-          # Verify Keto can actually handle API requests
-          echo "Verifying Keto API is functional..."
-          for i in {1..10}; do
-            if curl -sf "http://localhost:4466/relation-tuples?namespace=Tenant" > /dev/null 2>&1; then
-              echo "Keto API is responding!"
-              break
-            fi
-            echo "Keto API attempt $i/10..."
-            sleep 2
-          done
-
-          echo "All services are ready!"
 
       - name: Sync test environment
         working-directory: tests/api
@@ -143,51 +122,18 @@ jobs:
         run: |
           echo "Waiting for services after sync..."
 
-          # Verify API is still healthy
-          echo "Verifying API..."
-          for i in {1..10}; do
-            if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
-              echo "API is ready!"
+          # Wait for all services to be ready via unified health check
+          for i in {1..60}; do
+            HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
+            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+              echo "All services are ready!"
+              echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
               break
             fi
-            echo "API attempt $i/10..."
+            echo "Services not ready yet (attempt $i/60)..."
+            echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
             sleep 2
           done
-
-          # Wait for Auth (restarted after sync)
-          echo "Waiting for Auth..."
-          for i in {1..30}; do
-            if curl -sf http://localhost:4433/health/ready > /dev/null 2>&1; then
-              echo "Auth is ready!"
-              break
-            fi
-            echo "Auth attempt $i/30..."
-            sleep 2
-          done
-
-          # Wait for Permissions (restarted after sync)
-          echo "Waiting for Permissions..."
-          for i in {1..30}; do
-            if curl -sf http://localhost:4466/health/ready > /dev/null 2>&1; then
-              echo "Permissions is ready!"
-              break
-            fi
-            echo "Permissions attempt $i/30..."
-            sleep 2
-          done
-
-          # Verify Keto can actually handle API requests
-          echo "Verifying Keto API is functional..."
-          for i in {1..10}; do
-            if curl -sf "http://localhost:4466/relation-tuples?namespace=Tenant" > /dev/null 2>&1; then
-              echo "Keto API is responding!"
-              break
-            fi
-            echo "Keto API attempt $i/10..."
-            sleep 2
-          done
-
-          echo "All services ready!"
 
       - name: Run API tests
         env:
