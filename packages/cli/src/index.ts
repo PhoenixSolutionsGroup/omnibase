@@ -108,7 +108,7 @@ async function runDockerCompose(
     logger.log(`Using mode: ${composeMode || "local"}`);
 
     execSync(`docker ${cmdArgs.join(" ")}`, {
-      stdio: "ignore",
+      stdio: "inherit",
       cwd: projectRoot,
       env: {
         ...process.env,
