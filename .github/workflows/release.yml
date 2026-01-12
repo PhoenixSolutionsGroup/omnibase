@@ -55,12 +55,13 @@ jobs:
       - name: Install schemathesis
         run: pip install schemathesis
 
+      - name: Generate and build core-js SDK
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
+
       - name: Install dependencies (skip lifecycle scripts)
         run: bun install --ignore-scripts
-
-      - name: Build core-js SDK
-        run: bun run build
-        working-directory: sdk/core/js
 
       - name: Build and install CLI globally
         run: bun run build && bun link
@@ -259,12 +260,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Generate and build core-js SDK
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
+
       - name: Install dependencies (skip lifecycle scripts)
         run: bun install --ignore-scripts
-
-      - name: Build core-js SDK
-        run: bun run build
-        working-directory: sdk/core/js
 
       - name: Check for API changes
         id: changes
@@ -431,6 +433,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Generate and build core-js SDK
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
 
       - name: Install dependencies (skip lifecycle scripts)
         run: bun install --ignore-scripts
