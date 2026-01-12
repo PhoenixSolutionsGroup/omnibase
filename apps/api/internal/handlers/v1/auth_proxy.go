@@ -115,7 +115,8 @@ func (h *AuthProxyHandler) doProxy(c *gin.Context, targetURL *url.URL, path stri
 
 	for key, values := range resp.Header {
 		for _, value := range values {
-			c.Header(key, value)
+			rewritten := h.rewriteResponseHeader(key, value, targetURL)
+			c.Header(key, rewritten)
 		}
 	}
 
@@ -128,6 +129,87 @@ func (h *AuthProxyHandler) doProxy(c *gin.Context, targetURL *url.URL, path stri
 	logger.Logger.Debug("Proxy request completed",
 		"target", proxyURL.String(),
 		"status", resp.StatusCode)
+}
+
+func (h *AuthProxyHandler) rewriteResponseHeader(key, value string, targetURL *url.URL) string {
+	headerLower := strings.ToLower(key)
+
+	if headerLower == "location" {
+		return h.rewriteLocationHeader(value, targetURL)
+	}
+
+	if headerLower == "set-cookie" {
+		return h.rewriteSetCookieHeader(value, targetURL)
+	}
+
+	return value
+}
+
+func (h *AuthProxyHandler) rewriteLocationHeader(location string, targetURL *url.URL) string {
+	locURL, err := url.Parse(location)
+	if err != nil {
+		logger.Logger.Warn("Failed to parse Location header", "location", location, "error", err)
+		return location
+	}
+
+	if !h.isKratosPath(locURL.Path) {
+		return location
+	}
+
+	proxyPath := "/api/v1/auth/proxy"
+	rewritten := proxyPath + locURL.Path
+	if locURL.RawQuery != "" {
+		rewritten += "?" + locURL.RawQuery
+	}
+
+	logger.Logger.Debug("Rewrote Location header",
+		"original", location,
+		"rewritten", rewritten)
+
+	return rewritten
+}
+
+func (h *AuthProxyHandler) isKratosPath(path string) bool {
+	kratosPaths := []string{
+		"/self-service/",
+		"/sessions/",
+		"/schemas/",
+		"/.well-known/",
+	}
+
+	for _, prefix := range kratosPaths {
+		if strings.HasPrefix(path, prefix) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (h *AuthProxyHandler) rewriteSetCookieHeader(cookie string, targetURL *url.URL) string {
+	parts := strings.Split(cookie, ";")
+	var rewrittenParts []string
+
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		lowerPart := strings.ToLower(trimmed)
+
+		if strings.HasPrefix(lowerPart, "domain=") {
+			continue
+		}
+
+		rewrittenParts = append(rewrittenParts, trimmed)
+	}
+
+	rewritten := strings.Join(rewrittenParts, "; ")
+
+	if rewritten != cookie {
+		logger.Logger.Debug("Rewrote Set-Cookie header",
+			"original", cookie,
+			"rewritten", rewritten)
+	}
+
+	return rewritten
 }
 
 func shouldForwardHeader(header string) bool {
