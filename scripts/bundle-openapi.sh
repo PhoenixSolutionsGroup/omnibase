@@ -7,4 +7,4 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$ROOT_DIR"
 
 # Bundle OpenAPI spec
-npx redocly bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml
+npx @redocly/cli bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml

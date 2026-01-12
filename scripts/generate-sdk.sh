@@ -84,7 +84,7 @@ echo -e "${BLUE}[3/3] Generating SDKs...${NC}"
 if [ "$GENERATE_JS" = true ]; then
   echo -e "${BLUE}Generating JavaScript SDK...${NC}"
   cd apps/api
-  npx openapi-generator-cli generate \
+  npx @openapitools/openapi-generator-cli generate \
     -i docs/openapi.yaml \
     -g typescript-fetch \
     -o ../../sdk/core/js \
@@ -109,7 +109,7 @@ fi
 if [ "$GENERATE_GO" = true ]; then
   echo -e "${BLUE}Generating Go SDK...${NC}"
   cd apps/api
-  npx openapi-generator-cli generate \
+  npx @openapitools/openapi-generator-cli generate \
     -i docs/openapi.yaml \
     -g go \
     -o ../../sdk/core/go \
