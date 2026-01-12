@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/internal/config"
+	"api/internal/database"
 	"api/internal/handlers"
 	v1 "api/internal/handlers/v1"
 	"api/internal/logger"
@@ -11,8 +12,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/pprof"
+	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v82"
 )
 
@@ -87,12 +88,16 @@ func main() {
 		}
 	})
 
-	r.GET("/health", func(ctx *gin.Context) {
-		logger.Logger.Trace("Health check endpoint called")
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": "healthy",
-		})
-	})
+	// Initialize database connection for health checks
+	db, err := database.GetConnection(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get database connection for health handler", "error", err)
+		panic(err)
+	}
+
+	healthHandler := handlers.NewHealthHandler(cfg, db)
+	r.GET("/health", healthHandler.HealthLive)
+	r.GET("/health/ready", healthHandler.HealthReady)
 
 	logger.Logger.Info("Initializing v1 API routes")
 	v1_group := r.Group("/api/v1")
