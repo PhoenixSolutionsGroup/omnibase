@@ -54,11 +54,7 @@ export async function fetchProjectSecretKey(projectId: string) {
       serviceKey: data.api_service_key,
     };
   } catch (error) {
-    console.error("Error fetching secret key:", error);
-    return {
-      success: false,
-      error: "Failed to connect to the server",
-    };
+    throw error;
   }
 }
 
