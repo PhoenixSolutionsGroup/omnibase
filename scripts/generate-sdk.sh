@@ -94,6 +94,11 @@ if [ "$GENERATE_JS" = true ]; then
   cd "$ROOT_DIR"
   echo -e "${GREEN}✓ JavaScript SDK generated${NC}"
 
+  # Add files field to package.json so dist/ is included in npm publish
+  echo -e "${BLUE}Patching JavaScript SDK package.json...${NC}"
+  jq '. + {"files": ["dist"]}' sdk/core/js/package.json > sdk/core/js/package.json.tmp && mv sdk/core/js/package.json.tmp sdk/core/js/package.json
+  echo -e "${GREEN}✓ JavaScript SDK package.json patched${NC}"
+
   echo -e "${BLUE}Building JavaScript SDK...${NC}"
   cd sdk/core/js
   bun run build
