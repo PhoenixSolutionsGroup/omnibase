@@ -78,10 +78,11 @@ paths:
       parameters:
         - name: schemas
           in: query
-          description: Comma-separated list of database schemas to include
+          description: Comma-separated list of database schemas to include (valid PostgreSQL identifiers)
           required: false
           schema:
             type: string
+            pattern: '^[a-zA-Z_][a-zA-Z0-9_]*(,[a-zA-Z_][a-zA-Z0-9_]*)*$'
             default: public
             example: public,auth
         - name: language

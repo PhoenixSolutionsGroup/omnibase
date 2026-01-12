@@ -2686,7 +2686,8 @@ export type UploadDatabaseMigrationsBody = {
 
 export type GenerateDatabaseTypesParams = {
   /**
-   * Comma-separated list of database schemas to include
+   * Comma-separated list of database schemas to include (valid PostgreSQL identifiers)
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*(,[a-zA-Z_][a-zA-Z0-9_]*)*$
    */
   schemas?: string;
   /**
