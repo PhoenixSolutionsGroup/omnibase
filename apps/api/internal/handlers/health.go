@@ -70,6 +70,20 @@ func (h *HealthHandler) HealthReady(c *gin.Context) {
 		allReady = false
 	}
 
+	// Check PostgREST service
+	postgrestHealth := h.checkHTTPService(h.cfg.PostgRESTURL, "/")
+	services["postgrest"] = postgrestHealth
+	if !postgrestHealth.Ready {
+		allReady = false
+	}
+
+	// Check typegen (postgres-meta) service
+	typegenHealth := h.checkHTTPService(h.cfg.TypegenURL, "/health")
+	services["typegen"] = typegenHealth
+	if !typegenHealth.Ready {
+		allReady = false
+	}
+
 	status := "ready"
 	statusCode := http.StatusOK
 	if !allReady {
