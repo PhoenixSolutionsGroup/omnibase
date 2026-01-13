@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 import { addPermissionsCommands } from "./commands/permissions";
@@ -13,12 +12,13 @@ import { addAuthCommands } from "./commands/auth";
 import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
-import {
-  findOmnibaseRoot,
-  getProjectName,
-  selectEnvironment,
-} from "./utils/environment";
+import { selectEnvironment } from "./utils/environment";
 import { logger } from "./utils/logger";
+import {
+  getComposeFiles,
+  validateComposeFiles,
+  runDockerComposeCommand,
+} from "./utils/docker";
 
 const program = new Command();
 
@@ -45,76 +45,24 @@ function createTemplateFiles(targetDir: string): void {
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
 }
 
-function getComposeFiles(composeMode?: string): string[] {
-  const dockerDir = path.join(__dirname, "..", "docker");
-  const baseFile = path.join(dockerDir, "docker-compose.base.yml");
-
-  const files = [baseFile];
-
-  if (composeMode === "dev") {
-    files.push(path.join(dockerDir, "docker-compose.dev.yml"));
-  } else if (composeMode === "test") {
-    files.push(path.join(dockerDir, "docker-compose.test.yml"));
-  } else if (composeMode === "perf-test") {
-    files.push(path.join(dockerDir, "docker-compose.perf-test.yml"));
-  } else {
-    // No mode specified - use local compose with persistent volumes
-    files.push(path.join(dockerDir, "docker-compose.local.yml"));
-  }
-
-  return files;
-}
-
 async function runDockerCompose(
   envOverride?: string,
   composeMode?: string,
-  ...args: string[]
+  command?: string,
+  services: string[] = []
 ): Promise<void> {
   try {
-    const projectRoot = findOmnibaseRoot();
-
     const envConfig = await selectEnvironment(envOverride);
-    const envPath = path.join(
-      projectRoot,
-      "omnibase",
-      "environments",
-      `.env.${envConfig.name}`
-    );
 
-    const composeFiles = getComposeFiles(composeMode);
-
-    for (const file of composeFiles) {
-      if (!fs.existsSync(file)) {
-        throw new Error(
-          `Compose file not found at: ${file}\nMake sure you're in a valid omnibase project directory.`
-        );
-      }
-    }
-
-    const projectName = getProjectName();
-
-    const cmdArgs = [
-      "compose",
-      "--project-name",
-      projectName,
-      ...composeFiles.flatMap((f) => ["-f", f]),
-      "--env-file",
-      envPath,
-      ...args,
-    ];
-
-    logger.log(`Using project name: ${projectName}`);
     logger.log(`Using environment: ${envConfig.name}`);
     logger.log(`Using mode: ${composeMode || "local"}`);
 
-    execSync(`docker ${cmdArgs.join(" ")}`, {
-      stdio: "inherit",
-      cwd: projectRoot,
-      env: {
-        ...process.env,
-        OMNIBASE_PROJECT_DIR: projectRoot,
-        OMNIBASE_ENV_FILE: envPath,
-      },
+    const composeFiles = getComposeFiles(composeMode);
+    validateComposeFiles(composeFiles);
+
+    runDockerComposeCommand(command || "up", services, {
+      mode: composeMode,
+      envConfig,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -157,9 +105,9 @@ program
   .action(async (cmdOptions) => {
     try {
       const globalOptions = program.opts();
-      const args = cmdOptions.build ? ["up", "-d", "--build"] : ["up", "-d"];
+      const command = cmdOptions.build ? "up -d --build" : "up -d";
       logger.start("Starting services...");
-      await runDockerCompose("local", globalOptions.mode, ...args);
+      await runDockerCompose("local", globalOptions.mode, command);
       logger.succeed("Services started");
     } catch (error) {
       logger.fail(error instanceof Error ? error.message : String(error));

@@ -1,19 +1,11 @@
 import { Command } from "commander";
-import { exec } from "child_process";
-import { promisify } from "util";
 import { checkbox } from "@inquirer/prompts";
-
-const execAsync = promisify(exec);
-import * as path from "path";
-import {
-  findOmnibaseRoot,
-  getProjectName,
-  EnvironmentConfig,
-} from "../utils/environment";
+import { EnvironmentConfig } from "../utils/environment";
 import { getCommandContextWithEnv } from "../utils/context";
 import { createManagedHostingClient } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { formatHttpError, handleCommandError } from "../utils/errors";
+import { restartDockerService } from "../utils/docker";
 
 interface RestartableService {
   name: string;
@@ -79,54 +71,17 @@ const SERVICES: RestartableService[] = [
   },
 ];
 
-function getComposeFiles(mode: string): string[] {
-  const dockerDir = path.join(__dirname, "..", "..", "docker");
-  const baseFile = path.join(dockerDir, "docker-compose.yml");
-
-  const files = [baseFile];
-
-  if (mode === "dev") {
-    files.push(path.join(dockerDir, "docker-compose.dev.yml"));
-  } else if (mode === "test") {
-    files.push(path.join(dockerDir, "docker-compose.test.yml"));
-  }
-
-  return files;
-}
-
 async function restartLocalService(
   dockerService: string,
   env: EnvironmentConfig,
   mode: string
 ): Promise<boolean> {
-  const projectRoot = findOmnibaseRoot();
-  const projectName = getProjectName();
-  const composeFiles = getComposeFiles(mode);
-  const composeArgs = composeFiles.map((f) => `-f ${f}`).join(" ");
-
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${env.name}`
-  );
-
   try {
-    await execAsync(
-      `docker compose --project-name ${projectName} ${composeArgs} --env-file ${envPath} restart ${dockerService}`,
-      {
-        cwd: projectRoot,
-        env: {
-          ...process.env,
-          OMNIBASE_PROJECT_DIR: projectRoot,
-          OMNIBASE_ENV_FILE: envPath,
-        },
-      }
-    );
+    await restartDockerService(dockerService, { mode, envConfig: env });
     return true;
   } catch (error: any) {
-    const stderr = error.stderr?.toString() || error.message || "Unknown error";
-    logger.warn(`   ${stderr.trim()}`);
+    const message = error.message || "Unknown error";
+    logger.warn(`   ${message}`);
     return false;
   }
 }

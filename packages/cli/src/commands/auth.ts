@@ -1,15 +1,11 @@
 import { Command } from "commander";
-import { execSync } from "child_process";
 import axios from "axios";
-import {
-  findOmnibaseRoot,
-  getProjectName,
-  selectEnvironment,
-} from "../utils/environment";
+import { selectEnvironment } from "../utils/environment";
 import { getLocalServiceName } from "../config/services";
 import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
 import { getCommandContext } from "../utils/context";
+import { restartDockerService } from "../utils/docker";
 
 /**
  * Reset the auth service (restart)
@@ -41,25 +37,8 @@ async function resetLocalService(mode?: string): Promise<void> {
   logger.update(`Restarting Docker service: ${dockerService}...`);
 
   try {
-    const projectRoot = findOmnibaseRoot();
-    const projectName = getProjectName();
-    const composeMode = mode || "default";
-    const dockerDir = `${__dirname}/../../docker`;
-    const composeFiles = [
-      `${dockerDir}/docker-compose.yml`,
-      ...(composeMode === "dev"
-        ? [`${dockerDir}/docker-compose.dev.yml`]
-        : composeMode === "test"
-          ? [`${dockerDir}/docker-compose.test.yml`]
-          : []),
-    ];
-    const composeArgs = composeFiles.map((f) => `-f ${f}`).join(" ");
-
-    execSync(
-      `docker compose --project-name ${projectName} ${composeArgs} restart ${dockerService}`,
-      { stdio: "inherit", cwd: projectRoot }
-    );
-
+    const envConfig = await selectEnvironment("local");
+    await restartDockerService(dockerService, { mode, envConfig });
     logger.succeed(`Docker service ${dockerService} restarted`);
   } catch (error) {
     logger.fail("Failed to restart Docker service");

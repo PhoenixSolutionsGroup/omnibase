@@ -10,14 +10,13 @@ import {
 } from "@ory/client";
 import {
   selectEnvironment,
-  findOmnibaseRoot,
-  getProjectName,
   EnvironmentConfig,
 } from "../utils/environment";
 import { createManagedHostingClient } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { formatHttpError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
+import { runDockerComposeCommand } from "../utils/docker";
 
 export class PermissionsCommand {
   private relationshipApi: RelationshipApi;
@@ -31,16 +30,6 @@ export class PermissionsCommand {
     this.permissionApi = new PermissionApi(
       undefined,
       `${apiUrl}/api/v1/permissions/read`
-    );
-  }
-
-  private getEnvFilePath(envName: string): string {
-    const projectRoot = findOmnibaseRoot();
-    return path.join(
-      projectRoot,
-      "omnibase",
-      "environments",
-      `.env.${envName}`
     );
   }
 
@@ -165,28 +154,12 @@ export class PermissionsCommand {
       } else {
         logger.log("   Restarting permissions service...");
         try {
-          const projectRoot = findOmnibaseRoot();
-          const projectName = getProjectName();
-          const composeMode = mode || "default";
-          const dockerDir = path.join(__dirname, "..", "..", "docker");
-          const composeFiles = [
-            path.join(dockerDir, "docker-compose.yml"),
-            ...(composeMode === "dev"
-              ? [path.join(dockerDir, "docker-compose.dev.yml")]
-              : composeMode === "test"
-                ? [path.join(dockerDir, "docker-compose.test.yml")]
-                : []),
-          ];
-          const composeArgs = composeFiles.map((f) => `-f ${f}`).join(" ");
-
-          const envConfig = await selectEnvironment("local");
-          const envFilePath = this.getEnvFilePath(envConfig.name);
-          const envVars = { ...process.env, OMNIBASE_ENV_FILE: envFilePath };
-
-          execSync(
-            `docker compose --project-name ${projectName} ${composeArgs} restart permissions`,
-            { stdio: "ignore", cwd: projectRoot, env: envVars }
-          );
+          const localEnvConfig = await selectEnvironment("local");
+          runDockerComposeCommand("restart", ["permissions"], {
+            mode,
+            envConfig: localEnvConfig,
+            stdio: "ignore",
+          });
           logger.log("   Permissions restarted successfully");
         } catch (error) {
           logger.warn("Failed to restart permissions automatically");
