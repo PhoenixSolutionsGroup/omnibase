@@ -208,39 +208,6 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           persist-credentials: true
 
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: "https://registry.npmjs.org"
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.21"
-
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Generate and build core-js SDK
-        run: |
-          bun run generate:sdk --js-only
-          cd sdk/core/js && bun run build
-
-      - name: Install dependencies (skip lifecycle scripts)
-        run: bun install --ignore-scripts
-
       - name: Check for API changes
         id: changes
         run: |
@@ -258,6 +225,47 @@ jobs:
               echo "has_changes=false" >> $GITHUB_OUTPUT
             fi
           fi
+
+      - uses: oven-sh/setup-bun@v1
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: actions/setup-go@v5
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          go-version: "1.21"
+
+      - uses: docker/setup-buildx-action@v3
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - uses: docker/login-action@v3
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configure git
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate and build core-js SDK
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
+
+      - name: Install dependencies (skip lifecycle scripts)
+        if: steps.changes.outputs.has_changes == 'true'
+        run: bun install --ignore-scripts
 
       - name: Make scripts executable
         if: steps.changes.outputs.has_changes == 'true'
@@ -317,28 +325,6 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           persist-credentials: true
 
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Generate and build core-js SDK
-        run: |
-          bun run generate:sdk --js-only
-          cd sdk/core/js && bun run build
-
-      - name: Install dependencies (skip lifecycle scripts)
-        run: bun install --ignore-scripts
-
       - name: Check for changes
         id: changes
         run: |
@@ -356,6 +342,27 @@ jobs:
               echo "has_changes=false" >> $GITHUB_OUTPUT
             fi
           fi
+
+      - uses: oven-sh/setup-bun@v1
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Configure git
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies (skip lifecycle scripts)
+        if: steps.changes.outputs.has_changes == 'true'
+        run: bun install --ignore-scripts
 
       - name: Build package
         if: steps.changes.outputs.has_changes == 'true'
@@ -403,34 +410,6 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           persist-credentials: true
 
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Generate and build core-js SDK
-        run: |
-          bun run generate:sdk --js-only
-          cd sdk/core/js && bun run build
-
-      - name: Install dependencies (skip lifecycle scripts)
-        run: bun install --ignore-scripts
-
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Check for changes
         id: changes
         run: |
@@ -448,6 +427,30 @@ jobs:
               echo "has_changes=false" >> $GITHUB_OUTPUT
             fi
           fi
+
+      - uses: actions/setup-node@v4
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          node-version: 22
+
+      - uses: docker/setup-buildx-action@v3
+        if: steps.changes.outputs.has_changes == 'true'
+
+      - uses: docker/login-action@v3
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configure git
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install semantic-release plugins
+        if: steps.changes.outputs.has_changes == 'true'
+        run: npm install --no-save semantic-release @semantic-release/changelog @semantic-release/exec @semantic-release/git @semantic-release/github semantic-release-commit-filter
 
       - name: Release
         if: steps.changes.outputs.has_changes == 'true'
