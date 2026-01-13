@@ -4,7 +4,7 @@ dsn: memory
 
 serve:
   public:
-    base_url: ${API_URL}/api/v1/auth/proxy
+    base_url: ${API_PUBLIC_URL}/api/v1/auth/proxy
     cors:
       enabled: true
       allowed_origins:

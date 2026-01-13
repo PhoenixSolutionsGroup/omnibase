@@ -113,6 +113,7 @@ services:
 
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - API_URL=http://rest-api:8080
+      - API_PUBLIC_URL=${API_PUBLIC_URL:-http://127.0.0.1:8080}
       - SERVICE_KEY=VERY_SECRET_KEY
       - WAIT_FOR_API_HEALTH=true
       - APP_NAME=${APP_NAME:-"My App"}
