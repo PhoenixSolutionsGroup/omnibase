@@ -62,6 +62,12 @@ fuzzing.enabled = false
 include-name = "POST /api/v1/database/migrations"
 enabled = false
 
+# Disable typegen endpoint - depends on postgres-type-gen service which may not
+# be ready during contract tests. Returns 502 if service is unavailable.
+[[operations]]
+include-name = "GET /api/v1/database/typegen"
+enabled = false
+
 [[operations]]
 include-name = "POST /api/v1/permissions/namespaces"
 enabled = false
