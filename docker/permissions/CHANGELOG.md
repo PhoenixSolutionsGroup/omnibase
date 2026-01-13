@@ -1,3 +1,11 @@
+## [0.2.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.2.0...permissions-v0.2.1) (2026-01-13)
+
+
+### Bug Fixes
+
+* **release:** add package.json for Go projects ([829ab1c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/829ab1c26705b28cf970dce475ed942aa152c83d))
+* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+
 # [0.2.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.1.1...permissions-v0.2.0) (2026-01-05)
 
 
