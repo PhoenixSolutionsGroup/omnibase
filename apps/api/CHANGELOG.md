@@ -1,3 +1,22 @@
+# [0.13.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.6...api-v0.13.0) (2026-01-13)
+
+
+### Bug Fixes
+
+* **api:** add pattern validation to typegen schemas parameter ([378418b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/378418ba1aad76fbf63e5f1608ff20b95d12f5bd))
+* **api:** handle missing products gracefully in archive operation ([d2cb08b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d2cb08bf008140e0b6e7934692fbc24b79bd81f3))
+* **api:** include all stripe IDs in config response ([20fdf21](https://github.com/PhoenixSolutionsGroup/omnibase/commit/20fdf213968d187b24b4e0b01edaf3aef7b3bc4e))
+* **api:** rewrite Location and Set-Cookie headers in auth proxy ([6f81cdf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6f81cdf773a2f25b23aaedc832958da83e9f3217))
+
+
+### Features
+
+* **api:** add comprehensive health ready endpoint ([c01cf28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c01cf282b74d6ddfc8ad9d211a6489d1c320c7d9))
+* **api:** add database typegen endpoint ([4346e04](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4346e04bcc16a3a9543275081e9b54bb2fc98c57))
+* **api:** add enterprise pricing support ([839ef19](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839ef19056587801c47de72501c52888879967d1))
+* **api:** add postgrest and typegen to health ready check ([2540408](https://github.com/PhoenixSolutionsGroup/omnibase/commit/254040818387ee71516421efa4c304a7247194da))
+* **api:** add stripe coupons and promotion codes support ([9876ddf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9876ddfe15f7eff02a1ca68e5b797b39a0c4242b))
+
 ## [0.12.6](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.5...api-v0.12.6) (2026-01-07)
 
 
