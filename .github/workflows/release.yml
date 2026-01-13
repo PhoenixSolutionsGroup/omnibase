@@ -428,6 +428,11 @@ jobs:
             fi
           fi
 
+      - uses: oven-sh/setup-bun@v1
+        if: steps.changes.outputs.has_changes == 'true'
+        with:
+          bun-version: latest
+
       - uses: actions/setup-node@v4
         if: steps.changes.outputs.has_changes == 'true'
         with:
@@ -448,9 +453,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install semantic-release plugins
+      - name: Install dependencies (skip lifecycle scripts)
         if: steps.changes.outputs.has_changes == 'true'
-        run: npm install --no-save semantic-release @semantic-release/changelog @semantic-release/exec @semantic-release/git @semantic-release/github semantic-release-commit-filter
+        run: bun install --ignore-scripts
 
       - name: Release
         if: steps.changes.outputs.has_changes == 'true'
@@ -458,4 +463,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           DOCKER_IMAGE: ${{ matrix.image }}
-        run: npx semantic-release
+        run: bunx semantic-release
