@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.2.1...auth-v0.2.2) (2026-01-13)
+
+
+### Bug Fixes
+
+* **api:** rewrite Location and Set-Cookie headers in auth proxy ([6f81cdf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6f81cdf773a2f25b23aaedc832958da83e9f3217))
+
 ## [0.2.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.2.0...auth-v0.2.1) (2026-01-07)
 
 
