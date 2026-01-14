@@ -12,12 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OrganizationDropdown } from "./organization-dropdown";
+import { switchTenant } from "@/app/(dashboard)/(organization)/actions";
+import type { Tenant } from "@omnibase/core-js";
 
 interface TopNavbarProps {
-  children?: React.ReactNode;
+  tenants: Tenant[];
+  currentTenantId: string;
 }
 
-export function TopNavbar({ children }: TopNavbarProps) {
+export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
   const router = useRouter();
   const handleLogout = async () => {
     try {
@@ -32,8 +36,17 @@ export function TopNavbar({ children }: TopNavbarProps) {
 
   return (
     <div className="flex h-18 w-full items-center border-b border-border bg-background px-6">
-      {/* Breadcrumb Area */}
-      <div className="flex flex-1 items-center text-base">{children}</div>
+      {/* Tenant Switcher */}
+      <OrganizationDropdown
+        tenants={tenants}
+        currentTenantId={currentTenantId}
+        formAction={switchTenant}
+        // TODO: Uncomment after publishing @omnibase/shadcn with onCreateTenant support
+        // onCreateTenant={() => router.push("/onboarding/create-tenant")}
+        // createTenantLabel="Create Organization"
+      />
+
+      <div className="flex-1" />
 
       {/* Right Section - Docs and Profile */}
       <div className="flex h-full items-center gap-2">

@@ -16,10 +16,8 @@ import {
 import {
   Database,
   Globe,
-  Key,
-  Mail,
-  Shield,
   Cloud,
+  Mail,
   Boxes,
   Eye,
   EyeOff,
@@ -32,6 +30,7 @@ import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
 import {
   fetchProjectSecretKey,
+  fetchPostgrestServiceKey,
   fetchDatabasePassword,
   fetchDatabaseConnectionString,
   fetchPostmarkServerToken,
@@ -49,6 +48,7 @@ interface ConfigItem {
   sensitive?: boolean;
   encryptedField?:
     | "service_key"
+    | "postgrest_service_key"
     | "database_password"
     | "connection_string"
     | "postmark_token"
@@ -152,12 +152,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       envVars.push(
         `OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`
       );
-
-      // Auth
-      if (project.auth_public_url)
-        envVars.push(`OMNIBASE_AUTH_URL=${project.auth_public_url}`);
-      if (project.auth_admin_url)
-        envVars.push(`OMNIBASE_AUTH_ADMIN_URL=${project.auth_admin_url}`);
 
       // Database
       if (project.postgrest_url)
@@ -274,9 +268,15 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       switch (encryptedField) {
         case "service_key":
           result = await fetchProjectSecretKey(project.id);
-          console.log(result);
           if (result?.success && result.serviceKey) {
-            console.log(result);
+            setDecryptedValues((prev) =>
+              new Map(prev).set(key, result!.serviceKey!)
+            );
+          }
+          break;
+        case "postgrest_service_key":
+          result = await fetchPostgrestServiceKey(project.id);
+          if (result?.success && result.serviceKey) {
             setDecryptedValues((prev) =>
               new Map(prev).set(key, result!.serviceKey!)
             );
@@ -357,15 +357,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       ],
     },
     {
-      title: "Authentication",
-      description: "Authentication service endpoints and credentials",
-      icon: <Shield className="h-5 w-5 text-primary" />,
-      items: [
-        { label: "Auth Public URL", value: project.auth_public_url },
-        { label: "Auth Admin URL", value: project.auth_admin_url },
-      ],
-    },
-    {
       title: "Database",
       description: "Database connection information",
       icon: <Database className="h-5 w-5 text-primary" />,
@@ -374,10 +365,10 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         { label: "PostgREST URL", value: project.postgrest_url },
         { label: "Anon Key", value: project.database_anon_key },
         {
-          label: "Database Service Key",
+          label: "PostgREST Service Key",
           value: project.database_service_key_encrypted,
           sensitive: true,
-          encryptedField: "service_key",
+          encryptedField: "postgrest_service_key",
         },
         { label: "Database Host", value: project.database_host },
         { label: "Database Port", value: project.database_port?.toString() },
@@ -396,18 +387,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           encryptedField: "connection_string",
         },
         { label: "Neon Project ID", value: project.neon_project_id },
-      ],
-    },
-    {
-      title: "Permissions",
-      description: "Permission service endpoints",
-      icon: <Key className="h-5 w-5 text-primary" />,
-      items: [
-        { label: "Permissions Read URL", value: project.permissions_read_url },
-        {
-          label: "Permissions Write URL",
-          value: project.permissions_write_url,
-        },
       ],
     },
     {

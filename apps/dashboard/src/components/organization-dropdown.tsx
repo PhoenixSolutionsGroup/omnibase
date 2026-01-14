@@ -1,46 +1,47 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, Plus, Building2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-interface Organization {
-  id: string;
-  name: string;
-}
+import { SwitchActiveTenant } from "@omnibase/shadcn";
+import type { Tenant } from "@omnibase/core-js";
 
 interface OrganizationDropdownProps {
-  organizations?: Organization[];
+  tenants?: Tenant[];
+  currentTenantId?: string;
   currentOrganization?: string;
-  onOrganizationChange?: (organizationId: string) => void;
-  onCreateOrganization?: () => void;
+  onTenantChange?: (tenantId: string) => void;
+  formAction?: (formData: FormData) => void | Promise<void>;
+  onCreateTenant?: () => void;
+  createTenantLabel?: string;
 }
 
 export function OrganizationDropdown({
-  organizations = [{ id: "1", name: "My Organization" }],
-  currentOrganization = "My Organization",
-  onOrganizationChange,
-  onCreateOrganization,
+  tenants = [],
+  currentTenantId,
+  currentOrganization,
+  onTenantChange,
+  formAction,
+  onCreateTenant,
+  createTenantLabel,
 }: OrganizationDropdownProps) {
+  if (tenants.length === 0 && currentOrganization) {
+    return (
+      <span className="px-2 py-1 text-sm font-medium">
+        {currentOrganization}
+      </span>
+    );
+  }
+
   return (
-    <div className="relative inline-block">
-      <button
-        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-        onClick={(e) => {
-          e.preventDefault();
-          // This will be enhanced with proper dropdown functionality
-        }}
-      >
-        <span>{currentOrganization}</span>
-        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-      </button>
-    </div>
+    <SwitchActiveTenant
+      tenants={tenants}
+      currentTenantId={currentTenantId}
+      onTenantChange={onTenantChange}
+      formAction={formAction}
+      placeholder="Select organization..."
+      className="w-fit border-none bg-transparent shadow-none hover:bg-accent"
+      // TODO: Uncomment after publishing @omnibase/shadcn with onCreateTenant support
+      // onCreateTenant={onCreateTenant}
+      // createTenantLabel={createTenantLabel}
+    />
   );
 }

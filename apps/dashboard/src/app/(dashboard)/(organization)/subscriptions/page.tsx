@@ -4,7 +4,12 @@ import { headers } from "next/headers";
 import React from "react";
 import { CustomerPortalButton } from "./customer-portal-button";
 import { getOmnibaseConfiguration } from "@/lib/server";
-import { V1PaymentsApi, V1StripeApi, V1TenantsApi } from "@omnibase/core-js";
+import {
+  Product,
+  V1PaymentsApi,
+  V1StripeApi,
+  V1TenantsApi,
+} from "@omnibase/core-js";
 
 async function createCustomerPortal() {
   "use server";
@@ -85,7 +90,7 @@ export default async function Page() {
       {products.length !== 0 && (
         <PricingTable
           // TODO: Fix `as any` type
-          products={products as any}
+          products={products as Product[]}
           selectedPriceId={active_subscription_id}
           showPricingToggle
           className="scale-[95%]"

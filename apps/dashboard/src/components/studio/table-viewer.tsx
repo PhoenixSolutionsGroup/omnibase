@@ -338,7 +338,8 @@ export function TableViewer({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showRLS, setShowRLS] = useState(true);
 
-  const fetchTableData = useCallback(async () => {
+  const fetchTableData = useCallback(async (retryCount = 0) => {
+    const maxRetries = 3;
     setLoading(true);
     try {
       let query = client
@@ -371,6 +372,16 @@ export function TableViewer({
       setData(rows || []);
       setTotal(count || 0);
     } catch (err: any) {
+      const isTransientError = err.message?.includes("schema cache") ||
+                               err.message?.includes("Retrying") ||
+                               err.code === "PGRST503";
+
+      if (isTransientError && retryCount < maxRetries) {
+        const delay = Math.pow(2, retryCount) * 500;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchTableData(retryCount + 1);
+      }
+
       toast.error(`Error fetching data: ${err.message}`);
     } finally {
       setLoading(false);

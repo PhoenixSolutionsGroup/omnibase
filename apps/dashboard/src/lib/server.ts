@@ -1,6 +1,6 @@
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import { Database } from "@/types/omnibase";
-import { Configuration, V1PaymentsApi, V1StripeApi } from "@omnibase/core-js";
+import { Configuration } from "@omnibase/core-js";
 import { PostgrestClient } from "@supabase/postgrest-js";
 import { cookies } from "next/headers";
 

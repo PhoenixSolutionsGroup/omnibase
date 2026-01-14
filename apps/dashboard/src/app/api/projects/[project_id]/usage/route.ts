@@ -19,27 +19,25 @@ export async function GET(
 
     // Get query parameters from the request
     const { searchParams } = new URL(request.url);
-    const startDate = searchParams.get("start_date");
-    const endDate = searchParams.get("end_date");
-    const realTime = searchParams.get("real_time");
+    const start = searchParams.get("start");
+    const end = searchParams.get("end");
 
-    if (!startDate || !endDate) {
+    if (!start || !end) {
       return NextResponse.json(
-        { message: "start_date and end_date are required" },
+        { message: "start and end are required (RFC3339 format)" },
         { status: 400 }
       );
     }
 
     // Build the URL with query parameters
     const queryString = new URLSearchParams({
-      start_date: startDate,
-      end_date: endDate,
-      ...(realTime && { real_time: realTime }),
+      start,
+      end,
     }).toString();
 
-    // Make GET request to managed host API
+    // Make GET request to managed host API usage-preview endpoint
     const response = await fetch(
-      `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project_id}/usage?${queryString}`,
+      `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project_id}/usage-preview?${queryString}`,
       {
         method: "GET",
         headers: {

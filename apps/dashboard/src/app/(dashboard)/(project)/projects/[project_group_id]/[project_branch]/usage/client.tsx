@@ -9,30 +9,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-interface UsageMetric {
-  timestamp: string;
-  storage_bytes: number;
-  storage_operations: number;
-  db_storage_gb: number;
-  db_compute_hours: number;
-  email_sends: number;
-  cloudrun_billable_time_seconds: number;
-  workers_requests: number;
-  workers_cpu_ms: number;
+interface UsageLineItem {
+  PriceID: string;
+  Quantity: number;
+  Description: string;
+  ProjectID: string;
+  Metadata: Record<string, string>;
 }
 
-interface UsageResponse {
+interface UsagePreviewResponse {
   project_id: string;
-  project_group_id: string;
-  organization_id: string;
-  period: {
-    start: string;
-    end: string;
-    granularity: string;
-  };
-  data: UsageMetric[];
-  totals: UsageMetric;
+  billing_start: string;
+  billing_end: string;
+  line_items: UsageLineItem[];
+  item_count: number;
 }
 
 interface UsageClientProps {
@@ -77,7 +82,7 @@ export function UsageClient({ projectId, projectCreatedAt }: UsageClientProps) {
   const [selectedMonth, setSelectedMonth] = useState(
     monthOptions[0]?.value || ""
   );
-  const [usageData, setUsageData] = useState<UsageResponse | null>(null);
+  const [usageData, setUsageData] = useState<UsagePreviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -91,12 +96,15 @@ export function UsageClient({ projectId, projectCreatedAt }: UsageClientProps) {
 
         const [year, month] = selectedMonth.split("-").map(Number);
 
-        // Selected month: start to end of selected calendar month
-        const monthStart = new Date(year, month - 1, 1);
-        const monthEnd = new Date(year, month, 0, 23, 59, 59, 999);
+        // Selected month: start to end of selected calendar month (RFC3339 format)
+        const monthStart = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+        const endOfMonth = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+        const now = new Date();
+        // Use the earlier of end-of-month or current time
+        const monthEnd = endOfMonth < now ? endOfMonth : now;
 
         const response = await fetch(
-          `/api/projects/${projectId}/usage?start_date=${monthStart.toISOString()}&end_date=${monthEnd.toISOString()}&real_time=true`,
+          `/api/projects/${projectId}/usage?start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`,
           {
             method: "GET",
             credentials: "include",
@@ -145,8 +153,59 @@ export function UsageClient({ projectId, projectCreatedAt }: UsageClientProps) {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">Loading usage data...</p>
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-64 mt-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Summary Cards Skeleton */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col space-y-2 p-4 border rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="w-3 h-3 rounded-full" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                      <Skeleton className="h-8 w-8" />
+                      <Skeleton className="h-3 w-12" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Table Skeleton */}
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Quantity</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[...Array(4)].map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell>
+                          <Skeleton className="h-5 w-16 rounded-full" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-48" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Skeleton className="h-4 w-16 ml-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 

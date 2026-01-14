@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { createServerClient } from "@/lib/server";
+import { createServerClient, getOmnibaseConfiguration } from "@/lib/server";
 import { redirect } from "next/navigation";
 import { getProject } from "@/utils/get-project";
-import { headers } from "next/headers";
 import { UnifiedLayoutClient } from "@/components/layout-client";
+import { V1AuthApi } from "@omnibase/core-js";
 
 export const metadata: Metadata = {
   title: "OmniBase Dashboard",
@@ -26,31 +26,6 @@ export default async function ProjectLayout({
     redirect("/projects/new");
   }
 
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = headersList.get("x-forwarded-proto");
-  const currentUrl = `${protocol}://${host}/projects/${project_group_id}/${project_branch}/dashboard`;
-  const returnTo = encodeURIComponent(currentUrl);
-  // Redirect to Stripe onboarding
-  // const cookieStore = await cookies();
-  // const cookieHeader = Array.from(cookieStore.getAll())
-  //   .map((cookie) => `${cookie.name}=${cookie.value}`)
-  //   .join("; ");
-
-  // const response = await fetch(
-  //   `${process.env.MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
-  //   {
-  //     headers: {
-  //       Cookie: cookieHeader,
-  //     },
-  //   }
-  // );
-  // const data = await response.json();
-
-  // if (data.onboarding_required && data.url) {
-  //   redirect(data.url);
-  // }
-
   const db = await createServerClient();
 
   // Fetch all branches for this project group
@@ -67,19 +42,28 @@ export default async function ProjectLayout({
     .select("*")
     .in("status", ["active", "provisioning"]);
 
-  // Fetch organization name from tenants table
-  const { data: tenantData } = await (db as any)
-    .schema("auth")
-    .from("tenant_users")
-    .select("tenants(*)")
-    .eq("is_active", true)
-    .single();
+  // Fetch tenants using the SDK
+  const config = await getOmnibaseConfiguration();
+  const authApi = new V1AuthApi(config);
+  const response = await authApi.listTenants();
+  const tenantItems = response.data?.tenants ?? [];
 
-  const organizationName = tenantData?.tenants?.name || "My Organization";
+  if (tenantItems.length === 0) {
+    redirect("/auth/onboarding");
+  }
+
+  const activeTenantItem = tenantItems.find((t) => t.isActive);
+  if (!activeTenantItem) {
+    redirect("/auth/onboarding");
+  }
+
+  const tenants = tenantItems.map((t) => t.tenant);
+  const currentTenantId = activeTenantItem.tenant.id;
 
   return (
     <UnifiedLayoutClient
-      organizationName={organizationName}
+      tenants={tenants}
+      currentTenantId={currentTenantId}
       projectData={{
         projectId: project.id,
         projectGroupId: project_group_id,

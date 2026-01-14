@@ -20,6 +20,14 @@ import {
 import { Project } from "./project-provisioning-dashboard";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  fetchComputeDeployment,
+  fetchDatabaseDeployment,
+  fetchStorageDeployment,
+  type ComputeDeployment,
+  type DatabaseDeployment,
+  type StorageDeployment,
+} from "@/utils/deployment-lookup";
 
 interface ProjectDashboardClientProps {
   project: Project & {
@@ -66,21 +74,17 @@ export function ProjectDashboardClient({
   const [serviceStatuses, setServiceStatuses] = useState<ServiceStatus[]>([]);
   const [serviceLogs, setServiceLogs] = useState<ServiceLogs>({});
   const [logsLoading, setLogsLoading] = useState(true);
+  const [computeDeployment, setComputeDeployment] =
+    useState<ComputeDeployment | null>(null);
+  const [databaseDeployment, setDatabaseDeployment] =
+    useState<DatabaseDeployment | null>(null);
+  const [storageDeployment, setStorageDeployment] =
+    useState<StorageDeployment | null>(null);
 
   // Define services to check (with service type mapping)
+  // Note: Auth and Permissions are now proxied through the API, so we only need to check
+  // the API health endpoint which internally verifies auth/permissions connectivity
   const services = [
-    {
-      name: "Auth (Public)",
-      url: project.auth_public_url,
-      health_url: project.auth_public_url + "/health/alive",
-      serviceType: "auth-pub",
-    },
-    {
-      name: "Auth (Admin)",
-      url: project.auth_admin_url,
-      health_url: project.auth_admin_url + "/health/alive",
-      serviceType: "auth-adm",
-    },
     {
       name: "API",
       url: project.api_url,
@@ -92,18 +96,6 @@ export function ProjectDashboardClient({
       url: project.postgrest_url,
       health_url: project.postgrest_url + "/ready",
       serviceType: "postgrest",
-    },
-    {
-      name: "Permissions (Read)",
-      url: project.permissions_read_url,
-      health_url: project.permissions_read_url + "/health/ready",
-      serviceType: "perm-read",
-    },
-    {
-      name: "Permissions (Write)",
-      url: project.permissions_write_url,
-      health_url: project.permissions_write_url + "/health/ready",
-      serviceType: "perm-write",
     },
     {
       name: "Worker",
@@ -178,14 +170,8 @@ export function ProjectDashboardClient({
     setLogsLoading(true);
     try {
       // Service types to fetch logs from
-      const serviceTypes = [
-        "api",
-        "auth-pub",
-        "auth-adm",
-        "perm-read",
-        "perm-write",
-        "postgrest",
-      ];
+      // Note: Auth and Permissions logs are now aggregated through the API service
+      const serviceTypes = ["api", "postgrest", "worker"];
 
       // Calculate start time (24 hours ago)
       const startTime = new Date();
@@ -277,6 +263,31 @@ export function ProjectDashboardClient({
   useEffect(() => {
     fetchLogs();
   }, []);
+
+  // Fetch deployment info on mount
+  useEffect(() => {
+    const loadDeploymentInfo = async () => {
+      const [compute, database, storage] = await Promise.all([
+        project.compute_deployment_id
+          ? fetchComputeDeployment(project.compute_deployment_id)
+          : null,
+        project.database_deployment_id
+          ? fetchDatabaseDeployment(project.database_deployment_id)
+          : null,
+        project.storage_deployment_id
+          ? fetchStorageDeployment(project.storage_deployment_id)
+          : null,
+      ]);
+      setComputeDeployment(compute);
+      setDatabaseDeployment(database);
+      setStorageDeployment(storage);
+    };
+    loadDeploymentInfo();
+  }, [
+    project.compute_deployment_id,
+    project.database_deployment_id,
+    project.storage_deployment_id,
+  ]);
 
   const region = project.vps_hosts?.region || "Unknown";
 
@@ -401,32 +412,26 @@ export function ProjectDashboardClient({
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Database Provider
+                    Database
                   </p>
                   <p className="mt-1 font-medium">
-                    {/* Fix: Database Provider */}
-                    {/* {project.database_provider || "N/A"} */}
-                    N/A
+                    {databaseDeployment?.name || "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Compute Provider
+                    Compute
                   </p>
                   <p className="mt-1 font-medium">
-                    {/* Fix: Compute Provider */}
-                    {/* {project.compute_provider || "N/A"} */}
-                    N/A
+                    {computeDeployment?.name || "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Storage Provider
+                    Storage
                   </p>
                   <p className="mt-1 font-medium">
-                    {/* Fix: Storage Provider */}
-                    {/* {project.storage_provider || "N/A"} */}
-                    N/A
+                    {storageDeployment?.name || "N/A"}
                   </p>
                 </div>
 

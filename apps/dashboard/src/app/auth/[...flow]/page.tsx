@@ -1,6 +1,7 @@
 import React from "react";
 import { FlowRouter, protectedRoute } from "@omnibase/nextjs/auth";
 import {
+  // ErrorForm - TODO: uncomment and add - Need to release shadcn package first,
   LoginForm,
   RecoveryForm,
   RegistrationForm,
@@ -42,6 +43,9 @@ export default function page({ params, searchParams }: any) {
           verification: (flow) => {
             return <VerificationForm flow={flow as any} />;
           },
+          // error: (error) => {
+          //   return <ErrorForm error={error as any} login_url="/auth/login" />;
+          // },
           onboarding: async () => {
             const session = await protectedRoute("/auth/login");
             const { token } = await searchParams;

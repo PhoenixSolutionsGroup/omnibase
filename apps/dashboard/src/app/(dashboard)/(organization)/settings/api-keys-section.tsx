@@ -124,7 +124,7 @@ export function APIKeysSection({
             </Link>
           </div>
         ) : (
-          <Table wrapperClassName="overflow-visible">
+          <Table className="overflow-visible">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>

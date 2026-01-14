@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
+  Database,
   LayoutDashboard,
   Settings,
   ScrollText,
@@ -90,9 +91,14 @@ const getProjectNavigationItems = (
     icon: LayoutDashboard,
   },
   {
-    title: "Configuration",
-    href: `/projects/${projectGroupId}/${projectBranch}/configuration`,
-    icon: Wrench,
+    title: "Studio",
+    href: `/projects/${projectGroupId}/${projectBranch}/studio`,
+    icon: Database,
+  },
+  {
+    title: "Stripe",
+    href: `/projects/${projectGroupId}/${projectBranch}/stripe-settings`,
+    icon: CreditCard,
   },
   {
     title: "Logs",
@@ -105,9 +111,9 @@ const getProjectNavigationItems = (
     icon: BarChart3,
   },
   {
-    title: "Stripe",
-    href: `/projects/${projectGroupId}/${projectBranch}/stripe-settings`,
-    icon: CreditCard,
+    title: "Configuration",
+    href: `/projects/${projectGroupId}/${projectBranch}/configuration`,
+    icon: Wrench,
   },
   {
     title: "Settings",

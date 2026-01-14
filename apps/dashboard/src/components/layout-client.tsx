@@ -4,9 +4,9 @@ import * as React from "react";
 import { TopNavbar } from "@/components/top-navbar";
 import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
-import { Breadcrumb } from "@/components/breadcrumb";
 import { useRouter } from "next/navigation";
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import type { Tenant } from "@omnibase/core-js";
 
 interface ProjectData {
   projectId: string;
@@ -18,14 +18,16 @@ interface ProjectData {
 
 interface UnifiedLayoutClientProps {
   children: React.ReactNode;
-  organizationName: string;
+  tenants: Tenant[];
+  currentTenantId: string;
   projectData?: ProjectData;
   projects?: Project[];
 }
 
 export function UnifiedLayoutClient({
   children,
-  organizationName,
+  tenants,
+  currentTenantId,
   projectData,
   projects,
 }: UnifiedLayoutClientProps) {
@@ -33,9 +35,7 @@ export function UnifiedLayoutClient({
   return (
     <SidebarProvider>
       <div className="flex h-screen flex-col overflow-hidden bg-background">
-        <TopNavbar>
-          <Breadcrumb organizationName={organizationName} />
-        </TopNavbar>
+        <TopNavbar tenants={tenants} currentTenantId={currentTenantId} />
         <div className="flex flex-1 overflow-hidden">
           <UnifiedSidebar
             projectContext={

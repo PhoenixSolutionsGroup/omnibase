@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { protectedRoute } from "@omnibase/nextjs/auth";
 import { UnifiedLayoutClient } from "@/components/layout-client";
-import { createServerClient } from "@/lib/server";
+import { getOmnibaseConfiguration } from "@/lib/server";
+import { V1AuthApi } from "@omnibase/core-js";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -12,22 +13,26 @@ export const metadata: Metadata = {
 export default async function ProjectLayout({ children }: { children: any }) {
   await protectedRoute("/auth/login");
 
-  const db = (await createServerClient()) as any;
-  const { data: organization } = await db
-    .schema("auth")
-    .from("tenant_users")
-    .select("tenants(*)")
-    .eq("is_active", true)
-    .single();
+  const config = await getOmnibaseConfiguration();
+  const authApi = new V1AuthApi(config);
 
-  if (!organization) {
+  const response = await authApi.listTenants();
+  const tenantItems = response.data?.tenants ?? [];
+
+  if (tenantItems.length === 0) {
     return redirect("/auth/onboarding");
   }
 
-  const tenantName = organization.tenants.name;
+  const activeTenantItem = tenantItems.find((t) => t.isActive);
+  if (!activeTenantItem) {
+    return redirect("/auth/onboarding");
+  }
+
+  const tenants = tenantItems.map((t) => t.tenant);
+  const currentTenantId = activeTenantItem.tenant.id;
 
   return (
-    <UnifiedLayoutClient organizationName={tenantName}>
+    <UnifiedLayoutClient tenants={tenants} currentTenantId={currentTenantId}>
       {children}
     </UnifiedLayoutClient>
   );

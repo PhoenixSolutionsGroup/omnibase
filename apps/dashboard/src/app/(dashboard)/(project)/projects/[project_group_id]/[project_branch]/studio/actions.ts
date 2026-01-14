@@ -54,34 +54,34 @@ export async function fetchSchemaInfo(
   try {
     await client.connect();
 
-    // Get all tables with their schemas
+    // Get all tables with their schemas using pg_catalog (much faster than information_schema)
     const tablesResult = await client.query(`
       SELECT
-        t.table_schema,
-        t.table_name,
-        c.column_name,
-        c.data_type,
-        c.udt_name,
-        c.is_nullable,
-        c.column_default,
-        CASE WHEN pk.column_name IS NOT NULL THEN true ELSE false END as is_primary_key
-      FROM information_schema.tables t
-      JOIN information_schema.columns c
-        ON t.table_schema = c.table_schema
-        AND t.table_name = c.table_name
+        n.nspname AS table_schema,
+        c.relname AS table_name,
+        a.attname AS column_name,
+        pg_catalog.format_type(a.atttypid, a.atttypmod) AS data_type,
+        t.typname AS udt_name,
+        CASE WHEN a.attnotnull THEN 'NO' ELSE 'YES' END AS is_nullable,
+        pg_get_expr(d.adbin, d.adrelid) AS column_default,
+        CASE WHEN pk.attname IS NOT NULL THEN true ELSE false END AS is_primary_key,
+        a.attnum AS ordinal_position
+      FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
+      JOIN pg_catalog.pg_type t ON t.oid = a.atttypid
+      LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid = c.oid AND d.adnum = a.attnum
       LEFT JOIN (
-        SELECT ku.table_schema, ku.table_name, ku.column_name
-        FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage ku
-          ON tc.constraint_name = ku.constraint_name
-          AND tc.table_schema = ku.table_schema
-        WHERE tc.constraint_type = 'PRIMARY KEY'
-      ) pk ON c.table_schema = pk.table_schema
-          AND c.table_name = pk.table_name
-          AND c.column_name = pk.column_name
-      WHERE t.table_type = 'BASE TABLE'
-        AND t.table_schema NOT IN ('pg_catalog', 'pg_toast', 'information_schema')
-      ORDER BY t.table_schema, t.table_name, c.ordinal_position
+        SELECT i.indrelid, unnest(i.indkey) AS attnum, a2.attname
+        FROM pg_catalog.pg_index i
+        JOIN pg_catalog.pg_attribute a2 ON a2.attrelid = i.indrelid AND a2.attnum = ANY(i.indkey)
+        WHERE i.indisprimary
+      ) pk ON pk.indrelid = c.oid AND pk.attnum = a.attnum
+      WHERE c.relkind = 'r'
+        AND a.attnum > 0
+        AND NOT a.attisdropped
+        AND n.nspname NOT IN ('pg_catalog', 'pg_toast', 'information_schema')
+      ORDER BY n.nspname, c.relname, a.attnum
     `);
 
     // Get RLS policy counts per table

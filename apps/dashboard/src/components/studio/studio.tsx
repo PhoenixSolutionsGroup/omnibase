@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { PostgrestClient } from "@supabase/postgrest-js";
-import { Loader2, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { SchemaBrowser } from "./schema-browser";
 import { TableViewer } from "./table-viewer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
-import { fetchProjectSecretKey } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/settings/actions";
+import { fetchPostgrestServiceKey } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/settings/actions";
 import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/studio/actions";
 
 interface StudioProps {
@@ -32,19 +33,19 @@ export default function Studio({ project }: StudioProps) {
 
         // Fetch decrypted service key if we don't have it yet
         if (!serviceKeyRef.current) {
-          try {
-            const keyResult = await fetchProjectSecretKey(project.id);
-            if (!keyResult.success || !keyResult.serviceKey) {
-              throw new Error(
-                keyResult.error || "Failed to fetch database service key"
-              );
-            }
-            serviceKeyRef.current = keyResult.serviceKey;
-          } catch (error) {
-            // Fallback: super_user JWT signed with default dev secret (expires 2125)
-            serviceKeyRef.current =
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3VwZXJfdXNlciIsImlhdCI6MTc2ODIwOTQzOCwiZXhwIjo0OTIxODA5NDM4fQ.9UpLESA_Kc_uYwACYz9sxysZNOjAxh-h1BGw6wsZ_i4";
+          const keyResult = await fetchPostgrestServiceKey(project.id);
+          if (!keyResult.success || !keyResult.serviceKey) {
+            throw new Error(
+              keyResult.error || "Failed to fetch database service key"
+            );
           }
+          // Validate that the key is a JWT (has 3 parts separated by dots)
+          if (keyResult.serviceKey.split(".").length !== 3) {
+            throw new Error(
+              "Invalid service key format: expected a JWT token"
+            );
+          }
+          serviceKeyRef.current = keyResult.serviceKey;
         }
 
         // Use simulated token for RLS simulation, otherwise use service key
@@ -86,8 +87,65 @@ export default function Studio({ project }: StudioProps) {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex h-full flex-col">
+        {/* Header skeleton */}
+        <div className="border-b p-2 flex items-center justify-between bg-background px-4 h-12">
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="flex-1 flex overflow-hidden">
+          {/* Sidebar skeleton */}
+          <div className="w-64 border-r bg-muted/10 p-3 space-y-4">
+            <Skeleton className="h-4 w-20" />
+            <div className="space-y-2">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-full" />
+              ))}
+            </div>
+            <Skeleton className="h-4 w-16 mt-4" />
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-full" />
+              ))}
+            </div>
+          </div>
+          {/* Table skeleton */}
+          <div className="flex-1 overflow-hidden bg-background p-4">
+            {/* Toolbar skeleton */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-5 w-16" />
+              </div>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+            </div>
+            {/* Table header skeleton */}
+            <div className="border rounded-md">
+              <div className="flex border-b bg-muted/30 p-2 gap-4">
+                <Skeleton className="h-4 w-8" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              {/* Table rows skeleton */}
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex p-2 gap-4 border-b last:border-0">
+                  <Skeleton className="h-4 w-8" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
