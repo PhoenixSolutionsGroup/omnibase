@@ -1,3 +1,15 @@
+# [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.2.2...auth-v0.3.0) (2026-01-14)
+
+
+### Bug Fixes
+
+* **docker:** add API_PUBLIC_URL for browser-facing auth redirects ([4657787](https://github.com/PhoenixSolutionsGroup/omnibase/commit/465778737b79697ec240c3c575c3a9cc19530aee))
+
+
+### Features
+
+* **docker:** add workers service and require email verification ([d85cf48](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d85cf484ab0a616ede8ecdafd68994ff825c9ecd))
+
 ## [0.2.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.2.1...auth-v0.2.2) (2026-01-13)
 
 
