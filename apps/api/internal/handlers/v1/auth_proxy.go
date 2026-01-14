@@ -3,12 +3,15 @@ package v1
 import (
 	"api/internal/config"
 	"api/internal/logger"
+	"context"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/api/idtoken"
 )
 
 type AuthProxyHandler struct {
@@ -34,14 +37,29 @@ func NewAuthProxyHandler(cfg *config.Config) *AuthProxyHandler {
 		panic(err)
 	}
 
+	// Default HTTP client
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	// On Cloud Run, use identity token for service-to-service auth
+	if os.Getenv("K_SERVICE") != "" {
+		// Use the public URL as audience (primary proxy target)
+		idTokenClient, err := idtoken.NewClient(context.Background(), cfg.AuthConfig.AuthURL)
+		if err != nil {
+			logger.Logger.Error("Failed to create identity token client for auth proxy", "error", err)
+			panic(err)
+		}
+		client = idTokenClient
+		logger.Logger.Info("Using identity token client for auth proxy")
+	}
+
 	return &AuthProxyHandler{
 		publicURL: publicURL,
 		adminURL:  adminURL,
-		client: &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
-				return http.ErrUseLastResponse
-			},
-		},
+		client:    client,
 	}
 }
 

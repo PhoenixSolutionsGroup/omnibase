@@ -8,12 +8,16 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
+
+	"google.golang.org/api/idtoken"
 )
 
 type KetoService struct {
-	readURL  string
-	writeURL string
-	client   *http.Client
+	readURL     string
+	writeURL    string
+	readClient  *http.Client
+	writeClient *http.Client
 }
 
 // SubjectSet represents a Keto subject set (namespace + object + optional relation)
@@ -25,10 +29,31 @@ type SubjectSet struct {
 
 func NewKetoService(readURL, writeURL string) *KetoService {
 	logger.Logger.Info("Initializing Keto service", "readURL", readURL, "writeURL", writeURL)
+
+	readClient := &http.Client{}
+	writeClient := &http.Client{}
+
+	// On Cloud Run, use identity tokens for service-to-service auth
+	if os.Getenv("K_SERVICE") != "" {
+		var err error
+		readClient, err = idtoken.NewClient(context.Background(), readURL)
+		if err != nil {
+			logger.Logger.Error("Failed to create identity token client for Keto read", "error", err)
+			panic(err)
+		}
+		writeClient, err = idtoken.NewClient(context.Background(), writeURL)
+		if err != nil {
+			logger.Logger.Error("Failed to create identity token client for Keto write", "error", err)
+			panic(err)
+		}
+		logger.Logger.Info("Using identity token clients for Keto service")
+	}
+
 	return &KetoService{
-		readURL:  readURL,
-		writeURL: writeURL,
-		client:   &http.Client{},
+		readURL:     readURL,
+		writeURL:    writeURL,
+		readClient:  readClient,
+		writeClient: writeClient,
 	}
 }
 
@@ -60,7 +85,7 @@ func (k *KetoService) CheckPermission(ctx context.Context, namespace, object, re
 	}
 
 	logger.Logger.Info("Making Keto permission check API call", "url", checkURL)
-	resp, err := k.client.Do(req)
+	resp, err := k.readClient.Do(req)
 	if err != nil {
 		logger.Logger.Error("Failed to check permission", "error", err, "url", checkURL)
 		return false, fmt.Errorf("failed to check permission: %w", err)
@@ -125,7 +150,7 @@ func (k *KetoService) CreateRelationTuple(ctx context.Context, namespace, object
 	req.Header.Set("Content-Type", "application/json")
 
 	logger.Logger.Info("Making Keto create relation tuple API call", "url", createURL)
-	resp, err := k.client.Do(req)
+	resp, err := k.writeClient.Do(req)
 	if err != nil {
 		logger.Logger.Error("Failed to create relation tuple", "error", err, "url", createURL)
 		return fmt.Errorf("failed to create relation tuple: %w", err)
@@ -171,7 +196,7 @@ func (k *KetoService) DeleteRelationTuple(ctx context.Context, namespace, object
 	}
 
 	logger.Logger.Info("Making Keto delete relation tuple API call", "url", deleteURL)
-	resp, err := k.client.Do(req)
+	resp, err := k.writeClient.Do(req)
 	if err != nil {
 		logger.Logger.Error("Failed to delete relation tuple", "error", err, "url", deleteURL)
 		return fmt.Errorf("failed to delete relation tuple: %w", err)
@@ -232,7 +257,7 @@ func (k *KetoService) ListRelationTuples(ctx context.Context, namespace, object,
 	}
 
 	logger.Logger.Info("Making Keto list relation tuples API call", "url", listURL)
-	resp, err := k.client.Do(req)
+	resp, err := k.readClient.Do(req)
 	if err != nil {
 		logger.Logger.Error("Failed to list relation tuples", "error", err, "url", listURL)
 		return nil, fmt.Errorf("failed to list relation tuples: %w", err)

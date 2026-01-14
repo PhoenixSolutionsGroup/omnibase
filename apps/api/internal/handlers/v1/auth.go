@@ -8,9 +8,11 @@ import (
 	"api/internal/models"
 	"context"
 	"net/mail"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	kratos "github.com/ory/kratos-client-go"
+	"google.golang.org/api/idtoken"
 	"gorm.io/gorm"
 )
 
@@ -30,11 +32,34 @@ func NewAuthHandler(cfg *config.Config) *AuthHandler {
 		},
 	}
 
+	// On Cloud Run, use identity token for service-to-service auth
+	if os.Getenv("K_SERVICE") != "" {
+		publicIdTokenClient, err := idtoken.NewClient(context.Background(), cfg.AuthConfig.AuthURL)
+		if err != nil {
+			logger.Logger.Error("Failed to create identity token client for public auth", "error", err)
+			panic(err)
+		}
+		publicConfig.HTTPClient = publicIdTokenClient
+		logger.Logger.Info("Using identity token client for Kratos public API")
+	}
+
 	adminConfig := kratos.NewConfiguration()
 	adminConfig.Servers = []kratos.ServerConfiguration{
 		{
 			URL: cfg.AuthConfig.AuthAdminURL,
 		},
+	}
+
+	// On Cloud Run, use identity token for service-to-service auth
+	// The K_SERVICE env var is set automatically by Cloud Run
+	if os.Getenv("K_SERVICE") != "" {
+		idTokenClient, err := idtoken.NewClient(context.Background(), cfg.AuthConfig.AuthAdminURL)
+		if err != nil {
+			logger.Logger.Error("Failed to create identity token client", "error", err)
+			panic(err)
+		}
+		adminConfig.HTTPClient = idTokenClient
+		logger.Logger.Info("Using identity token client for Kratos admin API")
 	}
 
 	db, err := database.GetConnection(cfg.Database)
