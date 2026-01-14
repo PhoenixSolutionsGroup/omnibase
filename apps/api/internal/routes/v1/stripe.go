@@ -20,6 +20,7 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 
 	router.GET("/config", stripeHandler.GetConfig)
 	router.GET("/config/prices/:price_id", stripeHandler.GetPriceByID)
+	router.POST("/config/prices/:price_id/calculate", stripeHandler.CalculatePriceCost)
 	router.GET("/config/products/:product_id", stripeHandler.GetProductByID)
 	router.GET("/config/meters/:meter_id", stripeHandler.GetMeterByID)
 

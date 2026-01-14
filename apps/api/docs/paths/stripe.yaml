@@ -412,6 +412,72 @@ paths:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
 
+  /api/v1/stripe/config/prices/{price_id}/calculate:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Calculate cost for a price
+      description: |
+        Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Pricing Modes
+        - **per_unit**: Simple flat pricing where cost = unit_amount × quantity
+        - **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
+        - **tiered (volume)**: The applicable tier's price applies to ALL units
+
+        ## Use Cases
+        - Calculate estimated costs for usage preview
+        - Display cost estimates in dashboard
+        - Usage billing calculations
+      operationId: calculatePriceCost
+      parameters:
+        - name: price_id
+          in: path
+          description: Price config ID
+          required: true
+          schema:
+            type: string
+            example: "compute_hourly"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/stripe.yaml#/components/schemas/CalculatePriceCostRequest'
+      responses:
+        '200':
+          description: Cost calculated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/stripe.yaml#/components/schemas/CalculatePriceCostResponse'
+        '400':
+          description: Invalid request or missing quantity
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/BadRequest'
+        '404':
+          description: Price not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/NotFound'
+        '500':
+          description: Failed to calculate cost
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/InternalServerError'
+
   /api/v1/stripe/config/products/{product_id}:
     get:
       tags:

@@ -1922,3 +1922,65 @@ components:
           type: integer
           description: Total number of prices returned
           example: 3
+
+    # Price Cost Calculation Models
+    CalculatePriceCostRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Quantity of units to calculate cost for
+          example: 1500
+
+    CalculatePriceCostResponse:
+      type: object
+      required:
+        - price_id
+        - quantity
+        - cost_cents
+        - effective_unit_cost_cents
+        - currency
+        - billing_scheme
+      properties:
+        price_id:
+          type: string
+          description: The config price ID
+          example: "compute_hourly"
+        quantity:
+          type: integer
+          format: int64
+          description: The quantity used for calculation
+          example: 1500
+        cost_cents:
+          type: integer
+          format: int64
+          description: The calculated cost in smallest currency unit (e.g., cents)
+          example: 15000
+        effective_unit_cost_cents:
+          type: number
+          format: double
+          description: The effective unit cost (cost_cents / quantity), 0 if quantity is 0
+          example: 10
+        currency:
+          type: string
+          description: The currency code
+          example: "usd"
+        billing_scheme:
+          type: string
+          description: The billing scheme used (per_unit or tiered)
+          enum:
+            - per_unit
+            - tiered
+          example: "per_unit"
+        tiers_mode:
+          type: string
+          nullable: true
+          description: The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+          enum:
+            - graduated
+            - volume
+          example: "graduated"

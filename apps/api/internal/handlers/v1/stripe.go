@@ -1678,3 +1678,225 @@ func (h *StripeHandler) ListWebhooks(ctx *gin.Context) {
 
 	handlers.NewSuccessResponse(ctx, ListWebhooksResponse{Webhooks: response})
 }
+
+// CalculatePriceCostRequest represents the request to calculate cost for a price
+type CalculatePriceCostRequest struct {
+	// Quantity of units to calculate cost for
+	Quantity int64 `json:"quantity" binding:"required,min=0" example:"1500"`
+}
+
+// CalculatePriceCostResponse represents the calculated cost for a price
+type CalculatePriceCostResponse struct {
+	// The config price ID
+	PriceID string `json:"price_id" binding:"required" example:"compute_hourly"`
+	// The quantity used for calculation
+	Quantity int64 `json:"quantity" binding:"required" example:"1500"`
+	// The calculated cost in smallest currency unit (e.g., cents)
+	CostCents int64 `json:"cost_cents" binding:"required" example:"15000"`
+	// The effective unit cost in smallest currency unit (cost_cents / quantity), 0 if quantity is 0
+	EffectiveUnitCostCents float64 `json:"effective_unit_cost_cents" binding:"required" example:"10"`
+	// The currency code
+	Currency string `json:"currency" binding:"required" example:"usd"`
+	// The billing scheme used (per_unit or tiered)
+	BillingScheme string `json:"billing_scheme" binding:"required" example:"per_unit"`
+	// The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+	TiersMode string `json:"tiers_mode,omitempty" example:"graduated"`
+}
+
+// CalculatePriceCost calculates the cost for a given quantity of a price
+func (h *StripeHandler) CalculatePriceCost(ctx *gin.Context) {
+	priceID := ctx.Param("price_id")
+	if priceID == "" {
+		handlers.NewBadRequestResponse(ctx, "price_id is required")
+		return
+	}
+
+	var req CalculatePriceCostRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		handlers.NewBadRequestResponse(ctx, "Invalid request: quantity is required and must be >= 0")
+		return
+	}
+
+	logger.Logger.Debug("Calculating price cost", "price_id", priceID, "quantity", req.Quantity)
+
+	// Get latest config
+	var config *models.StripeConfig
+	if err := h.db.Order("created_at DESC").First(&config).Error; err != nil {
+		logger.Logger.Error("Error retrieving stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error retrieving config: %s", err))
+		return
+	}
+
+	parsedConfig, err := h.service.ParseAndValidateConfig(config.Config)
+	if err != nil {
+		logger.Logger.Error("Error parsing stripe config", "error", err)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error parsing config: %s", err))
+		return
+	}
+
+	// Find the price
+	var foundPrice *models.Price
+	for _, product := range parsedConfig.Products {
+		for _, price := range product.Prices {
+			if price.ID == priceID {
+				foundPrice = &price
+				break
+			}
+		}
+		if foundPrice != nil {
+			break
+		}
+	}
+
+	if foundPrice == nil {
+		logger.Logger.Warn("Price not found for calculation", "price_id", priceID)
+		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Price not found: %s", priceID))
+		return
+	}
+
+	// Calculate cost
+	costCents := calculatePriceCost(foundPrice, req.Quantity)
+
+	// Calculate effective unit cost
+	var effectiveUnitCost float64
+	if req.Quantity > 0 {
+		effectiveUnitCost = float64(costCents) / float64(req.Quantity)
+	}
+
+	billingScheme := foundPrice.BillingScheme
+	if billingScheme == "" {
+		billingScheme = "per_unit"
+	}
+
+	logger.Logger.Info("Calculated price cost",
+		"price_id", priceID,
+		"quantity", req.Quantity,
+		"cost_cents", costCents,
+		"billing_scheme", billingScheme)
+
+	handlers.NewSuccessResponse(ctx, CalculatePriceCostResponse{
+		PriceID:                priceID,
+		Quantity:               req.Quantity,
+		CostCents:              costCents,
+		EffectiveUnitCostCents: effectiveUnitCost,
+		Currency:               foundPrice.Currency,
+		BillingScheme:          billingScheme,
+		TiersMode:              foundPrice.TiersMode,
+	})
+}
+
+// calculatePriceCost calculates the cost in cents for a given quantity
+func calculatePriceCost(price *models.Price, quantity int64) int64 {
+	if quantity <= 0 {
+		return 0
+	}
+
+	// Check if tiered pricing
+	if price.BillingScheme == "tiered" && len(price.Tiers) > 0 {
+		return calculateTieredCost(price, quantity)
+	}
+
+	// Flat per-unit pricing
+	// price.Amount is stored as float64 (already in cents based on the conversion code)
+	return int64(price.Amount) * quantity
+}
+
+// calculateTieredCost calculates cost for tiered pricing
+func calculateTieredCost(price *models.Price, quantity int64) int64 {
+	if len(price.Tiers) == 0 {
+		return 0
+	}
+
+	// Volume pricing: the tier you land in applies to ALL units
+	if price.TiersMode == "volume" {
+		for _, tier := range price.Tiers {
+			upTo := getTierUpTo(tier.UpTo)
+			if upTo == -1 || quantity <= upTo {
+				// Found the applicable tier
+				var cost int64
+				if tier.FlatAmount != nil {
+					cost += *tier.FlatAmount
+				}
+				if tier.UnitAmount != nil {
+					cost += *tier.UnitAmount * quantity
+				}
+				return cost
+			}
+		}
+		// Shouldn't reach here if tiers are configured correctly
+		return 0
+	}
+
+	// Graduated pricing (default): each tier's price applies only to units in that tier
+	var totalCost int64
+	var remaining = quantity
+	var prevUpTo int64 = 0
+
+	for _, tier := range price.Tiers {
+		if remaining <= 0 {
+			break
+		}
+
+		upTo := getTierUpTo(tier.UpTo)
+
+		// Calculate units in this tier
+		var tierUnits int64
+		if upTo == -1 {
+			// Infinite tier - all remaining units
+			tierUnits = remaining
+		} else {
+			tierCapacity := upTo - prevUpTo
+			tierUnits = min(remaining, tierCapacity)
+		}
+
+		// Add flat amount (only once per tier if we use any units from it)
+		if tierUnits > 0 && tier.FlatAmount != nil {
+			totalCost += *tier.FlatAmount
+		}
+
+		// Add unit-based cost
+		if tier.UnitAmount != nil {
+			totalCost += *tier.UnitAmount * tierUnits
+		}
+
+		remaining -= tierUnits
+		if upTo != -1 {
+			prevUpTo = upTo
+		}
+	}
+
+	return totalCost
+}
+
+// getTierUpTo extracts the up_to value from a tier
+// Returns -1 for infinite ("inf" or 0)
+func getTierUpTo(upTo interface{}) int64 {
+	if upTo == nil {
+		return -1
+	}
+
+	switch v := upTo.(type) {
+	case string:
+		if v == "inf" {
+			return -1
+		}
+		return -1
+	case float64:
+		if v == 0 {
+			return -1
+		}
+		return int64(v)
+	case int64:
+		if v == 0 {
+			return -1
+		}
+		return v
+	case int:
+		if v == 0 {
+			return -1
+		}
+		return int64(v)
+	default:
+		return -1
+	}
+}
