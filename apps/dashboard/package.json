@@ -10,6 +10,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^3.1.1",
+    "@hugeicons/react": "^1.1.4",
     "@omnibase/core-js": "^0.9.18",
     "@omnibase/nextjs": "^0.6.5",
     "@omnibase/shadcn": "^0.6.2",
@@ -32,9 +34,11 @@
     "next": "15.5.6",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",
+    "radix-ui": "^1.4.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "2.15.4",
+    "shadcn": "^3.6.3",
     "sonner": "^2.0.7",
     "stripe": "^19.3.1",
     "tailwind": "^4.0.0",

@@ -44,8 +44,5 @@
   "dependencies": {
     "@redocly/cli": "^2.14.3",
     "yaml": "^2.8.2"
-  },
-  "overrides": {
-    "find-up": "5.0.0"
   }
 }

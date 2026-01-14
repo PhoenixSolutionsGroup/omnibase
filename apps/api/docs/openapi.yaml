@@ -36,8 +36,6 @@ tags:
     description: Database migration and management endpoints
   - name: V1 Email
     description: Email sending endpoints
-  - name: V1 Events
-    description: Event publishing endpoints
   - name: V1 Keto
     description: Keto namespace management endpoints
   - name: V1 Payments
@@ -623,79 +621,6 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/v1/events:
-    get:
-      operationId: connectWebSocket
-      summary: WebSocket connection for real-time events
-      description: |
-        WebSocket endpoint for receiving real-time database change notifications with Row-Level Security (RLS) enforcement.
-
-        ## Connection Details
-        - Protocol: WebSocket
-        - Upgrade from HTTP GET request
-
-        ## Authentication
-        Session authentication via JWT token sent in subscription messages.
-
-        ## Message Format
-        **Subscribe to changes:**
-        ```json
-        {
-          "action": "subscribe",
-          "subscription": {
-            "table": "projects",
-            "row_id": "project_test_123",
-            "columns": ["name", "status"],
-            "jwt": "eyJhbGciOiJIUzI1NiIs..."
-          }
-        }
-        ```
-
-        **Unsubscribe:**
-        ```json
-        {
-          "action": "unsubscribe",
-          "subscription": {
-            "table": "projects",
-            "row_id": "project_test_123"
-          }
-        }
-        ```
-
-        **Received updates:**
-        ```json
-        {
-          "type": "update",
-          "table": "projects",
-          "row_id": "project_test_123",
-          "data": {
-            "name": "Updated Project",
-            "status": "active"
-          }
-        }
-        ```
-
-        ## RLS Enforcement
-        - Access checked via PostgREST using provided JWT
-        - Only changes to accessible rows are broadcast
-        - Re-validates access on each change notification
-
-        ## Use Cases
-        - Real-time collaboration features
-        - Live data synchronization
-        - Notification systems
-        - Activity feeds
-      tags:
-        - V1 Events
-      responses:
-        '101':
-          description: Switching Protocols - WebSocket connection established
-        '400':
-          description: Bad Request - Invalid WebSocket upgrade
-        '401':
-          description: Unauthorized - Invalid JWT in subscription message
-        '404':
-          $ref: '#/components/responses/NotFoundError'
   /api/v1/payments/checkout:
     post:
       operationId: createCheckout
@@ -1258,8 +1183,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user permissions, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Verify user permissions before performing actions
@@ -1273,21 +1198,23 @@ paths:
           ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Permission check request with either subject_id or subject_set
+        description: Permission check request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CheckPermissionRequest'
             examples:
-              withSubjectId:
-                summary: Check permission with subject_id
+              checkUserPermission:
+                summary: Check if a user can invite to a tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
                   relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Check permission with subject_set
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              checkTenantPermission:
+                summary: Check permission with tenant subject set
                 value:
                   namespace: Tenant
                   object: tenant_test_123
@@ -1295,7 +1222,7 @@ paths:
                   subject_set:
                     namespace: Tenant
                     object: tenant_parent_456
-                    relation: can_invite_user
+                    relation: owners
       responses:
         '200':
           description: Permission check result
@@ -1322,22 +1249,17 @@ paths:
                     data:
                       allowed: false
         '400':
-          description: Invalid request body - namespace, object, and relation cannot be empty, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''CheckPermissionRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -1361,8 +1283,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Remove resource links from tenants
@@ -1376,21 +1298,23 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship deletion request with either subject_id or subject_set
+        description: Relationship deletion request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/DeleteRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Delete relationship with subject_id
+              deleteUserRelationship:
+                summary: Delete user relationship from tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Delete relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              deleteTenantRelationship:
+                summary: Delete project-tenant relationship
                 value:
                   namespace: Project
                   object: project_123
@@ -1415,22 +1339,17 @@ paths:
                 data:
                   message: Relationship deleted successfully
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''DeleteRelationshipRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -1455,8 +1374,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Link resources to tenants
@@ -1470,29 +1389,30 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship creation request with either subject_id or subject_set
+        description: Relationship creation request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Create relationship with subject_id
+              createUserRelationship:
+                summary: Create user as tenant owner
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Create relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              createTenantRelationship:
+                summary: Create project-tenant relationship
                 value:
-                  namespace: Tenant
-                  object: tenant_test_123
-                  relation: can_delete_tenant
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
                   subject_set:
                     namespace: Tenant
-                    object: tenant_parent_456
-                    relation: can_invite_user
+                    object: tenant_456
       responses:
         '200':
           description: Relationship created successfully
@@ -1512,25 +1432,22 @@ paths:
                   relationship:
                     namespace: Tenant
                     object: tenant_test_123
-                    relation: can_invite_user
-                    subject_id: 550e8400-e29b-41d4-a716-446655440000
+                    relation: owners
+                    subject_set:
+                      namespace: User
+                      object: 550e8400-e29b-41d4-a716-446655440000
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''CreateRelationshipRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -5132,31 +5049,6 @@ components:
           type: boolean
           description: Whether to auto-advance the invoice (send immediately)
           example: true
-    CheckPermissionRequestWithSubjectId:
-      type: object
-      description: Check permission request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace of the permission check
-        object:
-          type: string
-          minLength: 1
-          description: The object to check permissions on
-        relation:
-          type: string
-          minLength: 1
-          description: The relation/permission to check
-        subject_id:
-          type: string
-          description: Direct subject identifier
-      additionalProperties: false
     SubjectSetRequest:
       type: object
       description: Subject set representation for permission checks and relationship creation
@@ -5165,20 +5057,20 @@ components:
           type: string
           minLength: 1
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           minLength: 1
-          description: Object of the subject set
-          example: tenant_test_123
+          description: Object of the subject set (e.g., user ID)
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
-          description: Relation of the subject set
-          example: can_invite_user
+          description: Relation of the subject set (optional)
+          example: ''
       required:
         - namespace
         - object
-    CheckPermissionRequestWithSubjectSet:
+    CheckPermissionRequest:
       type: object
       description: Check permission request using a subject set
       required:
@@ -5191,22 +5083,20 @@ components:
           type: string
           minLength: 1
           description: The namespace of the permission check
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object to check permissions on
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation/permission to check
+          example: can_invite_user
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    CheckPermissionRequest:
-      description: Check permission request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectId'
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectSet'
     CheckPermissionResponse:
       type: object
       description: Permission check result
@@ -5217,33 +5107,7 @@ components:
           example: true
       required:
         - allowed
-    CreateRelationshipRequestWithSubjectId:
-      type: object
-      description: Create relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-    CreateRelationshipRequestWithSubjectSet:
+    CreateRelationshipRequest:
       type: object
       description: Create relationship request using a subject set
       required:
@@ -5256,22 +5120,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    CreateRelationshipRequest:
-      description: Create relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectSet'
     SubjectSet:
       type: object
       description: Subject set representation in Keto relationship tuples
@@ -5279,15 +5141,15 @@ components:
         namespace:
           type: string
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           description: Object of the subject set
-          example: tenant_test_123
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
           description: Relation of the subject set
-          example: member
+          example: ''
     Relationship:
       type: object
       description: Keto relationship tuple representing a permission relationship
@@ -5295,19 +5157,15 @@ components:
         namespace:
           type: string
           description: Namespace of the relation tuple
-          example: Project
+          example: Tenant
         object:
           type: string
           description: Object of the relation tuple
-          example: project_test_123
+          example: tenant_test_123
         relation:
           type: string
           description: Relation of the relation tuple
-          example: member
-        subject_id:
-          type: string
-          description: Subject ID of the relation tuple (optional, mutually exclusive with subject_set)
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSet'
     CreateRelationshipResponse:
@@ -5323,33 +5181,7 @@ components:
       required:
         - message
         - relationship
-    DeleteRelationshipRequestWithSubjectId:
-      type: object
-      description: Delete relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-    DeleteRelationshipRequestWithSubjectSet:
+    DeleteRelationshipRequest:
       type: object
       description: Delete relationship request using a subject set
       required:
@@ -5362,22 +5194,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Project
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: project_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: tenant
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    DeleteRelationshipRequest:
-      description: Delete relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectSet'
     DeleteRelationshipResponse:
       type: object
       description: Relationship deletion result

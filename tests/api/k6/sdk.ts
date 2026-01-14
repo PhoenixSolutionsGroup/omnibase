@@ -16,14 +16,14 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.12.6
+ * Service version: 0.13.0
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
 import { URL, URLSearchParams } from "https://jslib.k6.io/url/1.0.0/index.js";
 
 import * as http from "k6/http";
-import type { Params, Response, ResponseBody } from "k6/http";
+import type { Params, Response } from "k6/http";
 
 export type SuccessResponseDataOneOf = { [key: string]: unknown };
 
@@ -611,29 +611,6 @@ export interface FinalizeInvoiceRequest {
 }
 
 /**
- * Check permission request using a direct subject identifier
- */
-export interface CheckPermissionRequestWithSubjectId {
-  /**
-   * The namespace of the permission check
-   * @minLength 1
-   */
-  namespace: string;
-  /**
-   * The object to check permissions on
-   * @minLength 1
-   */
-  object: string;
-  /**
-   * The relation/permission to check
-   * @minLength 1
-   */
-  relation: string;
-  /** Direct subject identifier */
-  subject_id: string;
-}
-
-/**
  * Subject set representation for permission checks and relationship creation
  */
 export interface SubjectSetRequest {
@@ -643,18 +620,18 @@ export interface SubjectSetRequest {
    */
   namespace: string;
   /**
-   * Object of the subject set
+   * Object of the subject set (e.g., user ID)
    * @minLength 1
    */
   object: string;
-  /** Relation of the subject set */
+  /** Relation of the subject set (optional) */
   relation?: string;
 }
 
 /**
  * Check permission request using a subject set
  */
-export interface CheckPermissionRequestWithSubjectSet {
+export interface CheckPermissionRequest {
   /**
    * The namespace of the permission check
    * @minLength 1
@@ -672,13 +649,6 @@ export interface CheckPermissionRequestWithSubjectSet {
   relation: string;
   subject_set: SubjectSetRequest;
 }
-
-/**
- * Check permission request. Must provide exactly one of subject_id or subject_set.
- */
-export type CheckPermissionRequest =
-  | CheckPermissionRequestWithSubjectId
-  | CheckPermissionRequestWithSubjectSet;
 
 /**
  * Permission check result
@@ -689,35 +659,9 @@ export interface CheckPermissionResponse {
 }
 
 /**
- * Create relationship request using a direct subject identifier
- */
-export interface CreateRelationshipRequestWithSubjectId {
-  /**
-   * The namespace for the relationship
-   * @minLength 1
-   */
-  namespace: string;
-  /**
-   * The object in the relationship
-   * @minLength 1
-   */
-  object: string;
-  /**
-   * The relation type
-   * @minLength 1
-   */
-  relation: string;
-  /**
-   * Direct subject identifier
-   * @minLength 1
-   */
-  subject_id: string;
-}
-
-/**
  * Create relationship request using a subject set
  */
-export interface CreateRelationshipRequestWithSubjectSet {
+export interface CreateRelationshipRequest {
   /**
    * The namespace for the relationship
    * @minLength 1
@@ -735,13 +679,6 @@ export interface CreateRelationshipRequestWithSubjectSet {
   relation: string;
   subject_set: SubjectSetRequest;
 }
-
-/**
- * Create relationship request. Must provide exactly one of subject_id or subject_set.
- */
-export type CreateRelationshipRequest =
-  | CreateRelationshipRequestWithSubjectId
-  | CreateRelationshipRequestWithSubjectSet;
 
 /**
  * Subject set representation in Keto relationship tuples
@@ -765,8 +702,6 @@ export interface Relationship {
   object?: string;
   /** Relation of the relation tuple */
   relation?: string;
-  /** Subject ID of the relation tuple (optional, mutually exclusive with subject_set) */
-  subject_id?: string;
   subject_set?: SubjectSet;
 }
 
@@ -780,35 +715,9 @@ export interface CreateRelationshipResponse {
 }
 
 /**
- * Delete relationship request using a direct subject identifier
- */
-export interface DeleteRelationshipRequestWithSubjectId {
-  /**
-   * The namespace for the relationship
-   * @minLength 1
-   */
-  namespace: string;
-  /**
-   * The object in the relationship
-   * @minLength 1
-   */
-  object: string;
-  /**
-   * The relation type
-   * @minLength 1
-   */
-  relation: string;
-  /**
-   * Direct subject identifier
-   * @minLength 1
-   */
-  subject_id: string;
-}
-
-/**
  * Delete relationship request using a subject set
  */
-export interface DeleteRelationshipRequestWithSubjectSet {
+export interface DeleteRelationshipRequest {
   /**
    * The namespace for the relationship
    * @minLength 1
@@ -826,13 +735,6 @@ export interface DeleteRelationshipRequestWithSubjectSet {
   relation: string;
   subject_set: SubjectSetRequest;
 }
-
-/**
- * Delete relationship request. Must provide exactly one of subject_id or subject_set.
- */
-export type DeleteRelationshipRequest =
-  | DeleteRelationshipRequestWithSubjectId
-  | DeleteRelationshipRequestWithSubjectSet;
 
 /**
  * Relationship deletion result
@@ -3903,95 +3805,6 @@ Template types are user-defined identifiers (e.g., "welcome", "password-reset", 
   }
 
   /**
- * WebSocket endpoint for receiving real-time database change notifications with Row-Level Security (RLS) enforcement.
-
-## Connection Details
-- Protocol: WebSocket
-- Upgrade from HTTP GET request
-
-## Authentication
-Session authentication via JWT token sent in subscription messages.
-
-## Message Format
-**Subscribe to changes:**
-```json
-{
-  "action": "subscribe",
-  "subscription": {
-    "table": "projects",
-    "row_id": "project_test_123",
-    "columns": ["name", "status"],
-    "jwt": "eyJhbGciOiJIUzI1NiIs..."
-  }
-}
-```
-
-**Unsubscribe:**
-```json
-{
-  "action": "unsubscribe",
-  "subscription": {
-    "table": "projects",
-    "row_id": "project_test_123"
-  }
-}
-```
-
-**Received updates:**
-```json
-{
-  "type": "update",
-  "table": "projects",
-  "row_id": "project_test_123",
-  "data": {
-    "name": "Updated Project",
-    "status": "active"
-  }
-}
-```
-
-## RLS Enforcement
-- Access checked via PostgREST using provided JWT
-- Only changes to accessible rows are broadcast
-- Re-validates access on each change notification
-
-## Use Cases
-- Real-time collaboration features
-- Live data synchronization
-- Notification systems
-- Activity feeds
-
- * @summary WebSocket connection for real-time events
- */
-  connectWebSocket(requestParameters?: Params): {
-    response: Response;
-    data: ResponseBody;
-  } {
-    const url = new URL(this.cleanBaseUrl + `/api/v1/events`);
-    const mergedRequestParameters = this._mergeRequestParameters(
-      requestParameters || {},
-      this.commonRequestParameters,
-    );
-    const response = http.request(
-      "GET",
-      url.toString(),
-      undefined,
-      mergedRequestParameters,
-    );
-    let data;
-
-    try {
-      data = response.json();
-    } catch {
-      data = response.body;
-    }
-    return {
-      response,
-      data,
-    };
-  }
-
-  /**
  * Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
 
 ## Authentication
@@ -4549,8 +4362,8 @@ Requires service key authentication via `X-Service-Key` header.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user permissions, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Verify user permissions before performing actions
@@ -4603,8 +4416,8 @@ to enforce this constraint at the schema level.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user relationships, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Remove resource links from tenants
@@ -4659,8 +4472,8 @@ to enforce this constraint at the schema level.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user relationships, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Link resources to tenants
