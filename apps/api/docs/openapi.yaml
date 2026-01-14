@@ -2203,6 +2203,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/prices/{price_id}/calculate:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Calculate cost for a price
+      description: |
+        Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Pricing Modes
+        - **per_unit**: Simple flat pricing where cost = unit_amount × quantity
+        - **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
+        - **tiered (volume)**: The applicable tier's price applies to ALL units
+
+        ## Use Cases
+        - Calculate estimated costs for usage preview
+        - Display cost estimates in dashboard
+        - Usage billing calculations
+      operationId: calculatePriceCost
+      parameters:
+        - name: price_id
+          in: path
+          description: Price config ID
+          required: true
+          schema:
+            type: string
+            example: compute_hourly
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculatePriceCostRequest'
+      responses:
+        '200':
+          description: Cost calculated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CalculatePriceCostResponse'
+        '400':
+          description: Invalid request or missing quantity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Price not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to calculate cost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /api/v1/stripe/config/products/{product_id}:
     get:
       tags:
@@ -6970,6 +7035,65 @@ components:
       required:
         - status
         - error
+    CalculatePriceCostRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Quantity of units to calculate cost for
+          example: 1500
+    CalculatePriceCostResponse:
+      type: object
+      required:
+        - price_id
+        - quantity
+        - cost_cents
+        - effective_unit_cost_cents
+        - currency
+        - billing_scheme
+      properties:
+        price_id:
+          type: string
+          description: The config price ID
+          example: compute_hourly
+        quantity:
+          type: integer
+          format: int64
+          description: The quantity used for calculation
+          example: 1500
+        cost_cents:
+          type: integer
+          format: int64
+          description: The calculated cost in smallest currency unit (e.g., cents)
+          example: 15000
+        effective_unit_cost_cents:
+          type: number
+          format: double
+          description: The effective unit cost (cost_cents / quantity), 0 if quantity is 0
+          example: 10
+        currency:
+          type: string
+          description: The currency code
+          example: usd
+        billing_scheme:
+          type: string
+          description: The billing scheme used (per_unit or tiered)
+          enum:
+            - per_unit
+            - tiered
+          example: per_unit
+        tiers_mode:
+          type: string
+          nullable: true
+          description: The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+          enum:
+            - graduated
+            - volume
+          example: graduated
     ProductResponse:
       type: object
       required:

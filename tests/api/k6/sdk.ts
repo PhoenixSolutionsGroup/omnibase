@@ -2006,6 +2006,60 @@ export interface NotFound {
   error: string;
 }
 
+export interface CalculatePriceCostRequest {
+  /**
+   * Quantity of units to calculate cost for
+   * @minimum 0
+   */
+  quantity: number;
+}
+
+/**
+ * The billing scheme used (per_unit or tiered)
+ */
+export type CalculatePriceCostResponseBillingScheme =
+  (typeof CalculatePriceCostResponseBillingScheme)[keyof typeof CalculatePriceCostResponseBillingScheme];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CalculatePriceCostResponseBillingScheme = {
+  per_unit: "per_unit",
+  tiered: "tiered",
+} as const;
+
+/**
+ * The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+ * @nullable
+ */
+export type CalculatePriceCostResponseTiersMode =
+  | (typeof CalculatePriceCostResponseTiersMode)[keyof typeof CalculatePriceCostResponseTiersMode]
+  | null;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CalculatePriceCostResponseTiersMode = {
+  graduated: "graduated",
+  volume: "volume",
+} as const;
+
+export interface CalculatePriceCostResponse {
+  /** The config price ID */
+  price_id: string;
+  /** The quantity used for calculation */
+  quantity: number;
+  /** The calculated cost in smallest currency unit (e.g., cents) */
+  cost_cents: number;
+  /** The effective unit cost (cost_cents / quantity), 0 if quantity is 0 */
+  effective_unit_cost_cents: number;
+  /** The currency code */
+  currency: string;
+  /** The billing scheme used (per_unit or tiered) */
+  billing_scheme: CalculatePriceCostResponseBillingScheme;
+  /**
+   * The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+   * @nullable
+   */
+  tiers_mode?: CalculatePriceCostResponseTiersMode;
+}
+
 export interface ProductResponse {
   /** The product with Stripe IDs */
   product: ProductWithStripeIDs;
@@ -2915,6 +2969,13 @@ export type GetPriceByID200AllOf = {
 };
 
 export type GetPriceByID200 = SuccessResponse & GetPriceByID200AllOf;
+
+export type CalculatePriceCost200AllOf = {
+  data?: CalculatePriceCostResponse;
+};
+
+export type CalculatePriceCost200 = SuccessResponse &
+  CalculatePriceCost200AllOf;
 
 export type GetProductByID200AllOf = {
   data?: ProductResponse;
@@ -5176,6 +5237,64 @@ No authentication required for public endpoint.
       url.toString(),
       undefined,
       mergedRequestParameters,
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
+
+## Authentication
+No authentication required for public endpoint.
+
+## Pricing Modes
+- **per_unit**: Simple flat pricing where cost = unit_amount × quantity
+- **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
+- **tiered (volume)**: The applicable tier's price applies to ALL units
+
+## Use Cases
+- Calculate estimated costs for usage preview
+- Display cost estimates in dashboard
+- Usage billing calculations
+
+ * @summary Calculate cost for a price
+ */
+  calculatePriceCost(
+    priceId: string,
+    calculatePriceCostRequest: CalculatePriceCostRequest,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: CalculatePriceCost200;
+  } {
+    const url = new URL(
+      this.cleanBaseUrl + `/api/v1/stripe/config/prices/${priceId}/calculate`,
+    );
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(calculatePriceCostRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+        },
+      },
     );
     let data;
 
