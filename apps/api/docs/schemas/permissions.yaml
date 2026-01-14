@@ -10,48 +10,21 @@ components:
           type: string
           minLength: 1
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           minLength: 1
-          description: Object of the subject set
-          example: tenant_test_123
+          description: Object of the subject set (e.g., user ID)
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
-          description: Relation of the subject set
-          example: can_invite_user
+          description: Relation of the subject set (optional)
+          example: ""
       required:
         - namespace
         - object
 
-    # Named variants for CheckPermissionRequest
-    CheckPermissionRequestWithSubjectId:
-      type: object
-      description: Check permission request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace of the permission check
-        object:
-          type: string
-          minLength: 1
-          description: The object to check permissions on
-        relation:
-          type: string
-          minLength: 1
-          description: The relation/permission to check
-        subject_id:
-          type: string
-          description: Direct subject identifier
-      additionalProperties: false
-
-    CheckPermissionRequestWithSubjectSet:
+    CheckPermissionRequest:
       type: object
       description: Check permission request using a subject set
       required:
@@ -64,23 +37,20 @@ components:
           type: string
           minLength: 1
           description: The namespace of the permission check
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object to check permissions on
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation/permission to check
+          example: can_invite_user
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-
-    CheckPermissionRequest:
-      description: Check permission request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectId'
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectSet'
 
     CheckPermissionResponse:
       type: object
@@ -93,35 +63,7 @@ components:
       required:
         - allowed
 
-    # Named variants for CreateRelationshipRequest
-    CreateRelationshipRequestWithSubjectId:
-      type: object
-      description: Create relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-
-    CreateRelationshipRequestWithSubjectSet:
+    CreateRelationshipRequest:
       type: object
       description: Create relationship request using a subject set
       required:
@@ -134,23 +76,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-
-    CreateRelationshipRequest:
-      description: Create relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectSet'
 
     CreateRelationshipResponse:
       type: object
@@ -166,35 +105,7 @@ components:
         - message
         - relationship
 
-    # Named variants for DeleteRelationshipRequest
-    DeleteRelationshipRequestWithSubjectId:
-      type: object
-      description: Delete relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-
-    DeleteRelationshipRequestWithSubjectSet:
+    DeleteRelationshipRequest:
       type: object
       description: Delete relationship request using a subject set
       required:
@@ -207,23 +118,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Project
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: project_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: tenant
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-
-    DeleteRelationshipRequest:
-      description: Delete relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectSet'
 
     DeleteRelationshipResponse:
       type: object
@@ -243,19 +151,15 @@ components:
         namespace:
           type: string
           description: Namespace of the relation tuple
-          example: Project
+          example: Tenant
         object:
           type: string
           description: Object of the relation tuple
-          example: project_test_123
+          example: tenant_test_123
         relation:
           type: string
           description: Relation of the relation tuple
-          example: member
-        subject_id:
-          type: string
-          description: Subject ID of the relation tuple (optional, mutually exclusive with subject_set)
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSet'
 
@@ -266,12 +170,12 @@ components:
         namespace:
           type: string
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           description: Object of the subject set
-          example: tenant_test_123
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
           description: Relation of the subject set
-          example: member
+          example: ""

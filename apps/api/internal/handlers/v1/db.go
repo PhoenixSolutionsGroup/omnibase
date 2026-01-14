@@ -487,6 +487,11 @@ func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
 	}
 	defer m.Close()
 
+	// Capture current version before attempting migrations
+	// This is needed to rollback dirty state on failure
+	prevVersion, _, prevErr := m.Version()
+	hasPreviousVersion := prevErr == nil
+
 	// Apply migrations
 	logger.Logger.Info("Executing database migrations")
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
@@ -494,20 +499,29 @@ func (h *MigrationHandler) applyMigrations(migrationsDir string) error {
 
 		version, dirty, vErr := m.Version()
 		if vErr == nil && dirty {
-			logger.Logger.Warn("Detected dirty migration state, forcing cleanup",
-				"version", version,
+			// Force back to the PREVIOUS version, not the failed version
+			// Using the failed version would mark it as "applied" and skip it on retry
+			targetVersion := -1 // NilVersion - no migrations applied
+			if hasPreviousVersion {
+				targetVersion = int(prevVersion)
+			}
+
+			logger.Logger.Warn("Detected dirty migration state, reverting to previous version",
+				"failed_version", version,
+				"reverting_to", targetVersion,
 				"original_error", err)
 
-			if forceErr := m.Force(int(version)); forceErr != nil {
-				logger.Logger.Error("Failed to force clean dirty migration",
-					"version", version,
+			if forceErr := m.Force(targetVersion); forceErr != nil {
+				logger.Logger.Error("Failed to revert dirty migration state",
+					"failed_version", version,
+					"target_version", targetVersion,
 					"error", forceErr)
 				return fmt.Errorf("migration failed and cleanup failed: %w (original: %v)", forceErr, err)
 			}
 
-			logger.Logger.Info("Auto-cleaned dirty migration state", "version", version)
+			logger.Logger.Info("Reverted to previous migration state", "version", targetVersion)
 			// Return original error so caller knows migration failed
-			return fmt.Errorf("migration failed (dirty state cleaned for retry): %w", err)
+			return fmt.Errorf("migration failed (reverted to version %d for retry): %w", targetVersion, err)
 		}
 
 		return err

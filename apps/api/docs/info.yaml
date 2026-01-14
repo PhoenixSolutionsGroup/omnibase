@@ -93,10 +93,6 @@ paths:
   /api/v1/email/templates/{type}:
     $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1templates~1{type}'
   
-  # Events endpoints
-  /api/v1/events:
-    $ref: './paths/events.yaml#/paths/~1api~1v1~1events'
-  
   # Payments endpoints
   /api/v1/payments/checkout:
     $ref: './paths/payments.yaml#/paths/~1api~1v1~1payments~1checkout'
@@ -166,6 +162,9 @@ paths:
   
   /api/v1/stripe/config/prices/{price_id}:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1prices~1{price_id}'
+
+  /api/v1/stripe/config/prices/{price_id}/calculate:
+    $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1prices~1{price_id}~1calculate'
 
   /api/v1/stripe/config/products/{product_id}:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1config~1products~1{product_id}'
@@ -247,8 +246,6 @@ tags:
     description: Database migration and management endpoints
   - name: V1 Email
     description: Email sending endpoints
-  - name: V1 Events
-    description: Event publishing endpoints
   - name: V1 Keto
     description: Keto namespace management endpoints
   - name: V1 Payments

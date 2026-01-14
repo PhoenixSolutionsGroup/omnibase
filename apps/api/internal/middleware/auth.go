@@ -166,8 +166,7 @@ func (m *AuthMiddleware) validateSessionWithJWT(ctx context.Context, sessionToke
 
 	// Use the session data from JWT claims instead of calling Kratos
 	if claims.Session == nil {
-		logger.Logger.Error("No session found in JWT claims - JWT may not have been issued with the new template",
-			"all_claims", fmt.Sprintf("%+v", claims))
+		logger.Logger.Error("No session found in JWT claims - JWT may not have been issued with the new template")
 		return nil, fmt.Errorf("no session found in JWT claims")
 	}
 
@@ -364,7 +363,6 @@ func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
 		tenantIDHeader := c.GetHeader("X-Tenant-Id")
 		userIDHeader := c.GetHeader("X-User-Id")
 
-		logger.Logger.Debug("Request Headers", "header", c.Request.Header)
 		// Try service key authentication first
 		if serviceKey != "" {
 			if serviceKey != m.JWTSecret {

@@ -45,7 +45,6 @@ func NewPermissionsHandler(cfg *config.Config) *PermissionsHandler {
 }
 
 // CheckPermissionRequest represents the request body for checking permissions
-// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
 type CheckPermissionRequest struct {
 	// Namespace of the relationship (required, cannot be empty)
 	Namespace string `json:"namespace" binding:"required,min=1" example:"Tenant"`
@@ -53,10 +52,8 @@ type CheckPermissionRequest struct {
 	Object string `json:"object" binding:"required,min=1" example:"tenant_test_123"`
 	// Relation to check (required, cannot be empty)
 	Relation string `json:"relation" binding:"required,min=1" example:"can_invite_user"`
-	// Subject ID (user ID) to check permission for - provide either this OR subject_set, not both
-	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
-	// Subject set (alternative to subject_id) - provide either this OR subject_id, not both
-	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
+	// Subject set to check permission for
+	SubjectSet SubjectSetRequest `json:"subject_set" binding:"required"`
 }
 
 // SubjectSetRequest represents a subject set in permission checks
@@ -85,40 +82,21 @@ func (h *PermissionsHandler) CheckPermission(ctx *gin.Context) {
 		return
 	}
 
-	// Validate that exactly one of subject_id or subject_set is provided
-	if req.SubjectID != nil && req.SubjectSet != nil {
-		logger.Logger.Warn("Both subject_id and subject_set provided in permission check")
-		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
-		return
-	}
-	if req.SubjectID == nil && req.SubjectSet == nil {
-		logger.Logger.Warn("Neither subject_id nor subject_set provided in permission check")
-		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
-		return
-	}
-
 	logger.Logger.Debug("Checking permission via Keto SDK",
 		"namespace", req.Namespace,
 		"object", req.Object,
 		"relation", req.Relation,
-		"has_subject_id", req.SubjectID != nil,
-		"has_subject_set", req.SubjectSet != nil)
+		"subject_set_namespace", req.SubjectSet.Namespace,
+		"subject_set_object", req.SubjectSet.Object)
 
 	// Build the check request
 	checkReq := h.ketoReadAPI.CheckPermission(ctx.Request.Context()).
 		Namespace(req.Namespace).
 		Object(req.Object).
-		Relation(req.Relation)
-
-	if req.SubjectID != nil {
-		checkReq = checkReq.SubjectId(*req.SubjectID)
-	}
-
-	if req.SubjectSet != nil {
-		checkReq = checkReq.SubjectSetNamespace(req.SubjectSet.Namespace).
-			SubjectSetObject(req.SubjectSet.Object).
-			SubjectSetRelation(req.SubjectSet.Relation)
-	}
+		Relation(req.Relation).
+		SubjectSetNamespace(req.SubjectSet.Namespace).
+		SubjectSetObject(req.SubjectSet.Object).
+		SubjectSetRelation(req.SubjectSet.Relation)
 
 	// Execute the permission check
 	result, resp, err := checkReq.Execute()
@@ -149,7 +127,6 @@ func (h *PermissionsHandler) CheckPermission(ctx *gin.Context) {
 }
 
 // CreateRelationshipRequest represents the request body for creating relationships
-// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
 type CreateRelationshipRequest struct {
 	// Namespace of the relationship
 	Namespace *string `json:"namespace" binding:"required" example:"Tenant"`
@@ -157,10 +134,8 @@ type CreateRelationshipRequest struct {
 	Object *string `json:"object" binding:"required" example:"tenant_test_123"`
 	// Relation type
 	Relation *string `json:"relation" binding:"required" example:"can_invite_user"`
-	// Subject ID (user ID) - provide either this OR subject_id, not both
-	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
-	// Subject set - provide either this OR subject_id, not both
-	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
+	// Subject set for the relationship
+	SubjectSet SubjectSetRequest `json:"subject_set" binding:"required"`
 }
 
 // CreateRelationshipResponse represents the response for creating relationships
@@ -181,42 +156,23 @@ func (h *PermissionsHandler) CreateRelationship(ctx *gin.Context) {
 		return
 	}
 
-	// Validate that exactly one of subject_id or subject_set is provided
-	if req.SubjectID != nil && req.SubjectSet != nil {
-		logger.Logger.Warn("Both subject_id and subject_set provided in relationship creation")
-		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
-		return
-	}
-	if req.SubjectID == nil && req.SubjectSet == nil {
-		logger.Logger.Warn("Neither subject_id nor subject_set provided in relationship creation")
-		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
-		return
-	}
-
 	logger.Logger.Debug("Creating relationship via Keto SDK",
 		"namespace", *req.Namespace,
 		"object", *req.Object,
 		"relation", *req.Relation,
-		"has_subject_id", req.SubjectID != nil,
-		"has_subject_set", req.SubjectSet != nil)
+		"subject_set_namespace", req.SubjectSet.Namespace,
+		"subject_set_object", req.SubjectSet.Object)
 
 	// Build the relationship body
 	relationshipBody := keto.CreateRelationshipBody{
 		Namespace: req.Namespace,
 		Object:    req.Object,
 		Relation:  req.Relation,
-	}
-
-	if req.SubjectID != nil {
-		relationshipBody.SubjectId = req.SubjectID
-	}
-
-	if req.SubjectSet != nil {
-		relationshipBody.SubjectSet = &keto.SubjectSet{
+		SubjectSet: &keto.SubjectSet{
 			Namespace: req.SubjectSet.Namespace,
 			Object:    req.SubjectSet.Object,
 			Relation:  req.SubjectSet.Relation,
-		}
+		},
 	}
 
 	// Execute the relationship creation
@@ -261,7 +217,6 @@ func (h *PermissionsHandler) CreateRelationship(ctx *gin.Context) {
 }
 
 // DeleteRelationshipRequest represents the request body for deleting relationships
-// Exactly one of subject_id or subject_set must be provided (mutually exclusive)
 type DeleteRelationshipRequest struct {
 	// Namespace of the relationship
 	Namespace string `json:"namespace" binding:"required" example:"Project"`
@@ -269,10 +224,8 @@ type DeleteRelationshipRequest struct {
 	Object string `json:"object" binding:"required" example:"project_123"`
 	// Relation type
 	Relation string `json:"relation" binding:"required" example:"tenant"`
-	// Subject ID (user ID) - provide either this OR subject_set, not both
-	SubjectID *string `json:"subject_id,omitempty" example:"550e8400-e29b-41d4-a716-446655440000"`
-	// Subject set - provide either this OR subject_id, not both
-	SubjectSet *SubjectSetRequest `json:"subject_set,omitempty"`
+	// Subject set for the relationship
+	SubjectSet SubjectSetRequest `json:"subject_set" binding:"required"`
 }
 
 // DeleteRelationshipResponse represents the response for deleting relationships
@@ -291,41 +244,23 @@ func (h *PermissionsHandler) DeleteRelationship(ctx *gin.Context) {
 		return
 	}
 
-	// Validate that exactly one of subject_id or subject_set is provided
-	if req.SubjectID != nil && req.SubjectSet != nil {
-		logger.Logger.Warn("Both subject_id and subject_set provided in relationship deletion")
-		handlers.NewBadRequestResponse(ctx, "Provide either subject_id or subject_set, not both")
-		return
-	}
-	if req.SubjectID == nil && req.SubjectSet == nil {
-		logger.Logger.Warn("Neither subject_id nor subject_set provided in relationship deletion")
-		handlers.NewBadRequestResponse(ctx, "Either subject_id or subject_set must be provided")
-		return
-	}
-
 	logger.Logger.Debug("Deleting relationship via Keto SDK",
 		"namespace", req.Namespace,
 		"object", req.Object,
 		"relation", req.Relation,
-		"has_subject_id", req.SubjectID != nil,
-		"has_subject_set", req.SubjectSet != nil)
+		"subject_set_namespace", req.SubjectSet.Namespace,
+		"subject_set_object", req.SubjectSet.Object)
 
 	// Build the delete request
 	deleteReq := h.ketoWriteAPI.DeleteRelationships(ctx.Request.Context()).
 		Namespace(req.Namespace).
 		Object(req.Object).
-		Relation(req.Relation)
+		Relation(req.Relation).
+		SubjectSetNamespace(req.SubjectSet.Namespace).
+		SubjectSetObject(req.SubjectSet.Object)
 
-	if req.SubjectID != nil {
-		deleteReq = deleteReq.SubjectId(*req.SubjectID)
-	}
-
-	if req.SubjectSet != nil {
-		deleteReq = deleteReq.SubjectSetNamespace(req.SubjectSet.Namespace).
-			SubjectSetObject(req.SubjectSet.Object)
-		if req.SubjectSet.Relation != "" {
-			deleteReq = deleteReq.SubjectSetRelation(req.SubjectSet.Relation)
-		}
+	if req.SubjectSet.Relation != "" {
+		deleteReq = deleteReq.SubjectSetRelation(req.SubjectSet.Relation)
 	}
 
 	// Execute the relationship deletion

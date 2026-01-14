@@ -7,14 +7,14 @@ paths:
       summary: Check permission
       description: |
         Checks if a subject has a specific permission on an object using Ory Keto.
-        
+
         ## Authentication
         Requires session authentication.
-        
+
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
-        
+        Provide a `subject_set` to identify the subject. For user permissions, use
+        `namespace: "User"` and `object: "<user_id>"`.
+
         ## Use Cases
         - Verify user permissions before performing actions
         - Implement fine-grained access control
@@ -27,21 +27,23 @@ paths:
           ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Permission check request with either subject_id or subject_set
+        description: Permission check request with subject_set
         content:
           application/json:
             schema:
               $ref: '../schemas/permissions.yaml#/components/schemas/CheckPermissionRequest'
             examples:
-              withSubjectId:
-                summary: Check permission with subject_id
+              checkUserPermission:
+                summary: Check if a user can invite to a tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
                   relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Check permission with subject_set
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              checkTenantPermission:
+                summary: Check permission with tenant subject set
                 value:
                   namespace: Tenant
                   object: tenant_test_123
@@ -49,7 +51,7 @@ paths:
                   subject_set:
                     namespace: Tenant
                     object: tenant_parent_456
-                    relation: can_invite_user
+                    relation: owners
       responses:
         '200':
           description: Permission check result
@@ -76,22 +78,17 @@ paths:
                     data:
                       allowed: false
         '400':
-          description: Invalid request body - namespace, object, and relation cannot be empty, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: "Provide either subject_id or subject_set, not both"
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: "Either subject_id or subject_set must be provided"
+                    error: "Invalid request body: Key: 'CheckPermissionRequest.SubjectSet' Error:Field validation for 'SubjectSet' failed on the 'required' tag"
         '401':
           description: Not authenticated
           content:
@@ -116,8 +113,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Remove resource links from tenants
@@ -131,21 +128,23 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship deletion request with either subject_id or subject_set
+        description: Relationship deletion request with subject_set
         content:
           application/json:
             schema:
               $ref: '../schemas/permissions.yaml#/components/schemas/DeleteRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Delete relationship with subject_id
+              deleteUserRelationship:
+                summary: Delete user relationship from tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Delete relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              deleteTenantRelationship:
+                summary: Delete project-tenant relationship
                 value:
                   namespace: Project
                   object: project_123
@@ -170,22 +169,17 @@ paths:
                 data:
                   message: Relationship deleted successfully
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: "Provide either subject_id or subject_set, not both"
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: "Either subject_id or subject_set must be provided"
+                    error: "Invalid request body: Key: 'DeleteRelationshipRequest.SubjectSet' Error:Field validation for 'SubjectSet' failed on the 'required' tag"
         '401':
           description: Not authenticated
           content:
@@ -205,14 +199,14 @@ paths:
       summary: Create relationship
       description: |
         Creates a new relationship tuple in Ory Keto.
-        
+
         ## Authentication
         Requires session authentication.
-        
+
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
-        
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
+
         ## Use Cases
         - Link resources to tenants
         - Assign users to projects
@@ -225,29 +219,30 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship creation request with either subject_id or subject_set
+        description: Relationship creation request with subject_set
         content:
           application/json:
             schema:
               $ref: '../schemas/permissions.yaml#/components/schemas/CreateRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Create relationship with subject_id
+              createUserRelationship:
+                summary: Create user as tenant owner
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Create relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              createTenantRelationship:
+                summary: Create project-tenant relationship
                 value:
-                  namespace: Tenant
-                  object: tenant_test_123
-                  relation: can_delete_tenant
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
                   subject_set:
                     namespace: Tenant
-                    object: tenant_parent_456
-                    relation: can_invite_user
+                    object: tenant_456
       responses:
         '200':
           description: Relationship created successfully
@@ -267,25 +262,22 @@ paths:
                   relationship:
                     namespace: Tenant
                     object: tenant_test_123
-                    relation: can_invite_user
-                    subject_id: 550e8400-e29b-41d4-a716-446655440000
+                    relation: owners
+                    subject_set:
+                      namespace: User
+                      object: 550e8400-e29b-41d4-a716-446655440000
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: "Provide either subject_id or subject_set, not both"
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: "Either subject_id or subject_set must be provided"
+                    error: "Invalid request body: Key: 'CreateRelationshipRequest.SubjectSet' Error:Field validation for 'SubjectSet' failed on the 'required' tag"
         '401':
           description: Not authenticated
           content:

@@ -33,8 +33,5 @@ func InitRoutes(group *gin.RouterGroup) {
 	logger.Logger.Debug("Setting up email routes at /email")
 	SetUpEmailRoutes(group.Group("/email"))
 
-	logger.Logger.Debug("Setting up events routes at /events")
-	SetUpEventsRoutes(group.Group("/events"))
-
 	logger.Logger.Info("All v1 API routes initialized successfully")
 }
