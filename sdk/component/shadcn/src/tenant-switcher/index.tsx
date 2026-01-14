@@ -3,11 +3,14 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { Tenant } from "@omnibase/core-js";
+
+const CREATE_TENANT_VALUE = "__create_tenant__";
 
 export interface SwitchActiveTenantProps {
   /** Array of tenants available to the user */
@@ -22,6 +25,10 @@ export interface SwitchActiveTenantProps {
   className?: string;
   /** Callback fired when tenant selection changes */
   onTenantChange?: (tenantId: string) => void;
+  /** Callback fired when "Create Tenant" is clicked */
+  onCreateTenant?: () => void;
+  /** Label for the create tenant option */
+  createTenantLabel?: string;
 }
 
 /**
@@ -36,6 +43,8 @@ export interface SwitchActiveTenantProps {
  * @param placeholder - Placeholder text for the select
  * @param className - Additional CSS classes
  * @param onTenantChange - Callback for tenant changes
+ * @param onCreateTenant - Callback for creating a new tenant
+ * @param createTenantLabel - Label for the create tenant option
  */
 export function SwitchActiveTenant({
   tenants,
@@ -44,22 +53,27 @@ export function SwitchActiveTenant({
   placeholder = "Select tenant...",
   className,
   onTenantChange,
+  onCreateTenant,
+  createTenantLabel = "Create Tenant",
 }: SwitchActiveTenantProps) {
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const handleTenantChange = async (tenantId: string) => {
-    if (tenantId === currentTenantId) return;
+  const handleTenantChange = async (value: string) => {
+    if (value === CREATE_TENANT_VALUE) {
+      onCreateTenant?.();
+      return;
+    }
+
+    if (value === currentTenantId) return;
 
     setIsLoading(true);
 
     try {
-      // Call the onTenantChange callback if provided
-      onTenantChange?.(tenantId);
+      onTenantChange?.(value);
 
-      // If a custom form action is provided, use it
       if (formAction) {
         const formData = new FormData();
-        formData.append("tenant_id", tenantId);
+        formData.append("tenant_id", value);
         await formAction(formData);
       }
     } catch (error) {
@@ -88,6 +102,14 @@ export function SwitchActiveTenant({
             {tenant.name}
           </SelectItem>
         ))}
+        {onCreateTenant && (
+          <>
+            <SelectSeparator />
+            <SelectItem value={CREATE_TENANT_VALUE}>
+              {createTenantLabel}
+            </SelectItem>
+          </>
+        )}
       </SelectContent>
     </Select>
   );

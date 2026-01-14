@@ -77,6 +77,14 @@ const meta: Meta<typeof SwitchActiveTenant> = {
       description: "Callback fired when tenant selection changes",
       control: false,
     },
+    onCreateTenant: {
+      description: "Callback fired when 'Create Tenant' option is clicked",
+      control: false,
+    },
+    createTenantLabel: {
+      description: "Label for the create tenant option",
+      control: { type: "text" },
+    },
   },
 };
 
@@ -183,5 +191,46 @@ export const EmptyTenants: Story = {
     placeholder: "No tenants available",
     onTenantChange: () => {},
     formAction: () => {},
+  },
+};
+
+export const WithCreateTenant: Story = {
+  args: {
+    tenants: mockTenants,
+    currentTenantId: "tenant_1",
+    placeholder: "Select tenant...",
+    onTenantChange: () => {},
+    formAction: () => {},
+    onCreateTenant: () => {
+      alert("Create Tenant clicked! Navigate to tenant creation page.");
+    },
+  },
+};
+
+export const WithCreateTenantCustomLabel: Story = {
+  args: {
+    tenants: mockTenants,
+    currentTenantId: "tenant_2",
+    placeholder: "Select organization...",
+    onTenantChange: () => {},
+    formAction: () => {},
+    onCreateTenant: () => {
+      alert("Create Organization clicked!");
+    },
+    createTenantLabel: "Create Organization",
+  },
+};
+
+export const EmptyWithCreateTenant: Story = {
+  args: {
+    tenants: [],
+    currentTenantId: undefined,
+    placeholder: "No tenants yet",
+    onTenantChange: () => {},
+    formAction: () => {},
+    onCreateTenant: () => {
+      alert("Create your first tenant!");
+    },
+    createTenantLabel: "Create Your First Tenant",
   },
 };
