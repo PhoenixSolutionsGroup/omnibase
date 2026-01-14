@@ -15,6 +15,7 @@ import type {
   SettingsFlow,
   VerificationFlow,
 } from "@ory/client";
+import { FrontendApi, Configuration, type FlowError } from "@ory/client-fetch";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -354,3 +355,70 @@ export const getLogoutFlow = async ({
       },
     };
 };
+
+/**
+ * Properties required for retrieving error flow details
+ *
+ * @since 0.7.0
+ * @public
+ * @group Flow Retrieval
+ */
+export type GetErrorFlowProps = {
+  /** Promise resolving to search parameters containing the error ID */
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined;
+  }>;
+};
+
+/**
+ * Retrieves error details for a user-facing authentication error
+ *
+ * When Ory Kratos encounters an error during authentication flows (CSRF failures,
+ * expired flows, OAuth errors, etc.), it redirects to the error UI with an error ID.
+ * This function fetches the error details using that ID.
+ *
+ * @param props - Configuration object containing search parameters
+ * @param props.searchParams - Promise resolving to search parameters containing the error ID
+ *
+ * @returns Promise that resolves to a FlowError object or null if the error cannot be retrieved
+ *
+ * @example
+ * ```typescript
+ * // In a Next.js server component
+ * import { getErrorFlow } from '@omnibase/nextjs/auth';
+ *
+ * const error = await getErrorFlow({
+ *   searchParams: Promise.resolve({ id: 'error-id-123' })
+ * });
+ *
+ * if (error) {
+ *   return <ErrorForm error={error} />;
+ * }
+ * ```
+ *
+ * @since 0.7.0
+ * @public
+ * @group Flow Retrieval
+ */
+export const getErrorFlow = async (
+  props: GetErrorFlowProps
+): Promise<FlowError | null> => {
+  const params = await props.searchParams;
+  const id = typeof params.id === "string" ? params.id : params.id?.[0];
+
+  if (!id) return null;
+
+  const ory = new FrontendApi(
+    new Configuration({
+      basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL,
+    })
+  );
+
+  try {
+    return await ory.getFlowError({ id });
+  } catch {
+    return null;
+  }
+};
+
+export type { FlowError };

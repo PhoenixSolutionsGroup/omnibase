@@ -5,7 +5,9 @@ import {
   getRegistrationFlow,
   getSettingsFlow,
   getVerificationFlow,
+  getErrorFlow,
   type GetFlowProps,
+  type FlowError,
 } from "./get-flow";
 import type {
   LoginFlow,
@@ -14,6 +16,9 @@ import type {
   SettingsFlow,
   VerificationFlow,
 } from "@ory/client";
+import { redirect } from "next/navigation";
+
+const SESSION_VERIFIED_ADDRESS_REQUIRED_ERROR_ID = 4000010;
 
 /**
  * Maps auth flow types to their corresponding React component functions
@@ -48,6 +53,8 @@ export type FlowMap = {
   settings?: (flow: SettingsFlow) => ReactNode;
   /** Function that takes any flow object and returns a component for custom onboarding */
   onboarding?: (flow: any) => ReactNode;
+  /** Function that takes a FlowError and returns a component for displaying authentication errors */
+  error?: (error: FlowError) => ReactNode;
 };
 
 /**
@@ -218,10 +225,30 @@ export async function FlowRouter({
 
   if (componentFunction) {
     if (flowType === "onboarding") return componentFunction(null);
+
+    // Error flow uses 'id' param instead of 'flow' param
+    if (flowType === "error") {
+      const errorFlow = await getErrorFlow({ searchParams });
+      if (errorFlow) {
+        return (flowMap.error as (error: FlowError) => ReactNode)(errorFlow);
+      }
+      return onNotFound;
+    }
+
     // Get the flow object using our getFlow function
     const flowObject = await getFlow(flowType, { url, searchParams });
 
     if (flowObject) {
+      // Check if login flow has verification required error
+      if (flowType === "login" && flowMap.verification) {
+        const hasVerificationRequiredError = flowObject.ui.messages?.some(
+          (msg) => msg.id === SESSION_VERIFIED_ADDRESS_REQUIRED_ERROR_ID
+        );
+        if (hasVerificationRequiredError) {
+          redirect(`${url}/verification?return_to=${encodeURIComponent(returnTo)}`);
+        }
+      }
+
       // Call the component function with the flow object
       return componentFunction(flowObject as any);
     }
