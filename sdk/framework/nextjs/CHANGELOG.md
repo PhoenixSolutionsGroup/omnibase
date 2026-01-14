@@ -1,3 +1,15 @@
+# [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.7.0...nextjs-v0.8.0) (2026-01-14)
+
+
+### Bug Fixes
+
+* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+
+
+### Features
+
+* **sdk/nextjs:** add error flow support and verification redirect ([6440955](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64409557d5c41468a6aba3918268116da8d0eb7e))
+
 # [0.7.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.6.5...nextjs-v0.7.0) (2026-01-06)
 
 
