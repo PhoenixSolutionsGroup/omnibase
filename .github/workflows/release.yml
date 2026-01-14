@@ -366,7 +366,7 @@ jobs:
 
       - name: Pull latest changes
         if: steps.changes.outputs.has_changes == 'true'
-        run: git pull --rebase origin main
+        run: git pull --rebase --autostash origin main
 
       - name: Build package
         if: steps.changes.outputs.has_changes == 'true'
@@ -463,7 +463,7 @@ jobs:
 
       - name: Pull latest changes
         if: steps.changes.outputs.has_changes == 'true'
-        run: git pull --rebase origin main
+        run: git pull --rebase --autostash origin main
 
       - name: Release
         if: steps.changes.outputs.has_changes == 'true'
