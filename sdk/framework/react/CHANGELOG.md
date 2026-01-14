@@ -1,3 +1,10 @@
+## [0.3.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.3...react-v0.3.4) (2026-01-14)
+
+
+### Bug Fixes
+
+* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+
 ## [0.3.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.2...react-v0.3.3) (2026-01-05)
 
 
