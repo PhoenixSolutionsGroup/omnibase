@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -26,8 +26,6 @@ type Relationship struct {
 	Object *string `json:"object,omitempty"`
 	// Relation of the relation tuple
 	Relation *string `json:"relation,omitempty"`
-	// Subject ID of the relation tuple (optional, mutually exclusive with subject_set)
-	SubjectId *string `json:"subject_id,omitempty"`
 	SubjectSet *SubjectSet `json:"subject_set,omitempty"`
 }
 
@@ -144,38 +142,6 @@ func (o *Relationship) SetRelation(v string) {
 	o.Relation = &v
 }
 
-// GetSubjectId returns the SubjectId field value if set, zero value otherwise.
-func (o *Relationship) GetSubjectId() string {
-	if o == nil || IsNil(o.SubjectId) {
-		var ret string
-		return ret
-	}
-	return *o.SubjectId
-}
-
-// GetSubjectIdOk returns a tuple with the SubjectId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Relationship) GetSubjectIdOk() (*string, bool) {
-	if o == nil || IsNil(o.SubjectId) {
-		return nil, false
-	}
-	return o.SubjectId, true
-}
-
-// HasSubjectId returns a boolean if a field has been set.
-func (o *Relationship) HasSubjectId() bool {
-	if o != nil && !IsNil(o.SubjectId) {
-		return true
-	}
-
-	return false
-}
-
-// SetSubjectId gets a reference to the given string and assigns it to the SubjectId field.
-func (o *Relationship) SetSubjectId(v string) {
-	o.SubjectId = &v
-}
-
 // GetSubjectSet returns the SubjectSet field value if set, zero value otherwise.
 func (o *Relationship) GetSubjectSet() SubjectSet {
 	if o == nil || IsNil(o.SubjectSet) {
@@ -226,9 +192,6 @@ func (o Relationship) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Relation) {
 		toSerialize["relation"] = o.Relation
-	}
-	if !IsNil(o.SubjectId) {
-		toSerialize["subject_id"] = o.SubjectId
 	}
 	if !IsNil(o.SubjectSet) {
 		toSerialize["subject_set"] = o.SubjectSet

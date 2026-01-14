@@ -6,6 +6,7 @@ All URIs are relative to *https://api.omnibase.tech*
 |------------- | ------------- | -------------|
 | [**applyEnterpriseCustom**](V1StripeApi.md#applyenterprisecustomoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing |
 | [**applyEnterpriseTemplate**](V1StripeApi.md#applyenterprisetemplateoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing |
+| [**calculatePriceCost**](V1StripeApi.md#calculatepricecostoperation) | **POST** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price |
 | [**convertStripeIDToConfigID**](V1StripeApi.md#convertstripeidtoconfigid) | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID |
 | [**getEnterprisePricesByID**](V1StripeApi.md#getenterprisepricesbyid) | **GET** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID |
 | [**getEnterprisePricesByTemplate**](V1StripeApi.md#getenterprisepricesbytemplate) | **GET** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template |
@@ -164,6 +165,79 @@ example().catch(console.error);
 | **401** | Invalid or missing service key |  -  |
 | **404** | Tenant or enterprise template not found |  -  |
 | **500** | Failed to apply enterprise pricing |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## calculatePriceCost
+
+> CalculatePriceCost200Response calculatePriceCost(priceId, calculatePriceCostRequest)
+
+Calculate cost for a price
+
+Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost &#x3D; unit_amount × quantity - **tiered (graduated)**: Each tier\&#39;s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\&#39;s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1StripeApi,
+} from '@omnibase/core-js';
+import type { CalculatePriceCostOperationRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const api = new V1StripeApi();
+
+  const body = {
+    // string | Price config ID
+    priceId: compute_hourly,
+    // CalculatePriceCostRequest
+    calculatePriceCostRequest: ...,
+  } satisfies CalculatePriceCostOperationRequest;
+
+  try {
+    const data = await api.calculatePriceCost(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **priceId** | `string` | Price config ID | [Defaults to `undefined`] |
+| **calculatePriceCostRequest** | [CalculatePriceCostRequest](CalculatePriceCostRequest.md) |  | |
+
+### Return type
+
+[**CalculatePriceCost200Response**](CalculatePriceCost200Response.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Cost calculated successfully |  -  |
+| **400** | Invalid request or missing quantity |  -  |
+| **404** | Price not found |  -  |
+| **500** | Failed to calculate cost |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -29,7 +29,7 @@ type ApiCheckPermissionRequest struct {
 	checkPermissionRequest *CheckPermissionRequest
 }
 
-// Permission check request with either subject_id or subject_set
+// Permission check request with subject_set
 func (r ApiCheckPermissionRequest) CheckPermissionRequest(checkPermissionRequest CheckPermissionRequest) ApiCheckPermissionRequest {
 	r.checkPermissionRequest = &checkPermissionRequest
 	return r
@@ -48,8 +48,8 @@ Checks if a subject has a specific permission on an object using Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user permissions, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Verify user permissions before performing actions
@@ -213,7 +213,7 @@ type ApiCreateRelationshipRequest struct {
 	createRelationshipRequest *CreateRelationshipRequest
 }
 
-// Relationship creation request with either subject_id or subject_set
+// Relationship creation request with subject_set
 func (r ApiCreateRelationshipRequest) CreateRelationshipRequest(createRelationshipRequest CreateRelationshipRequest) ApiCreateRelationshipRequest {
 	r.createRelationshipRequest = &createRelationshipRequest
 	return r
@@ -232,8 +232,8 @@ Creates a new relationship tuple in Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user relationships, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Link resources to tenants
@@ -408,7 +408,7 @@ type ApiDeleteRelationshipRequest struct {
 	deleteRelationshipRequest *DeleteRelationshipRequest
 }
 
-// Relationship deletion request with either subject_id or subject_set
+// Relationship deletion request with subject_set
 func (r ApiDeleteRelationshipRequest) DeleteRelationshipRequest(deleteRelationshipRequest DeleteRelationshipRequest) ApiDeleteRelationshipRequest {
 	r.deleteRelationshipRequest = &deleteRelationshipRequest
 	return r
@@ -427,8 +427,8 @@ Deletes a relationship tuple from Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user relationships, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Remove resource links from tenants

@@ -31,7 +31,7 @@ import (
 )
 
 func main() {
-	checkPermissionRequest := openapiclient.CheckPermissionRequest{CheckPermissionRequestWithSubjectId: openapiclient.NewCheckPermissionRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CheckPermissionRequest | Permission check request with either subject_id or subject_set
+	checkPermissionRequest := *openapiclient.NewCheckPermissionRequest("Tenant", "tenant_test_123", "can_invite_user", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // CheckPermissionRequest | Permission check request with subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -56,7 +56,7 @@ Other parameters are passed through a pointer to a apiCheckPermissionRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **checkPermissionRequest** | [**CheckPermissionRequest**](CheckPermissionRequest.md) | Permission check request with either subject_id or subject_set | 
+ **checkPermissionRequest** | [**CheckPermissionRequest**](CheckPermissionRequest.md) | Permission check request with subject_set | 
 
 ### Return type
 
@@ -97,7 +97,7 @@ import (
 )
 
 func main() {
-	createRelationshipRequest := openapiclient.CreateRelationshipRequest{CreateRelationshipRequestWithSubjectId: openapiclient.NewCreateRelationshipRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // CreateRelationshipRequest | Relationship creation request with either subject_id or subject_set
+	createRelationshipRequest := *openapiclient.NewCreateRelationshipRequest("Tenant", "tenant_test_123", "owners", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // CreateRelationshipRequest | Relationship creation request with subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -122,7 +122,7 @@ Other parameters are passed through a pointer to a apiCreateRelationshipRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) | Relationship creation request with either subject_id or subject_set | 
+ **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) | Relationship creation request with subject_set | 
 
 ### Return type
 
@@ -163,7 +163,7 @@ import (
 )
 
 func main() {
-	deleteRelationshipRequest := openapiclient.DeleteRelationshipRequest{DeleteRelationshipRequestWithSubjectId: openapiclient.NewDeleteRelationshipRequestWithSubjectId("Namespace_example", "Object_example", "Relation_example", "SubjectId_example")} // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
+	deleteRelationshipRequest := *openapiclient.NewDeleteRelationshipRequest("Project", "project_123", "tenant", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // DeleteRelationshipRequest | Relationship deletion request with subject_set
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -188,7 +188,7 @@ Other parameters are passed through a pointer to a apiDeleteRelationshipRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) | Relationship deletion request with either subject_id or subject_set | 
+ **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) | Relationship deletion request with subject_set | 
 
 ### Return type
 

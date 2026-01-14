@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ApplyEnterpriseCustom**](V1StripeAPI.md#ApplyEnterpriseCustom) | **Post** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
 [**ApplyEnterpriseTemplate**](V1StripeAPI.md#ApplyEnterpriseTemplate) | **Post** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing
+[**CalculatePriceCost**](V1StripeAPI.md#CalculatePriceCost) | **Post** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
 [**ConvertStripeIDToConfigID**](V1StripeAPI.md#ConvertStripeIDToConfigID) | **Get** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
 [**GetEnterprisePricesByID**](V1StripeAPI.md#GetEnterprisePricesByID) | **Get** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID
 [**GetEnterprisePricesByTemplate**](V1StripeAPI.md#GetEnterprisePricesByTemplate) | **Get** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template
@@ -139,6 +140,78 @@ Name | Type | Description  | Notes
 ### Authorization
 
 [ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CalculatePriceCost
+
+> CalculatePriceCost200Response CalculatePriceCost(ctx, priceId).CalculatePriceCostRequest(calculatePriceCostRequest).Execute()
+
+Calculate cost for a price
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	priceId := "compute_hourly" // string | Price config ID
+	calculatePriceCostRequest := *openapiclient.NewCalculatePriceCostRequest(int64(1500)) // CalculatePriceCostRequest | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1StripeAPI.CalculatePriceCost(context.Background(), priceId).CalculatePriceCostRequest(calculatePriceCostRequest).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.CalculatePriceCost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CalculatePriceCost`: CalculatePriceCost200Response
+	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.CalculatePriceCost`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**priceId** | **string** | Price config ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCalculatePriceCostRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **calculatePriceCostRequest** | [**CalculatePriceCostRequest**](CalculatePriceCostRequest.md) |  | 
+
+### Return type
+
+[**CalculatePriceCost200Response**](CalculatePriceCost200Response.md)
+
+### Authorization
+
+No authorization required
 
 ### HTTP request headers
 

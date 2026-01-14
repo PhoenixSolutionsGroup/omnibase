@@ -22,10 +22,11 @@ docs/BadRequest.md
 docs/BadRequestResponse.md
 docs/BillingInterval.md
 docs/BillingStatusResponse.md
+docs/CalculatePriceCost200Response.md
+docs/CalculatePriceCostRequest.md
+docs/CalculatePriceCostResponse.md
 docs/CheckPermission200Response.md
 docs/CheckPermissionRequest.md
-docs/CheckPermissionRequestWithSubjectId.md
-docs/CheckPermissionRequestWithSubjectSet.md
 docs/CheckPermissionResponse.md
 docs/ConfigHistoryItem.md
 docs/ConfigHistoryPagination.md
@@ -51,8 +52,6 @@ docs/CreatePortalRequest.md
 docs/CreatePortalResponse.md
 docs/CreateRelationship200Response.md
 docs/CreateRelationshipRequest.md
-docs/CreateRelationshipRequestWithSubjectId.md
-docs/CreateRelationshipRequestWithSubjectSet.md
 docs/CreateRelationshipResponse.md
 docs/CreateRole200Response.md
 docs/CreateRoleRequest.md
@@ -71,8 +70,6 @@ docs/DeleteObject200Response.md
 docs/DeleteObjectRequest.md
 docs/DeleteRelationship200Response.md
 docs/DeleteRelationshipRequest.md
-docs/DeleteRelationshipRequestWithSubjectId.md
-docs/DeleteRelationshipRequestWithSubjectSet.md
 docs/DeleteRelationshipResponse.md
 docs/DeleteRole200Response.md
 docs/DeleteRoleResponse.md
@@ -216,7 +213,6 @@ docs/UsageType.md
 docs/UserTenantListItem.md
 docs/V1AuthApi.md
 docs/V1ConfigurationApi.md
-docs/V1EventsApi.md
 docs/V1PaymentsApi.md
 docs/V1PermissionsApi.md
 docs/V1StorageApi.md
@@ -231,7 +227,6 @@ docs/WhoAmIResponse.md
 package.json
 src/apis/V1AuthApi.ts
 src/apis/V1ConfigurationApi.ts
-src/apis/V1EventsApi.ts
 src/apis/V1PaymentsApi.ts
 src/apis/V1PermissionsApi.ts
 src/apis/V1StorageApi.ts
@@ -260,10 +255,11 @@ src/models/BadRequest.ts
 src/models/BadRequestResponse.ts
 src/models/BillingInterval.ts
 src/models/BillingStatusResponse.ts
+src/models/CalculatePriceCost200Response.ts
+src/models/CalculatePriceCostRequest.ts
+src/models/CalculatePriceCostResponse.ts
 src/models/CheckPermission200Response.ts
 src/models/CheckPermissionRequest.ts
-src/models/CheckPermissionRequestWithSubjectId.ts
-src/models/CheckPermissionRequestWithSubjectSet.ts
 src/models/CheckPermissionResponse.ts
 src/models/ConfigHistoryItem.ts
 src/models/ConfigHistoryPagination.ts
@@ -289,8 +285,6 @@ src/models/CreatePortalRequest.ts
 src/models/CreatePortalResponse.ts
 src/models/CreateRelationship200Response.ts
 src/models/CreateRelationshipRequest.ts
-src/models/CreateRelationshipRequestWithSubjectId.ts
-src/models/CreateRelationshipRequestWithSubjectSet.ts
 src/models/CreateRelationshipResponse.ts
 src/models/CreateRole200Response.ts
 src/models/CreateRoleRequest.ts
@@ -309,8 +303,6 @@ src/models/DeleteObject200Response.ts
 src/models/DeleteObjectRequest.ts
 src/models/DeleteRelationship200Response.ts
 src/models/DeleteRelationshipRequest.ts
-src/models/DeleteRelationshipRequestWithSubjectId.ts
-src/models/DeleteRelationshipRequestWithSubjectSet.ts
 src/models/DeleteRelationshipResponse.ts
 src/models/DeleteRole200Response.ts
 src/models/DeleteRoleResponse.ts

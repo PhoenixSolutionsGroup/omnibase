@@ -7,14 +7,13 @@ Name | Type | Description | Notes
 **Namespace** | **string** | The namespace for the relationship | 
 **Object** | **string** | The object in the relationship | 
 **Relation** | **string** | The relation type | 
-**SubjectId** | **string** | Direct subject identifier | 
 **SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |  | 
 
 ## Methods
 
 ### NewDeleteRelationshipRequest
 
-`func NewDeleteRelationshipRequest(namespace string, object string, relation string, subjectId string, subjectSet SubjectSetRequest, ) *DeleteRelationshipRequest`
+`func NewDeleteRelationshipRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *DeleteRelationshipRequest`
 
 NewDeleteRelationshipRequest instantiates a new DeleteRelationshipRequest object
 This constructor will assign default values to properties that have it defined,
@@ -87,26 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *DeleteRelationshipRequest) SetRelation(v string)`
 
 SetRelation sets Relation field to given value.
-
-
-### GetSubjectId
-
-`func (o *DeleteRelationshipRequest) GetSubjectId() string`
-
-GetSubjectId returns the SubjectId field if non-nil, zero value otherwise.
-
-### GetSubjectIdOk
-
-`func (o *DeleteRelationshipRequest) GetSubjectIdOk() (*string, bool)`
-
-GetSubjectIdOk returns a tuple with the SubjectId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSubjectId
-
-`func (o *DeleteRelationshipRequest) SetSubjectId(v string)`
-
-SetSubjectId sets SubjectId field to given value.
 
 
 ### GetSubjectSet

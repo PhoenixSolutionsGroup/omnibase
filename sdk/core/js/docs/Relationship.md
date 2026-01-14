@@ -10,7 +10,6 @@ Name | Type
 `namespace` | string
 `object` | string
 `relation` | string
-`subjectId` | string
 `subjectSet` | [SubjectSet](SubjectSet.md)
 
 ## Example
@@ -20,10 +19,9 @@ import type { Relationship } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "namespace": Project,
-  "object": project_test_123,
-  "relation": member,
-  "subjectId": 550e8400-e29b-41d4-a716-446655440000,
+  "namespace": Tenant,
+  "object": tenant_test_123,
+  "relation": owners,
   "subjectSet": null,
 } satisfies Relationship
 

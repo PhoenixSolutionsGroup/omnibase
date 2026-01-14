@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -13,124 +13,198 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
-// DeleteRelationshipRequest - Delete relationship request. Must provide exactly one of subject_id or subject_set.
+// checks if the DeleteRelationshipRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DeleteRelationshipRequest{}
+
+// DeleteRelationshipRequest Delete relationship request using a subject set
 type DeleteRelationshipRequest struct {
-	DeleteRelationshipRequestWithSubjectId *DeleteRelationshipRequestWithSubjectId
-	DeleteRelationshipRequestWithSubjectSet *DeleteRelationshipRequestWithSubjectSet
+	// The namespace for the relationship
+	Namespace string `json:"namespace"`
+	// The object in the relationship
+	Object string `json:"object"`
+	// The relation type
+	Relation string `json:"relation"`
+	SubjectSet SubjectSetRequest `json:"subject_set"`
 }
 
-// DeleteRelationshipRequestWithSubjectIdAsDeleteRelationshipRequest is a convenience function that returns DeleteRelationshipRequestWithSubjectId wrapped in DeleteRelationshipRequest
-func DeleteRelationshipRequestWithSubjectIdAsDeleteRelationshipRequest(v *DeleteRelationshipRequestWithSubjectId) DeleteRelationshipRequest {
-	return DeleteRelationshipRequest{
-		DeleteRelationshipRequestWithSubjectId: v,
+type _DeleteRelationshipRequest DeleteRelationshipRequest
+
+// NewDeleteRelationshipRequest instantiates a new DeleteRelationshipRequest object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewDeleteRelationshipRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest) *DeleteRelationshipRequest {
+	this := DeleteRelationshipRequest{}
+	this.Namespace = namespace
+	this.Object = object
+	this.Relation = relation
+	this.SubjectSet = subjectSet
+	return &this
+}
+
+// NewDeleteRelationshipRequestWithDefaults instantiates a new DeleteRelationshipRequest object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewDeleteRelationshipRequestWithDefaults() *DeleteRelationshipRequest {
+	this := DeleteRelationshipRequest{}
+	return &this
+}
+
+// GetNamespace returns the Namespace field value
+func (o *DeleteRelationshipRequest) GetNamespace() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
+
+	return o.Namespace
 }
 
-// DeleteRelationshipRequestWithSubjectSetAsDeleteRelationshipRequest is a convenience function that returns DeleteRelationshipRequestWithSubjectSet wrapped in DeleteRelationshipRequest
-func DeleteRelationshipRequestWithSubjectSetAsDeleteRelationshipRequest(v *DeleteRelationshipRequestWithSubjectSet) DeleteRelationshipRequest {
-	return DeleteRelationshipRequest{
-		DeleteRelationshipRequestWithSubjectSet: v,
+// GetNamespaceOk returns a tuple with the Namespace field value
+// and a boolean to check if the value has been set.
+func (o *DeleteRelationshipRequest) GetNamespaceOk() (*string, bool) {
+	if o == nil {
+		return nil, false
 	}
+	return &o.Namespace, true
 }
 
+// SetNamespace sets field value
+func (o *DeleteRelationshipRequest) SetNamespace(v string) {
+	o.Namespace = v
+}
 
-// Unmarshal JSON data into one of the pointers in the struct
-func (dst *DeleteRelationshipRequest) UnmarshalJSON(data []byte) error {
-	var err error
-	match := 0
-	// try to unmarshal data into DeleteRelationshipRequestWithSubjectId
-	err = newStrictDecoder(data).Decode(&dst.DeleteRelationshipRequestWithSubjectId)
-	if err == nil {
-		jsonDeleteRelationshipRequestWithSubjectId, _ := json.Marshal(dst.DeleteRelationshipRequestWithSubjectId)
-		if string(jsonDeleteRelationshipRequestWithSubjectId) == "{}" { // empty struct
-			dst.DeleteRelationshipRequestWithSubjectId = nil
-		} else {
-			if err = validator.Validate(dst.DeleteRelationshipRequestWithSubjectId); err != nil {
-				dst.DeleteRelationshipRequestWithSubjectId = nil
-			} else {
-				match++
-			}
+// GetObject returns the Object field value
+func (o *DeleteRelationshipRequest) GetObject() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Object
+}
+
+// GetObjectOk returns a tuple with the Object field value
+// and a boolean to check if the value has been set.
+func (o *DeleteRelationshipRequest) GetObjectOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Object, true
+}
+
+// SetObject sets field value
+func (o *DeleteRelationshipRequest) SetObject(v string) {
+	o.Object = v
+}
+
+// GetRelation returns the Relation field value
+func (o *DeleteRelationshipRequest) GetRelation() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Relation
+}
+
+// GetRelationOk returns a tuple with the Relation field value
+// and a boolean to check if the value has been set.
+func (o *DeleteRelationshipRequest) GetRelationOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Relation, true
+}
+
+// SetRelation sets field value
+func (o *DeleteRelationshipRequest) SetRelation(v string) {
+	o.Relation = v
+}
+
+// GetSubjectSet returns the SubjectSet field value
+func (o *DeleteRelationshipRequest) GetSubjectSet() SubjectSetRequest {
+	if o == nil {
+		var ret SubjectSetRequest
+		return ret
+	}
+
+	return o.SubjectSet
+}
+
+// GetSubjectSetOk returns a tuple with the SubjectSet field value
+// and a boolean to check if the value has been set.
+func (o *DeleteRelationshipRequest) GetSubjectSetOk() (*SubjectSetRequest, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.SubjectSet, true
+}
+
+// SetSubjectSet sets field value
+func (o *DeleteRelationshipRequest) SetSubjectSet(v SubjectSetRequest) {
+	o.SubjectSet = v
+}
+
+func (o DeleteRelationshipRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o DeleteRelationshipRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["namespace"] = o.Namespace
+	toSerialize["object"] = o.Object
+	toSerialize["relation"] = o.Relation
+	toSerialize["subject_set"] = o.SubjectSet
+	return toSerialize, nil
+}
+
+func (o *DeleteRelationshipRequest) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"namespace",
+		"object",
+		"relation",
+		"subject_set",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
-	} else {
-		dst.DeleteRelationshipRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into DeleteRelationshipRequestWithSubjectSet
-	err = newStrictDecoder(data).Decode(&dst.DeleteRelationshipRequestWithSubjectSet)
-	if err == nil {
-		jsonDeleteRelationshipRequestWithSubjectSet, _ := json.Marshal(dst.DeleteRelationshipRequestWithSubjectSet)
-		if string(jsonDeleteRelationshipRequestWithSubjectSet) == "{}" { // empty struct
-			dst.DeleteRelationshipRequestWithSubjectSet = nil
-		} else {
-			if err = validator.Validate(dst.DeleteRelationshipRequestWithSubjectSet); err != nil {
-				dst.DeleteRelationshipRequestWithSubjectSet = nil
-			} else {
-				match++
-			}
-		}
-	} else {
-		dst.DeleteRelationshipRequestWithSubjectSet = nil
+	varDeleteRelationshipRequest := _DeleteRelationshipRequest{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varDeleteRelationshipRequest)
+
+	if err != nil {
+		return err
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.DeleteRelationshipRequestWithSubjectId = nil
-		dst.DeleteRelationshipRequestWithSubjectSet = nil
+	*o = DeleteRelationshipRequest(varDeleteRelationshipRequest)
 
-		return fmt.Errorf("data matches more than one schema in oneOf(DeleteRelationshipRequest)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(DeleteRelationshipRequest)")
-	}
-}
-
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src DeleteRelationshipRequest) MarshalJSON() ([]byte, error) {
-	if src.DeleteRelationshipRequestWithSubjectId != nil {
-		return json.Marshal(&src.DeleteRelationshipRequestWithSubjectId)
-	}
-
-	if src.DeleteRelationshipRequestWithSubjectSet != nil {
-		return json.Marshal(&src.DeleteRelationshipRequestWithSubjectSet)
-	}
-
-	return nil, nil // no data in oneOf schemas
-}
-
-// Get the actual instance
-func (obj *DeleteRelationshipRequest) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.DeleteRelationshipRequestWithSubjectId != nil {
-		return obj.DeleteRelationshipRequestWithSubjectId
-	}
-
-	if obj.DeleteRelationshipRequestWithSubjectSet != nil {
-		return obj.DeleteRelationshipRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
-}
-
-// Get the actual instance value
-func (obj DeleteRelationshipRequest) GetActualInstanceValue() (interface{}) {
-	if obj.DeleteRelationshipRequestWithSubjectId != nil {
-		return *obj.DeleteRelationshipRequestWithSubjectId
-	}
-
-	if obj.DeleteRelationshipRequestWithSubjectSet != nil {
-		return *obj.DeleteRelationshipRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
+	return err
 }
 
 type NullableDeleteRelationshipRequest struct {

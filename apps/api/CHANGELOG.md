@@ -1,3 +1,12 @@
+# [0.14.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.13.0...api-v0.14.0) (2026-01-14)
+
+
+### Features
+
+* **api:** add Cloud Run identity token auth for Ory services ([5daaf2e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5daaf2e13e2aab1731f3f9137b75272301c8ce69))
+* **api:** add price calculation endpoint for usage cost estimation ([c63b46f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c63b46ffac54424815e963585f8bfaf4d43d331e))
+* **api:** add price cost calculation endpoint ([2831d6c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2831d6c223629dfc06a18a11a6be37783f915d6d))
+
 # [0.13.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.12.6...api-v0.13.0) (2026-01-13)
 
 

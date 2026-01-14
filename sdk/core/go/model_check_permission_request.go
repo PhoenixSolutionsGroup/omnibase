@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -13,124 +13,198 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
-// CheckPermissionRequest - Check permission request. Must provide exactly one of subject_id or subject_set.
+// checks if the CheckPermissionRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CheckPermissionRequest{}
+
+// CheckPermissionRequest Check permission request using a subject set
 type CheckPermissionRequest struct {
-	CheckPermissionRequestWithSubjectId *CheckPermissionRequestWithSubjectId
-	CheckPermissionRequestWithSubjectSet *CheckPermissionRequestWithSubjectSet
+	// The namespace of the permission check
+	Namespace string `json:"namespace"`
+	// The object to check permissions on
+	Object string `json:"object"`
+	// The relation/permission to check
+	Relation string `json:"relation"`
+	SubjectSet SubjectSetRequest `json:"subject_set"`
 }
 
-// CheckPermissionRequestWithSubjectIdAsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestWithSubjectId wrapped in CheckPermissionRequest
-func CheckPermissionRequestWithSubjectIdAsCheckPermissionRequest(v *CheckPermissionRequestWithSubjectId) CheckPermissionRequest {
-	return CheckPermissionRequest{
-		CheckPermissionRequestWithSubjectId: v,
+type _CheckPermissionRequest CheckPermissionRequest
+
+// NewCheckPermissionRequest instantiates a new CheckPermissionRequest object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewCheckPermissionRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest) *CheckPermissionRequest {
+	this := CheckPermissionRequest{}
+	this.Namespace = namespace
+	this.Object = object
+	this.Relation = relation
+	this.SubjectSet = subjectSet
+	return &this
+}
+
+// NewCheckPermissionRequestWithDefaults instantiates a new CheckPermissionRequest object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewCheckPermissionRequestWithDefaults() *CheckPermissionRequest {
+	this := CheckPermissionRequest{}
+	return &this
+}
+
+// GetNamespace returns the Namespace field value
+func (o *CheckPermissionRequest) GetNamespace() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
+
+	return o.Namespace
 }
 
-// CheckPermissionRequestWithSubjectSetAsCheckPermissionRequest is a convenience function that returns CheckPermissionRequestWithSubjectSet wrapped in CheckPermissionRequest
-func CheckPermissionRequestWithSubjectSetAsCheckPermissionRequest(v *CheckPermissionRequestWithSubjectSet) CheckPermissionRequest {
-	return CheckPermissionRequest{
-		CheckPermissionRequestWithSubjectSet: v,
+// GetNamespaceOk returns a tuple with the Namespace field value
+// and a boolean to check if the value has been set.
+func (o *CheckPermissionRequest) GetNamespaceOk() (*string, bool) {
+	if o == nil {
+		return nil, false
 	}
+	return &o.Namespace, true
 }
 
+// SetNamespace sets field value
+func (o *CheckPermissionRequest) SetNamespace(v string) {
+	o.Namespace = v
+}
 
-// Unmarshal JSON data into one of the pointers in the struct
-func (dst *CheckPermissionRequest) UnmarshalJSON(data []byte) error {
-	var err error
-	match := 0
-	// try to unmarshal data into CheckPermissionRequestWithSubjectId
-	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestWithSubjectId)
-	if err == nil {
-		jsonCheckPermissionRequestWithSubjectId, _ := json.Marshal(dst.CheckPermissionRequestWithSubjectId)
-		if string(jsonCheckPermissionRequestWithSubjectId) == "{}" { // empty struct
-			dst.CheckPermissionRequestWithSubjectId = nil
-		} else {
-			if err = validator.Validate(dst.CheckPermissionRequestWithSubjectId); err != nil {
-				dst.CheckPermissionRequestWithSubjectId = nil
-			} else {
-				match++
-			}
+// GetObject returns the Object field value
+func (o *CheckPermissionRequest) GetObject() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Object
+}
+
+// GetObjectOk returns a tuple with the Object field value
+// and a boolean to check if the value has been set.
+func (o *CheckPermissionRequest) GetObjectOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Object, true
+}
+
+// SetObject sets field value
+func (o *CheckPermissionRequest) SetObject(v string) {
+	o.Object = v
+}
+
+// GetRelation returns the Relation field value
+func (o *CheckPermissionRequest) GetRelation() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Relation
+}
+
+// GetRelationOk returns a tuple with the Relation field value
+// and a boolean to check if the value has been set.
+func (o *CheckPermissionRequest) GetRelationOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Relation, true
+}
+
+// SetRelation sets field value
+func (o *CheckPermissionRequest) SetRelation(v string) {
+	o.Relation = v
+}
+
+// GetSubjectSet returns the SubjectSet field value
+func (o *CheckPermissionRequest) GetSubjectSet() SubjectSetRequest {
+	if o == nil {
+		var ret SubjectSetRequest
+		return ret
+	}
+
+	return o.SubjectSet
+}
+
+// GetSubjectSetOk returns a tuple with the SubjectSet field value
+// and a boolean to check if the value has been set.
+func (o *CheckPermissionRequest) GetSubjectSetOk() (*SubjectSetRequest, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.SubjectSet, true
+}
+
+// SetSubjectSet sets field value
+func (o *CheckPermissionRequest) SetSubjectSet(v SubjectSetRequest) {
+	o.SubjectSet = v
+}
+
+func (o CheckPermissionRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CheckPermissionRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["namespace"] = o.Namespace
+	toSerialize["object"] = o.Object
+	toSerialize["relation"] = o.Relation
+	toSerialize["subject_set"] = o.SubjectSet
+	return toSerialize, nil
+}
+
+func (o *CheckPermissionRequest) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"namespace",
+		"object",
+		"relation",
+		"subject_set",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
-	} else {
-		dst.CheckPermissionRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into CheckPermissionRequestWithSubjectSet
-	err = newStrictDecoder(data).Decode(&dst.CheckPermissionRequestWithSubjectSet)
-	if err == nil {
-		jsonCheckPermissionRequestWithSubjectSet, _ := json.Marshal(dst.CheckPermissionRequestWithSubjectSet)
-		if string(jsonCheckPermissionRequestWithSubjectSet) == "{}" { // empty struct
-			dst.CheckPermissionRequestWithSubjectSet = nil
-		} else {
-			if err = validator.Validate(dst.CheckPermissionRequestWithSubjectSet); err != nil {
-				dst.CheckPermissionRequestWithSubjectSet = nil
-			} else {
-				match++
-			}
-		}
-	} else {
-		dst.CheckPermissionRequestWithSubjectSet = nil
+	varCheckPermissionRequest := _CheckPermissionRequest{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCheckPermissionRequest)
+
+	if err != nil {
+		return err
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.CheckPermissionRequestWithSubjectId = nil
-		dst.CheckPermissionRequestWithSubjectSet = nil
+	*o = CheckPermissionRequest(varCheckPermissionRequest)
 
-		return fmt.Errorf("data matches more than one schema in oneOf(CheckPermissionRequest)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(CheckPermissionRequest)")
-	}
-}
-
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src CheckPermissionRequest) MarshalJSON() ([]byte, error) {
-	if src.CheckPermissionRequestWithSubjectId != nil {
-		return json.Marshal(&src.CheckPermissionRequestWithSubjectId)
-	}
-
-	if src.CheckPermissionRequestWithSubjectSet != nil {
-		return json.Marshal(&src.CheckPermissionRequestWithSubjectSet)
-	}
-
-	return nil, nil // no data in oneOf schemas
-}
-
-// Get the actual instance
-func (obj *CheckPermissionRequest) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.CheckPermissionRequestWithSubjectId != nil {
-		return obj.CheckPermissionRequestWithSubjectId
-	}
-
-	if obj.CheckPermissionRequestWithSubjectSet != nil {
-		return obj.CheckPermissionRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
-}
-
-// Get the actual instance value
-func (obj CheckPermissionRequest) GetActualInstanceValue() (interface{}) {
-	if obj.CheckPermissionRequestWithSubjectId != nil {
-		return *obj.CheckPermissionRequestWithSubjectId
-	}
-
-	if obj.CheckPermissionRequestWithSubjectSet != nil {
-		return *obj.CheckPermissionRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
+	return err
 }
 
 type NullableCheckPermissionRequest struct {

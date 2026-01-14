@@ -7,14 +7,13 @@ Name | Type | Description | Notes
 **Namespace** | **string** | The namespace of the permission check | 
 **Object** | **string** | The object to check permissions on | 
 **Relation** | **string** | The relation/permission to check | 
-**SubjectId** | **string** | Direct subject identifier | 
 **SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |  | 
 
 ## Methods
 
 ### NewCheckPermissionRequest
 
-`func NewCheckPermissionRequest(namespace string, object string, relation string, subjectId string, subjectSet SubjectSetRequest, ) *CheckPermissionRequest`
+`func NewCheckPermissionRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *CheckPermissionRequest`
 
 NewCheckPermissionRequest instantiates a new CheckPermissionRequest object
 This constructor will assign default values to properties that have it defined,
@@ -87,26 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *CheckPermissionRequest) SetRelation(v string)`
 
 SetRelation sets Relation field to given value.
-
-
-### GetSubjectId
-
-`func (o *CheckPermissionRequest) GetSubjectId() string`
-
-GetSubjectId returns the SubjectId field if non-nil, zero value otherwise.
-
-### GetSubjectIdOk
-
-`func (o *CheckPermissionRequest) GetSubjectIdOk() (*string, bool)`
-
-GetSubjectIdOk returns a tuple with the SubjectId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSubjectId
-
-`func (o *CheckPermissionRequest) SetSubjectId(v string)`
-
-SetSubjectId sets SubjectId field to given value.
 
 
 ### GetSubjectSet

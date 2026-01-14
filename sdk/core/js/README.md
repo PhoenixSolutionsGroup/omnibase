@@ -1,4 +1,4 @@
-# @omnibase/core-js@0.13.0
+# @omnibase/core-js@0.14.0
 
 A TypeScript SDK client for the api.omnibase.tech API.
 
@@ -73,7 +73,6 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1ConfigurationApi* | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config
 *V1ConfigurationApi* | [**uploadDatabaseMigrations**](docs/V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations
 *V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config
-*V1EventsApi* | [**connectWebSocket**](docs/V1EventsApi.md#connectwebsocket) | **GET** /api/v1/events | WebSocket connection for real-time events
 *V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitemoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item
 *V1PaymentsApi* | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID
 *V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create checkout session
@@ -91,6 +90,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1StorageApi* | [**uploadFile**](docs/V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage
 *V1StripeApi* | [**applyEnterpriseCustom**](docs/V1StripeApi.md#applyenterprisecustomoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-custom | Apply custom enterprise pricing
 *V1StripeApi* | [**applyEnterpriseTemplate**](docs/V1StripeApi.md#applyenterprisetemplateoperation) | **POST** /api/v1/stripe/admin/enterprise/apply-template | Apply enterprise template pricing
+*V1StripeApi* | [**calculatePriceCost**](docs/V1StripeApi.md#calculatepricecostoperation) | **POST** /api/v1/stripe/config/prices/{price_id}/calculate | Calculate cost for a price
 *V1StripeApi* | [**convertStripeIDToConfigID**](docs/V1StripeApi.md#convertstripeidtoconfigid) | **GET** /api/v1/stripe/convert/stripe-id/{stripe_id} | Convert Stripe ID to config ID
 *V1StripeApi* | [**getEnterprisePricesByID**](docs/V1StripeApi.md#getenterprisepricesbyid) | **GET** /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id} | Get enterprise prices by ID
 *V1StripeApi* | [**getEnterprisePricesByTemplate**](docs/V1StripeApi.md#getenterprisepricesbytemplate) | **GET** /api/v1/stripe/admin/enterprise/prices/by-template/{template} | Get enterprise prices by template
@@ -146,10 +146,11 @@ All URIs are relative to *https://api.omnibase.tech*
 - [BadRequestResponse](docs/BadRequestResponse.md)
 - [BillingInterval](docs/BillingInterval.md)
 - [BillingStatusResponse](docs/BillingStatusResponse.md)
+- [CalculatePriceCost200Response](docs/CalculatePriceCost200Response.md)
+- [CalculatePriceCostRequest](docs/CalculatePriceCostRequest.md)
+- [CalculatePriceCostResponse](docs/CalculatePriceCostResponse.md)
 - [CheckPermission200Response](docs/CheckPermission200Response.md)
 - [CheckPermissionRequest](docs/CheckPermissionRequest.md)
-- [CheckPermissionRequestWithSubjectId](docs/CheckPermissionRequestWithSubjectId.md)
-- [CheckPermissionRequestWithSubjectSet](docs/CheckPermissionRequestWithSubjectSet.md)
 - [CheckPermissionResponse](docs/CheckPermissionResponse.md)
 - [ConfigHistoryItem](docs/ConfigHistoryItem.md)
 - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
@@ -175,8 +176,6 @@ All URIs are relative to *https://api.omnibase.tech*
 - [CreatePortalResponse](docs/CreatePortalResponse.md)
 - [CreateRelationship200Response](docs/CreateRelationship200Response.md)
 - [CreateRelationshipRequest](docs/CreateRelationshipRequest.md)
-- [CreateRelationshipRequestWithSubjectId](docs/CreateRelationshipRequestWithSubjectId.md)
-- [CreateRelationshipRequestWithSubjectSet](docs/CreateRelationshipRequestWithSubjectSet.md)
 - [CreateRelationshipResponse](docs/CreateRelationshipResponse.md)
 - [CreateRole200Response](docs/CreateRole200Response.md)
 - [CreateRoleRequest](docs/CreateRoleRequest.md)
@@ -195,8 +194,6 @@ All URIs are relative to *https://api.omnibase.tech*
 - [DeleteObjectRequest](docs/DeleteObjectRequest.md)
 - [DeleteRelationship200Response](docs/DeleteRelationship200Response.md)
 - [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
-- [DeleteRelationshipRequestWithSubjectId](docs/DeleteRelationshipRequestWithSubjectId.md)
-- [DeleteRelationshipRequestWithSubjectSet](docs/DeleteRelationshipRequestWithSubjectSet.md)
 - [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
 - [DeleteRole200Response](docs/DeleteRole200Response.md)
 - [DeleteRoleResponse](docs/DeleteRoleResponse.md)
@@ -377,8 +374,8 @@ This TypeScript SDK client supports the [Fetch API](https://fetch.spec.whatwg.or
 and is automatically generated by the
 [OpenAPI Generator](https://openapi-generator.tech) project:
 
-- API version: `0.13.0`
-- Package version: `0.13.0`
+- API version: `0.14.0`
+- Package version: `0.14.0`
 - Generator version: `7.17.0`
 - Build package: `org.openapitools.codegen.languages.TypeScriptFetchClientCodegen`
 

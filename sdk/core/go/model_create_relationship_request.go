@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -13,124 +13,198 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
-// CreateRelationshipRequest - Create relationship request. Must provide exactly one of subject_id or subject_set.
+// checks if the CreateRelationshipRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateRelationshipRequest{}
+
+// CreateRelationshipRequest Create relationship request using a subject set
 type CreateRelationshipRequest struct {
-	CreateRelationshipRequestWithSubjectId *CreateRelationshipRequestWithSubjectId
-	CreateRelationshipRequestWithSubjectSet *CreateRelationshipRequestWithSubjectSet
+	// The namespace for the relationship
+	Namespace string `json:"namespace"`
+	// The object in the relationship
+	Object string `json:"object"`
+	// The relation type
+	Relation string `json:"relation"`
+	SubjectSet SubjectSetRequest `json:"subject_set"`
 }
 
-// CreateRelationshipRequestWithSubjectIdAsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestWithSubjectId wrapped in CreateRelationshipRequest
-func CreateRelationshipRequestWithSubjectIdAsCreateRelationshipRequest(v *CreateRelationshipRequestWithSubjectId) CreateRelationshipRequest {
-	return CreateRelationshipRequest{
-		CreateRelationshipRequestWithSubjectId: v,
+type _CreateRelationshipRequest CreateRelationshipRequest
+
+// NewCreateRelationshipRequest instantiates a new CreateRelationshipRequest object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewCreateRelationshipRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest) *CreateRelationshipRequest {
+	this := CreateRelationshipRequest{}
+	this.Namespace = namespace
+	this.Object = object
+	this.Relation = relation
+	this.SubjectSet = subjectSet
+	return &this
+}
+
+// NewCreateRelationshipRequestWithDefaults instantiates a new CreateRelationshipRequest object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewCreateRelationshipRequestWithDefaults() *CreateRelationshipRequest {
+	this := CreateRelationshipRequest{}
+	return &this
+}
+
+// GetNamespace returns the Namespace field value
+func (o *CreateRelationshipRequest) GetNamespace() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
+
+	return o.Namespace
 }
 
-// CreateRelationshipRequestWithSubjectSetAsCreateRelationshipRequest is a convenience function that returns CreateRelationshipRequestWithSubjectSet wrapped in CreateRelationshipRequest
-func CreateRelationshipRequestWithSubjectSetAsCreateRelationshipRequest(v *CreateRelationshipRequestWithSubjectSet) CreateRelationshipRequest {
-	return CreateRelationshipRequest{
-		CreateRelationshipRequestWithSubjectSet: v,
+// GetNamespaceOk returns a tuple with the Namespace field value
+// and a boolean to check if the value has been set.
+func (o *CreateRelationshipRequest) GetNamespaceOk() (*string, bool) {
+	if o == nil {
+		return nil, false
 	}
+	return &o.Namespace, true
 }
 
+// SetNamespace sets field value
+func (o *CreateRelationshipRequest) SetNamespace(v string) {
+	o.Namespace = v
+}
 
-// Unmarshal JSON data into one of the pointers in the struct
-func (dst *CreateRelationshipRequest) UnmarshalJSON(data []byte) error {
-	var err error
-	match := 0
-	// try to unmarshal data into CreateRelationshipRequestWithSubjectId
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestWithSubjectId)
-	if err == nil {
-		jsonCreateRelationshipRequestWithSubjectId, _ := json.Marshal(dst.CreateRelationshipRequestWithSubjectId)
-		if string(jsonCreateRelationshipRequestWithSubjectId) == "{}" { // empty struct
-			dst.CreateRelationshipRequestWithSubjectId = nil
-		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestWithSubjectId); err != nil {
-				dst.CreateRelationshipRequestWithSubjectId = nil
-			} else {
-				match++
-			}
+// GetObject returns the Object field value
+func (o *CreateRelationshipRequest) GetObject() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Object
+}
+
+// GetObjectOk returns a tuple with the Object field value
+// and a boolean to check if the value has been set.
+func (o *CreateRelationshipRequest) GetObjectOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Object, true
+}
+
+// SetObject sets field value
+func (o *CreateRelationshipRequest) SetObject(v string) {
+	o.Object = v
+}
+
+// GetRelation returns the Relation field value
+func (o *CreateRelationshipRequest) GetRelation() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Relation
+}
+
+// GetRelationOk returns a tuple with the Relation field value
+// and a boolean to check if the value has been set.
+func (o *CreateRelationshipRequest) GetRelationOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Relation, true
+}
+
+// SetRelation sets field value
+func (o *CreateRelationshipRequest) SetRelation(v string) {
+	o.Relation = v
+}
+
+// GetSubjectSet returns the SubjectSet field value
+func (o *CreateRelationshipRequest) GetSubjectSet() SubjectSetRequest {
+	if o == nil {
+		var ret SubjectSetRequest
+		return ret
+	}
+
+	return o.SubjectSet
+}
+
+// GetSubjectSetOk returns a tuple with the SubjectSet field value
+// and a boolean to check if the value has been set.
+func (o *CreateRelationshipRequest) GetSubjectSetOk() (*SubjectSetRequest, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.SubjectSet, true
+}
+
+// SetSubjectSet sets field value
+func (o *CreateRelationshipRequest) SetSubjectSet(v SubjectSetRequest) {
+	o.SubjectSet = v
+}
+
+func (o CreateRelationshipRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CreateRelationshipRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["namespace"] = o.Namespace
+	toSerialize["object"] = o.Object
+	toSerialize["relation"] = o.Relation
+	toSerialize["subject_set"] = o.SubjectSet
+	return toSerialize, nil
+}
+
+func (o *CreateRelationshipRequest) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"namespace",
+		"object",
+		"relation",
+		"subject_set",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
-	} else {
-		dst.CreateRelationshipRequestWithSubjectId = nil
 	}
 
-	// try to unmarshal data into CreateRelationshipRequestWithSubjectSet
-	err = newStrictDecoder(data).Decode(&dst.CreateRelationshipRequestWithSubjectSet)
-	if err == nil {
-		jsonCreateRelationshipRequestWithSubjectSet, _ := json.Marshal(dst.CreateRelationshipRequestWithSubjectSet)
-		if string(jsonCreateRelationshipRequestWithSubjectSet) == "{}" { // empty struct
-			dst.CreateRelationshipRequestWithSubjectSet = nil
-		} else {
-			if err = validator.Validate(dst.CreateRelationshipRequestWithSubjectSet); err != nil {
-				dst.CreateRelationshipRequestWithSubjectSet = nil
-			} else {
-				match++
-			}
-		}
-	} else {
-		dst.CreateRelationshipRequestWithSubjectSet = nil
+	varCreateRelationshipRequest := _CreateRelationshipRequest{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCreateRelationshipRequest)
+
+	if err != nil {
+		return err
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.CreateRelationshipRequestWithSubjectId = nil
-		dst.CreateRelationshipRequestWithSubjectSet = nil
+	*o = CreateRelationshipRequest(varCreateRelationshipRequest)
 
-		return fmt.Errorf("data matches more than one schema in oneOf(CreateRelationshipRequest)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(CreateRelationshipRequest)")
-	}
-}
-
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src CreateRelationshipRequest) MarshalJSON() ([]byte, error) {
-	if src.CreateRelationshipRequestWithSubjectId != nil {
-		return json.Marshal(&src.CreateRelationshipRequestWithSubjectId)
-	}
-
-	if src.CreateRelationshipRequestWithSubjectSet != nil {
-		return json.Marshal(&src.CreateRelationshipRequestWithSubjectSet)
-	}
-
-	return nil, nil // no data in oneOf schemas
-}
-
-// Get the actual instance
-func (obj *CreateRelationshipRequest) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.CreateRelationshipRequestWithSubjectId != nil {
-		return obj.CreateRelationshipRequestWithSubjectId
-	}
-
-	if obj.CreateRelationshipRequestWithSubjectSet != nil {
-		return obj.CreateRelationshipRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
-}
-
-// Get the actual instance value
-func (obj CreateRelationshipRequest) GetActualInstanceValue() (interface{}) {
-	if obj.CreateRelationshipRequestWithSubjectId != nil {
-		return *obj.CreateRelationshipRequestWithSubjectId
-	}
-
-	if obj.CreateRelationshipRequestWithSubjectSet != nil {
-		return *obj.CreateRelationshipRequestWithSubjectSet
-	}
-
-	// all schemas are nil
-	return nil
+	return err
 }
 
 type NullableCreateRelationshipRequest struct {

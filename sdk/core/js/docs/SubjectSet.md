@@ -18,9 +18,9 @@ import type { SubjectSet } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "namespace": Tenant,
-  "object": tenant_test_123,
-  "relation": member,
+  "namespace": User,
+  "object": 550e8400-e29b-41d4-a716-446655440000,
+  "relation": ,
 } satisfies SubjectSet
 
 console.log(example)

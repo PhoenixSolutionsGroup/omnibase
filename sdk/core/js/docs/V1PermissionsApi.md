@@ -16,7 +16,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 Check permission
 
-Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide either &#x60;subject_id&#x60; or &#x60;subject_set&#x60; (not both). The request uses oneOf  to enforce this constraint at the schema level.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
+Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a &#x60;subject_set&#x60; to identify the subject. For user permissions, use &#x60;namespace: \&quot;User\&quot;&#x60; and &#x60;object: \&quot;&lt;user_id&gt;\&quot;&#x60;.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
 
 ### Example
 
@@ -40,8 +40,8 @@ async function example() {
   const api = new V1PermissionsApi(config);
 
   const body = {
-    // CheckPermissionRequest | Permission check request with either subject_id or subject_set
-    checkPermissionRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"can_invite_user","subject_id":"550e8400-e29b-41d4-a716-446655440000"},
+    // CheckPermissionRequest | Permission check request with subject_set
+    checkPermissionRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"can_invite_user","subject_set":{"namespace":"User","object":"550e8400-e29b-41d4-a716-446655440000"}},
   } satisfies CheckPermissionOperationRequest;
 
   try {
@@ -61,7 +61,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **checkPermissionRequest** | [CheckPermissionRequest](CheckPermissionRequest.md) | Permission check request with either subject_id or subject_set | |
+| **checkPermissionRequest** | [CheckPermissionRequest](CheckPermissionRequest.md) | Permission check request with subject_set | |
 
 ### Return type
 
@@ -81,7 +81,7 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Permission check result |  -  |
-| **400** | Invalid request body - namespace, object, and relation cannot be empty, or both/neither subject fields provided |  -  |
+| **400** | Invalid request body - namespace, object, relation, and subject_set are required |  -  |
 | **401** | Not authenticated |  -  |
 | **500** | Failed to check permission |  -  |
 
@@ -94,7 +94,7 @@ example().catch(console.error);
 
 Create relationship
 
-Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide either &#x60;subject_id&#x60; or &#x60;subject_set&#x60; (not both). The request uses oneOf  to enforce this constraint at the schema level.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships 
+Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a &#x60;subject_set&#x60; to identify the subject. For user relationships, use &#x60;namespace: \&quot;User\&quot;&#x60; and &#x60;object: \&quot;&lt;user_id&gt;\&quot;&#x60;.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships 
 
 ### Example
 
@@ -118,8 +118,8 @@ async function example() {
   const api = new V1PermissionsApi(config);
 
   const body = {
-    // CreateRelationshipRequest | Relationship creation request with either subject_id or subject_set
-    createRelationshipRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"can_invite_user","subject_id":"550e8400-e29b-41d4-a716-446655440000"},
+    // CreateRelationshipRequest | Relationship creation request with subject_set
+    createRelationshipRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"owners","subject_set":{"namespace":"User","object":"550e8400-e29b-41d4-a716-446655440000"}},
   } satisfies CreateRelationshipOperationRequest;
 
   try {
@@ -139,7 +139,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **createRelationshipRequest** | [CreateRelationshipRequest](CreateRelationshipRequest.md) | Relationship creation request with either subject_id or subject_set | |
+| **createRelationshipRequest** | [CreateRelationshipRequest](CreateRelationshipRequest.md) | Relationship creation request with subject_set | |
 
 ### Return type
 
@@ -159,7 +159,7 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Relationship created successfully |  -  |
-| **400** | Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided |  -  |
+| **400** | Invalid request body - namespace, object, relation, and subject_set are required |  -  |
 | **401** | Not authenticated |  -  |
 | **404** | Not Found - Resource not found |  -  |
 | **500** | Failed to create relationship |  -  |
@@ -173,7 +173,7 @@ example().catch(console.error);
 
 Delete relationship
 
-Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide either &#x60;subject_id&#x60; or &#x60;subject_set&#x60; (not both). The request uses oneOf to enforce this constraint at the schema level.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships 
+Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a &#x60;subject_set&#x60; to identify the subject. For user relationships, use &#x60;namespace: \&quot;User\&quot;&#x60; and &#x60;object: \&quot;&lt;user_id&gt;\&quot;&#x60;.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships 
 
 ### Example
 
@@ -197,8 +197,8 @@ async function example() {
   const api = new V1PermissionsApi(config);
 
   const body = {
-    // DeleteRelationshipRequest | Relationship deletion request with either subject_id or subject_set
-    deleteRelationshipRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"can_invite_user","subject_id":"550e8400-e29b-41d4-a716-446655440000"},
+    // DeleteRelationshipRequest | Relationship deletion request with subject_set
+    deleteRelationshipRequest: {"namespace":"Tenant","object":"tenant_test_123","relation":"owners","subject_set":{"namespace":"User","object":"550e8400-e29b-41d4-a716-446655440000"}},
   } satisfies DeleteRelationshipOperationRequest;
 
   try {
@@ -218,7 +218,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **deleteRelationshipRequest** | [DeleteRelationshipRequest](DeleteRelationshipRequest.md) | Relationship deletion request with either subject_id or subject_set | |
+| **deleteRelationshipRequest** | [DeleteRelationshipRequest](DeleteRelationshipRequest.md) | Relationship deletion request with subject_set | |
 
 ### Return type
 
@@ -238,7 +238,7 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Relationship deleted successfully |  -  |
-| **400** | Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided |  -  |
+| **400** | Invalid request body - namespace, object, relation, and subject_set are required |  -  |
 | **401** | Not authenticated |  -  |
 | **404** | Not Found - Resource not found |  -  |
 | **500** | Failed to delete relationship |  -  |

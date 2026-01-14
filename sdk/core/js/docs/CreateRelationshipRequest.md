@@ -1,7 +1,7 @@
 
 # CreateRelationshipRequest
 
-Create relationship request. Must provide exactly one of subject_id or subject_set.
+Create relationship request using a subject set
 
 ## Properties
 
@@ -10,7 +10,6 @@ Name | Type
 `namespace` | string
 `object` | string
 `relation` | string
-`subjectId` | string
 `subjectSet` | [SubjectSetRequest](SubjectSetRequest.md)
 
 ## Example
@@ -20,10 +19,9 @@ import type { CreateRelationshipRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "namespace": null,
-  "object": null,
-  "relation": null,
-  "subjectId": null,
+  "namespace": Tenant,
+  "object": tenant_test_123,
+  "relation": owners,
   "subjectSet": null,
 } satisfies CreateRelationshipRequest
 

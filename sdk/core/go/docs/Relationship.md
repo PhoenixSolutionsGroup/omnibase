@@ -7,7 +7,6 @@ Name | Type | Description | Notes
 **Namespace** | Pointer to **string** | Namespace of the relation tuple | [optional] 
 **Object** | Pointer to **string** | Object of the relation tuple | [optional] 
 **Relation** | Pointer to **string** | Relation of the relation tuple | [optional] 
-**SubjectId** | Pointer to **string** | Subject ID of the relation tuple (optional, mutually exclusive with subject_set) | [optional] 
 **SubjectSet** | Pointer to [**SubjectSet**](SubjectSet.md) |  | [optional] 
 
 ## Methods
@@ -103,31 +102,6 @@ SetRelation sets Relation field to given value.
 `func (o *Relationship) HasRelation() bool`
 
 HasRelation returns a boolean if a field has been set.
-
-### GetSubjectId
-
-`func (o *Relationship) GetSubjectId() string`
-
-GetSubjectId returns the SubjectId field if non-nil, zero value otherwise.
-
-### GetSubjectIdOk
-
-`func (o *Relationship) GetSubjectIdOk() (*string, bool)`
-
-GetSubjectIdOk returns a tuple with the SubjectId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSubjectId
-
-`func (o *Relationship) SetSubjectId(v string)`
-
-SetSubjectId sets SubjectId field to given value.
-
-### HasSubjectId
-
-`func (o *Relationship) HasSubjectId() bool`
-
-HasSubjectId returns a boolean if a field has been set.
 
 ### GetSubjectSet
 

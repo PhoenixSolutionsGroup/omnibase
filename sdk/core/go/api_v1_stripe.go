@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.13.0
+API version: 0.14.0
 Contact: support@omnibase.dev
 */
 
@@ -345,6 +345,166 @@ func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterprise
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v Unauthorized
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 404 {
+			var v NotFound
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v InternalServerError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiCalculatePriceCostRequest struct {
+	ctx context.Context
+	ApiService *V1StripeAPIService
+	priceId string
+	calculatePriceCostRequest *CalculatePriceCostRequest
+}
+
+func (r ApiCalculatePriceCostRequest) CalculatePriceCostRequest(calculatePriceCostRequest CalculatePriceCostRequest) ApiCalculatePriceCostRequest {
+	r.calculatePriceCostRequest = &calculatePriceCostRequest
+	return r
+}
+
+func (r ApiCalculatePriceCostRequest) Execute() (*CalculatePriceCost200Response, *http.Response, error) {
+	return r.ApiService.CalculatePriceCostExecute(r)
+}
+
+/*
+CalculatePriceCost Calculate cost for a price
+
+Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
+
+## Authentication
+No authentication required for public endpoint.
+
+## Pricing Modes
+- **per_unit**: Simple flat pricing where cost = unit_amount × quantity
+- **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
+- **tiered (volume)**: The applicable tier's price applies to ALL units
+
+## Use Cases
+- Calculate estimated costs for usage preview
+- Display cost estimates in dashboard
+- Usage billing calculations
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param priceId Price config ID
+ @return ApiCalculatePriceCostRequest
+*/
+func (a *V1StripeAPIService) CalculatePriceCost(ctx context.Context, priceId string) ApiCalculatePriceCostRequest {
+	return ApiCalculatePriceCostRequest{
+		ApiService: a,
+		ctx: ctx,
+		priceId: priceId,
+	}
+}
+
+// Execute executes the request
+//  @return CalculatePriceCost200Response
+func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRequest) (*CalculatePriceCost200Response, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CalculatePriceCost200Response
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.CalculatePriceCost")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/stripe/config/prices/{price_id}/calculate"
+	localVarPath = strings.Replace(localVarPath, "{"+"price_id"+"}", url.PathEscape(parameterValueToString(r.priceId, "priceId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.calculatePriceCostRequest == nil {
+		return localVarReturnValue, nil, reportError("calculatePriceCostRequest is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.calculatePriceCostRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v BadRequest
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

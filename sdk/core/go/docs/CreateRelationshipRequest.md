@@ -7,14 +7,13 @@ Name | Type | Description | Notes
 **Namespace** | **string** | The namespace for the relationship | 
 **Object** | **string** | The object in the relationship | 
 **Relation** | **string** | The relation type | 
-**SubjectId** | **string** | Direct subject identifier | 
 **SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |  | 
 
 ## Methods
 
 ### NewCreateRelationshipRequest
 
-`func NewCreateRelationshipRequest(namespace string, object string, relation string, subjectId string, subjectSet SubjectSetRequest, ) *CreateRelationshipRequest`
+`func NewCreateRelationshipRequest(namespace string, object string, relation string, subjectSet SubjectSetRequest, ) *CreateRelationshipRequest`
 
 NewCreateRelationshipRequest instantiates a new CreateRelationshipRequest object
 This constructor will assign default values to properties that have it defined,
@@ -87,26 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateRelationshipRequest) SetRelation(v string)`
 
 SetRelation sets Relation field to given value.
-
-
-### GetSubjectId
-
-`func (o *CreateRelationshipRequest) GetSubjectId() string`
-
-GetSubjectId returns the SubjectId field if non-nil, zero value otherwise.
-
-### GetSubjectIdOk
-
-`func (o *CreateRelationshipRequest) GetSubjectIdOk() (*string, bool)`
-
-GetSubjectIdOk returns a tuple with the SubjectId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSubjectId
-
-`func (o *CreateRelationshipRequest) SetSubjectId(v string)`
-
-SetSubjectId sets SubjectId field to given value.
 
 
 ### GetSubjectSet

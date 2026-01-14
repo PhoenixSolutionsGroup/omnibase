@@ -5,8 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Namespace** | **string** | Namespace of the subject set | 
-**Object** | **string** | Object of the subject set | 
-**Relation** | Pointer to **string** | Relation of the subject set | [optional] 
+**Object** | **string** | Object of the subject set (e.g., user ID) | 
+**Relation** | Pointer to **string** | Relation of the subject set (optional) | [optional] 
 
 ## Methods
 
