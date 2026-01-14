@@ -1,3 +1,31 @@
+# [0.2.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.1.0...cli-v0.2.0) (2026-01-14)
+
+
+### Bug Fixes
+
+* **cli:** add default values for required Kratos environment variables ([40e99aa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/40e99aae14111d3733bdf34b6a6a5da4e6635417))
+* **cli:** add missing adm-zip dependency ([145df41](https://github.com/PhoenixSolutionsGroup/omnibase/commit/145df41ded35c64a80b3da57face700efaba270c))
+* **cli:** add postgres healthcheck and wait for healthy state ([0b443d6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0b443d65e2d7b0c9c016ff3e566cfe75347cff57))
+* **cli:** add test mode and refactor docker compose to base + override pattern ([713b302](https://github.com/PhoenixSolutionsGroup/omnibase/commit/713b3021f0f60d3b589afc38c12f0bc154674cdd))
+* **cli:** show docker compose output during execution ([e910727](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e91072798cec9eaaf65814023af1db6c7caa068f))
+* **docker:** add API_PUBLIC_URL for browser-facing auth redirects ([4657787](https://github.com/PhoenixSolutionsGroup/omnibase/commit/465778737b79697ec240c3c575c3a9cc19530aee))
+* **release:** add repository field for npm provenance ([d042f55](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d042f55a39e996e6dbc172ffe102de200b81db0d))
+* **release:** filter commits by package path in changelogs ([35721a1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35721a19019add4dbf4f64c74ad1c1c6226b0087))
+* **release:** remove --provenance flag and use npm token auth ([5309948](https://github.com/PhoenixSolutionsGroup/omnibase/commit/53099480197916568874da3a982b55ce0c752a45))
+* **release:** use bun publish to resolve workspace dependencies ([4885ee1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4885ee132f9f8735feba5e2d0c55cd8e9773631a))
+* **release:** use npm publish with OIDC provenance for trusted publishing ([f837221](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8372211e9d77ee1d7f2059cf1fbe76733b76104))
+
+
+### Features
+
+* **api:** add database typegen endpoint ([4346e04](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4346e04bcc16a3a9543275081e9b54bb2fc98c57))
+* **api:** add enterprise pricing support ([839ef19](https://github.com/PhoenixSolutionsGroup/omnibase/commit/839ef19056587801c47de72501c52888879967d1))
+* **api:** add stripe coupons and promotion codes support ([9876ddf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9876ddfe15f7eff02a1ca68e5b797b39a0c4242b))
+* **cli:** add environment variable expansion for webhook URLs ([c62dedd](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c62dedd58f0bb99bd3dbd8b290a485b8dc19186f))
+* **docker:** add workers service and require email verification ([d85cf48](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d85cf484ab0a616ede8ecdafd68994ff825c9ecd))
+* **permissions:** add tenant owner role management permissions ([46fa406](https://github.com/PhoenixSolutionsGroup/omnibase/commit/46fa40642988a1329029d6890ab534f24b98a852))
+* **stripe:** support multiple webhooks with pull and cleanup ([f8dea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f8dea9d31909be9541203a873a0aa9a92f737b99))
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
