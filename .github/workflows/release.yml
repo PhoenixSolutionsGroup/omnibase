@@ -364,6 +364,10 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         run: bun install --ignore-scripts
 
+      - name: Pull latest changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: git pull --rebase origin main
+
       - name: Build package
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.package }}
@@ -456,6 +460,10 @@ jobs:
       - name: Install dependencies (skip lifecycle scripts)
         if: steps.changes.outputs.has_changes == 'true'
         run: bun install --ignore-scripts
+
+      - name: Pull latest changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: git pull --rebase origin main
 
       - name: Release
         if: steps.changes.outputs.has_changes == 'true'
