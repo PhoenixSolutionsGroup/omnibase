@@ -306,6 +306,21 @@ services:
     networks:
       - app-network
 
+  # Workers - Hono app for background jobs
+  workers:
+    image: oven/bun:latest
+    working_dir: /app
+    volumes:
+      - ${OMNIBASE_PROJECT_DIR}/omnibase/workers:/app
+    ports:
+      - "8787:8787"
+    environment:
+      - PORT=8787
+    command: sh -c "bun install && bun run dev"
+    networks:
+      - app-network
+    restart: unless-stopped
+
 networks:
   app-network:
     driver: bridge

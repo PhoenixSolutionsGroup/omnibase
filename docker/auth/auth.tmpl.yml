@@ -79,6 +79,10 @@ selfservice:
     login:
       ui_url: ${WEBSITE_LOGIN_URL}
       lifespan: 10m
+      after:
+        password:
+          hooks:
+            - hook: require_verified_address
 
     registration:
       lifespan: 10m
