@@ -1,3 +1,10 @@
+## [0.3.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.4...react-v0.3.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** build TypeScript declarations before npm publish ([45298b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/45298b6d4b3ddc464760a3361f694ed56526ce2f))
+
 ## [0.3.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.3...react-v0.3.4) (2026-01-14)
 
 
