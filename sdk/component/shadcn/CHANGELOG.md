@@ -1,3 +1,10 @@
+## [0.7.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.1...shadcn-v0.7.2) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** use find instead of glob for .d.ts file check ([38ea742](https://github.com/PhoenixSolutionsGroup/omnibase/commit/38ea742fd2735cce8b6dfeeeba26946a7f0f66f1))
+
 ## [0.7.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.0...shadcn-v0.7.1) (2026-01-15)
 
 
