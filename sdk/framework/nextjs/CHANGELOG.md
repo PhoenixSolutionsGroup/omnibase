@@ -1,3 +1,12 @@
+## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.0...nextjs-v0.8.1) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** build TypeScript declarations before npm publish ([45298b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/45298b6d4b3ddc464760a3361f694ed56526ce2f))
+* **release:** use find instead of glob for .d.ts file check ([38ea742](https://github.com/PhoenixSolutionsGroup/omnibase/commit/38ea742fd2735cce8b6dfeeeba26946a7f0f66f1))
+* **sdk/nextjs:** use @ory/client-fetch types for flow compatibility ([a7411b3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a7411b3d9aa15bd1496c4bfdd53796687082fc57))
+
 # [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.7.0...nextjs-v0.8.0) (2026-01-14)
 
 
