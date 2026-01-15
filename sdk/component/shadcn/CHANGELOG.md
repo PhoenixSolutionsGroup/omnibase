@@ -1,3 +1,10 @@
+## [0.7.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.0...shadcn-v0.7.1) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** build TypeScript declarations before npm publish ([45298b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/45298b6d4b3ddc464760a3361f694ed56526ce2f))
+
 # [0.7.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.6.2...shadcn-v0.7.0) (2026-01-14)
 
 
