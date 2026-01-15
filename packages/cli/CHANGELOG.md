@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.2.0...cli-v0.2.1) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** build TypeScript declarations before npm publish ([45298b6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/45298b6d4b3ddc464760a3361f694ed56526ce2f))
+
 # [0.2.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.1.0...cli-v0.2.0) (2026-01-14)
 
 
