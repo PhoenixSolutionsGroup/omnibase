@@ -1,3 +1,10 @@
+## [0.3.6](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.5...react-v0.3.6) (2026-01-15)
+
+
+### Bug Fixes
+
+* **release:** use find instead of glob for .d.ts file check ([38ea742](https://github.com/PhoenixSolutionsGroup/omnibase/commit/38ea742fd2735cce8b6dfeeeba26946a7f0f66f1))
+
 ## [0.3.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.4...react-v0.3.5) (2026-01-15)
 
 
