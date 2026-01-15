@@ -19,7 +19,7 @@ module.exports = {
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/exec', {
       prepareCmd: 'npm pkg set version=${nextRelease.version} && bun run build',
-      publishCmd: 'ls dist/**/*.d.ts > /dev/null 2>&1 || (echo "ERROR: No .d.ts files" && exit 1) && bun pm pack && npm publish *.tgz --access public && rm *.tgz'
+      publishCmd: 'find dist -name "*.d.ts" | grep -q . || (echo "ERROR: No .d.ts files" && exit 1) && bun pm pack && npm publish *.tgz --access public && rm *.tgz'
     }],
     ['@semantic-release/git', {
       assets: ['CHANGELOG.md', 'package.json'],
