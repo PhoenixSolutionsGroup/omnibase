@@ -15,7 +15,7 @@ import type {
   RegistrationFlow,
   SettingsFlow,
   VerificationFlow,
-} from "@ory/client";
+} from "@ory/client-fetch";
 import { redirect } from "next/navigation";
 
 const SESSION_VERIFIED_ADDRESS_REQUIRED_ERROR_ID = 4000010;

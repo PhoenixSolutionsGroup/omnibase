@@ -7,15 +7,17 @@ import {
   getLogoutFlow as logoutFlow,
 } from "@ory/nextjs/app";
 
-import type {
-  LoginFlow,
-  LogoutFlow,
-  RecoveryFlow,
-  RegistrationFlow,
-  SettingsFlow,
-  VerificationFlow,
-} from "@ory/client";
-import { FrontendApi, Configuration, type FlowError } from "@ory/client-fetch";
+import {
+  FrontendApi,
+  Configuration,
+  type FlowError,
+  type LoginFlow,
+  type LogoutFlow,
+  type RecoveryFlow,
+  type RegistrationFlow,
+  type SettingsFlow,
+  type VerificationFlow,
+} from "@ory/client-fetch";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
