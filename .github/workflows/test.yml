@@ -1,0 +1,183 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================
+  # Check if tests should be skipped
+  # ============================================
+  check-skip:
+    name: Check Skip
+    runs-on: ubuntu-latest
+    outputs:
+      skip_tests: ${{ steps.check.outputs.skip_tests }}
+    steps:
+      - name: Check commit message for skip pattern
+        id: check
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MSG" == *"[skip tests]"* ]] || [[ "$COMMIT_MSG" == *"[skip ci tests]"* ]]; then
+            echo "skip_tests=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Skipping tests due to commit message pattern"
+          else
+            echo "skip_tests=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ============================================
+  # Run tests (required for all releases)
+  # Skip with [skip tests] or [skip ci tests] in commit message
+  # ============================================
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [check-skip]
+    if: needs.check-skip.outputs.skip_tests != 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          cache: true
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+          cache: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache k6 binary
+        id: cache-k6
+        uses: actions/cache@v4
+        with:
+          path: ~/k6
+          key: k6-${{ runner.os }}-v0.54.0
+
+      - name: Install k6
+        if: steps.cache-k6.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/k6
+          curl -L https://github.com/grafana/k6/releases/download/v0.54.0/k6-v0.54.0-linux-amd64.tar.gz | tar xz --strip-components=1 -C ~/k6
+
+      - name: Add k6 to PATH
+        run: echo "$HOME/k6" >> $GITHUB_PATH
+
+      - name: Install schemathesis
+        run: pip install schemathesis
+
+      - name: Generate and build core-js SDK
+        run: |
+          bun run generate:sdk --js-only
+          cd sdk/core/js && bun run build
+
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
+
+      - name: Build and install CLI globally
+        run: bun run build && bun link
+        working-directory: packages/cli
+
+      - name: Create test environment config
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: |
+          mkdir -p tests/api/omnibase/environments
+          cat > tests/api/omnibase/environments/.env.local <<EOF
+          OMNIBASE_API_URL=http://localhost:8080
+          OMNIBASE_SERVICE_KEY=VERY_SECRET_KEY
+          STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+          EOF
+          sed -i 's/^[[:space:]]*//' tests/api/omnibase/environments/.env.local
+
+      - name: Start OmniBase
+        working-directory: tests/api
+        run: |
+          omnibase start --mode test &
+          echo "Waiting for services to be ready..."
+
+          # Wait for API to be live first
+          echo "Waiting for API..."
+          for i in {1..60}; do
+            if curl -sf http://localhost:8080/health > /dev/null 2>&1; then
+              echo "API is live!"
+              break
+            fi
+            echo "API attempt $i/60..."
+            sleep 5
+          done
+
+          # Wait for all services to be ready (database, auth, permissions)
+          echo "Waiting for all services to be ready..."
+          for i in {1..60}; do
+            HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
+            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+              echo "All services are ready!"
+              echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
+              break
+            fi
+            echo "Services not ready yet (attempt $i/60)..."
+            echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
+            sleep 5
+          done
+
+      - name: Sync test environment
+        working-directory: tests/api
+        run: omnibase sync --env local all
+
+      - name: Restart auth and permissions
+        working-directory: tests/api
+        run: omnibase restart --mode test --env local auth permissions
+
+      - name: Wait for services after sync
+        run: |
+          echo "Waiting for services after sync..."
+
+          # Wait for all services to be ready via unified health check
+          for i in {1..60}; do
+            HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
+            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+              echo "All services are ready!"
+              echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
+              break
+            fi
+            echo "Services not ready yet (attempt $i/60)..."
+            echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
+            sleep 2
+          done
+
+      - name: Run API tests
+        env:
+          API_URL: http://localhost:8080
+          SERVICE_KEY: VERY_SECRET_KEY
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: bun run test:api:local integration
+
+      - name: Show service logs on failure
+        if: "!success()"
+        run: |
+          echo "=== API Logs (errors) ==="
+          docker logs api-rest-api-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
+          echo ""
+          echo "=== Permissions Logs (errors) ==="
+          docker logs api-permissions-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
+          echo ""
+          echo "=== Auth Logs (errors) ==="
+          docker logs api-auth-1 2>&1 | grep -E "(error|Error|ERROR|failed|Failed)" -C 5 || true
+
+      - name: Stop OmniBase
+        if: always()
+        working-directory: tests/api
+        run: omnibase stop || true
