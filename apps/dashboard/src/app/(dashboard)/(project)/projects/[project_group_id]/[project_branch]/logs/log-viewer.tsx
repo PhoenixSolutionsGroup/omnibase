@@ -9,7 +9,7 @@ interface Log {
   message?: string;
   severity?: string;
   source?: string;
-  service_type?: string;
+  service_name?: string;
   labels?: Record<string, string>;
   metadata?: Record<string, any>;
 }
@@ -18,22 +18,20 @@ const MANAGED_HOSTING_API_URL = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
 if (!MANAGED_HOSTING_API_URL)
   throw new Error("NEXT_PUBLIC_MANAGED_HOSTING_API_URL must be set");
 
-// Service type labels and colors
+// Service name labels and colors
 const SERVICE_CONFIG: Record<string, { label: string; className: string }> = {
-  all: { label: "All", className: "bg-gray-100 text-gray-700 border-gray-200" },
+  all: { label: "ALL", className: "bg-gray-100 text-gray-700 border-gray-200" },
   api: { label: "API", className: "bg-blue-50 text-blue-700 border-blue-200" },
-  "auth-pub": { label: "Auth Pub", className: "bg-green-50 text-green-700 border-green-200" },
-  "auth-adm": { label: "Auth Adm", className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  "perm-read": { label: "Perm Read", className: "bg-purple-50 text-purple-700 border-purple-200" },
-  "perm-write": { label: "Perm Write", className: "bg-violet-50 text-violet-700 border-violet-200" },
-  postgrest: { label: "PostgREST", className: "bg-orange-50 text-orange-700 border-orange-200" },
+  auth: { label: "AUTH", className: "bg-green-50 text-green-700 border-green-200" },
+  perm: { label: "PERM", className: "bg-purple-50 text-purple-700 border-purple-200" },
+  postgrest: { label: "POSTGREST", className: "bg-orange-50 text-orange-700 border-orange-200" },
 };
 
-const getServiceTypeBadge = (serviceType?: string) => {
-  if (!serviceType) return null;
+const getServiceNameBadge = (serviceName?: string) => {
+  if (!serviceName) return null;
 
-  const config = SERVICE_CONFIG[serviceType] || {
-    label: serviceType,
+  const config = SERVICE_CONFIG[serviceName] || {
+    label: serviceName.toUpperCase(),
     className: "bg-gray-100 text-gray-700 border-gray-200",
   };
 
@@ -155,7 +153,7 @@ export function LogViewer({
         `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
         window.location.origin
       );
-      url.searchParams.set("service_type", serviceType);
+      url.searchParams.set("service_name", serviceType);
       url.searchParams.set("limit", limit.toString());
       url.searchParams.set("end_time", endTime);
       // Don't use tail=true for historical logs - we want older logs, not newest
@@ -202,7 +200,7 @@ export function LogViewer({
         `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
         window.location.origin
       );
-      url.searchParams.set("service_type", serviceType);
+      url.searchParams.set("service_name", serviceType);
       url.searchParams.set("limit", "20");
       url.searchParams.set("start_time", startTime);
       url.searchParams.set("tail", "true");
@@ -296,7 +294,7 @@ export function LogViewer({
                   </td>
                   {serviceType === "all" && (
                     <td className="px-2 py-2">
-                      {getServiceTypeBadge(log.service_type)}
+                      {getServiceNameBadge(log.service_name)}
                     </td>
                   )}
                   <td className="px-3 py-2 w-56">

@@ -29,7 +29,7 @@ export function TimeRangeSelector({
       <Select
         value={currentRange}
         onValueChange={(value) => {
-          window.location.href = `/projects/${project_group_id}/${project_branch}/logs?service_type=${activeService}&limit=${limit}&time_range=${value}`;
+          window.location.href = `/projects/${project_group_id}/${project_branch}/logs?service_name=${activeService}&limit=${limit}&time_range=${value}`;
         }}
       >
         <SelectTrigger className="w-[140px]">

@@ -21,26 +21,16 @@ interface LogsResponse {
   count: number;
 }
 
-// Map of service types to readable labels
+// Map of service names to readable labels
 const SERVICE_LABELS: Record<string, string> = {
   all: "All Services",
-  "auth-pub": "Auth Public",
-  "auth-adm": "Auth Admin",
-  "perm-read": "Permissions Read",
-  "perm-write": "Permissions Write",
-  api: "API Service",
+  api: "API",
+  auth: "Auth",
+  perm: "Permissions",
   postgrest: "PostgREST",
 };
 
-const SERVICE_ORDER = [
-  "all",
-  "api",
-  "auth-pub",
-  "auth-adm",
-  "perm-read",
-  "perm-write",
-  "postgrest",
-];
+const SERVICE_ORDER = ["all", "api", "auth", "perm", "postgrest"];
 
 interface LogsClientProps {
   projectId: string;
@@ -112,7 +102,7 @@ export function LogsClient({
           `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
           window.location.origin
         );
-        url.searchParams.set("service_type", activeService);
+        url.searchParams.set("service_name", activeService);
         url.searchParams.set("limit", limit.toString());
         url.searchParams.set("tail", "true");
         url.searchParams.set("start_time", getStartTime(timeRange));
@@ -159,7 +149,7 @@ export function LogsClient({
         {services.map((service) => (
           <a
             key={service.key}
-            href={`/projects/${projectGroupId}/${projectBranch}/logs?service_type=${service.key}&limit=${limit}`}
+            href={`/projects/${projectGroupId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
             className={`px-4 py-2 rounded border ${
               activeService === service.key
                 ? "bg-primary text-primary-foreground border-primary"

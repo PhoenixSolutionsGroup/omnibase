@@ -8,7 +8,7 @@ interface LogsPageProps {
     project_branch: string;
   }>;
   searchParams: Promise<{
-    service_type?: string;
+    service_name?: string;
     limit?: string;
     time_range?: string;
   }>;
@@ -26,7 +26,7 @@ export default async function LogsPage({
   }
 
   const {
-    service_type: activeService = "all",
+    service_name: activeService = "all",
     limit: limitParam = "100",
     time_range: timeRange = "7d",
   } = await searchParams;
