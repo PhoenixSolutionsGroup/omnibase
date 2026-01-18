@@ -20,6 +20,8 @@ type CreateTenantRequest struct {
 	Name string `json:"name" binding:"required,min=1" example:"Test Organization"`
 	// Billing email for Stripe customer
 	BillingEmail string `json:"billing_email" example:"billing@test.example.com"`
+	// Tenant type: "organization" for multi-user tenants, "individual" for single-user tenants
+	Type string `json:"type" example:"organization"`
 }
 
 // CreateTenantResponse represents the tenant creation response
@@ -88,10 +90,21 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 		stripeCustomerID = customerID
 	}
 
+	// Default to "organization" if type not provided
+	tenantType := req.Type
+	if tenantType == "" {
+		tenantType = "organization"
+	}
+	// Validate tenant type
+	if tenantType != "organization" && tenantType != "individual" {
+		handlers.NewBadRequestResponse(ctx, "Invalid tenant type. Must be 'organization' or 'individual'")
+		return
+	}
+
 	tenant := models.Tenant{
 		ID:               uuid.New().String(),
 		Name:             req.Name,
-		Type:             "organization",
+		Type:             tenantType,
 		StripeCustomerID: &stripeCustomerID,
 		CreatedAt:        time.Now(),
 		UpdatedAt:        time.Now(),

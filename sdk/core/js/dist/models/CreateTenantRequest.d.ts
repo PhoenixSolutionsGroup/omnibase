@@ -27,7 +27,21 @@ export interface CreateTenantRequest {
      * @memberof CreateTenantRequest
      */
     billingEmail?: string;
+    /**
+     * Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified.
+     * @type {string}
+     * @memberof CreateTenantRequest
+     */
+    type?: CreateTenantRequestTypeEnum;
 }
+/**
+ * @export
+ */
+export declare const CreateTenantRequestTypeEnum: {
+    readonly Organization: "organization";
+    readonly Individual: "individual";
+};
+export type CreateTenantRequestTypeEnum = typeof CreateTenantRequestTypeEnum[keyof typeof CreateTenantRequestTypeEnum];
 /**
  * Check if a given object implements the CreateTenantRequest interface.
  */

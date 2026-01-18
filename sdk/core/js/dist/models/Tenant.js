@@ -13,12 +13,20 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TenantTypeEnum = void 0;
 exports.instanceOfTenant = instanceOfTenant;
 exports.TenantFromJSON = TenantFromJSON;
 exports.TenantFromJSONTyped = TenantFromJSONTyped;
 exports.TenantToJSON = TenantToJSON;
 exports.TenantToJSONTyped = TenantToJSONTyped;
 const TenantSettings_1 = require("./TenantSettings");
+/**
+ * @export
+ */
+exports.TenantTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+};
 /**
  * Check if a given object implements the Tenant interface.
  */

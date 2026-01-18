@@ -13,11 +13,19 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateTenantRequestTypeEnum = void 0;
 exports.instanceOfCreateTenantRequest = instanceOfCreateTenantRequest;
 exports.CreateTenantRequestFromJSON = CreateTenantRequestFromJSON;
 exports.CreateTenantRequestFromJSONTyped = CreateTenantRequestFromJSONTyped;
 exports.CreateTenantRequestToJSON = CreateTenantRequestToJSON;
 exports.CreateTenantRequestToJSONTyped = CreateTenantRequestToJSONTyped;
+/**
+ * @export
+ */
+exports.CreateTenantRequestTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+};
 /**
  * Check if a given object implements the CreateTenantRequest interface.
  */
@@ -36,6 +44,7 @@ function CreateTenantRequestFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'name': json['name'],
         'billingEmail': json['billing_email'] == null ? undefined : json['billing_email'],
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 function CreateTenantRequestToJSON(json) {
@@ -48,5 +57,6 @@ function CreateTenantRequestToJSONTyped(value, ignoreDiscriminator = false) {
     return {
         'name': value['name'],
         'billing_email': value['billingEmail'],
+        'type': value['type'],
     };
 }

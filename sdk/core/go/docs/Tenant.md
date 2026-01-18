@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **StripeCustomerId** | Pointer to **string** | Stripe customer ID (nullable initially) | [optional] 
 **EnterpriseTemplate** | Pointer to **string** | Enterprise pricing template applied to this tenant | [optional] 
 **EnterpriseId** | Pointer to **string** | Custom enterprise pricing ID for this tenant | [optional] 
-**Type** | **string** | Tenant type | 
+**Type** | **string** | Tenant type: &#39;organization&#39; for multi-user tenants with invitations and team management, &#39;individual&#39; for single-user tenants | 
 **CreatedAt** | **time.Time** | Timestamp when tenant was created | 
 **UpdatedAt** | **time.Time** | Timestamp when tenant was last updated | 
 **Settings** | Pointer to [**TenantSettings**](TenantSettings.md) |  | [optional] 

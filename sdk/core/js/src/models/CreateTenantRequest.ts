@@ -31,7 +31,24 @@ export interface CreateTenantRequest {
      * @memberof CreateTenantRequest
      */
     billingEmail?: string;
+    /**
+     * Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified.
+     * @type {string}
+     * @memberof CreateTenantRequest
+     */
+    type?: CreateTenantRequestTypeEnum;
 }
+
+
+/**
+ * @export
+ */
+export const CreateTenantRequestTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+} as const;
+export type CreateTenantRequestTypeEnum = typeof CreateTenantRequestTypeEnum[keyof typeof CreateTenantRequestTypeEnum];
+
 
 /**
  * Check if a given object implements the CreateTenantRequest interface.
@@ -53,6 +70,7 @@ export function CreateTenantRequestFromJSONTyped(json: any, ignoreDiscriminator:
         
         'name': json['name'],
         'billingEmail': json['billing_email'] == null ? undefined : json['billing_email'],
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 
@@ -69,6 +87,7 @@ export function CreateTenantRequestToJSONTyped(value?: CreateTenantRequest | nul
         
         'name': value['name'],
         'billing_email': value['billingEmail'],
+        'type': value['type'],
     };
 }
 

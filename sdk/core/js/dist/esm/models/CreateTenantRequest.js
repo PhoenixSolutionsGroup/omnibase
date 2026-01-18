@@ -12,6 +12,13 @@
  * Do not edit the class manually.
  */
 /**
+ * @export
+ */
+export const CreateTenantRequestTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+};
+/**
  * Check if a given object implements the CreateTenantRequest interface.
  */
 export function instanceOfCreateTenantRequest(value) {
@@ -29,6 +36,7 @@ export function CreateTenantRequestFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'name': json['name'],
         'billingEmail': json['billing_email'] == null ? undefined : json['billing_email'],
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 export function CreateTenantRequestToJSON(json) {
@@ -41,5 +49,6 @@ export function CreateTenantRequestToJSONTyped(value, ignoreDiscriminator = fals
     return {
         'name': value['name'],
         'billing_email': value['billingEmail'],
+        'type': value['type'],
     };
 }

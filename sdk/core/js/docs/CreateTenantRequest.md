@@ -9,6 +9,7 @@ Name | Type
 ------------ | -------------
 `name` | string
 `billingEmail` | string
+`type` | string
 
 ## Example
 
@@ -19,6 +20,7 @@ import type { CreateTenantRequest } from '@omnibase/core-js'
 const example = {
   "name": Test Organization,
   "billingEmail": billing@test.example.com,
+  "type": organization,
 } satisfies CreateTenantRequest
 
 console.log(example)

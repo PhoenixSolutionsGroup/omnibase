@@ -26,6 +26,8 @@ type CreateTenantRequest struct {
 	Name string `json:"name"`
 	// Billing email for Stripe customer
 	BillingEmail *string `json:"billing_email,omitempty"`
+	// Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified.
+	Type *string `json:"type,omitempty"`
 }
 
 type _CreateTenantRequest CreateTenantRequest
@@ -37,6 +39,8 @@ type _CreateTenantRequest CreateTenantRequest
 func NewCreateTenantRequest(name string) *CreateTenantRequest {
 	this := CreateTenantRequest{}
 	this.Name = name
+	var type_ string = "organization"
+	this.Type = &type_
 	return &this
 }
 
@@ -45,6 +49,8 @@ func NewCreateTenantRequest(name string) *CreateTenantRequest {
 // but it doesn't guarantee that properties required by API are set
 func NewCreateTenantRequestWithDefaults() *CreateTenantRequest {
 	this := CreateTenantRequest{}
+	var type_ string = "organization"
+	this.Type = &type_
 	return &this
 }
 
@@ -104,6 +110,38 @@ func (o *CreateTenantRequest) SetBillingEmail(v string) {
 	o.BillingEmail = &v
 }
 
+// GetType returns the Type field value if set, zero value otherwise.
+func (o *CreateTenantRequest) GetType() string {
+	if o == nil || IsNil(o.Type) {
+		var ret string
+		return ret
+	}
+	return *o.Type
+}
+
+// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateTenantRequest) GetTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.Type) {
+		return nil, false
+	}
+	return o.Type, true
+}
+
+// HasType returns a boolean if a field has been set.
+func (o *CreateTenantRequest) HasType() bool {
+	if o != nil && !IsNil(o.Type) {
+		return true
+	}
+
+	return false
+}
+
+// SetType gets a reference to the given string and assigns it to the Type field.
+func (o *CreateTenantRequest) SetType(v string) {
+	o.Type = &v
+}
+
 func (o CreateTenantRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -117,6 +155,9 @@ func (o CreateTenantRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize["name"] = o.Name
 	if !IsNil(o.BillingEmail) {
 		toSerialize["billing_email"] = o.BillingEmail
+	}
+	if !IsNil(o.Type) {
+		toSerialize["type"] = o.Type
 	}
 	return toSerialize, nil
 }

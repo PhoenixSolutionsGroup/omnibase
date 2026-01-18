@@ -58,11 +58,11 @@ export interface Tenant {
      */
     enterpriseId?: string;
     /**
-     * Tenant type
+     * Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants
      * @type {string}
      * @memberof Tenant
      */
-    type: string;
+    type: TenantTypeEnum;
     /**
      * Timestamp when tenant was created
      * @type {Date}
@@ -82,6 +82,17 @@ export interface Tenant {
      */
     settings?: TenantSettings;
 }
+
+
+/**
+ * @export
+ */
+export const TenantTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+} as const;
+export type TenantTypeEnum = typeof TenantTypeEnum[keyof typeof TenantTypeEnum];
+
 
 /**
  * Check if a given object implements the Tenant interface.

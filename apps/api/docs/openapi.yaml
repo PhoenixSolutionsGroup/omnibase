@@ -4321,7 +4321,10 @@ components:
           example: acme_corp
         type:
           type: string
-          description: Tenant type
+          enum:
+            - organization
+            - individual
+          description: 'Tenant type: ''organization'' for multi-user tenants with invitations and team management, ''individual'' for single-user tenants'
           example: organization
         created_at:
           type: string
@@ -7290,6 +7293,14 @@ components:
           format: email
           description: Billing email for Stripe customer
           example: billing@test.example.com
+        type:
+          type: string
+          enum:
+            - organization
+            - individual
+          default: organization
+          description: 'Tenant type: ''organization'' for multi-user tenants with invitations and team management, ''individual'' for single-user tenants. Defaults to ''organization'' if not specified.'
+          example: organization
     CreateTenantResponse:
       type: object
       description: Response after creating a tenant

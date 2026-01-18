@@ -4166,7 +4166,11 @@ components:
           type: string
           nullable: true
         type:
-          description: Tenant type
+          description: "Tenant type: 'organization' for multi-user tenants with invitations\
+            \ and team management, 'individual' for single-user tenants"
+          enum:
+          - organization
+          - individual
           example: organization
           type: string
         created_at:
@@ -10996,6 +11000,7 @@ components:
       example:
         billing_email: billing@test.example.com
         name: Test Organization
+        type: organization
       properties:
         name:
           description: Organization name
@@ -11006,6 +11011,16 @@ components:
           description: Billing email for Stripe customer
           example: billing@test.example.com
           format: email
+          type: string
+        type:
+          default: organization
+          description: "Tenant type: 'organization' for multi-user tenants with invitations\
+            \ and team management, 'individual' for single-user tenants. Defaults\
+            \ to 'organization' if not specified."
+          enum:
+          - organization
+          - individual
+          example: organization
           type: string
       required:
       - name

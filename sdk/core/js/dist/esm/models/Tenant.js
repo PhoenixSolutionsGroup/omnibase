@@ -13,6 +13,13 @@
  */
 import { TenantSettingsFromJSON, TenantSettingsToJSON, } from './TenantSettings';
 /**
+ * @export
+ */
+export const TenantTypeEnum = {
+    Organization: 'organization',
+    Individual: 'individual'
+};
+/**
  * Check if a given object implements the Tenant interface.
  */
 export function instanceOfTenant(value) {

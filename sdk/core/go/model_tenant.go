@@ -33,7 +33,7 @@ type Tenant struct {
 	EnterpriseTemplate *string `json:"enterprise_template,omitempty"`
 	// Custom enterprise pricing ID for this tenant
 	EnterpriseId *string `json:"enterprise_id,omitempty"`
-	// Tenant type
+	// Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants
 	Type string `json:"type"`
 	// Timestamp when tenant was created
 	CreatedAt time.Time `json:"created_at"`

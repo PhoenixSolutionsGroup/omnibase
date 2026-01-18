@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Organization name | 
 **BillingEmail** | Pointer to **string** | Billing email for Stripe customer | [optional] 
+**Type** | Pointer to **string** | Tenant type: &#39;organization&#39; for multi-user tenants with invitations and team management, &#39;individual&#39; for single-user tenants. Defaults to &#39;organization&#39; if not specified. | [optional] [default to "organization"]
 
 ## Methods
 
@@ -70,6 +71,31 @@ SetBillingEmail sets BillingEmail field to given value.
 `func (o *CreateTenantRequest) HasBillingEmail() bool`
 
 HasBillingEmail returns a boolean if a field has been set.
+
+### GetType
+
+`func (o *CreateTenantRequest) GetType() string`
+
+GetType returns the Type field if non-nil, zero value otherwise.
+
+### GetTypeOk
+
+`func (o *CreateTenantRequest) GetTypeOk() (*string, bool)`
+
+GetTypeOk returns a tuple with the Type field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetType
+
+`func (o *CreateTenantRequest) SetType(v string)`
+
+SetType sets Type field to given value.
+
+### HasType
+
+`func (o *CreateTenantRequest) HasType() bool`
+
+HasType returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
