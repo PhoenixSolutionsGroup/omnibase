@@ -44,7 +44,7 @@ omnibase start
 # API runs at http://localhost:8080
 ```
 
-Quick start guide at https://docs.omnibase.tech/guides/quickstart
+Quick start guide at https://docs.omnibase.tech/docs/guides/quickstart
 
 ---
 
