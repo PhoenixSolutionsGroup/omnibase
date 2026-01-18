@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.14.0...api-v0.15.0) (2026-01-18)
+
+
+### Features
+
+* **api:** add tenant type support (organization/individual) ([9ba2615](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9ba261518275a382a13afc8baf0c231e4395f6e2))
+
 # [0.14.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.13.0...api-v0.14.0) (2026-01-14)
 
 
