@@ -2,5 +2,13 @@
   "title": "Guides",
   "description": "Getting started and tutorials",
   "root": true,
-  "icon": "Book"
+  "icon": "Book",
+  "pages": [
+    "quickstart",
+    "authentication",
+    "multi-tenancy",
+    "rbac",
+    "stripe",
+    "storage"
+  ]
 }

@@ -1,0 +1,11 @@
+{
+  "title": "Concepts",
+  "description": "Architecture and mental models",
+  "icon": "Lightbulb",
+  "root": true,
+  "pages": [
+    "tenants",
+    "stripe-sync",
+    "permissions"
+  ]
+}

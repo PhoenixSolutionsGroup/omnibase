@@ -1,0 +1,370 @@
+---
+title: Document Storage
+description: Store and retrieve files with tenant isolation and RLS-based security
+---
+
+# Document Storage
+
+OmniBase provides S3-compatible file storage with Row-Level Security (RLS) enforcement. Files are securely isolated per tenant with customizable access policies based on file paths.
+
+**Key Features:**
+- Presigned URLs for direct browser uploads/downloads
+- PostgreSQL RLS enforcement via PostgREST
+- Custom metadata support
+- Tenant isolation by default
+- Path-based access control (e.g., `public/` directories)
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────┐     1. Request presigned URL     ┌─────────────┐
+│   Client    │ ────────────────────────────────►│  OmniBase   │
+│  (Browser)  │                                  │     API     │
+└─────────────┘                                  └──────┬──────┘
+      │                                                 │
+      │                                          2. Check RLS
+      │                                            permission
+      │                                                 │
+      │                                                 ▼
+      │                                          ┌─────────────┐
+      │                                          │  PostgREST  │
+      │                                          │ (RLS check) │
+      │                                          └─────────────┘
+      │
+      │  3. Upload/Download directly
+      │     using presigned URL
+      │
+      ▼
+┌─────────────┐
+│     S3      │
+│  (MinIO)    │
+└─────────────┘
+```
+
+Files are never proxied through the API server. Clients upload and download directly to S3 using time-limited presigned URLs (valid for 15 minutes).
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/storage/upload` | Get presigned upload URL |
+| POST | `/api/v1/storage/download` | Get presigned download URL |
+| DELETE | `/api/v1/storage/object` | Delete a file |
+
+---
+
+## Uploading Files
+
+### Step 1: Request Upload URL
+
+```typescript
+import { Configuration, V1StorageApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: 'http://localhost:8080',
+  headers: {
+    'X-Service-Key': 'your-service-key',
+    'X-User-Id': userId,
+    'X-Tenant-Id': tenantId,
+    'X-Postgrest-Token': postgrestJwt,
+  },
+});
+
+const storageApi = new V1StorageApi(config);
+
+const { data } = await storageApi.uploadFile({
+  uploadRequest: {
+    path: 'documents/report-2024.pdf',
+    metadata: {
+      description: 'Annual report',
+      uploaded_by: userId,
+    },
+  },
+});
+
+console.log('Upload URL:', data.data.upload_url);
+console.log('File path:', data.data.path);
+```
+
+### Step 2: Upload to S3
+
+Upload the file directly to S3 using the presigned URL:
+
+```typescript
+const file = document.getElementById('file-input').files[0];
+
+await fetch(data.data.upload_url, {
+  method: 'PUT',
+  body: file,
+  headers: {
+    'Content-Type': file.type,
+  },
+});
+```
+
+<Callout type="info">
+Presigned URLs expire after 15 minutes. Request a new URL if the upload fails due to expiration.
+</Callout>
+
+---
+
+## Downloading Files
+
+### Step 1: Request Download URL
+
+```typescript
+const { data } = await storageApi.downloadFile({
+  downloadRequest: {
+    path: 'documents/report-2024.pdf',
+  },
+});
+
+console.log('Download URL:', data.data.download_url);
+```
+
+### Step 2: Download from S3
+
+```typescript
+// Option 1: Direct browser download
+window.location.href = data.data.download_url;
+
+// Option 2: Fetch and process
+const response = await fetch(data.data.download_url);
+const blob = await response.blob();
+```
+
+---
+
+## Deleting Files
+
+```typescript
+const { data } = await storageApi.deleteObject({
+  deleteObjectRequest: {
+    path: 'documents/report-2024.pdf',
+  },
+});
+
+console.log(data.data.message); // "file deleted"
+```
+
+<Callout type="warning">
+Deletion removes both the file metadata from PostgreSQL and the file from S3. This operation cannot be undone.
+</Callout>
+
+---
+
+## File Paths
+
+You control the full path structure. Paths must:
+- Start with an alphanumeric character
+- Contain only: `a-z`, `A-Z`, `0-9`, `/`, `_`, `.`, ` `, `-`
+- Be 1-1024 characters long
+
+**Example path structures:**
+
+```
+avatars/user-123.png           # User avatars
+documents/invoices/2024-01.pdf # Nested directories
+public/assets/logo.png         # Public files
+private/user-123/notes.txt     # User-specific files
+```
+
+---
+
+## Security Model
+
+### Tenant Isolation
+
+Files are automatically isolated per tenant. The `tenant_id` is stored in the `storage.objects` table and enforced via RLS policies:
+
+```sql
+-- Files are only visible within the same tenant
+CREATE POLICY storage_objects_tenant_isolation ON storage.objects
+  USING (tenant_id = current_setting('request.jwt.claims')::json->>'tenant_id');
+```
+
+### Cross-Tenant Access
+
+Attempting to access files from another tenant returns 403 or 404:
+
+```typescript
+// User in Tenant A trying to access Tenant B's file
+const { data } = await storageApi.downloadFile({
+  downloadRequest: {
+    path: 'tenant-b-files/document.pdf', // Will fail
+  },
+});
+// Error: "Access denied" or "File not found"
+```
+
+### Path-Based Policies
+
+Create custom RLS policies based on path patterns. Common examples:
+
+**Public directory accessible to all tenant members:**
+
+```sql
+CREATE POLICY storage_public_read ON storage.objects
+  FOR SELECT
+  USING (
+    tenant_id = current_setting('request.jwt.claims')::json->>'tenant_id'
+    AND split_part(path, '/', 1) = 'public'
+  );
+```
+
+**User-specific directories:**
+
+```sql
+CREATE POLICY storage_user_files ON storage.objects
+  USING (
+    tenant_id = current_setting('request.jwt.claims')::json->>'tenant_id'
+    AND split_part(path, '/', 2) = current_setting('request.jwt.claims')::json->>'user_id'
+  );
+```
+
+---
+
+## Authentication
+
+All storage endpoints require authentication via one of:
+
+| Method | Headers Required |
+|--------|------------------|
+| Session Auth | Cookie: `omnibase_postgrest_jwt` or Header: `X-Postgrest-Token` |
+| Service Key Auth | `X-Service-Key` + `X-User-Id` + `X-Tenant-Id` + `X-Postgrest-Token` |
+
+### Getting a PostgREST JWT
+
+```typescript
+import { V1TenantsApi } from '@omnibase/core-js';
+
+const tenantsApi = new V1TenantsApi(config);
+
+const { data } = await tenantsApi.getTenantJWT();
+const postgrestToken = data.data.token;
+```
+
+---
+
+## Metadata
+
+Store custom metadata with each file:
+
+```typescript
+await storageApi.uploadFile({
+  uploadRequest: {
+    path: 'documents/contract.pdf',
+    metadata: {
+      document_type: 'contract',
+      client_name: 'Acme Corp',
+      version: 2,
+      tags: ['legal', 'signed'],
+    },
+  },
+});
+```
+
+Metadata is stored as JSONB in PostgreSQL and can be queried via PostgREST:
+
+```typescript
+// Query files by metadata using PostgREST
+const response = await fetch(
+  `${postgrestUrl}/objects?metadata->document_type=eq.contract`,
+  {
+    headers: {
+      Authorization: `Bearer ${postgrestToken}`,
+      'Accept-Profile': 'storage',
+    },
+  }
+);
+```
+
+---
+
+## Complete Example
+
+```typescript
+import { Configuration, V1StorageApi, V1TenantsApi } from '@omnibase/core-js';
+
+async function uploadDocument(file: File, tenantId: string, userId: string) {
+  const config = new Configuration({
+    basePath: process.env.OMNIBASE_API_URL,
+    headers: {
+      'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY,
+    },
+  });
+
+  // Get PostgREST token
+  const tenantsApi = new V1TenantsApi(config);
+  const { data: jwtData } = await tenantsApi.getTenantJWT({
+    headers: {
+      'X-User-Id': userId,
+      'X-Tenant-Id': tenantId,
+    },
+  });
+
+  // Request upload URL
+  const storageApi = new V1StorageApi(config);
+  const { data: uploadData } = await storageApi.uploadFile({
+    uploadRequest: {
+      path: `uploads/${Date.now()}-${file.name}`,
+      metadata: {
+        original_name: file.name,
+        content_type: file.type,
+        size: file.size,
+      },
+    },
+    headers: {
+      'X-User-Id': userId,
+      'X-Tenant-Id': tenantId,
+      'X-Postgrest-Token': jwtData.data.token,
+    },
+  });
+
+  // Upload to S3
+  await fetch(uploadData.data.upload_url, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type },
+  });
+
+  return uploadData.data.path;
+}
+```
+
+---
+
+## Error Handling
+
+| Status | Error | Cause |
+|--------|-------|-------|
+| 400 | Invalid path | Path doesn't match allowed pattern |
+| 401 | Missing JWT token | No PostgREST token provided |
+| 401 | Access denied | RLS policy denied the operation |
+| 404 | File not found | File doesn't exist or user lacks permission |
+
+```typescript
+try {
+  await storageApi.downloadFile({
+    downloadRequest: { path: 'missing-file.pdf' },
+  });
+} catch (error) {
+  if (error.response?.status === 404) {
+    console.log('File not found');
+  } else if (error.response?.status === 401) {
+    console.log('Access denied - check permissions');
+  }
+}
+```
+
+---
+
+## Next Steps
+
+- [Multi-Tenancy Guide](/docs/guides/multi-tenancy) — Understanding tenant isolation
+- [RBAC Guide](/docs/guides/rbac) — Role-based access control
+- [API Reference](/docs/reference/api/v1) — Complete API documentation

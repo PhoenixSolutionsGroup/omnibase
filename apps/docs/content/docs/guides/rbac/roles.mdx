@@ -1,0 +1,593 @@
+---
+title: Role Configuration
+description: Configure the required owner role and create custom roles
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+
+# Role Configuration
+
+Roles are defined in your project's `omnibase/permissions/roles.config.json` file and synced to OmniBase using the CLI. These serve as **templates** that are copied to each tenant when created.
+
+## UI Components
+
+OmniBase provides pre-built shadcn components for role management in `@omnibase/shadcn`:
+
+<Accordions>
+<Accordion title="RoleCreator Component">
+Create and edit roles with an autocomplete role name input and permission selector.
+
+```tsx
+import { RoleCreator } from '@omnibase/shadcn';
+
+<RoleCreator
+  definitions={namespaceDefinitions}
+  roles={existingRoles}
+  namespaceMap={{
+    project: projects.map(p => ({ id: p.id, label: p.name })),
+  }}
+  onRoleCreate={async (data) => {
+    await tenantsApi.createRole({
+      createRoleRequest: {
+        roleName: data.role_name,
+        permissions: data.permissions,
+      },
+    });
+  }}
+  onRoleUpdate={async (data) => {
+    await tenantsApi.updateRole({
+      roleId: data.role_id,
+      updateRoleRequest: { permissions: data.permissions },
+    });
+  }}
+/>
+```
+
+**Props:**
+- `definitions` — Namespace definitions from `getRoleDefinitions()`
+- `roles` — Existing roles for autocomplete suggestions
+- `namespaceMap` — Optional mapping of namespace to selectable resources
+- `onRoleCreate` — Callback when creating a new role
+- `onRoleUpdate` — Callback when editing an existing role
+</Accordion>
+
+<Accordion title="UserViewer Component">
+Display and manage team members with role updates and removal.
+
+```tsx
+import { UserViewer } from '@omnibase/shadcn';
+
+<UserViewer
+  users={tenantUsers}
+  availableRoles={['owner', 'admin', 'member']}
+  canEditUsers={hasPermission('tenant#update_user_role')}
+  onRoleUpdate={async (userId, newRole) => {
+    await tenantsApi.updateTenantUserRole({
+      updateTenantUserRoleRequest: { userId, role: newRole },
+    });
+  }}
+  onRemoveUser={async (userId) => {
+    await tenantsApi.removeTenantUser({
+      removeTenantUserRequest: { userId },
+    });
+  }}
+/>
+```
+
+**Props:**
+- `users` — Array of `TenantUserResponse` from `listTenantUsers()`
+- `availableRoles` — Role names for the dropdown
+- `canEditUsers` — Whether to show edit controls
+- `onRoleUpdate` — Callback for role changes
+- `onRemoveUser` — Callback for user removal
+</Accordion>
+
+<Accordion title="PermissionsSelector Component">
+Low-level permission picker for building permission strings.
+
+```tsx
+import { PermissionsSelector } from '@omnibase/shadcn';
+
+<PermissionsSelector
+  definitions={namespaceDefinitions}
+  namespaceMap={{
+    project: projects.map(p => ({ id: p.id, label: p.name })),
+  }}
+  onPermissionsChange={(rows) => {
+    console.log('Selected permissions:', rows);
+  }}
+  showPreview={true}
+/>
+```
+
+**Props:**
+- `definitions` — Namespace definitions with available relations
+- `namespaceMap` — Resource IDs for non-tenant namespaces
+- `onPermissionsChange` — Callback with permission rows
+- `showPreview` — Show preview of permission strings
+</Accordion>
+</Accordions>
+
+---
+
+## How Role Templates Work
+
+<Callout type="info">
+  The `roles.config.json` file defines **role templates**. When a tenant is created, OmniBase copies the current state of these templates to create isolated roles for that specific tenant.
+</Callout>
+
+```
+roles.config.json (Templates)
+        │
+        ▼ (copied on tenant creation)
+┌───────────────────────────────────────┐
+│  Tenant: Acme Corp                    │
+│  ├── owner (copied from template)     │
+│  ├── admin (copied from template)     │
+│  └── member (copied from template)    │
+└───────────────────────────────────────┘
+┌───────────────────────────────────────┐
+│  Tenant: Beta Inc                     │
+│  ├── owner (copied from template)     │
+│  ├── admin (copied from template)     │
+│  └── member (copied from template)    │
+└───────────────────────────────────────┘
+```
+
+### Key Behaviors
+
+| Action | Effect |
+|--------|--------|
+| Update `roles.config.json` | Only affects **newly created** tenants |
+| `tenantsApi.updateRole()` | Only affects **that specific tenant's** role |
+| Add permission to template | Existing tenants do **not** automatically get it |
+
+<Callout type="warn">
+  If you add a new permission to a role template (e.g., `tenant#some_new_permission` to `owner`), existing tenants will **not** automatically receive it. However, tenant admins can manually add the permission to their tenant's role via the API or UI.
+</Callout>
+
+---
+
+## The Owner Role (Required)
+
+<Callout type="warn">
+  The `owner` role **must** be created in your project. When a user creates a tenant, they are automatically assigned the `owner` role. If this role doesn't exist, tenant creation will fail.
+</Callout>
+
+The `owner` role is the only required role. Add it to your roles configuration:
+
+```json title="omnibase/permissions/roles.config.json"
+{
+  "roles": [
+    {
+      "id": "owner",
+      "name": "Owner",
+      "permissions": [
+        "tenant#delete_tenant",
+        "tenant#invite_user",
+        "tenant#remove_user",
+        "tenant#update_user_role"
+      ]
+    }
+  ]
+}
+```
+
+### Owner Role Behavior
+
+- **Auto-assigned**: When a user creates a tenant, they automatically receive the `owner` role
+- **Required**: Tenant creation fails if the `owner` role doesn't exist
+- **Full control**: Owners typically have all tenant management permissions
+
+---
+
+## Example Roles
+
+The `admin` and `member` roles below are **examples** to help you understand the pattern. You can customize these or create entirely different roles based on your application's needs.
+
+<Tabs items={['Owner (Required)', 'Admin (Example)', 'Member (Example)', 'Viewer (Example)']}>
+<Tab value="Owner (Required)">
+**Full Control** — Auto-assigned to tenant creator
+
+Suggested permissions:
+- `tenant#delete_tenant` — Delete the organization
+- `tenant#invite_user` — Invite new members
+- `tenant#remove_user` — Remove members
+- `tenant#update_user_role` — Change member roles
+
+```json
+{
+  "id": "owner",
+  "name": "Owner",
+  "permissions": [
+    "tenant#delete_tenant",
+    "tenant#invite_user",
+    "tenant#remove_user",
+    "tenant#update_user_role"
+  ]
+}
+```
+</Tab>
+
+<Tab value="Admin (Example)">
+**Team Management** — For team managers
+
+Suggested permissions:
+- `tenant#invite_user` — Invite new members
+- `tenant#remove_user` — Remove members
+- `tenant#update_user_role` — Change member roles
+
+```json
+{
+  "id": "admin",
+  "name": "Administrator",
+  "permissions": [
+    "tenant#invite_user",
+    "tenant#remove_user",
+    "tenant#update_user_role"
+  ]
+}
+```
+</Tab>
+
+<Tab value="Member (Example)">
+**Standard Access** — For regular team members
+
+Suggested permissions:
+- `tenant#view_users` — View tenant members
+
+```json
+{
+  "id": "member",
+  "name": "Member",
+  "permissions": [
+    "tenant#view_users"
+  ]
+}
+```
+</Tab>
+
+<Tab value="Viewer (Example)">
+**Read-Only Access** — For external collaborators
+
+Suggested permissions:
+- `tenant#view_users` — View tenant members (optional)
+
+```json
+{
+  "id": "viewer",
+  "name": "Viewer",
+  "permissions": []
+}
+```
+</Tab>
+</Tabs>
+
+---
+
+## Complete Configuration Example
+
+Here's a full `roles.config.json` with multiple roles:
+
+```json title="omnibase/permissions/roles.config.json"
+{
+  "roles": [
+    {
+      "id": "owner",
+      "name": "Owner",
+      "permissions": [
+        "tenant#delete_tenant",
+        "tenant#invite_user",
+        "tenant#remove_user",
+        "tenant#update_user_role",
+        "tenant#view_users",
+        "tenant#manage_billing"
+      ]
+    },
+    {
+      "id": "admin",
+      "name": "Administrator",
+      "permissions": [
+        "tenant#invite_user",
+        "tenant#remove_user",
+        "tenant#update_user_role",
+        "tenant#view_users"
+      ]
+    },
+    {
+      "id": "member",
+      "name": "Member",
+      "permissions": [
+        "tenant#view_users"
+      ]
+    },
+    {
+      "id": "viewer",
+      "name": "Viewer",
+      "permissions": []
+    }
+  ]
+}
+```
+
+---
+
+## Syncing Role Templates
+
+After updating your roles configuration, sync it to OmniBase:
+
+```bash
+omnibase sync permissions
+```
+
+This command:
+1. Reads your `omnibase/permissions/roles.config.json`
+2. Validates the role definitions
+3. Updates the role **templates** in OmniBase
+4. Reports any errors or conflicts
+
+<Callout type="info">
+  Remember: Syncing only updates the templates. Existing tenants keep their current role configurations.
+</Callout>
+
+---
+
+## Managing Tenant Roles via API
+
+The API methods below manage roles for **a specific tenant**, not the global templates.
+
+### Creating Roles for a Tenant
+
+Create a new role within the current tenant:
+
+```typescript
+import { V1TenantsApi } from '@omnibase/core-js';
+
+const tenantsApi = new V1TenantsApi(config);
+
+// Creates a role ONLY for the current tenant
+const { data } = await tenantsApi.createRole({
+  createRoleRequest: {
+    roleName: 'developer',
+    permissions: [
+      'tenant#view_users',
+    ],
+  },
+});
+
+console.log('Created role:', data.data.role.id);
+```
+
+### Listing Tenant Roles
+
+```typescript
+// Lists roles for the current tenant only
+const { data } = await tenantsApi.listRoles();
+
+for (const role of data.data.roles) {
+  console.log(`${role.role_name} (${role.id})`);
+  console.log(`  Permissions: ${role.permissions.join(', ')}`);
+  console.log(`  Users: ${role.user_ids.length}`);
+}
+```
+
+### Updating Tenant Role Permissions
+
+<Callout type="warn">
+  This only updates the role for **this specific tenant**. Other tenants are not affected, and the global role templates remain unchanged.
+</Callout>
+
+```typescript
+// Updates the role ONLY for the current tenant
+await tenantsApi.updateRole({
+  roleId: roleId,
+  updateRoleRequest: {
+    permissions: [
+      'tenant#view_users',
+      'tenant#invite_user',  // Added permission
+    ],
+  },
+});
+```
+
+Permission changes propagate immediately. All users with this role in **this tenant** will have updated permissions on their next request.
+
+### Deleting Tenant Roles
+
+```typescript
+await tenantsApi.deleteRole({
+  roleId: roleId,
+});
+```
+
+<Callout type="warn">
+  Before deleting a role, all users must be reassigned to a different role. The `owner` role cannot be deleted.
+</Callout>
+
+---
+
+## Propagating Template Changes to Existing Tenants
+
+If you update `roles.config.json` and want existing tenants to receive the new permissions, you have two options:
+
+### Option 1: Manual Update via API
+
+Tenant owners/admins can add the new permission themselves:
+
+```typescript
+// Tenant admin adds the new permission to their tenant's role
+await tenantsApi.updateRole({
+  roleId: 'owner',
+  updateRoleRequest: {
+    permissions: [
+      // ... existing permissions
+      'tenant#some_new_permission',  // New permission
+    ],
+  },
+});
+```
+
+### Option 2: Migration Script
+
+For application-wide updates, create a migration script:
+
+```typescript
+// Admin script to update all tenants
+const tenants = await getAllTenants();  // Your admin API
+
+for (const tenant of tenants) {
+  const tenantsApi = new V1TenantsApi(configForTenant(tenant.id));
+
+  const { data: roles } = await tenantsApi.listRoles();
+  const ownerRole = roles.data.roles.find(r => r.role_name === 'owner');
+
+  if (ownerRole && !ownerRole.permissions.includes('tenant#some_new_permission')) {
+    await tenantsApi.updateRole({
+      roleId: ownerRole.id,
+      updateRoleRequest: {
+        permissions: [
+          ...ownerRole.permissions,
+          'tenant#some_new_permission',
+        ],
+      },
+    });
+  }
+}
+```
+
+---
+
+## Assigning Users to Roles
+
+### Via Invitation
+
+When inviting users, specify their role:
+
+```typescript
+await tenantsApi.createInvite({
+  createTenantUserInviteRequest: {
+    email: 'teammate@example.com',
+    role: 'member',  // Role ID
+    inviteUrl: 'https://app.example.com/auth/onboarding',
+  },
+});
+```
+
+See [Team Invitations](/docs/guides/multi-tenancy/invitations) for the `UserInvite` component.
+
+### Updating Existing User's Role
+
+```typescript
+await tenantsApi.updateTenantUserRole({
+  updateTenantUserRoleRequest: {
+    userId: targetUserId,
+    role: 'admin',  // New role ID
+  },
+});
+```
+
+Use the `UserViewer` component to provide a UI for role management. See [UserViewer Component](/docs/components/user-viewer).
+
+---
+
+## Common Role Patterns
+
+<Accordions type="single">
+<Accordion title="Read-Only Viewer">
+For external stakeholders who need visibility but no edit access:
+
+```json
+{
+  "id": "viewer",
+  "name": "Viewer",
+  "permissions": [
+    "tenant#view_users"
+  ]
+}
+```
+</Accordion>
+
+<Accordion title="Billing Manager">
+For users who manage subscriptions but not team members:
+
+```json
+{
+  "id": "billing",
+  "name": "Billing Manager",
+  "permissions": [
+    "tenant#view_users",
+    "tenant#view_billing",
+    "tenant#manage_billing"
+  ]
+}
+```
+</Accordion>
+
+<Accordion title="Project Lead">
+For users who manage specific projects (requires resource-level permissions):
+
+```json
+{
+  "id": "project_lead",
+  "name": "Project Lead",
+  "permissions": [
+    "tenant#view_users"
+  ]
+}
+```
+
+Then grant project-specific access:
+
+```typescript
+// Grant access to specific projects
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Project',
+    object: 'project-123-uuid',
+    relation: 'can_manage',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+```
+</Accordion>
+
+<Accordion title="Contractor (Limited Project Access)">
+For external contractors with access to specific projects only:
+
+```json
+{
+  "id": "contractor",
+  "name": "Contractor",
+  "permissions": []
+}
+```
+
+Grant access only to assigned projects:
+
+```typescript
+// No tenant-wide permissions, only project-specific
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Project',
+    object: 'project-456-uuid',
+    relation: 'can_write',
+    subjectId: contractorUserId,
+    subjectNamespace: 'User',
+  },
+});
+```
+</Accordion>
+</Accordions>
+
+---
+
+## Next Steps
+
+- [Custom Permissions](/docs/guides/multi-tenancy/rbac/permissions) — Define your own permission namespaces
+- [Team Invitations](/docs/guides/multi-tenancy/invitations) — Invite users with specific roles
+- [Permissions Concept](/docs/concepts/permissions) — Deep dive into ReBAC internals

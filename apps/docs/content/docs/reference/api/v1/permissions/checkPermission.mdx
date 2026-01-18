@@ -19,10 +19,10 @@ _openapi:
 
           ## Request Format
 
-          Provide either `subject_id` or `subject_set` (not both). The request
-          uses oneOf 
+          Provide a `subject_set` to identify the subject. For user permissions,
+          use
 
-          to enforce this constraint at the schema level.
+          `namespace: "User"` and `object: "<user_id>"`.
 
 
           ## Use Cases
@@ -42,8 +42,8 @@ Checks if a subject has a specific permission on an object using Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user permissions, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Verify user permissions before performing actions

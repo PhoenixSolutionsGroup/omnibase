@@ -17,7 +17,32 @@ const config = {
     return [
       {
         source: '/',
-        destination: '/docs/guides',
+        destination: '/docs/guides/quickstart',
+        permanent: false,
+      },
+      {
+        source: '/docs',
+        destination: '/docs/guides/quickstart',
+        permanent: false,
+      },
+      {
+        source: '/docs/guides',
+        destination: '/docs/guides/quickstart',
+        permanent: false,
+      },
+      {
+        source: '/docs/reference',
+        destination: '/docs/reference/overview',
+        permanent: false,
+      },
+      {
+        source: '/docs/concepts',
+        destination: '/docs/concepts/tenants',
+        permanent: false,
+      },
+      {
+        source: '/docs/self-hosting',
+        destination: '/docs/self-hosting/index',
         permanent: false,
       },
     ];

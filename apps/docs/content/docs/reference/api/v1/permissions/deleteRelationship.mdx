@@ -18,10 +18,10 @@ _openapi:
 
           ## Request Format
 
-          Provide either `subject_id` or `subject_set` (not both). The request
-          uses oneOf
+          Provide a `subject_set` to identify the subject. For user
+          relationships, use
 
-          to enforce this constraint at the schema level.
+          `namespace: "User"` and `object: "<user_id>"`.
 
 
           ## Use Cases
@@ -41,8 +41,8 @@ Deletes a relationship tuple from Ory Keto.
 Requires session authentication.
 
 ## Request Format
-Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-to enforce this constraint at the schema level.
+Provide a `subject_set` to identify the subject. For user relationships, use
+`namespace: "User"` and `object: "<user_id>"`.
 
 ## Use Cases
 - Remove resource links from tenants

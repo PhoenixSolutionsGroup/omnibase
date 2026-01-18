@@ -1,0 +1,445 @@
+---
+title: Checkout & Customer Portal
+description: Integrate Stripe Checkout for payments and Customer Portal for self-service billing
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# Checkout & Customer Portal
+
+OmniBase integrates with Stripe Checkout for secure payment collection and Customer Portal for self-service billing management.
+
+## Stripe Checkout
+
+Checkout provides a hosted payment page that handles card collection, validation, 3D Secure, and payment processing.
+
+### Creating a Checkout Session
+
+```typescript
+import { V1PaymentsApi } from '@omnibase/core-js';
+
+const paymentsApi = new V1PaymentsApi(config);
+
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+    cancelUrl: 'https://example.com/pricing',
+  },
+});
+
+// Redirect to Stripe Checkout
+window.location.href = data.url;
+```
+
+### Checkout Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `priceId` | `string` | Config price ID to purchase |
+| `successUrl` | `string` | URL to redirect after successful payment |
+| `cancelUrl` | `string` | URL to redirect if customer cancels |
+| `trialPeriodDays` | `number` | Days of free trial (subscriptions only) |
+| `promotionCode` | `string` | Pre-applied promotion code |
+| `allowPromotionCodes` | `boolean` | Let customers enter codes at checkout |
+
+### Mode Detection
+
+OmniBase automatically detects the checkout mode based on the price:
+
+| Price Type | Checkout Mode | Description |
+|------------|---------------|-------------|
+| Recurring (has `interval`) | `subscription` | Creates a subscription |
+| One-time (no `interval`) | `payment` | Single payment |
+
+### Trial Periods
+
+Add a free trial to subscription checkouts:
+
+```typescript
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'https://example.com/success',
+    cancelUrl: 'https://example.com/pricing',
+    trialPeriodDays: 14, // 14-day free trial
+  },
+});
+```
+
+During trial:
+- Customer's payment method is collected but not charged
+- Subscription status is `trialing`
+- `trial_will_end` webhook fires 3 days before trial ends
+- Customer is charged when trial ends
+
+### Promotion Codes
+
+#### Pre-Applied Code
+
+Apply a specific promotion code automatically:
+
+```typescript
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'https://example.com/success',
+    cancelUrl: 'https://example.com/pricing',
+    promotionCode: 'WELCOME50',
+  },
+});
+```
+
+#### Customer-Entered Codes
+
+Allow customers to enter their own codes:
+
+```typescript
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'https://example.com/success',
+    cancelUrl: 'https://example.com/pricing',
+    allowPromotionCodes: true,
+  },
+});
+```
+
+<Callout type="warn">
+You cannot use both `promotionCode` and `allowPromotionCodes` in the same checkout.
+</Callout>
+
+## Customer Portal
+
+The Customer Portal is a Stripe-hosted page where customers can:
+
+- View and download invoices
+- Update payment methods
+- Change subscription plans
+- Cancel subscriptions
+- Update billing information
+
+### Creating a Portal Session
+
+```typescript
+import { V1PaymentsApi } from '@omnibase/core-js';
+
+const paymentsApi = new V1PaymentsApi(config);
+
+const { data } = await paymentsApi.createCustomerPortal({
+  createPortalRequest: {
+    returnUrl: 'https://example.com/settings',
+  },
+});
+
+// Redirect to Customer Portal
+window.location.href = data.url;
+```
+
+### Portal Configuration
+
+Configure the Customer Portal in your [Stripe Dashboard](https://dashboard.stripe.com/settings/billing/portal):
+
+- **Invoice history** — Allow viewing past invoices
+- **Payment methods** — Allow updating cards
+- **Subscription updates** — Allow plan changes
+- **Subscription cancellation** — Allow self-service cancellation
+- **Customer information** — Allow updating billing details
+
+## Next.js Implementation
+
+### Server Actions
+
+```tsx title="app/(dashboard)/subscriptions/actions.ts"
+'use server';
+
+import { redirect } from 'next/navigation';
+import { V1PaymentsApi, Configuration } from '@omnibase/core-js';
+import { cookies, headers } from 'next/headers';
+
+async function getConfig() {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
+
+  return new Configuration({
+    basePath: process.env.OMNIBASE_API_URL,
+    headers: { Cookie: cookieHeader },
+  });
+}
+
+export async function createCheckout(priceId: string) {
+  const config = await getConfig();
+  const paymentsApi = new V1PaymentsApi(config);
+
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') || 'https';
+  const baseUrl = `${protocol}://${host}`;
+
+  const { data } = await paymentsApi.createCheckout({
+    createCheckoutRequest: {
+      priceId,
+      successUrl: `${baseUrl}/subscriptions?success=true`,
+      cancelUrl: `${baseUrl}/subscriptions`,
+      trialPeriodDays: 14,
+      allowPromotionCodes: true,
+    },
+  });
+
+  redirect(data.url!);
+}
+
+export async function openCustomerPortal() {
+  const config = await getConfig();
+  const paymentsApi = new V1PaymentsApi(config);
+
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') || 'https';
+  const returnUrl = `${protocol}://${host}/subscriptions`;
+
+  const { data } = await paymentsApi.createCustomerPortal({
+    createPortalRequest: { returnUrl },
+  });
+
+  redirect(data.url!);
+}
+```
+
+### Subscriptions Page
+
+```tsx title="app/(dashboard)/subscriptions/page.tsx"
+import { V1StripeApi, V1TenantsApi } from '@omnibase/core-js';
+import { PricingTable } from '@omnibase/shadcn';
+import { createCheckout, openCustomerPortal } from './actions';
+import { CustomerPortalButton } from './customer-portal-button';
+
+export default async function SubscriptionsPage() {
+  const stripeApi = new V1StripeApi(config);
+  const tenantsApi = new V1TenantsApi(config);
+
+  const [{ data: stripeConfig }, { data: subscriptions }] = await Promise.all([
+    stripeApi.getStripeConfig(),
+    tenantsApi.listTenantSubscriptions(),
+  ]);
+
+  const currentPriceId = subscriptions?.[0]?.configPriceId;
+
+  return (
+    <div className="container py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold">Subscription</h1>
+        {currentPriceId && (
+          <form action={openCustomerPortal}>
+            <CustomerPortalButton />
+          </form>
+        )}
+      </div>
+
+      <PricingTable
+        products={stripeConfig.products}
+        selectedPriceId={currentPriceId}
+        onPriceSelect={createCheckout}
+        showPricingToggle
+        defaultInterval="month"
+      />
+    </div>
+  );
+}
+```
+
+### Customer Portal Button
+
+```tsx title="app/(dashboard)/subscriptions/customer-portal-button.tsx"
+'use client';
+
+import { useFormStatus } from 'react-dom';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Loader2 } from 'lucide-react';
+
+interface CustomerPortalButtonProps {
+  label?: string;
+  className?: string;
+  variant?: 'default' | 'outline' | 'secondary' | 'ghost';
+  showIcon?: boolean;
+}
+
+export function CustomerPortalButton({
+  label = 'Manage Billing',
+  className,
+  variant = 'outline',
+  showIcon = true,
+}: CustomerPortalButtonProps) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      variant={variant}
+      className={className}
+      disabled={pending}
+    >
+      {pending ? (
+        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+      ) : showIcon ? (
+        <ExternalLink className="h-4 w-4 mr-2" />
+      ) : null}
+      {label}
+    </Button>
+  );
+}
+```
+
+## Handling Success
+
+After successful checkout, handle the return:
+
+```tsx title="app/(dashboard)/subscriptions/page.tsx"
+import { Suspense } from 'react';
+
+function SuccessMessage({ searchParams }: { searchParams: { success?: string } }) {
+  if (searchParams.success === 'true') {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+        <h3 className="text-green-800 font-medium">Welcome to Pro!</h3>
+        <p className="text-green-700 text-sm">
+          Your subscription is now active. You have access to all Pro features.
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
+export default async function SubscriptionsPage({
+  searchParams,
+}: {
+  searchParams: { success?: string };
+}) {
+  return (
+    <div>
+      <Suspense fallback={null}>
+        <SuccessMessage searchParams={searchParams} />
+      </Suspense>
+      {/* Rest of page */}
+    </div>
+  );
+}
+```
+
+## Webhook Events
+
+Handle checkout and portal events:
+
+```json
+{
+  "webhooks": [
+    {
+      "id": "checkout_events",
+      "url": "${WEBHOOK_URL}/api/stripe/checkout",
+      "events": [
+        "checkout.session.completed",
+        "checkout.session.expired",
+        "checkout.session.async_payment_succeeded",
+        "checkout.session.async_payment_failed"
+      ]
+    }
+  ]
+}
+```
+
+### Checkout Session Completed
+
+```typescript
+case 'checkout.session.completed':
+  const session = event.data.object as Stripe.Checkout.Session;
+
+  // For subscriptions
+  if (session.mode === 'subscription') {
+    const subscriptionId = session.subscription as string;
+    const customerId = session.customer as string;
+
+    // Activate features for customer
+    await activateSubscription(customerId, subscriptionId);
+  }
+
+  // For one-time payments
+  if (session.mode === 'payment') {
+    const paymentIntentId = session.payment_intent as string;
+
+    // Fulfill order
+    await fulfillOrder(session.metadata);
+  }
+  break;
+```
+
+## Free Tier Handling
+
+For $0 prices, OmniBase bypasses Stripe Checkout since Stripe doesn't support free subscriptions:
+
+```typescript
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'free', // $0 price
+    successUrl: 'https://example.com/success',
+    cancelUrl: 'https://example.com/pricing',
+  },
+});
+
+// For free prices, the subscription is created directly
+// and you receive a success response without a Stripe URL
+```
+
+## Error Handling
+
+Handle common checkout errors:
+
+```typescript
+try {
+  const { data } = await paymentsApi.createCheckout({
+    createCheckoutRequest: {
+      priceId: 'pro_monthly',
+      successUrl: 'https://example.com/success',
+      cancelUrl: 'https://example.com/pricing',
+    },
+  });
+
+  redirect(data.url!);
+} catch (error) {
+  if (error.status === 400) {
+    // Invalid price ID or configuration
+    return { error: 'Invalid plan selected' };
+  }
+  if (error.status === 402) {
+    // Payment required (no payment method)
+    return { error: 'Please add a payment method' };
+  }
+  throw error;
+}
+```
+
+## Best Practices
+
+1. **Always Validate Success** — Don't trust the success URL alone; verify via webhook
+
+2. **Handle Expiration** — Checkout sessions expire after 24 hours by default
+
+3. **Use Metadata** — Pass custom data through checkout for order fulfillment
+
+4. **Secure URLs** — Include session IDs in success URLs for verification
+
+5. **Configure Portal** — Customize the Customer Portal to match your business needs
+
+6. **Test Thoroughly** — Use Stripe test mode and test cards before going live
+
+## Related
+
+- [Subscriptions](/docs/guides/stripe/subscriptions) — Subscription management
+- [Coupons & Promotions](/docs/guides/stripe/coupons-promotions) — Discount codes
+- [Webhooks](/docs/guides/stripe/webhooks) — Event handling
+- [UI Components](/docs/guides/stripe/ui-components) — PricingTable component

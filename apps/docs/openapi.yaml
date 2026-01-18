@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Omnibase REST API
-  version: 0.11.0
+  version: 0.14.0
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -36,8 +36,6 @@ tags:
     description: Database migration and management endpoints
   - name: V1 Email
     description: Email sending endpoints
-  - name: V1 Events
-    description: Event publishing endpoints
   - name: V1 Keto
     description: Keto namespace management endpoints
   - name: V1 Payments
@@ -393,6 +391,75 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/v1/database/typegen:
+    get:
+      operationId: generateDatabaseTypes
+      summary: Generate types from database schema
+      description: |
+        Generates type definitions from the database schema using postgres-meta.
+
+        ## Supported Languages
+        - `typescript` (default) - TypeScript type definitions
+        - `go` - Go struct definitions
+        - `swift` (beta) - Swift type definitions
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - CLI type generation via `omnibase db typegen`
+        - CI/CD pipeline type generation
+        - Programmatic type generation for SDKs
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: schemas
+          in: query
+          description: Comma-separated list of database schemas to include (valid PostgreSQL identifiers)
+          required: false
+          schema:
+            type: string
+            pattern: ^[a-zA-Z_][a-zA-Z0-9_]*(,[a-zA-Z_][a-zA-Z0-9_]*)*$
+            default: public
+            example: public,auth
+        - name: language
+          in: query
+          description: Target language for type generation
+          required: false
+          schema:
+            type: string
+            enum:
+              - typescript
+              - go
+              - swift
+            default: typescript
+            example: typescript
+      responses:
+        '200':
+          description: Generated type definitions
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Type definitions as plain text
+        '400':
+          description: Unsupported language
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          description: Failed to connect to typegen service
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationErrorResponse'
   /api/v1/email/templates:
     get:
       operationId: getEmailTemplates
@@ -554,79 +621,6 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /api/v1/events:
-    get:
-      operationId: connectWebSocket
-      summary: WebSocket connection for real-time events
-      description: |
-        WebSocket endpoint for receiving real-time database change notifications with Row-Level Security (RLS) enforcement.
-
-        ## Connection Details
-        - Protocol: WebSocket
-        - Upgrade from HTTP GET request
-
-        ## Authentication
-        Session authentication via JWT token sent in subscription messages.
-
-        ## Message Format
-        **Subscribe to changes:**
-        ```json
-        {
-          "action": "subscribe",
-          "subscription": {
-            "table": "projects",
-            "row_id": "project_test_123",
-            "columns": ["name", "status"],
-            "jwt": "eyJhbGciOiJIUzI1NiIs..."
-          }
-        }
-        ```
-
-        **Unsubscribe:**
-        ```json
-        {
-          "action": "unsubscribe",
-          "subscription": {
-            "table": "projects",
-            "row_id": "project_test_123"
-          }
-        }
-        ```
-
-        **Received updates:**
-        ```json
-        {
-          "type": "update",
-          "table": "projects",
-          "row_id": "project_test_123",
-          "data": {
-            "name": "Updated Project",
-            "status": "active"
-          }
-        }
-        ```
-
-        ## RLS Enforcement
-        - Access checked via PostgREST using provided JWT
-        - Only changes to accessible rows are broadcast
-        - Re-validates access on each change notification
-
-        ## Use Cases
-        - Real-time collaboration features
-        - Live data synchronization
-        - Notification systems
-        - Activity feeds
-      tags:
-        - V1 Events
-      responses:
-        '101':
-          description: Switching Protocols - WebSocket connection established
-        '400':
-          description: Bad Request - Invalid WebSocket upgrade
-        '401':
-          description: Unauthorized - Invalid JWT in subscription message
-        '404':
-          $ref: '#/components/responses/NotFoundError'
   /api/v1/payments/checkout:
     post:
       operationId: createCheckout
@@ -1189,8 +1183,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user permissions, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Verify user permissions before performing actions
@@ -1204,21 +1198,23 @@ paths:
           ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Permission check request with either subject_id or subject_set
+        description: Permission check request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CheckPermissionRequest'
             examples:
-              withSubjectId:
-                summary: Check permission with subject_id
+              checkUserPermission:
+                summary: Check if a user can invite to a tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
                   relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Check permission with subject_set
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              checkTenantPermission:
+                summary: Check permission with tenant subject set
                 value:
                   namespace: Tenant
                   object: tenant_test_123
@@ -1226,7 +1222,7 @@ paths:
                   subject_set:
                     namespace: Tenant
                     object: tenant_parent_456
-                    relation: can_invite_user
+                    relation: owners
       responses:
         '200':
           description: Permission check result
@@ -1253,22 +1249,17 @@ paths:
                     data:
                       allowed: false
         '400':
-          description: Invalid request body - namespace, object, and relation cannot be empty, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''CheckPermissionRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -1292,8 +1283,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Remove resource links from tenants
@@ -1307,21 +1298,23 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship deletion request with either subject_id or subject_set
+        description: Relationship deletion request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/DeleteRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Delete relationship with subject_id
+              deleteUserRelationship:
+                summary: Delete user relationship from tenant
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Delete relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              deleteTenantRelationship:
+                summary: Delete project-tenant relationship
                 value:
                   namespace: Project
                   object: project_123
@@ -1346,22 +1339,17 @@ paths:
                 data:
                   message: Relationship deleted successfully
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''DeleteRelationshipRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -1386,8 +1374,8 @@ paths:
         Requires session authentication.
 
         ## Request Format
-        Provide either `subject_id` or `subject_set` (not both). The request uses oneOf 
-        to enforce this constraint at the schema level.
+        Provide a `subject_set` to identify the subject. For user relationships, use
+        `namespace: "User"` and `object: "<user_id>"`.
 
         ## Use Cases
         - Link resources to tenants
@@ -1401,29 +1389,30 @@ paths:
         - ServiceKeyAuth: []
       requestBody:
         required: true
-        description: Relationship creation request with either subject_id or subject_set
+        description: Relationship creation request with subject_set
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateRelationshipRequest'
             examples:
-              withSubjectId:
-                summary: Create relationship with subject_id
+              createUserRelationship:
+                summary: Create user as tenant owner
                 value:
                   namespace: Tenant
                   object: tenant_test_123
-                  relation: can_invite_user
-                  subject_id: 550e8400-e29b-41d4-a716-446655440000
-              withSubjectSet:
-                summary: Create relationship with subject_set
+                  relation: owners
+                  subject_set:
+                    namespace: User
+                    object: 550e8400-e29b-41d4-a716-446655440000
+              createTenantRelationship:
+                summary: Create project-tenant relationship
                 value:
-                  namespace: Tenant
-                  object: tenant_test_123
-                  relation: can_delete_tenant
+                  namespace: Project
+                  object: project_123
+                  relation: tenant
                   subject_set:
                     namespace: Tenant
-                    object: tenant_parent_456
-                    relation: can_invite_user
+                    object: tenant_456
       responses:
         '200':
           description: Relationship created successfully
@@ -1443,25 +1432,22 @@ paths:
                   relationship:
                     namespace: Tenant
                     object: tenant_test_123
-                    relation: can_invite_user
-                    subject_id: 550e8400-e29b-41d4-a716-446655440000
+                    relation: owners
+                    subject_set:
+                      namespace: User
+                      object: 550e8400-e29b-41d4-a716-446655440000
         '400':
-          description: Invalid request body - namespace, object, and relation are required, or both/neither subject fields provided
+          description: Invalid request body - namespace, object, relation, and subject_set are required
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
               examples:
-                bothSubjects:
-                  summary: Both subject_id and subject_set provided
+                missingSubjectSet:
+                  summary: Missing subject_set
                   value:
                     status: 400
-                    error: Provide either subject_id or subject_set, not both
-                neitherSubject:
-                  summary: Neither subject_id nor subject_set provided
-                  value:
-                    status: 400
-                    error: Either subject_id or subject_set must be provided
+                    error: 'Invalid request body: Key: ''CreateRelationshipRequest.SubjectSet'' Error:Field validation for ''SubjectSet'' failed on the ''required'' tag'
         '401':
           description: Not authenticated
           content:
@@ -1920,7 +1906,7 @@ paths:
         - V1 Configuration
       summary: Update Stripe config
       description: |
-        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, and meters.
+        Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.
 
         ## Authentication
         Requires admin JWT token.
@@ -1929,6 +1915,11 @@ paths:
         - Deploy new pricing
         - Update product definitions
         - Modify metered billing settings
+        - Configure webhook endpoints
+
+        ## Webhooks
+        Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted.
+        Each webhook can have `connect: true` to listen to events from connected accounts.
       operationId: updateStripeConfig
       security:
         - ServiceKeyAuth: []
@@ -1944,7 +1935,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/StripeConfigUpdateResponse'
         '400':
           description: Invalid configuration, validation errors, or configuration data is required
           content:
@@ -2207,6 +2203,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/config/prices/{price_id}/calculate:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Calculate cost for a price
+      description: |
+        Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
+
+        ## Authentication
+        No authentication required for public endpoint.
+
+        ## Pricing Modes
+        - **per_unit**: Simple flat pricing where cost = unit_amount × quantity
+        - **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
+        - **tiered (volume)**: The applicable tier's price applies to ALL units
+
+        ## Use Cases
+        - Calculate estimated costs for usage preview
+        - Display cost estimates in dashboard
+        - Usage billing calculations
+      operationId: calculatePriceCost
+      parameters:
+        - name: price_id
+          in: path
+          description: Price config ID
+          required: true
+          schema:
+            type: string
+            example: compute_hourly
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculatePriceCostRequest'
+      responses:
+        '200':
+          description: Cost calculated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/CalculatePriceCostResponse'
+        '400':
+          description: Invalid request or missing quantity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Price not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to calculate cost
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /api/v1/stripe/config/products/{product_id}:
     get:
       tags:
@@ -2369,26 +2430,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-  /api/v1/stripe/config/webhook:
+  /api/v1/stripe/admin/webhooks:
     get:
       tags:
-        - V1 Webhooks
-      summary: Get webhook secret
+        - V1 Stripe
+      summary: List all webhooks
       description: |
-        Retrieves the webhook signing secret for the most recent webhook configuration.
+        Retrieves all configured webhook endpoints with their signing secrets.
 
         ## Authentication
         Requires service key authentication.
 
         ## Use Cases
-        - Retrieve signing secret for webhook signature verification
+        - List all webhook configurations
+        - Retrieve signing secrets for webhook signature verification
         - Debug webhook configuration
-      operationId: getWebhookSecret
+      operationId: listWebhooks
       security:
         - ServiceKeyAuth: []
       responses:
         '200':
-          description: Webhook secret retrieved successfully
+          description: Webhooks retrieved successfully
           content:
             application/json:
               schema:
@@ -2397,49 +2459,42 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '#/components/schemas/WebhookSecretResponse'
+                        $ref: '#/components/schemas/ListWebhooksResponse'
         '401':
           description: Invalid or missing service key
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
-        '404':
-          description: No webhook configured
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
         '500':
-          description: Failed to retrieve webhook secret
+          description: Failed to retrieve webhooks
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-  /api/v1/stripe/config/webhooks:
+  /api/v1/stripe/admin/enterprise/apply-template:
     post:
       tags:
-        - V1 Webhooks
-      summary: Configure multiple webhook endpoints
+        - V1 Stripe
+      summary: Apply enterprise template pricing
       description: |
-        Creates, updates, or removes multiple webhook endpoints to match the desired configuration.
-        Webhooks not in the request will be deleted.
+        Applies template-based enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to the corresponding enterprise template prices.
 
         ## Authentication
         Requires service key authentication.
 
-        ## Connect Webhooks
-        Each webhook can have `connect: true` to listen to events from connected accounts.
-
-        ## URL Interpolation
-        URLs support `${VAR}` environment variable interpolation when using the CLI.
-        The CLI resolves these before sending to the API.
-
         ## Use Cases
-        - Configure multiple webhooks for different environments
-        - Set up both account and Connect webhooks
-        - Declarative webhook configuration management
-      operationId: configureWebhooks
+        - Apply pre-defined discount tiers to enterprise customers
+        - Bulk pricing changes for enterprise accounts
+        - Template-based enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_template`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_template` field for future provisioning
+      operationId: applyEnterpriseTemplate
       security:
         - ServiceKeyAuth: []
       requestBody:
@@ -2447,10 +2502,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhooksConfigRequest'
+              $ref: '#/components/schemas/ApplyEnterpriseTemplateRequest'
       responses:
         '200':
-          description: Webhooks configured successfully
+          description: Enterprise template pricing applied successfully
           content:
             application/json:
               schema:
@@ -2459,9 +2514,9 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '#/components/schemas/WebhooksConfigResponse'
+                        $ref: '#/components/schemas/EnterpriseApplyResponse'
         '400':
-          description: Invalid request - validation errors or invalid Stripe event types
+          description: Invalid request or tenant has no Stripe customer ID
           content:
             application/json:
               schema:
@@ -2472,14 +2527,179 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
-        '409':
-          description: Conflict - duplicate webhook URL provided
+        '404':
+          description: Tenant or enterprise template not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConflictResponse'
+                $ref: '#/components/schemas/NotFound'
         '500':
-          description: Failed to configure webhooks
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/apply-custom:
+    post:
+      tags:
+        - V1 Stripe
+      summary: Apply custom enterprise pricing
+      description: |
+        Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant's
+        active subscription prices to custom enterprise prices identified by enterprise_id.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Apply custom negotiated pricing for specific enterprise customers
+        - Tenant-specific pricing overrides
+        - Custom enterprise onboarding
+
+        ## Flow
+        1. Validates tenant exists and has Stripe customer ID
+        2. Fetches all prices with matching `enterprise_id`
+        3. Swaps subscription item prices to enterprise equivalents
+        4. Updates tenant's `enterprise_id` field for future provisioning
+      operationId: applyEnterpriseCustom
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyEnterpriseCustomRequest'
+      responses:
+        '200':
+          description: Custom enterprise pricing applied successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterpriseApplyResponse'
+        '400':
+          description: Invalid request or tenant has no Stripe customer ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: Tenant or enterprise_id not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Failed to apply enterprise pricing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/prices/by-template/{template}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by template
+      description: |
+        Retrieves prices filtered by enterprise template.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - List available enterprise prices for a template
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByTemplate
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: template
+          in: path
+          description: Enterprise template to filter by
+          required: true
+          schema:
+            type: string
+            example: tier1_10pct_off
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}:
+    get:
+      tags:
+        - V1 Stripe
+      summary: Get enterprise prices by ID
+      description: |
+        Retrieves prices filtered by enterprise ID.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - View custom pricing for a specific enterprise
+        - Provisioning services for enterprise tenants
+      operationId: getEnterprisePricesByID
+      security:
+        - ServiceKeyAuth: []
+      parameters:
+        - name: enterprise_id
+          in: path
+          description: Enterprise ID to filter by
+          required: true
+          schema:
+            type: string
+            example: acme_corp
+      responses:
+        '200':
+          description: Enterprise prices retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EnterprisePricesResponse'
+        '401':
+          description: Invalid or missing service key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Failed to retrieve enterprise prices
           content:
             application/json:
               schema:
@@ -2637,6 +2857,131 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to delete tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/tenants/by-id/{tenant_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant by ID
+      description: |
+        Returns a tenant by its ID.
+
+        ## Authentication
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
+
+        ## Use Cases
+        - Service-to-service tenant resolution
+        - Webhook processing
+        - Backend tenant lookup
+      operationId: getTenantByID
+      parameters:
+        - name: tenant_id
+          in: path
+          required: true
+          description: Tenant ID (UUID)
+          schema:
+            type: string
+            format: uuid
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GetTenantByIDResponse'
+        '400':
+          description: Bad request - Invalid tenant_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/tenants/by-stripe-customer/{stripe_customer_id}:
+    get:
+      tags:
+        - V1 Tenants
+      summary: Get tenant by Stripe customer ID
+      description: |
+        Returns a tenant by its Stripe customer ID.
+
+        ## Authentication
+        - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)
+
+        ## Use Cases
+        - Stripe webhook processing
+        - Payment event correlation
+        - Invoice/subscription tenant resolution
+      operationId: getTenantByStripeCustomerID
+      parameters:
+        - name: stripe_customer_id
+          in: path
+          required: true
+          description: Stripe customer ID
+          schema:
+            type: string
+          example: cus_TOWEstcga5ou7a
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GetTenantByStripeCustomerIDResponse'
+        '400':
+          description: Bad request - Invalid stripe_customer_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -3964,6 +4309,16 @@ components:
           nullable: true
           description: Stripe customer ID (nullable initially)
           example: cus_TOWEstcga5ou7a
+        enterprise_template:
+          type: string
+          nullable: true
+          description: Enterprise pricing template applied to this tenant
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          nullable: true
+          description: Custom enterprise pricing ID for this tenant
+          example: acme_corp
         type:
           type: string
           description: Tenant type
@@ -4759,31 +5114,6 @@ components:
           type: boolean
           description: Whether to auto-advance the invoice (send immediately)
           example: true
-    CheckPermissionRequestWithSubjectId:
-      type: object
-      description: Check permission request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace of the permission check
-        object:
-          type: string
-          minLength: 1
-          description: The object to check permissions on
-        relation:
-          type: string
-          minLength: 1
-          description: The relation/permission to check
-        subject_id:
-          type: string
-          description: Direct subject identifier
-      additionalProperties: false
     SubjectSetRequest:
       type: object
       description: Subject set representation for permission checks and relationship creation
@@ -4792,20 +5122,20 @@ components:
           type: string
           minLength: 1
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           minLength: 1
-          description: Object of the subject set
-          example: tenant_test_123
+          description: Object of the subject set (e.g., user ID)
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
-          description: Relation of the subject set
-          example: can_invite_user
+          description: Relation of the subject set (optional)
+          example: ''
       required:
         - namespace
         - object
-    CheckPermissionRequestWithSubjectSet:
+    CheckPermissionRequest:
       type: object
       description: Check permission request using a subject set
       required:
@@ -4818,22 +5148,20 @@ components:
           type: string
           minLength: 1
           description: The namespace of the permission check
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object to check permissions on
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation/permission to check
+          example: can_invite_user
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    CheckPermissionRequest:
-      description: Check permission request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectId'
-        - $ref: '#/components/schemas/CheckPermissionRequestWithSubjectSet'
     CheckPermissionResponse:
       type: object
       description: Permission check result
@@ -4844,33 +5172,7 @@ components:
           example: true
       required:
         - allowed
-    CreateRelationshipRequestWithSubjectId:
-      type: object
-      description: Create relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-    CreateRelationshipRequestWithSubjectSet:
+    CreateRelationshipRequest:
       type: object
       description: Create relationship request using a subject set
       required:
@@ -4883,22 +5185,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Tenant
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: tenant_test_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    CreateRelationshipRequest:
-      description: Create relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/CreateRelationshipRequestWithSubjectSet'
     SubjectSet:
       type: object
       description: Subject set representation in Keto relationship tuples
@@ -4906,15 +5206,15 @@ components:
         namespace:
           type: string
           description: Namespace of the subject set
-          example: Tenant
+          example: User
         object:
           type: string
           description: Object of the subject set
-          example: tenant_test_123
+          example: 550e8400-e29b-41d4-a716-446655440000
         relation:
           type: string
           description: Relation of the subject set
-          example: member
+          example: ''
     Relationship:
       type: object
       description: Keto relationship tuple representing a permission relationship
@@ -4922,19 +5222,15 @@ components:
         namespace:
           type: string
           description: Namespace of the relation tuple
-          example: Project
+          example: Tenant
         object:
           type: string
           description: Object of the relation tuple
-          example: project_test_123
+          example: tenant_test_123
         relation:
           type: string
           description: Relation of the relation tuple
-          example: member
-        subject_id:
-          type: string
-          description: Subject ID of the relation tuple (optional, mutually exclusive with subject_set)
-          example: 550e8400-e29b-41d4-a716-446655440000
+          example: owners
         subject_set:
           $ref: '#/components/schemas/SubjectSet'
     CreateRelationshipResponse:
@@ -4950,33 +5246,7 @@ components:
       required:
         - message
         - relationship
-    DeleteRelationshipRequestWithSubjectId:
-      type: object
-      description: Delete relationship request using a direct subject identifier
-      required:
-        - namespace
-        - object
-        - relation
-        - subject_id
-      properties:
-        namespace:
-          type: string
-          minLength: 1
-          description: The namespace for the relationship
-        object:
-          type: string
-          minLength: 1
-          description: The object in the relationship
-        relation:
-          type: string
-          minLength: 1
-          description: The relation type
-        subject_id:
-          type: string
-          minLength: 1
-          description: Direct subject identifier
-      additionalProperties: false
-    DeleteRelationshipRequestWithSubjectSet:
+    DeleteRelationshipRequest:
       type: object
       description: Delete relationship request using a subject set
       required:
@@ -4989,22 +5259,20 @@ components:
           type: string
           minLength: 1
           description: The namespace for the relationship
+          example: Project
         object:
           type: string
           minLength: 1
           description: The object in the relationship
+          example: project_123
         relation:
           type: string
           minLength: 1
           description: The relation type
+          example: tenant
         subject_set:
           $ref: '#/components/schemas/SubjectSetRequest'
       additionalProperties: false
-    DeleteRelationshipRequest:
-      description: Delete relationship request. Must provide exactly one of subject_id or subject_set.
-      oneOf:
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectId'
-        - $ref: '#/components/schemas/DeleteRelationshipRequestWithSubjectSet'
     DeleteRelationshipResponse:
       type: object
       description: Relationship deletion result
@@ -5467,6 +5735,14 @@ components:
           type: boolean
           description: Mark as default price
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
         stripe_id:
@@ -5536,7 +5812,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: service
         prices:
           type: array
@@ -5551,6 +5826,146 @@ components:
           nullable: true
           description: Actual Stripe product ID (null for free products)
           example: prod_1SRiyyCJIZaBlhY1
+    CouponDuration:
+      type: string
+      description: |
+        Duration for the coupon discount.
+        - once: Discount applies to the first charge only
+        - repeating: Discount applies for a specified number of months (requires duration_in_months)
+        - forever: Discount applies indefinitely (only valid with percent_off, not amount_off)
+      enum:
+        - once
+        - repeating
+        - forever
+      example: once
+    CouponWithStripeID:
+      type: object
+      required:
+        - id
+        - duration
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Coupon identifier (config ID)
+          example: launch_discount
+        name:
+          type: string
+          description: Coupon name
+          example: Launch Discount
+        percent_off:
+          type: number
+          format: double
+          nullable: true
+          description: Percentage discount
+          example: 20
+        amount_off:
+          type: integer
+          format: int64
+          nullable: true
+          description: Fixed amount discount
+          example: 500
+        currency:
+          type: string
+          description: Currency for amount_off
+          example: usd
+        duration:
+          $ref: '#/components/schemas/CouponDuration'
+        duration_in_months:
+          type: integer
+          format: int64
+          nullable: true
+          description: Number of months for repeating duration
+          example: 3
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum redemptions
+          example: 100
+        redeem_by:
+          type: integer
+          format: int64
+          nullable: true
+          description: Redemption deadline
+          example: 1735689600
+        applies_to:
+          type: array
+          description: Product IDs this coupon applies to
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        stripe_id:
+          type: string
+          nullable: true
+          description: Actual Stripe coupon ID
+          example: coupon_1SRiyyCJIZaBlhY1
+    PromotionCodeWithStripeID:
+      type: object
+      required:
+        - id
+        - code
+        - coupon
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Promotion code identifier (config ID)
+          example: promo_launch25
+        code:
+          type: string
+          minLength: 1
+          description: Customer-facing promotion code
+          example: LAUNCH25
+        coupon:
+          type: string
+          minLength: 1
+          description: Reference to coupon ID
+          example: launch_discount
+        active:
+          type: boolean
+          nullable: true
+          description: Whether the promotion code is active
+          example: true
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum redemptions
+          example: 100
+        first_time_transaction:
+          type: boolean
+          nullable: true
+          description: First-time customers only
+          example: true
+        minimum_amount:
+          type: integer
+          format: int64
+          nullable: true
+          description: Minimum order amount
+          example: 5000
+        minimum_amount_currency:
+          type: string
+          description: Currency for minimum_amount
+          example: usd
+        expires_at:
+          type: integer
+          format: int64
+          nullable: true
+          description: Expiration timestamp
+          example: 1735689600
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        stripe_id:
+          type: string
+          nullable: true
+          description: Actual Stripe promotion code ID
+          example: promo_1SRiyyCJIZaBlhY1
     StripeConfigurationWithIDs:
       type: object
       required:
@@ -5576,6 +5991,16 @@ components:
           description: List of products with Stripe IDs
           items:
             $ref: '#/components/schemas/ProductWithStripeIDs'
+        coupons:
+          type: array
+          description: List of coupons with Stripe IDs
+          items:
+            $ref: '#/components/schemas/CouponWithStripeID'
+        promotion_codes:
+          type: array
+          description: List of promotion codes with Stripe IDs
+          items:
+            $ref: '#/components/schemas/PromotionCodeWithStripeID'
     StripeConfigResponse:
       type: object
       required:
@@ -5718,16 +6143,26 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
     TieredBillingScheme:
       type: string
       description: Billing scheme type for tiered pricing
@@ -5802,16 +6237,26 @@ components:
           type: boolean
           description: Mark as default price for the product
           example: false
+        enterprise_template:
+          type: string
+          description: Enterprise template group for shared pricing tiers
+          example: tier1_10pct_off
+        enterprise_id:
+          type: string
+          description: Enterprise pricing group ID for tenant-specific pricing
+          example: acme_corp
         ui:
           $ref: '#/components/schemas/PriceUI'
-      anyOf:
-        - not:
-            properties:
-              usage_type:
-                const: metered
-        - required:
-            - interval
-            - meter
+      if:
+        properties:
+          usage_type:
+            const: metered
+        required:
+          - usage_type
+      then:
+        required:
+          - interval
+          - meter
     Price:
       oneOf:
         - $ref: '#/components/schemas/PerUnitPrice'
@@ -5847,7 +6292,6 @@ components:
           enum:
             - service
             - good
-            - metered
           example: service
         prices:
           type: array
@@ -5857,6 +6301,141 @@ components:
             $ref: '#/components/schemas/Price'
         ui:
           $ref: '#/components/schemas/ProductUI'
+    Coupon:
+      type: object
+      required:
+        - id
+        - duration
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Coupon identifier (config ID)
+          example: launch_discount
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support (optional, used to link existing Stripe coupons)
+          example: coupon_1SRiyyCJIZaBlhY1
+        name:
+          type: string
+          description: Coupon name (displayed to customers)
+          example: Launch Discount
+        percent_off:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          nullable: true
+          description: Percentage discount (0-100). Either percent_off or amount_off must be set, not both.
+          example: 20
+        amount_off:
+          type: integer
+          format: int64
+          nullable: true
+          description: Fixed amount discount in smallest currency unit. Either percent_off or amount_off must be set, not both. Note that amount_off coupons cannot use 'forever' duration (Stripe restriction).
+          example: 500
+        currency:
+          type: string
+          description: Currency for amount_off (required when amount_off is set)
+          example: usd
+        duration:
+          $ref: '#/components/schemas/CouponDuration'
+        duration_in_months:
+          type: integer
+          format: int64
+          nullable: true
+          description: Number of months the discount applies (required when duration is repeating)
+          example: 3
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum number of times this coupon can be redeemed
+          example: 100
+        redeem_by:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp after which the coupon can no longer be redeemed
+          example: 1735689600
+        applies_to:
+          type: array
+          description: List of product IDs this coupon applies to (empty = all products)
+          items:
+            type: string
+          example:
+            - pro_plan
+            - enterprise_plan
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata for the coupon
+          example:
+            campaign: launch_2025
+    PromotionCode:
+      type: object
+      required:
+        - id
+        - code
+        - coupon
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Promotion code identifier (config ID)
+          example: promo_launch25
+        stripe_id:
+          type: string
+          description: Original Stripe ID for migration support
+          example: promo_1SRiyyCJIZaBlhY1
+        code:
+          type: string
+          minLength: 1
+          description: Customer-facing promotion code
+          example: LAUNCH25
+        coupon:
+          type: string
+          minLength: 1
+          description: Reference to coupon ID this promotion code applies
+          example: launch_discount
+        active:
+          type: boolean
+          nullable: true
+          description: Whether the promotion code is active (default true)
+          example: true
+        max_redemptions:
+          type: integer
+          format: int64
+          nullable: true
+          description: Maximum number of times this code can be redeemed
+          example: 100
+        first_time_transaction:
+          type: boolean
+          nullable: true
+          description: Restrict to first-time customers only
+          example: true
+        minimum_amount:
+          type: integer
+          format: int64
+          nullable: true
+          description: Minimum order amount required (in smallest currency unit)
+          example: 5000
+        minimum_amount_currency:
+          type: string
+          description: Currency for minimum_amount
+          example: usd
+        expires_at:
+          type: integer
+          format: int64
+          nullable: true
+          description: Unix timestamp when the promotion code expires
+          example: 1735689600
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata for the promotion code
     StripeConfigUpdateRequest:
       type: object
       required:
@@ -5868,6 +6447,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: ^\d+\.\d+\.\d+$
           example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)
@@ -5879,6 +6463,376 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons (optional)
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons (optional)
+          items:
+            $ref: '#/components/schemas/PromotionCode'
+    ProductChange:
+      type: object
+      required:
+        - product_id
+        - product_name
+        - action
+      properties:
+        product_id:
+          type: string
+          description: Product config ID
+          example: basic_plan
+        product_name:
+          type: string
+          description: Product name
+          example: Basic Plan
+        action:
+          type: string
+          description: Action performed on the product
+          enum:
+            - created
+            - created_local
+            - updated
+            - archived
+            - linked
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe product ID (if applicable)
+          example: prod_123abc
+        details:
+          type: array
+          description: Additional details about the changes
+          items:
+            type: string
+          example:
+            - Price test_price created
+            - Price old_price archived
+    ProductChanges:
+      type: object
+      description: Summary of product changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Products that were created in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        updated:
+          type: array
+          description: Products that were updated in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+        archived:
+          type: array
+          description: Products that were archived in Stripe
+          items:
+            $ref: '#/components/schemas/ProductChange'
+    PriceChange:
+      type: object
+      required:
+        - price_id
+        - product_id
+        - action
+      properties:
+        price_id:
+          type: string
+          description: Price config ID
+          example: basic_monthly
+        product_id:
+          type: string
+          description: Parent product config ID
+          example: basic_plan
+        action:
+          type: string
+          description: Action performed on the price
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe price ID (if applicable)
+          example: price_123abc
+    PriceChanges:
+      type: object
+      description: Summary of price changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Prices that were created in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+        updated:
+          type: array
+          description: Prices that were updated in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+        archived:
+          type: array
+          description: Prices that were archived in Stripe
+          items:
+            $ref: '#/components/schemas/PriceChange'
+    MeterChange:
+      type: object
+      required:
+        - meter_id
+        - display_name
+        - action
+      properties:
+        meter_id:
+          type: string
+          description: Meter config ID
+          example: api_calls
+        display_name:
+          type: string
+          description: Meter display name
+          example: API Calls
+        action:
+          type: string
+          description: Action performed on the meter
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe meter ID
+          example: mtr_123abc
+    MeterChanges:
+      type: object
+      description: Summary of meter changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Meters that were created in Stripe
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        updated:
+          type: array
+          description: Meters that were updated
+          items:
+            $ref: '#/components/schemas/MeterChange'
+        archived:
+          type: array
+          description: Meters that were archived
+          items:
+            $ref: '#/components/schemas/MeterChange'
+    WebhookChange:
+      type: object
+      properties:
+        webhook_id:
+          type: string
+          description: Webhook ID (internal)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        url:
+          type: string
+          description: Webhook URL
+          example: https://example.com/webhooks/stripe
+        action:
+          type: string
+          description: Action performed on the webhook
+          enum:
+            - created
+            - updated
+            - unchanged
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe webhook endpoint ID
+          example: we_123abc
+    WebhookChanges:
+      type: object
+      description: Summary of webhook changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Webhooks that were created in Stripe
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        updated:
+          type: array
+          description: Webhooks that were updated
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+        unchanged:
+          type: array
+          description: Webhooks that were unchanged
+          items:
+            $ref: '#/components/schemas/WebhookChange'
+    CouponChange:
+      type: object
+      required:
+        - coupon_id
+        - name
+        - action
+      properties:
+        coupon_id:
+          type: string
+          description: Coupon config ID
+          example: launch_discount
+        name:
+          type: string
+          description: Coupon name
+          example: Launch Discount
+        action:
+          type: string
+          description: Action performed on the coupon
+          enum:
+            - created
+            - updated
+            - archived
+            - linked
+            - skipped
+            - recreated
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe coupon ID
+          example: coupon_123abc
+    CouponChanges:
+      type: object
+      description: Summary of coupon changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Coupons that were created in Stripe
+          items:
+            $ref: '#/components/schemas/CouponChange'
+        updated:
+          type: array
+          description: Coupons that were updated
+          items:
+            $ref: '#/components/schemas/CouponChange'
+        archived:
+          type: array
+          description: Coupons that were deleted
+          items:
+            $ref: '#/components/schemas/CouponChange'
+    PromotionCodeChange:
+      type: object
+      required:
+        - promo_id
+        - code
+        - action
+      properties:
+        promo_id:
+          type: string
+          description: Promotion code config ID
+          example: promo_launch25
+        code:
+          type: string
+          description: Customer-facing promotion code
+          example: LAUNCH25
+        action:
+          type: string
+          description: Action performed on the promotion code
+          enum:
+            - created
+            - updated
+            - deactivated
+            - linked
+            - skipped
+            - recreated
+          example: created
+        stripe_id:
+          type: string
+          description: Stripe promotion code ID
+          example: promo_123abc
+    PromotionCodeChanges:
+      type: object
+      description: Summary of promotion code changes made during configuration update
+      properties:
+        created:
+          type: array
+          description: Promotion codes that were created in Stripe
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+        updated:
+          type: array
+          description: Promotion codes that were updated
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+        deactivated:
+          type: array
+          description: Promotion codes that were deactivated
+          items:
+            $ref: '#/components/schemas/PromotionCodeChange'
+    StripeConfigChanges:
+      type: object
+      description: Summary of changes made during configuration update
+      properties:
+        products:
+          $ref: '#/components/schemas/ProductChanges'
+        prices:
+          $ref: '#/components/schemas/PriceChanges'
+        meters:
+          $ref: '#/components/schemas/MeterChanges'
+        webhooks:
+          $ref: '#/components/schemas/WebhookChanges'
+        coupons:
+          $ref: '#/components/schemas/CouponChanges'
+        promotion_codes:
+          $ref: '#/components/schemas/PromotionCodeChanges'
+    StripeConfiguration:
+      type: object
+      required:
+        - version
+        - products
+      properties:
+        version:
+          type: string
+          description: Configuration version in semantic versioning format
+          example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
+        meters:
+          type: array
+          description: List of billing meters for metered pricing (required when any price uses usage_type metered)
+          items:
+            $ref: '#/components/schemas/Meter'
+        products:
+          type: array
+          description: List of products with their prices
+          items:
+            $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons
+          items:
+            $ref: '#/components/schemas/PromotionCode'
+    StripeConfigUpdateResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Status message describing the update result
+          example: Configuration updated successfully
+        changes:
+          $ref: '#/components/schemas/StripeConfigChanges'
+        config:
+          $ref: '#/components/schemas/StripeConfiguration'
+        errors:
+          type: array
+          description: List of validation errors (only present if validation failed)
+          items:
+            type: string
+          example: []
     BadRequest:
       type: object
       description: Bad Request error response (400)
@@ -5988,6 +6942,11 @@ components:
           description: Configuration version (required, semantic version format)
           pattern: ^\d+\.\d+\.\d+$
           example: 1.0.0
+        webhooks:
+          type: array
+          description: List of webhook endpoint configurations (optional)
+          items:
+            $ref: '#/components/schemas/WebhookEndpointConfig'
         meters:
           type: array
           description: List of billing meters (optional array, items must be valid meter objects)
@@ -5999,6 +6958,16 @@ components:
           minItems: 1
           items:
             $ref: '#/components/schemas/Product'
+        coupons:
+          type: array
+          description: List of discount coupons (optional)
+          items:
+            $ref: '#/components/schemas/Coupon'
+        promotion_codes:
+          type: array
+          description: List of promotion codes that apply coupons (optional)
+          items:
+            $ref: '#/components/schemas/PromotionCode'
     ArchiveAllResponse:
       type: object
       required:
@@ -6066,6 +7035,65 @@ components:
       required:
         - status
         - error
+    CalculatePriceCostRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Quantity of units to calculate cost for
+          example: 1500
+    CalculatePriceCostResponse:
+      type: object
+      required:
+        - price_id
+        - quantity
+        - cost_cents
+        - effective_unit_cost_cents
+        - currency
+        - billing_scheme
+      properties:
+        price_id:
+          type: string
+          description: The config price ID
+          example: compute_hourly
+        quantity:
+          type: integer
+          format: int64
+          description: The quantity used for calculation
+          example: 1500
+        cost_cents:
+          type: integer
+          format: int64
+          description: The calculated cost in smallest currency unit (e.g., cents)
+          example: 15000
+        effective_unit_cost_cents:
+          type: number
+          format: double
+          description: The effective unit cost (cost_cents / quantity), 0 if quantity is 0
+          example: 10
+        currency:
+          type: string
+          description: The currency code
+          example: usd
+        billing_scheme:
+          type: string
+          description: The billing scheme used (per_unit or tiered)
+          enum:
+            - per_unit
+            - tiered
+          example: per_unit
+        tiers_mode:
+          type: string
+          nullable: true
+          description: The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+          enum:
+            - graduated
+            - volume
+          example: graduated
     ProductResponse:
       type: object
       required:
@@ -6101,11 +7129,13 @@ components:
           example: price_test_basic_monthly
         item_type:
           type: string
-          description: Item type (product, price, or meter)
+          description: Item type (product, price, meter, coupon, or promotion_code)
           enum:
             - product
             - price
             - meter
+            - coupon
+            - promotion_code
           example: price
         config_uuid:
           type: string
@@ -6160,72 +7190,90 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
-    WebhooksConfigRequest:
+    ListWebhooksResponse:
       type: object
       required:
         - webhooks
       properties:
         webhooks:
           type: array
-          description: List of webhook endpoint configurations. Each webhook must have a unique URL - duplicate URLs are not allowed.
-          minItems: 1
+          description: List of all configured webhooks
           items:
-            $ref: '#/components/schemas/WebhookEndpointConfig'
-    WebhookResult:
+            $ref: '#/components/schemas/WebhookSecretResponse'
+    ApplyEnterpriseTemplateRequest:
       type: object
       required:
-        - stripe_id
-        - url
-        - events
-        - connect
-        - secret
-        - action
+        - tenant_id
+        - enterprise_template
       properties:
-        id:
+        tenant_id:
           type: string
-          description: Internal webhook ID
-          example: e056fa27-151d-4d25-b237-97e9de8d8dbf
-        stripe_id:
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        enterprise_template:
           type: string
-          description: Stripe webhook endpoint ID (we_xxx) or managed pseudo ID (wh_managed_xxx)
-          example: we_1SRiyyCJIZaBlhY1
-        url:
+          minLength: 1
+          description: Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)
+          example: tier1_10pct_off
+    EnterpriseApplyResponse:
+      type: object
+      required:
+        - message
+        - tenant_id
+        - prices_swapped
+      properties:
+        message:
           type: string
-          description: Webhook endpoint URL
-          example: https://example.com/webhooks/stripe
-        events:
+          description: Success message
+          example: Enterprise pricing applied successfully
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID that pricing was applied to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        prices_swapped:
+          type: integer
+          description: Number of subscription prices that were swapped
+          example: 3
+        swapped_details:
           type: array
-          description: List of subscribed event types
+          description: Details of each price swap performed
           items:
             type: string
           example:
-            - invoice.paid
-        connect:
-          type: boolean
-          description: Whether webhook listens to connected account events
-          example: false
-        secret:
-          type: string
-          description: Webhook signing secret for signature verification
-          example: whsec_xxx
-        action:
-          type: string
-          description: Action performed on the webhook
-          enum:
-            - created
-            - updated
-            - unchanged
-          example: created
-    WebhooksConfigResponse:
+            - 'basic_monthly -> basic_monthly_tier1 (subscription: sub_123)'
+    ApplyEnterpriseCustomRequest:
       type: object
       required:
-        - webhooks
+        - tenant_id
+        - enterprise_id
       properties:
-        webhooks:
+        tenant_id:
+          type: string
+          format: uuid
+          description: Tenant ID to apply enterprise pricing to
+          example: 7d5da463-8351-4abe-870c-8ccdefc4d78c
+        enterprise_id:
+          type: string
+          minLength: 1
+          description: Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)
+          example: acme_corp
+    EnterprisePricesResponse:
+      type: object
+      required:
+        - prices
+        - count
+      properties:
+        prices:
           type: array
-          description: List of configured webhook endpoints with results
+          description: List of enterprise prices matching the query
           items:
-            $ref: '#/components/schemas/WebhookResult'
+            $ref: '#/components/schemas/PriceWithStripeID'
+        count:
+          type: integer
+          description: Total number of prices returned
+          example: 3
     CreateTenantRequest:
       type: object
       description: Request to create a new tenant
@@ -6270,6 +7318,22 @@ components:
           type: string
           description: Success message
           example: Tenant deleted successfully
+    GetTenantByIDResponse:
+      type: object
+      description: Response containing a tenant by ID
+      required:
+        - tenant
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+    GetTenantByStripeCustomerIDResponse:
+      type: object
+      description: Response containing a tenant by Stripe customer ID
+      required:
+        - tenant
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
     SwitchTenantRequest:
       type: object
       description: Request to switch active tenant

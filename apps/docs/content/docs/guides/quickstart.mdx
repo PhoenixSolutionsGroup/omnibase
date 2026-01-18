@@ -1,0 +1,313 @@
+---
+title: Quickstart
+description: Go from zero to a working app with auth and multi-tenancy in 15 minutes
+---
+
+# Quickstart
+
+This guide walks you through setting up OmniBase locally, creating your first user and tenant, and configuring Stripe billing. By the end, you'll have a working backend with authentication, multi-tenancy, and payments.
+
+**Time:** ~15 minutes
+**Prerequisites:** Docker, Node.js 18+ (or Bun)
+
+---
+
+## 1. Install the CLI
+
+```bash
+npm i -g @omnibase/cli
+```
+
+Verify the installation:
+
+```bash
+omnibase --version
+```
+
+---
+
+## 2. Initialize Your Project
+
+Create a new directory and initialize OmniBase:
+
+```bash
+mkdir my-app && cd my-app
+omnibase init
+```
+
+This creates an `omnibase/` directory with:
+
+```
+omnibase/
+├── environments/        # Environment configs (.env.local, .env.prod, etc.)
+├── stripe/              # Stripe billing configurations
+├── permissions/         # RBAC permission definitions
+├── db/                  # Database migrations
+├── email/               # Email templates
+└── workers/             # Edge functions (Cloudflare Workers)
+```
+
+---
+
+## 3. Configure Environment
+
+Edit `omnibase/environments/.env.local`:
+
+```bash
+# Required
+OMNIBASE_API_URL=http://localhost:8080
+OMNIBASE_SERVICE_KEY=your-secret-service-key
+
+# Auth Configuration
+WEBSITE_URL=http://localhost:3000
+COOKIE_SECRET=change-this-to-a-secure-random-string
+CIPHER_SECRET=32-character-secret-for-encryption
+
+# Stripe (get keys from https://dashboard.stripe.com/apikeys)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+<Callout type="info">
+For local development, you can use your own Stripe keys. Real keys are required for payment features.
+</Callout>
+
+---
+
+## 4. Start Services
+
+Launch all OmniBase services:
+
+```bash
+omnibase start
+```
+
+This starts:
+- **API** at `http://localhost:8080`
+- **PostgreSQL** database
+- **Ory Kratos** (authentication)
+- **Ory Keto** (permissions)
+
+Wait for the health check to pass:
+
+```bash
+curl http://localhost:8080/health/ready
+# {"ready":true,"services":{"database":"ok","auth":"ok","permissions":"ok"}}
+```
+
+---
+
+## 5. Sync Configuration
+
+Push your local configurations to the running services:
+
+```bash
+omnibase sync all
+```
+
+This syncs:
+- Permission namespaces to Keto
+- Database migrations
+- Email templates
+- Stripe configuration
+
+---
+
+## 6. Create Your First User and Tenant
+
+Install the SDK in your application:
+
+```bash
+npm install @omnibase/core-js
+# or
+bun add @omnibase/core-js
+```
+
+Create a user and tenant programmatically:
+
+```typescript
+import { Configuration, V1AuthApi, V1TenantsApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: 'http://localhost:8080',
+  headers: {
+    'X-Service-Key': 'your-secret-service-key', // For server-side operations
+  },
+});
+
+// Create a user
+const authApi = new V1AuthApi(config);
+const { data: userData } = await authApi.createUser({
+  createUserRequest: {
+    email: 'admin@example.com',
+    password: 'secure-password-123',
+    name: { first: 'Admin', last: 'User' },
+  },
+});
+
+console.log('User created:', userData.data.id);
+
+// Create a tenant (organization)
+const tenantsApi = new V1TenantsApi(config);
+const { data: tenantData } = await tenantsApi.createTenant(
+  {
+    createTenantRequest: {
+      name: 'Acme Corporation',
+      billingEmail: 'billing@acme.com',
+    },
+  },
+  { headers: { 'X-User-Id': userData.data.id } }
+);
+
+console.log('Tenant created:', tenantData.data.tenant.id);
+console.log('Stripe Customer:', tenantData.data.tenant.stripe_customer_id);
+```
+
+<Callout type="info">
+When a tenant is created, OmniBase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
+</Callout>
+
+---
+
+## 7. Configure Stripe Products
+
+Create a billing configuration in `omnibase/stripe/products.config.json`:
+
+```json
+{
+  "$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "free_plan",
+      "name": "Free",
+      "description": "Get started for free",
+      "type": "service",
+      "prices": [
+        {
+          "id": "free_monthly",
+          "amount": 0,
+          "currency": "usd",
+          "interval": "month"
+        }
+      ]
+    },
+    {
+      "id": "pro_plan",
+      "name": "Professional",
+      "description": "For growing teams",
+      "type": "service",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 2900,
+          "currency": "usd",
+          "interval": "month"
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 29000,
+          "currency": "usd",
+          "interval": "year"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Push to Stripe:
+
+```bash
+omnibase stripe push
+```
+
+You'll see output like:
+
+```
+✔ Successfully loaded config
+✔ Configuration uploaded successfully!
+
+Products created: 2
+   - Free (free_plan)
+   - Professional (pro_plan)
+Prices created: 3
+   - free_monthly (product: free_plan)
+   - pro_monthly (product: pro_plan)
+   - pro_yearly (product: pro_plan)
+```
+
+---
+
+## 8. Create a Checkout Session
+
+Now create a checkout session for your tenant:
+
+```typescript
+import { V1PaymentsApi } from '@omnibase/core-js';
+
+const paymentsApi = new V1PaymentsApi(config);
+
+const { data: checkout } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'http://localhost:3000/success',
+    cancelUrl: 'http://localhost:3000/pricing',
+  },
+});
+
+console.log('Checkout URL:', checkout.data.url);
+// Redirect user to checkout.data.url
+```
+
+---
+
+## Next Steps
+
+You now have a working OmniBase setup with:
+- User authentication via Ory Kratos
+- Multi-tenant organization support
+- Stripe billing integration
+
+**Continue learning:**
+
+- [Multi-Tenancy Guide](/docs/guides/multi-tenancy) — Deep dive into tenant isolation, invitations, and RBAC
+- [Stripe Configuration](/docs/guides/stripe-config) — Version control, rollbacks, and metered billing
+- [Self-Hosting Guide](/docs/self-hosting) — Production deployment options
+- [API Reference](/docs/reference/api/v1) — Complete API documentation
+
+---
+
+## Stopping Services
+
+When you're done developing:
+
+```bash
+omnibase stop
+```
+
+This gracefully shuts down all Docker containers while preserving your data.
+
+---
+
+## Troubleshooting
+
+### Services won't start
+
+Check Docker is running:
+```bash
+docker info
+```
+
+### Health check fails
+
+View service logs:
+```bash
+docker logs api-rest-api-1
+docker logs api-auth-1
+docker logs api-permissions-1
+```
+
+### Stripe push fails
+
+Verify your Stripe keys in `.env.local` and ensure you're using test mode keys (`sk_test_...`).

@@ -1,0 +1,500 @@
+---
+title: Usage-Based Billing
+description: Implement metered billing with billing meters and usage tracking
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# Usage-Based Billing
+
+OmniBase supports usage-based (metered) billing for scenarios where you charge based on consumption rather than a flat fee. This is ideal for API calls, compute time, storage, and similar metrics.
+
+## Billing Meters
+
+Billing meters track usage events and aggregate them for billing. Define meters in your configuration:
+
+```json
+{
+  "meters": [
+    {
+      "id": "api_calls",
+      "display_name": "API Calls",
+      "event_name": "api_call",
+      "default_aggregation": {
+        "formula": "sum"
+      },
+      "customer_mapping": {
+        "event_payload_key": "customer_id",
+        "type": "by_id"
+      },
+      "value_settings": {
+        "event_payload_key": "value"
+      }
+    }
+  ]
+}
+```
+
+### Meter Configuration
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | `string` | Yes | Unique meter identifier |
+| `display_name` | `string` | Yes | Human-readable name |
+| `event_name` | `string` | Yes | Event name to track |
+| `stripe_id` | `string` | No | Existing Stripe meter ID (migration) |
+| `default_aggregation` | `object` | Yes | How to aggregate events |
+| `customer_mapping` | `object` | No | How to identify customers |
+| `value_settings` | `object` | No | How to extract values |
+
+### Aggregation Formulas
+
+| Formula | Description | Use Case |
+|---------|-------------|----------|
+| `sum` | Sum all values | API calls, data transfer |
+| `count` | Count events | Requests, transactions |
+| `last` | Use last value | Current storage size |
+
+## Metered Prices
+
+Link a price to a meter for usage-based billing:
+
+```json
+{
+  "products": [
+    {
+      "id": "api_usage",
+      "name": "API Usage",
+      "type": "service",
+      "prices": [
+        {
+          "id": "api_per_call",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "api_calls",
+          "billing_scheme": "per_unit",
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Per-Unit Metered Pricing
+
+Charge a fixed amount per unit:
+
+```json
+{
+  "id": "compute_hours",
+  "currency": "usd",
+  "interval": "month",
+  "usage_type": "metered",
+  "meter": "compute_time",
+  "billing_scheme": "per_unit",
+  "amount": 10
+}
+```
+
+This charges $0.10 per unit of compute time.
+
+### Tiered Metered Pricing
+
+For volume discounts, use tiered pricing:
+
+```json
+{
+  "id": "api_tiered",
+  "currency": "usd",
+  "interval": "month",
+  "usage_type": "metered",
+  "meter": "api_calls",
+  "billing_scheme": "tiered",
+  "tiers_mode": "graduated",
+  "tiers": [
+    { "up_to": 1000, "unit_amount": 0 },
+    { "up_to": 10000, "unit_amount": 100 },
+    { "up_to": 100000, "unit_amount": 50 },
+    { "up_to": "inf", "unit_amount": 25 }
+  ]
+}
+```
+
+This creates a pricing structure:
+- First 1,000 calls: Free
+- 1,001 - 10,000: $0.01 per call
+- 10,001 - 100,000: $0.005 per call
+- 100,000+: $0.0025 per call
+
+## Recording Usage
+
+### Via API
+
+```typescript
+import { V1PaymentsApi } from '@omnibase/core-js';
+
+const paymentsApi = new V1PaymentsApi(config);
+
+// Record 100 API calls
+await paymentsApi.recordUsage({
+  recordUsageRequest: {
+    meterEventName: 'api_call',
+    value: '100',
+  },
+});
+```
+
+### Via Go SDK
+
+```go
+import (
+    "context"
+    omnibase "github.com/omnibase/sdk-go"
+)
+
+client := omnibase.NewClient(os.Getenv("OMNIBASE_API_URL"))
+
+err := client.V1PaymentsAPI.RecordUsage(ctx).
+    XServiceKey(serviceKey).
+    XTenantId(tenantID).
+    RecordUsageRequest(omnibase.RecordUsageRequest{
+        MeterEventName: "api_call",
+        Value:          "100",
+    }).
+    Execute()
+```
+
+### Batch Recording
+
+For high-volume scenarios, batch usage events:
+
+```typescript
+// Record usage in batches (e.g., every minute)
+async function recordBatchedUsage() {
+  const usage = getUsageFromBuffer(); // Your buffered usage data
+
+  await paymentsApi.recordUsage({
+    recordUsageRequest: {
+      meterEventName: 'api_call',
+      value: String(usage.count),
+    },
+  });
+}
+
+// Run every minute
+setInterval(recordBatchedUsage, 60000);
+```
+
+## Usage Calculation Service
+
+For complex usage scenarios (like managed hosting), OmniBase provides a usage calculation service:
+
+### Project Usage Calculation
+
+```go
+type UsageLineItem struct {
+    PriceID     string            // Config price ID
+    Quantity    int64             // Quantity of units
+    Description string            // Human-readable description
+    ProjectID   string            // Project reference
+    Metadata    map[string]string // Additional metadata
+}
+
+func (u *UsageCalculator) CalculateProjectUsage(
+    ctx context.Context,
+    project *models.Project,
+    billingStart, billingEnd time.Time,
+) ([]UsageLineItem, error) {
+    var lineItems []UsageLineItem
+
+    // Calculate compute usage
+    if project.ComputeDeploymentID != nil {
+        items, _ := u.calculateComputeUsage(ctx, project, billingStart, billingEnd)
+        lineItems = append(lineItems, items...)
+    }
+
+    // Calculate storage usage
+    if project.StorageDeploymentID != nil {
+        items, _ := u.calculateStorageUsage(ctx, project, billingStart, billingEnd)
+        lineItems = append(lineItems, items...)
+    }
+
+    // Calculate database usage
+    if project.DatabaseDeploymentID != nil {
+        items, _ := u.calculateDatabaseUsage(ctx, project, billingStart, billingEnd)
+        lineItems = append(lineItems, items...)
+    }
+
+    return lineItems, nil
+}
+```
+
+### Usage Categories
+
+| Category | Metrics | Unit |
+|----------|---------|------|
+| **Compute** | VPS hours, Cloud Run vCPU-seconds | Hours, vCPU-seconds |
+| **Storage** | GB stored, operations (Class A/B) | GB-month, operations |
+| **Database** | Compute hours, storage GB | Hours, GB-hours |
+| **Email** | Emails sent | Count |
+| **Workers** | Requests, CPU milliseconds | Millions |
+
+### Billing Period Normalization
+
+For VPS billing, OmniBase normalizes to 730 hours/month:
+
+```go
+const StandardMonthHours = 730 // 365 * 24 / 12
+
+// If project ran full billing period, cap at standard hours
+if ranFullBillingPeriod {
+    billableHours = StandardMonthHours
+}
+```
+
+## Displaying Usage
+
+### Usage Preview API
+
+```typescript
+// Get usage preview for a billing period
+const response = await fetch(
+  `/api/projects/${projectId}/usage?start=${startDate}&end=${endDate}`
+);
+
+const usage = await response.json();
+// {
+//   project_id: "...",
+//   billing_start: "2024-01-01T00:00:00Z",
+//   billing_end: "2024-02-01T00:00:00Z",
+//   line_items: [...],
+//   item_count: 5
+// }
+```
+
+### Usage Chart Component
+
+```tsx title="components/UsageChart.tsx"
+import { V1StripeApi } from '@omnibase/core-js';
+
+const CATEGORY_MAP = {
+  compute: ['vks_', 'gcp_cloudrun_'],
+  storage: ['cloudflare_r2_'],
+  database: ['neon_'],
+  email: ['postmark_'],
+  workers: ['cloudflare_workers_'],
+};
+
+function categorizeLineItem(priceId: string): string {
+  for (const [category, prefixes] of Object.entries(CATEGORY_MAP)) {
+    if (prefixes.some(p => priceId.startsWith(p))) {
+      return category;
+    }
+  }
+  return 'other';
+}
+
+function formatQuantity(priceId: string, quantity: number): string {
+  if (priceId.includes('hourly')) return `${quantity} hrs`;
+  if (priceId.includes('gb_month')) return `${quantity} GB`;
+  if (priceId.includes('requests')) return `${(quantity / 1_000_000).toFixed(2)}M reqs`;
+  return String(quantity);
+}
+
+export function UsageChart({ lineItems }) {
+  const stripeApi = new V1StripeApi(config);
+
+  const itemsWithPrices = await Promise.all(
+    lineItems.map(async (item) => {
+      const { data } = await stripeApi.getPriceByID({ priceId: item.PriceID });
+      return {
+        ...item,
+        price: data.price,
+        category: categorizeLineItem(item.PriceID),
+        cost: calculateCost(item.PriceID, data.price.amount, item.Quantity),
+      };
+    })
+  );
+
+  const totalCost = itemsWithPrices.reduce((sum, item) => sum + item.cost, 0);
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {itemsWithPrices.map((item) => (
+          <tr key={item.PriceID}>
+            <td>{item.category}</td>
+            <td>{item.Description}</td>
+            <td>{formatQuantity(item.PriceID, item.Quantity)}</td>
+            <td>${(item.cost / 100).toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colSpan={3}>Estimated Total</td>
+          <td>${(totalCost / 100).toFixed(2)}</td>
+        </tr>
+      </tfoot>
+    </table>
+  );
+}
+```
+
+## Cost Calculation API
+
+Calculate costs for any quantity:
+
+```typescript
+const { data } = await stripeApi.calculatePriceCost({
+  priceId: 'api_tiered',
+  calculatePriceCostRequest: { quantity: 50000 },
+});
+
+console.log(data.cost_cents);              // Total cost in cents
+console.log(data.effective_unit_cost_cents); // Average cost per unit
+console.log(data.billing_scheme);          // "tiered"
+console.log(data.tiers_mode);              // "graduated"
+```
+
+## Invoice Integration
+
+For `invoice.created` webhooks, calculate and add usage line items:
+
+```go
+func (h *StripeEventHandler) handleInvoiceCreated(
+    ctx context.Context,
+    event stripe.Event,
+) error {
+    var invoice stripe.Invoice
+    json.Unmarshal(event.Data.Raw, &invoice)
+
+    billingStart := time.Unix(invoice.PeriodStart, 0)
+    billingEnd := time.Unix(invoice.PeriodEnd, 0)
+
+    // Get all projects for tenant
+    projects := getProjectsForCustomer(invoice.Customer.ID)
+
+    // Calculate usage for each project
+    var allLineItems []UsageLineItem
+    for _, project := range projects {
+        items, _ := h.usageCalculator.CalculateProjectUsage(
+            ctx, &project, billingStart, billingEnd,
+        )
+        allLineItems = append(allLineItems, items...)
+    }
+
+    // Aggregate by price ID
+    aggregated := aggregateLineItems(allLineItems)
+
+    // Add to invoice
+    for _, item := range aggregated {
+        h.addInvoiceLineItem(ctx, invoice.ID, item)
+    }
+
+    return nil
+}
+```
+
+## Complete Example
+
+```json title="omnibase/stripe/usage-billing.config.json"
+{
+  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+  "version": "1.0.0",
+  "meters": [
+    {
+      "id": "api_calls",
+      "display_name": "API Calls",
+      "event_name": "api_call",
+      "default_aggregation": { "formula": "sum" }
+    },
+    {
+      "id": "storage_gb",
+      "display_name": "Storage (GB)",
+      "event_name": "storage_usage",
+      "default_aggregation": { "formula": "last" }
+    }
+  ],
+  "products": [
+    {
+      "id": "usage_plan",
+      "name": "Usage-Based Plan",
+      "type": "service",
+      "prices": [
+        {
+          "id": "base_monthly",
+          "amount": 999,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "licensed",
+          "ui": {
+            "display_name": "Base Fee"
+          }
+        },
+        {
+          "id": "api_usage",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "api_calls",
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "tiers": [
+            { "up_to": 10000, "unit_amount": 0 },
+            { "up_to": 100000, "unit_amount": 10 },
+            { "up_to": "inf", "unit_amount": 5 }
+          ],
+          "ui": {
+            "display_name": "API Calls",
+            "billing_period": "per 1,000 calls"
+          }
+        },
+        {
+          "id": "storage_usage",
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "storage_gb",
+          "billing_scheme": "per_unit",
+          "amount": 25,
+          "ui": {
+            "display_name": "Storage",
+            "billing_period": "per GB/month"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Best Practices
+
+1. **Batch Usage Events** — Don't send individual events; batch them for performance
+
+2. **Use Appropriate Aggregation** — `sum` for cumulative metrics, `last` for point-in-time metrics
+
+3. **Include Free Tiers** — Start tiered pricing with a free tier for better customer experience
+
+4. **Display Usage** — Show customers their current usage and projected costs
+
+5. **Set Usage Alerts** — Notify customers when they approach usage thresholds
+
+## Related
+
+- [Products & Prices](/docs/guides/stripe/products-prices) — Tiered pricing configuration
+- [Invoices](/docs/guides/stripe/invoices) — Adding usage to invoices
+- [Webhooks](/docs/guides/stripe/webhooks) — Invoice event handling

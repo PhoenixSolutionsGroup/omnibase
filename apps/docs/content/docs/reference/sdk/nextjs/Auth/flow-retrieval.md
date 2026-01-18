@@ -7,6 +7,40 @@ title: "Flow Retrieval"
 Server-side functions for fetching authentication flow data from Ory Kratos.
 These functions handle the flow lifecycle and return typed flow objects.
 
+### GetErrorFlowProps
+
+```ts
+type GetErrorFlowProps = {
+  searchParams: Promise<{
+   [key: string]: string | string[] | undefined;
+  }>;
+};
+```
+
+Defined in: [src/auth/get-flow.ts:368](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L368)
+
+Properties required for retrieving error flow details
+
+#### Since
+
+0.7.0
+
+#### Properties
+
+##### searchParams
+
+```ts
+searchParams: Promise<{
+[key: string]: string | string[] | undefined;
+}>;
+```
+
+Defined in: [src/auth/get-flow.ts:370](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L370)
+
+Promise resolving to search parameters containing the error ID
+
+***
+
 ### GetFlowProps
 
 ```ts
@@ -18,7 +52,7 @@ type GetFlowProps = {
 };
 ```
 
-Defined in: [auth/get-flow.ts:40](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L40)
+Defined in: [src/auth/get-flow.ts:43](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L43)
 
 Properties required for retrieving authentication flows
 
@@ -49,7 +83,7 @@ searchParams: Promise<{
 }>;
 ```
 
-Defined in: [auth/get-flow.ts:44](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L44)
+Defined in: [src/auth/get-flow.ts:47](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L47)
 
 Promise resolving to search parameters from the request, containing flow ID and state
 
@@ -59,7 +93,7 @@ Promise resolving to search parameters from the request, containing flow ID and 
 url: string;
 ```
 
-Defined in: [auth/get-flow.ts:42](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L42)
+Defined in: [src/auth/get-flow.ts:45](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L45)
 
 The UI URL for the specific authentication flow (e.g., '/auth/login')
 
@@ -74,7 +108,7 @@ type LogoutFlowReturnType = {
 };
 ```
 
-Defined in: [auth/get-flow.ts:282](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L282)
+Defined in: [src/auth/get-flow.ts:285](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L285)
 
 Return type for the getLogoutFlow function
 
@@ -93,7 +127,7 @@ the logout process, including clearing all authentication cookies.
 action: () => Promise<void>;
 ```
 
-Defined in: [auth/get-flow.ts:286](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L286)
+Defined in: [src/auth/get-flow.ts:289](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L289)
 
 Server action that clears authentication cookies and completes logout
 
@@ -107,9 +141,56 @@ Server action that clears authentication cookies and completes logout
 flow: LogoutFlow;
 ```
 
-Defined in: [auth/get-flow.ts:284](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L284)
+Defined in: [src/auth/get-flow.ts:287](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L287)
 
 Logout flow object from Ory Kratos containing logout URL and token
+
+***
+
+### getErrorFlow()
+
+```ts
+function getErrorFlow(props): Promise<FlowError | null>;
+```
+
+Defined in: [src/auth/get-flow.ts:405](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L405)
+
+Retrieves error details for a user-facing authentication error
+
+When Ory Kratos encounters an error during authentication flows (CSRF failures,
+expired flows, OAuth errors, etc.), it redirects to the error UI with an error ID.
+This function fetches the error details using that ID.
+
+#### Parameters
+
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `props` | [`GetErrorFlowProps`](#geterrorflowprops) | Configuration object containing search parameters |
+
+#### Returns
+
+`Promise`\<[`FlowError`](#flowerror) \| `null`\>
+
+Promise that resolves to a FlowError object or null if the error cannot be retrieved
+
+#### Example
+
+```typescript
+// In a Next.js server component
+import { getErrorFlow } from '@omnibase/nextjs/auth';
+
+const error = await getErrorFlow({
+  searchParams: Promise.resolve({ id: 'error-id-123' })
+});
+
+if (error) {
+  return <ErrorForm error={error} />;
+}
+```
+
+#### Since
+
+0.7.0
 
 ***
 
@@ -119,7 +200,7 @@ Logout flow object from Ory Kratos containing logout URL and token
 function getLoginFlow(props): Promise<LoginFlow | null>;
 ```
 
-Defined in: [auth/get-flow.ts:81](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L81)
+Defined in: [src/auth/get-flow.ts:84](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L84)
 
 Retrieves a login flow for user authentication
 
@@ -167,7 +248,7 @@ if (flow) {
 function getLogoutFlow(props): Promise<LogoutFlowReturnType | null>;
 ```
 
-Defined in: [auth/get-flow.ts:330](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L330)
+Defined in: [src/auth/get-flow.ts:333](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L333)
 
 Retrieves a logout flow for the authenticated user with complete logout handling
 
@@ -228,7 +309,7 @@ export default async function LogoutButton() {
 function getRecoveryFlow(props): Promise<RecoveryFlow | null>;
 ```
 
-Defined in: [auth/get-flow.ts:124](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L124)
+Defined in: [src/auth/get-flow.ts:127](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L127)
 
 Retrieves a recovery flow for password reset and account recovery
 
@@ -276,7 +357,7 @@ if (flow) {
 function getRegistrationFlow(props): Promise<RegistrationFlow | null>;
 ```
 
-Defined in: [auth/get-flow.ts:169](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L169)
+Defined in: [src/auth/get-flow.ts:172](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L172)
 
 Retrieves a registration flow for new user account creation
 
@@ -324,7 +405,7 @@ if (flow) {
 function getSettingsFlow(props): Promise<SettingsFlow | null>;
 ```
 
-Defined in: [auth/get-flow.ts:214](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L214)
+Defined in: [src/auth/get-flow.ts:217](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L217)
 
 Retrieves a settings flow for user account management and profile updates
 
@@ -372,7 +453,7 @@ if (flow) {
 function getVerificationFlow(props): Promise<VerificationFlow | null>;
 ```
 
-Defined in: [auth/get-flow.ts:259](https://github.com/PhoenixSolutionsGroup/omnibase/blob/d042f55a39e996e6dbc172ffe102de200b81db0d/sdk/framework/nextjs/src/auth/get-flow.ts#L259)
+Defined in: [src/auth/get-flow.ts:262](https://github.com/PhoenixSolutionsGroup/omnibase/blob/a7411b3d9aa15bd1496c4bfdd53796687082fc57/sdk/framework/nextjs/src/auth/get-flow.ts#L262)
 
 Retrieves a verification flow for email or account verification
 

@@ -1,0 +1,155 @@
+---
+title: Tenants
+description: Understanding the tenant model and data isolation
+---
+
+# Understanding Tenants
+
+Tenants are the core organizational unit in OmniBase. This page explains the mental model behind multi-tenancy and how data isolation works.
+
+## What is a Tenant?
+
+A **tenant** is an isolated container for users and data. Think of it as:
+
+- A **company** in a B2B SaaS
+- A **workspace** in a collaboration tool
+- An **organization** in a developer platform
+
+Each tenant has:
+- Its own data, isolated via Row-Level Security
+- A Stripe customer for billing
+- Members with role-based permissions
+- Independent configuration
+
+## Tenant Lifecycle
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    TENANT CREATION                       │
+├─────────────────────────────────────────────────────────┤
+│  1. User calls createTenant()                           │
+│  2. OmniBase creates tenant record                      │
+│  3. Stripe customer created automatically               │
+│  4. Creating user assigned as owner                     │
+│  5. Keto relationship created: user → owner → tenant    │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                    TENANT ACTIVE                         │
+├─────────────────────────────────────────────────────────┤
+│  • Members can be invited                               │
+│  • Data is isolated via RLS                             │
+│  • Subscriptions can be added                           │
+│  • Billing goes to tenant's Stripe customer             │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                    TENANT DELETION                       │
+├─────────────────────────────────────────────────────────┤
+│  1. Owner calls deleteTenant()                          │
+│  2. All memberships removed                             │
+│  3. Stripe subscriptions cancelled                      │
+│  4. Data marked for deletion                            │
+│  5. Keto relationships cleaned up                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Active Tenant Context
+
+Users can belong to multiple tenants. The **active tenant** determines:
+
+1. **Data visibility** — RLS policies filter by `auth.active_tenant_id()`
+2. **Billing context** — Which Stripe customer is used
+3. **Permission scope** — Which tenant's roles apply
+
+### How Active Tenant Works
+
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│   Request    │───▶│  JWT/Cookie  │───▶│  RLS Policy  │
+│              │    │  tenant_id   │    │  Filters     │
+└──────────────┘    └──────────────┘    └──────────────┘
+```
+
+When a user authenticates:
+1. Their active tenant is stored in the session
+2. API requests include tenant context
+3. Database queries are automatically filtered
+
+### Switching Tenants
+
+```typescript
+// User has access to multiple tenants
+const tenants = await tenantsApi.listTenants();
+// [{ tenant: { id: 'acme', name: 'Acme Corp' } },
+//  { tenant: { id: 'globex', name: 'Globex Inc' } }]
+
+// Switch to a different tenant
+await tenantsApi.switchActiveTenant({
+  switchTenantRequest: { tenantId: 'globex' }
+});
+
+// Now all queries are scoped to Globex
+```
+
+## Data Isolation with RLS
+
+PostgreSQL Row-Level Security ensures tenants can't access each other's data:
+
+```sql
+-- The auth.active_tenant_id() function returns the current tenant
+CREATE POLICY tenant_isolation ON projects
+  USING (tenant_id = auth.active_tenant_id());
+```
+
+### How It Works
+
+1. User makes API request with session cookie
+2. API extracts tenant_id from JWT
+3. `SET LOCAL` sets the tenant context for the transaction
+4. All queries automatically filter by tenant
+
+```sql
+-- Behind the scenes, this query:
+SELECT * FROM projects;
+
+-- Becomes:
+SELECT * FROM projects WHERE tenant_id = 'current-tenant-id';
+```
+
+## Tenant Members
+
+Each tenant has members with roles:
+
+| Role | Access Level |
+|------|--------------|
+| `owner` | Full control, can delete tenant |
+| `admin` | Manage members, view billing |
+| `member` | Standard access |
+
+### Member Hierarchy
+
+```
+Tenant: Acme Corp
+├── alice@acme.com (owner)
+├── bob@acme.com (admin)
+├── carol@acme.com (member)
+└── dave@acme.com (member)
+```
+
+## Single-Tenant Applications
+
+OmniBase works for single-tenant apps too:
+
+1. Create one tenant at signup
+2. All users belong to that tenant
+3. Skip tenant switching UI
+4. RLS still provides security benefits
+
+## Related Topics
+
+- [Multi-Tenancy Guide](/docs/guides/multi-tenancy) — Implementation guide
+- [RBAC Guide](/docs/guides/rbac) — Role configuration
+- [Permissions Concepts](/docs/concepts/permissions) — How permissions work

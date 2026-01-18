@@ -3,12 +3,10 @@
   "pages": [
     "auth",
     "configuration",
-    "events",
     "payments",
     "permissions",
     "storage",
     "stripe",
-    "tenants",
-    "webhooks"
+    "tenants"
   ]
 }

@@ -86,6 +86,11 @@ async function cleanupTypedocOutput(dir: string): Promise<void> {
     const fullPath = join(dir, entry.name);
 
     if (entry.isDirectory()) {
+      // Remove _media directories (TypeDoc copies source files that have broken imports)
+      if (entry.name === "_media") {
+        await rm(fullPath, { recursive: true });
+        continue;
+      }
       await cleanupTypedocOutput(fullPath);
     } else if (entry.name === "README.md") {
       // Rename README.md to index.md

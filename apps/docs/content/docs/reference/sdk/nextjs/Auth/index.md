@@ -82,4 +82,5 @@ export default async function DashboardPage() {
 - [Authentication](./authentication)
 - [Flow Retrieval](./flow-retrieval)
 - [Flow Routing](./flow-routing)
+- [Interfaces](./interfaces)
 - [Session Management](./session-management)

@@ -4,6 +4,7 @@
     "authentication",
     "flow-retrieval",
     "flow-routing",
+    "interfaces",
     "session-management"
   ]
 }

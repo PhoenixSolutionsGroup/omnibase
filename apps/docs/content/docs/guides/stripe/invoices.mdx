@@ -1,0 +1,467 @@
+---
+title: Invoices
+description: Create, manage, and process invoices programmatically
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# Invoices
+
+OmniBase provides a complete invoice management API for creating custom invoices, adding line items, and handling invoice lifecycle events.
+
+## Invoice Lifecycle
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│    Draft    │────▶│  Finalized  │────▶│    Open     │────▶│    Paid     │
+│             │     │             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+       │                                       │                    │
+       │                                       ▼                    │
+       │                               ┌─────────────┐              │
+       └───────────────────────────────│    Void     │◀─────────────┘
+                                       └─────────────┘
+```
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Invoice can be edited, line items added |
+| `open` | Invoice sent to customer, awaiting payment |
+| `paid` | Payment received |
+| `void` | Invoice canceled |
+| `uncollectible` | Payment failed, marked as bad debt |
+
+## Creating Invoices
+
+### Create Draft Invoice
+
+```typescript
+import { V1PaymentsApi } from '@omnibase/core-js';
+
+const paymentsApi = new V1PaymentsApi(config);
+
+const { data: invoice } = await paymentsApi.createInvoice({
+  createInvoiceRequest: {
+    currency: 'usd',
+    autoAdvance: false, // Keep as draft
+    description: 'January 2024 Usage',
+    metadata: {
+      billing_period: '2024-01',
+      tenant_id: 'tenant_123',
+    },
+  },
+});
+
+console.log(invoice.id);     // "in_xxx..."
+console.log(invoice.status); // "draft"
+```
+
+### Invoice Options
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `currency` | `string` | Invoice currency (e.g., `"usd"`) |
+| `autoAdvance` | `boolean` | Auto-finalize and send when created |
+| `description` | `string` | Invoice description |
+| `metadata` | `object` | Custom key-value metadata |
+
+## Adding Line Items
+
+### By Amount
+
+Add a custom amount line item:
+
+```typescript
+await paymentsApi.addInvoiceLineItem({
+  invoiceId: invoice.id,
+  addInvoiceLineItemRequest: {
+    amount: 5000, // $50.00 in cents
+    currency: 'usd',
+    description: 'Consulting Services - 2 hours',
+  },
+});
+```
+
+### By Price ID and Quantity
+
+Add a line item using a configured price:
+
+```typescript
+await paymentsApi.addInvoiceLineItemWithPriceId({
+  invoiceId: invoice.id,
+  addInvoiceLineItemWithPriceIDRequest: {
+    priceId: 'compute_hourly', // Config price ID
+    quantity: 730,             // 730 hours
+    currency: 'usd',
+    description: 'Compute - VKS Starter (730 hours)',
+    metadata: {
+      project_id: 'proj_123',
+    },
+  },
+});
+```
+
+<Callout type="info">
+When using `priceId`, OmniBase automatically converts your config price ID to the Stripe price ID.
+</Callout>
+
+## Updating Invoices
+
+Update draft invoices before finalizing:
+
+```typescript
+await paymentsApi.updateInvoice({
+  invoiceId: invoice.id,
+  updateInvoiceRequest: {
+    description: 'Updated: January 2024 Usage',
+    metadata: {
+      updated_at: new Date().toISOString(),
+    },
+  },
+});
+```
+
+<Callout type="warn">
+Only draft invoices can be updated. Attempting to update a finalized invoice returns a 400 error.
+</Callout>
+
+## Finalizing Invoices
+
+Finalize to send the invoice to the customer:
+
+```typescript
+const { data: finalizedInvoice } = await paymentsApi.finalizeInvoice({
+  invoiceId: invoice.id,
+  finalizeInvoiceRequest: {
+    autoAdvance: true, // Send immediately
+  },
+});
+
+console.log(finalizedInvoice.status);          // "open"
+console.log(finalizedInvoice.hostedInvoiceUrl); // Stripe-hosted invoice page
+console.log(finalizedInvoice.invoicePdf);       // PDF download URL
+```
+
+### Auto-Advance Behavior
+
+| autoAdvance | Behavior |
+|-------------|----------|
+| `true` | Invoice is sent immediately, payment attempted if auto-charge enabled |
+| `false` | Invoice is finalized but not sent; manual sending required |
+
+## Getting Invoices
+
+```typescript
+const { data: invoice } = await paymentsApi.getInvoice({
+  invoiceId: 'in_xxx',
+});
+
+console.log(invoice.amountDue);      // Amount due in cents
+console.log(invoice.amountPaid);     // Amount paid in cents
+console.log(invoice.lineItems);      // Array of line items
+console.log(invoice.hostedInvoiceUrl); // Customer invoice URL
+```
+
+## Usage-Based Invoice Processing
+
+For usage-based billing, process `invoice.created` webhooks to add line items:
+
+### Webhook Handler
+
+```go title="internal/handlers/stripe_event_handler.go"
+func (h *StripeEventHandler) handleInvoiceCreated(
+    ctx context.Context,
+    event stripe.Event,
+) error {
+    var invoice stripe.Invoice
+    json.Unmarshal(event.Data.Raw, &invoice)
+
+    // Skip if not a subscription invoice
+    if invoice.Subscription == nil {
+        return nil
+    }
+
+    billingStart := time.Unix(invoice.PeriodStart, 0)
+    billingEnd := time.Unix(invoice.PeriodEnd, 0)
+
+    // Look up tenant by Stripe customer ID
+    tenant, err := h.getTenantByCustomerID(invoice.Customer.ID)
+    if err != nil {
+        return err
+    }
+
+    // Get all projects for this tenant
+    projects, _ := h.getProjectsForTenant(tenant.ID)
+
+    // Calculate usage for each project
+    var allLineItems []UsageLineItem
+    for _, project := range projects {
+        items, _ := h.usageCalculator.CalculateProjectUsage(
+            ctx, &project, billingStart, billingEnd,
+        )
+        allLineItems = append(allLineItems, items...)
+    }
+
+    // Aggregate line items by price ID
+    aggregated := aggregateLineItems(allLineItems)
+
+    // Add aggregated line items to invoice
+    for _, item := range aggregated {
+        _, _, err := h.omnibaseClient.V1PaymentsAPI.
+            AddInvoiceLineItemWithPriceId(ctx, invoice.ID).
+            XServiceKey(h.serviceKey).
+            XTenantId(tenant.ID).
+            AddInvoiceLineItemWithPriceIDRequest(omnibase.AddInvoiceLineItemWithPriceIDRequest{
+                AddInvoiceLineItemWithConfigPriceRequest: &omnibase.AddInvoiceLineItemWithConfigPriceRequest{
+                    Quantity:    item.Quantity,
+                    PriceId:     item.PriceID,
+                    Description: item.Description,
+                    Currency:    omnibase.USD,
+                    Metadata:    item.Metadata,
+                },
+            }).
+            Execute()
+
+        if err != nil {
+            logger.Logger.Error("Failed to add line item",
+                "invoice_id", invoice.ID,
+                "price_id", item.PriceID,
+                "error", err)
+        }
+    }
+
+    return nil
+}
+```
+
+### Line Item Aggregation
+
+```go
+type aggregatedItem struct {
+    item         UsageLineItem
+    projectCount int
+}
+
+func aggregateLineItems(items []UsageLineItem) []UsageLineItem {
+    grouped := make(map[string]*aggregatedItem)
+
+    for _, item := range items {
+        if existing, ok := grouped[item.PriceID]; ok {
+            // Sum quantities for same price
+            existing.item.Quantity += item.Quantity
+            existing.projectCount++
+        } else {
+            grouped[item.PriceID] = &aggregatedItem{
+                item:         item,
+                projectCount: 1,
+            }
+        }
+    }
+
+    result := make([]UsageLineItem, 0, len(grouped))
+    for _, agg := range grouped {
+        item := agg.item
+        if agg.projectCount > 1 {
+            item.Description = fmt.Sprintf(
+                "%s (aggregated from %d projects)",
+                item.Description, agg.projectCount,
+            )
+            item.Metadata["project_count"] = fmt.Sprintf("%d", agg.projectCount)
+        }
+        result = append(result, item)
+    }
+
+    return result
+}
+```
+
+## Webhook Events
+
+Subscribe to invoice events:
+
+```json
+{
+  "webhooks": [
+    {
+      "id": "invoice_events",
+      "url": "${WEBHOOK_URL}/api/stripe/invoices",
+      "events": [
+        "invoice.created",
+        "invoice.finalized",
+        "invoice.paid",
+        "invoice.payment_failed",
+        "invoice.payment_action_required",
+        "invoice.upcoming",
+        "invoice.marked_uncollectible",
+        "invoice.voided"
+      ]
+    }
+  ]
+}
+```
+
+### Event Handling
+
+```typescript
+switch (event.type) {
+  case 'invoice.created':
+    // Add usage-based line items (see above)
+    await addUsageLineItems(event.data.object);
+    break;
+
+  case 'invoice.paid':
+    // Payment successful
+    const paidInvoice = event.data.object;
+    await recordPayment(paidInvoice.customer, paidInvoice.amount_paid);
+    break;
+
+  case 'invoice.payment_failed':
+    // Payment failed
+    const failedInvoice = event.data.object;
+    await notifyPaymentFailed(failedInvoice.customer);
+    break;
+
+  case 'invoice.upcoming':
+    // Invoice will be created soon (useful for previews)
+    await sendUpcomingInvoiceNotification(event.data.object);
+    break;
+}
+```
+
+## Complete Example
+
+### TypeScript SDK
+
+```typescript
+import { V1PaymentsApi, Configuration } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: {
+    'X-Service-Key': process.env.SERVICE_KEY,
+    'X-Tenant-Id': tenantId,
+  },
+});
+
+const paymentsApi = new V1PaymentsApi(config);
+
+// 1. Create draft invoice
+const { data: invoice } = await paymentsApi.createInvoice({
+  createInvoiceRequest: {
+    currency: 'usd',
+    autoAdvance: false,
+    description: 'January 2024 Infrastructure Usage',
+  },
+});
+
+// 2. Add compute line item
+await paymentsApi.addInvoiceLineItemWithPriceId({
+  invoiceId: invoice.id,
+  addInvoiceLineItemWithPriceIDRequest: {
+    priceId: 'vks_starter_hourly',
+    quantity: 730,
+    currency: 'usd',
+    description: 'Compute - VKS Starter (730 hours)',
+  },
+});
+
+// 3. Add database line item
+await paymentsApi.addInvoiceLineItemWithPriceId({
+  invoiceId: invoice.id,
+  addInvoiceLineItemWithPriceIDRequest: {
+    priceId: 'neon_compute_hour',
+    quantity: 150,
+    currency: 'usd',
+    description: 'Database - Neon Compute (150 hours)',
+  },
+});
+
+// 4. Add storage line item
+await paymentsApi.addInvoiceLineItemWithPriceId({
+  invoiceId: invoice.id,
+  addInvoiceLineItemWithPriceIDRequest: {
+    priceId: 'cloudflare_r2_storage',
+    quantity: 50,
+    currency: 'usd',
+    description: 'Storage - Cloudflare R2 (50 GB)',
+  },
+});
+
+// 5. Finalize and send
+const { data: finalInvoice } = await paymentsApi.finalizeInvoice({
+  invoiceId: invoice.id,
+  finalizeInvoiceRequest: {
+    autoAdvance: true,
+  },
+});
+
+console.log('Invoice sent:', finalInvoice.hostedInvoiceUrl);
+```
+
+### Go SDK
+
+```go
+import (
+    "context"
+    omnibase "github.com/omnibase/sdk-go"
+)
+
+client := omnibase.NewAPIClient(omnibase.NewConfiguration())
+
+// Create invoice
+invoice, _, _ := client.V1PaymentsAPI.CreateInvoice(ctx).
+    XServiceKey(serviceKey).
+    XTenantId(tenantID).
+    CreateInvoiceRequest(omnibase.CreateInvoiceRequest{
+        Currency:    omnibase.USD,
+        AutoAdvance: omnibase.PtrBool(false),
+        Description: omnibase.PtrString("January 2024 Usage"),
+    }).
+    Execute()
+
+// Add line items
+for _, item := range usageLineItems {
+    _, _, _ = client.V1PaymentsAPI.AddInvoiceLineItemWithPriceId(ctx, invoice.Id).
+        XServiceKey(serviceKey).
+        XTenantId(tenantID).
+        AddInvoiceLineItemWithPriceIDRequest(omnibase.AddInvoiceLineItemWithPriceIDRequest{
+            AddInvoiceLineItemWithConfigPriceRequest: &omnibase.AddInvoiceLineItemWithConfigPriceRequest{
+                PriceId:     item.PriceID,
+                Quantity:    item.Quantity,
+                Currency:    omnibase.USD,
+                Description: item.Description,
+            },
+        }).
+        Execute()
+}
+
+// Finalize
+finalInvoice, _, _ := client.V1PaymentsAPI.FinalizeInvoice(ctx, invoice.Id).
+    XServiceKey(serviceKey).
+    FinalizeInvoiceRequest(omnibase.FinalizeInvoiceRequest{
+        AutoAdvance: omnibase.PtrBool(true),
+    }).
+    Execute()
+```
+
+## Best Practices
+
+1. **Idempotency** — Use metadata to track processed invoices and prevent duplicates
+
+2. **Error Handling** — Log failed line item additions; don't fail the entire invoice
+
+3. **Aggregation** — Aggregate similar line items to keep invoices readable
+
+4. **Descriptions** — Use clear descriptions customers can understand
+
+5. **Metadata** — Include billing period and project references for auditing
+
+6. **Testing** — Test invoice flows in Stripe test mode before production
+
+## Related
+
+- [Metering](/docs/guides/stripe/metering) — Usage-based billing
+- [Webhooks](/docs/guides/stripe/webhooks) — Invoice event handling
+- [Subscriptions](/docs/guides/stripe/subscriptions) — Subscription-generated invoices

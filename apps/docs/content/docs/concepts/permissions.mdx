@@ -1,0 +1,267 @@
+---
+title: Permissions
+description: Fine-grained permissions with role-based grouping
+---
+
+# How Permissions Work
+
+OmniBase uses Ory Keto for permission management. The system is built around **fine-grained permissions** that are grouped into **roles** for easier management.
+
+## Core Concepts
+
+### Fine-Grained Permissions
+
+Permissions are atomic actions a user can perform. Each permission is a specific capability:
+
+```
+can_invite_user
+can_delete_tenant
+can_view_users
+can_view_database_password
+can_update_project_env
+```
+
+Permissions are defined within namespaces (like `Tenant` or `Project`). In `roles.config.json`, tenant permissions use the format `tenant#permission_name`.
+
+### Roles Group Permissions
+
+Roles are collections of permissions defined in `roles.config.json`:
+
+```json
+{
+  "roles": [
+    {
+      "role": "owner",
+      "permissions": [
+        "tenant#can_delete_tenant",
+        "tenant#can_invite_user",
+        "tenant#can_remove_user",
+        "tenant#can_update_user_role",
+        "tenant#can_view_users",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys",
+        "tenant#can_revoke_api_keys"
+      ]
+    },
+    {
+      "role": "admin",
+      "permissions": [
+        "tenant#can_invite_user",
+        "tenant#can_remove_user",
+        "tenant#can_update_user_role",
+        "tenant#can_view_users",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys"
+      ]
+    },
+    {
+      "role": "member",
+      "permissions": [
+        "tenant#can_view_users"
+      ]
+    }
+  ]
+}
+```
+
+When you assign a user the `admin` role, they receive all permissions in that role's array.
+
+## Defining Permissions
+
+Permissions are defined using Ory Permission Language (OPL) in TypeScript namespace files:
+
+```typescript
+// permissions/tenants.ts
+class Tenant implements Namespace {
+  related: {
+    can_delete_tenant: User[];
+    can_invite_user: User[];
+    can_remove_user: User[];
+    can_view_users: User[];
+    can_create_api_keys: User[];
+    can_view_api_keys: User[];
+    can_revoke_api_keys: User[];
+  };
+
+  permits = {
+    delete_tenant: (ctx: Context): boolean =>
+      this.related.can_delete_tenant.includes(ctx.subject),
+
+    invite_user: (ctx: Context): boolean =>
+      this.related.can_invite_user.includes(ctx.subject),
+
+    view_users: (ctx: Context): boolean =>
+      this.related.can_view_users.includes(ctx.subject),
+  };
+}
+```
+
+Each `related` field defines a permission. The `permits` object defines how those permissions are checked.
+
+## Permission Inheritance
+
+Permissions can inherit from parent resources. For example, project permissions can fall back to tenant-level permissions:
+
+```typescript
+// permissions/projects.ts
+class Project implements Namespace {
+  related: {
+    tenant: Tenant[];
+    can_view_database_password: (User | ApiKey)[];
+    can_update_project_env: (User | ApiKey)[];
+  };
+
+  permits = {
+    view_database_password: (ctx: Context): boolean =>
+      // Check project-level permission first
+      this.related.can_view_database_password.includes(ctx.subject) ||
+      // Fall back to tenant-level permission
+      this.related.tenant.traverse((t) =>
+        t.related.can_view_database_password.includes(ctx.subject)
+      ),
+  };
+}
+```
+
+This allows you to grant permissions at either the tenant level (applies to all projects) or the project level (applies to specific projects).
+
+## How Checks Work
+
+When checking if a user can perform an action:
+
+```
+Can user:alice delete tenant:acme-corp?
+│
+├─▶ Look up alice's role in acme-corp → "admin"
+│
+├─▶ Check if "admin" role includes "tenant#can_delete_tenant"
+│   └─▶ No → DENIED
+│
+└─▶ Result: NOT ALLOWED
+```
+
+For an owner:
+
+```
+Can user:bob delete tenant:acme-corp?
+│
+├─▶ Look up bob's role in acme-corp → "owner"
+│
+├─▶ Check if "owner" role includes "tenant#can_delete_tenant"
+│   └─▶ Yes → Check relation tuple exists
+│       └─▶ (Tenant, acme-corp, can_delete_tenant, user:bob) exists
+│
+└─▶ Result: ALLOWED
+```
+
+## Tenant vs Resource Permissions
+
+All permission checks require a namespace, object ID, relation, and subject. The difference is how the object ID is obtained:
+
+### Tenant Permissions
+
+For tenant permissions, the RBAC middleware automatically retrieves the tenant ID from the user's session context:
+
+```go
+// Middleware handles getting tenant ID from session
+tenantID := ctx.GetString("tenant_id")
+checkPermission(ctx, "Tenant", tenantID, relation)
+```
+
+In `roles.config.json`, tenant permissions use the `tenant#` prefix:
+
+```json
+"permissions": ["tenant#can_invite_user", "tenant#can_delete_tenant"]
+```
+
+### Resource Permissions (e.g., Project)
+
+For resource permissions like `Project`, the object ID must come from the request (e.g., URL parameter):
+
+```go
+// Project ID comes from URL param
+projectID := ctx.Param("project_id")
+checkPermission(ctx, "Project", projectID, relation)
+```
+
+Project permissions inherit from tenant-level permissions, so if a user has a permission at the tenant level, they have it for all projects in that tenant.
+
+## API Keys
+
+API keys can be granted the same permissions as users. This requires two things:
+
+### 1. Define an Empty ApiKey Namespace
+
+The `ApiKey` namespace is defined as an empty class - it exists only as a subject identifier:
+
+```typescript
+// permissions/tenants.ts
+export class ApiKey implements Namespace {}
+```
+
+### 2. Allow ApiKey in Permission Definitions
+
+For permissions that API keys should be able to have, include `ApiKey` in the type union:
+
+```typescript
+related: {
+  // User-only permissions
+  can_invite_user: User[];
+  can_delete_tenant: User[];
+
+  // Permissions that can be granted to Users OR API keys
+  can_view_database_password: (User | ApiKey)[];
+  can_rotate_keys: (User | ApiKey)[];
+}
+```
+
+### Checking API Key Permissions
+
+When checking permissions for an API key, you must specify the `ApiKey` namespace as the subject:
+
+```go
+// Subject for a user
+SubjectSet{Namespace: "User", Object: userId}
+
+// Subject for an API key
+SubjectSet{Namespace: "ApiKey", Object: apiKeyId}
+```
+
+The middleware determines which subject type to use based on the authentication method:
+
+```go
+switch authMethod {
+case "session":
+    namespace = "User"
+    object = ctx.GetString("user_id")
+case "api_key":
+    namespace = "ApiKey"
+    object = ctx.GetString("api_key")
+}
+```
+
+## Custom Roles
+
+You can define custom roles beyond the defaults:
+
+```json
+{
+  "role": "billing_admin",
+  "permissions": [
+    "tenant#can_view_billing",
+    "tenant#can_update_billing",
+    "tenant#can_view_invoices"
+  ]
+}
+```
+
+## Summary
+
+1. **Define fine-grained permissions** in namespace files using OPL
+2. **Group permissions into roles** in `roles.config.json`
+3. **Assign users to roles** - they receive all permissions in that role
+4. **Check permissions** at runtime:
+   - Tenant permissions use the active tenant context automatically
+   - Resource permissions (Project, etc.) require explicit object IDs
+
+This approach gives you the flexibility of fine-grained access control with the simplicity of role-based management.

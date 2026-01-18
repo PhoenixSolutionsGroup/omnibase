@@ -1,0 +1,262 @@
+---
+title: Multi-Tenancy Overview
+description: Learn how OmniBase handles organizations, team management, and data isolation
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Users, Shield, Database, UserPlus, Building2, Lock } from 'lucide-react';
+
+# Multi-Tenancy
+
+OmniBase provides a complete multi-tenant architecture with organization management, team invitations, role-based access control, and automatic data isolation via PostgreSQL Row-Level Security.
+
+## Key Features
+
+<Cards>
+  <Card title="Tenant Management" icon={<Building2 />} href="/docs/guides/multi-tenancy/tenants">
+    Create organizations, switch contexts, and manage tenant lifecycle
+  </Card>
+  <Card title="Team Invitations" icon={<UserPlus />} href="/docs/guides/multi-tenancy/invitations">
+    Invite users, manage memberships, and onboard team members
+  </Card>
+  <Card title="RBAC" icon={<Shield />} href="/docs/guides/multi-tenancy/rbac">
+    Configure roles, permissions, and fine-grained access control
+  </Card>
+  <Card title="Data Isolation" icon={<Database />} href="/docs/guides/multi-tenancy/isolation">
+    Row-Level Security, JWT tokens, and tenant-scoped queries
+  </Card>
+</Cards>
+
+## Architecture
+
+OmniBase implements a **Row-Level Security (RLS) based multi-tenancy model** with three layers:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        USER REQUEST                              │
+│         (Cookie/Session Token + Active Tenant Context)          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     AUTHENTICATION LAYER                         │
+│              OmniBase Auth (Identity + Sessions)                │
+│         ┌─────────────────────────────────────────┐             │
+│         │ JWT Claims: { user_id, tenant_id, role }│             │
+│         └─────────────────────────────────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    AUTHORIZATION LAYER                           │
+│                OmniBase Permissions (ReBAC)                     │
+│         ┌─────────────────────────────────────────┐             │
+│         │  Relation Tuples:                       │             │
+│         │  (Tenant, acme-corp, owner, user:alice) │             │
+│         └─────────────────────────────────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      DATA LAYER                                  │
+│             PostgreSQL with Row-Level Security                  │
+│         ┌─────────────────────────────────────────┐             │
+│         │  WHERE tenant_id = auth.active_tenant() │             │
+│         └─────────────────────────────────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## What is a Tenant?
+
+A **tenant** represents an organization, workspace, or account that groups users together. Each tenant has:
+
+- **Isolated data** via PostgreSQL Row-Level Security (RLS)
+- **A dedicated Stripe customer** for billing
+- **Role-based access control (RBAC)** for members
+- **Invitation system** for onboarding users
+- **Custom roles** with fine-grained permissions
+
+## Quick Start
+
+<Steps>
+<Step>
+### Install the SDK
+
+```bash
+bun add @omnibase/core-js
+```
+</Step>
+
+<Step>
+### Create a Tenant
+
+```typescript
+import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+});
+
+const tenantsApi = new V1TenantsApi(config);
+
+const { data } = await tenantsApi.createTenant({
+  createTenantRequest: {
+    name: 'Acme Corporation',
+    billingEmail: 'billing@acme.com',
+  },
+});
+
+console.log('Tenant ID:', data.data.tenant.id);
+```
+</Step>
+
+<Step>
+### Invite Team Members
+
+```typescript
+await tenantsApi.createInvite({
+  createTenantUserInviteRequest: {
+    email: 'teammate@example.com',
+    role: 'member',
+    inviteUrl: 'https://app.example.com/auth/onboarding',
+  },
+});
+```
+</Step>
+</Steps>
+
+## Tenant Types
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| `organization` | Multi-user tenant with team features | B2B SaaS, team workspaces |
+| `individual` | Single-user tenant | Personal accounts, solo users |
+
+## SDK Options
+
+<Tabs items={['Next.js', 'React', 'Core API']}>
+<Tab value="Next.js">
+**Best for:** Server-side rendering, App Router, full-stack applications
+
+```tsx
+// Server Action for tenant switching
+'use server';
+import { V1TenantsApi } from '@omnibase/core-js';
+import { revalidatePath } from 'next/cache';
+
+export async function switchTenant(formData: FormData) {
+  const tenantId = formData.get('tenant_id') as string;
+  const tenantsApi = new V1TenantsApi(config);
+
+  await tenantsApi.switchActiveTenant({
+    switchTenantRequest: { tenantId },
+  });
+
+  revalidatePath('/');
+}
+```
+</Tab>
+
+<Tab value="React">
+**Best for:** Client-side applications, SPAs
+
+```tsx
+import { useCallback } from 'react';
+import { V1TenantsApi } from '@omnibase/core-js';
+
+function TenantSwitcher({ tenants }) {
+  const switchTenant = useCallback(async (tenantId: string) => {
+    const api = new V1TenantsApi(config);
+    await api.switchActiveTenant({
+      switchTenantRequest: { tenantId },
+    });
+    window.location.reload();
+  }, []);
+
+  return (
+    <select onChange={(e) => switchTenant(e.target.value)}>
+      {tenants.map((t) => (
+        <option key={t.id} value={t.id}>{t.name}</option>
+      ))}
+    </select>
+  );
+}
+```
+</Tab>
+
+<Tab value="Core API">
+**Best for:** Server-to-server, custom implementations
+
+```typescript
+import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: { 'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY },
+});
+
+const tenantsApi = new V1TenantsApi(config);
+
+// Create tenant for a user
+const { data } = await tenantsApi.createTenant(
+  {
+    createTenantRequest: { name: 'New Org' },
+  },
+  { headers: { 'X-User-Id': userId } }
+);
+```
+</Tab>
+</Tabs>
+
+## Common Patterns
+
+### Personal Workspace Pattern
+
+For apps where each user has their own isolated workspace:
+
+1. Create one tenant per user at signup
+2. Each user owns their own tenant with their own Stripe account
+3. Skip tenant switching UI (unless they create additional workspaces)
+4. RLS isolates each user's data automatically
+
+### Personal + Team Workspaces
+
+Support both individual and team contexts:
+
+```typescript
+// Personal workspace
+const personal = await tenantsApi.createTenant({
+  createTenantRequest: {
+    name: 'My Workspace',
+    type: 'individual',
+  },
+});
+
+// Team workspace
+const team = await tenantsApi.createTenant({
+  createTenantRequest: {
+    name: 'Acme Team',
+    type: 'organization',
+  },
+});
+```
+
+## What's Next?
+
+<Cards>
+  <Card title="Tenant Lifecycle" href="/docs/guides/multi-tenancy/tenants">
+    Create, switch, and delete tenants
+  </Card>
+  <Card title="Team Invitations" href="/docs/guides/multi-tenancy/invitations">
+    Invite users and manage memberships
+  </Card>
+  <Card title="RBAC" href="/docs/guides/multi-tenancy/rbac">
+    Configure roles, permissions, and access control
+  </Card>
+  <Card title="Data Isolation" href="/docs/guides/multi-tenancy/isolation">
+    Understand RLS and tenant scoping
+  </Card>
+</Cards>

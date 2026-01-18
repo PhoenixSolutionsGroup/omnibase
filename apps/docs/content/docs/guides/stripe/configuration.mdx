@@ -1,0 +1,479 @@
+---
+title: Configuration Guide
+description: Complete reference for the Stripe configuration schema and all available options
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { File, Folder, Files } from 'fumadocs-ui/components/files';
+
+# Configuration Guide
+
+OmniBase uses JSON configuration files to define your Stripe billing setup. This guide covers the complete schema and all available options.
+
+## Configuration Schema
+
+Every configuration file must include a `version` and at least one `product`:
+
+```json title="omnibase/stripe/config.json"
+{
+  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+  "version": "1.0.0",
+  "webhooks": [],
+  "meters": [],
+  "products": [],
+  "coupons": [],
+  "promotion_codes": []
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | `string` | No | JSON Schema URL for IDE autocomplete |
+| `version` | `string` | Yes | Semantic version (e.g., `"1.0.0"`) |
+| `webhooks` | `array` | No | Webhook endpoint configurations |
+| `meters` | `array` | No | Billing meters for usage-based pricing |
+| `products` | `array` | Yes | Product definitions (minimum 1) |
+| `coupons` | `array` | No | Discount coupon definitions |
+| `promotion_codes` | `array` | No | Promotion codes for coupons |
+
+<Callout type="info">
+Add `"$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json"` to enable IDE autocomplete in VS Code and other editors.
+</Callout>
+
+## Version Management
+
+The `version` field must follow semantic versioning:
+
+```json
+{
+  "version": "1.0.0"
+}
+```
+
+<Callout type="info">
+Version changes are tracked in the configuration history. Use `omnibase stripe history` to view past versions.
+</Callout>
+
+### Version Pattern
+
+The version must match the pattern `^\d+\.\d+\.\d+$`:
+
+- `1.0.0` - Valid
+- `2.1.0` - Valid
+- `1.0` - Invalid (missing patch version)
+- `v1.0.0` - Invalid (no `v` prefix)
+
+## File Organization
+
+You can split your configuration across multiple files for better organization:
+
+<Files>
+  <Folder name="omnibase" defaultOpen>
+    <Folder name="stripe" defaultOpen>
+      <File name="webhook.config.json" />
+      <File name="subscriptions.config.json" />
+      <File name="shared-tiers.config.json" />
+      <File name="cloudflare-workers.config.json" />
+      <File name="neon.config.json" />
+      <File name="postmark.config.json" />
+    </Folder>
+  </Folder>
+</Files>
+
+### Example: Subscription Plans
+
+```json title="omnibase/stripe/subscriptions.config.json"
+{
+  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "free",
+      "name": "Free Plan",
+      "description": "Get started with OmniBase",
+      "type": "service",
+      "prices": [
+        {
+          "id": "free",
+          "amount": 0,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "licensed",
+          "billing_scheme": "per_unit",
+          "public": true,
+          "ui": {
+            "display_name": "Free",
+            "billing_period": "Forever",
+            "price_display": {
+              "custom_text": "Free",
+              "show_currency": false
+            },
+            "features": [
+              "Up to 2 instances",
+              "Community support"
+            ],
+            "limits": [
+              {
+                "text": "2.5% transaction fee",
+                "value": 2.5,
+                "unit": "percent"
+              }
+            ]
+          }
+        }
+      ],
+      "ui": {
+        "display_name": "Free",
+        "tagline": "For personal projects",
+        "sort_order": 1
+      }
+    },
+    {
+      "id": "pro",
+      "name": "Pro Plan",
+      "description": "For professional developers",
+      "type": "service",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 4900,
+          "currency": "usd",
+          "interval": "month",
+          "public": true,
+          "default": true
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 49000,
+          "currency": "usd",
+          "interval": "year",
+          "public": true
+        }
+      ],
+      "ui": {
+        "display_name": "Pro",
+        "tagline": "For growing teams",
+        "badge": "Most Popular",
+        "highlighted": true,
+        "cta_text": "Upgrade to Pro",
+        "sort_order": 3
+      }
+    }
+  ]
+}
+```
+
+### Example: Usage-Based Infrastructure Pricing
+
+```json title="omnibase/stripe/cloudflare-workers.config.json"
+{
+  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "cloudflare_workers",
+      "name": "Cloudflare Workers",
+      "type": "good",
+      "prices": [
+        {
+          "id": "cloudflare_workers_requests",
+          "amount": 60,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "billing_scheme": "per_unit",
+          "public": false,
+          "ui": {
+            "display_name": "Worker Requests",
+            "billing_period": "per million requests"
+          }
+        },
+        {
+          "id": "cloudflare_workers_cpu_ms",
+          "amount": 4,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "billing_scheme": "per_unit",
+          "public": false,
+          "ui": {
+            "display_name": "CPU Milliseconds",
+            "billing_period": "per million ms"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Environment Variable Interpolation
+
+Configuration files support environment variable interpolation using `${VAR_NAME}` syntax:
+
+```json
+{
+  "webhooks": [
+    {
+      "id": "main_webhook",
+      "url": "${STRIPE_WEBHOOK_URL}/api/stripe/webhook",
+      "events": ["invoice.created"]
+    }
+  ]
+}
+```
+
+Set the environment variable in your `.env` file:
+
+```bash title=".env"
+STRIPE_WEBHOOK_URL=https://api.example.com
+```
+
+The URL will be expanded to `https://api.example.com/api/stripe/webhook` when pushed to Stripe.
+
+## CLI Commands
+
+### Push Configuration
+
+Push your local configuration to Stripe:
+
+```bash
+omnibase stripe push
+```
+
+This command:
+1. Validates all configuration files against the schema
+2. Calculates the diff between local and remote configurations
+3. Creates new products, prices, meters, coupons, promotion codes
+4. Updates existing resources where possible
+5. Archives removed resources (marks as inactive)
+6. Stores the new configuration version in PostgreSQL
+
+### Pull Configuration
+
+Import existing Stripe configuration:
+
+```bash
+omnibase stripe pull --output omnibase/stripe/pulled.config.json
+```
+
+This fetches all active products, prices, meters, and webhooks from your Stripe account.
+
+### Validate Configuration
+
+Check configuration without pushing:
+
+```bash
+omnibase stripe validate
+```
+
+Returns validation errors if the configuration is invalid.
+
+### View History
+
+```bash
+omnibase stripe history --limit 10
+```
+
+Shows recent configuration versions with timestamps and change summaries.
+
+### Reset
+
+<Callout type="warn">
+This is a destructive operation. It archives all products, prices, meters, coupons, and promotion codes in Stripe.
+</Callout>
+
+```bash
+omnibase stripe reset
+```
+
+## API Endpoints
+
+### Get Configuration Schema
+
+```bash
+GET /api/v1/stripe/schema
+```
+
+Returns the JSON schema for validating configuration files. Useful for IDE autocomplete.
+
+### Get Public Configuration
+
+```bash
+GET /api/v1/stripe/config
+```
+
+Returns the current configuration with only `public: true` prices visible.
+
+### Get Admin Configuration
+
+```bash
+GET /api/v1/stripe/admin/config
+# Header: X-Service-Key: your-service-key
+```
+
+Returns the full configuration including private/enterprise prices.
+
+### Update Configuration
+
+```bash
+POST /api/v1/stripe/admin/config
+Content-Type: application/json
+X-Service-Key: your-service-key
+
+{
+  "version": "1.0.1",
+  "products": [...]
+}
+```
+
+### Validate Configuration
+
+```bash
+POST /api/v1/stripe/admin/config/validate
+Content-Type: application/json
+X-Service-Key: your-service-key
+
+{
+  "version": "1.0.0",
+  "products": [...]
+}
+```
+
+Returns validation result without applying changes.
+
+### Get Configuration History
+
+```bash
+GET /api/v1/stripe/admin/config/history?limit=10&offset=0
+X-Service-Key: your-service-key
+```
+
+Returns paginated configuration history.
+
+## Change Detection
+
+When you push a configuration, OmniBase calculates a diff and reports:
+
+```json
+{
+  "changes": {
+    "products": {
+      "created": ["pro"],
+      "updated": ["starter"],
+      "archived": ["legacy_plan"]
+    },
+    "prices": {
+      "created": ["pro_monthly", "pro_yearly"],
+      "updated": [],
+      "archived": ["legacy_price"]
+    },
+    "meters": {
+      "created": [],
+      "updated": [],
+      "deactivated": []
+    },
+    "webhooks": {
+      "created": ["main_webhook"],
+      "updated": [],
+      "unchanged": []
+    }
+  }
+}
+```
+
+### Archiving vs Deletion
+
+OmniBase archives resources instead of deleting them because Stripe doesn't allow deletion of resources with payment history. Archived resources:
+
+- Are marked as inactive in Stripe
+- Cannot be used for new subscriptions
+- Remain accessible for historical data
+
+## ID Mapping
+
+OmniBase maintains a mapping between your config IDs and Stripe's generated IDs:
+
+| Config ID | Stripe ID | Item Type |
+|-----------|-----------|-----------|
+| `pro_monthly` | `price_1ABC123...` | price |
+| `pro` | `prod_XYZ789...` | product |
+| `api_calls` | `mtr_DEF456...` | meter |
+
+### Convert IDs
+
+```bash
+GET /api/v1/stripe/convert/stripe-id/price_1ABC123
+```
+
+Returns:
+
+```json
+{
+  "config_id": "pro_monthly",
+  "stripe_id": "price_1ABC123...",
+  "item_type": "price",
+  "history_count": 2
+}
+```
+
+## Validation Rules
+
+### Required Fields
+
+- Every product must have an `id` and `name`
+- Every price must have an `id`, `currency`, and either `amount` or `tiers`
+- Every meter must have an `id`, `display_name`, and `event_name`
+
+### Constraints
+
+- Price `amount` must be >= 0
+- Currency must be a valid 3-letter code (lowercase)
+- Billing interval must be `day`, `week`, `month`, or `year`
+- Tiered prices must have `billing_scheme: "tiered"` and a `tiers` array
+- Metered prices must reference a defined meter
+
+### Duplicate Detection
+
+OmniBase rejects configurations with:
+- Duplicate product IDs
+- Duplicate price IDs (across all products)
+- Duplicate meter IDs
+- Duplicate webhook URLs
+
+## Migration Support
+
+When migrating from an existing Stripe setup, you can include `stripe_id` fields:
+
+```json
+{
+  "id": "pro_monthly",
+  "stripe_id": "price_1ABC123...",
+  "amount": 4900
+}
+```
+
+This associates your config ID with an existing Stripe resource.
+
+## Best Practices
+
+1. **Use Descriptive IDs** — Choose config IDs that are human-readable: `pro_monthly` not `price_1`
+
+2. **Organize by Purpose** — Split configurations into logical files (subscriptions, usage, enterprise)
+
+3. **Version Thoughtfully** — Increment versions when making significant changes
+
+4. **Test in Staging** — Use a separate Stripe account for testing before pushing to production
+
+5. **Review Diffs** — Always review the changes summary before confirming a push
+
+6. **Keep History** — Don't delete old configuration files; version control handles history
+
+## Related
+
+- [Products & Prices](/docs/guides/stripe/products-prices) — Detailed product and pricing configuration
+- [Webhooks](/docs/guides/stripe/webhooks) — Webhook endpoint configuration
+- [Metering](/docs/guides/stripe/metering) — Usage-based billing configuration
+- [Testing](/docs/guides/stripe/testing) — Testing your configuration

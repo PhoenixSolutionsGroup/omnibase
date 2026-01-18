@@ -128,10 +128,10 @@ function DashboardPage() {
 
 // 4. Use direct Ory access for custom flows
 function LogoutButton() {
-  const ory = useAuth();
+  const auth = useAuth();
 
   const handleLogout = async () => {
-    const { data } = await ory.createBrowserLogoutFlow();
+    const { data } = await auth.createBrowserLogoutFlow();
     window.location.href = data.logout_url;
   };
 
