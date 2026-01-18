@@ -79,8 +79,6 @@ const { data } = await payments.createCheckout({
 |----------|------|
 | Documentation | [docs.omnibase.tech](https://docs.omnibase.tech) |
 | Quickstart Guide | [Getting Started](https://docs.omnibase.tech/guides/quickstart) |
-| Discord Community | [Join Discord](https://discord.gg/omnibase) |
-| Contributing | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 ---
 
