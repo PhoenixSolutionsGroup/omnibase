@@ -69,26 +69,46 @@ func (h *TenantHandler) GetTenantUsers(ctx *gin.Context) {
 		return
 	}
 
-	// Query to join tenant_users with identities and extract traits
-	// Initialize as empty slice to ensure JSON response is [] not null when no users
-	users := []TenantUserResponse{}
-	err = h.db.Raw(`
-		SELECT
-			tu.user_id,
-			COALESCE(i.traits->'name'->>'first', '') as first_name,
-			COALESCE(i.traits->'name'->>'last', '') as last_name,
-			COALESCE(i.traits->>'email', '') as email,
-			tu.role
-		FROM auth.tenant_users tu
-		INNER JOIN auth.identities i ON tu.user_id::uuid = i.id
-		WHERE tu.tenant_id = ?
-		ORDER BY tu.joined_at DESC
-	`, tenantID).Scan(&users).Error
-
+	// Fetch tenant users from database
+	var tenantUsers []models.TenantUser
+	err = h.db.Where("tenant_id = ?", tenantID).Order("joined_at DESC").Find(&tenantUsers).Error
 	if err != nil {
 		logger.Logger.Error("Failed to fetch tenant users", "error", err, "tenant_id", tenantID)
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch tenant users: %w", err))
 		return
+	}
+
+	// Initialize as empty slice to ensure JSON response is [] not null when no users
+	users := []TenantUserResponse{}
+	if len(tenantUsers) == 0 {
+		handlers.NewSuccessResponse(ctx, users)
+		return
+	}
+
+	// Collect user IDs for batch fetch
+	userIDs := make([]string, len(tenantUsers))
+	for i, tu := range tenantUsers {
+		userIDs[i] = tu.UserID
+	}
+
+	// Batch fetch identity details from Kratos
+	identities, err := h.kratos.GetIdentitiesByIDs(ctx.Request.Context(), userIDs)
+	if err != nil {
+		logger.Logger.Error("Failed to fetch identities from Kratos", "error", err, "tenant_id", tenantID)
+		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to fetch user details: %w", err))
+		return
+	}
+
+	// Merge tenant user data with identity details
+	for _, tu := range tenantUsers {
+		identity := identities[tu.UserID]
+		users = append(users, TenantUserResponse{
+			UserID:    tu.UserID,
+			FirstName: identity.FirstName,
+			LastName:  identity.LastName,
+			Email:     identity.Email,
+			Role:      tu.Role,
+		})
 	}
 
 	logger.Logger.Info("Successfully fetched tenant users", "tenant_id", tenantID, "user_count", len(users))

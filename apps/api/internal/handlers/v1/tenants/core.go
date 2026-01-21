@@ -19,6 +19,7 @@ type TenantHandler struct {
 	tenants *services_v1.TenantsService
 	keto    *services_v1.KetoService
 	roles   *services_v1.RolesService
+	kratos  *services_v1.KratosService
 }
 
 func NewTenantHandler(cfg *config.Config) *TenantHandler {
@@ -43,6 +44,7 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 	tenantsService := services_v1.NewTenantsService(db, cfg)
 	ketoService := services_v1.NewKetoService(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 	rolesService := services_v1.NewRolesService(db, ketoService)
+	kratosService := services_v1.NewKratosService(cfg.AuthConfig.AuthAdminURL)
 
 	logger.Logger.Info("TenantHandler initialized successfully")
 	return &TenantHandler{
@@ -53,5 +55,6 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 		tenants: tenantsService,
 		keto:    ketoService,
 		roles:   rolesService,
+		kratos:  kratosService,
 	}
 }
