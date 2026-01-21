@@ -124,7 +124,7 @@ jobs:
           echo "Waiting for all services to be ready..."
           for i in {1..60}; do
             HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
-            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+            if [ "$(echo "$HEALTH_RESPONSE" | jq -r '.ready')" = "true" ]; then
               echo "All services are ready!"
               echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
               break
@@ -149,7 +149,7 @@ jobs:
           # Wait for all services to be ready via unified health check
           for i in {1..60}; do
             HEALTH_RESPONSE=$(curl -s http://localhost:8080/health/ready 2>/dev/null || echo '{"ready":false}')
-            if echo "$HEALTH_RESPONSE" | grep -q '"ready":true'; then
+            if [ "$(echo "$HEALTH_RESPONSE" | jq -r '.ready')" = "true" ]; then
               echo "All services are ready!"
               echo "$HEALTH_RESPONSE" | jq . 2>/dev/null || echo "$HEALTH_RESPONSE"
               break
