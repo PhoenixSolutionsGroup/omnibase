@@ -13,7 +13,7 @@ an authenticated user session.
 function protectedRoute(redirectTo): Promise<Session>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/protected-route.ts:45](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/auth/protected-route.ts#L45)
+Defined in: [sdk/framework/nextjs/src/auth/protected-route.ts:45](https://github.com/PhoenixSolutionsGroup/omnibase/blob/6ae046982292849b99422aa2d608a3b49cd23ec3/sdk/framework/nextjs/src/auth/protected-route.ts#L45)
 
 Server-side route protection utility for Next.js App Router
 
