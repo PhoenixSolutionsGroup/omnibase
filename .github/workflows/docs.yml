@@ -15,12 +15,23 @@ permissions:
   contents: write
 
 jobs:
-  generate:
-    name: Generate Documentation
+  # ============================================
+  # Gate: Only proceed if release succeeded
+  # ============================================
+  check-release:
+    name: Check Release Passed
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'workflow_dispatch') ||
       (github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Release passed
+        run: echo "Release passed, proceeding with documentation generation"
+
+  generate:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+    needs: [check-release]
 
     steps:
       - uses: actions/checkout@v4

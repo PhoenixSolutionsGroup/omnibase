@@ -13,14 +13,25 @@ concurrency:
 
 jobs:
   # ============================================
+  # Gate: Only proceed if tests passed
+  # ============================================
+  check-tests:
+    name: Check Tests Passed
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Tests passed
+        run: echo "Tests passed, proceeding with release"
+
+  # ============================================
   # Release API (Docker + Core SDKs)
   # ============================================
   release-api:
     name: Release API
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event.workflow_run.conclusion == 'success')
+    needs: [check-tests]
     permissions:
       contents: write
       id-token: write
@@ -116,9 +127,9 @@ jobs:
   release-docker:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [release-api]
+    needs: [check-tests, release-api]
     if: |
-      always() &&
+      !cancelled() &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped')
     strategy:
       fail-fast: false
@@ -204,9 +215,9 @@ jobs:
   release-npm:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [release-api, release-docker]
+    needs: [check-tests, release-api, release-docker]
     if: |
-      always() &&
+      !cancelled() &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped') &&
       (needs.release-docker.result == 'success' || needs.release-docker.result == 'skipped')
     permissions:
