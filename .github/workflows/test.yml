@@ -23,8 +23,9 @@ jobs:
     steps:
       - name: Check commit message for skip pattern
         id: check
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
           if [[ "$COMMIT_MSG" == *"[skip tests]"* ]] || [[ "$COMMIT_MSG" == *"[skip ci tests]"* ]]; then
             echo "skip_tests=true" >> $GITHUB_OUTPUT
             echo "⚠️ Skipping tests due to commit message pattern"
