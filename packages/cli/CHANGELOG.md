@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.0...cli-v0.3.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* **cli:** add argon2 hasher defaults for auth service ([9f577b9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9f577b9fb17c3301e880a9b276187ce81d2c071f))
+
 # [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.2.2...cli-v0.3.0) (2026-01-21)
 
 
