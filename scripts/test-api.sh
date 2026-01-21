@@ -143,8 +143,10 @@ if [ "$RUN_K6" = true ]; then
   npx openapi-to-k6 ./apps/api/docs/openapi.yaml ./tests/api/k6/sdk.ts
 
   # Build k6 tests
+  # Note: Use --target=browser for k6's goja runtime (not Node.js)
+  # Externalize k6 and all subpaths (k6/http, k6/check, etc.)
   echo -e "${BLUE}Building k6 tests...${NC}"
-  bun build ./tests/api/k6/index.ts --outdir ./tests/api/k6/dist --target=node --format=esm --external k6
+  bun build ./tests/api/k6/index.ts --outdir ./tests/api/k6/dist --target=browser --format=esm --external 'k6' --external 'k6/*'
 
   # Build k6 args
   K6_ARGS=""
