@@ -55,7 +55,7 @@ type OmnibaseMiddlewareConfig = {
 };
 ```
 
-Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:28](https://github.com/PhoenixSolutionsGroup/omnibase/blob/4d4252e66ce6f5f8dae44dbc01ae667c80f06e7e/sdk/framework/nextjs/src/middleware/middleware.ts#L28)
+Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:28](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/middleware/middleware.ts#L28)
 
 Configuration options for the OmniBase middleware
 
@@ -86,7 +86,7 @@ const config: OmnibaseMiddlewareConfig = {
 tenant_check: boolean;
 ```
 
-Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:33](https://github.com/PhoenixSolutionsGroup/omnibase/blob/4d4252e66ce6f5f8dae44dbc01ae667c80f06e7e/sdk/framework/nextjs/src/middleware/middleware.ts#L33)
+Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:33](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/middleware/middleware.ts#L33)
 
 Enable or disable tenant membership checking
 
@@ -102,7 +102,7 @@ true
 tenant_check_paths: string[];
 ```
 
-Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:40](https://github.com/PhoenixSolutionsGroup/omnibase/blob/4d4252e66ce6f5f8dae44dbc01ae667c80f06e7e/sdk/framework/nextjs/src/middleware/middleware.ts#L40)
+Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:40](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/middleware/middleware.ts#L40)
 
 Array of path patterns that require tenant membership
 Supports exact matches and wildcard patterns (e.g., '/dashboard/*')
@@ -119,7 +119,7 @@ Supports exact matches and wildcard patterns (e.g., '/dashboard/*')
 tenant_check_redirect_url: string;
 ```
 
-Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:46](https://github.com/PhoenixSolutionsGroup/omnibase/blob/4d4252e66ce6f5f8dae44dbc01ae667c80f06e7e/sdk/framework/nextjs/src/middleware/middleware.ts#L46)
+Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:46](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/middleware/middleware.ts#L46)
 
 URL to redirect users who are not part of a tenant
 
@@ -137,7 +137,7 @@ URL to redirect users who are not part of a tenant
 function createOmniBaseMiddleware(api_url, config): (req) => Promise<NextResponse<unknown>>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:101](https://github.com/PhoenixSolutionsGroup/omnibase/blob/4d4252e66ce6f5f8dae44dbc01ae667c80f06e7e/sdk/framework/nextjs/src/middleware/middleware.ts#L101)
+Defined in: [sdk/framework/nextjs/src/middleware/middleware.ts:101](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f244ac2a69f3a69421ae3445d087131f00d1e3e8/sdk/framework/nextjs/src/middleware/middleware.ts#L101)
 
 Creates a Next.js middleware function with authentication and tenant checking
 
