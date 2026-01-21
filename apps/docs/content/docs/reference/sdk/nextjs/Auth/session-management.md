@@ -14,7 +14,7 @@ management across your component tree.
 const getServerSession: () => Promise<Session>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/provider.tsx:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/321ae3f407b1156f91244fe295849241116a0a48/sdk/framework/nextjs/src/auth/provider.tsx#L50)
+Defined in: [sdk/framework/nextjs/src/auth/provider.tsx:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/17db0f683c32a4997bf6ddd187982b3b37a17b8a/sdk/framework/nextjs/src/auth/provider.tsx#L50)
 
 Fetches the current session on the server side
 
@@ -68,7 +68,7 @@ export default async function ProfilePage() {
 function SessionProvider(props): Promise<Element>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/provider.tsx:99](https://github.com/PhoenixSolutionsGroup/omnibase/blob/321ae3f407b1156f91244fe295849241116a0a48/sdk/framework/nextjs/src/auth/provider.tsx#L99)
+Defined in: [sdk/framework/nextjs/src/auth/provider.tsx:99](https://github.com/PhoenixSolutionsGroup/omnibase/blob/17db0f683c32a4997bf6ddd187982b3b37a17b8a/sdk/framework/nextjs/src/auth/provider.tsx#L99)
 
 Server-side React component that provides session context to the component tree
 
