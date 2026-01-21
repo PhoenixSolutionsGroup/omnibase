@@ -9,6 +9,14 @@ export const BASE_URL = __ENV.API_URL || "http://localhost:8080";
 export function uniqueId(): string {
   return `${Date.now()}-${__VU}-${__ITER}`;
 }
+
+/**
+ * Generate a random password string for k6 tests.
+ * k6 doesn't have crypto.randomUUID(), so we use a simple alternative.
+ */
+export function randomPassword(): string {
+  return `pwd-${Date.now()}-${__VU}-${__ITER}-${Math.random().toString(36).substring(2, 15)}`;
+}
 export const SERVICE_KEY = __ENV.SERVICE_KEY || "VERY_SECRET_KEY";
 
 export const client = new OmnibaseRESTAPIClient({

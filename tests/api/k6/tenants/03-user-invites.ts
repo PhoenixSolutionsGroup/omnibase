@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Tenant User Invites
@@ -27,7 +27,7 @@ export async function userInvites() {
   const id = uniqueId();
   const ownerEmail = `owner-${id}@example.com`;
   const invitedEmail = `invited-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create owner user

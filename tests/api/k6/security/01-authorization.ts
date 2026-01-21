@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, BASE_URL, logError, uniqueId } from "../client";
+import { createClient, BASE_URL, logError, uniqueId, randomPassword } from "../client";
 import { OmnibaseRESTAPIClient } from "../sdk";
 
 /**
@@ -31,7 +31,7 @@ export async function authorization() {
   const id = uniqueId();
   const ownerEmail = `auth-owner-${id}@example.com`;
   const memberEmail = `auth-member-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Attempt API call without X-Service-Key header (should 401)

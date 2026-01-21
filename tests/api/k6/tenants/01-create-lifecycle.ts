@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Complete Tenant Creation Lifecycle
@@ -22,7 +22,7 @@ import { createClient, logError, uniqueId } from "../client";
 export async function createTenant() {
   const id = uniqueId();
   const email = `test-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient()
 
   // Step 1: Create user

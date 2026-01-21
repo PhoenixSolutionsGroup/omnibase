@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Permission Check API
@@ -32,7 +32,7 @@ export async function checkPermissions() {
   const id = uniqueId();
   const ownerEmail = `perm-owner-${id}@example.com`;
   const memberEmail = `perm-member-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create tenant with owner user

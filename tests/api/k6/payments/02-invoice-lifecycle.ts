@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, SERVICE_KEY, logError, uniqueId } from "../client";
+import { createClient, SERVICE_KEY, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Invoice Lifecycle
@@ -14,7 +14,7 @@ import { createClient, SERVICE_KEY, logError, uniqueId } from "../client";
 export async function invoiceLifecycle() {
   const id = uniqueId();
   const email = `test-invoice-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create user

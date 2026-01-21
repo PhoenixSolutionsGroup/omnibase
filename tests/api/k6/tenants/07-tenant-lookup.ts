@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Tenant Lookup Endpoints
@@ -17,7 +17,7 @@ import { createClient, logError, uniqueId } from "../client";
 export async function tenantLookup() {
   const id = uniqueId();
   const email = `test-lookup-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Setup: Create user

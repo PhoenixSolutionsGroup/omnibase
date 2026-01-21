@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 import http from "k6/http";
 
 /**
@@ -30,7 +30,7 @@ export async function fileOperations() {
   const id = uniqueId();
   const ownerEmail = `owner-${id}@example.com`;
   const memberEmail = `member-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create tenant with owner user

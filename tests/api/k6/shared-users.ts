@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { BASE_URL, SERVICE_KEY } from "./client";
+import { BASE_URL, SERVICE_KEY, randomPassword } from "./client";
 
 declare const __VU: number;
 
@@ -51,7 +51,7 @@ export function createSharedUsers(vuCount: number): SetupData {
   for (let i = 0; i < totalUsers; i++) {
     userRequests.push({
       email: `stress-user-${baseId}-${i}@example.com`,
-      password: crypto.randomUUID(),
+      password: randomPassword(),
       index: i,
     });
   }

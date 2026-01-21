@@ -1,6 +1,6 @@
 import { check, sleep } from "k6";
 import http from "k6/http";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Payment/Subscription Lifecycle
@@ -33,7 +33,7 @@ import { createClient, logError, uniqueId } from "../client";
 export async function subscriptionLifecycle() {
   const id = uniqueId();
   const email = `test-payment-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create user

@@ -1,6 +1,6 @@
 import { check, sleep } from "k6";
 import http from "k6/http";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Enterprise Pricing Lifecycle
@@ -82,7 +82,7 @@ export async function enterprisePricingGetPrices() {
 export async function enterprisePricingApplyTemplate() {
   const id = uniqueId();
   const email = `test-enterprise-template-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create user
@@ -268,7 +268,7 @@ export async function enterprisePricingApplyTemplate() {
 export async function enterprisePricingApplyCustom() {
   const id = uniqueId();
   const email = `test-enterprise-custom-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create user
@@ -468,7 +468,7 @@ export async function enterprisePricingValidation() {
   // First we need a valid tenant - create one
   const id = uniqueId();
   const email = `test-enterprise-validation-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
 
   const authResponse = client.createUser({
     email: email,

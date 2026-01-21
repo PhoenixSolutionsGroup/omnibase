@@ -1,5 +1,5 @@
 import { check } from "k6";
-import { createClient, logError, uniqueId } from "../client";
+import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**
  * Test Scenario: Cross-Tenant Data Isolation
@@ -33,7 +33,7 @@ export async function crossTenantIsolation() {
   const id = uniqueId();
   const userAEmail = `user-a-${id}@example.com`;
   const userBEmail = `user-b-${id}@example.com`;
-  const password = crypto.randomUUID();
+  const password = randomPassword();
   const client = createClient();
 
   // Step 1: Create User A with Tenant A
