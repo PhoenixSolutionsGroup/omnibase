@@ -84,6 +84,15 @@ func (h *HealthHandler) HealthReady(c *gin.Context) {
 		allReady = false
 	}
 
+	// Check storage service
+	if h.cfg.S3Config.Endpoint != "" {
+		storageHealth := h.checkHTTPService(h.cfg.S3Config.Endpoint, "/health")
+		services["storage"] = storageHealth
+		if !storageHealth.Ready {
+			allReady = false
+		}
+	}
+
 	status := "ready"
 	statusCode := http.StatusOK
 	if !allReady {
