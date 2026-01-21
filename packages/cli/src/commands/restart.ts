@@ -29,14 +29,14 @@ const SERVICES: RestartableService[] = [
     label: "Auth",
     description: "Omnibase Auth Service",
     localDockerService: "auth",
-    cloudServiceTypes: ["auth-pub", "auth-adm"],
+    cloudServiceTypes: ["auth"],
   },
   {
     name: "permissions",
     label: "Permissions",
     description: "Ory Keto permissions service",
     localDockerService: "permissions",
-    cloudServiceTypes: ["perm-read", "perm-write"],
+    cloudServiceTypes: ["perm"],
   },
   {
     name: "postgrest",
@@ -62,10 +62,10 @@ const SERVICES: RestartableService[] = [
     localOnly: true,
   },
   {
-    name: "minio",
-    label: "MinIO",
+    name: "rustfs",
+    label: "RustFS",
     description: "Object storage server (local)",
-    localDockerService: "minio",
+    localDockerService: "rustfs",
     cloudServiceTypes: [],
     localOnly: true,
   },
@@ -106,8 +106,7 @@ async function restartCloudService(
     );
     return true;
   } catch (error) {
-    logger.warn(`Failed to restart: ${formatHttpError(error)}`);
-    return false;
+    throw new Error(formatHttpError(error));
   }
 }
 
@@ -148,9 +147,10 @@ async function runRestart(
   const results = settledResults.map((result, index) => {
     const service = servicesToRestart[index];
     if (result.status === "fulfilled") {
-      return { service: service.name, label: service.label, success: result.value.success };
+      return { service: service.name, label: service.label, success: result.value.success, error: undefined };
     }
-    return { service: service.name, label: service.label, success: false };
+    const errorMsg = result.reason instanceof Error ? result.reason.message : String(result.reason);
+    return { service: service.name, label: service.label, success: false, error: errorMsg };
   });
 
   // Log individual results
@@ -158,7 +158,8 @@ async function runRestart(
     if (result.success) {
       logger.succeed(`${result.label} restarted`);
     } else {
-      logger.fail(`${result.label} restart failed`);
+      const reason = result.error ? `: ${result.error}` : "";
+      logger.fail(`${result.label} restart failed${reason}`);
     }
   }
 

@@ -135,33 +135,39 @@ services:
       - app-network
     restart: unless-stopped
 
-  # MinIO - Object Storage
-  minio:
-    image: minio/minio:latest
+  # RustFS - Object Storage (S3-compatible)
+  rustfs:
+    image: rustfs/rustfs:latest
     ports:
       - "9000:9000" # API
       - "9001:9001" # Console
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
-      MINIO_API_CORS_ALLOW_ORIGIN: "*"
-    command: server /data --console-address ":9001"
+      RUSTFS_ACCESS_KEY: rustfsadmin
+      RUSTFS_SECRET_KEY: rustfsadmin123
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+    command: /data
+    volumes:
+      - rustfs-data:/data
     networks:
       - app-network
     restart: unless-stopped
 
-  minio-init:
-    image: minio/mc:latest
+  rustfs-init:
+    image: amazon/aws-cli:latest
     depends_on:
-      - minio
+      - rustfs
+    environment:
+      AWS_ACCESS_KEY_ID: rustfsadmin
+      AWS_SECRET_ACCESS_KEY: rustfsadmin123
+      AWS_DEFAULT_REGION: us-east-1
     entrypoint: >
       /bin/sh -c "
-      until /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin123; do
-        echo 'Waiting for MinIO to be ready...';
+      until aws --endpoint-url http://rustfs:9000 s3 ls 2>/dev/null; do
+        echo 'Waiting for RustFS to be ready...';
         sleep 2;
       done;
-      /usr/bin/mc mb myminio/dev --ignore-existing;
-      echo 'MinIO buckets created successfully';
+      aws --endpoint-url http://rustfs:9000 s3 mb s3://dev --region us-east-1 || true;
+      echo 'RustFS buckets created successfully';
       "
     networks:
       - app-network
@@ -184,7 +190,7 @@ services:
     ports:
       - "8001:3000"
     environment:
-      PGRST_DB_URI: postgres://postgres:postgres@pgbouncer:6432/db
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/db
       PGRST_DB_SCHEMAS: public,auth,storage
       PGRST_DB_ANON_ROLE: anon_user
       PGRST_JWT_SECRET: ${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
@@ -224,11 +230,11 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=db
 
-      # S3/MinIO Configuration
-      - S3_ENDPOINT=http://minio:9000
+      # S3/RustFS Configuration
+      - S3_ENDPOINT=http://rustfs:9000
       - S3_PUBLIC_ENDPOINT=http://127.0.0.1:9000
-      - S3_ACCESS_KEY=minioadmin
-      - S3_SECRET_KEY=minioadmin123
+      - S3_ACCESS_KEY=rustfsadmin
+      - S3_SECRET_KEY=rustfsadmin123
       - S3_BUCKET_NAME=dev
       - S3_REGION=us-east-1
       - S3_USE_SSL=false
@@ -284,9 +290,9 @@ services:
       - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
       - LOG_LEVEL=debug
       - NAMESPACE_BUCKET=dev
-      - R2_ENDPOINT=http://minio:9000
-      - R2_ACCESS_KEY=minioadmin
-      - R2_SECRET_KEY=minioadmin123
+      - R2_ENDPOINT=http://rustfs:9000
+      - R2_ACCESS_KEY=rustfsadmin
+      - R2_SECRET_KEY=rustfsadmin123
     command: serve -c /etc/config/permissions/permissions.yml
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
     networks:
@@ -324,3 +330,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  rustfs-data:
