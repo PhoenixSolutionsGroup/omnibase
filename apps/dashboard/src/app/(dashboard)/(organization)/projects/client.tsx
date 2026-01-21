@@ -11,16 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
+import { Database } from "@/types/omnibase";
 
-interface Project {
-  id: string;
-  name: string;
-  provisioning_type: string | null;
-  created_at: string;
-}
-
+type Project = Database["public"]["Tables"]["projects"]["Row"];
 interface ProjectsClientProps {
-  projects: Project[];
+  projects: Pick<Project, "id" | "name" | "created_at">[];
 }
 
 export function ProjectsClient({ projects }: ProjectsClientProps) {
@@ -68,7 +63,6 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Project Name</TableHead>
-                  <TableHead>Provisioning Type</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -90,9 +84,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                         {project.name}
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {project.provisioning_type || "-"}
-                    </TableCell>
+
                     <TableCell className="text-muted-foreground">
                       {formatDate(project.created_at)}
                     </TableCell>

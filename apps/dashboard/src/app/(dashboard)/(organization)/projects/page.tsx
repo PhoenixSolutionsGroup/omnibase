@@ -7,7 +7,7 @@ export default async function ProjectsPage() {
   // Query the projects table
   const { data: projects, error } = await db
     .from("projects")
-    .select("id, name, provisioning_type, created_at")
+    .select("id, name, created_at")
     .eq("branch_name", "main")
     .neq("status", "failed")
     .neq("status", "deleted")
@@ -19,13 +19,5 @@ export default async function ProjectsPage() {
     return <ProjectsClient projects={[]} />;
   }
 
-  // Transform the data to match the client component's expected format
-  const formattedProjects = (projects || []).map((project) => ({
-    id: project.id,
-    name: project.name,
-    provisioning_type: project.provisioning_type,
-    created_at: project.created_at,
-  }));
-
-  return <ProjectsClient projects={formattedProjects} />;
+  return <ProjectsClient projects={projects} />;
 }

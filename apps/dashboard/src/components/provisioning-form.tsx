@@ -75,6 +75,7 @@ type RegionInfo = {
   name: string;
   country: string;
   continent: string;
+  active: boolean;
 };
 
 // VKS compute deployment
@@ -146,7 +147,7 @@ const UNIT_DISPLAY: Record<string, string> = {
 
 function formatPriceConfig(
   config: PriceConfig | undefined,
-  fallback?: string
+  fallback?: string,
 ): string {
   if (!config?.enabled || !config.price) return fallback || "Free";
   if (config.price.amount === 0) return "Free";
@@ -161,7 +162,7 @@ function formatPriceConfig(
 
 function formatHourlyAsMonthly(
   config: PriceConfig | undefined,
-  fallback?: string
+  fallback?: string,
 ): string {
   if (!config?.enabled || !config.price) return fallback || "Free";
   if (config.price.amount === 0) return "Free";
@@ -257,7 +258,7 @@ function DeploymentCombobox<T>({
                             "h-4 w-4",
                             value === getItemId(item)
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                         <span>{getItemName(item)}</span>
@@ -287,7 +288,7 @@ function DeploymentCombobox<T>({
                           "h-4 w-4",
                           value === getItemId(item)
                             ? "opacity-100"
-                            : "opacity-0"
+                            : "opacity-0",
                         )}
                       />
                       <span>{getItemName(item)}</span>
@@ -325,22 +326,32 @@ function RegionCombobox({
   const [open, setOpen] = React.useState(false);
   const [hasAutoSelected, setHasAutoSelected] = React.useState(false);
 
-  const regionIds = React.useMemo(() => regions.map((r) => r.id), [regions]);
-  const latencies = useRegionLatency(regionIds, "vultr");
+  // Only measure latency for active regions
+  const activeRegionIds = React.useMemo(
+    () => regions.filter((r) => r.active).map((r) => r.id),
+    [regions],
+  );
+  const latencies = useRegionLatency(activeRegionIds, "vultr");
 
-  const regionKey = regionIds.join(",");
+  const regionKey = activeRegionIds.join(",");
   React.useEffect(() => {
     setHasAutoSelected(false);
   }, [regionKey]);
 
+  // Only recommend from active regions
+  const activeRegions = React.useMemo(
+    () => regions.filter((r) => r.active),
+    [regions],
+  );
+
   const recommendedRegions = React.useMemo(
-    () => getTopRegionsByLatency(regions, latencies, 3),
-    [regions, latencies]
+    () => getTopRegionsByLatency(activeRegions, latencies, 3),
+    [activeRegions, latencies],
   );
 
   React.useEffect(() => {
     if (!autoSelectLowestLatency || hasAutoSelected) return;
-    if (regions.length === 0) return;
+    if (activeRegions.length === 0) return;
     if (recommendedRegions.length === 0) return;
 
     const bestRegion = recommendedRegions[0];
@@ -354,7 +365,7 @@ function RegionCombobox({
     recommendedRegions,
     value,
     onSelect,
-    regions.length,
+    activeRegions.length,
   ]);
 
   const selectedRegion = regions.find((r) => r.id === value);
@@ -376,7 +387,7 @@ function RegionCombobox({
       }
       return Infinity;
     },
-    [latencies]
+    [latencies],
   );
 
   const groupedRegions = React.useMemo(() => {
@@ -389,55 +400,86 @@ function RegionCombobox({
       groups.get(continent)!.push(region);
     }
 
+    // Sort regions within each group: active first (by latency), then inactive (alphabetically)
     for (const [, regionList] of groups) {
-      regionList.sort((a, b) => getLatencyValue(a.id) - getLatencyValue(b.id));
+      regionList.sort((a, b) => {
+        // Active regions come first
+        if (a.active && !b.active) return -1;
+        if (!a.active && b.active) return 1;
+        // Among active regions, sort by latency
+        if (a.active && b.active) {
+          return getLatencyValue(a.id) - getLatencyValue(b.id);
+        }
+        // Among inactive regions, sort alphabetically
+        return a.name.localeCompare(b.name);
+      });
     }
 
     const sortedEntries = Array.from(groups.entries()).sort(
       ([, regionsA], [, regionsB]) => {
-        const minLatencyA = Math.min(
-          ...regionsA.map((r) => getLatencyValue(r.id))
-        );
-        const minLatencyB = Math.min(
-          ...regionsB.map((r) => getLatencyValue(r.id))
-        );
+        // Sort continents by best latency of their active regions
+        const activeA = regionsA.filter((r) => r.active);
+        const activeB = regionsB.filter((r) => r.active);
+        const minLatencyA =
+          activeA.length > 0
+            ? Math.min(...activeA.map((r) => getLatencyValue(r.id)))
+            : Infinity;
+        const minLatencyB =
+          activeB.length > 0
+            ? Math.min(...activeB.map((r) => getLatencyValue(r.id)))
+            : Infinity;
         return minLatencyA - minLatencyB;
-      }
+      },
     );
 
     return new Map(sortedEntries);
   }, [regions, getLatencyValue]);
 
   const renderRegionItem = (region: RegionInfo, keyPrefix: string = "") => {
+    const isActive = region.active;
     const latencyResult = latencies.get(region.id);
-    const latencyDisplay = formatLatency(latencyResult);
+    const latencyDisplay = isActive
+      ? formatLatency(latencyResult)
+      : "Coming Soon";
 
     return (
       <CommandItem
         key={`${keyPrefix}${region.id}`}
         value={`${keyPrefix}${region.name} ${region.country} ${region.continent}`}
         onSelect={() => {
-          onSelect(region.id);
-          setOpen(false);
+          if (isActive) {
+            onSelect(region.id);
+            setOpen(false);
+          }
         }}
-        className="flex items-center justify-between"
+        disabled={!isActive}
+        className={cn(
+          "flex items-center justify-between",
+          !isActive && "opacity-50 cursor-not-allowed",
+        )}
       >
         <div className="flex items-center gap-2">
           <Check
             className={cn(
               "h-4 w-4",
-              value === region.id ? "opacity-100" : "opacity-0"
+              value === region.id ? "opacity-100" : "opacity-0",
             )}
           />
-          <span>{region.name}</span>
+          <span className={cn(!isActive && "text-muted-foreground")}>
+            {region.name}
+          </span>
         </div>
         <div className="flex items-center gap-3 text-sm">
           <span className="text-muted-foreground">{region.country}</span>
           <span
             className={cn(
-              "min-w-[50px] text-right font-mono text-xs",
-              latencyResult?.status === "measuring" && "animate-pulse",
-              getLatencyColorClass(latencyResult)
+              "min-w-20 text-right font-mono text-xs",
+              isActive &&
+                latencyResult?.status === "measuring" &&
+                "animate-pulse",
+              isActive
+                ? getLatencyColorClass(latencyResult)
+                : "text-muted-foreground italic",
             )}
           >
             {latencyDisplay}
@@ -476,7 +518,7 @@ function RegionCombobox({
             {recommendedRegions.length > 0 && (
               <CommandGroup heading="Recommended (Lowest Latency)">
                 {recommendedRegions.map((region) =>
-                  renderRegionItem(region, "recommended-")
+                  renderRegionItem(region, "recommended-"),
                 )}
               </CommandGroup>
             )}
@@ -485,7 +527,7 @@ function RegionCombobox({
                 <CommandGroup key={continent} heading={continent}>
                   {continentRegions.map((region) => renderRegionItem(region))}
                 </CommandGroup>
-              )
+              ),
             )}
           </CommandList>
         </Command>
@@ -528,7 +570,7 @@ export function ProvisioningForm({
       try {
         const res = await fetch(
           managed_hosting_url + "/api/v1/projects/options",
-          { credentials: "include" }
+          { credentials: "include" },
         );
         if (!res.ok) throw new Error("Failed to fetch options");
         const data: DeploymentOptions = await res.json();
@@ -538,18 +580,25 @@ export function ProvisioningForm({
         const firstDeployment = data.deployments[0];
         if (firstDeployment) {
           const vpsDb = data.database_options.find(
-            (d) => d.provider === "vps_postgres"
+            (d) => d.provider === "omnibase",
           );
           const vpsMinio = data.storage_options.find(
-            (s) => s.provider === "vps_minio"
+            (s) => s.provider === "omnibase",
+          );
+
+          // Default to first active region, or empty if none
+          const firstActiveRegion = firstDeployment.regions.find(
+            (r) => r.active,
           );
 
           setFormData((prev) => ({
             ...prev,
             compute_deployment_id: firstDeployment.id,
-            compute_region: firstDeployment.regions[0]?.id || "",
-            database_deployment_id: vpsDb?.id || data.database_options[0]?.id || "",
-            storage_deployment_id: vpsMinio?.id || data.storage_options[0]?.id || "",
+            compute_region: firstActiveRegion?.id || "",
+            database_deployment_id:
+              vpsDb?.id || data.database_options[0]?.id || "",
+            storage_deployment_id:
+              vpsMinio?.id || data.storage_options[0]?.id || "",
           }));
         }
       } catch (error) {
@@ -565,32 +614,32 @@ export function ProvisioningForm({
   const selectedCompute = React.useMemo(() => {
     if (!options || !formData.compute_deployment_id) return null;
     return options.deployments.find(
-      (d) => d.id === formData.compute_deployment_id
+      (d) => d.id === formData.compute_deployment_id,
     );
   }, [options, formData.compute_deployment_id]);
 
-  // Get region IDs for latency measurement
-  const regionIds = React.useMemo(() => {
+  // Get active region IDs for latency measurement
+  const activeRegionIds = React.useMemo(() => {
     if (!selectedCompute) return [];
-    return selectedCompute.regions.map((r) => r.id);
+    return selectedCompute.regions.filter((r) => r.active).map((r) => r.id);
   }, [selectedCompute]);
 
-  const latencies = useRegionLatency(regionIds, "vultr");
+  const latencies = useRegionLatency(activeRegionIds, "vultr");
 
   const isLatenciesLoading = React.useMemo(() => {
-    if (regionIds.length === 0) return false;
+    if (activeRegionIds.length === 0) return false;
     const finishedCount = Array.from(latencies.values()).filter(
-      (l) => l.status === "done" || l.status === "error"
+      (l) => l.status === "done" || l.status === "error",
     ).length;
     return finishedCount === 0;
-  }, [latencies, regionIds.length]);
+  }, [latencies, activeRegionIds.length]);
 
   // Filter database options based on compute selection
   const availableDatabaseOptions = React.useMemo(() => {
     if (!options) return [];
     if (selectedCompute?.valid_database_ids?.length) {
       return options.database_options.filter((d) =>
-        selectedCompute.valid_database_ids!.includes(d.id)
+        selectedCompute.valid_database_ids!.includes(d.id),
       );
     }
     return options.database_options;
@@ -601,7 +650,7 @@ export function ProvisioningForm({
     if (!options) return [];
     if (selectedCompute?.valid_storage_ids?.length) {
       return options.storage_options.filter((s) =>
-        selectedCompute.valid_storage_ids!.includes(s.id)
+        selectedCompute.valid_storage_ids!.includes(s.id),
       );
     }
     return options.storage_options;
@@ -638,7 +687,7 @@ export function ProvisioningForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
           credentials: "include",
-        }
+        },
       );
 
       if (!res.ok) {
@@ -650,7 +699,7 @@ export function ProvisioningForm({
       toast.success(
         isBranchMode
           ? "Branch creation initiated!"
-          : "Project creation initiated!"
+          : "Project creation initiated!",
       );
 
       const targetBranch = isBranchMode
@@ -789,8 +838,8 @@ export function ProvisioningForm({
                             Math.max(
                               0,
                               options.deployments.findIndex(
-                                (d) => d.id === formData.compute_deployment_id
-                              )
+                                (d) => d.id === formData.compute_deployment_id,
+                              ),
                             ),
                           ]}
                           min={0}
@@ -799,10 +848,13 @@ export function ProvisioningForm({
                           onValueChange={(vals) => {
                             const deployment = options.deployments[vals[0]];
                             if (deployment) {
+                              const firstActiveRegion = deployment.regions.find(
+                                (r) => r.active,
+                              );
                               setFormData({
                                 ...formData,
                                 compute_deployment_id: deployment.id,
-                                compute_region: deployment.regions[0]?.id || "",
+                                compute_region: firstActiveRegion?.id || "",
                               });
                             }
                           }}
@@ -810,7 +862,11 @@ export function ProvisioningForm({
                         <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                           <span>{options.deployments[0]?.name}</span>
                           <span>
-                            {options.deployments[options.deployments.length - 1]?.name}
+                            {
+                              options.deployments[
+                                options.deployments.length - 1
+                              ]?.name
+                            }
                           </span>
                         </div>
                       </div>
@@ -824,7 +880,9 @@ export function ProvisioningForm({
                                 {selectedCompute.name}
                               </CardTitle>
                               <span className="text-lg font-semibold text-primary">
-                                {formatHourlyAsMonthly(selectedCompute.prices.hourly)}
+                                {formatHourlyAsMonthly(
+                                  selectedCompute.prices.hourly,
+                                )}
                               </span>
                             </div>
                             <CardDescription>
@@ -834,26 +892,32 @@ export function ProvisioningForm({
                           <CardContent>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
-                                <div className="text-muted-foreground">vCPU</div>
+                                <div className="text-muted-foreground">
+                                  vCPU
+                                </div>
                                 <div className="font-medium">
                                   {selectedCompute.vcpus} cores
                                 </div>
                               </div>
                               <div>
-                                <div className="text-muted-foreground">Memory</div>
+                                <div className="text-muted-foreground">
+                                  Memory
+                                </div>
                                 <div className="font-medium">
                                   {selectedCompute.memory_gb >= 1
                                     ? `${selectedCompute.memory_gb} GB`
                                     : `${selectedCompute.memory_gb * 1024} MB`}
                                 </div>
                               </div>
-                              {selectedCompute.database_storage_limit_gb > 0 && (
+                              {selectedCompute.database_storage_limit_gb >
+                                0 && (
                                 <div>
                                   <div className="text-muted-foreground">
                                     DB Storage
                                   </div>
                                   <div className="font-medium">
-                                    {selectedCompute.database_storage_limit_gb} GB
+                                    {selectedCompute.database_storage_limit_gb}{" "}
+                                    GB
                                   </div>
                                 </div>
                               )}

@@ -34,6 +34,13 @@ export default function Studio({ project }: StudioProps) {
         // Fetch decrypted service key if we don't have it yet
         if (!serviceKeyRef.current) {
           const keyResult = await fetchPostgrestServiceKey(project.id);
+          console.log("[Studio] fetchPostgrestServiceKey result:", {
+            success: keyResult.success,
+            error: keyResult.error,
+            serviceKeyLength: keyResult.serviceKey?.length,
+            serviceKeyPreview: keyResult.serviceKey?.substring(0, 50) + "...",
+            serviceKeyParts: keyResult.serviceKey?.split(".").length,
+          });
           if (!keyResult.success || !keyResult.serviceKey) {
             throw new Error(
               keyResult.error || "Failed to fetch database service key"
@@ -50,6 +57,12 @@ export default function Studio({ project }: StudioProps) {
 
         // Use simulated token for RLS simulation, otherwise use service key
         const token = simulatedToken || serviceKeyRef.current;
+        console.log("[Studio] Using token:", {
+          isSimulated: !!simulatedToken,
+          tokenLength: token?.length,
+          tokenPreview: token?.substring(0, 50) + "...",
+          tokenParts: token?.split(".").length,
+        });
 
         const pgClient = new PostgrestClient(project.postgrest_url, {
           headers: {

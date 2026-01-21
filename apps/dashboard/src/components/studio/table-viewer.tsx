@@ -11,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   ChevronLeft,
   ChevronRight,
@@ -151,7 +150,7 @@ export function TableViewer({
         }
       }
       return {};
-    }
+    },
   );
 
   // Column order state - load from localStorage
@@ -190,7 +189,9 @@ export function TableViewer({
         // Validate and sync with current columns
         const currentColumns = new Set(defaultOrder);
         const validOrder = parsed.filter((name) => currentColumns.has(name));
-        const newColumns = defaultOrder.filter((name) => !parsed.includes(name));
+        const newColumns = defaultOrder.filter(
+          (name) => !parsed.includes(name),
+        );
         setColumnOrder([...validOrder, ...newColumns]);
       } catch {
         setColumnOrder(defaultOrder);
@@ -204,7 +205,7 @@ export function TableViewer({
   useEffect(() => {
     localStorage.setItem(
       storageKey,
-      JSON.stringify(Array.from(visibleColumns))
+      JSON.stringify(Array.from(visibleColumns)),
     );
   }, [visibleColumns, storageKey]);
 
@@ -242,7 +243,7 @@ export function TableViewer({
         startWidth,
       });
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -277,7 +278,7 @@ export function TableViewer({
       e.dataTransfer.setData("text/plain", columnName);
       setDraggingColumn(columnName);
     },
-    []
+    [],
   );
 
   const handleDragOver = useCallback(
@@ -288,38 +289,35 @@ export function TableViewer({
         setDragOverColumn(columnName);
       }
     },
-    [draggingColumn]
+    [draggingColumn],
   );
 
   const handleDragLeave = useCallback(() => {
     setDragOverColumn(null);
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent, targetColumn: string) => {
-      e.preventDefault();
-      const sourceColumn = e.dataTransfer.getData("text/plain");
+  const handleDrop = useCallback((e: React.DragEvent, targetColumn: string) => {
+    e.preventDefault();
+    const sourceColumn = e.dataTransfer.getData("text/plain");
 
-      if (sourceColumn && sourceColumn !== targetColumn) {
-        setColumnOrder((prev) => {
-          const newOrder = [...prev];
-          const sourceIdx = newOrder.indexOf(sourceColumn);
-          const targetIdx = newOrder.indexOf(targetColumn);
+    if (sourceColumn && sourceColumn !== targetColumn) {
+      setColumnOrder((prev) => {
+        const newOrder = [...prev];
+        const sourceIdx = newOrder.indexOf(sourceColumn);
+        const targetIdx = newOrder.indexOf(targetColumn);
 
-          if (sourceIdx !== -1 && targetIdx !== -1) {
-            newOrder.splice(sourceIdx, 1);
-            newOrder.splice(targetIdx, 0, sourceColumn);
-          }
+        if (sourceIdx !== -1 && targetIdx !== -1) {
+          newOrder.splice(sourceIdx, 1);
+          newOrder.splice(targetIdx, 0, sourceColumn);
+        }
 
-          return newOrder;
-        });
-      }
+        return newOrder;
+      });
+    }
 
-      setDraggingColumn(null);
-      setDragOverColumn(null);
-    },
-    []
-  );
+    setDraggingColumn(null);
+    setDragOverColumn(null);
+  }, []);
 
   const handleDragEnd = useCallback(() => {
     setDraggingColumn(null);
@@ -338,55 +336,67 @@ export function TableViewer({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showRLS, setShowRLS] = useState(true);
 
-  const fetchTableData = useCallback(async (retryCount = 0) => {
-    const maxRetries = 3;
-    setLoading(true);
-    try {
-      let query = client
-        .schema(tableDefinition.schemaName)
-        .from(tableName)
-        .select("*", { count: "exact" });
+  const fetchTableData = useCallback(
+    async (retryCount = 0) => {
+      const maxRetries = 3;
+      setLoading(true);
+      try {
+        let query = client
+          .schema(tableDefinition.schemaName)
+          .from(tableName)
+          .select("*", { count: "exact" });
 
-      if (sort) {
-        query = query.order(sort.column, { ascending: sort.order === "asc" });
+        if (sort) {
+          query = query.order(sort.column, { ascending: sort.order === "asc" });
+        }
+
+        // Apply filters
+        filters.forEach((f) => {
+          if (!f.value && f.operator !== "is") return;
+          let val = f.value;
+          if (f.operator === "ilike" && !val.includes("%")) val = `%${val}%`;
+          query = query.filter(f.column, f.operator, val);
+        });
+
+        const from = page * pageSize;
+        const to = from + pageSize - 1;
+        query = query.range(from, to);
+
+        const { data: rows, error, count } = await query;
+
+        console.log("[TableViewer] Query result:", {
+          tableName,
+          schemaName: tableDefinition.schemaName,
+          rowCount: rows?.length,
+          totalCount: count,
+          error: error ? JSON.stringify(error) : null,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        setData(rows || []);
+        setTotal(count || 0);
+      } catch (err: any) {
+        const isTransientError =
+          err.message?.includes("schema cache") ||
+          err.message?.includes("Retrying") ||
+          err.code === "PGRST503";
+
+        if (isTransientError && retryCount < maxRetries) {
+          const delay = Math.pow(2, retryCount) * 500;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return fetchTableData(retryCount + 1);
+        }
+
+        toast.error(`Error fetching data: ${err.message}`);
+      } finally {
+        setLoading(false);
       }
-
-      // Apply filters
-      filters.forEach((f) => {
-        if (!f.value && f.operator !== "is") return;
-        let val = f.value;
-        if (f.operator === "ilike" && !val.includes("%")) val = `%${val}%`;
-        query = query.filter(f.column, f.operator, val);
-      });
-
-      const from = page * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
-
-      const { data: rows, error, count } = await query;
-
-      if (error) {
-        throw error;
-      }
-
-      setData(rows || []);
-      setTotal(count || 0);
-    } catch (err: any) {
-      const isTransientError = err.message?.includes("schema cache") ||
-                               err.message?.includes("Retrying") ||
-                               err.code === "PGRST503";
-
-      if (isTransientError && retryCount < maxRetries) {
-        const delay = Math.pow(2, retryCount) * 500;
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return fetchTableData(retryCount + 1);
-      }
-
-      toast.error(`Error fetching data: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [client, tableName, page, pageSize, sort, filters]);
+    },
+    [client, tableName, page, pageSize, sort, filters],
+  );
 
   useEffect(() => {
     setPage(0);
@@ -443,7 +453,7 @@ export function TableViewer({
       const ids = Array.from(selectedRows);
       if (!tableDefinition.columns.find((c) => c.name === pkCol)) {
         throw new Error(
-          `Cannot delete: No primary key found (assumed '${pkCol}')`
+          `Cannot delete: No primary key found (assumed '${pkCol}')`,
         );
       }
 
@@ -478,7 +488,7 @@ export function TableViewer({
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchTableData}
+            onClick={() => fetchTableData()}
             title="Refresh"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
@@ -527,7 +537,7 @@ export function TableViewer({
           <div
             className={cn(
               "flex items-center gap-2",
-              selectedRows.size === 0 && "hidden"
+              selectedRows.size === 0 && "hidden",
             )}
             data-testid="bulk-actions"
           >
@@ -585,7 +595,7 @@ export function TableViewer({
                         "whitespace-nowrap relative group select-none",
                         draggingColumn === col.name && "opacity-50",
                         dragOverColumn === col.name &&
-                          "border-l-2 border-l-primary"
+                          "border-l-2 border-l-primary",
                       )}
                       style={{
                         width: columnWidths[col.name]
@@ -650,7 +660,7 @@ export function TableViewer({
                             "absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border hover:bg-primary transition-colors",
                             resizing?.column === col.name
                               ? "opacity-100 bg-primary"
-                              : "opacity-0 group-hover:opacity-100"
+                              : "opacity-0 group-hover:opacity-100",
                           )}
                           onMouseDown={(e) => handleResizeStart(e, col.name)}
                           data-testid={`resize-handle-${col.name}`}

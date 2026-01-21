@@ -39,6 +39,7 @@ export async function fetchSchemaInfo(
   const connResult = await fetchDatabaseConnectionString(project.id);
   if (connResult.success && connResult.connectionString) {
     connectionString = connResult.connectionString;
+    console.log("[fetchSchemaInfo] Using connection string from managed-hosting");
   } else {
     // Fallback: build connection string from project fields
     const host = project.database_host || "127.0.0.1";
@@ -47,12 +48,23 @@ export async function fetchSchemaInfo(
     const password = "postgres"; // default dev password
     const dbName = project.database_name || "db";
     connectionString = `postgresql://${user}:${password}@${host}:${port}/${dbName}`;
+    console.log("[fetchSchemaInfo] Using fallback connection string", { host, port, user, dbName });
   }
 
-  const client = new Client({ connectionString });
+  // Mask password for logging
+  const maskedConnString = connectionString.replace(/:([^@]+)@/, ":***@");
+  console.log("[fetchSchemaInfo] Connecting to:", maskedConnString);
+
+  const client = new Client({
+    connectionString,
+    connectionTimeoutMillis: 10000, // 10 second connection timeout
+    query_timeout: 30000, // 30 second query timeout
+  });
 
   try {
+    console.log("[fetchSchemaInfo] Attempting to connect...");
     await client.connect();
+    console.log("[fetchSchemaInfo] Connected successfully");
 
     // Get all tables with their schemas using pg_catalog (much faster than information_schema)
     const tablesResult = await client.query(`
