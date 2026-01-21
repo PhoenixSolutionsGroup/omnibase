@@ -1,0 +1,10 @@
+omni-base
+Copyright 2025 Phoenix Solutions Group
+
+This product includes software developed by:
+
+- Ory Corp (https://www.ory.sh) - Kratos, Keto
+- RustFS (https://github.com/rustfs/rustfs)
+- PostgREST (https://postgrest.org)
+- PgBouncer (https://www.pgbouncer.org)
+- PostgreSQL Global Development Group (https://www.postgresql.org)
