@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.3.0...auth-v0.3.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* **docker:** quote argon2 hasher env vars in auth template ([fc98bf8](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fc98bf8c73b402106cd86c49a81df41be58309d1))
+
 # [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.2.2...auth-v0.3.0) (2026-01-14)
 
 
