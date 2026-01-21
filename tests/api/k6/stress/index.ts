@@ -1,5 +1,5 @@
 import { check } from "k6";
-import http from "k6/http";
+import * as http from "k6/http";
 import { createClient, uniqueId, logError } from "../client";
 import { getMyUser, getMySecondUser } from "../shared-users";
 import type { SetupData } from "../shared-users";

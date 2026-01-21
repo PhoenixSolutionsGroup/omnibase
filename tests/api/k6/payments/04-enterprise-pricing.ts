@@ -1,5 +1,5 @@
 import { check, sleep } from "k6";
-import http from "k6/http";
+import * as http from "k6/http";
 import { createClient, logError, uniqueId, randomPassword } from "../client";
 
 /**

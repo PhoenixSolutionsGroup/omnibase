@@ -1,4 +1,4 @@
-import http from "k6/http";
+import * as http from "k6/http";
 import { BASE_URL, SERVICE_KEY, randomPassword } from "./client";
 
 declare const __VU: number;

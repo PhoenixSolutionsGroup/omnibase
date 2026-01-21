@@ -1,6 +1,6 @@
 import { check } from "k6";
 import { createClient, logError, uniqueId, randomPassword } from "../client";
-import http from "k6/http";
+import * as http from "k6/http";
 
 /**
  * Test Scenario: Storage Operations with Permission Enforcement
