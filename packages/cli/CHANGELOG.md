@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.2.2...cli-v0.3.0) (2026-01-21)
+
+
+### Features
+
+* **cli:** replace MinIO with RustFS for local object storage ([2c93d4c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2c93d4c7ae8f5ae760d26d17f4dd780a58c1d15b))
+
 ## [0.2.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.2.1...cli-v0.2.2) (2026-01-15)
 
 
