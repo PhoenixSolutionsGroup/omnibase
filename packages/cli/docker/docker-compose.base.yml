@@ -117,6 +117,13 @@ services:
       - SERVICE_KEY=VERY_SECRET_KEY
       - WAIT_FOR_API_HEALTH=true
       - APP_NAME=${APP_NAME:-"My App"}
+
+      # Argon2 hasher configuration
+      - HASHER_ARGON2_PARALLELISM=${HASHER_ARGON2_PARALLELISM:-1}
+      - HASHER_ARGON2_MEMORY=${HASHER_ARGON2_MEMORY:-19456}
+      - HASHER_ARGON2_ITERATIONS=${HASHER_ARGON2_ITERATIONS:-2}
+      - HASHER_ARGON2_SALT_LENGTH=${HASHER_ARGON2_SALT_LENGTH:-16}
+      - HASHER_ARGON2_KEY_LENGTH=${HASHER_ARGON2_KEY_LENGTH:-32}
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
     command: serve --dev --watch-courier
     networks:
