@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.13.0
+ * Service version: 0.15.0
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -61,6 +61,17 @@ export interface TenantSettings {
 }
 
 /**
+ * Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants
+ */
+export type TenantType = (typeof TenantType)[keyof typeof TenantType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const TenantType = {
+  organization: "organization",
+  individual: "individual",
+} as const;
+
+/**
  * Main tenant/organization entity
  */
 export interface Tenant {
@@ -83,8 +94,8 @@ export interface Tenant {
    * @nullable
    */
   enterprise_id?: string | null;
-  /** Tenant type */
-  type: string;
+  /** Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants */
+  type: TenantType;
   /** Timestamp when tenant was created */
   created_at: string;
   /** Timestamp when tenant was last updated */
@@ -2161,6 +2172,18 @@ export interface EnterprisePricesResponse {
 }
 
 /**
+ * Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified.
+ */
+export type CreateTenantRequestType =
+  (typeof CreateTenantRequestType)[keyof typeof CreateTenantRequestType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateTenantRequestType = {
+  organization: "organization",
+  individual: "individual",
+} as const;
+
+/**
  * Request to create a new tenant
  */
 export interface CreateTenantRequest {
@@ -2171,6 +2194,8 @@ export interface CreateTenantRequest {
   name: string;
   /** Billing email for Stripe customer */
   billing_email?: string;
+  /** Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified. */
+  type?: CreateTenantRequestType;
 }
 
 /**

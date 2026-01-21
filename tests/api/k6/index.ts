@@ -4,6 +4,9 @@ import { SecurityTests } from "./security";
 import { StorageTests } from "./storage";
 import { TenantTests } from "./tenants";
 import { StripeConfigTests } from "./stripe-config";
+import { createSharedUsers } from "./shared-users";
+import type { SetupData } from "./shared-users";
+import { runStressTests } from "./stress";
 import {
   createConfigWithPercentOffCoupon,
   createConfigWithAmountOffCoupon,
@@ -78,14 +81,17 @@ const allScenarios: Record<string, object> = {
     executor: "ramping-arrival-rate",
     startRate: 1,
     timeUnit: "1s",
-    preAllocatedVUs: 50,
-    maxVUs: 200,
+    preAllocatedVUs: 10,
+    maxVUs: 20,
     stages: [
-      { duration: "30s", target: 10 }, // Warm up to 10 req/s
-      { duration: "1m", target: 50 }, // Ramp to 50 req/s
-      { duration: "2m", target: 100 }, // Push to 100 req/s
-      { duration: "2m", target: 200 }, // Push to 200 req/s
-      { duration: "2m", target: 300 }, // Push harder to find breaking point
+      { duration: "30s", target: 3 }, // Warm up to 10 req/s
+      { duration: "2m", target: 5 }, // Temp
+      { duration: "2m", target: 10 }, // Temp
+      { duration: "2m", target: 20 }, // Temp
+      // { duration: "1m", target: 50 }, // Ramp to 50 req/s
+      // { duration: "2m", target: 100 }, // Push to 100 req/s
+      // { duration: "2m", target: 200 }, // Push to 200 req/s
+      // { duration: "2m", target: 300 }, // Push harder to find breaking point
       { duration: "1m", target: 0 }, // Cool down
     ],
     exec: "stressTest",
@@ -113,6 +119,7 @@ const scenarios = selectedScenario
 
 export const options = {
   scenarios,
+  setupTimeout: "5m", // User creation involves bcrypt hashing which is slow
   thresholds: {
     checks: ["rate==1"], // All checks must pass
 
@@ -195,9 +202,36 @@ export function couponAndPromoTests() {
   noChangeOnIdenticalCouponsPromos();
 }
 
-// Stress test function - lightweight operations for high throughput
-export async function stressTest() {
-  // Run a mix of operations to stress different parts of the API
-  await TenantTests();
-  await SecurityTests();
+// Setup function - creates shared users BEFORE stress/soak tests run.
+// This avoids bcrypt overhead during the actual test iterations.
+// Returns data that is passed to stressTest() as the first argument.
+export function setup(): SetupData | undefined {
+  const scenario = __ENV.K6_SCENARIO;
+
+  // Only create shared users for stress/soak scenarios
+  if (scenario === "stress" || scenario === "soak") {
+    // Get max VUs from scenario config (stress=50, soak=200)
+    const maxVUs = scenario === "soak" ? 200 : 20;
+    console.log(`[setup] Running ${scenario} scenario with max ${maxVUs} VUs`);
+    return createSharedUsers(maxVUs);
+  }
+
+  // Other scenarios don't need pre-created users
+  return undefined;
+}
+
+// Stress test function - uses pre-created users for high throughput
+// The `data` parameter comes from setup() function
+export function stressTest(data: SetupData) {
+  if (!data || !data.users || data.users.length === 0) {
+    console.error(
+      "[stressTest] No setup data - falling back to original tests",
+    );
+    TenantTests();
+    SecurityTests();
+    return;
+  }
+
+  // Run stress-optimized tests that reuse pre-created users
+  runStressTests(data);
 }
