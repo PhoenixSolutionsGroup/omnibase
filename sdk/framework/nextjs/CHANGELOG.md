@@ -1,3 +1,10 @@
+## [0.8.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.1...nextjs-v0.8.2) (2026-01-21)
+
+
+### Bug Fixes
+
+* **nextjs:** add JWT expiration checking in PostgREST middleware ([bb5795d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bb5795df4ac2048d9f4bac479d10d704a731227b))
+
 ## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.0...nextjs-v0.8.1) (2026-01-15)
 
 
