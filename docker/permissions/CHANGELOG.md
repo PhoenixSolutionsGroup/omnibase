@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.2.1...permissions-v0.3.0) (2026-01-22)
+
+
+### Features
+
+* **release:** auto-sync docker image versions to CLI on release ([505ed28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/505ed28851e452b70f6a698d331e11134d05dd08))
+
 ## [0.2.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.2.0...permissions-v0.2.1) (2026-01-13)
 
 
