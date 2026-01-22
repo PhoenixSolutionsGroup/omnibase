@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.3.2...auth-v0.4.0) (2026-01-22)
+
+
+### Features
+
+* **release:** auto-sync docker image versions to CLI on release ([505ed28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/505ed28851e452b70f6a698d331e11134d05dd08))
+
 ## [0.3.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.3.1...auth-v0.3.2) (2026-01-22)
 
 
