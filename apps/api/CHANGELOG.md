@@ -1,3 +1,15 @@
+# [0.16.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.15.0...api-v0.16.0) (2026-01-22)
+
+
+### Bug Fixes
+
+* **api:** use Kratos API for tenant users instead of direct DB join ([e11b2af](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e11b2af9be69e0f58c01786bad50f0ccebe47152))
+
+
+### Features
+
+* **api:** add storage service to health check ([47e7047](https://github.com/PhoenixSolutionsGroup/omnibase/commit/47e704748188ca112867afbcf8825cccf8d4f116))
+
 # [0.15.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.14.0...api-v0.15.0) (2026-01-18)
 
 
