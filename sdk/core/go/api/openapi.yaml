@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.16.0
+  version: 0.17.0
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/

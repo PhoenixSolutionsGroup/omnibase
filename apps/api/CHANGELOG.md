@@ -1,3 +1,10 @@
+# [0.17.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.16.0...api-v0.17.0) (2026-01-22)
+
+
+### Features
+
+* **release:** auto-sync docker image versions to CLI on release ([505ed28](https://github.com/PhoenixSolutionsGroup/omnibase/commit/505ed28851e452b70f6a698d331e11134d05dd08))
+
 # [0.16.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.15.0...api-v0.16.0) (2026-01-22)
 
 
