@@ -4,12 +4,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  minio:
-    volumes:
-      - minio_data:/data
-
 volumes:
   postgres_data:
-    driver: local
-  minio_data:
     driver: local
