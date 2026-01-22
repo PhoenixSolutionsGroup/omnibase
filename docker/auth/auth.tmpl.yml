@@ -115,11 +115,11 @@ ciphers:
 hashers:
   algorithm: argon2
   argon2:
-    parallelism: "${HASHER_ARGON2_PARALLELISM}"
-    memory: "${HASHER_ARGON2_MEMORY}"
-    iterations: "${HASHER_ARGON2_ITERATIONS}"
-    salt_length: "${HASHER_ARGON2_SALT_LENGTH}"
-    key_length: "${HASHER_ARGON2_KEY_LENGTH}"
+    parallelism: ${HASHER_ARGON2_PARALLELISM}
+    memory: ${HASHER_ARGON2_MEMORY}
+    iterations: ${HASHER_ARGON2_ITERATIONS}
+    salt_length: ${HASHER_ARGON2_SALT_LENGTH}
+    key_length: ${HASHER_ARGON2_KEY_LENGTH}
 
 identity:
   default_schema_id: default
