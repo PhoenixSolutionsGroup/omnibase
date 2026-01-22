@@ -29,7 +29,8 @@ module.exports = {
     // Run prepare and publish scripts
     ['@semantic-release/exec', {
       prepareCmd: '../../scripts/release-api-prepare.sh ${nextRelease.version}',
-      publishCmd: '../../scripts/release-api-publish.sh ${nextRelease.version}'
+      publishCmd: '../../scripts/release-api-publish.sh ${nextRelease.version}',
+      successCmd: '../../scripts/sync-docker-compose.sh api ${nextRelease.version}'
     }],
 
     // Commit changes back to repo
