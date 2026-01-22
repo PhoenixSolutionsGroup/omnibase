@@ -61,7 +61,7 @@ services:
         condition: service_healthy
 
   auth-migrate:
-    image: phoenixsolutionsgroup/omnibase-auth:0.3.1
+    image: phoenixsolutionsgroup/omnibase-auth:0.4.0
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
@@ -82,7 +82,7 @@ services:
       - auth-migrate
       - rest-api
       - pgbouncer
-    image: phoenixsolutionsgroup/omnibase-auth:0.3.1
+    image: phoenixsolutionsgroup/omnibase-auth:0.4.0
     restart: unless-stopped
     env_file:
       - ${OMNIBASE_ENV_FILE}
