@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.1...cli-v0.3.2) (2026-01-22)
+
+
+### Bug Fixes
+
+* **docker:** update argon2 hasher configuration ([68c3049](https://github.com/PhoenixSolutionsGroup/omnibase/commit/68c3049d316aa2daace2d03f97216adaa057740b))
+
 ## [0.3.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.0...cli-v0.3.1) (2026-01-21)
 
 
