@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.2...cli-v0.4.0) (2026-01-22)
+
+
+### Bug Fixes
+
+* **cli:** update docker image versions to latest releases ([6caa097](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6caa0978fdff9d7bb90c52610edeb879c4096cc1))
+
+
+### Features
+
+* **cli:** sync api docker image to 0.17.0 [skip ci] ([4692e1a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4692e1ad3d89f8e516b1363a5871aa4a4dda60c2))
+* **cli:** sync auth docker image to 0.4.0 [skip ci] ([7c65702](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7c6570200e66d026d582c834726e328204e005cc))
+* **cli:** sync permissions docker image to 0.3.0 [skip ci] ([fa71034](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fa71034b6ca0d901407cf666b0dd55580aa6cb53))
+
 ## [0.3.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.1...cli-v0.3.2) (2026-01-22)
 
 
