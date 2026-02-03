@@ -95,4 +95,4 @@ Features still being implemented:
 
 ## License
 
-[MIT](LICENSE)
+[Apache 2.0](LICENSE)
