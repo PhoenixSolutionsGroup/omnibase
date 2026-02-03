@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.4.0...cli-v0.4.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* **cli:** use package.json version instead of hardcoded 1.0.0 [skip tests] ([84b8d84](https://github.com/PhoenixSolutionsGroup/omnibase/commit/84b8d841b8a8e3764b3a3c70c0a318d8d631cdcc))
+
 # [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.3.2...cli-v0.4.0) (2026-01-22)
 
 
