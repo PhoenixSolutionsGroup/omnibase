@@ -17,32 +17,22 @@ const config = {
     return [
       {
         source: '/',
-        destination: '/docs/guides/quickstart',
+        destination: '/guides/quickstart',
         permanent: false,
       },
       {
-        source: '/docs',
-        destination: '/docs/guides/quickstart',
+        source: '/guides',
+        destination: '/guides/quickstart',
         permanent: false,
       },
       {
-        source: '/docs/guides',
-        destination: '/docs/guides/quickstart',
+        source: '/reference',
+        destination: '/reference/overview',
         permanent: false,
       },
       {
-        source: '/docs/reference',
-        destination: '/docs/reference/overview',
-        permanent: false,
-      },
-      {
-        source: '/docs/concepts',
+        source: '/concepts',
         destination: '/docs/concepts/tenants',
-        permanent: false,
-      },
-      {
-        source: '/docs/self-hosting',
-        destination: '/docs/self-hosting/index',
         permanent: false,
       },
     ];
