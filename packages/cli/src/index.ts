@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import * as path from "path";
 import * as fs from "fs";
+import packageJson from "../package.json";
 import { addPermissionsCommands } from "./commands/permissions";
 import { addEnvironmentCommands } from "./commands/environment";
 import { addStripeCommands } from "./commands/stripe";
@@ -27,7 +28,7 @@ program
   .description(
     "OmniBase CLI - Manage Docker Compose services and environment configuration"
   )
-  .version("1.0.0")
+  .version(packageJson.version)
   .option("--env <environment>", "Override environment for this command")
   .option(
     "--mode <mode>",
