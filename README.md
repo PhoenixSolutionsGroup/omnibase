@@ -2,7 +2,7 @@
 
 **Open-source Backend-as-a-Service with native multi-tenancy**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
 [![Status: Alpha](https://img.shields.io/badge/Status-Alpha-yellow)]()
 
