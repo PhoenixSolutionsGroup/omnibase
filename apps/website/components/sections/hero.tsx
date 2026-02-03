@@ -17,7 +17,7 @@ export function HeroSection() {
 
           <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             The open-source backend for{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <span className="text-primary">
               multi-tenant SaaS
             </span>
           </h1>

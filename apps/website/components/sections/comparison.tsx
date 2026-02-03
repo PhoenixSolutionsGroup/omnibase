@@ -12,7 +12,7 @@ const comparisonData = [
   {
     feature: "Native multi-tenancy",
     omnibase: true,
-    supabase: "manual",
+    supabase: false,
   },
   {
     feature: "Built-in RBAC",

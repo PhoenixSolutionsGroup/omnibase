@@ -43,8 +43,8 @@ export function ProblemSection() {
               key={index}
               className="flex items-start gap-4 rounded-lg border bg-background p-6"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-                <point.icon className="h-5 w-5 text-destructive" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
+                <point.icon className="h-5 w-5 text-secondary-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">{point.text}</p>
             </div>

@@ -7,21 +7,21 @@ const features = [
     icon: Building2,
     title: "Multi-Tenancy",
     description:
-      "Schema-based tenant isolation out of the box. Create tenants, switch contexts, and manage shared user identities without writing RLS policies.",
+      "First-class tenant context switching with JWTs. RLS policies use auth.active_tenant_id(). Custom roles per organization.",
     href: "https://docs.omnibase.tech/guides/multi-tenancy",
   },
   {
     icon: Shield,
     title: "RBAC",
     description:
-      "Define roles and permissions that make sense for your app. Built on Ory Keto for production-grade authorization without the complexity.",
+      "Define roles and permissions that make sense for your app. Built on Ory Keto for production-grade permissions without the complexity.",
     href: "https://docs.omnibase.tech/guides/rbac",
   },
   {
     icon: CreditCard,
     title: "Stripe as Code",
     description:
-      "Define your products, prices, and billing logic in config files. Push changes with the CLI. Omnibase keeps Stripe in sync.",
+      "Products, prices, coupons, promotion codes, meters, and webhooks - all defined in config files. Push changes with the CLI.",
     href: "https://docs.omnibase.tech/guides/stripe",
   },
   {
