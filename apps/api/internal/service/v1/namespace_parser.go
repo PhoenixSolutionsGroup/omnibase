@@ -280,13 +280,17 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 				subjectRelations[subject] = append(subjectRelations[subject], relationName)
 			}
 
-			// Build relation metadata
+			// Build relation metadata - ensure Roles is never nil (JSON requires array, not null)
+			rolesSlice := roles
+			if rolesSlice == nil {
+				rolesSlice = []string{}
+			}
 			relationsMetadata = append(relationsMetadata, RelationMetadata{
 				Name:        relationName,
 				DisplayName: finalDisplayName,
 				Group:       group,
 				SubGroup:    subGroup,
-				Roles:       roles,
+				Roles:       rolesSlice,
 				Subjects:    subjects,
 			})
 		}
