@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.15.0
+ * Service version: 0.17.0
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -2374,6 +2374,30 @@ export interface DeleteRoleResponse {
 }
 
 /**
+ * Enriched metadata for a single relation including JSDoc annotations
+ */
+export interface RelationMetadata {
+  /** Relation name as defined in TypeScript */
+  name: string;
+  /** Human-readable display name (auto-generated or from @displayName) */
+  display_name: string;
+  /**
+   * UI grouping from @group annotation (null if ungrouped)
+   * @nullable
+   */
+  group?: string | null;
+  /**
+   * Nested UI grouping from @subGroup annotation (null if no subgroup)
+   * @nullable
+   */
+  sub_group?: string | null;
+  /** Roles that have this permission (from @role annotations) */
+  roles?: string[];
+  /** Subject types that can have this relation */
+  subjects: string[];
+}
+
+/**
  * Maps subject types to their allowed relations
  */
 export type NamespaceDefinitionSubjectRelations = { [key: string]: string[] };
@@ -2386,8 +2410,10 @@ export interface NamespaceDefinition {
   id: string;
   /** Namespace name */
   namespace: string;
-  /** Available relations in this namespace */
+  /** Available relations in this namespace (for backwards compatibility) */
   relations: string[];
+  /** Enriched relation metadata with JSDoc annotations */
+  relations_metadata?: RelationMetadata[];
   /** Maps subject types to their allowed relations */
   subject_relations?: NamespaceDefinitionSubjectRelations;
   /** Timestamp when definition was last updated */
