@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { PermissionsSelector, type PermissionRow, generateId } from ".";
-import { mockRoleCreatorDefinitions } from "../role-creator/mock-definitions";
+import {
+  mockRoleCreatorDefinitions,
+  mockEnrichedDefinitions,
+} from "../role-creator/mock-definitions";
 
 const mockNamespaceMap = {
   project: [
@@ -189,6 +192,118 @@ export const Controlled: Story = {
       description: {
         story:
           "Example showing how to use the PermissionsSelector in a controlled manner with parent state management.",
+      },
+    },
+  },
+};
+
+// --- Hierarchical Grouping Stories (with relationsMetadata) ---
+
+export const GroupedPermissions: Story = {
+  args: {
+    definitions: mockEnrichedDefinitions,
+    namespaceMap: mockNamespaceMap,
+    onPermissionsChange: (rows) => {
+      console.log("Permissions changed:", rows);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates hierarchical grouping when definitions include `relationsMetadata` with `@group` and `@subGroup` annotations. Permissions are organized into collapsible groups like 'User Management', 'Database > Secrets', etc.",
+      },
+    },
+  },
+};
+
+export const GroupedTenantPermissions: Story = {
+  args: {
+    definitions: mockEnrichedDefinitions.filter(
+      (d) => d.namespace === "Tenant"
+    ),
+    namespaceMap: {},
+    onPermissionsChange: (rows) => {
+      console.log("Permissions changed:", rows);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Tenant namespace with grouped permissions. Groups include: User Management (with Role Assignment subgroup), API Keys, Database (with Secrets and Connection subgroups), and more.",
+      },
+    },
+  },
+};
+
+export const GroupedProjectPermissions: Story = {
+  args: {
+    definitions: mockEnrichedDefinitions.filter(
+      (d) => d.namespace === "Project"
+    ),
+    namespaceMap: mockNamespaceMap,
+    onPermissionsChange: (rows) => {
+      console.log("Permissions changed:", rows);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Project namespace with grouped permissions and resource selector. Notice the Database group has Secrets and Connection subgroups.",
+      },
+    },
+  },
+};
+
+function ComparisonExample() {
+  const [legacyRows, setLegacyRows] = useState<PermissionRow[]>([
+    { id: generateId(), namespace: "", relation: "", objectId: "" },
+  ]);
+  const [enrichedRows, setEnrichedRows] = useState<PermissionRow[]>([
+    { id: generateId(), namespace: "", relation: "", objectId: "" },
+  ]);
+
+  return (
+    <div className="grid grid-cols-2 gap-8">
+      <div className="space-y-4">
+        <h3 className="font-semibold text-sm">Legacy (flat list)</h3>
+        <p className="text-xs text-muted-foreground">
+          Without relationsMetadata - permissions shown as flat list with
+          auto-generated labels
+        </p>
+        <PermissionsSelector
+          definitions={mockRoleCreatorDefinitions}
+          namespaceMap={mockNamespaceMap}
+          initialPermissions={legacyRows}
+          onPermissionsChange={setLegacyRows}
+        />
+      </div>
+      <div className="space-y-4">
+        <h3 className="font-semibold text-sm">Enriched (grouped)</h3>
+        <p className="text-xs text-muted-foreground">
+          With relationsMetadata - permissions grouped by @group/@subGroup with
+          custom displayNames
+        </p>
+        <PermissionsSelector
+          definitions={mockEnrichedDefinitions}
+          namespaceMap={mockNamespaceMap}
+          initialPermissions={enrichedRows}
+          onPermissionsChange={setEnrichedRows}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const LegacyVsEnriched: Story = {
+  render: () => <ComparisonExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Side-by-side comparison of legacy (flat list) vs enriched (grouped) permissions. Select the Tenant namespace in both to see the difference.",
       },
     },
   },
