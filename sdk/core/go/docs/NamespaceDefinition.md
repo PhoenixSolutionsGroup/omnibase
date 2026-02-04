@@ -6,7 +6,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | Unique namespace definition identifier | 
 **Namespace** | **string** | Namespace name | 
-**Relations** | **[]string** | Available relations in this namespace | 
+**Relations** | **[]string** | Available relations in this namespace (for backwards compatibility) | 
+**RelationsMetadata** | Pointer to [**[]RelationMetadata**](RelationMetadata.md) | Enriched relation metadata with JSDoc annotations | [optional] 
 **SubjectRelations** | Pointer to **map[string][]string** | Maps subject types to their allowed relations | [optional] 
 **UpdatedAt** | **time.Time** | Timestamp when definition was last updated | 
 
@@ -88,6 +89,31 @@ and a boolean to check if the value has been set.
 
 SetRelations sets Relations field to given value.
 
+
+### GetRelationsMetadata
+
+`func (o *NamespaceDefinition) GetRelationsMetadata() []RelationMetadata`
+
+GetRelationsMetadata returns the RelationsMetadata field if non-nil, zero value otherwise.
+
+### GetRelationsMetadataOk
+
+`func (o *NamespaceDefinition) GetRelationsMetadataOk() (*[]RelationMetadata, bool)`
+
+GetRelationsMetadataOk returns a tuple with the RelationsMetadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRelationsMetadata
+
+`func (o *NamespaceDefinition) SetRelationsMetadata(v []RelationMetadata)`
+
+SetRelationsMetadata sets RelationsMetadata field to given value.
+
+### HasRelationsMetadata
+
+`func (o *NamespaceDefinition) HasRelationsMetadata() bool`
+
+HasRelationsMetadata returns a boolean if a field has been set.
 
 ### GetSubjectRelations
 

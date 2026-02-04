@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import type { RelationMetadata } from './RelationMetadata';
 /**
  * Definition of a permission namespace
  * @export
@@ -28,11 +29,17 @@ export interface NamespaceDefinition {
      */
     namespace: string;
     /**
-     * Available relations in this namespace
+     * Available relations in this namespace (for backwards compatibility)
      * @type {Array<string>}
      * @memberof NamespaceDefinition
      */
     relations: Array<string>;
+    /**
+     * Enriched relation metadata with JSDoc annotations
+     * @type {Array<RelationMetadata>}
+     * @memberof NamespaceDefinition
+     */
+    relationsMetadata?: Array<RelationMetadata>;
     /**
      * Maps subject types to their allowed relations
      * @type {{ [key: string]: Array<string>; }}

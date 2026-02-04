@@ -27,8 +27,10 @@ type NamespaceDefinition struct {
 	Id string `json:"id"`
 	// Namespace name
 	Namespace string `json:"namespace"`
-	// Available relations in this namespace
+	// Available relations in this namespace (for backwards compatibility)
 	Relations []string `json:"relations"`
+	// Enriched relation metadata with JSDoc annotations
+	RelationsMetadata []RelationMetadata `json:"relations_metadata,omitempty"`
 	// Maps subject types to their allowed relations
 	SubjectRelations map[string][]string `json:"subject_relations,omitempty"`
 	// Timestamp when definition was last updated
@@ -130,6 +132,38 @@ func (o *NamespaceDefinition) SetRelations(v []string) {
 	o.Relations = v
 }
 
+// GetRelationsMetadata returns the RelationsMetadata field value if set, zero value otherwise.
+func (o *NamespaceDefinition) GetRelationsMetadata() []RelationMetadata {
+	if o == nil || IsNil(o.RelationsMetadata) {
+		var ret []RelationMetadata
+		return ret
+	}
+	return o.RelationsMetadata
+}
+
+// GetRelationsMetadataOk returns a tuple with the RelationsMetadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *NamespaceDefinition) GetRelationsMetadataOk() ([]RelationMetadata, bool) {
+	if o == nil || IsNil(o.RelationsMetadata) {
+		return nil, false
+	}
+	return o.RelationsMetadata, true
+}
+
+// HasRelationsMetadata returns a boolean if a field has been set.
+func (o *NamespaceDefinition) HasRelationsMetadata() bool {
+	if o != nil && !IsNil(o.RelationsMetadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetRelationsMetadata gets a reference to the given []RelationMetadata and assigns it to the RelationsMetadata field.
+func (o *NamespaceDefinition) SetRelationsMetadata(v []RelationMetadata) {
+	o.RelationsMetadata = v
+}
+
 // GetSubjectRelations returns the SubjectRelations field value if set, zero value otherwise.
 func (o *NamespaceDefinition) GetSubjectRelations() map[string][]string {
 	if o == nil || IsNil(o.SubjectRelations) {
@@ -199,6 +233,9 @@ func (o NamespaceDefinition) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["namespace"] = o.Namespace
 	toSerialize["relations"] = o.Relations
+	if !IsNil(o.RelationsMetadata) {
+		toSerialize["relations_metadata"] = o.RelationsMetadata
+	}
 	if !IsNil(o.SubjectRelations) {
 		toSerialize["subject_relations"] = o.SubjectRelations
 	}

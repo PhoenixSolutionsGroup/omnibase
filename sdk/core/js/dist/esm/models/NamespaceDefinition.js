@@ -11,6 +11,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { RelationMetadataFromJSON, RelationMetadataToJSON, } from './RelationMetadata';
 /**
  * Check if a given object implements the NamespaceDefinition interface.
  */
@@ -36,6 +37,7 @@ export function NamespaceDefinitionFromJSONTyped(json, ignoreDiscriminator) {
         'id': json['id'],
         'namespace': json['namespace'],
         'relations': json['relations'],
+        'relationsMetadata': json['relations_metadata'] == null ? undefined : (json['relations_metadata'].map(RelationMetadataFromJSON)),
         'subjectRelations': json['subject_relations'] == null ? undefined : json['subject_relations'],
         'updatedAt': (new Date(json['updated_at'])),
     };
@@ -51,6 +53,7 @@ export function NamespaceDefinitionToJSONTyped(value, ignoreDiscriminator = fals
         'id': value['id'],
         'namespace': value['namespace'],
         'relations': value['relations'],
+        'relations_metadata': value['relationsMetadata'] == null ? undefined : (value['relationsMetadata'].map(RelationMetadataToJSON)),
         'subject_relations': value['subjectRelations'],
         'updated_at': value['updatedAt'].toISOString(),
     };

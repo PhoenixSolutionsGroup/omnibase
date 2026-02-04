@@ -164,6 +164,7 @@ docs/PromotionCodeChanges.md
 docs/PromotionCodeWithStripeID.md
 docs/PullStripeConfig200Response.md
 docs/RecordUsageRequest.md
+docs/RelationMetadata.md
 docs/Relationship.md
 docs/RemoveSubscription200Response.md
 docs/RemoveSubscriptionRequest.md
@@ -397,6 +398,7 @@ src/models/PromotionCodeChanges.ts
 src/models/PromotionCodeWithStripeID.ts
 src/models/PullStripeConfig200Response.ts
 src/models/RecordUsageRequest.ts
+src/models/RelationMetadata.ts
 src/models/Relationship.ts
 src/models/RemoveSubscription200Response.ts
 src/models/RemoveSubscriptionRequest.ts

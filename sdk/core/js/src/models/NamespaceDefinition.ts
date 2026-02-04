@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { RelationMetadata } from './RelationMetadata';
+import {
+    RelationMetadataFromJSON,
+    RelationMetadataFromJSONTyped,
+    RelationMetadataToJSON,
+    RelationMetadataToJSONTyped,
+} from './RelationMetadata';
+
 /**
  * Definition of a permission namespace
  * @export
@@ -32,11 +40,17 @@ export interface NamespaceDefinition {
      */
     namespace: string;
     /**
-     * Available relations in this namespace
+     * Available relations in this namespace (for backwards compatibility)
      * @type {Array<string>}
      * @memberof NamespaceDefinition
      */
     relations: Array<string>;
+    /**
+     * Enriched relation metadata with JSDoc annotations
+     * @type {Array<RelationMetadata>}
+     * @memberof NamespaceDefinition
+     */
+    relationsMetadata?: Array<RelationMetadata>;
     /**
      * Maps subject types to their allowed relations
      * @type {{ [key: string]: Array<string>; }}
@@ -75,6 +89,7 @@ export function NamespaceDefinitionFromJSONTyped(json: any, ignoreDiscriminator:
         'id': json['id'],
         'namespace': json['namespace'],
         'relations': json['relations'],
+        'relationsMetadata': json['relations_metadata'] == null ? undefined : ((json['relations_metadata'] as Array<any>).map(RelationMetadataFromJSON)),
         'subjectRelations': json['subject_relations'] == null ? undefined : json['subject_relations'],
         'updatedAt': (new Date(json['updated_at'])),
     };
@@ -94,6 +109,7 @@ export function NamespaceDefinitionToJSONTyped(value?: NamespaceDefinition | nul
         'id': value['id'],
         'namespace': value['namespace'],
         'relations': value['relations'],
+        'relations_metadata': value['relationsMetadata'] == null ? undefined : ((value['relationsMetadata'] as Array<any>).map(RelationMetadataToJSON)),
         'subject_relations': value['subjectRelations'],
         'updated_at': value['updatedAt'].toISOString(),
     };

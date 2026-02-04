@@ -288,6 +288,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
 - [PullStripeConfig200Response](docs/PullStripeConfig200Response.md)
 - [RecordUsageRequest](docs/RecordUsageRequest.md)
+- [RelationMetadata](docs/RelationMetadata.md)
 - [Relationship](docs/Relationship.md)
 - [RemoveSubscription200Response](docs/RemoveSubscription200Response.md)
 - [RemoveSubscriptionRequest](docs/RemoveSubscriptionRequest.md)

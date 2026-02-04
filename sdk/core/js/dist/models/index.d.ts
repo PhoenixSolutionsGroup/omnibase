@@ -161,6 +161,7 @@ export * from './PromotionCodeChanges';
 export * from './PromotionCodeWithStripeID';
 export * from './PullStripeConfig200Response';
 export * from './RecordUsageRequest';
+export * from './RelationMetadata';
 export * from './Relationship';
 export * from './RemoveSubscription200Response';
 export * from './RemoveSubscriptionRequest';

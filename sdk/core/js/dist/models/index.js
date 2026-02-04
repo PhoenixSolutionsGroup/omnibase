@@ -179,6 +179,7 @@ __exportStar(require("./PromotionCodeChanges"), exports);
 __exportStar(require("./PromotionCodeWithStripeID"), exports);
 __exportStar(require("./PullStripeConfig200Response"), exports);
 __exportStar(require("./RecordUsageRequest"), exports);
+__exportStar(require("./RelationMetadata"), exports);
 __exportStar(require("./Relationship"), exports);
 __exportStar(require("./RemoveSubscription200Response"), exports);
 __exportStar(require("./RemoveSubscriptionRequest"), exports);

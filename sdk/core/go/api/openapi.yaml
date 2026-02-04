@@ -11390,10 +11390,83 @@ components:
           type: string
       required:
       - message
+    RelationMetadata:
+      description: Enriched metadata for a single relation including JSDoc annotations
+      example:
+        sub_group: Database
+        roles:
+        - owner
+        - admin
+        subjects:
+        - User
+        - ApiKey
+        name: can_view_db_secret_key
+        display_name: View Db Secret Key
+        group: Secrets
+      properties:
+        name:
+          description: Relation name as defined in TypeScript
+          example: can_view_db_secret_key
+          type: string
+        display_name:
+          description: Human-readable display name (auto-generated or from @displayName)
+          example: View Db Secret Key
+          type: string
+        group:
+          description: UI grouping from @group annotation (null if ungrouped)
+          example: Secrets
+          type: string
+          nullable: true
+        sub_group:
+          description: Nested UI grouping from @subGroup annotation (null if no subgroup)
+          example: Database
+          type: string
+          nullable: true
+        roles:
+          description: Roles that have this permission (from @role annotations)
+          example:
+          - owner
+          - admin
+          items:
+            type: string
+          type: array
+        subjects:
+          description: Subject types that can have this relation
+          example:
+          - User
+          - ApiKey
+          items:
+            type: string
+          type: array
+      required:
+      - display_name
+      - name
+      - subjects
     NamespaceDefinition:
       description: Definition of a permission namespace
       example:
         updated_at: 2025-11-10T00:33:08.720326Z
+        relations_metadata:
+        - sub_group: Database
+          roles:
+          - owner
+          - admin
+          subjects:
+          - User
+          - ApiKey
+          name: can_view_db_secret_key
+          display_name: View Db Secret Key
+          group: Secrets
+        - sub_group: Database
+          roles:
+          - owner
+          - admin
+          subjects:
+          - User
+          - ApiKey
+          name: can_view_db_secret_key
+          display_name: View Db Secret Key
+          group: Secrets
         namespace: Tenant
         id: bfab650b-f834-4904-a4e8-41343fea86bc
         subject_relations:
@@ -11419,13 +11492,18 @@ components:
           example: Tenant
           type: string
         relations:
-          description: Available relations in this namespace
+          description: Available relations in this namespace (for backwards compatibility)
           example:
           - can_delete_tenant
           - can_invite_user
           - can_update_user_role
           items:
             type: string
+          type: array
+        relations_metadata:
+          description: Enriched relation metadata with JSDoc annotations
+          items:
+            $ref: "#/components/schemas/RelationMetadata"
           type: array
         subject_relations:
           additionalProperties:
@@ -11455,6 +11533,27 @@ components:
       example:
         definitions:
         - updated_at: 2025-11-10T00:33:08.720326Z
+          relations_metadata:
+          - sub_group: Database
+            roles:
+            - owner
+            - admin
+            subjects:
+            - User
+            - ApiKey
+            name: can_view_db_secret_key
+            display_name: View Db Secret Key
+            group: Secrets
+          - sub_group: Database
+            roles:
+            - owner
+            - admin
+            subjects:
+            - User
+            - ApiKey
+            name: can_view_db_secret_key
+            display_name: View Db Secret Key
+            group: Secrets
           namespace: Tenant
           id: bfab650b-f834-4904-a4e8-41343fea86bc
           subject_relations:
@@ -11470,6 +11569,27 @@ components:
           - can_invite_user
           - can_update_user_role
         - updated_at: 2025-11-10T00:33:08.720326Z
+          relations_metadata:
+          - sub_group: Database
+            roles:
+            - owner
+            - admin
+            subjects:
+            - User
+            - ApiKey
+            name: can_view_db_secret_key
+            display_name: View Db Secret Key
+            group: Secrets
+          - sub_group: Database
+            roles:
+            - owner
+            - admin
+            subjects:
+            - User
+            - ApiKey
+            name: can_view_db_secret_key
+            display_name: View Db Secret Key
+            group: Secrets
           namespace: Tenant
           id: bfab650b-f834-4904-a4e8-41343fea86bc
           subject_relations:
@@ -14487,6 +14607,27 @@ components:
         data:
           definitions:
           - updated_at: 2025-11-10T00:33:08.720326Z
+            relations_metadata:
+            - sub_group: Database
+              roles:
+              - owner
+              - admin
+              subjects:
+              - User
+              - ApiKey
+              name: can_view_db_secret_key
+              display_name: View Db Secret Key
+              group: Secrets
+            - sub_group: Database
+              roles:
+              - owner
+              - admin
+              subjects:
+              - User
+              - ApiKey
+              name: can_view_db_secret_key
+              display_name: View Db Secret Key
+              group: Secrets
             namespace: Tenant
             id: bfab650b-f834-4904-a4e8-41343fea86bc
             subject_relations:
@@ -14502,6 +14643,27 @@ components:
             - can_invite_user
             - can_update_user_role
           - updated_at: 2025-11-10T00:33:08.720326Z
+            relations_metadata:
+            - sub_group: Database
+              roles:
+              - owner
+              - admin
+              subjects:
+              - User
+              - ApiKey
+              name: can_view_db_secret_key
+              display_name: View Db Secret Key
+              group: Secrets
+            - sub_group: Database
+              roles:
+              - owner
+              - admin
+              subjects:
+              - User
+              - ApiKey
+              name: can_view_db_secret_key
+              display_name: View Db Secret Key
+              group: Secrets
             namespace: Tenant
             id: bfab650b-f834-4904-a4e8-41343fea86bc
             subject_relations:

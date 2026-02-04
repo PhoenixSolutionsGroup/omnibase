@@ -18,6 +18,7 @@ exports.NamespaceDefinitionFromJSON = NamespaceDefinitionFromJSON;
 exports.NamespaceDefinitionFromJSONTyped = NamespaceDefinitionFromJSONTyped;
 exports.NamespaceDefinitionToJSON = NamespaceDefinitionToJSON;
 exports.NamespaceDefinitionToJSONTyped = NamespaceDefinitionToJSONTyped;
+const RelationMetadata_1 = require("./RelationMetadata");
 /**
  * Check if a given object implements the NamespaceDefinition interface.
  */
@@ -43,6 +44,7 @@ function NamespaceDefinitionFromJSONTyped(json, ignoreDiscriminator) {
         'id': json['id'],
         'namespace': json['namespace'],
         'relations': json['relations'],
+        'relationsMetadata': json['relations_metadata'] == null ? undefined : (json['relations_metadata'].map(RelationMetadata_1.RelationMetadataFromJSON)),
         'subjectRelations': json['subject_relations'] == null ? undefined : json['subject_relations'],
         'updatedAt': (new Date(json['updated_at'])),
     };
@@ -58,6 +60,7 @@ function NamespaceDefinitionToJSONTyped(value, ignoreDiscriminator = false) {
         'id': value['id'],
         'namespace': value['namespace'],
         'relations': value['relations'],
+        'relations_metadata': value['relationsMetadata'] == null ? undefined : (value['relationsMetadata'].map(RelationMetadata_1.RelationMetadataToJSON)),
         'subject_relations': value['subjectRelations'],
         'updated_at': value['updatedAt'].toISOString(),
     };
