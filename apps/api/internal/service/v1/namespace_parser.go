@@ -12,16 +12,26 @@ import (
 	"api/internal/logger"
 )
 
+// RelationMetadata contains enriched metadata for a single relation
+type RelationMetadata struct {
+	Name        string   `json:"name"`                  // e.g., can_view_db_secret_key
+	DisplayName string   `json:"display_name"`          // e.g., Can View Db Secret Key
+	Group       *string  `json:"group"`                 // e.g., "Secrets" or null
+	SubGroup    *string  `json:"sub_group"`             // e.g., "Database" or null
+	Roles       []string `json:"roles"`                 // e.g., ["owner", "admin"]
+	Subjects    []string `json:"subjects"`              // e.g., ["User", "ApiKey"]
+}
+
 type ParsedNamespaceDefinition struct {
-	Namespace        string              `json:"namespace"`
-	Relations        []string            `json:"relations"`
-	SubjectRelations map[string][]string `json:"subject_relations"` // subject -> relations that accept this subject
+	Namespace         string              `json:"namespace"`
+	Relations         []string            `json:"relations"`                    // Keep for backwards compat
+	RelationsMetadata []RelationMetadata  `json:"relations_metadata,omitempty"` // New enriched data
+	SubjectRelations  map[string][]string `json:"subject_relations"`            // subject -> relations that accept this subject
 }
 
 type ParsedRoleConfig struct {
 	Role        string   `json:"role"`
 	Permissions []string `json:"permissions"`
-	Immutable   bool     `json:"immutable"`
 }
 
 type RolesConfig struct {
@@ -130,8 +140,7 @@ func (s *NamespaceParserService) ParseRolesConfig(zipBytes []byte) (*RolesConfig
 		for _, role := range rolesConfig.Roles {
 			logger.Logger.Debug("Parsed role",
 				"role", role.Role,
-				"permissions_count", len(role.Permissions),
-				"immutable", role.Immutable)
+				"permissions_count", len(role.Permissions))
 		}
 
 		return &rolesConfig, nil
@@ -176,11 +185,10 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 
 	var allDefinitions []ParsedNamespaceDefinition
 
-	// Regex patterns for relation extraction
-	// Matches: "relationName: SubjectType[]"
-	singleSubjectRegex := regexp.MustCompile(`(\w+):\s*(\w+)\[\]`)
-	// Matches: "relationName: (SubjectType1 | SubjectType2 | ...)[]"
-	unionSubjectRegex := regexp.MustCompile(`(\w+):\s*\(([^)]+)\)\[\]`)
+	// Regex to match JSDoc comment followed by relation
+	// Matches: /** ... */ relationName: (Type1 | Type2)[] or /** ... */ relationName: Type[]
+	// Also matches relations without JSDoc
+	jsdocRelationRegex := regexp.MustCompile(`(?s)(/\*\*.*?\*/)?\s*(\w+):\s*(?:\(([^)]+)\)|(\w+))\[\]`)
 
 	// Match each related block to its class
 	for i, relatedMatch := range relatedMatches {
@@ -223,62 +231,72 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 			continue
 		}
 
-		// Build subject -> relations map
+		// Build subject -> relations map and relations metadata
 		subjectRelations := make(map[string][]string)
 		var allRelations []string
+		var relationsMetadata []RelationMetadata
 
-		// First, extract union type relations: "(User | ApiKey)[]"
-		unionMatches := unionSubjectRegex.FindAllStringSubmatch(relatedBlock, -1)
-		processedRelations := make(map[string]bool)
+		// Extract all relations with their JSDoc comments
+		jsdocMatches := jsdocRelationRegex.FindAllStringSubmatch(relatedBlock, -1)
 
-		for _, match := range unionMatches {
-			if len(match) >= 3 {
-				relationName := match[1]
-				subjectsStr := match[2]
-				processedRelations[relationName] = true
+		for _, match := range jsdocMatches {
+			jsdocContent := match[1]    // JSDoc comment (may be empty)
+			relationName := match[2]    // Relation name
+			unionSubjects := match[3]   // Union subjects like "User | ApiKey" (may be empty)
+			singleSubject := match[4]   // Single subject like "User" (may be empty)
 
-				// Parse subjects from union: "User | ApiKey" -> ["User", "ApiKey"]
-				subjects := s.parseUnionSubjects(subjectsStr)
-
-				logger.Logger.Debug("Extracted union relation",
-					"class", belongsToClass,
-					"relation", relationName,
-					"subjects", subjects)
-
-				allRelations = append(allRelations, relationName)
-				for _, subject := range subjects {
-					subjectRelations[subject] = append(subjectRelations[subject], relationName)
-				}
+			// Determine subjects
+			var subjects []string
+			if unionSubjects != "" {
+				subjects = s.parseUnionSubjects(unionSubjects)
+			} else if singleSubject != "" {
+				subjects = []string{singleSubject}
 			}
-		}
 
-		// Then, extract single subject relations: "User[]"
-		singleMatches := singleSubjectRegex.FindAllStringSubmatch(relatedBlock, -1)
-		for _, match := range singleMatches {
-			if len(match) >= 3 {
-				relationName := match[1]
-				subject := match[2]
+			// Parse JSDoc tags
+			var group, subGroup, displayName *string
+			var roles []string
+			if jsdocContent != "" {
+				group, subGroup, displayName, roles = s.parseJSDocTags(jsdocContent)
+			}
 
-				// Skip if already processed as union type
-				if processedRelations[relationName] {
-					continue
-				}
+			// Generate default display name if not provided
+			finalDisplayName := s.generateDisplayName(relationName)
+			if displayName != nil {
+				finalDisplayName = *displayName
+			}
 
-				logger.Logger.Debug("Extracted single-subject relation",
-					"class", belongsToClass,
-					"relation", relationName,
-					"subject", subject)
+			logger.Logger.Debug("Extracted relation with JSDoc",
+				"class", belongsToClass,
+				"relation", relationName,
+				"subjects", subjects,
+				"group", group,
+				"subGroup", subGroup,
+				"displayName", finalDisplayName,
+				"roles", roles)
 
-				allRelations = append(allRelations, relationName)
+			allRelations = append(allRelations, relationName)
+			for _, subject := range subjects {
 				subjectRelations[subject] = append(subjectRelations[subject], relationName)
 			}
+
+			// Build relation metadata
+			relationsMetadata = append(relationsMetadata, RelationMetadata{
+				Name:        relationName,
+				DisplayName: finalDisplayName,
+				Group:       group,
+				SubGroup:    subGroup,
+				Roles:       roles,
+				Subjects:    subjects,
+			})
 		}
 
 		if len(allRelations) > 0 {
 			logger.Logger.Info("Successfully parsed namespace",
 				"namespace", belongsToClass,
 				"relations_count", len(allRelations),
-				"subject_count", len(subjectRelations))
+				"subject_count", len(subjectRelations),
+				"metadata_count", len(relationsMetadata))
 
 			for subject, relations := range subjectRelations {
 				logger.Logger.Debug("Subject relations",
@@ -288,9 +306,10 @@ func (s *NamespaceParserService) parseNamespaceContent(content string) []ParsedN
 			}
 
 			allDefinitions = append(allDefinitions, ParsedNamespaceDefinition{
-				Namespace:        belongsToClass,
-				Relations:        allRelations,
-				SubjectRelations: subjectRelations,
+				Namespace:         belongsToClass,
+				Relations:         allRelations,
+				RelationsMetadata: relationsMetadata,
+				SubjectRelations:  subjectRelations,
 			})
 		} else {
 			logger.Logger.Warn("No relations found in related block", "class", belongsToClass)
@@ -312,6 +331,101 @@ func (s *NamespaceParserService) parseUnionSubjects(unionStr string) []string {
 		}
 	}
 	return subjects
+}
+
+// generateDisplayName converts relation name to display format
+// e.g., "can_view_db_secret_key" -> "Can View Db Secret Key"
+func (s *NamespaceParserService) generateDisplayName(relationName string) string {
+	words := strings.Split(relationName, "_")
+	for i, word := range words {
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(string(word[0])) + strings.ToLower(word[1:])
+		}
+	}
+	return strings.Join(words, " ")
+}
+
+// parseJSDocTags extracts @group, @subGroup, @displayName, and @role tags from JSDoc content
+func (s *NamespaceParserService) parseJSDocTags(jsdocContent string) (group *string, subGroup *string, displayName *string, roles []string) {
+	// Clean up the JSDoc content - remove * at start of lines
+	cleaned := regexp.MustCompile(`(?m)^\s*\*\s?`).ReplaceAllString(jsdocContent, " ")
+	cleaned = strings.TrimSpace(cleaned)
+
+	// Extract @group
+	groupRegex := regexp.MustCompile(`@group\s+([^@\n]+)`)
+	if match := groupRegex.FindStringSubmatch(cleaned); len(match) >= 2 {
+		g := strings.TrimSpace(match[1])
+		if g != "" {
+			group = &g
+		}
+	}
+
+	// Extract @subGroup
+	subGroupRegex := regexp.MustCompile(`@subGroup\s+([^@\n]+)`)
+	if match := subGroupRegex.FindStringSubmatch(cleaned); len(match) >= 2 {
+		sg := strings.TrimSpace(match[1])
+		if sg != "" {
+			// Only set subGroup if group is also set
+			if group != nil {
+				subGroup = &sg
+			} else {
+				logger.Logger.Warn("@subGroup found without @group, ignoring", "subGroup", sg)
+			}
+		}
+	}
+
+	// Extract @displayName
+	displayNameRegex := regexp.MustCompile(`@displayName\s+([^@\n]+)`)
+	if match := displayNameRegex.FindStringSubmatch(cleaned); len(match) >= 2 {
+		dn := strings.TrimSpace(match[1])
+		if dn != "" {
+			displayName = &dn
+		}
+	}
+
+	// Extract all @role tags
+	roleRegex := regexp.MustCompile(`@role\s+(\w+)`)
+	roleMatches := roleRegex.FindAllStringSubmatch(cleaned, -1)
+	for _, match := range roleMatches {
+		if len(match) >= 2 {
+			role := strings.ToLower(strings.TrimSpace(match[1]))
+			if role != "" {
+				roles = append(roles, role)
+			}
+		}
+	}
+
+	return group, subGroup, displayName, roles
+}
+
+// BuildRolesFromMetadata aggregates role->permissions mapping from parsed namespace definitions
+func (s *NamespaceParserService) BuildRolesFromMetadata(definitions []ParsedNamespaceDefinition) []ParsedRoleConfig {
+	rolePermissions := make(map[string][]string)
+
+	for _, def := range definitions {
+		namespace := strings.ToLower(def.Namespace)
+		for _, rel := range def.RelationsMetadata {
+			for _, role := range rel.Roles {
+				permission := fmt.Sprintf("%s#%s", namespace, rel.Name)
+				rolePermissions[role] = append(rolePermissions[role], permission)
+			}
+		}
+	}
+
+	var roles []ParsedRoleConfig
+	for role, permissions := range rolePermissions {
+		roles = append(roles, ParsedRoleConfig{
+			Role:        role,
+			Permissions: permissions,
+		})
+	}
+
+	logger.Logger.Info("Built roles from metadata", "role_count", len(roles))
+	for _, r := range roles {
+		logger.Logger.Debug("Role permissions", "role", r.Role, "permissions_count", len(r.Permissions))
+	}
+
+	return roles
 }
 
 func min(a, b int) int {

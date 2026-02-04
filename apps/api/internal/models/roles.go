@@ -33,6 +33,40 @@ func (s *SubjectRelationsData) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, s)
 }
 
+// RelationMetadata contains enriched metadata for a single relation including JSDoc annotations
+type RelationMetadata struct {
+	Name        string   `json:"name"`                  // Relation name as defined in TypeScript
+	DisplayName string   `json:"display_name"`          // Human-readable display name (auto-generated or from @displayName)
+	Group       *string  `json:"group"`                 // UI grouping from @group annotation (null if ungrouped)
+	SubGroup    *string  `json:"sub_group"`             // Nested UI grouping from @subGroup annotation (null if no subgroup)
+	Roles       []string `json:"roles"`                 // Roles that have this permission (from @role annotations)
+	Subjects    []string `json:"subjects"`              // Subject types that can have this relation
+}
+
+// RelationsMetadataData is a slice of RelationMetadata stored as JSONB
+type RelationsMetadataData []RelationMetadata
+
+func (r RelationsMetadataData) Value() (driver.Value, error) {
+	if r == nil {
+		return nil, nil
+	}
+	return json.Marshal(r)
+}
+
+func (r *RelationsMetadataData) Scan(value interface{}) error {
+	if value == nil {
+		*r = nil
+		return nil
+	}
+
+	bytes, ok := value.([]byte)
+	if !ok {
+		return nil
+	}
+
+	return json.Unmarshal(bytes, r)
+}
+
 type RoleTemplate struct {
 	ID          string         `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"7bde7bd1-9be9-42f5-bc4b-be9f24cde432"`
 	RoleName    string         `gorm:"type:text;unique;not null" json:"role_name" binding:"required" example:"owner"`
@@ -71,11 +105,12 @@ func (Role) TableName() string {
 }
 
 type NamespaceDefinition struct {
-	ID               string               `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"bfab650b-f834-4904-a4e8-41343fea86bc"`
-	Namespace        string               `gorm:"type:text;unique;not null" json:"namespace" binding:"required" example:"Tenant"`
-	Relations        pq.StringArray       `gorm:"type:text[]" json:"relations" binding:"required" example:"can_delete_tenant,can_invite_user,can_update_user_role"`
-	SubjectRelations SubjectRelationsData `gorm:"type:jsonb" json:"subject_relations,omitempty" example:"{\"User\":[\"can_delete_tenant\"],\"ApiKey\":[\"can_rotate_keys\"]}"`
-	UpdatedAt        time.Time            `json:"updated_at" binding:"required" example:"2025-11-10T00:33:08.720326Z"`
+	ID                string                `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id" binding:"required" example:"bfab650b-f834-4904-a4e8-41343fea86bc"`
+	Namespace         string                `gorm:"type:text;unique;not null" json:"namespace" binding:"required" example:"Tenant"`
+	Relations         pq.StringArray        `gorm:"type:text[]" json:"relations" binding:"required" example:"can_delete_tenant,can_invite_user,can_update_user_role"`
+	RelationsMetadata RelationsMetadataData `gorm:"type:jsonb" json:"relations_metadata,omitempty"`
+	SubjectRelations  SubjectRelationsData  `gorm:"type:jsonb" json:"subject_relations,omitempty" example:"{\"User\":[\"can_delete_tenant\"],\"ApiKey\":[\"can_rotate_keys\"]}"`
+	UpdatedAt         time.Time             `json:"updated_at" binding:"required" example:"2025-11-10T00:33:08.720326Z"`
 }
 
 func (NamespaceDefinition) TableName() string {

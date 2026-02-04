@@ -7567,6 +7567,48 @@ components:
           type: string
           description: Success message
           example: Role deleted successfully
+    RelationMetadata:
+      type: object
+      description: Enriched metadata for a single relation including JSDoc annotations
+      required:
+        - name
+        - display_name
+        - subjects
+      properties:
+        name:
+          type: string
+          description: Relation name as defined in TypeScript
+          example: can_view_db_secret_key
+        display_name:
+          type: string
+          description: Human-readable display name (auto-generated or from @displayName)
+          example: View Db Secret Key
+        group:
+          type: string
+          nullable: true
+          description: UI grouping from @group annotation (null if ungrouped)
+          example: Secrets
+        sub_group:
+          type: string
+          nullable: true
+          description: Nested UI grouping from @subGroup annotation (null if no subgroup)
+          example: Database
+        roles:
+          type: array
+          description: Roles that have this permission (from @role annotations)
+          items:
+            type: string
+          example:
+            - owner
+            - admin
+        subjects:
+          type: array
+          description: Subject types that can have this relation
+          items:
+            type: string
+          example:
+            - User
+            - ApiKey
     NamespaceDefinition:
       type: object
       description: Definition of a permission namespace
@@ -7587,13 +7629,18 @@ components:
           example: Tenant
         relations:
           type: array
-          description: Available relations in this namespace
+          description: Available relations in this namespace (for backwards compatibility)
           items:
             type: string
           example:
             - can_delete_tenant
             - can_invite_user
             - can_update_user_role
+        relations_metadata:
+          type: array
+          description: Enriched relation metadata with JSDoc annotations
+          items:
+            $ref: '#/components/schemas/RelationMetadata'
         subject_relations:
           type: object
           description: Maps subject types to their allowed relations

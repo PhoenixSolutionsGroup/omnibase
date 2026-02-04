@@ -207,12 +207,27 @@ func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.Parse
 		logger.Logger.Trace("Processing namespace definition",
 			"namespace", def.Namespace,
 			"relations_count", len(def.Relations),
+			"metadata_count", len(def.RelationsMetadata),
 			"subject_count", len(def.SubjectRelations))
 
+		// Convert RelationsMetadata from service type to model type
+		var relationsMetadata models.RelationsMetadataData
+		for _, rm := range def.RelationsMetadata {
+			relationsMetadata = append(relationsMetadata, models.RelationMetadata{
+				Name:        rm.Name,
+				DisplayName: rm.DisplayName,
+				Group:       rm.Group,
+				SubGroup:    rm.SubGroup,
+				Roles:       rm.Roles,
+				Subjects:    rm.Subjects,
+			})
+		}
+
 		dbDef := models.NamespaceDefinition{
-			Namespace:        def.Namespace,
-			Relations:        pq.StringArray(def.Relations),
-			SubjectRelations: models.SubjectRelationsData(def.SubjectRelations),
+			Namespace:         def.Namespace,
+			Relations:         pq.StringArray(def.Relations),
+			RelationsMetadata: relationsMetadata,
+			SubjectRelations:  models.SubjectRelationsData(def.SubjectRelations),
 		}
 
 		// Upsert
@@ -226,6 +241,7 @@ func (h *KetoNamespacesHandler) storeDefinitions(definitions []services_v1.Parse
 		if result.RowsAffected == 0 {
 			logger.Logger.Debug("Updating existing namespace definition", "namespace", def.Namespace)
 			dbDef.Relations = pq.StringArray(def.Relations)
+			dbDef.RelationsMetadata = relationsMetadata
 			dbDef.SubjectRelations = models.SubjectRelationsData(def.SubjectRelations)
 			if err := db.Save(&dbDef).Error; err != nil {
 				logger.Logger.Error("Failed to update namespace definition", "namespace", def.Namespace, "error", err)
