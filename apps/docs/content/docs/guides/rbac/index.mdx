@@ -9,7 +9,7 @@ import { Shield, Users, FileCode, Key } from 'lucide-react';
 
 # Role-Based Access Control (RBAC)
 
-OmniBase uses a fine-grained, relationship-based access control (ReBAC) system powered by Ory Keto. Each tenant has its own set of roles with configurable permissions.
+OmniBase uses a fine-grained, relationship-based access control (ReBAC) system powered by Ory Keto. Each tenant manages their own roles with configurable permissions.
 
 ## UI Components
 
@@ -18,10 +18,11 @@ OmniBase provides pre-built shadcn components in `@omnibase/shadcn`:
 | Component | Description |
 |-----------|-------------|
 | `RoleCreator` | Create and edit roles with permission selector |
-| `PermissionsSelector` | Low-level permission picker for namespaces and relations |
+| `PermissionsSelector` | Row-based permission picker for namespaces and relations |
+| `PermissionsSelectorTree` | Tree-based permission picker grouped by JSDoc annotations |
 | `UserViewer` | View team members and manage role assignments |
 
-See [Role Configuration](/docs/guides/multi-tenancy/rbac/roles#ui-components) for usage examples.
+See [Managing Roles](/docs/guides/rbac/roles#ui-components) for usage examples.
 
 ## How It Works
 
@@ -33,24 +34,46 @@ Permissions are stored as relationship tuples:
 
 Examples:
 ```
-(Tenant, acme-corp-uuid, delete_tenant, User:alice)
-(Tenant, acme-corp-uuid, invite_user, User:bob)
+(Tenant, acme-corp-uuid, can_delete_tenant, User:alice)
+(Tenant, acme-corp-uuid, can_invite_user, User:bob)
 (Project, proj-123-uuid, can_write, User:carol)
 ```
 
 When checking permissions, OmniBase verifies the relationship exists between the subject and object.
+
+## Defining Permissions with JSDoc
+
+Permissions are defined in TypeScript namespace files with JSDoc annotations that provide metadata for UI rendering:
+
+```typescript title="omnibase/permissions/tenants.ts"
+/**
+ * @group User Management
+ * @displayName Invite Users
+ * @role owner
+ * @role admin
+ */
+can_invite_user: User[];
+```
+
+| Annotation | Purpose |
+|------------|---------|
+| `@group` | Primary UI grouping |
+| `@subGroup` | Secondary grouping within a group |
+| `@displayName` | Human-readable label |
+| `@role` | Suggested default role(s) |
+| `@hidden` | Hide internal relations from UI |
 
 ## Key Concepts
 
 ### Tenant Permissions vs Resource Permissions
 
 <Callout type="info">
-  Only `tenant#` permissions support auto-scoping. The active tenant ID is automatically injected when checking these permissions.
+  Only `Tenant` permissions support auto-scoping. The active tenant ID is automatically injected when checking these permissions.
 </Callout>
 
 | Type | Format | Auto-Scoped |
 |------|--------|-------------|
-| Tenant permissions | `tenant#relation` | Yes - uses active tenant |
+| Tenant permissions | `Tenant#relation` | Yes - uses active tenant |
 | Resource permissions | `(Namespace, uuid, relation, subject)` | No - requires explicit UUID |
 
 ### No Resource-Wide Wildcards
@@ -59,10 +82,9 @@ When checking permissions, OmniBase verifies the relationship exists between the
   There is **no** `project#can_read` permission that grants access to all projects. Resource permissions always require a specific UUID.
 </Callout>
 
-To grant access to resources like projects or documents, you must create relationships for each resource individually:
+To grant access to resources like projects or documents, create relationships for each resource:
 
 ```typescript
-// Grant access to a specific project
 await permissionsApi.createRelationship({
   createRelationshipRequest: {
     namespace: 'Project',
@@ -77,11 +99,11 @@ await permissionsApi.createRelationship({
 ## RBAC Guides
 
 <Cards>
-  <Card title="Role Configuration" icon={<Users />} href="/docs/guides/multi-tenancy/rbac/roles">
-    Configure the required owner role and create custom roles
+  <Card title="Defining Permissions" icon={<FileCode />} href="/docs/guides/rbac/permissions">
+    Create permission namespaces with JSDoc metadata for UI grouping
   </Card>
-  <Card title="Custom Permissions" icon={<FileCode />} href="/docs/guides/multi-tenancy/rbac/permissions">
-    Define permission namespaces and relations in your project
+  <Card title="Managing Roles" icon={<Users />} href="/docs/guides/rbac/roles">
+    Create roles and assign users within your tenants
   </Card>
 </Cards>
 
@@ -92,12 +114,12 @@ import { V1PermissionsApi } from '@omnibase/core-js';
 
 const permissionsApi = new V1PermissionsApi(config);
 
-// Check if user can delete tenant (auto-scoped to active tenant)
+// Check if user can delete tenant
 const { data } = await permissionsApi.checkPermission({
   checkPermissionRequest: {
     namespace: 'Tenant',
     object: tenantId,
-    relation: 'delete_tenant',
+    relation: 'can_delete_tenant',
     subjectId: userId,
     subjectNamespace: 'User',
   },

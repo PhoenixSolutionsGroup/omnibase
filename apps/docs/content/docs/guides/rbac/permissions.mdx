@@ -1,197 +1,119 @@
 ---
-title: Custom Permissions
-description: Define permission namespaces and relations for your application
+title: Defining Permissions
+description: Define permission namespaces with JSDoc metadata for UI grouping and role suggestions
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
-import { Files, FileCode, Shield } from 'lucide-react';
 
-# Custom Permissions
+# Defining Permissions
 
-OmniBase allows you to define custom permission namespaces and relations that match your application's domain model. Permissions are defined in TypeScript files and synced via the CLI.
-
-## UI Components
-
-OmniBase provides pre-built shadcn components for permission management in `@omnibase/shadcn`:
-
-<Accordions>
-<Accordion title="PermissionsSelector Component">
-Interactive picker for namespaces, relations, and object IDs. Automatically adds new rows as you fill them.
-
-```tsx
-import { PermissionsSelector, type PermissionRow } from '@omnibase/shadcn';
-
-function PermissionEditor() {
-  const [permissions, setPermissions] = useState<PermissionRow[]>([]);
-
-  return (
-    <PermissionsSelector
-      definitions={namespaceDefinitions}
-      namespaceMap={{
-        // Map namespace to selectable resources (not needed for 'tenant')
-        project: projects.map(p => ({ id: p.id, label: p.name })),
-        document: documents.map(d => ({ id: d.id, label: d.title })),
-      }}
-      initialPermissions={permissions}
-      onPermissionsChange={setPermissions}
-      showPreview={true}  // Shows permission strings like "project:uuid#can_read"
-    />
-  );
-}
-```
-
-**Props:**
-- `definitions` — `NamespaceDefinition[]` from `getRoleDefinitions()`
-- `namespaceMap` — `Record<string, { id: string; label: string }[]>` for resource selection
-- `initialPermissions` — Pre-filled permission rows
-- `onPermissionsChange` — Callback with updated rows
-- `showPreview` — Display generated permission strings
-- `disabled` — Disable all inputs
-
-**Helper Functions:**
-```tsx
-import { generateId, buildPermissionString, formatRelation } from '@omnibase/shadcn';
-
-// Generate unique row ID
-const id = generateId();  // "abc123x"
-
-// Build permission string from row
-const perm = buildPermissionString({
-  namespace: 'Project',
-  relation: 'can_read',
-  objectId: 'proj-123'
-});  // "project:proj-123#can_read"
-
-// Format relation for display
-const label = formatRelation('can_read');  // "Read"
-```
-</Accordion>
-
-<Accordion title="RoleCreator Component">
-Higher-level component that combines role name input with PermissionsSelector.
-
-```tsx
-import { RoleCreator } from '@omnibase/shadcn';
-
-<RoleCreator
-  definitions={namespaceDefinitions}
-  roles={existingRoles}  // For autocomplete suggestions
-  namespaceMap={{ project: projects }}
-  onRoleCreate={async ({ role_name, permissions }) => {
-    await tenantsApi.createRole({
-      createRoleRequest: { roleName: role_name, permissions },
-    });
-  }}
-  onRoleUpdate={async ({ role_id, role_name, permissions }) => {
-    await tenantsApi.updateRole({
-      roleId: role_id,
-      updateRoleRequest: { permissions },
-    });
-  }}
-/>
-```
-
-The component auto-detects when you type an existing role name and switches to edit mode.
-</Accordion>
-</Accordions>
+OmniBase allows you to define custom permission namespaces using TypeScript with JSDoc annotations. These annotations provide metadata for UI rendering and role suggestions.
 
 ## Project Structure
 
-Custom permissions are defined in your project's `omnibase/permissions/` directory:
+Permissions are defined in your project's `omnibase/permissions/` directory:
 
 ```
 omnibase/
 └── permissions/
-    ├── roles.config.json    # Role definitions
+    ├── types.ts             # Type definitions
     ├── tenants.ts           # Tenant namespace (required)
     ├── projects.ts          # Project namespace (example)
-    ├── documents.ts         # Document namespace (example)
     └── ...                  # Your custom namespaces
 ```
 
 ---
 
-## Defining Permission Namespaces
+## JSDoc Annotations
 
-Permission namespaces define the entities in your system and the relations users can have with them.
+Each permission relation can have JSDoc annotations that provide metadata:
 
-### Basic Namespace Structure
+| Annotation | Description | Example |
+|------------|-------------|---------|
+| `@group` | Primary grouping for UI | `@group User Management` |
+| `@subGroup` | Secondary grouping within a group | `@subGroup Role Assignment` |
+| `@displayName` | Human-readable name | `@displayName Invite Users` |
+| `@role` | Suggested default role (can have multiple) | `@role owner` |
+| `@hidden` | Hide from UI (internal relations) | `@hidden` |
 
-```typescript title="omnibase/permissions/projects.ts"
-import type { Namespace, Context } from "@ory/keto-namespace-types";
+### Example with Annotations
 
-class User implements Namespace {}
+```typescript title="omnibase/permissions/tenants.ts"
+import { Context, Namespace } from "./types";
 
-class Project implements Namespace {
-  // Define the relations that can exist
+export class User implements Namespace {}
+export class ApiKey implements Namespace {}
+
+export class Tenant implements Namespace {
   related: {
-    owners: User[];
-    editors: User[];
-    viewers: User[];
+    /**
+     * @group User Management
+     * @displayName Invite Users
+     * @role owner
+     * @role admin
+     */
+    can_invite_user: User[];
+
+    /**
+     * @group User Management
+     * @subGroup Role Assignment
+     * @displayName Update User Roles
+     * @role owner
+     * @role admin
+     */
+    can_update_user_role: User[];
+
+    /**
+     * @group User Management
+     * @subGroup Role Assignment
+     * @displayName Promote to Owner
+     * @role owner
+     */
+    can_update_user_role_to_owner: User[];
+
+    /**
+     * @group Database
+     * @subGroup Secrets
+     * @displayName View Database Password
+     * @role owner
+     * @role admin
+     */
+    can_view_database_password: (User | ApiKey)[];
   };
 
-  // Define computed permissions
   permits = {
-    // Only owners can delete
-    delete: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
-
-    // Owners and editors can write
-    write: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject),
-
-    // All relations can read
-    read: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject) ||
-      this.related.viewers.includes(ctx.subject),
+    invite_user: (ctx: Context): boolean =>
+      this.related.can_invite_user.includes(ctx.subject),
+    // ... other permits
   };
 }
 ```
 
-### Tenant Namespace (Required)
+---
 
-The tenant namespace is required and defines tenant-level permissions:
+## Hiding Internal Relations
 
-```typescript title="omnibase/permissions/tenants.ts"
-import type { Namespace, Context } from "@ory/keto-namespace-types";
+Use the `@hidden` annotation for relations that are used internally for permission traversal but shouldn't appear in the UI:
 
-class User implements Namespace {}
-
-class Tenant implements Namespace {
+```typescript title="omnibase/permissions/projects.ts"
+export class Project implements Namespace {
   related: {
-    owners: User[];
-    admins: User[];
-    members: User[];
-  };
+    /** @hidden */
+    parent_project: Project[];
 
-  permits = {
-    // Only owners can delete the tenant
-    delete_tenant: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
+    /** @hidden */
+    tenant: Tenant[];
 
-    // Owners and admins can manage members
-    invite_user: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject),
-
-    remove_user: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject),
-
-    update_user_role: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject),
-
-    // All members can view the user list
-    view_users: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
-      this.related.members.includes(ctx.subject),
+    /**
+     * @group Configuration
+     * @displayName View Environment
+     * @role owner
+     * @role admin
+     */
+    can_view_project_env: (User | ApiKey)[];
   };
 }
 ```
@@ -203,19 +125,22 @@ class Tenant implements Namespace {
 ### Tenant Permissions (Auto-Scoped)
 
 <Callout type="info">
-  Tenant permissions are the **only** permissions that support auto-scoping. The active tenant ID is automatically injected.
+  Tenant permissions are the **only** permissions that support auto-scoping. The active tenant ID is automatically injected when checking these permissions.
 </Callout>
 
-When you check a `tenant#` permission, OmniBase automatically uses the user's active tenant:
+When you check a `Tenant` permission, OmniBase automatically uses the user's active tenant:
 
 ```typescript
-// In your roles.config.json
-{
-  "permissions": [
-    "tenant#delete_tenant",   // Auto-scoped to active tenant
-    "tenant#invite_user"      // Auto-scoped to active tenant
-  ]
-}
+// Check if user can invite others to the current tenant
+const result = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Tenant',
+    object: tenantId,  // From session context
+    relation: 'can_invite_user',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
 ```
 
 ### Resource Permissions (UUID Required)
@@ -224,10 +149,10 @@ When you check a `tenant#` permission, OmniBase automatically uses the user's ac
   Resource permissions do **not** support wildcards. You must always specify the resource UUID when creating or checking permissions.
 </Callout>
 
-For resources like projects, documents, or any custom entities:
+For resources like projects, documents, or custom entities:
 
 ```typescript
-// Creating a resource permission - UUID required
+// Grant access to a specific project
 await permissionsApi.createRelationship({
   createRelationshipRequest: {
     namespace: 'Project',
@@ -237,96 +162,73 @@ await permissionsApi.createRelationship({
     subjectNamespace: 'User',
   },
 });
-
-// Checking a resource permission - UUID required
-await permissionsApi.checkPermission({
-  checkPermissionRequest: {
-    namespace: 'Project',
-    object: 'proj-123-uuid',  // Specific UUID required
-    relation: 'can_write',
-    subjectId: userId,
-    subjectNamespace: 'User',
-  },
-});
 ```
-
----
-
-## Subject Sets
-
-Subject sets allow you to grant permissions to groups of users based on their relationships:
-
-```typescript
-// Instead of granting to each user individually:
-(Project, proj-123, viewer, user:alice)
-(Project, proj-123, viewer, user:bob)
-(Project, proj-123, viewer, user:carol)
-
-// Grant to all members of a tenant:
-(Project, proj-123, viewers, Tenant:acme-corp#members)
-```
-
-### Creating Subject Set Relationships
-
-```typescript
-await permissionsApi.createRelationship({
-  createRelationshipRequest: {
-    namespace: 'Project',
-    object: projectId,
-    relation: 'viewers',
-    // Subject set: all members of the tenant
-    subjectId: tenantId,
-    subjectNamespace: 'Tenant',
-    subjectRelation: 'members',
-  },
-});
-```
-
-This means "all members of the tenant can view this project".
 
 ---
 
 ## Hierarchical Permissions
 
-Define permission inheritance across namespaces:
+Permissions can inherit from parent resources using the `traverse()` method:
 
-```typescript title="omnibase/permissions/organizations.ts"
-import type { Namespace, Context } from "@ory/keto-namespace-types";
-
-class User implements Namespace {}
-class Tenant implements Namespace {
+```typescript title="omnibase/permissions/projects.ts"
+export class Project implements Namespace {
   related: {
-    parent: Organization;
-    owners: User[];
-  };
-}
+    /** @hidden */
+    parent_project: Project[];
 
-class Organization implements Namespace {
-  related: {
-    owners: User[];
-    tenants: Tenant[];
+    /** @hidden */
+    tenant: Tenant[];
+
+    /**
+     * @group Database
+     * @subGroup Secrets
+     * @displayName View Database Password
+     * @role owner
+     * @role admin
+     */
+    can_view_database_password: (User | ApiKey)[];
   };
 
   permits = {
-    // Org owners can manage all child tenants
-    manage_tenants: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
+    view_database_password: (ctx: Context): boolean =>
+      // Check project-level permission
+      this.related.can_view_database_password.includes(ctx.subject) ||
+      // Check parent project (for nested projects)
+      this.related.parent_project.traverse((p) =>
+        p.permits.view_database_password(ctx)
+      ) ||
+      // Fall back to tenant-level permission
+      this.related.tenant.traverse((t) =>
+        t.related.can_view_database_password.includes(ctx.subject)
+      ),
   };
 }
+```
 
-// In Tenant namespace, inherit from Organization
-class TenantWithInheritance implements Namespace {
-  related: {
-    parent: Organization;
-    owners: User[];
-  };
+This allows granting permissions at the tenant level (applies to all projects) or project level (applies to specific projects).
 
-  permits = {
-    // Tenant owners OR org owners can delete
-    delete: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.parent.permits.manage_tenants(ctx),
-  };
+---
+
+## Subject Types
+
+Permissions can be granted to different subject types:
+
+| Subject | Description | Usage |
+|---------|-------------|-------|
+| `User` | Human users with sessions | Standard user permissions |
+| `ApiKey` | Programmatic API keys | Service-to-service access |
+
+Define which subjects can have a permission using TypeScript union types:
+
+```typescript
+related: {
+  // User-only permissions
+  can_invite_user: User[];
+  can_delete_tenant: User[];
+
+  // Permissions for both Users and API keys
+  can_view_database_password: (User | ApiKey)[];
+  can_rotate_keys: (User | ApiKey)[];
 }
 ```
 
@@ -354,7 +256,7 @@ This checks for syntax errors and invalid references.
 omnibase sync permissions
 ```
 
-This uploads your permission namespaces and role definitions.
+This uploads your permission namespaces with all JSDoc metadata.
 </Step>
 
 <Step>
@@ -364,77 +266,20 @@ This uploads your permission namespaces and role definitions.
 omnibase permissions list
 ```
 
-Lists all registered namespaces and their relations.
+Lists all registered namespaces with their relations and metadata.
 </Step>
 </Steps>
 
 ---
 
-## Checking Permissions in Code
+## Fetching Permission Definitions
 
-### Direct Permission Check
-
-```typescript
-import { V1PermissionsApi } from '@omnibase/core-js';
-
-const permissionsApi = new V1PermissionsApi(config);
-
-const { data } = await permissionsApi.checkPermission({
-  checkPermissionRequest: {
-    namespace: 'Project',
-    object: projectId,
-    relation: 'write',
-    subjectId: userId,
-    subjectNamespace: 'User',
-  },
-});
-
-if (data.data.allowed) {
-  // User can write to this project
-}
-```
-
-### Middleware Pattern
+The API returns all permission metadata including JSDoc annotations:
 
 ```typescript
-async function requirePermission(
-  namespace: string,
-  relation: string,
-  getObject: (req: Request) => string
-) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const { data } = await permissionsApi.checkPermission({
-      checkPermissionRequest: {
-        namespace,
-        object: getObject(req),
-        relation,
-        subjectId: req.user.id,
-        subjectNamespace: 'User',
-      },
-    });
+import { V1TenantsApi } from '@omnibase/core-js';
 
-    if (!data.data.allowed) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-
-    next();
-  };
-}
-
-// Usage
-app.delete('/projects/:id',
-  requirePermission('Project', 'delete', (req) => req.params.id),
-  deleteProjectHandler
-);
-```
-
----
-
-## Listing Available Permissions
-
-Get all available permission definitions:
-
-```typescript
+const tenantsApi = new V1TenantsApi(config);
 const { data } = await tenantsApi.getRoleDefinitions({
   subject: 'User',  // or 'ApiKey'
 });
@@ -442,99 +287,221 @@ const { data } = await tenantsApi.getRoleDefinitions({
 for (const namespace of data.data.namespaces) {
   console.log(`Namespace: ${namespace.name}`);
   for (const relation of namespace.relations) {
-    console.log(`  - ${namespace.name}#${relation.name}`);
-    console.log(`    ${relation.description}`);
+    console.log(`  ${relation.name}`);
+    console.log(`    Display: ${relation.displayName}`);
+    console.log(`    Group: ${relation.group}`);
+    console.log(`    SubGroup: ${relation.subGroup}`);
+    console.log(`    Roles: ${relation.roles?.join(', ')}`);
   }
 }
 ```
 
-### Subject Types
+### Response Structure
 
-| Subject | Description |
-|---------|-------------|
-| `User` | Human users with sessions |
-| `ApiKey` | Programmatic API keys |
-
-Some permissions may be restricted to specific subject types.
+```typescript
+interface RelationMetadata {
+  name: string;           // e.g., "can_invite_user"
+  displayName?: string;   // e.g., "Invite Users"
+  group?: string;         // e.g., "User Management"
+  subGroup?: string;      // e.g., "Role Assignment"
+  roles?: string[];       // e.g., ["owner", "admin"]
+  subjectTypes: string[]; // e.g., ["User"] or ["User", "ApiKey"]
+}
+```
 
 ---
 
-## Example: Document Management System
+## UI Components
 
-A complete example with multiple namespaces:
+OmniBase provides pre-built shadcn components that use the permission metadata:
 
-<Tabs items={['Tenant', 'Folder', 'Document']}>
+<Accordions>
+<Accordion title="PermissionsSelectorTree Component">
+Hierarchical tree view with checkboxes, grouped by `@group` and `@subGroup` annotations.
+
+```tsx
+import { PermissionsSelectorTree } from '@omnibase/shadcn';
+
+<PermissionsSelectorTree
+  definitions={namespaceDefinitions}
+  selectedPermissions={['tenant#can_invite_user', 'tenant#can_view_users']}
+  onSelectionChange={(permissions) => {
+    console.log('Selected:', permissions);
+  }}
+  disabled={false}
+/>
+```
+
+The tree automatically organizes permissions by their JSDoc groups.
+</Accordion>
+
+<Accordion title="PermissionsSelector Component">
+Row-based permission picker for building permission strings with namespace and object selection.
+
+```tsx
+import { PermissionsSelector } from '@omnibase/shadcn';
+
+<PermissionsSelector
+  definitions={namespaceDefinitions}
+  namespaceMap={{
+    project: projects.map(p => ({ id: p.id, label: p.name })),
+  }}
+  onPermissionsChange={(rows) => {
+    console.log('Permission rows:', rows);
+  }}
+  showPreview={true}
+/>
+```
+</Accordion>
+
+<Accordion title="RoleCreator Component">
+Higher-level component combining role name input with permission selection.
+
+```tsx
+import { RoleCreator } from '@omnibase/shadcn';
+
+<RoleCreator
+  definitions={namespaceDefinitions}
+  roles={existingRoles}
+  namespaceMap={{ project: projects }}
+  onRoleCreate={async ({ role_name, permissions }) => {
+    await tenantsApi.createRole({
+      createRoleRequest: { roleName: role_name, permissions },
+    });
+  }}
+/>
+```
+</Accordion>
+</Accordions>
+
+---
+
+## Complete Example
+
+<Tabs items={['Tenant', 'Project']}>
 <Tab value="Tenant">
 ```typescript title="omnibase/permissions/tenants.ts"
-class Tenant implements Namespace {
+import { Context, Namespace } from "./types";
+
+export class User implements Namespace {}
+export class ApiKey implements Namespace {}
+
+export class Tenant implements Namespace {
   related: {
-    owners: User[];
-    admins: User[];
-    members: User[];
+    /**
+     * @group Tenant Administration
+     * @displayName Delete Tenant
+     * @role owner
+     */
+    can_delete_tenant: User[];
+
+    /**
+     * @group User Management
+     * @displayName Invite Users
+     * @role owner
+     * @role admin
+     */
+    can_invite_user: User[];
+
+    /**
+     * @group User Management
+     * @displayName View Users
+     * @role owner
+     * @role admin
+     * @role dev
+     * @role member
+     */
+    can_view_users: User[];
+
+    /**
+     * @group API Keys
+     * @displayName Create API Keys
+     * @role owner
+     * @role admin
+     * @role dev
+     */
+    can_create_api_keys: User[];
+
+    /**
+     * @group Database
+     * @subGroup Secrets
+     * @displayName View Database Password
+     * @role owner
+     * @role admin
+     */
+    can_view_database_password: (User | ApiKey)[];
   };
 
   permits = {
-    delete_tenant: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
-    manage_members: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject),
-    view: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.admins.includes(ctx.subject) ||
-      this.related.members.includes(ctx.subject),
+    delete_tenant: (ctx: Context): boolean =>
+      this.related.can_delete_tenant.includes(ctx.subject),
+
+    invite_user: (ctx: Context): boolean =>
+      this.related.can_invite_user.includes(ctx.subject),
+
+    view_users: (ctx: Context): boolean =>
+      this.related.can_view_users.includes(ctx.subject),
+
+    create_api_keys: (ctx: Context): boolean =>
+      this.related.can_create_api_keys.includes(ctx.subject),
+
+    view_database_password: (ctx: Context): boolean =>
+      this.related.can_view_database_password.includes(ctx.subject),
   };
 }
 ```
 </Tab>
 
-<Tab value="Folder">
-```typescript title="omnibase/permissions/folders.ts"
-class Folder implements Namespace {
+<Tab value="Project">
+```typescript title="omnibase/permissions/projects.ts"
+import { ApiKey, Tenant, User } from "./tenants";
+import { Context, Namespace } from "./types";
+
+export class Project implements Namespace {
   related: {
-    parent: Folder;
-    owners: User[];
-    editors: User[];
-    viewers: User[];
+    /** @hidden */
+    parent_project: Project[];
+
+    /** @hidden */
+    tenant: Tenant[];
+
+    /**
+     * @group Database
+     * @subGroup Secrets
+     * @displayName View Database Password
+     * @role owner
+     * @role admin
+     */
+    can_view_database_password: (User | ApiKey)[];
+
+    /**
+     * @group Configuration
+     * @displayName Update Environment
+     * @role owner
+     * @role admin
+     * @role dev
+     */
+    can_update_project_env: (User | ApiKey)[];
   };
 
   permits = {
-    delete: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
-    create_document: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject),
-    view: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject) ||
-      this.related.viewers.includes(ctx.subject) ||
-      this.related.parent?.permits.view(ctx),
-  };
-}
-```
-</Tab>
+    view_database_password: (ctx: Context): boolean =>
+      this.related.can_view_database_password.includes(ctx.subject) ||
+      this.related.parent_project.traverse((p) =>
+        p.permits.view_database_password(ctx)
+      ) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_view_database_password.includes(ctx.subject)
+      ),
 
-<Tab value="Document">
-```typescript title="omnibase/permissions/documents.ts"
-class Document implements Namespace {
-  related: {
-    parent: Folder;
-    owners: User[];
-    editors: User[];
-    viewers: User[];
-  };
-
-  permits = {
-    delete: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject),
-    edit: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject),
-    view: (ctx: Context) =>
-      this.related.owners.includes(ctx.subject) ||
-      this.related.editors.includes(ctx.subject) ||
-      this.related.viewers.includes(ctx.subject) ||
-      this.related.parent?.permits.view(ctx),
+    update_project_env: (ctx: Context): boolean =>
+      this.related.can_update_project_env.includes(ctx.subject) ||
+      this.related.parent_project.traverse((p) =>
+        p.permits.update_project_env(ctx)
+      ) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_update_project_env.includes(ctx.subject)
+      ),
   };
 }
 ```
@@ -545,6 +512,6 @@ class Document implements Namespace {
 
 ## Next Steps
 
-- [Role Configuration](/docs/guides/multi-tenancy/rbac/roles) — Configure roles that use these permissions
-- [Permissions Concept](/docs/concepts/permissions) — Deep dive into ReBAC internals
+- [Role Configuration](/docs/guides/rbac/roles) — Create roles from permission templates
+- [Permissions Concept](/docs/concepts/permissions) — Deep dive into how permissions work
 - [Data Isolation](/docs/guides/multi-tenancy/isolation) — How permissions work with RLS
