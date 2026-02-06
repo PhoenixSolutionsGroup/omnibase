@@ -158,19 +158,20 @@ func (h *KetoNamespacesHandler) DeployNamespaces(c *gin.Context) {
 			}
 		}
 
-		// Parse and store roles config
-		rolesConfig, err := parser.ParseRolesConfig(fileBytes)
-		if err != nil {
-			logger.Logger.Warn("Failed to parse roles config", "error", err)
-		} else if rolesConfig != nil {
-			logger.Logger.Info("Parsed system roles from roles.config.json", "count", len(rolesConfig.Roles))
-			rolesCount, err := h.storeRolesConfig(rolesConfig)
-			if err != nil {
-				logger.Logger.Warn("Failed to store roles config", "error", err)
+		// Build and store role templates from JSDoc @role annotations
+		if len(definitions) > 0 {
+			jsdocRoles := parser.BuildRolesFromMetadata(definitions)
+			if len(jsdocRoles) > 0 {
+				rolesConfig := &services_v1.RolesConfig{Roles: jsdocRoles}
+				rolesCount, err := h.storeRolesConfig(rolesConfig)
+				if err != nil {
+					logger.Logger.Warn("Failed to store JSDoc-derived role templates", "error", err)
+				} else {
+					logger.Logger.Info("Synced role templates from JSDoc @role annotations", "count", rolesCount)
+					c.Set("roles_synced", rolesCount)
+				}
 			} else {
-				logger.Logger.Info("Successfully synced system roles to database", "count", rolesCount)
-				// Store count in context for response
-				c.Set("roles_synced", rolesCount)
+				logger.Logger.Warn("No @role annotations found in namespace definitions")
 			}
 		}
 	}

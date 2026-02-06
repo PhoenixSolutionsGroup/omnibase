@@ -3,7 +3,6 @@ package services_v1
 import (
 	"archive/zip"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"regexp"
@@ -92,62 +91,6 @@ func (s *NamespaceParserService) ParseNamespaceFiles(zipBytes []byte) ([]ParsedN
 
 	logger.Logger.Info("Namespace parsing completed", "total_definitions", len(definitions))
 	return definitions, nil
-}
-
-// ParseRolesConfig extracts role configurations from roles.config.json in zip
-func (s *NamespaceParserService) ParseRolesConfig(zipBytes []byte) (*RolesConfig, error) {
-	logger.Logger.Info("Starting roles config parsing", "zip_size", len(zipBytes))
-
-	reader, err := zip.NewReader(bytes.NewReader(zipBytes), int64(len(zipBytes)))
-	if err != nil {
-		logger.Logger.Error("Failed to read zip file for roles config", "error", err)
-		return nil, fmt.Errorf("failed to read zip: %w", err)
-	}
-
-	logger.Logger.Debug("Looking for roles.config.json in zip", "file_count", len(reader.File))
-
-	for _, file := range reader.File {
-		if file.Name != "roles.config.json" {
-			continue
-		}
-
-		logger.Logger.Info("Found roles.config.json", "file", file.Name)
-
-		rc, err := file.Open()
-		if err != nil {
-			logger.Logger.Error("Failed to open roles.config.json", "error", err)
-			return nil, fmt.Errorf("failed to open roles.config.json: %w", err)
-		}
-		defer rc.Close()
-
-		content, err := io.ReadAll(rc)
-		if err != nil {
-			logger.Logger.Error("Failed to read roles.config.json content", "error", err)
-			return nil, fmt.Errorf("failed to read roles.config.json: %w", err)
-		}
-
-		logger.Logger.Debug("Parsing roles config JSON", "content_length", len(content))
-
-		var rolesConfig RolesConfig
-		if err := json.Unmarshal(content, &rolesConfig); err != nil {
-			logger.Logger.Error("Failed to unmarshal roles config JSON", "error", err)
-			return nil, fmt.Errorf("failed to parse roles.config.json: %w", err)
-		}
-
-		logger.Logger.Info("Successfully parsed roles config",
-			"roles_count", len(rolesConfig.Roles))
-
-		for _, role := range rolesConfig.Roles {
-			logger.Logger.Debug("Parsed role",
-				"role", role.Role,
-				"permissions_count", len(role.Permissions))
-		}
-
-		return &rolesConfig, nil
-	}
-
-	logger.Logger.Debug("No roles.config.json found in zip")
-	return nil, nil
 }
 
 // parseNamespaceContent extracts namespace definitions from TypeScript
