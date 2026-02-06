@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.2...shadcn-v0.8.0) (2026-02-06)
+
+
+### Features
+
+* **shadcn:** add PermissionsSelectorTree component ([e749bf0](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e749bf0e5ef3e3a5c3313887d11c3947bf977db4))
+
 ## [0.7.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.1...shadcn-v0.7.2) (2026-01-15)
 
 
