@@ -1,3 +1,16 @@
+# [0.18.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.17.0...api-v0.18.0) (2026-02-06)
+
+
+### Bug Fixes
+
+* **api:** ensure roles array is never null in API response ([f359f0c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f359f0cd90eae9de5f46303581b93e8a467ee2da))
+* **api:** use JSDoc [@role](https://github.com/role) annotations for role template creation ([8c06504](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8c065041a6f75f73eb235fa5e490be0deaff9610))
+
+
+### Features
+
+* **api:** add JSDoc metadata parsing for permission relations ([6ad5a80](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ad5a8083f21672a02f76c9091c0b82f2f585921))
+
 # [0.17.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.16.0...api-v0.17.0) (2026-01-22)
 
 
