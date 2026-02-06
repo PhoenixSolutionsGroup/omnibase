@@ -15,16 +15,15 @@ import type { RelationMetadata, NamespaceDefinition } from "../sdk";
  * 1. Fetch all namespace definitions
  * 2. Verify relations_metadata field is present
  * 3. Verify each relation has required metadata fields
- * 4. Verify display_name is generated correctly (snake_case → Title Case)
+ * 4. Verify display_name matches @displayName JSDoc annotation
  * 5. Verify subjects array matches type definitions
- * 6. Verify group/sub_group/roles are handled correctly (null if not annotated)
+ * 6. Verify group/sub_group/roles match JSDoc annotations
  *
  * This test validates:
  * - RelationMetadata schema is returned correctly
- * - Auto-generated display names work (can_view_db → "Can View Db")
- * - Null handling for group/sub_group when not annotated
+ * - @displayName annotations override auto-generated names
+ * - @group and @role annotations are extracted correctly
  * - Subject types are correctly extracted from TypeScript union types
- * - Backwards compatibility: relations without JSDoc still work
  */
 export async function jsdocMetadata() {
   const client = createClient();
@@ -95,8 +94,8 @@ export async function jsdocMetadata() {
       allHaveRequiredFields,
   });
 
-  // Step 4: Verify display_name is generated correctly
-  // can_view_db_secret_key → "Can View Db Secret Key"
+  // Step 4: Verify display_name matches @displayName JSDoc annotation
+  // can_view_db_secret_key has @displayName "View DB Secret Key"
   const canViewDbSecretKey = metadata.find(
     (m: RelationMetadata) => m.name === "can_view_db_secret_key"
   );
@@ -105,7 +104,7 @@ export async function jsdocMetadata() {
     "display_name: can_view_db_secret_key exists": () =>
       canViewDbSecretKey !== undefined,
     "display_name: can_view_db_secret_key has correct display_name": () =>
-      canViewDbSecretKey?.display_name === "Can View Db Secret Key",
+      canViewDbSecretKey?.display_name === "View DB Secret Key",
   });
 
   const canDeleteTenant = metadata.find(
@@ -116,7 +115,7 @@ export async function jsdocMetadata() {
     "display_name: can_delete_tenant exists": () =>
       canDeleteTenant !== undefined,
     "display_name: can_delete_tenant has correct display_name": () =>
-      canDeleteTenant?.display_name === "Can Delete Tenant",
+      canDeleteTenant?.display_name === "Delete Tenant",
   });
 
   // Step 5: Verify subjects array matches type definitions
@@ -136,16 +135,19 @@ export async function jsdocMetadata() {
       canViewDbSecretKey?.subjects?.includes("ApiKey") === true,
   });
 
-  // Step 6: Verify group/sub_group/roles are handled correctly
-  // Current permissions have no JSDoc annotations, so these should be null/empty
+  // Step 6: Verify group/sub_group/roles match JSDoc annotations
+  // can_delete_tenant has @group "Tenant Administration" and @role owner
   check(allDefsResult.response, {
-    "group: is null when not annotated": () =>
-      canDeleteTenant?.group === null || canDeleteTenant?.group === undefined,
-    "sub_group: is null when not annotated": () =>
+    "group: can_delete_tenant has correct group": () =>
+      canDeleteTenant?.group === "Tenant Administration",
+    "sub_group: can_delete_tenant has no sub_group": () =>
       canDeleteTenant?.sub_group === null ||
-      canDeleteTenant?.sub_group === undefined,
-    "roles: is empty array when not annotated": () =>
-      !canDeleteTenant?.roles || canDeleteTenant.roles.length === 0,
+      canDeleteTenant?.sub_group === undefined ||
+      canDeleteTenant?.sub_group === "",
+    "roles: can_delete_tenant has owner role": () =>
+      Array.isArray(canDeleteTenant?.roles) &&
+      canDeleteTenant!.roles.length === 1 &&
+      canDeleteTenant!.roles.includes("owner"),
   });
 
   // Step 7: Verify all relations have corresponding metadata entries
@@ -179,10 +181,7 @@ export async function jsdocMetadata() {
  * Test Scenario: JSDoc Annotations with Groups
  *
  * This test validates that the parser correctly extracts @group, @subGroup,
- * @displayName, and @role annotations when they are present.
- *
- * NOTE: This test will only pass after Phase 6 migration adds JSDoc annotations
- * to the permission files. Until then, it will verify the "no annotation" case.
+ * @displayName, and @role annotations from the permission files.
  */
 export async function jsdocAnnotatedMetadata() {
   const client = createClient();
