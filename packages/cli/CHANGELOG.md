@@ -1,3 +1,11 @@
+# [0.5.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.4.1...cli-v0.5.0) (2026-02-06)
+
+
+### Features
+
+* **api:** add JSDoc metadata parsing for permission relations ([6ad5a80](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6ad5a8083f21672a02f76c9091c0b82f2f585921))
+* **cli:** sync api docker image to 0.18.0 [skip ci] ([8e914eb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8e914eb0751ad4d2087bef0654f16bad0ad4238a))
+
 ## [0.4.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.4.0...cli-v0.4.1) (2026-02-03)
 
 
