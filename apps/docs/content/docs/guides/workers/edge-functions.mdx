@@ -1,0 +1,510 @@
+---
+title: Edge Functions
+description: Deploy serverless functions at the edge with Cloudflare Workers and Hono
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+# Edge Functions
+
+OmniBase Workers are serverless functions that run on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Deploy globally distributed APIs that respond in milliseconds.
+
+## Quick Start
+
+<Steps>
+<Step>
+### Initialize Your Project
+
+If you haven't already initialized OmniBase, create a new project:
+
+```bash
+omnibase init
+```
+
+This creates an `omnibase/workers/` directory with a starter edge function.
+</Step>
+
+<Step>
+### Project Structure
+
+Your workers directory contains:
+
+```
+omnibase/workers/
+├── src/
+│   └── index.ts        # Main entry point
+├── package.json        # Dependencies
+├── wrangler.toml       # Cloudflare Workers config
+└── tsconfig.json       # TypeScript config
+```
+</Step>
+
+<Step>
+### Write Your First Function
+
+Open `omnibase/workers/src/index.ts`:
+
+```typescript
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+
+type EnvVars = any;
+
+const app = new Hono<{ Bindings: EnvVars }>();
+
+// Enable CORS
+app.use("/*", cors());
+
+// Hello world endpoint
+app.get("/", (c) => {
+  return c.json({
+    message: "Hello from the edge!",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Example API endpoint
+app.get("/api/users/:id", (c) => {
+  const userId = c.req.param("id");
+  return c.json({
+    id: userId,
+    name: "John Doe",
+    email: "john@example.com",
+  });
+});
+
+export default {
+  fetch: app.fetch,
+};
+```
+</Step>
+
+<Step>
+### Local Development
+
+Install dependencies and run locally:
+
+```bash
+cd omnibase/workers
+bun install
+bun dev
+```
+
+Your edge function is now running at `http://localhost:8787`
+</Step>
+
+<Step>
+### Deploy to OmniBase
+
+Deploy your workers to OmniBase Cloud:
+
+```bash
+omnibase cloud workers deploy
+```
+
+For specific environments:
+
+```bash
+omnibase cloud workers deploy --env production
+omnibase cloud workers deploy --env staging
+omnibase cloud workers deploy --env dev
+```
+
+Your function is now live globally on Cloudflare's edge network.
+</Step>
+</Steps>
+
+---
+
+## Routing
+
+Hono provides intuitive routing with automatic parameter parsing:
+
+```typescript
+// GET /api/posts
+app.get("/api/posts", async (c) => {
+  const posts = await fetchPosts();
+  return c.json(posts);
+});
+
+// GET /api/posts/:id
+app.get("/api/posts/:id", async (c) => {
+  const id = c.req.param("id");
+  const post = await fetchPost(id);
+  return c.json(post);
+});
+
+// POST /api/posts
+app.post("/api/posts", async (c) => {
+  const body = await c.req.json();
+  const newPost = await createPost(body);
+  return c.json(newPost, 201);
+});
+
+// PUT /api/posts/:id
+app.put("/api/posts/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const updated = await updatePost(id, body);
+  return c.json(updated);
+});
+
+// DELETE /api/posts/:id
+app.delete("/api/posts/:id", async (c) => {
+  const id = c.req.param("id");
+  await deletePost(id);
+  return c.json({ success: true });
+});
+```
+
+---
+
+## Environment Variables
+
+Environment variables are managed through OmniBase environment files located in `omnibase/environments/`.
+
+### Configure Environment Variables
+
+Add your variables to the environment file for your target environment:
+
+```bash
+# omnibase/environments/.env.production
+OMNIBASE_API_URL=https://api.yourdomain.com
+DATABASE_URL=postgresql://...
+API_KEY=your-secret-key
+STRIPE_SECRET_KEY=sk_live_...
+```
+
+```bash
+# omnibase/environments/.env.staging
+OMNIBASE_API_URL=https://staging-api.yourdomain.com
+DATABASE_URL=postgresql://...
+API_KEY=your-staging-key
+STRIPE_SECRET_KEY=sk_test_...
+```
+
+### Access Environment Variables
+
+Access them in your worker code via `c.env`:
+
+```typescript
+app.get("/api/data", async (c) => {
+  const apiKey = c.env.API_KEY;
+  const dbUrl = c.env.DATABASE_URL;
+
+  if (!apiKey) {
+    return c.json({ error: "Missing API key" }, 401);
+  }
+
+  return c.json({ data: "secure data" });
+});
+```
+
+### TypeScript Types
+
+Define your environment variables for type safety:
+
+```typescript
+type EnvVars = {
+  OMNIBASE_API_URL: string;
+  DATABASE_URL: string;
+  API_KEY: string;
+  STRIPE_SECRET_KEY: string;
+};
+
+const app = new Hono<{ Bindings: EnvVars }>();
+
+app.get("/api/secure", async (c) => {
+  // Now c.env is fully typed with autocomplete
+  const apiUrl = c.env.OMNIBASE_API_URL;
+  const apiKey = c.env.API_KEY;
+
+  return c.json({ connected: true });
+});
+```
+
+<Callout type="info">
+When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically reads from `omnibase/environments/.env.production` and injects those variables into your worker.
+</Callout>
+
+---
+
+## Middleware
+
+Hono makes it easy to add middleware for common tasks:
+
+<Tabs items={['Logging', 'CORS']}>
+<Tab value="Logging">
+```typescript
+import { Hono } from "hono";
+import { logger } from "hono/logger";
+
+const app = new Hono();
+
+// Log all requests
+app.use("*", logger());
+
+app.get("/", (c) => {
+  return c.json({ message: "Logged!" });
+});
+```
+</Tab>
+
+<Tab value="CORS">
+```typescript
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+
+const app = new Hono();
+
+// Enable CORS for all routes
+app.use("/*", cors({
+  origin: ["https://yourdomain.com"],
+  allowMethods: ["GET", "POST", "PUT", "DELETE"],
+  allowHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+
+app.get("/api/data", (c) => {
+  return c.json({ data: "accessible cross-origin" });
+});
+```
+</Tab>
+</Tabs>
+
+---
+
+## Request & Response
+
+### Reading Request Data
+
+```typescript
+// Query parameters
+app.get("/search", (c) => {
+  const query = c.req.query("q");
+  const page = c.req.query("page") || "1";
+  return c.json({ query, page });
+});
+
+// Request body (JSON)
+app.post("/api/data", async (c) => {
+  const body = await c.req.json();
+  return c.json({ received: body });
+});
+
+// Headers
+app.get("/info", (c) => {
+  const userAgent = c.req.header("user-agent");
+  const auth = c.req.header("authorization");
+  return c.json({ userAgent, auth });
+});
+
+// Route parameters
+app.get("/users/:id", (c) => {
+  const id = c.req.param("id");
+  return c.json({ userId: id });
+});
+```
+
+### Returning Responses
+
+```typescript
+// JSON response
+app.get("/json", (c) => {
+  return c.json({ status: "ok" });
+});
+
+// Text response
+app.get("/text", (c) => {
+  return c.text("Plain text response");
+});
+
+// HTML response
+app.get("/html", (c) => {
+  return c.html("<h1>Hello World</h1>");
+});
+
+// Custom status code
+app.get("/not-found", (c) => {
+  return c.json({ error: "Not found" }, 404);
+});
+
+// Redirect
+app.get("/redirect", (c) => {
+  return c.redirect("/new-location");
+});
+
+// Custom headers
+app.get("/custom", (c) => {
+  return c.json({ data: "value" }, 200, {
+    "X-Custom-Header": "custom-value",
+    "Cache-Control": "max-age=3600",
+  });
+});
+```
+
+---
+
+## Error Handling
+
+```typescript
+import { Hono } from "hono";
+
+const app = new Hono();
+
+// Global error handler
+app.onError((err, c) => {
+  console.error(`Error: ${err.message}`);
+
+  return c.json({
+    error: "Internal server error",
+    message: err.message,
+  }, 500);
+});
+
+// Not found handler
+app.notFound((c) => {
+  return c.json({
+    error: "Not found",
+    path: c.req.path,
+  }, 404);
+});
+
+// Route-level error handling
+app.get("/api/risky", async (c) => {
+  try {
+    const data = await riskyOperation();
+    return c.json(data);
+  } catch (error) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+```
+
+---
+
+## Common Use Cases
+
+### Proxy to OmniBase API
+
+```typescript
+app.get("/api/users", async (c) => {
+  const response = await fetch(`${c.env.OMNIBASE_API_URL}/v1/users`, {
+    headers: {
+      "X-Service-Key": c.env.OMNIBASE_SERVICE_KEY,
+    },
+  });
+
+  const data = await response.json();
+  return c.json(data);
+});
+```
+
+### Webhook Handler
+
+```typescript
+app.post("/webhooks/stripe", async (c) => {
+  const signature = c.req.header("stripe-signature");
+  const body = await c.req.text();
+
+  // Verify webhook signature
+  const event = verifyStripeWebhook(body, signature, c.env.STRIPE_WEBHOOK_SECRET);
+
+  // Handle the event
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      await handlePaymentSuccess(event.data);
+      break;
+    case "customer.subscription.updated":
+      await handleSubscriptionUpdate(event.data);
+      break;
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+
+  return c.json({ received: true });
+});
+```
+
+### Health Check Endpoint
+
+```typescript
+app.get("/health", (c) => {
+  return c.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    environment: c.env.ENVIRONMENT || "unknown",
+  });
+});
+```
+
+---
+
+## Best Practices
+
+### Keep Workers Fast
+
+Workers are optimized for quick responses. Avoid long-running operations:
+
+```typescript
+// ✅ Good: Quick response
+app.post("/api/process", async (c) => {
+  const data = await c.req.json();
+  // Return immediately
+  return c.json({ queued: true });
+});
+
+// ❌ Bad: Slow operation blocks the worker
+app.post("/api/process", async (c) => {
+  const data = await c.req.json();
+  await slowProcessing(data); // Takes 10+ seconds
+  return c.json({ done: true });
+});
+```
+
+### Use TypeScript
+
+Get full type safety and better developer experience:
+
+```typescript
+type EnvVars = {
+  DATABASE_URL: string;
+  API_KEY: string;
+};
+
+const app = new Hono<{ Bindings: EnvVars }>();
+
+// c.env is now fully typed
+app.get("/", (c) => {
+  const dbUrl = c.env.DATABASE_URL; // ✅ Autocomplete works
+  return c.json({ connected: true });
+});
+```
+
+### Handle Errors Gracefully
+
+Always implement error handling:
+
+```typescript
+app.onError((err, c) => {
+  console.error(`Error: ${err.message}`);
+  return c.json({ error: "Something went wrong" }, 500);
+});
+
+app.notFound((c) => {
+  return c.json({ error: "Not found" }, 404);
+});
+```
+
+---
+
+## Next Steps
+
+- [Hono Documentation](https://hono.dev/) — Learn more about the Hono framework
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/) — Explore Workers platform features
+
+<Callout type="info">
+Need scheduled jobs or background processing? Check out the [Cron Jobs](/docs/guides/workers/cron) and [Queues](/docs/guides/workers/queues) guides (coming soon).
+</Callout>

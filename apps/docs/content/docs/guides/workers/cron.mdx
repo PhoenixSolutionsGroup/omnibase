@@ -1,0 +1,495 @@
+---
+title: Cron Jobs
+description: Run scheduled tasks at the edge with Cloudflare Workers cron triggers
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+# Cron Jobs
+
+Schedule automated tasks that run on Cloudflare's global network. Perfect for periodic data syncing, cleanup jobs, report generation, and API polling.
+
+## What Are Cron Jobs?
+
+Cron jobs are scheduled tasks that run automatically at specified times or intervals. OmniBase Workers support cron triggers, allowing you to execute code on a schedule without managing servers or infrastructure.
+
+### Key Features
+
+- **Reliable Execution** — Guaranteed to run at scheduled times
+- **Global Distribution** — Runs on Cloudflare's edge network
+- **No Infrastructure** — Serverless, no servers to maintain
+- **Standard Syntax** — Uses familiar cron expression format
+- **Environment Variables** — Full access to your environment config
+
+---
+
+## Quick Start
+
+<Steps>
+<Step>
+### Define Cron Schedule
+
+Add cron schedules to your `omnibase/workers/wrangler.toml`:
+
+```toml title="wrangler.toml"
+name = "omnibase-edge"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = [
+  "0 * * * *",      # Every hour
+  "0 0 * * *",      # Daily at midnight
+  "*/15 * * * *"    # Every 15 minutes
+]
+```
+</Step>
+
+<Step>
+### Add Scheduled Handler
+
+Add a `scheduled` handler to your worker in `omnibase/workers/src/index.ts`:
+
+```typescript title="src/index.ts"
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+
+type EnvVars = {
+  OMNIBASE_API_URL: string;
+  API_KEY: string;
+};
+
+const app = new Hono<{ Bindings: EnvVars }>();
+
+app.use("/*", cors());
+
+app.get("/", (c) => {
+  return c.json({
+    message: "Hello from the edge!",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+export default {
+  fetch: app.fetch,
+
+  // Handle scheduled cron triggers
+  async scheduled(event, env, ctx) {
+    console.log("Cron job triggered at:", new Date(event.scheduledTime).toISOString());
+
+    // Your scheduled task logic here
+    await performScheduledTask(env);
+  },
+};
+
+async function performScheduledTask(env: EnvVars) {
+  // Example: Call your OmniBase API
+  const response = await fetch(`${env.OMNIBASE_API_URL}/api/v1/cleanup`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.API_KEY}`,
+    },
+  });
+
+  console.log("Cleanup task completed:", response.status);
+}
+```
+</Step>
+
+<Step>
+### Deploy
+
+Deploy your worker with the cron schedules:
+
+```bash
+omnibase cloud workers deploy --env production
+```
+
+Your cron jobs are now active and will run according to the defined schedules.
+</Step>
+</Steps>
+
+---
+
+## Cron Syntax
+
+Cron expressions use the standard format: `minute hour day month dayOfWeek`
+
+### Common Patterns
+
+| Expression | Description |
+|------------|-------------|
+| `* * * * *` | Every minute |
+| `*/5 * * * *` | Every 5 minutes |
+| `*/15 * * * *` | Every 15 minutes |
+| `0 * * * *` | Every hour at minute 0 |
+| `0 */6 * * *` | Every 6 hours |
+| `0 0 * * *` | Daily at midnight (00:00) |
+| `0 9 * * *` | Daily at 9:00 AM |
+| `0 0 * * 0` | Weekly on Sunday at midnight |
+| `0 0 1 * *` | Monthly on the 1st at midnight |
+| `0 0 1 1 *` | Yearly on January 1st at midnight |
+
+### Syntax Breakdown
+
+```
+┌───────────── minute (0 - 59)
+│ ┌───────────── hour (0 - 23)
+│ │ ┌───────────── day of month (1 - 31)
+│ │ │ ┌───────────── month (1 - 12)
+│ │ │ │ ┌───────────── day of week (0 - 6) (Sunday = 0)
+│ │ │ │ │
+* * * * *
+```
+
+<Callout type="info">
+Cloudflare Workers supports standard cron syntax with `*`, ranges (`1-5`), lists (`1,3,5`), and steps (`*/15`).
+</Callout>
+
+---
+
+## Scheduled Event Object
+
+The `scheduled` handler receives three arguments:
+
+```typescript
+async scheduled(
+  event: ScheduledEvent,
+  env: EnvVars,
+  ctx: ExecutionContext
+) {
+  // event.scheduledTime - Timestamp when this invocation was scheduled
+  // event.cron - The cron expression that triggered this event
+  // env - Your environment variables
+  // ctx - Execution context for waitUntil
+}
+```
+
+### ScheduledEvent Properties
+
+```typescript
+interface ScheduledEvent {
+  scheduledTime: number;  // Unix timestamp in milliseconds
+  cron: string;           // The cron pattern that triggered this event
+}
+```
+
+### Example: Using Event Data
+
+```typescript
+export default {
+  fetch: app.fetch,
+
+  async scheduled(event, env, ctx) {
+    const scheduledDate = new Date(event.scheduledTime);
+
+    console.log("Triggered by cron:", event.cron);
+    console.log("Scheduled for:", scheduledDate.toISOString());
+
+    // Different logic based on which cron triggered
+    if (event.cron === "0 0 * * *") {
+      await runDailyReport(env);
+    } else if (event.cron === "0 * * * *") {
+      await runHourlySync(env);
+    }
+  },
+};
+```
+
+---
+
+## Use Cases
+
+### Daily Report Generation
+
+Send daily reports via email or save to storage:
+
+```typescript
+async scheduled(event, env, ctx) {
+  if (event.cron !== "0 9 * * *") return; // Only run at 9 AM
+
+  const report = await generateDailyReport(env);
+
+  // Send report via your API
+  await fetch(`${env.OMNIBASE_API_URL}/api/v1/reports`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${env.API_KEY}`,
+    },
+    body: JSON.stringify(report),
+  });
+
+  console.log("Daily report sent successfully");
+}
+```
+
+### Cleanup Jobs
+
+Remove expired data periodically:
+
+```typescript
+async scheduled(event, env, ctx) {
+  // Run every hour to clean up expired sessions
+  const response = await fetch(
+    `${env.OMNIBASE_API_URL}/api/v1/sessions/cleanup`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.API_KEY}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+  console.log(`Cleaned up ${result.deletedCount} expired sessions`);
+}
+```
+
+### API Polling
+
+Poll external APIs and sync data:
+
+```typescript
+async scheduled(event, env, ctx) {
+  // Poll external API every 15 minutes
+  const data = await fetch("https://api.external.com/data");
+  const json = await data.json();
+
+  // Sync to your OmniBase API
+  await fetch(`${env.OMNIBASE_API_URL}/api/v1/sync`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${env.API_KEY}`,
+    },
+    body: JSON.stringify(json),
+  });
+
+  console.log("Data synced from external API");
+}
+```
+
+### Cache Warming
+
+Pre-warm caches before peak traffic:
+
+```typescript
+async scheduled(event, env, ctx) {
+  // Warm cache before business hours (8 AM)
+  if (event.cron !== "0 8 * * *") return;
+
+  const endpoints = [
+    "/api/v1/products",
+    "/api/v1/categories",
+    "/api/v1/featured",
+  ];
+
+  for (const endpoint of endpoints) {
+    await fetch(`${env.OMNIBASE_API_URL}${endpoint}`, {
+      headers: {
+        "Authorization": `Bearer ${env.API_KEY}`,
+      },
+    });
+  }
+
+  console.log("Cache warmed successfully");
+}
+```
+
+---
+
+## Environment Variables
+
+Access environment variables the same way as in your edge functions:
+
+```typescript
+type EnvVars = {
+  OMNIBASE_API_URL: string;
+  DATABASE_URL: string;
+  API_KEY: string;
+};
+
+export default {
+  fetch: app.fetch,
+
+  async scheduled(event, env: EnvVars, ctx) {
+    // Use environment variables
+    const apiUrl = env.OMNIBASE_API_URL;
+    const apiKey = env.API_KEY;
+
+    await performTask(apiUrl, apiKey);
+  },
+};
+```
+
+Environment variables are configured in `omnibase/environments/.env.production` (or your target environment) and automatically injected when you deploy.
+
+---
+
+## Testing Locally
+
+You can test cron triggers locally by calling your scheduled handler manually:
+
+```typescript
+// Add a test endpoint for local development
+app.get("/test-cron", async (c) => {
+  // Manually invoke the scheduled handler
+  const event = {
+    scheduledTime: Date.now(),
+    cron: "0 * * * *",
+  };
+
+  await scheduled(event, c.env, {} as ExecutionContext);
+
+  return c.json({ message: "Cron job executed" });
+});
+
+export default {
+  fetch: app.fetch,
+  async scheduled(event, env, ctx) {
+    await performScheduledTask(env);
+  },
+};
+```
+
+Then trigger it manually:
+
+```bash
+# Start local development
+cd omnibase/workers
+bun dev
+
+# In another terminal, trigger the test endpoint
+curl http://localhost:8787/test-cron
+```
+
+<Callout type="warn">
+Remove test endpoints before deploying to production to avoid unauthorized executions.
+</Callout>
+
+---
+
+## Best Practices
+
+### Use waitUntil for Background Tasks
+
+Extend execution beyond the scheduled handler:
+
+```typescript
+async scheduled(event, env, ctx) {
+  // Process immediately
+  const result = await quickTask();
+
+  // Process in background (doesn't block)
+  ctx.waitUntil(slowBackgroundTask(env));
+
+  console.log("Scheduled handler completed, background task running");
+}
+```
+
+### Handle Errors Gracefully
+
+Always catch and log errors:
+
+```typescript
+async scheduled(event, env, ctx) {
+  try {
+    await performTask(env);
+    console.log("Task completed successfully");
+  } catch (error) {
+    console.error("Task failed:", error.message);
+
+    // Optional: Send error notification
+    await notifyError(env, error);
+  }
+}
+```
+
+### Keep Tasks Lightweight
+
+Cron jobs have execution time limits. For long-running tasks, break them into smaller chunks or use queues:
+
+```typescript
+// ✅ Good: Quick task
+async scheduled(event, env, ctx) {
+  const items = await fetchItemsToProcess(env);
+
+  // Queue each item for background processing
+  for (const item of items) {
+    ctx.waitUntil(processItem(item, env));
+  }
+}
+
+// ❌ Bad: Long-running synchronous task
+async scheduled(event, env, ctx) {
+  const items = await fetchItemsToProcess(env);
+
+  // This might timeout
+  for (const item of items) {
+    await processItem(item, env); // Blocks on each item
+  }
+}
+```
+
+### Add Logging
+
+Log execution for debugging and monitoring:
+
+```typescript
+async scheduled(event, env, ctx) {
+  const startTime = Date.now();
+
+  console.log("Cron started:", {
+    cron: event.cron,
+    scheduledTime: new Date(event.scheduledTime).toISOString(),
+  });
+
+  try {
+    await performTask(env);
+
+    const duration = Date.now() - startTime;
+    console.log(`Cron completed in ${duration}ms`);
+  } catch (error) {
+    console.error("Cron failed:", error);
+    throw error;
+  }
+}
+```
+
+---
+
+## Deployment
+
+Deploy your worker with cron schedules:
+
+```bash
+# Deploy to specific environment
+omnibase cloud workers deploy --env production
+omnibase cloud workers deploy --env staging
+omnibase cloud workers deploy --env dev
+```
+
+The CLI automatically reads cron schedules from `wrangler.toml` and configures them on Cloudflare Workers.
+
+<Callout type="info">
+Cron schedules are updated every time you deploy. You don't need to manually configure them separately.
+</Callout>
+
+---
+
+## Limitations
+
+- **Minimum Interval**: Cron jobs run at most once per minute
+- **Execution Time**: Cron handlers have the same CPU time limits as regular Workers requests
+- **No Guarantees on Exact Time**: Cron jobs run within a few seconds of the scheduled time, but exact timing isn't guaranteed
+- **No Overlapping Executions**: If a cron job is still running when the next execution is scheduled, the new execution is skipped
+
+---
+
+## Next Steps
+
+- [Edge Functions](/docs/guides/workers/edge-functions) — Learn about HTTP-triggered workers
+- [Queues](/docs/guides/workers/queues) — Process background jobs with guaranteed delivery (coming soon)
+- [Hono Documentation](https://hono.dev/) — Explore the Hono framework

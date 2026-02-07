@@ -9,6 +9,7 @@
     "multi-tenancy",
     "rbac",
     "stripe",
+    "workers",
     "storage"
   ]
 }
