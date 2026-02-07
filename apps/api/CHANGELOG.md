@@ -1,3 +1,10 @@
+## [0.18.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.0...api-v0.18.1) (2026-02-07)
+
+
+### Bug Fixes
+
+* **api:** update webhook registration to use managed hosting registration ID ([d6f29d1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d6f29d1ba33a05bccb7a637267c12a51a7391c7d))
+
 # [0.18.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.17.0...api-v0.18.0) (2026-02-06)
 
 
