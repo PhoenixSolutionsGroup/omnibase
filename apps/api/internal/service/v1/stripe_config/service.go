@@ -202,8 +202,9 @@ func (s *StripeConfigService) processWebhookManaged(ctx context.Context, configI
 	}
 
 	// Store in local database for consistency
+	// Use the managed-hosting registration UUID as the StripeID (unique identifier)
 	webhook := models.StripeWebhook{
-		StripeID: resp.StripeID,
+		StripeID: resp.ID,
 		URL:      url,
 		Secret:   encryptedSecret,
 		Events:   events,
@@ -218,7 +219,7 @@ func (s *StripeConfigService) processWebhookManaged(ctx context.Context, configI
 
 	return &handlers.WebhookResult{
 		ID:       webhook.ID.String(),
-		StripeID: resp.StripeID,
+		StripeID: resp.ID,
 		URL:      url,
 		Events:   events,
 		Connect:  connect,

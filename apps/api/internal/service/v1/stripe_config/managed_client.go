@@ -43,9 +43,10 @@ type RegisterWebhookRequest struct {
 
 // RegisterWebhookResponse represents the response from registering a webhook
 type RegisterWebhookResponse struct {
-	StripeID string `json:"stripe_id"` // Pseudo ID like "wh_managed_xxx"
-	Secret   string `json:"secret"`    // Generated secret
-	Action   string `json:"action"`    // "created" or "updated"
+	ID        string `json:"id"`         // Registration UUID from managed hosting
+	WebhookID string `json:"webhook_id"` // Config webhook ID
+	Secret    string `json:"secret"`     // Generated secret
+	Action    string `json:"action"`     // "created", "updated", or "unchanged"
 }
 
 // RegisterWebhook forwards a webhook registration to the managed hosting API
@@ -88,7 +89,8 @@ func (c *ManagedHostingClient) RegisterWebhook(ctx context.Context, req Register
 	}
 
 	logger.Logger.Debug("Webhook registration forwarded successfully",
-		"stripeID", result.StripeID,
+		"id", result.ID,
+		"webhookID", result.WebhookID,
 		"action", result.Action)
 
 	return &result, nil
