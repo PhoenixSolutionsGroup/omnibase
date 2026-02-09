@@ -44,6 +44,12 @@ type DeleteObjectRequest struct {
 	Path string `json:"path" binding:"required" example:"test/avatars/user-123.png"`
 }
 
+// MakePublicRequest represents a request to make a file publicly accessible
+type MakePublicRequest struct {
+	// Path of the file to make public
+	Path string `json:"path" binding:"required" example:"test/avatars/user-123.png"`
+}
+
 // MessageResponse represents a simple message response
 type MessageResponse struct {
 	// Status message
@@ -80,6 +86,7 @@ type StorageObject struct {
 	TenantID   *string         `json:"tenant_id,omitempty"`
 	UserID     string          `json:"user_id" gorm:"not null" binding:"required"`
 	Metadata   StorageMetadata `json:"metadata,omitempty" gorm:"type:jsonb;default:'{}'"`
+	IsPublic   bool            `json:"is_public" gorm:"not null;default:false"`
 	CreatedAt  time.Time       `json:"created_at" binding:"required"`
 	UpdatedAt  time.Time       `json:"updated_at" binding:"required"`
 }
