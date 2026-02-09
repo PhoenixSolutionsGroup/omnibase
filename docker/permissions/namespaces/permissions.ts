@@ -1,8 +1,8 @@
 import { Context, KetoArray, Namespace, SubjectSet } from "./types";
 
-class User implements Namespace {}
+export class User implements Namespace {}
 
-class Tenant implements Namespace {
+export class Tenant implements Namespace {
   related: {
     can_delete_tenant: User[];
     can_invite_user: User[];
