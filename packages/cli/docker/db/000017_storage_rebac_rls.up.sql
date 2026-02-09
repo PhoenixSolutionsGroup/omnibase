@@ -1,21 +1,15 @@
--- Migration: storage-rls-policies
--- Created: 2025-11-20T12:22:30.758Z
--- Description: ReBAC-based RLS policies for storage.objects using auth.has_any_relation()
+-- Migration: storage-rebac-rls
+-- Description: Replace path-based storage RLS with ReBAC policies.
+--
+-- Default policies are minimal — users add more permissive policies for
+-- tenant-wide access etc. PostgreSQL permissive policies are OR'd:
+-- if ANY policy passes, the row is visible.
 
--- Drop existing policies if they exist (for clean re-runs)
+-- Drop all old path-based and column-based policies
 DROP POLICY IF EXISTS storage_objects_public_read ON storage.objects;
 DROP POLICY IF EXISTS storage_objects_public_insert ON storage.objects;
 DROP POLICY IF EXISTS storage_objects_user_all ON storage.objects;
 DROP POLICY IF EXISTS storage_objects_tenant_read ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_owner_full_access ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_member_uploads ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_tenant_shared_read ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_tenant_isolation ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_tenant_read_all ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_manage_all ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_insert ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_read ON storage.objects;
-DROP POLICY IF EXISTS storage_objects_delete ON storage.objects;
 
 -- INSERT: tenant members can create files (Keto can't check — object doesn't exist yet)
 CREATE POLICY storage_objects_insert ON storage.objects
