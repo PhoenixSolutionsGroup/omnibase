@@ -137,7 +137,10 @@ paths:
   
   /api/v1/storage/object:
     $ref: './paths/storage.yaml#/paths/~1api~1v1~1storage~1object'
-  
+
+  /api/v1/storage/make-public:
+    $ref: './paths/storage.yaml#/paths/~1api~1v1~1storage~1make-public'
+
   # Stripe endpoints
   /api/v1/stripe/schema:
     $ref: './paths/stripe.yaml#/paths/~1api~1v1~1stripe~1schema'

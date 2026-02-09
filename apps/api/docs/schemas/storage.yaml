@@ -26,6 +26,7 @@ components:
       required:
         - upload_url
         - path
+        - id
       properties:
         upload_url:
           type: string
@@ -35,6 +36,11 @@ components:
           type: string
           description: Confirmed storage path
           example: avatars/user-123.png
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the storage object
+          example: 550e8400-e29b-41d4-a716-446655440000
 
     DownloadRequest:
       type: object
@@ -72,6 +78,20 @@ components:
           maxLength: 1024
           pattern: '^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$'
           description: Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+          example: avatars/user-123.png
+
+    MakePublicRequest:
+      type: object
+      required:
+        - path
+      additionalProperties: false
+      properties:
+        path:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          pattern: '^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$'
+          description: Path of the file to make public. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
           example: avatars/user-123.png
 
     MessageResponse:

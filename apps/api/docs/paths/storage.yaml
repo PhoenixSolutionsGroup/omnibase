@@ -266,3 +266,91 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/ForbiddenError'
         '404':
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+
+  /api/v1/storage/make-public:
+    post:
+      operationId: makeFilePublic
+      summary: Make a file publicly accessible
+      description: |
+        Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
+        ## Permission Check
+        Requires `make_public` permission via Keto OPL. By default, only the file owner
+        or users with the `can_make_public` relation can make a file public.
+
+        ## Effect
+        Once public, any authenticated user can download the file without needing
+        a Keto relation or tenant membership.
+      tags:
+        - V1 Storage
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/storage.yaml#/components/schemas/MakePublicRequest'
+      responses:
+        '200':
+          description: File made public successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '../schemas/storage.yaml#/components/schemas/MessageResponse'
+        '400':
+          description: Bad request - Invalid or missing required headers/body
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                example: "400 Bad Request"
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '../schemas/errors.yaml#/components/responses/ForbiddenError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

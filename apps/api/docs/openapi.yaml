@@ -1799,6 +1799,93 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+  /api/v1/storage/make-public:
+    post:
+      operationId: makeFilePublic
+      summary: Make a file publicly accessible
+      description: |
+        Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
+        ## Permission Check
+        Requires `make_public` permission via Keto OPL. By default, only the file owner
+        or users with the `can_make_public` relation can make a file public.
+
+        ## Effect
+        Once public, any authenticated user can download the file without needing
+        a Keto relation or tenant membership.
+      tags:
+        - V1 Storage
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MakePublicRequest'
+      responses:
+        '200':
+          description: File made public successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Bad request - Invalid or missing required headers/body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                example: 400 Bad Request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/stripe/schema:
     get:
       tags:
@@ -5339,6 +5426,7 @@ components:
       required:
         - upload_url
         - path
+        - id
       properties:
         upload_url:
           type: string
@@ -5348,6 +5436,11 @@ components:
           type: string
           description: Confirmed storage path
           example: avatars/user-123.png
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the storage object
+          example: 550e8400-e29b-41d4-a716-446655440000
     ForbiddenResponse:
       type: object
       description: Forbidden error response (403)
@@ -5405,6 +5498,19 @@ components:
           type: string
           description: Status message
           example: file deleted
+    MakePublicRequest:
+      type: object
+      required:
+        - path
+      additionalProperties: false
+      properties:
+        path:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+          description: Path of the file to make public. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+          example: avatars/user-123.png
     InternalServerError:
       type: object
       description: Internal Server Error response (500)
