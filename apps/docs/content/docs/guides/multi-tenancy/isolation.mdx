@@ -49,25 +49,35 @@ OmniBase generates JWT tokens with tenant context:
 
 ## RLS Helper Functions
 
-OmniBase provides SQL helper functions to access JWT claims:
+OmniBase provides SQL helper functions for use in RLS policies:
 
 ```sql
--- Get current user ID from JWT
+-- Get current user ID (from JWT)
 SELECT auth.user_id();
 -- Returns: '550e8400-e29b-41d4-a716-446655440000'
 
--- Get active tenant ID from JWT
+-- Get active tenant ID (from JWT)
 SELECT auth.active_tenant_id();
 -- Returns: '7c9e6679-7425-40de-944b-e07fc1f90ae7'
 
--- Get user's role in active tenant
+-- Get user's role in active tenant (DB lookup)
 SELECT auth.active_user_role();
 -- Returns: 'owner'
 
 -- Get all tenant IDs user belongs to
 SELECT auth.user_tenant_ids();
 -- Returns: ARRAY['tenant-1', 'tenant-2']
+
+-- Check if user has a Keto relation on an object
+SELECT auth.has_relation('Tenant', 'tenant-uuid', 'delete_tenant');
+-- Returns: true/false
+
+-- Check if user has ANY of the specified relations
+SELECT auth.has_any_relation('StorageObject', 'object-uuid', ARRAY['owner', 'can_read']);
+-- Returns: true/false
 ```
+
+`active_tenant_id()` and `user_id()` read from JWT claims. `active_user_role()` queries `permissions.roles` directly and `has_relation()` / `has_any_relation()` query Keto relation tuples, so permission changes take effect immediately without requiring a new JWT.
 
 ### Implementation
 
@@ -82,10 +92,18 @@ RETURNS text AS $$
   SELECT current_setting('request.jwt.claims', true)::json->>'tenant_id'
 $$ LANGUAGE sql STABLE;
 
+-- Queries permissions.roles directly (not from JWT)
 CREATE OR REPLACE FUNCTION auth.active_user_role()
 RETURNS text AS $$
-  SELECT current_setting('request.jwt.claims', true)::json->>'user_role'
-$$ LANGUAGE sql STABLE;
+BEGIN
+    RETURN (
+        SELECT role_name FROM permissions.roles
+        WHERE tenant_id = auth.active_tenant_id()::uuid
+          AND auth.user_id()::uuid = ANY(user_ids)
+        LIMIT 1
+    );
+END;
+$$ LANGUAGE plpgsql STABLE;
 ```
 
 ---
@@ -315,11 +333,14 @@ CREATE TABLE storage.objects (
   tenant_id UUID REFERENCES auth.tenants(id) ON DELETE CASCADE,
   user_id UUID NOT NULL,
   metadata JSONB,
+  is_public BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(bucket_name, path)
 );
 ```
+
+Per-object permissions (read, delete, make-public) are enforced via Keto relation tuples on the `StorageObject` namespace, not RLS policies. See [Storage](/guides/storage) for details.
 </Accordion>
 </Accordions>
 
@@ -492,6 +513,22 @@ CREATE POLICY admin_only_data ON sensitive_table
 ```
 </Accordion>
 
+<Accordion title="Relation-Gated Access (ReBAC)">
+Gate rows on Keto relation tuples using `auth.has_relation()` or `auth.has_any_relation()`. This checks the same permission data the API middleware uses:
+
+```sql
+-- Only users with 'owner' or 'can_read' relation can see a storage object
+CREATE POLICY storage_objects_read ON storage.objects
+  FOR SELECT
+  USING (
+    tenant_id::text = auth.active_tenant_id()
+    AND auth.has_any_relation('StorageObject', id::text, ARRAY['owner', 'can_read'])
+  );
+```
+
+See [Row-Level Security](/guides/postgresql/rls) for more ReBAC RLS patterns.
+</Accordion>
+
 <Accordion title="Shared Reference Data">
 For data shared across all tenants (read-only):
 
@@ -516,3 +553,5 @@ GRANT SELECT ON subscription_plans TO anon_user;
 - [Tenant Lifecycle](/guides/multi-tenancy/tenants) — Create and manage tenants
 - [Roles & Permissions](/guides/multi-tenancy/roles) — Configure access control
 - [Permissions Concept](/concepts/permissions) — How ReBAC works
+- [Row-Level Security](/guides/postgresql/rls) — Writing custom RLS policies with ReBAC helpers
+- [Storage](/guides/storage) — File storage with per-object permissions
