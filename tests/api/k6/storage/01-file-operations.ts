@@ -244,7 +244,6 @@ export async function fileOperations() {
   }
 
   // Step 7: Member can upload files within the same tenant
-  // (storage_objects_tenant_isolation policy allows all operations for tenant members)
   const memberUploadPath = `test-files/member-document-${id}.txt`;
   const memberUploadResponse = client.uploadFile(
     {
@@ -264,8 +263,30 @@ export async function fileOperations() {
     "member upload: status is 200": (r) => r.status === 200,
   });
 
-  // Step 8: Member can download owner's files within the same tenant
-  // (storage_objects_tenant_isolation policy allows all operations for tenant members)
+  // Step 8: Grant member can_read on owner's file, then download
+  const shareOwnerFileResponse = client.createRelationship({
+    namespace: "StorageObject",
+    object: uploadData.id,
+    relation: "can_read",
+    subject_set: {
+      namespace: "User",
+      object: member.id,
+      relation: "",
+    },
+  });
+
+  check(shareOwnerFileResponse.response, {
+    "share owner file with member: status is 200": (r) =>
+      r.status === 200 || r.status === 201,
+  });
+
+  if (
+    shareOwnerFileResponse.response.status !== 200 &&
+    shareOwnerFileResponse.response.status !== 201
+  ) {
+    logError("shareOwnerFileWithMember", shareOwnerFileResponse.response);
+  }
+
   const memberDownloadResponse = client.downloadFile(
     {
       path: filePath,
@@ -285,7 +306,11 @@ export async function fileOperations() {
     },
   });
 
-  // Step 8b: Upload public file as owner
+  if (memberDownloadResponse.response.status !== 200) {
+    logError("memberDownloadOwnerFile", memberDownloadResponse.response);
+  }
+
+  // Step 8b: Upload file, then make it public via API
   const publicFilePath = `public/document-${id}.txt`;
   const publicFileContent = `This is a public file created at ${id}`;
 
@@ -325,7 +350,63 @@ export async function fileOperations() {
     });
   }
 
-  // Step 8c: Member can download files from public/ directory
+  // Step 8c: Make file public via API endpoint
+  const makePublicResponse = client.makeFilePublic(
+    {
+      path: publicFilePath,
+    },
+    {
+      "X-User-Id": owner.id,
+      "X-Tenant-Id": tenant.id,
+      "X-Postgrest-Token": ownerPostgrestTokenData.token,
+    }
+  );
+
+  check(makePublicResponse.response, {
+    "make file public: status is 200": (r) => r.status === 200,
+    "make file public: returns message": (r) => {
+      const body = r.json() as any;
+      return body?.data?.message !== undefined;
+    },
+  });
+
+  if (makePublicResponse.response.status !== 200) {
+    logError("makeFilePublic", makePublicResponse.response);
+  }
+
+  // Step 8d: Making an already-public file public again is idempotent
+  const makePublicAgainResponse = client.makeFilePublic(
+    {
+      path: publicFilePath,
+    },
+    {
+      "X-User-Id": owner.id,
+      "X-Tenant-Id": tenant.id,
+      "X-Postgrest-Token": ownerPostgrestTokenData.token,
+    }
+  );
+
+  check(makePublicAgainResponse.response, {
+    "make already-public file public: status is 200": (r) => r.status === 200,
+  });
+
+  // Step 8e: Member cannot make owner's private file public (no can_make_public relation)
+  const memberMakePublicDenied = client.makeFilePublic(
+    {
+      path: filePath,
+    },
+    {
+      "X-User-Id": member.id,
+      "X-Tenant-Id": tenant.id,
+      "X-Postgrest-Token": memberPostgrestTokenData.token,
+    }
+  );
+
+  check(memberMakePublicDenied.response, {
+    "member make-public denied: status is 403": (r) => r.status === 403,
+  });
+
+  // Step 8f: Member can download public file WITHOUT explicit can_read relation
   const memberPublicDownloadResponse = client.downloadFile(
     {
       path: publicFilePath,
@@ -344,6 +425,10 @@ export async function fileOperations() {
       return body?.data?.download_url !== undefined;
     },
   });
+
+  if (memberPublicDownloadResponse.response.status !== 200) {
+    logError("memberDownloadPublicFile", memberPublicDownloadResponse.response);
+  }
 
   const memberPublicDownloadData = memberPublicDownloadResponse.data.data;
   if (memberPublicDownloadData?.download_url) {

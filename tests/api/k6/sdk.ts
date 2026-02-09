@@ -16,7 +16,7 @@
 Most endpoints require authentication via session cookies or JWT tokens.
 Use the appropriate security scheme based on the endpoint requirements.
 
- * Service version: 0.17.0
+ * Service version: 0.18.0
  */
 import { FormData } from "https://jslib.k6.io/formdata/0.0.2/index.js";
 
@@ -790,6 +790,8 @@ export interface UploadResponse {
   upload_url: string;
   /** Confirmed storage path */
   path: string;
+  /** Unique identifier of the storage object */
+  id: string;
 }
 
 /**
@@ -830,6 +832,16 @@ export interface DeleteObjectRequest {
 export interface MessageResponse {
   /** Status message */
   message?: string;
+}
+
+export interface MakePublicRequest {
+  /**
+   * Path of the file to make public. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+   * @minLength 1
+   * @maxLength 1024
+   * @pattern ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+   */
+  path: string;
 }
 
 /**
@@ -2959,6 +2971,27 @@ export type DeleteObject200AllOf = {
 
 export type DeleteObject200 = SuccessResponse & DeleteObject200AllOf;
 
+export type MakeFilePublicHeaders = {
+  /**
+   * User ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-User-Id"?: string;
+  /**
+   * Tenant ID (UUID) - Required when using X-Service-Key header
+   */
+  "X-Tenant-Id"?: string;
+  /**
+   * PostgREST JWT token - Alternative to cookie authentication
+   */
+  "X-Postgrest-Token"?: string;
+};
+
+export type MakeFilePublic200AllOf = {
+  data?: MessageResponse;
+};
+
+export type MakeFilePublic200 = SuccessResponse & MakeFilePublic200AllOf;
+
 export type GetStripeConfigSchema200 = { [key: string]: unknown };
 
 export type GetStripeConfig200AllOf = {
@@ -4870,6 +4903,68 @@ Users must have DELETE permission based on their custom RLS policies.
       "DELETE",
       url.toString(),
       JSON.stringify(deleteObjectRequest),
+      {
+        ...mergedRequestParameters,
+        headers: {
+          ...mergedRequestParameters?.headers,
+          "Content-Type": "application/json",
+          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
+          ...Object.fromEntries(
+            Object.entries(headers || {}).map(([key, value]) => [
+              key,
+              String(value),
+            ]),
+          ),
+        },
+      },
+    );
+    let data;
+
+    try {
+      data = response.json();
+    } catch {
+      data = response.body;
+    }
+    return {
+      response,
+      data,
+    };
+  }
+
+  /**
+ * Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
+
+## Authentication
+- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
+## Permission Check
+Requires `make_public` permission via Keto OPL. By default, only the file owner
+or users with the `can_make_public` relation can make a file public.
+
+## Effect
+Once public, any authenticated user can download the file without needing
+a Keto relation or tenant membership.
+
+ * @summary Make a file publicly accessible
+ */
+  makeFilePublic(
+    makePublicRequest: MakePublicRequest,
+    headers?: MakeFilePublicHeaders,
+    requestParameters?: Params,
+  ): {
+    response: Response;
+    data: MakeFilePublic200;
+  } {
+    const url = new URL(this.cleanBaseUrl + `/api/v1/storage/make-public`);
+    const mergedRequestParameters = this._mergeRequestParameters(
+      requestParameters || {},
+      this.commonRequestParameters,
+    );
+    const response = http.request(
+      "POST",
+      url.toString(),
+      JSON.stringify(makePublicRequest),
       {
         ...mergedRequestParameters,
         headers: {
