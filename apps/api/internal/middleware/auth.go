@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -332,7 +333,7 @@ func (m *AuthMiddleware) RequireServiceKey() gin.HandlerFunc {
 		tenantIDHeader := c.GetHeader("X-Tenant-Id")
 		userIDHeader := c.GetHeader("X-User-Id")
 
-		if serviceKey == "" || serviceKey != m.JWTSecret {
+		if serviceKey == "" || subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.JWTSecret)) != 1 {
 			handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing service key")
 			c.Abort()
 			return
@@ -378,7 +379,7 @@ func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
 
 		// Try service key authentication first
 		if serviceKey != "" {
-			if serviceKey != m.JWTSecret {
+			if subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.JWTSecret)) != 1 {
 				handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid service key")
 				c.Abort()
 				return
