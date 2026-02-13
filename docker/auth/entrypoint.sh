@@ -169,4 +169,10 @@ download_templates
 
 generate_config
 
-exec kratos "$@" -c /tmp/auth.yml
+# HTTP requires --dev flag for cookies to work
+KRATOS_ARGS=""
+if [ -n "$WEBSITE_URL" ] && echo "$WEBSITE_URL" | grep -q "^http://"; then
+    KRATOS_ARGS="--dev"
+fi
+
+exec kratos "$@" $KRATOS_ARGS -c /tmp/auth.yml
