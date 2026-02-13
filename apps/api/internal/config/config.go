@@ -4,6 +4,7 @@ import (
 	"api/internal/logger"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type Config struct {
@@ -20,6 +21,7 @@ type Config struct {
 	JWTSecret            string
 	EncryptionMasterKey  string
 	EnablePprof          bool
+	CORSAllowedOrigins   []string
 }
 
 type ManagedHostingConfig struct {
@@ -127,9 +129,10 @@ func New() *Config {
 		},
 		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
 		TypegenURL:          getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
-		JWTSecret:           os.Getenv("JWT_SECRET"),
-		EncryptionMasterKey: os.Getenv("ENCRYPTION_MASTER_KEY"),
-		EnablePprof:         os.Getenv("ENABLE_PPROF") == "true",
+		JWTSecret:            os.Getenv("JWT_SECRET"),
+		EncryptionMasterKey:  os.Getenv("ENCRYPTION_MASTER_KEY"),
+		EnablePprof:          os.Getenv("ENABLE_PPROF") == "true",
+		CORSAllowedOrigins:   parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
 	}
 }
 
@@ -151,4 +154,19 @@ func getFloat64Env(key string, defaultValue float64) float64 {
 	}
 	logger.Logger.Trace("Loaded float64 config from environment", "key", key, "value", value)
 	return value
+}
+
+func parseCommaSeparated(value string) []string {
+	if value == "" {
+		return nil
+	}
+	parts := strings.Split(value, ",")
+	result := make([]string, 0, len(parts))
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }
