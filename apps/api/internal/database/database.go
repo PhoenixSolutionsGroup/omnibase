@@ -20,9 +20,17 @@ var (
 func GetConnection(cfg config.DatabaseConfig) (*gorm.DB, error) {
 	once.Do(func() {
 		logger.Logger.Info("Initializing database connection")
-		instance, initErr = newConnection(cfg)
+		for attempt := 1; attempt <= 30; attempt++ {
+			instance, initErr = newConnection(cfg)
+			if initErr == nil {
+				break
+			}
+			logger.Logger.Warn("Unable to connect to database, retrying",
+				"attempt", attempt, "error", initErr)
+			time.Sleep(time.Duration(attempt) * time.Second)
+		}
 		if initErr != nil {
-			logger.Logger.Error("Failed to initialize database connection", "error", initErr)
+			logger.Logger.Error("Failed to initialize database connection after retries", "error", initErr)
 			panic(initErr)
 		}
 		logger.Logger.Info("Database connection established successfully")
