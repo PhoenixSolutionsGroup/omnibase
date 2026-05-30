@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
 func SetUpDBRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Initializing database routes")
 	cfg := config.New()

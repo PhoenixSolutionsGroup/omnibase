@@ -1,0 +1,128 @@
+---
+title: RBAC Overview
+description: Role-based access control in OmniBase
+---
+
+# Role-Based Access Control (RBAC)
+
+OmniBase uses a fine-grained, relationship-based access control (ReBAC) system powered by Ory Keto. Each tenant manages their own roles with configurable permissions.
+
+## UI Components
+
+OmniBase provides pre-built shadcn components in `@omnibase/shadcn`:
+
+| Component | Description |
+|-----------|-------------|
+| `RoleCreator` | Create and edit roles with permission selector |
+| `PermissionsSelector` | Row-based permission picker for namespaces and relations |
+| `PermissionsSelectorTree` | Tree-based permission picker grouped by JSDoc annotations |
+| `UserViewer` | View team members and manage role assignments |
+
+See [Managing Roles](/guides/rbac/roles#ui-components) for usage examples.
+
+## How It Works
+
+Permissions are stored as relationship tuples:
+
+```
+(Namespace, Object, Relation, Subject)
+```
+
+Examples:
+```
+(Tenant, acme-corp-uuid, can_delete_tenant, User:alice)
+(Tenant, acme-corp-uuid, can_invite_user, User:bob)
+(Project, proj-123-uuid, can_write, User:carol)
+```
+
+When checking permissions, OmniBase verifies the relationship exists between the subject and object.
+
+## Defining Permissions with JSDoc
+
+Permissions are defined in TypeScript namespace files with JSDoc annotations that provide metadata for UI rendering:
+
+```typescript title="omnibase/permissions/tenants.ts"
+/**
+ * @group User Management
+ * @displayName Invite Users
+ * @role owner
+ * @role admin
+ */
+can_invite_user: User[];
+```
+
+| Annotation | Purpose |
+|------------|---------|
+| `@group` | Primary UI grouping |
+| `@subGroup` | Secondary grouping within a group |
+| `@displayName` | Human-readable label |
+| `@role` | Suggested default role(s) |
+| `@hidden` | Hide internal relations from UI |
+
+## Key Concepts
+
+### Tenant Permissions vs Resource Permissions
+
+> **Note:**
+  Only `Tenant` permissions support auto-scoping. The active tenant ID is automatically injected when checking these permissions.
+
+| Type | Format | Auto-Scoped |
+|------|--------|-------------|
+| Tenant permissions | `Tenant#relation` | Yes - uses active tenant |
+| Resource permissions | `(Namespace, uuid, relation, subject)` | No - requires explicit UUID |
+
+### No Resource-Wide Wildcards
+
+> **Note:**
+  There is **no** `project#can_read` permission that grants access to all projects. Resource permissions always require a specific UUID.
+
+To grant access to resources like projects or documents, create relationships for each resource:
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Project',
+    object: projectId,        // Specific project UUID
+    relation: 'can_write',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+```
+
+## RBAC Guides
+
+- **[Defining Permissions](/docs/guides/rbac/permissions)**
+    Create permission namespaces with JSDoc metadata for UI grouping
+- **[Managing Roles](/docs/guides/rbac/roles)**
+    Create roles and assign users within your tenants
+
+## Quick Example
+
+```typescript
+import { V1PermissionsApi } from '@omnibase/core-js';
+
+const permissionsApi = new V1PermissionsApi(config);
+
+// Check if user can delete tenant
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Tenant',
+    object: tenantId,
+    relation: 'can_delete_tenant',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+
+if (data.data.allowed) {
+  // User has permission
+}
+```
+
+## Related
+
+- [Tenant Management](/guides/multi-tenancy/tenants) — Create and manage tenants
+- [Team Invitations](/guides/multi-tenancy/invitations) — Invite users with roles
+- [Data Isolation](/guides/multi-tenancy/isolation) — How permissions affect data access
+- [Permissions Concept](/concepts/permissions) — Deep dive into ReBAC internals

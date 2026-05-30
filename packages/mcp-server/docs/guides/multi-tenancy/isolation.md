@@ -1,0 +1,541 @@
+---
+title: Data Isolation
+description: Row-Level Security, JWT tokens, and tenant-scoped queries
+---
+
+# Data Isolation
+
+OmniBase uses PostgreSQL Row-Level Security (RLS) to enforce tenant isolation at the database level. This ensures that tenants can never access each other's data, even if application code has bugs.
+
+## How It Works
+
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│   Request    │───▶│  JWT Token   │───▶│  RLS Policy  │
+│              │    │  tenant_id   │    │   Filters    │
+└──────────────┘    └──────────────┘    └──────────────┘
+```
+
+1. User makes API request with session cookie
+2. API extracts `tenant_id` from JWT claims
+3. JWT is passed to PostgREST
+4. PostgreSQL RLS policies filter all queries by tenant
+
+---
+
+## JWT Token Structure
+
+OmniBase generates JWT tokens with tenant context:
+
+```json
+{
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "tenant_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "user_role": "owner",
+  "role": "anon_user",
+  "iat": 1699900000,
+  "exp": 1699986400
+}
+```
+
+---
+
+## RLS Helper Functions
+
+OmniBase provides SQL helper functions for use in RLS policies:
+
+```sql
+-- Get current user ID (from JWT)
+SELECT auth.user_id();
+-- Returns: '550e8400-e29b-41d4-a716-446655440000'
+
+-- Get active tenant ID (from JWT)
+SELECT auth.active_tenant_id();
+-- Returns: '7c9e6679-7425-40de-944b-e07fc1f90ae7'
+
+-- Get user's role in active tenant (DB lookup)
+SELECT auth.active_user_role();
+-- Returns: 'owner'
+
+-- Get all tenant IDs user belongs to
+SELECT auth.user_tenant_ids();
+-- Returns: ARRAY['tenant-1', 'tenant-2']
+
+-- Check if user has a Keto relation on an object
+SELECT auth.has_relation('Tenant', 'tenant-uuid', 'delete_tenant');
+-- Returns: true/false
+
+-- Check if user has ANY of the specified relations
+SELECT auth.has_any_relation('StorageObject', 'object-uuid', ARRAY['owner', 'can_read']);
+-- Returns: true/false
+```
+
+`active_tenant_id()` and `user_id()` read from JWT claims. `active_user_role()` queries `permissions.roles` directly and `has_relation()` / `has_any_relation()` query Keto relation tuples, so permission changes take effect immediately without requiring a new JWT.
+
+### Implementation
+
+```sql
+CREATE OR REPLACE FUNCTION auth.user_id()
+RETURNS text AS $$
+  SELECT current_setting('request.jwt.claims', true)::json->>'user_id'
+$$ LANGUAGE sql STABLE;
+
+CREATE OR REPLACE FUNCTION auth.active_tenant_id()
+RETURNS text AS $$
+  SELECT current_setting('request.jwt.claims', true)::json->>'tenant_id'
+$$ LANGUAGE sql STABLE;
+
+-- Queries permissions.roles directly (not from JWT)
+CREATE OR REPLACE FUNCTION auth.active_user_role()
+RETURNS text AS $$
+BEGIN
+    RETURN (
+        SELECT role_name FROM permissions.roles
+        WHERE tenant_id = auth.active_tenant_id()::uuid
+          AND auth.user_id()::uuid = ANY(user_ids)
+        LIMIT 1
+    );
+END;
+$$ LANGUAGE plpgsql STABLE;
+```
+
+---
+
+## Creating Tenant-Scoped Tables
+
+### Basic Pattern
+
+```sql
+-- Create a tenant-scoped table
+CREATE TABLE projects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+
+-- Create isolation policy
+CREATE POLICY tenant_isolation ON projects
+  FOR ALL
+  USING (tenant_id = auth.active_tenant_id()::uuid)
+  WITH CHECK (tenant_id = auth.active_tenant_id()::uuid);
+
+-- Grant access to the anon_user role
+GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user;
+```
+
+### Policy Breakdown
+
+| Clause | Purpose |
+|--------|---------|
+| `FOR ALL` | Applies to SELECT, INSERT, UPDATE, DELETE |
+| `USING` | Filter condition for SELECT, UPDATE, DELETE |
+| `WITH CHECK` | Validation for INSERT, UPDATE |
+
+### Separate Policies Pattern
+
+For more granular control:
+
+```sql
+-- Read policy
+CREATE POLICY projects_select ON projects
+  FOR SELECT
+  USING (tenant_id = auth.active_tenant_id()::uuid);
+
+-- Insert policy (ensures tenant_id is set correctly)
+CREATE POLICY projects_insert ON projects
+  FOR INSERT
+  WITH CHECK (tenant_id = auth.active_tenant_id()::uuid);
+
+-- Update policy
+CREATE POLICY projects_update ON projects
+  FOR UPDATE
+  USING (tenant_id = auth.active_tenant_id()::uuid)
+  WITH CHECK (tenant_id = auth.active_tenant_id()::uuid);
+
+-- Delete policy
+CREATE POLICY projects_delete ON projects
+  FOR DELETE
+  USING (tenant_id = auth.active_tenant_id()::uuid);
+```
+
+---
+
+## Querying with RLS
+
+### Automatic Filtering
+
+```typescript
+// Using PostgREST client
+const { data: projects } = await db
+  .from('projects')
+  .select('*')
+  .eq('status', 'active');
+
+// Only returns projects where tenant_id = current user's active tenant
+// The WHERE tenant_id = '...' is added automatically by RLS
+```
+
+### Behind the Scenes
+
+```sql
+-- Your query:
+SELECT * FROM projects WHERE status = 'active';
+
+-- What PostgreSQL actually executes:
+SELECT * FROM projects
+WHERE status = 'active'
+  AND tenant_id = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
+```
+
+> **Note:**
+  RLS policies are enforced at the database level. Even direct SQL queries through PostgREST are filtered. There's no way for application code to bypass this protection.
+
+---
+
+## Database Roles
+
+OmniBase uses two PostgreSQL roles:
+
+### anon_user
+
+- Used for all user requests via PostgREST
+- RLS policies are enforced
+- Limited permissions per table
+
+### super_user
+
+- Used for administrative operations
+- Bypasses RLS policies
+- Used by OmniBase API internally
+
+```sql
+-- Create roles
+CREATE ROLE anon_user NOLOGIN;
+CREATE ROLE super_user NOLOGIN;
+
+-- anon_user has RLS enforced
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon_user;
+
+-- super_user bypasses RLS
+ALTER ROLE super_user SET row_security TO off;
+```
+
+---
+
+## Database Schema
+
+### Core Tables
+
+- `auth/`
+- `tenants`
+- `tenant_users`
+- `tenant_settings`
+- `tenant_invites`
+- `identities`
+- `permissions/`
+- `roles`
+- `role_templates`
+- `storage/`
+- `objects`
+
+### Schema Reference
+
+<Accordions type="multiple">
+#### auth.tenants
+
+```sql
+CREATE TABLE auth.tenants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  stripe_customer_id TEXT,
+  enterprise_template TEXT,
+  enterprise_id TEXT,
+  type TEXT NOT NULL DEFAULT 'organization',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### auth.tenant_users
+
+```sql
+CREATE TABLE auth.tenant_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.identities(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'member',
+  is_active BOOLEAN NOT NULL DEFAULT false,
+  joined_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(tenant_id, user_id)
+);
+```
+
+The `is_active` column tracks which tenant is currently active for each user. Only one tenant can be active per user at a time.
+
+#### auth.tenant_invites
+
+```sql
+CREATE TABLE auth.tenant_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'member',
+  token TEXT NOT NULL UNIQUE,
+  inviter_id UUID NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+#### permissions.roles
+
+```sql
+CREATE TABLE permissions.roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  role_name TEXT NOT NULL,
+  permissions TEXT[] NOT NULL DEFAULT '{}',
+  template_id UUID REFERENCES permissions.role_templates(id),
+  user_ids UUID[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(tenant_id, role_name)
+);
+```
+
+#### storage.objects
+
+```sql
+CREATE TABLE storage.objects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  bucket_name TEXT NOT NULL,
+  path TEXT NOT NULL,
+  tenant_id UUID REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL,
+  metadata JSONB,
+  is_public BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(bucket_name, path)
+);
+```
+
+Per-object permissions (read, delete, make-public) are enforced via Keto relation tuples on the `StorageObject` namespace, not RLS policies. See [Storage](/guides/storage) for details.
+
+---
+
+## Cross-Tenant Queries
+
+### Never Allowed via PostgREST
+
+User requests through PostgREST can never access other tenants' data:
+
+```typescript
+// Even if you somehow know another tenant's ID,
+// RLS will filter it out
+const { data } = await db
+  .from('projects')
+  .select('*')
+  .eq('tenant_id', 'other-tenant-id');
+
+// Returns: [] (empty array)
+```
+
+### Service-Level Access
+
+For administrative operations, use service key authentication:
+
+```typescript
+import { Configuration, V1TenantsApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: {
+    'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY,
+    'X-Tenant-Id': targetTenantId,  // Explicit tenant context
+  },
+});
+```
+
+---
+
+## Cascade Deletes
+
+When a tenant is deleted, all related data is automatically cleaned up via foreign key cascades:
+
+```sql
+-- When auth.tenants row is deleted:
+-- ├── auth.tenant_users (CASCADE)
+-- ├── auth.tenant_settings (CASCADE)
+-- ├── auth.tenant_invites (CASCADE)
+-- ├── permissions.roles (CASCADE)
+-- ├── storage.objects (CASCADE)
+-- └── All custom tables with tenant_id FK (CASCADE)
+```
+
+> **Note:**
+  Always use `ON DELETE CASCADE` for the `tenant_id` foreign key to ensure proper cleanup when tenants are deleted.
+
+---
+
+## Multi-Tenant Indexes
+
+For optimal query performance, include `tenant_id` in indexes:
+
+```sql
+-- Bad: Index without tenant_id
+CREATE INDEX idx_projects_status ON projects(status);
+
+-- Good: Composite index with tenant_id first
+CREATE INDEX idx_projects_tenant_status ON projects(tenant_id, status);
+
+-- For unique constraints, include tenant_id
+CREATE UNIQUE INDEX idx_projects_tenant_name
+  ON projects(tenant_id, name);
+```
+
+### Why Tenant-First Indexes?
+
+RLS adds `tenant_id = ?` to every query. Having `tenant_id` as the leading column in indexes allows PostgreSQL to efficiently filter rows before applying other conditions.
+
+---
+
+## Testing Data Isolation
+
+### k6 Integration Tests
+
+OmniBase includes tests that verify tenant isolation:
+
+```typescript
+// Create two separate users in separate tenants
+const user1 = await createUser({ email: 'user1@test.com' });
+const tenant1 = await createTenant({ name: 'Tenant 1' });
+
+const user2 = await createUser({ email: 'user2@test.com' });
+const tenant2 = await createTenant({ name: 'Tenant 2' });
+
+// Create data in tenant1
+await createProject({ name: 'Secret Project', tenantContext: tenant1 });
+
+// Try to access from tenant2 context
+const projects = await listProjects({ tenantContext: tenant2 });
+
+// Verify: tenant2 cannot see tenant1's project
+assert(projects.length === 0);
+```
+
+### Manual Verification
+
+```sql
+-- Connect as anon_user with tenant1 JWT
+SET request.jwt.claims = '{"tenant_id": "tenant-1-id"}';
+
+SELECT * FROM projects;
+-- Returns only tenant-1's projects
+
+-- Switch to tenant2 context
+SET request.jwt.claims = '{"tenant_id": "tenant-2-id"}';
+
+SELECT * FROM projects;
+-- Returns only tenant-2's projects (tenant-1's are invisible)
+```
+
+---
+
+## Common Patterns
+
+<Accordions type="single">
+#### User-Owned Data Within Tenant
+
+For data owned by specific users within a tenant:
+
+```sql
+CREATE TABLE documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL,  -- Owner within tenant
+  title TEXT NOT NULL,
+  content TEXT,
+  is_public BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Users can see their own docs OR public docs in their tenant
+CREATE POLICY documents_select ON documents
+  FOR SELECT
+  USING (
+    tenant_id = auth.active_tenant_id()::uuid
+    AND (user_id = auth.user_id()::uuid OR is_public = true)
+  );
+
+-- Users can only modify their own docs
+CREATE POLICY documents_modify ON documents
+  FOR ALL
+  USING (
+    tenant_id = auth.active_tenant_id()::uuid
+    AND user_id = auth.user_id()::uuid
+  );
+```
+
+#### Role-Based Data Access
+
+Restrict access based on user role:
+
+```sql
+CREATE POLICY admin_only_data ON sensitive_table
+  FOR ALL
+  USING (
+    tenant_id = auth.active_tenant_id()::uuid
+    AND auth.active_user_role() IN ('owner', 'admin')
+  );
+```
+
+#### Relation-Gated Access (ReBAC)
+
+Gate rows on Keto relation tuples using `auth.has_relation()` or `auth.has_any_relation()`. This checks the same permission data the API middleware uses:
+
+```sql
+-- Only users with 'owner' or 'can_read' relation can see a storage object
+CREATE POLICY storage_objects_read ON storage.objects
+  FOR SELECT
+  USING (
+    tenant_id::text = auth.active_tenant_id()
+    AND auth.has_any_relation('StorageObject', id::text, ARRAY['owner', 'can_read'])
+  );
+```
+
+See [Row-Level Security](/guides/postgresql/rls) for more ReBAC RLS patterns.
+
+#### Shared Reference Data
+
+For data shared across all tenants (read-only):
+
+```sql
+CREATE TABLE subscription_plans (
+  id UUID PRIMARY KEY,
+  name TEXT NOT NULL,
+  price INTEGER NOT NULL
+);
+
+-- No tenant_id column, no RLS needed
+-- All users can read, only super_user can modify
+GRANT SELECT ON subscription_plans TO anon_user;
+```
+
+---
+
+## Related Guides
+
+- [Tenant Lifecycle](/guides/multi-tenancy/tenants) — Create and manage tenants
+- [Roles & Permissions](/guides/multi-tenancy/roles) — Configure access control
+- [Permissions Concept](/concepts/permissions) — How ReBAC works
+- [Row-Level Security](/guides/postgresql/rls) — Writing custom RLS policies with ReBAC helpers
+- [Storage](/guides/storage) — File storage with per-object permissions

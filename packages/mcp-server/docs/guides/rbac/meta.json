@@ -1,0 +1,9 @@
+{
+  "title": "RBAC",
+  "description": "Role-based access control and permissions",
+  "icon": "Shield",
+  "pages": [
+    "roles",
+    "permissions"
+  ]
+}

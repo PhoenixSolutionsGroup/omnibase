@@ -1,0 +1,7 @@
+{
+  "title": "Roadmap",
+  "description": "What's coming next for OmniBase",
+  "icon": "Map",
+  "root": true,
+  "pages": ["index"]
+}

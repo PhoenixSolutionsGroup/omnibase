@@ -1,0 +1,526 @@
+---
+title: Document Storage
+description: Store and retrieve files with per-object permissions and tenant isolation
+---
+
+# Document Storage
+
+OmniBase provides S3-compatible file storage with per-object permissions powered by Ory Keto (ReBAC). Every file gets its own permission tuples, so you can share individual files with specific users without exposing the rest of a tenant's files.
+
+**Key Features:**
+- Presigned URLs for direct browser uploads/downloads
+- Per-object permissions via Keto (owner, can_read, can_delete, can_make_public)
+- Automatic owner assignment on upload
+- Share individual files with specific users
+- Make files publicly accessible across tenants
+- Custom metadata support
+- Tenant isolation by default
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────┐     1. Request presigned URL     ┌─────────────┐
+│   Client    │ ────────────────────────────────►│  OmniBase   │
+│  (Browser)  │                                  │     API     │
+└─────────────┘                                  └──────┬──────┘
+      │                                                 │
+      │                                          2. Check Keto
+      │                                            permission
+      │                                                 │
+      │                                                 ▼
+      │                                          ┌─────────────┐
+      │                                          │  Ory Keto   │
+      │                                          │   (ReBAC)   │
+      │                                          └─────────────┘
+      │
+      │  3. Upload/Download directly
+      │     using presigned URL
+      │
+      ▼
+┌─────────────┐
+│     S3      │
+│  (MinIO)    │
+└─────────────┘
+```
+
+Files are never proxied through the API server. Clients upload and download directly to S3 using time-limited presigned URLs (valid for 15 minutes).
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/storage/upload` | Get presigned upload URL |
+| POST | `/api/v1/storage/download` | Get presigned download URL |
+| DELETE | `/api/v1/storage/object` | Delete a file |
+| POST | `/api/v1/storage/make-public` | Make a file publicly accessible |
+
+---
+
+## Uploading Files
+
+When you upload a file, OmniBase automatically creates an `owner` relation in Keto. This gives you read, delete, and make-public permissions on the file without any extra setup.
+
+### Step 1: Request Upload URL
+
+```typescript
+import { Configuration, V1StorageApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: 'http://localhost:8080',
+  headers: {
+    'X-Service-Key': 'your-service-key',
+    'X-User-Id': userId,
+    'X-Tenant-Id': tenantId,
+  },
+});
+
+const storageApi = new V1StorageApi(config);
+
+const { data } = await storageApi.uploadFile({
+  uploadRequest: {
+    path: 'documents/report-2024.pdf',
+    metadata: {
+      description: 'Annual report',
+      uploaded_by: userId,
+    },
+  },
+});
+
+console.log('Upload URL:', data.data.upload_url);
+console.log('File path:', data.data.path);
+console.log('Object ID:', data.data.id); // Use this ID for sharing
+```
+
+The response includes an `id` field — this is the storage object's UUID. You'll need it to share the file with other users via the permissions API.
+
+### Step 2: Upload to S3
+
+Upload the file directly to S3 using the presigned URL:
+
+```typescript
+const file = document.getElementById('file-input').files[0];
+
+await fetch(data.data.upload_url, {
+  method: 'PUT',
+  body: file,
+  headers: {
+    'Content-Type': file.type,
+  },
+});
+```
+
+> **Note:**
+Presigned URLs expire after 15 minutes. Request a new URL if the upload fails due to expiration.
+
+---
+
+## Downloading Files
+
+Downloads check Keto permissions. The requesting user must be the file owner or have a `can_read` relation on the file. Public files skip this check entirely.
+
+### Step 1: Request Download URL
+
+```typescript
+const { data } = await storageApi.downloadFile({
+  downloadRequest: {
+    path: 'documents/report-2024.pdf',
+  },
+});
+
+console.log('Download URL:', data.data.download_url);
+```
+
+### Step 2: Download from S3
+
+```typescript
+// Option 1: Direct browser download
+window.location.href = data.data.download_url;
+
+// Option 2: Fetch and process
+const response = await fetch(data.data.download_url);
+const blob = await response.blob();
+```
+
+---
+
+## Deleting Files
+
+Deletes check Keto permissions. The requesting user must be the file owner or have a `can_delete` relation. When a file is deleted, all its Keto permission tuples are cleaned up automatically.
+
+```typescript
+const { data } = await storageApi.deleteObject({
+  deleteObjectRequest: {
+    path: 'documents/report-2024.pdf',
+  },
+});
+
+console.log(data.data.message); // "file deleted"
+```
+
+> **Note:**
+Deletion removes the file metadata from PostgreSQL, the file from S3, and all Keto permission tuples. This operation cannot be undone.
+
+---
+
+## Sharing Files
+
+By default, only the file owner can read, delete, or make a file public. To grant access to other users, create a relationship via the permissions API.
+
+### Grant Read Access
+
+```typescript
+import { V1PermissionsApi } from '@omnibase/core-js';
+
+const permissionsApi = new V1PermissionsApi(config);
+
+// Share a file with another user (use the object ID from the upload response)
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'StorageObject',
+    object: fileObjectId,       // UUID from upload response
+    relation: 'can_read',
+    subject_set: {
+      namespace: 'User',
+      object: otherUserId,      // UUID of user to share with
+      relation: '',
+    },
+  },
+});
+```
+
+### Grant Delete Access
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'StorageObject',
+    object: fileObjectId,
+    relation: 'can_delete',
+    subject_set: {
+      namespace: 'User',
+      object: otherUserId,
+      relation: '',
+    },
+  },
+});
+```
+
+### Revoke Access
+
+```typescript
+await permissionsApi.deleteRelationship({
+  namespace: 'StorageObject',
+  object: fileObjectId,
+  relation: 'can_read',
+  subject_set: {
+    namespace: 'User',
+    object: otherUserId,
+    relation: '',
+  },
+});
+```
+
+### Available Relations
+
+| Relation | Permission | Auto-Created |
+|----------|-----------|--------------|
+| `owner` | Read, delete, make public | Yes (on upload) |
+| `can_read` | Download the file | No |
+| `can_delete` | Delete the file | No |
+| `can_make_public` | Make the file publicly accessible | No |
+
+---
+
+## Making Files Public
+
+Public files are accessible to any authenticated user, regardless of which tenant they belong to. This is useful for shared assets like logos, public documents, or downloadable resources.
+
+### Make a File Public
+
+```typescript
+const { data } = await storageApi.makeFilePublic({
+  makePublicRequest: {
+    path: 'assets/company-logo.png',
+  },
+});
+
+console.log(data.data.message); // "file is now public"
+```
+
+Only the file owner or users with the `can_make_public` relation can make a file public. The operation is idempotent — calling it on an already-public file returns success.
+
+### How Public Files Work
+
+- Public files skip Keto permission checks on download
+- Any authenticated user can download a public file, even from a different tenant
+- The download endpoint first looks for the file in the requesting user's tenant, then falls back to checking public files globally
+- Making a file public cannot be reversed through the API (update the `is_public` column directly if needed)
+
+---
+
+## Tenant-Wide Storage Access
+
+By default, storage permissions are per-object: only the owner and explicitly shared users can access a file. If you want certain users (e.g. admins) to access all files in a tenant, you can set this up using OPL traversal.
+
+### Step 1: Add a Relation to the Tenant Namespace
+
+In your `permissions.ts` OPL file, add a `can_read_all_storage_objects` relation to the `Tenant` class and a corresponding permit:
+
+```typescript
+class Tenant implements Namespace {
+  related: {
+    // ... existing relations ...
+    can_read_all_storage_objects: User[];
+  };
+
+  permits = {
+    // ... existing permits ...
+    read_all_storage_objects: (ctx: Context): boolean =>
+      this.related.can_read_all_storage_objects.includes(ctx.subject),
+  };
+}
+```
+
+### Step 2: Add Tenant Traversal to StorageObject
+
+Update the `StorageObject` class to traverse the `tenant` relation and check if the user has the tenant-wide permit:
+
+```typescript
+class StorageObject implements Namespace {
+  related: {
+    owner: User[];
+    can_read: User[];
+    can_delete: User[];
+    can_make_public: User[];
+    tenant: Tenant[];
+  };
+
+  permits = {
+    read: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_read.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.permits.read_all_storage_objects(ctx)),
+
+    // ... other permits stay the same ...
+  };
+}
+```
+
+### Step 3: Assign the Relation to Users
+
+When creating a role (e.g. `admin`), include `tenant#can_read_all_storage_objects` in the role's permissions. Any user assigned that role will automatically be able to read all files in the tenant.
+
+You can also assign it directly via the permissions API:
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Tenant',
+    object: tenantId,
+    relation: 'can_read_all_storage_objects',
+    subject_set: {
+      namespace: 'User',
+      object: adminUserId,
+      relation: '',
+    },
+  },
+});
+```
+
+This works because every file upload creates a `tenant` relation linking the StorageObject to its Tenant. The OPL `traverse` follows that link and checks whether the user has the `read_all_storage_objects` permit on the parent Tenant.
+
+You can apply the same pattern for tenant-wide delete or make-public access by adding corresponding relations and permits.
+
+---
+
+## File Paths
+
+You control the full path structure. Paths must:
+- Start with an alphanumeric character
+- Contain only: `a-z`, `A-Z`, `0-9`, `/`, `_`, `.`, ` `, `-`
+- Be 1-1024 characters long
+
+**Example path structures:**
+
+```
+avatars/user-123.png           # User avatars
+documents/invoices/2024-01.pdf # Nested directories
+assets/logo.png                # Shared assets
+reports/q1-summary.pdf         # Team documents
+```
+
+---
+
+## Permission Model
+
+### StorageObject OPL Namespace
+
+The `StorageObject` namespace defines per-object permissions:
+
+```typescript
+class StorageObject implements Namespace {
+  related: {
+    owner: User[];           // Set automatically on upload
+    can_read: User[];        // Grant via permissions API
+    can_delete: User[];      // Grant via permissions API
+    can_make_public: User[]; // Grant via permissions API
+    tenant: Tenant[];        // Set automatically on upload
+  };
+
+  permits = {
+    read: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_read.includes(ctx.subject),
+
+    delete: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_delete.includes(ctx.subject),
+
+    make_public: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_make_public.includes(ctx.subject),
+  };
+}
+```
+
+### What Happens Automatically
+
+**On upload:**
+- `owner` relation created → uploader can read, delete, and make the file public
+- `tenant` relation created → links the file to its tenant (used for OPL traversal)
+
+**On delete:**
+- All Keto tuples for the object are cleaned up (owner, can_read, can_delete, etc.)
+
+### Tenant Isolation
+
+Files are scoped to a tenant via the `tenant_id` column in `storage.objects`. A user in Tenant A cannot see or access files belonging to Tenant B, even if they know the file path.
+
+The only exception is public files — once a file is made public via `/api/v1/storage/make-public`, any authenticated user can download it regardless of tenant.
+
+---
+
+## Authentication
+
+All storage endpoints require authentication via one of:
+
+| Method | Headers Required |
+|--------|------------------|
+| Session Auth | Cookie: `omnibase_postgrest_jwt` or Header: `X-Postgrest-Token` |
+| Service Key Auth | `X-Service-Key` + `X-User-Id` + `X-Tenant-Id` |
+
+---
+
+## Metadata
+
+Store custom metadata with each file:
+
+```typescript
+await storageApi.uploadFile({
+  uploadRequest: {
+    path: 'documents/contract.pdf',
+    metadata: {
+      document_type: 'contract',
+      client_name: 'Acme Corp',
+      version: 2,
+      tags: ['legal', 'signed'],
+    },
+  },
+});
+```
+
+Metadata is stored as JSONB in PostgreSQL.
+
+---
+
+## Complete Example
+
+```typescript
+import { Configuration, V1StorageApi, V1PermissionsApi } from '@omnibase/core-js';
+
+async function uploadAndShare(file: File, tenantId: string, userId: string, shareWithUserId: string) {
+  const config = new Configuration({
+    basePath: process.env.OMNIBASE_API_URL,
+    headers: {
+      'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY,
+      'X-User-Id': userId,
+      'X-Tenant-Id': tenantId,
+    },
+  });
+
+  // Upload file
+  const storageApi = new V1StorageApi(config);
+  const { data: uploadData } = await storageApi.uploadFile({
+    uploadRequest: {
+      path: `uploads/${Date.now()}-${file.name}`,
+      metadata: {
+        original_name: file.name,
+        content_type: file.type,
+        size: file.size,
+      },
+    },
+  });
+
+  // Upload to S3
+  await fetch(uploadData.data.upload_url, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type },
+  });
+
+  // Share with another user
+  const permissionsApi = new V1PermissionsApi(config);
+  await permissionsApi.createRelationship({
+    createRelationshipRequest: {
+      namespace: 'StorageObject',
+      object: uploadData.data.id,
+      relation: 'can_read',
+      subject_set: {
+        namespace: 'User',
+        object: shareWithUserId,
+        relation: '',
+      },
+    },
+  });
+
+  return { path: uploadData.data.path, id: uploadData.data.id };
+}
+```
+
+---
+
+## Error Handling
+
+| Status | Error | Cause |
+|--------|-------|-------|
+| 400 | Invalid path | Path doesn't match allowed pattern |
+| 403 | Access denied | User doesn't have the required Keto permission |
+| 404 | File not found | File doesn't exist in this tenant |
+
+```typescript
+try {
+  await storageApi.downloadFile({
+    downloadRequest: { path: 'missing-file.pdf' },
+  });
+} catch (error) {
+  if (error.response?.status === 404) {
+    console.log('File not found');
+  } else if (error.response?.status === 403) {
+    console.log('Access denied - ask the file owner to share it with you');
+  }
+}
+```
+
+---
+
+## Next Steps
+
+- [Row-Level Security](/guides/postgresql/rls) — Writing custom RLS policies with ReBAC helpers
+- [RBAC Guide](/guides/rbac) — Role-based access control
+- [Permissions Concept](/concepts/permissions) — How ReBAC works
+- [API Reference](/reference/api/v1) — Complete API documentation

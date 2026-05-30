@@ -1,0 +1,17 @@
+{
+  "title": "Stripe Integration",
+  "description": "Billing, subscriptions, and payment processing",
+  "icon": "CreditCard",
+  "pages": [
+    "configuration",
+    "products-prices",
+    "coupons-promotions",
+    "webhooks",
+    "subscriptions",
+    "metering",
+    "checkout-portal",
+    "invoices",
+    "enterprise-pricing",
+    "ui-components"
+  ]
+}

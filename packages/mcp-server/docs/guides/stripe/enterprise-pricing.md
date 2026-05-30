@@ -1,0 +1,430 @@
+---
+title: Enterprise Pricing
+description: Custom pricing templates and per-tenant pricing for enterprise customers
+---
+
+# Enterprise Pricing
+
+OmniBase supports enterprise pricing through two mechanisms: template-based pricing for discount tiers, and custom per-tenant pricing for negotiated rates.
+
+## Pricing Models
+
+| Model | Use Case | Example |
+|-------|----------|---------|
+| **Template-Based** | Standard discount tiers | 10% off, 25% off, partner pricing |
+| **Custom Per-Tenant** | Negotiated rates | Acme Corp gets $39/month instead of $49 |
+
+## Template-Based Pricing
+
+Templates allow you to define standard discount tiers that can be applied to multiple tenants.
+
+### Configuration
+
+Define enterprise template prices alongside regular prices:
+
+```json
+{
+  "products": [
+    {
+      "id": "pro",
+      "name": "Pro Plan",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 4900,
+          "currency": "usd",
+          "interval": "month",
+          "public": true,
+          "default": true
+        },
+        {
+          "id": "pro_monthly_tier1",
+          "amount": 4410,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "pro_monthly_tier2",
+          "amount": 3675,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier2_25pct_off"
+        }
+      ]
+    }
+  ]
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `public: false` | Hides from public API |
+| `enterprise_template` | Template identifier (e.g., `"tier1_10pct_off"`) |
+
+### Applying Templates
+
+Apply a template to a tenant's subscription:
+
+```typescript
+import { Configuration, V1StripeApi } from '@omnibase/core-js';
+
+const config = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: { 'X-Service-Key': process.env.SERVICE_KEY },
+});
+
+const stripeApi = new V1StripeApi(config);
+
+const { data } = await stripeApi.applyEnterpriseTemplate({
+  applyEnterpriseTemplateRequest: {
+    tenantId: 'tenant_123',
+    enterpriseTemplate: 'tier1_10pct_off',
+  },
+});
+
+console.log(`Prices swapped: ${data.pricesSwapped}`);
+// pricesSwapped: 1
+```
+
+### What Happens
+
+1. OmniBase finds the tenant's active subscriptions
+2. For each subscription item, finds a matching price with the same base ID and template
+3. Swaps the subscription item to use the enterprise price
+4. Updates the tenant's `enterprise_template` field
+5. Returns the count of prices swapped
+
+### Get Prices by Template
+
+List all prices for a specific template:
+
+```typescript
+const { data } = await stripeApi.getEnterpriseTemplatesPrices({
+  template: 'tier1_10pct_off',
+});
+
+data.prices.forEach(price => {
+  console.log(`${price.id}: $${price.amount / 100}`);
+});
+// pro_monthly_tier1: $44.10
+// team_monthly_tier1: $134.10
+```
+
+## Custom Per-Tenant Pricing
+
+For fully custom pricing, create prices with `enterprise_id`:
+
+### Configuration
+
+```json
+{
+  "products": [
+    {
+      "id": "pro",
+      "name": "Pro Plan",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 4900,
+          "currency": "usd",
+          "interval": "month",
+          "public": true,
+          "default": true
+        },
+        {
+          "id": "pro_monthly_acme",
+          "amount": 3900,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_id": "acme_corp"
+        },
+        {
+          "id": "pro_monthly_bigco",
+          "amount": 2900,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_id": "bigco_inc"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Applying Custom Pricing
+
+```typescript
+const { data } = await stripeApi.applyEnterpriseCustom({
+  applyEnterpriseCustomRequest: {
+    tenantId: 'tenant_456',
+    enterpriseId: 'acme_corp',
+  },
+});
+
+console.log(`Prices swapped: ${data.pricesSwapped}`);
+```
+
+### Get Prices by Enterprise ID
+
+```typescript
+const { data } = await stripeApi.getEnterpriseCustomPrices({
+  enterpriseId: 'acme_corp',
+});
+
+data.prices.forEach(price => {
+  console.log(`${price.id}: $${price.amount / 100}`);
+});
+// pro_monthly_acme: $39.00
+```
+
+## Tenant Fields
+
+After applying enterprise pricing, the tenant record is updated:
+
+| Field | Description |
+|-------|-------------|
+| `enterprise_template` | Applied template (e.g., `"tier1_10pct_off"`) |
+| `enterprise_id` | Custom enterprise ID (e.g., `"acme_corp"`) |
+
+> **Note:**
+A tenant can have either `enterprise_template` OR `enterprise_id`, not both. Applying one clears the other.
+
+## Proration Behavior
+
+When swapping enterprise prices, OmniBase uses `proration_behavior: "none"`:
+
+- No immediate charge or credit
+- New price takes effect at next billing cycle
+- Customer continues on current price until renewal
+
+This prevents unexpected charges when applying enterprise discounts.
+
+## API Endpoints
+
+### Templates
+
+```bash
+# Get prices by template
+GET /api/v1/stripe/admin/enterprise/prices/by-template/{template}
+X-Service-Key: your-service-key
+
+# Apply template to tenant
+POST /api/v1/stripe/admin/enterprise/apply-template
+X-Service-Key: your-service-key
+Content-Type: application/json
+
+{
+  "tenant_id": "tenant_123",
+  "enterprise_template": "tier1_10pct_off"
+}
+```
+
+### Custom Pricing
+
+```bash
+# Get prices by enterprise ID
+GET /api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}
+X-Service-Key: your-service-key
+
+# Apply custom pricing to tenant
+POST /api/v1/stripe/admin/enterprise/apply-custom
+X-Service-Key: your-service-key
+Content-Type: application/json
+
+{
+  "tenant_id": "tenant_456",
+  "enterprise_id": "acme_corp"
+}
+```
+
+## Complete Example
+
+```json title="omnibase/stripe/enterprise.config.json"
+{
+  "$schema": "https://dashboard.omnibase.tech/api/stripe-config.schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "pro",
+      "name": "Pro Plan",
+      "type": "service",
+      "prices": [
+        {
+          "id": "pro_monthly",
+          "amount": 4900,
+          "currency": "usd",
+          "interval": "month",
+          "public": true,
+          "default": true,
+          "ui": {
+            "display_name": "Monthly",
+            "billing_period": "per month"
+          }
+        },
+        {
+          "id": "pro_yearly",
+          "amount": 49000,
+          "currency": "usd",
+          "interval": "year",
+          "public": true,
+          "ui": {
+            "display_name": "Annual",
+            "billing_period": "per year",
+            "price_display": {
+              "suffix": " (Save 17%)"
+            }
+          }
+        },
+        {
+          "id": "pro_monthly_tier1",
+          "amount": 4410,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "pro_yearly_tier1",
+          "amount": 44100,
+          "currency": "usd",
+          "interval": "year",
+          "public": false,
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "pro_monthly_tier2",
+          "amount": 3675,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier2_25pct_off"
+        },
+        {
+          "id": "pro_yearly_tier2",
+          "amount": 36750,
+          "currency": "usd",
+          "interval": "year",
+          "public": false,
+          "enterprise_template": "tier2_25pct_off"
+        },
+        {
+          "id": "pro_monthly_acme",
+          "amount": 3500,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_id": "acme_corp"
+        },
+        {
+          "id": "pro_yearly_acme",
+          "amount": 35000,
+          "currency": "usd",
+          "interval": "year",
+          "public": false,
+          "enterprise_id": "acme_corp"
+        }
+      ]
+    },
+    {
+      "id": "team",
+      "name": "Team Plan",
+      "type": "service",
+      "prices": [
+        {
+          "id": "team_monthly",
+          "amount": 14900,
+          "currency": "usd",
+          "interval": "month",
+          "public": true,
+          "default": true
+        },
+        {
+          "id": "team_monthly_tier1",
+          "amount": 13410,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "team_monthly_tier2",
+          "amount": 11175,
+          "currency": "usd",
+          "interval": "month",
+          "public": false,
+          "enterprise_template": "tier2_25pct_off"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Workflow
+
+### Setting Up Enterprise Customer
+
+### Create Enterprise Prices
+
+Add prices with `enterprise_template` or `enterprise_id` to your configuration:
+
+```json
+{
+  "id": "pro_monthly_acme",
+  "amount": 3500,
+  "currency": "usd",
+  "interval": "month",
+  "public": false,
+  "enterprise_id": "acme_corp"
+}
+```
+
+### Push Configuration
+
+```bash
+omnibase stripe push
+```
+
+### Customer Signs Up
+
+Customer subscribes through normal checkout at standard pricing.
+
+### Apply Enterprise Pricing
+
+After contract negotiation, apply the enterprise pricing:
+
+```typescript
+await stripeApi.applyEnterpriseCustom({
+  applyEnterpriseCustomRequest: {
+    tenantId: customer.tenantId,
+    enterpriseId: 'acme_corp',
+  },
+});
+```
+
+### Verify
+
+The customer's subscription is now using the enterprise price. New price takes effect at next billing cycle.
+
+## Best Practices
+
+1. **Naming Convention** — Use clear template names: `tier1_10pct_off`, `partner_pricing`, `startup_program`
+
+2. **Match Base IDs** — Enterprise prices should match the pattern of base prices (e.g., `pro_monthly` → `pro_monthly_tier1`)
+
+3. **Cover All Intervals** — If you have monthly and yearly prices, create enterprise versions of both
+
+4. **Document Tiers** — Maintain a reference document mapping templates to discount percentages
+
+5. **Audit Trail** — The tenant's `enterprise_template`/`enterprise_id` field provides an audit trail
+
+## Related
+
+- [Products & Prices](/guides/stripe/products-prices) — Price configuration
+- [Subscriptions](/guides/stripe/subscriptions) — Subscription management
+- [Configuration Guide](/guides/stripe/configuration) — Full configuration reference

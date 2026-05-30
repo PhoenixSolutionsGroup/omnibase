@@ -1,0 +1,337 @@
+---
+title: Subscriptions
+description: Manage recurring billing, subscription lifecycle, and tenant subscriptions
+---
+
+# Subscriptions
+
+OmniBase provides a complete subscription management system built on Stripe, with tenant-level subscription tracking and automatic customer creation.
+
+## Subscription Lifecycle
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Tenant    │────▶│  Checkout   │────▶│   Active    │────▶│  Canceled   │
+│   Created   │     │   Session   │     │ Subscription│     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+       │                                       │
+       ▼                                       ▼
+┌─────────────┐                        ┌─────────────┐
+│   Stripe    │                        │   Trial     │
+│  Customer   │                        │   Period    │
+│   Created   │                        └─────────────┘
+└─────────────┘
+```
+
+## Automatic Customer Creation
+
+When a tenant is created with a `billing_email`, OmniBase automatically creates a Stripe customer:
+
+```typescript
+import { V1TenantsApi } from '@omnibase/core-js';
+
+const tenantsApi = new V1TenantsApi(config);
+
+// Create tenant with billing email
+const { data: tenant } = await tenantsApi.createTenant({
+  createTenantRequest: {
+    name: 'Acme Corp',
+    billingEmail: 'billing@acme.com',
+  },
+});
+
+// Stripe customer ID is automatically populated
+console.log(tenant.stripeCustomerId); // "cus_xxx..."
+```
+
+## Subscription States
+
+| State | Description |
+|-------|-------------|
+| `active` | Subscription is currently active and billing |
+| `trialing` | Subscription is in trial period |
+| `past_due` | Payment failed but subscription still active |
+| `canceled` | Subscription has been canceled |
+| `paused` | Subscription is paused (if enabled) |
+| `incomplete` | Initial payment failed during checkout |
+
+## Managing Subscriptions
+
+### List Tenant Subscriptions
+
+```typescript
+import { V1TenantsApi } from '@omnibase/core-js';
+
+const tenantsApi = new V1TenantsApi(config);
+
+const { data: subscriptions } = await tenantsApi.listTenantSubscriptions();
+
+subscriptions.forEach(sub => {
+  console.log(`Plan: ${sub.configPriceId}`);
+  console.log(`Status: ${sub.status}`);
+  console.log(`Current Period: ${new Date(sub.currentPeriodStart * 1000)} - ${new Date(sub.currentPeriodEnd * 1000)}`);
+
+  if (sub.trialEnd) {
+    console.log(`Trial ends: ${new Date(sub.trialEnd * 1000)}`);
+  }
+});
+```
+
+### Get Single Subscription
+
+```typescript
+const { data: subscription } = await tenantsApi.getTenantSubscription({
+  configPriceId: 'pro_monthly',
+});
+
+console.log(subscription.status);
+console.log(subscription.cancelAtPeriodEnd);
+```
+
+### Add Subscription
+
+```typescript
+const { data } = await tenantsApi.addTenantSubscription({
+  addTenantSubscriptionRequest: {
+    priceId: 'pro_monthly',
+  },
+});
+
+console.log('Subscription created:', data.subscriptionId);
+```
+
+### Cancel Subscription
+
+```typescript
+await tenantsApi.removeTenantSubscription({
+  removeTenantSubscriptionRequest: {
+    priceId: 'pro_monthly',
+  },
+});
+```
+
+> **Note:**
+By default, subscriptions are canceled at the end of the current billing period. The customer retains access until then.
+
+## Subscription Response
+
+```typescript
+interface SubscriptionResponse {
+  subscriptionId: string;      // Stripe subscription ID
+  configPriceId: string;       // Your config price ID
+  status: string;              // active, trialing, canceled, etc.
+  isLegacyPrice: boolean;      // True if price was migrated
+  currentPeriodStart: number;  // Unix timestamp
+  currentPeriodEnd: number;    // Unix timestamp
+  cancelAtPeriodEnd: boolean;  // Will cancel at period end
+  canceledAt?: number;         // When canceled (if applicable)
+  trialStart?: number;         // Trial start (if applicable)
+  trialEnd?: number;           // Trial end (if applicable)
+}
+```
+
+## Billing Status
+
+Check if a tenant has a valid payment method:
+
+```typescript
+const { data } = await tenantsApi.getTenantBillingStatus();
+
+if (data.isActive) {
+  console.log('Payment method is attached');
+} else {
+  console.log('No payment method - redirect to billing setup');
+}
+```
+
+## Server-Side Implementation
+
+### Next.js Example
+
+```tsx title="app/(dashboard)/subscriptions/page.tsx"
+import { V1StripeApi, V1TenantsApi, V1PaymentsApi } from '@omnibase/core-js';
+import { redirect } from 'next/navigation';
+import { PricingTable } from '@omnibase/shadcn';
+
+export default async function SubscriptionsPage() {
+  const stripeApi = new V1StripeApi(config);
+  const tenantsApi = new V1TenantsApi(config);
+  const paymentsApi = new V1PaymentsApi(config);
+
+  // Get available plans
+  const { data: stripeConfig } = await stripeApi.getStripeConfig();
+
+  // Get current subscription
+  const { data: subscriptions } = await tenantsApi.listTenantSubscriptions();
+  const currentPriceId = subscriptions?.[0]?.configPriceId;
+
+  async function createCheckout(priceId: string) {
+    'use server';
+    const { data } = await paymentsApi.createCheckout({
+      createCheckoutRequest: {
+        priceId,
+        successUrl: `${process.env.APP_URL}/subscriptions?success=true`,
+        cancelUrl: `${process.env.APP_URL}/subscriptions`,
+        trialPeriodDays: 14,
+        allowPromotionCodes: true,
+      },
+    });
+    redirect(data.url!);
+  }
+
+  async function openPortal() {
+    'use server';
+    const { data } = await paymentsApi.createCustomerPortal({
+      createPortalRequest: {
+        returnUrl: `${process.env.APP_URL}/subscriptions`,
+      },
+    });
+    redirect(data.url!);
+  }
+
+  return (
+    <div className="container py-8">
+      <h1 className="text-2xl font-bold mb-8">Subscription</h1>
+
+      <PricingTable
+        products={stripeConfig.products}
+        selectedPriceId={currentPriceId}
+        onPriceSelect={createCheckout}
+        showPricingToggle
+      />
+
+      {currentPriceId && (
+        <form action={openPortal} className="mt-8">
+          <button type="submit" className="btn">
+            Manage Billing
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+```
+
+## Trial Periods
+
+Add trial periods when creating checkout sessions:
+
+```typescript
+const { data } = await paymentsApi.createCheckout({
+  createCheckoutRequest: {
+    priceId: 'pro_monthly',
+    successUrl: 'https://example.com/success',
+    cancelUrl: 'https://example.com/pricing',
+    trialPeriodDays: 14, // 14-day free trial
+  },
+});
+```
+
+### Trial Behavior
+
+- Customer is not charged during trial
+- Payment method is collected but not charged
+- Subscription transitions to `active` when trial ends
+- `trial_will_end` webhook fires 3 days before trial ends
+
+## Handling Subscription Changes
+
+### Upgrade/Downgrade
+
+When a customer changes plans, the subscription item price is swapped:
+
+```typescript
+// This is typically handled through Customer Portal
+// or programmatically via the admin API
+```
+
+### Proration
+
+By default, Stripe prorates charges when customers change plans mid-cycle:
+
+- **Upgrade**: Customer is charged the prorated difference immediately
+- **Downgrade**: Customer receives credit applied to future invoices
+
+## Webhook Events
+
+Subscribe to these events for subscription management:
+
+```json
+{
+  "webhooks": [
+    {
+      "id": "subscription_events",
+      "url": "${WEBHOOK_URL}/api/stripe/subscriptions",
+      "events": [
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+        "customer.subscription.paused",
+        "customer.subscription.resumed",
+        "customer.subscription.trial_will_end"
+      ]
+    }
+  ]
+}
+```
+
+### Event Handling
+
+```typescript
+switch (event.type) {
+  case 'customer.subscription.created':
+    // New subscription started
+    const subscription = event.data.object;
+    await activateTenantFeatures(subscription.customer);
+    break;
+
+  case 'customer.subscription.updated':
+    // Subscription changed (plan change, status change, etc.)
+    await updateTenantPlan(subscription.customer, subscription.items);
+    break;
+
+  case 'customer.subscription.deleted':
+    // Subscription canceled
+    await deactivateTenantFeatures(subscription.customer);
+    break;
+
+  case 'customer.subscription.trial_will_end':
+    // Trial ending in 3 days - send reminder email
+    await sendTrialEndingEmail(subscription.customer);
+    break;
+}
+```
+
+## Legacy Price Handling
+
+When prices are updated in your configuration, OmniBase tracks the history:
+
+```typescript
+const { data: subscriptions } = await tenantsApi.listTenantSubscriptions();
+
+subscriptions.forEach(sub => {
+  if (sub.isLegacyPrice) {
+    console.log(`${sub.configPriceId} is on a legacy price`);
+    // Consider migrating to current price
+  }
+});
+```
+
+## Best Practices
+
+1. **Always Use Config IDs** — Reference prices by config ID (`pro_monthly`), not Stripe ID (`price_xxx`)
+
+2. **Handle All States** — Your UI should handle `active`, `trialing`, `past_due`, and `canceled` states
+
+3. **Implement Webhooks** — Don't rely on polling; use webhooks for real-time updates
+
+4. **Graceful Degradation** — When a subscription is `past_due`, consider a grace period before restricting access
+
+5. **Trial Communication** — Send emails before trial ends to improve conversion
+
+## Related
+
+- [Checkout & Portal](/guides/stripe/checkout-portal) — Creating checkout sessions
+- [Webhooks](/guides/stripe/webhooks) — Handling subscription events
+- [Enterprise Pricing](/guides/stripe/enterprise-pricing) — Custom pricing for enterprises
+- [UI Components](/guides/stripe/ui-components) — PricingTable component
