@@ -1,3 +1,22 @@
+# [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.5.0...cli-v0.6.0) (2026-05-30)
+
+
+### Bug Fixes
+
+* **api:** add CORS_ALLOWED_ORIGINS to compose and drop typegen from readiness ([2357c97](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2357c978237430b545eb116e23eab9c9989a67a0))
+* **api:** handle FK violations, SELinux mounts, and contract test gaps ([7686e20](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7686e2052d7cd275076a18844d3df88c52da39e6))
+* **cli:** sync api docker image to 0.18.1 [skip ci] ([5bdd48b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5bdd48bbf836c6de8b4e38b50849676fbad3b40b))
+* **cli:** sync auth docker image to 0.4.1 [skip ci] ([09da3f4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/09da3f4766f8e41fec06dd00b979e7b30dd9d5f6))
+
+
+### Features
+
+* **cli:** sync api docker image to 0.19.0 [skip ci] ([5d57a1f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5d57a1f49d3690519ba9b8f221a44f02ab1e2b99))
+* **cli:** sync permissions docker image to 0.4.0 [skip ci] ([1f90880](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1f908805ddd9d7bc3088435bb77d68994e980f20))
+* **db:** add ReBAC RLS helpers and replace path-based storage policies ([51f9463](https://github.com/PhoenixSolutionsGroup/omnibase/commit/51f9463d999d7010eb08af9fc239a822d2cd2f5f))
+* mcp server ([52f2a74](https://github.com/PhoenixSolutionsGroup/omnibase/commit/52f2a741476cefaf6f00be9ed892020056fb8216))
+* **permissions:** add StorageObject OPL namespace for per-object access control ([4bf0ed6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4bf0ed67be6218d21237ea5f4d31a0327ced6ce4))
+
 # [0.5.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.4.1...cli-v0.5.0) (2026-02-06)
 
 
