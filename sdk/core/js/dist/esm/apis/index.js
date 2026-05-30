@@ -1,9 +1,25 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 /* tslint:disable */
 /* eslint-disable */
-export * from './V1AuthApi';
-export * from './V1ConfigurationApi';
-export * from './V1PaymentsApi';
-export * from './V1PermissionsApi';
-export * from './V1StorageApi';
-export * from './V1StripeApi';
-export * from './V1TenantsApi';
+__exportStar(require("./V1AuthApi"), exports);
+__exportStar(require("./V1ConfigurationApi"), exports);
+__exportStar(require("./V1PaymentsApi"), exports);
+__exportStar(require("./V1PermissionsApi"), exports);
+__exportStar(require("./V1StorageApi"), exports);
+__exportStar(require("./V1StripeApi"), exports);
+__exportStar(require("./V1TenantsApi"), exports);

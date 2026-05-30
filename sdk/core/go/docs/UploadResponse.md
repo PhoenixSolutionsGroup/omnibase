@@ -6,12 +6,13 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **UploadUrl** | **string** | Presigned URL for uploading the file (valid for 15 minutes) | 
 **Path** | **string** | Confirmed storage path | 
+**Id** | **string** | Unique identifier of the storage object | 
 
 ## Methods
 
 ### NewUploadResponse
 
-`func NewUploadResponse(uploadUrl string, path string, ) *UploadResponse`
+`func NewUploadResponse(uploadUrl string, path string, id string, ) *UploadResponse`
 
 NewUploadResponse instantiates a new UploadResponse object
 This constructor will assign default values to properties that have it defined,
@@ -64,6 +65,26 @@ and a boolean to check if the value has been set.
 `func (o *UploadResponse) SetPath(v string)`
 
 SetPath sets Path field to given value.
+
+
+### GetId
+
+`func (o *UploadResponse) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *UploadResponse) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *UploadResponse) SetId(v string)`
+
+SetId sets Id field to given value.
 
 
 

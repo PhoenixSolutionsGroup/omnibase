@@ -125,6 +125,7 @@ export * from './ListWebhooks200Response';
 export * from './ListWebhooksResponse';
 export * from './Logout200Response';
 export * from './LogoutResponse';
+export * from './MakePublicRequest';
 export * from './MessageResponse';
 export * from './Meter';
 export * from './MeterChange';

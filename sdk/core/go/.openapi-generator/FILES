@@ -136,6 +136,7 @@ docs/ListWebhooks200Response.md
 docs/ListWebhooksResponse.md
 docs/Logout200Response.md
 docs/LogoutResponse.md
+docs/MakePublicRequest.md
 docs/MessageResponse.md
 docs/Meter.md
 docs/MeterChange.md
@@ -363,6 +364,7 @@ model_list_webhooks_200_response.go
 model_list_webhooks_response.go
 model_logout_200_response.go
 model_logout_response.go
+model_make_public_request.go
 model_message_response.go
 model_meter.go
 model_meter_change.go

@@ -6,6 +6,7 @@ All URIs are relative to *https://api.omnibase.tech*
 |------------- | ------------- | -------------|
 | [**deleteObject**](V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage |
 | [**downloadFile**](V1StorageApi.md#downloadfile) | **POST** /api/v1/storage/download | Download file from storage |
+| [**makeFilePublic**](V1StorageApi.md#makefilepublic) | **POST** /api/v1/storage/make-public | Make a file publicly accessible |
 | [**uploadFile**](V1StorageApi.md#uploadfile) | **POST** /api/v1/storage/upload | Upload file to storage |
 
 
@@ -193,6 +194,98 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## makeFilePublic
+
+> DeleteObject200Response makeFilePublic(makePublicRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
+
+Make a file publicly accessible
+
+Makes a storage object publicly accessible to any authenticated user, regardless of tenant.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (&#x60;omnibase_postgrest_jwt&#x60;) or Header (&#x60;X-Postgrest-Token&#x60;) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## Permission Check Requires &#x60;make_public&#x60; permission via Keto OPL. By default, only the file owner or users with the &#x60;can_make_public&#x60; relation can make a file public.  ## Effect Once public, any authenticated user can download the file without needing a Keto relation or tenant membership. 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1StorageApi,
+} from '@omnibase/core-js';
+import type { MakeFilePublicRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1StorageApi(config);
+
+  const body = {
+    // MakePublicRequest
+    makePublicRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | PostgREST JWT token - Alternative to cookie authentication (optional)
+    xPostgrestToken: xPostgrestToken_example,
+    // string | PostgREST JWT token in cookie form (optional)
+    omnibasePostgrestJwt: omnibasePostgrestJwt_example,
+  } satisfies MakeFilePublicRequest;
+
+  try {
+    const data = await api.makeFilePublic(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **makePublicRequest** | [MakePublicRequest](MakePublicRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xPostgrestToken** | `string` | PostgREST JWT token - Alternative to cookie authentication | [Optional] [Defaults to `undefined`] |
+| **omnibasePostgrestJwt** | `string` | PostgREST JWT token in cookie form | [Optional] [Defaults to `undefined`] |
+
+### Return type
+
+[**DeleteObject200Response**](DeleteObject200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`, `text/plain`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | File made public successfully |  -  |
+| **400** | Bad request - Invalid or missing required headers/body |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **403** | Forbidden - Insufficient permissions |  -  |
+| **404** | Not Found - Resource not found |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## uploadFile
 
 > UploadFile200Response uploadFile(uploadRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
@@ -279,6 +372,8 @@ example().catch(console.error);
 | **400** | Bad request - Invalid or missing required headers/body |  -  |
 | **401** | Unauthorized - Authentication required |  -  |
 | **403** | Forbidden - Insufficient permissions |  -  |
+| **404** | Tenant not found |  -  |
+| **409** | File already exists at the specified path |  -  |
 | **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

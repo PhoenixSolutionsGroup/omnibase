@@ -126,6 +126,7 @@ docs/ListWebhooks200Response.md
 docs/ListWebhooksResponse.md
 docs/Logout200Response.md
 docs/LogoutResponse.md
+docs/MakePublicRequest.md
 docs/MessageResponse.md
 docs/Meter.md
 docs/MeterChange.md
@@ -360,6 +361,7 @@ src/models/ListWebhooks200Response.ts
 src/models/ListWebhooksResponse.ts
 src/models/Logout200Response.ts
 src/models/LogoutResponse.ts
+src/models/MakePublicRequest.ts
 src/models/MessageResponse.ts
 src/models/Meter.ts
 src/models/MeterChange.ts

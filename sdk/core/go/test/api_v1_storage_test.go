@@ -46,6 +46,18 @@ func Test_omnibase_V1StorageAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1StorageAPIService MakeFilePublic", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1StorageAPI.MakeFilePublic(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1StorageAPIService UploadFile", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test

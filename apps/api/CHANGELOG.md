@@ -1,3 +1,23 @@
+# [0.19.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.1...api-v0.19.0) (2026-05-30)
+
+
+### Bug Fixes
+
+* **api:** add CORS_ALLOWED_ORIGINS to compose and drop typegen from readiness ([2357c97](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2357c978237430b545eb116e23eab9c9989a67a0))
+* **api:** handle FK violations, SELinux mounts, and contract test gaps ([7686e20](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7686e2052d7cd275076a18844d3df88c52da39e6))
+* **api:** require explicit CORS origin whitelist ([9cecce6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9cecce6a4c1065a560689e6e272ab30ece121d94))
+* **api:** restrict X-Stripe-Customer-Id header to service key auth ([64a46bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64a46bfeb5802ef541b2e88aad8e2221085ad00f))
+* **api:** return 400 for Stripe client errors in RecordUsage ([2b500c5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2b500c578a461750cdd72e7c4de90326ec488733))
+* **api:** use constant-time comparison for service key validation ([ad7e949](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ad7e949c1daf6ba06d9f3610fb2e38f8645bd331))
+* retry db connections ([5bbfbcf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5bbfbcfe88f85daa9f8d24e19256998557edb7c4))
+
+
+### Features
+
+* **api:** add make-public endpoint and object ID to OpenAPI spec ([ba95243](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ba9524319ac03062a16770db8db1c7494c0b67a6))
+* **api:** replace PostgREST storage with Keto per-object permissions ([25f3b90](https://github.com/PhoenixSolutionsGroup/omnibase/commit/25f3b90fb832b06a0d1bd0968b771396d2b25a6b))
+* mcp server ([52f2a74](https://github.com/PhoenixSolutionsGroup/omnibase/commit/52f2a741476cefaf6f00be9ed892020056fb8216))
+
 ## [0.18.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.0...api-v0.18.1) (2026-02-07)
 
 

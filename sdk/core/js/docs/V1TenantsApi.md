@@ -606,6 +606,7 @@ example().catch(console.error);
 | **401** | User not authenticated |  -  |
 | **403** | Insufficient permissions to delete tenant |  -  |
 | **404** | Tenant not found |  -  |
+| **409** | Tenant has associated resources that must be deleted first |  -  |
 | **500** | Failed to delete tenant |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

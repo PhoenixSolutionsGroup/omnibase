@@ -23,7 +23,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: 0.18.1
+  version: 0.19.0
 externalDocs:
   description: OpenAPI Specification
   url: https://swagger.io/specification/
@@ -1535,6 +1535,18 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Tenant not found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+          description: File already exists at the specified path
         "500":
           $ref: "#/components/responses/InternalServerError"
       security:
@@ -1724,6 +1736,96 @@ paths:
       - SessionTokenAuth: []
       - ServiceKeyAuth: []
       summary: Delete file from storage
+      tags:
+      - V1 Storage
+  /api/v1/storage/make-public:
+    post:
+      description: |
+        Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
+        ## Permission Check
+        Requires `make_public` permission via Keto OPL. By default, only the file owner
+        or users with the `can_make_public` relation can make a file public.
+
+        ## Effect
+        Once public, any authenticated user can download the file without needing
+        a Keto relation or tenant membership.
+      operationId: makeFilePublic
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: PostgREST JWT token - Alternative to cookie authentication
+        explode: false
+        in: header
+        name: X-Postgrest-Token
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: PostgREST JWT token in cookie form
+        explode: true
+        in: cookie
+        name: omnibase_postgrest_jwt
+        required: false
+        schema:
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MakePublicRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteObject_200_response"
+          description: File made public successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                example: 400 Bad Request
+                type: string
+          description: Bad request - Invalid or missing required headers/body
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Make a file publicly accessible
       tags:
       - V1 Storage
   /api/v1/stripe/schema:
@@ -2639,6 +2741,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
           description: Tenant not found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictResponse"
+          description: Tenant has associated resources that must be deleted first
         "500":
           content:
             application/json:
@@ -5320,6 +5428,7 @@ components:
       example:
         path: avatars/user-123.png
         upload_url: https://storage.test.example.com/bucket/path?signature=...
+        id: 550e8400-e29b-41d4-a716-446655440000
       properties:
         upload_url:
           description: Presigned URL for uploading the file (valid for 15 minutes)
@@ -5329,7 +5438,13 @@ components:
           description: Confirmed storage path
           example: avatars/user-123.png
           type: string
+        id:
+          description: Unique identifier of the storage object
+          example: 550e8400-e29b-41d4-a716-446655440000
+          format: uuid
+          type: string
       required:
+      - id
       - path
       - upload_url
     ForbiddenResponse:
@@ -5398,6 +5513,22 @@ components:
           description: Status message
           example: file deleted
           type: string
+    MakePublicRequest:
+      additionalProperties: false
+      example:
+        path: avatars/user-123.png
+      properties:
+        path:
+          description: "Path of the file to make public. Must start with alphanumeric\
+            \ character, can contain forward slashes, underscores, dots, spaces, and\
+            \ hyphens."
+          example: avatars/user-123.png
+          maxLength: 1024
+          minLength: 1
+          pattern: "^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$"
+          type: string
+      required:
+      - path
     InternalServerError:
       description: Internal Server Error response (500)
       example:
@@ -12343,6 +12474,7 @@ components:
         data:
           path: avatars/user-123.png
           upload_url: https://storage.test.example.com/bucket/path?signature=...
+          id: 550e8400-e29b-41d4-a716-446655440000
         status: 200
     downloadFile_200_response:
       allOf:

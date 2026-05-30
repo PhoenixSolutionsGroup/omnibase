@@ -141,6 +141,7 @@ __exportStar(require("./ListWebhooks200Response"), exports);
 __exportStar(require("./ListWebhooksResponse"), exports);
 __exportStar(require("./Logout200Response"), exports);
 __exportStar(require("./LogoutResponse"), exports);
+__exportStar(require("./MakePublicRequest"), exports);
 __exportStar(require("./MessageResponse"), exports);
 __exportStar(require("./Meter"), exports);
 __exportStar(require("./MeterChange"), exports);

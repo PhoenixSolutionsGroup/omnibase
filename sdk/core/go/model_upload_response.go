@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
 
-API version: 0.18.1
+API version: 0.19.0
 Contact: support@omnibase.dev
 */
 
@@ -26,6 +26,8 @@ type UploadResponse struct {
 	UploadUrl string `json:"upload_url"`
 	// Confirmed storage path
 	Path string `json:"path"`
+	// Unique identifier of the storage object
+	Id string `json:"id"`
 }
 
 type _UploadResponse UploadResponse
@@ -34,10 +36,11 @@ type _UploadResponse UploadResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUploadResponse(uploadUrl string, path string) *UploadResponse {
+func NewUploadResponse(uploadUrl string, path string, id string) *UploadResponse {
 	this := UploadResponse{}
 	this.UploadUrl = uploadUrl
 	this.Path = path
+	this.Id = id
 	return &this
 }
 
@@ -97,6 +100,30 @@ func (o *UploadResponse) SetPath(v string) {
 	o.Path = v
 }
 
+// GetId returns the Id field value
+func (o *UploadResponse) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *UploadResponse) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *UploadResponse) SetId(v string) {
+	o.Id = v
+}
+
 func (o UploadResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -109,6 +136,7 @@ func (o UploadResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["upload_url"] = o.UploadUrl
 	toSerialize["path"] = o.Path
+	toSerialize["id"] = o.Id
 	return toSerialize, nil
 }
 
@@ -119,6 +147,7 @@ func (o *UploadResponse) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"upload_url",
 		"path",
+		"id",
 	}
 
 	allProperties := make(map[string]interface{})
