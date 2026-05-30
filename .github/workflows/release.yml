@@ -241,6 +241,8 @@ jobs:
             name: shadcn
           - package: packages/cli
             name: cli
+          - package: packages/mcp-server
+            name: mcp-server
 
     steps:
       - uses: actions/checkout@v4

@@ -29,7 +29,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/db
       AUTH_TYPE: scram-sha-256
     volumes:
-      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:z
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,7 +45,7 @@ services:
   db-migrate:
     image: migrate/migrate:latest
     volumes:
-      - ./db:/migrations
+      - ./db:/migrations:z
     command:
       [
         "-path",
@@ -324,7 +324,7 @@ services:
     image: oven/bun:latest
     working_dir: /app
     volumes:
-      - ${OMNIBASE_PROJECT_DIR}/omnibase/workers:/app
+      - ${OMNIBASE_PROJECT_DIR}/omnibase/workers:/app:z
     ports:
       - "8787:8787"
     environment:

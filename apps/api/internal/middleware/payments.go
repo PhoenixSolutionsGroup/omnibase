@@ -247,6 +247,12 @@ func (m *PaymentsMiddleware) GetCustomerIDFromTenant() gin.HandlerFunc {
 
 func (m *PaymentsMiddleware) GetCustomerIDFromHeader() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		isServiceAuth, exists := ctx.Get("is_service_auth")
+		if !exists || isServiceAuth != true {
+			ctx.Next()
+			return
+		}
+
 		stripe_customer_id := ctx.GetHeader("X-Stripe-Customer-Id")
 		if stripe_customer_id != "" {
 			ctx.Set("stripe_customer_id", stripe_customer_id)

@@ -11,6 +11,7 @@
     "stripe",
     "postgresql",
     "workers",
-    "storage"
+    "storage",
+    "mcp-server"
   ]
 }

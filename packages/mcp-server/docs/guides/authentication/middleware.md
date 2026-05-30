@@ -1,0 +1,339 @@
+---
+title: Authentication Middleware
+description: Protecting routes and managing tenant context with Next.js middleware
+---
+
+# Authentication Middleware
+
+OmniBase provides Next.js middleware that handles authentication validation, tenant membership checking, and PostgREST JWT management automatically.
+
+## Overview
+
+The middleware runs on every request and performs:
+
+1. **Session validation** - Verifies the user is authenticated
+2. **Tenant checking** - Ensures authenticated users belong to a tenant
+3. **JWT management** - Sets up database access tokens
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Request   │────▶│   Middleware     │────▶│   Your App      │
+│             │     │   - Auth check   │     │                 │
+│             │     │   - Tenant check │     │                 │
+│             │     │   - JWT setup    │     │                 │
+└─────────────┘     └──────────────────┘     └─────────────────┘
+        │                    │
+        │                    ▼
+        │           ┌──────────────────┐
+        │           │   Redirect to    │
+        │           │   /auth/login or │
+        └──────────▶│   /auth/onboard  │
+                    └──────────────────┘
+```
+
+## Basic Setup
+
+Create a `middleware.ts` file in your project root:
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
+
+export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL);
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+};
+```
+
+> **Note:**
+The matcher excludes static files and images from middleware processing for better performance.
+
+## Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `tenant_check` | `boolean` | `true` | Enable tenant membership validation |
+| `tenant_check_paths` | `string[]` | `["/"]` | Paths that require tenant membership |
+| `tenant_check_redirect_url` | `string` | `"/auth/onboarding"` | URL to redirect users without a tenant |
+
+### Full Configuration Example
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+export const middleware = createOmniBaseMiddleware(
+  process.env.OMNIBASE_API_URL!,
+  {
+    tenant_check: true,
+    tenant_check_paths: ['/', '/dashboard', '/settings'],
+    tenant_check_redirect_url: '/auth/onboarding',
+  }
+);
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/|auth/).*)'],
+};
+```
+
+## Middleware Behavior
+
+### Path Matching
+
+The middleware supports three matching patterns:
+
+| Pattern | Behavior |
+|---------|----------|
+| `/dashboard` | Exact match and all subpaths (`/dashboard/settings`) |
+| `/api/*` | Wildcard matches all paths starting with `/api/` |
+| `/` | Matches the root and all subpaths |
+
+### Authentication Flow
+
+### Session Check
+
+Middleware retrieves the current session using `getServerSession()`.
+
+- **Has session**: Continue to tenant check
+- **No session**: Pass through (public routes) or handle via page-level protection
+
+### Tenant Check
+
+If `tenant_check` is enabled and the path matches `tenant_check_paths`:
+
+- **Has tenant**: Continue to JWT check
+- **No tenant**: Redirect to `tenant_check_redirect_url`
+
+### PostgREST JWT
+
+Ensures the `omnibase_postgrest_jwt` cookie is set for database access:
+
+- **Has JWT**: Continue
+- **No JWT**: Fetch new JWT from API and set cookie
+
+### Pass to App
+
+Request continues to your Next.js application with all cookies merged.
+
+## Common Patterns
+
+### Protect Everything Except Auth Routes
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+export const middleware = createOmniBaseMiddleware(
+  process.env.OMNIBASE_API_URL!,
+  {
+    tenant_check: true,
+    tenant_check_paths: ['/'],
+    tenant_check_redirect_url: '/auth/onboarding',
+  }
+);
+
+export const config = {
+  // Exclude auth routes, static files, and API routes
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|auth/|api/).*)'],
+};
+```
+
+### Disable Tenant Checking
+
+For single-tenant applications or when handling tenants manually:
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+export const middleware = createOmniBaseMiddleware(
+  process.env.OMNIBASE_API_URL!,
+  {
+    tenant_check: false,
+  }
+);
+```
+
+### Protect Specific Paths Only
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+export const middleware = createOmniBaseMiddleware(
+  process.env.OMNIBASE_API_URL!,
+  {
+    tenant_check: true,
+    tenant_check_paths: ['/dashboard', '/settings', '/billing'],
+    tenant_check_redirect_url: '/setup',
+  }
+);
+```
+
+## Combining with Page-Level Protection
+
+Middleware handles the high-level routing, but you should also use `protectedRoute()` for additional security:
+
+```tsx title="app/dashboard/page.tsx"
+import { protectedRoute } from '@omnibase/nextjs/auth';
+
+export default async function DashboardPage() {
+  // Double-check authentication at the page level
+  const session = await protectedRoute('/auth/login');
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome, {session.identity.traits.email}</p>
+    </div>
+  );
+}
+```
+
+> **Note:**
+Page-level protection (`protectedRoute`) provides defense in depth and handles edge cases where middleware might be bypassed.
+
+## Real-World Example
+
+Here's the complete middleware setup from the OmniBase dashboard:
+
+```typescript title="middleware.ts"
+import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+
+const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
+
+export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL, {
+  tenant_check: true,
+  tenant_check_paths: ['/'],
+  tenant_check_redirect_url: '/auth/onboarding',
+});
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+};
+```
+
+This configuration:
+- Validates sessions on all routes
+- Requires tenant membership for the entire app
+- Redirects new users to `/auth/onboarding` to create or join an organization
+- Handles PostgREST JWT tokens automatically
+
+## How It Works Internally
+
+### Tenant Check Middleware
+
+```typescript
+// Simplified version of internal implementation
+function tenantCheckMiddleware(req, session, config) {
+  // Skip if tenant check disabled
+  if (!config.tenant_check) return NextResponse.next();
+
+  // Skip non-matching paths
+  if (!matchesPath(req.url, config.tenant_check_paths)) {
+    return NextResponse.next();
+  }
+
+  // Skip if no session (handled elsewhere)
+  if (!session) return NextResponse.next();
+
+  // Check if user has active tenant
+  const hasTenant = session.identity?.metadata_public?.active_tenant_id;
+
+  if (!hasTenant) {
+    return NextResponse.redirect(config.tenant_check_redirect_url);
+  }
+
+  return NextResponse.next();
+}
+```
+
+### PostgREST JWT Middleware
+
+```typescript
+// Simplified version of internal implementation
+async function postgrestJWTCheckMiddleware(req, session, apiUrl) {
+  // Skip if no session
+  if (!session) return NextResponse.next();
+
+  // Check for existing JWT
+  const existingJWT = req.cookies.get('omnibase_postgrest_jwt');
+  if (existingJWT) return NextResponse.next();
+
+  // Fetch new JWT from API
+  const response = await fetch(`${apiUrl}/api/v1/tenants/jwt`, {
+    headers: { Cookie: req.headers.get('cookie') },
+  });
+
+  const { data } = await response.json();
+
+  // Set JWT cookie
+  const nextResponse = NextResponse.next();
+  nextResponse.cookies.set('omnibase_postgrest_jwt', data.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  });
+
+  return nextResponse;
+}
+```
+
+## Troubleshooting
+
+### Infinite Redirect Loop
+
+**Symptom**: Browser shows "too many redirects" error.
+
+**Cause**: Auth routes are being processed by tenant check middleware.
+
+**Fix**: Exclude auth routes from the middleware matcher:
+
+```typescript
+export const config = {
+  matcher: ['/((?!auth/).*)'],
+};
+```
+
+### JWT Cookie Not Set
+
+**Symptom**: Database queries fail with permission errors.
+
+**Cause**: PostgREST JWT middleware couldn't fetch the token.
+
+**Fix**: Ensure `OMNIBASE_API_URL` is correctly set and accessible from the middleware.
+
+### Tenant Check Not Working
+
+**Symptom**: Users without tenants can access protected routes.
+
+**Cause**: Path not matching `tenant_check_paths`.
+
+**Fix**: Use wildcards or ensure exact path matches:
+
+```typescript
+tenant_check_paths: ['/dashboard', '/dashboard/*', '/settings/*']
+```
+
+## Performance Considerations
+
+1. **Minimize matched paths** - Use specific matchers to avoid running middleware on static files
+2. **Cache session data** - The middleware caches session checks within a request
+3. **Exclude public routes** - Don't run middleware on truly public pages
+
+```typescript
+// Optimized matcher
+export const config = {
+  matcher: [
+    // Only match app routes that need protection
+    '/dashboard/:path*',
+    '/settings/:path*',
+    '/billing/:path*',
+    '/',
+  ],
+};
+```
+
+## Related
+
+- [Session Management](/guides/authentication/sessions) - How sessions work
+- [Authentication Flows](/guides/authentication/flows) - Login, registration, and more
+- [Multi-Tenancy Guide](/guides/multi-tenancy) - Working with tenants

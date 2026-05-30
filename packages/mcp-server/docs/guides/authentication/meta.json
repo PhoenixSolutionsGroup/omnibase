@@ -1,0 +1,10 @@
+{
+  "title": "Authentication",
+  "description": "User authentication and session management",
+  "icon": "KeyRound",
+  "pages": [
+    "sessions",
+    "flows",
+    "middleware"
+  ]
+}

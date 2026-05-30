@@ -244,7 +244,9 @@ func (h *PaymentsHandler) RecordUsage(ctx *gin.Context) {
 	err := h.stripe.RecordUsage(req.MeterEventName, customerID.(string), req.Value)
 	if err != nil {
 		logger.Logger.Error("Error recording usage in stripe", "meter_event_name", req.MeterEventName, "customer_id", customerID.(string), "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error recording usage in stripe: %s", err))
+		if !handlers.HandleStripeError(ctx, err) {
+			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Error recording usage in stripe: %s", err))
+		}
 		return
 	}
 

@@ -1,0 +1,9 @@
+{
+  "title": "Storage",
+  "pages": [
+    "uploadFile",
+    "downloadFile",
+    "deleteObject",
+    "makeFilePublic"
+  ]
+}

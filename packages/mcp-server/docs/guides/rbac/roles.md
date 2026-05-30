@@ -1,0 +1,425 @@
+---
+title: Managing Roles
+description: Create and manage roles for your tenants
+---
+
+# Managing Roles
+
+Roles are collections of permissions that can be assigned to users. Each tenant manages their own roles independently, giving tenant admins full control over access levels within their organization.
+
+## How Roles Work
+
+Each tenant has its own isolated set of roles:
+
+```
+┌───────────────────────────────────────┐
+│  Tenant: Acme Corp                    │
+│  ├── owner (required)                 │
+│  ├── admin (custom)                   │
+│  └── developer (custom)               │
+└───────────────────────────────────────┘
+┌───────────────────────────────────────┐
+│  Tenant: Beta Inc                     │
+│  ├── owner (required)                 │
+│  ├── manager (custom)                 │
+│  └── viewer (custom)                  │
+└───────────────────────────────────────┘
+```
+
+> **Note:**
+  Role changes in one tenant do **not** affect other tenants. Each organization has complete control over their role structure.
+
+---
+
+## The Owner Role (Required)
+
+> **Note:**
+  The `owner` role is created automatically when a tenant is created. The user who creates the tenant is automatically assigned this role. Every tenant must have at least one owner.
+
+### Owner Role Behavior
+
+- **Auto-assigned**: The tenant creator automatically receives the `owner` role
+- **Required**: Cannot be deleted; every tenant must have at least one owner
+- **Full control**: Owners typically have all tenant management permissions
+
+---
+
+## Role Suggestions from Permissions
+
+When defining permissions with JSDoc annotations, you can specify which roles should typically have each permission using the `@role` tag:
+
+```typescript title="omnibase/permissions/tenants.ts"
+/**
+ * @group User Management
+ * @displayName Invite Users
+ * @role owner
+ * @role admin
+ */
+can_invite_user: User[];
+```
+
+These `@role` annotations serve as **suggestions** when creating new roles in the UI. The permission metadata is returned by the API:
+
+```typescript
+const { data } = await tenantsApi.getRoleDefinitions({ subject: 'User' });
+
+// Each relation includes suggested roles
+for (const namespace of data.data.namespaces) {
+  for (const relation of namespace.relations) {
+    console.log(`${relation.name}: suggested for ${relation.roles?.join(', ')}`);
+  }
+}
+```
+
+---
+
+## UI Components
+
+OmniBase provides pre-built shadcn components for role management:
+
+#### RoleCreator Component
+
+Create and edit roles with autocomplete and permission selection.
+
+```tsx
+import { RoleCreator } from '@omnibase/shadcn';
+
+<RoleCreator
+  definitions={namespaceDefinitions}
+  roles={existingRoles}
+  namespaceMap={{
+    project: projects.map(p => ({ id: p.id, label: p.name })),
+  }}
+  onRoleCreate={async (data) => {
+    await tenantsApi.createRole({
+      createRoleRequest: {
+        roleName: data.role_name,
+        permissions: data.permissions,
+      },
+    });
+  }}
+  onRoleUpdate={async (data) => {
+    await tenantsApi.updateRole({
+      roleId: data.role_id,
+      updateRoleRequest: { permissions: data.permissions },
+    });
+  }}
+/>
+```
+
+**Props:**
+- `definitions` — Namespace definitions from `getRoleDefinitions()`
+- `roles` — Existing roles for autocomplete suggestions
+- `namespaceMap` — Optional mapping of namespace to selectable resources
+- `onRoleCreate` — Callback when creating a new role
+- `onRoleUpdate` — Callback when editing an existing role
+
+#### UserViewer Component
+
+Display and manage team members with role updates and removal.
+
+```tsx
+import { UserViewer } from '@omnibase/shadcn';
+
+<UserViewer
+  users={tenantUsers}
+  availableRoles={['owner', 'admin', 'member']}
+  canEditUsers={hasPermission('tenant#update_user_role')}
+  onRoleUpdate={async (userId, newRole) => {
+    await tenantsApi.updateTenantUserRole({
+      updateTenantUserRoleRequest: { userId, role: newRole },
+    });
+  }}
+  onRemoveUser={async (userId) => {
+    await tenantsApi.removeTenantUser({
+      removeTenantUserRequest: { userId },
+    });
+  }}
+/>
+```
+
+**Props:**
+- `users` — Array of `TenantUserResponse` from `listTenantUsers()`
+- `availableRoles` — Role names for the dropdown
+- `canEditUsers` — Whether to show edit controls
+- `onRoleUpdate` — Callback for role changes
+- `onRemoveUser` — Callback for user removal
+
+#### PermissionsSelectorTree Component
+
+Tree-based permission selector grouped by JSDoc annotations.
+
+```tsx
+import { PermissionsSelectorTree } from '@omnibase/shadcn';
+
+<PermissionsSelectorTree
+  definitions={namespaceDefinitions}
+  selectedPermissions={role.permissions}
+  onSelectionChange={(permissions) => {
+    setSelectedPermissions(permissions);
+  }}
+/>
+```
+
+The tree groups permissions by their `@group` and `@subGroup` annotations.
+
+---
+
+## Managing Roles via API
+
+### Creating Roles
+
+Create a new role for the current tenant:
+
+```typescript
+import { V1TenantsApi } from '@omnibase/core-js';
+
+const tenantsApi = new V1TenantsApi(config);
+
+const { data } = await tenantsApi.createRole({
+  createRoleRequest: {
+    roleName: 'developer',
+    permissions: [
+      'tenant#can_view_users',
+      'tenant#can_create_api_keys',
+      'tenant#can_view_api_keys',
+    ],
+  },
+});
+
+console.log('Created role:', data.data.role.id);
+```
+
+### Listing Roles
+
+```typescript
+const { data } = await tenantsApi.listRoles();
+
+for (const role of data.data.roles) {
+  console.log(`${role.role_name} (${role.id})`);
+  console.log(`  Permissions: ${role.permissions.join(', ')}`);
+  console.log(`  Users: ${role.user_ids.length}`);
+}
+```
+
+### Updating Role Permissions
+
+```typescript
+await tenantsApi.updateRole({
+  roleId: roleId,
+  updateRoleRequest: {
+    permissions: [
+      'tenant#can_view_users',
+      'tenant#can_invite_user',  // Added permission
+    ],
+  },
+});
+```
+
+Permission changes propagate immediately. All users with this role will have updated permissions on their next request.
+
+### Deleting Roles
+
+```typescript
+await tenantsApi.deleteRole({
+  roleId: roleId,
+});
+```
+
+> **Note:**
+  Before deleting a role, all users must be reassigned to a different role. The `owner` role cannot be deleted.
+
+---
+
+## Assigning Users to Roles
+
+### Via Invitation
+
+When inviting users, specify their role:
+
+```typescript
+await tenantsApi.createInvite({
+  createTenantUserInviteRequest: {
+    email: 'teammate@example.com',
+    role: 'developer',  // Role name
+    inviteUrl: 'https://app.example.com/auth/onboarding',
+  },
+});
+```
+
+### Updating Existing User's Role
+
+```typescript
+await tenantsApi.updateTenantUserRole({
+  updateTenantUserRoleRequest: {
+    userId: targetUserId,
+    role: 'admin',  // New role name
+  },
+});
+```
+
+---
+
+## Common Role Patterns
+
+**Owner:**
+
+**Full Control** — Auto-assigned to tenant creator
+
+Typical permissions:
+- All user management permissions
+- All API key permissions
+- All sensitive data access
+- Tenant deletion
+
+```typescript
+const ownerPermissions = [
+  'tenant#can_delete_tenant',
+  'tenant#can_invite_user',
+  'tenant#can_remove_user',
+  'tenant#can_update_user_role',
+  'tenant#can_view_users',
+  'tenant#can_update_roles',
+  'tenant#can_create_api_keys',
+  'tenant#can_view_api_keys',
+  'tenant#can_revoke_api_keys',
+  'tenant#can_view_database_password',
+  'tenant#can_rotate_keys',
+];
+```
+
+**Admin:**
+
+**Team Management** — For team managers
+
+Typical permissions:
+- User management (invite, remove, update roles)
+- API key management
+- Cannot delete tenant
+
+```typescript
+const adminPermissions = [
+  'tenant#can_invite_user',
+  'tenant#can_remove_user',
+  'tenant#can_update_user_role',
+  'tenant#can_view_users',
+  'tenant#can_update_roles',
+  'tenant#can_create_api_keys',
+  'tenant#can_view_api_keys',
+  'tenant#can_revoke_api_keys',
+];
+```
+
+**Developer:**
+
+**Development Access** — For developers
+
+Typical permissions:
+- View team members
+- API key management
+- Database connection access
+
+```typescript
+const developerPermissions = [
+  'tenant#can_view_users',
+  'tenant#can_create_api_keys',
+  'tenant#can_view_api_keys',
+  'tenant#can_view_database_connection_string',
+  'tenant#can_view_project_env',
+];
+```
+
+**Viewer:**
+
+**Read-Only Access** — For external collaborators
+
+Typical permissions:
+- View team members only
+
+```typescript
+const viewerPermissions = [
+  'tenant#can_view_users',
+];
+```
+
+---
+
+## Resource-Level Permissions
+
+For fine-grained access to specific resources (projects, documents, etc.), use direct permission relationships:
+
+```typescript
+// Grant project-specific access
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Project',
+    object: projectId,
+    relation: 'can_write',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+```
+
+This allows scenarios like:
+- **Contractor**: No tenant-wide permissions, only specific project access
+- **Project Lead**: Manage specific projects without tenant admin access
+- **Auditor**: Read-only access to specific resources
+
+---
+
+## Example: Setting Up a New Tenant
+
+When a new tenant is created, you might want to set up default roles:
+
+```typescript
+async function setupTenantRoles(tenantsApi: V1TenantsApi) {
+  // Owner role is created automatically
+
+  // Create admin role
+  await tenantsApi.createRole({
+    createRoleRequest: {
+      roleName: 'admin',
+      permissions: [
+        'tenant#can_invite_user',
+        'tenant#can_remove_user',
+        'tenant#can_update_user_role',
+        'tenant#can_view_users',
+        'tenant#can_create_api_keys',
+        'tenant#can_view_api_keys',
+      ],
+    },
+  });
+
+  // Create developer role
+  await tenantsApi.createRole({
+    createRoleRequest: {
+      roleName: 'developer',
+      permissions: [
+        'tenant#can_view_users',
+        'tenant#can_create_api_keys',
+        'tenant#can_view_api_keys',
+        'tenant#can_view_database_connection_string',
+      ],
+    },
+  });
+
+  // Create member role
+  await tenantsApi.createRole({
+    createRoleRequest: {
+      roleName: 'member',
+      permissions: [
+        'tenant#can_view_users',
+      ],
+    },
+  });
+}
+```
+
+---
+
+## Next Steps
+
+- [Defining Permissions](/guides/rbac/permissions) — Create permission namespaces with JSDoc metadata
+- [Team Invitations](/guides/multi-tenancy/invitations) — Invite users with specific roles
+- [Permissions Concept](/concepts/permissions) — Deep dive into ReBAC internals

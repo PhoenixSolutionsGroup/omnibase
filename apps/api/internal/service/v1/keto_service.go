@@ -27,6 +27,12 @@ type SubjectSet struct {
 	Relation  string `json:"relation"`
 }
 
+func Public(num *int) int {
+	second := *num + 10
+	return second
+}
+
+
 func NewKetoService(readURL, writeURL string) *KetoService {
 	logger.Logger.Info("Initializing Keto service", "readURL", readURL, "writeURL", writeURL)
 

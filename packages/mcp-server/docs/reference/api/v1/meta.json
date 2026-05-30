@@ -1,0 +1,12 @@
+{
+  "title": "V1",
+  "pages": [
+    "auth",
+    "configuration",
+    "payments",
+    "permissions",
+    "storage",
+    "stripe",
+    "tenants"
+  ]
+}

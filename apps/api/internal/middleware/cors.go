@@ -6,22 +6,42 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CORS returns a middleware that handles CORS headers
-func CORS() gin.HandlerFunc {
-	logger.Logger.Debug("CORS middleware initialized")
+// CORS returns a middleware that handles CORS headers.
+// allowedOrigins must be provided. Use "*" to allow all origins (dev only).
+func CORS(allowedOrigins []string) gin.HandlerFunc {
+	if len(allowedOrigins) == 0 {
+		logger.Logger.Error("CORS_ALLOWED_ORIGINS is required but not set")
+		panic("CORS_ALLOWED_ORIGINS environment variable must be set")
+	}
+
+	allowAll := len(allowedOrigins) == 1 && allowedOrigins[0] == "*"
+	originSet := make(map[string]bool, len(allowedOrigins))
+	if !allowAll {
+		for _, o := range allowedOrigins {
+			originSet[o] = true
+		}
+	}
+
+	logger.Logger.Debug("CORS middleware initialized", "allowed_origins", allowedOrigins, "allow_all", allowAll)
 
 	return gin.HandlerFunc(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 		path := c.Request.URL.Path
 
-		// Allow all origins and rely on JWT/session authentication for security
 		if origin != "" {
-			c.Header("Access-Control-Allow-Origin", origin)
-			c.Header("Access-Control-Allow-Credentials", "true")
-			logger.Logger.Debug("CORS headers set for origin",
-				"origin", origin,
-				"path", path,
-			)
+			if allowAll || originSet[origin] {
+				c.Header("Access-Control-Allow-Origin", origin)
+				c.Header("Access-Control-Allow-Credentials", "true")
+				logger.Logger.Debug("CORS headers set for origin",
+					"origin", origin,
+					"path", path,
+				)
+			} else {
+				logger.Logger.Debug("CORS request from non-whitelisted origin blocked",
+					"origin", origin,
+					"path", path,
+				)
+			}
 		}
 
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")

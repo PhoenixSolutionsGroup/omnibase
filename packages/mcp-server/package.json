@@ -1,0 +1,40 @@
+{
+  "name": "@omnibase/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for Omnibase documentation — gives AI agents access to bundled docs",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "omnibase-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "npx fastmcp dev src/index.ts",
+    "inspect": "npx fastmcp inspect src/index.ts",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
+  },
+  "keywords": [
+    "mcp",
+    "omnibase",
+    "documentation",
+    "ai"
+  ],
+  "author": "Phoenix Solutions Group",
+  "license": "MIT",
+  "dependencies": {
+    "fastmcp": "^3.32.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}

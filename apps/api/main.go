@@ -55,7 +55,7 @@ func main() {
 	r.Use(middleware.GinLogger())
 
 	logger.Logger.Info("Setting up CORS middleware")
-	r.Use(middleware.CORS())
+	r.Use(middleware.CORS(cfg.CORSAllowedOrigins))
 
 	// Custom handler for 404 Not Found
 	r.NoRoute(func(ctx *gin.Context) {

@@ -1,0 +1,32 @@
+---
+title: Roadmap
+description: What's coming next for OmniBase
+---
+
+# Roadmap
+
+See what's planned for OmniBase. Features are subject to change based on community feedback.
+
+## Open Source
+
+    ### Email Service
+
+    Send emails directly via the OmniBase REST API. Integrate transactional emails into your applications without third-party services.
+
+    ### Redis Service
+
+    Built-in Redis support for caching, sessions, and real-time features. Managed alongside your database with zero configuration.
+
+    ### Database Events
+
+    Subscribe to real-time database changes. Get notified when tables, columns, or rows are created, updated, or deleted. Perfect for building reactive applications.
+
+## Managed Hosting
+
+    ### GitHub Branch Sync
+
+    Automatic database branching synced with your GitHub branches. Each PR gets its own isolated database environment for testing.
+
+    ### Custom Email Domains
+
+    Send emails from your own domain. Full DNS configuration and SPF/DKIM setup included for maximum deliverability.

@@ -1,0 +1,56 @@
+---
+title: MCP Server
+description: Give AI agents access to Omnibase documentation
+---
+
+# MCP Server
+
+The Omnibase MCP server lets AI coding assistants (Claude Code, Cursor, Windsurf, etc.) search and read Omnibase documentation directly. Documentation is bundled with the server and versioned alongside the API — no network requests needed.
+
+## Install
+
+```bash
+npm install -g @omnibase/mcp-server
+```
+
+## Configure
+
+Add to your AI tool's MCP configuration:
+
+### Claude Code
+
+```bash
+claude mcp add omnibase-docs -- omnibase-mcp-server
+```
+
+### Claude Desktop / Cursor / Windsurf
+
+Add to your MCP settings file:
+
+```json
+{
+  "mcpServers": {
+    "omnibase-docs": {
+      "command": "omnibase-mcp-server"
+    }
+  }
+}
+```
+
+## What it does
+
+Once configured, your AI assistant can:
+
+- **Search documentation** — find relevant guides, API references, and examples by keyword
+- **Read full pages** — pull complete documentation content into the conversation
+- **List all docs** — browse available documentation pages
+
+The server version is pinned to the API version, so the docs your AI reads always match the API you're running.
+
+## Available tools
+
+| Tool | Description |
+|------|-------------|
+| `omnibase_list_docs` | List all available documentation pages |
+| `omnibase_search_docs` | Search documentation by keyword |
+| `omnibase_get_doc` | Read the full content of a specific page |

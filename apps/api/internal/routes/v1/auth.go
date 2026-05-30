@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
 func SetUpAuthRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Initializing auth routes")
 	cfg := config.New()
