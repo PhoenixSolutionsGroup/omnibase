@@ -8,9 +8,12 @@ import (
 	"api/internal/models"
 	services_v1 "api/internal/service/v1"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
@@ -115,6 +118,17 @@ func (h *StorageHandler) Upload(c *gin.Context) {
 
 	logger.Logger.Debug("Inserting file metadata")
 	if err := h.db.Create(&obj).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23503":
+				handlers.NewNotFoundResponse(c, "tenant not found")
+				return
+			case "23505":
+				handlers.NewConflictResponse(c, "file already exists at this path")
+				return
+			}
+		}
 		logger.Logger.Error("Failed to insert metadata", "path", fullPath, "error", err)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to insert metadata: %w", err))
 		return

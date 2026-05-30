@@ -285,6 +285,12 @@ paths:
             application/json:
               schema:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
+        '409':
+          description: Tenant has associated resources that must be deleted first
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/errors.yaml#/components/schemas/ConflictResponse'
         '500':
           description: Failed to delete tenant
           content:

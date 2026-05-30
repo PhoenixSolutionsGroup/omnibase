@@ -1621,6 +1621,18 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: File already exists at the specified path
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/storage/download:
@@ -2942,6 +2954,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Tenant has associated resources that must be deleted first
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
         '500':
           description: Failed to delete tenant
           content:

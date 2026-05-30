@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 )
 
@@ -231,6 +232,11 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 
 	// Delete the tenant (this will cascade delete tenant_users, tenant_settings, and tenant_invites)
 	if err := h.db.Delete(&tenant).Error; err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			handlers.NewConflictResponse(ctx, "tenant has associated resources that must be deleted first")
+			return
+		}
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to delete tenant: %s", err))
 		return
 	}
