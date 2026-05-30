@@ -99,6 +99,11 @@ if [ "$GENERATE_JS" = true ]; then
   jq '. + {"files": ["dist"]}' sdk/core/js/package.json > sdk/core/js/package.json.tmp && mv sdk/core/js/package.json.tmp sdk/core/js/package.json
   echo -e "${GREEN}✓ JavaScript SDK package.json patched${NC}"
 
+  echo -e "${BLUE}Patching JavaScript SDK tsconfig.json...${NC}"
+  jq '.compilerOptions.moduleResolution = "node16" | .compilerOptions.module = "node16" | .compilerOptions.rootDir = "./src"' sdk/core/js/tsconfig.json > sdk/core/js/tsconfig.json.tmp && mv sdk/core/js/tsconfig.json.tmp sdk/core/js/tsconfig.json
+  jq '.compilerOptions.module = "nodenext" | .compilerOptions.moduleResolution = "nodenext"' sdk/core/js/tsconfig.esm.json > sdk/core/js/tsconfig.esm.json.tmp && mv sdk/core/js/tsconfig.esm.json.tmp sdk/core/js/tsconfig.esm.json
+  echo -e "${GREEN}✓ JavaScript SDK tsconfig.json patched${NC}"
+
   echo -e "${BLUE}Building JavaScript SDK...${NC}"
   cd sdk/core/js
   bun run build
