@@ -9,6 +9,8 @@ services:
       - type: bind
         source: ../../../docker/auth
         target: /etc/config/auth
+        bind:
+          selinux: z
 
   auth:
     image: ""
@@ -19,6 +21,8 @@ services:
       - type: bind
         source: ../../../docker/auth
         target: /etc/config/auth
+        bind:
+          selinux: z
 
   rest-api:
     image: ""
@@ -28,7 +32,7 @@ services:
     environment:
       - ENABLE_PPROF=true
     volumes:
-      - ../../../apps/api:/app
+      - ../../../apps/api:/app:z
 
   permissions-migrate:
     image: ""

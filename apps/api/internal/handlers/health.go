@@ -77,13 +77,6 @@ func (h *HealthHandler) HealthReady(c *gin.Context) {
 		allReady = false
 	}
 
-	// Check typegen (postgres-meta) service
-	typegenHealth := h.checkHTTPService(h.cfg.TypegenURL, "/health")
-	services["typegen"] = typegenHealth
-	if !typegenHealth.Ready {
-		allReady = false
-	}
-
 	// Check storage service
 	if h.cfg.S3Config.Endpoint != "" {
 		storageHealth := h.checkHTTPService(h.cfg.S3Config.Endpoint, "/health")
