@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.0...auth-v0.4.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* **auth:** add --dev flag for HTTP website URLs ([6c429f3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6c429f3a80c4d6b6c5f26c269ab6f52b48b06def))
+
 # [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.3.2...auth-v0.4.0) (2026-01-22)
 
 
