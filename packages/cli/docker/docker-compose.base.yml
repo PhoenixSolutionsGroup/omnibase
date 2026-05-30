@@ -275,7 +275,7 @@ services:
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS}
 
   permissions-migrate:
-    image: phoenixsolutionsgroup/omnibase-permissions:0.3.0
+    image: phoenixsolutionsgroup/omnibase-permissions:0.4.0
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
     command: migrate up -c /etc/config/permissions/permissions.yml --yes
@@ -293,7 +293,7 @@ services:
     depends_on:
       - permissions-migrate
       - pgbouncer
-    image: phoenixsolutionsgroup/omnibase-permissions:0.3.0
+    image: phoenixsolutionsgroup/omnibase-permissions:0.4.0
     restart: unless-stopped
     environment:
       - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
