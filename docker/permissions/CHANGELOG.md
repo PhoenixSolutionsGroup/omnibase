@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.3.0...permissions-v0.4.0) (2026-05-30)
+
+
+### Features
+
+* **permissions:** add StorageObject OPL namespace for per-object access control ([4bf0ed6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4bf0ed67be6218d21237ea5f4d31a0327ced6ce4))
+
 # [0.3.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.2.1...permissions-v0.3.0) (2026-01-22)
 
 
