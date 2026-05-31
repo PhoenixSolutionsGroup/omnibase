@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Omnibase REST API
-  version: 0.14.0
+  version: 0.18.1
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -1621,6 +1621,18 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/ForbiddenError'
+        '404':
+          description: Tenant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: File already exists at the specified path
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /api/v1/storage/download:
@@ -1799,6 +1811,93 @@ paths:
           $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
+  /api/v1/storage/make-public:
+    post:
+      operationId: makeFilePublic
+      summary: Make a file publicly accessible
+      description: |
+        Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
+
+        ## Authentication
+        - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
+        - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
+
+        ## Permission Check
+        Requires `make_public` permission via Keto OPL. By default, only the file owner
+        or users with the `can_make_public` relation can make a file public.
+
+        ## Effect
+        Once public, any authenticated user can download the file without needing
+        a Keto relation or tenant membership.
+      tags:
+        - V1 Storage
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - in: header
+          name: X-User-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: User ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Tenant-Id
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+        - in: header
+          name: X-Postgrest-Token
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token - Alternative to cookie authentication
+        - in: cookie
+          name: omnibase_postgrest_jwt
+          required: false
+          schema:
+            type: string
+          description: PostgREST JWT token in cookie form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MakePublicRequest'
+      responses:
+        '200':
+          description: File made public successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Bad request - Invalid or missing required headers/body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/plain:
+              schema:
+                type: string
+                example: 400 Bad Request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/stripe/schema:
     get:
       tags:
@@ -2855,6 +2954,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Tenant has associated resources that must be deleted first
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictResponse'
         '500':
           description: Failed to delete tenant
           content:
@@ -4321,7 +4426,10 @@ components:
           example: acme_corp
         type:
           type: string
-          description: Tenant type
+          enum:
+            - organization
+            - individual
+          description: 'Tenant type: ''organization'' for multi-user tenants with invitations and team management, ''individual'' for single-user tenants'
           example: organization
         created_at:
           type: string
@@ -5336,6 +5444,7 @@ components:
       required:
         - upload_url
         - path
+        - id
       properties:
         upload_url:
           type: string
@@ -5345,6 +5454,11 @@ components:
           type: string
           description: Confirmed storage path
           example: avatars/user-123.png
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the storage object
+          example: 550e8400-e29b-41d4-a716-446655440000
     ForbiddenResponse:
       type: object
       description: Forbidden error response (403)
@@ -5402,6 +5516,19 @@ components:
           type: string
           description: Status message
           example: file deleted
+    MakePublicRequest:
+      type: object
+      required:
+        - path
+      additionalProperties: false
+      properties:
+        path:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9/_. -]*$
+          description: Path of the file to make public. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
+          example: avatars/user-123.png
     InternalServerError:
       type: object
       description: Internal Server Error response (500)
@@ -7290,6 +7417,14 @@ components:
           format: email
           description: Billing email for Stripe customer
           example: billing@test.example.com
+        type:
+          type: string
+          enum:
+            - organization
+            - individual
+          default: organization
+          description: 'Tenant type: ''organization'' for multi-user tenants with invitations and team management, ''individual'' for single-user tenants. Defaults to ''organization'' if not specified.'
+          example: organization
     CreateTenantResponse:
       type: object
       description: Response after creating a tenant
@@ -7556,6 +7691,48 @@ components:
           type: string
           description: Success message
           example: Role deleted successfully
+    RelationMetadata:
+      type: object
+      description: Enriched metadata for a single relation including JSDoc annotations
+      required:
+        - name
+        - display_name
+        - subjects
+      properties:
+        name:
+          type: string
+          description: Relation name as defined in TypeScript
+          example: can_view_db_secret_key
+        display_name:
+          type: string
+          description: Human-readable display name (auto-generated or from @displayName)
+          example: View Db Secret Key
+        group:
+          type: string
+          nullable: true
+          description: UI grouping from @group annotation (null if ungrouped)
+          example: Secrets
+        sub_group:
+          type: string
+          nullable: true
+          description: Nested UI grouping from @subGroup annotation (null if no subgroup)
+          example: Database
+        roles:
+          type: array
+          description: Roles that have this permission (from @role annotations)
+          items:
+            type: string
+          example:
+            - owner
+            - admin
+        subjects:
+          type: array
+          description: Subject types that can have this relation
+          items:
+            type: string
+          example:
+            - User
+            - ApiKey
     NamespaceDefinition:
       type: object
       description: Definition of a permission namespace
@@ -7576,13 +7753,18 @@ components:
           example: Tenant
         relations:
           type: array
-          description: Available relations in this namespace
+          description: Available relations in this namespace (for backwards compatibility)
           items:
             type: string
           example:
             - can_delete_tenant
             - can_invite_user
             - can_update_user_role
+        relations_metadata:
+          type: array
+          description: Enriched relation metadata with JSDoc annotations
+          items:
+            $ref: '#/components/schemas/RelationMetadata'
         subject_relations:
           type: object
           description: Maps subject types to their allowed relations
