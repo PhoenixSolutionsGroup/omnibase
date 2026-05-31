@@ -12,7 +12,7 @@ module.exports = {
         { type: 'fix', release: 'patch' },
         { type: 'docs', release: 'patch' },
         { type: 'refactor', release: 'patch' },
-        { breaking: true, release: 'major' }
+        { breaking: true, release: 'minor' }
       ]
     }],
     '@semantic-release/release-notes-generator',
