@@ -37,14 +37,14 @@ func GetConnection(cfg config.DatabaseConfig) (*gorm.DB, error) {
 
 		db, _ := instance.DB()
 		logger.Logger.Debug("Configuring database connection pool",
-			"max_idle_conns", 10,
-			"max_open_conns", 100,
-			"conn_max_lifetime", time.Hour,
-			"conn_max_idle_time", 10*time.Minute)
-		db.SetMaxIdleConns(10)
-		db.SetMaxOpenConns(100)
-		db.SetConnMaxLifetime(time.Hour)
-		db.SetConnMaxIdleTime(10 * time.Minute)
+			"max_idle_conns", cfg.MaxIdleConns,
+			"max_open_conns", cfg.MaxOpenConns,
+			"conn_max_lifetime", cfg.ConnMaxLifetime.String(),
+			"conn_max_idle_time", cfg.ConnMaxIdleTime.String())
+		db.SetMaxIdleConns(cfg.MaxIdleConns)
+		db.SetMaxOpenConns(cfg.MaxOpenConns)
+		db.SetConnMaxLifetime(cfg.ConnMaxLifetime)
+		db.SetConnMaxIdleTime(cfg.ConnMaxIdleTime)
 		logger.Logger.Info("Database connection pool configured")
 	})
 
