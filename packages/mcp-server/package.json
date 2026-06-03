@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/mcp-server",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server for Omnibase documentation — gives AI agents access to bundled docs",
   "type": "module",
   "main": "dist/index.js",
