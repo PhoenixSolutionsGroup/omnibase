@@ -62,7 +62,7 @@ export async function checkPermissions() {
     },
     {
       "X-User-Id": owner.id,
-    }
+    },
   );
 
   check(tenantResponse.response, {
@@ -87,7 +87,7 @@ export async function checkPermissions() {
     {
       "X-User-Id": owner.id,
       "X-Tenant-Id": tenant.id,
-    }
+    },
   );
 
   check(createRoleResponse.response, {
@@ -136,7 +136,7 @@ export async function checkPermissions() {
     {
       "X-Tenant-Id": tenant.id,
       "X-User-Id": owner.id,
-    }
+    },
   );
 
   check(inviteResponse.response, {
@@ -155,7 +155,7 @@ export async function checkPermissions() {
     },
     {
       "X-User-Id": member.id,
-    }
+    },
   );
 
   check(acceptResponse.response, {
@@ -233,7 +233,7 @@ export async function checkPermissions() {
     {
       "X-Tenant-Id": tenant.id,
       "X-User-Id": owner.id,
-    }
+    },
   );
 
   check(updateRoleAddResponse.response, {
@@ -280,7 +280,7 @@ export async function checkPermissions() {
     {
       "X-Tenant-Id": tenant.id,
       "X-User-Id": owner.id,
-    }
+    },
   );
 
   check(updateRoleRemoveResponse.response, {

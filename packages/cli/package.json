@@ -7,6 +7,11 @@
     "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
   },
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./db/policies": "./dist/db/policies.js",
+    "./db/generate": "./dist/db/generate.js"
+  },
   "bin": {
     "omnibase": "./dist/index.js"
   },

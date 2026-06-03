@@ -76,7 +76,7 @@ export default function page({ params, searchParams }: any) {
                     "use server";
 
                     const organizationName = formData.get(
-                      "organizationName"
+                      "organizationName",
                     ) as string | null;
                     const billingEmail = formData.get("billingEmail") as
                       | string

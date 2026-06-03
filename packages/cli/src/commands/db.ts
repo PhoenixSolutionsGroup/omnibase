@@ -145,6 +145,90 @@ export function addDbCommands(program: Command): void {
       }
     });
 
+  // ── Prisma Generate command ──────────────────────────────────────────
+
+  migrate
+    .command("generate")
+    .description("Generate migration SQL from Prisma schema + RLS policies")
+    .option("--db-url <url>", "Database URL (defaults to DATABASE_URL env)")
+    .action(async (options) => {
+      try {
+        const root = process.cwd();
+        logger.start("Generating migrations...");
+
+        const { generate } = await import("../db/generate");
+        const files = await generate({
+          projectRoot: root,
+          dbUrl: options.dbUrl,
+        });
+
+        logger.succeed(`Generated ${files.length} file(s):`);
+        for (const f of files) logger.log(`  ${f}`);
+      } catch (error) {
+        handleCommandError(error);
+      }
+    });
+
+  // ── Migrate Down command ────────────────────────────────────────────
+
+  migrate
+    .command("down")
+    .description("Rollback a migration using its .down.sql file")
+    .option("-d, --dir <directory>", "Migrations directory", "omnibase/db")
+    .option("-n, --name <name>", "Specific migration to rollback (non-interactive)")
+    .action(async (options) => {
+      try {
+        const root = process.cwd();
+        const { default: { select } } = await import("@inquirer/prompts");
+        const migrateDir = options.dir || "omnibase/db";
+        const migrationsPath = path.join(root, migrateDir);
+
+        if (!fs.existsSync(migrationsPath)) {
+          throw new Error(`No migrations directory found at ${migrationsPath}`);
+        }
+
+        const downFiles = fs
+          .readdirSync(migrationsPath)
+          .filter((f) => f.endsWith(".down.sql"))
+          .sort()
+          .reverse();
+
+        if (downFiles.length === 0) {
+          logger.info("No .down.sql files found");
+          return;
+        }
+
+        let selected: string;
+        if (options.name) {
+          const match = downFiles.find((f) => f.includes(options.name));
+          if (!match) throw new Error(`No migration matching "${options.name}"`);
+          selected = match;
+        } else {
+          selected = (await select({
+            message: "Select migration to rollback:",
+            choices: [
+              ...downFiles.map((f) => ({
+                name: f.replace(".down.sql", ""),
+                value: f,
+              })),
+              { name: "Cancel", value: "" },
+            ],
+          })) as string;
+          if (!selected) return;
+        }
+
+        const filePath = path.join(migrationsPath, selected);
+        const sql = fs.readFileSync(filePath, "utf-8");
+        logger.log(`\n${sql}\n`);
+        logger.warn(
+          `Rollback requires a database connection. Run this SQL manually via psql:\n` +
+          `  psql \$DATABASE_URL -f "${filePath}"`
+        );
+      } catch (error) {
+        handleCommandError(error);
+      }
+    });
+
   // Typegen command
   db.command("typegen")
     .description("Generate types from database schema")

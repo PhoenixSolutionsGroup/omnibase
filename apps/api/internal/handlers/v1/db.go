@@ -21,6 +21,9 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/logger"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 )
 
 type MigrationHandler struct {
@@ -139,11 +142,44 @@ func (h *MigrationHandler) HandleMigrations(c *gin.Context) {
 		return
 	}
 
-	logger.Logger.Info("Migrations applied successfully")
+	logger.Logger.Info("Migrations applied successfully, reloading PostgREST schema cache")
+	if err := h.reloadPostgREST(); err != nil {
+		logger.Logger.Warn("PostgREST schema reload failed (migrations still applied)", "error", err)
+	}
+
 	c.JSON(http.StatusOK, MigrationSuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Migrations applied successfully",
 	})
+}
+
+func (h *MigrationHandler) reloadPostgREST() error {
+	payload := fmt.Sprintf(`{"role":"authenticated","exp":%d}`, time.Now().Add(time.Minute).Unix())
+	header := `{"alg":"HS256","typ":"JWT"}`
+	seg1 := base64.RawURLEncoding.EncodeToString([]byte(header))
+	seg2 := base64.RawURLEncoding.EncodeToString([]byte(payload))
+	mac := hmac.New(sha256.New, []byte(h.cfg.Database.SigningKey))
+	mac.Write([]byte(seg1 + "." + seg2))
+	seg3 := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
+	token := seg1 + "." + seg2 + "." + seg3
+
+	req, err := http.NewRequest("POST", h.cfg.PostgRESTURL+"/rpc/pgrst_reload", nil)
+	if err != nil {
+		return fmt.Errorf("failed to create reload request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to call pgrst_reload: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("pgrst_reload returned status %d", resp.StatusCode)
+	}
+	return nil
 }
 
 func (h *MigrationHandler) extractZip(zipFile io.Reader, migrationsDir string) error {
@@ -320,7 +356,11 @@ func (h *MigrationHandler) HandleMigrationsReset(c *gin.Context) {
 		return
 	}
 
-	logger.Logger.Info("Database reset and migrations applied successfully")
+	logger.Logger.Info("Database reset and migrations applied successfully, reloading PostgREST schema cache")
+	if err := h.reloadPostgREST(); err != nil {
+		logger.Logger.Warn("PostgREST schema reload failed (migrations still applied)", "error", err)
+	}
+
 	c.JSON(http.StatusOK, MigrationSuccessResponse{
 		Status:  http.StatusOK,
 		Message: "Database reset and migrations applied successfully",
