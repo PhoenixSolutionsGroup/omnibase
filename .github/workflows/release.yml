@@ -1,10 +1,6 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["Test"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -16,14 +12,11 @@ jobs:
   # Gate: Only proceed if tests passed
   # ============================================
   check-tests:
-    name: Check Tests Passed
+    name: Manual Release Gate
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'workflow_dispatch') ||
-      (github.event.workflow_run.conclusion == 'success')
     steps:
-      - name: Tests passed
-        run: echo "Tests passed, proceeding with release"
+      - name: Release triggered
+        run: echo "Manual release dispatched, proceeding"
 
   # ============================================
   # Release API (Docker + Core SDKs)
