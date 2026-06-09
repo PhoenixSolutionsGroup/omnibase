@@ -1,0 +1,1 @@
+-- infra migration: 000010_add_role_templates.up.sql

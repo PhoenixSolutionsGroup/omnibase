@@ -1,0 +1,1 @@
+-- infra migration: 000006_db_events.up.sql

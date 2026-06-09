@@ -1,0 +1,1 @@
+-- infra migration: 000015_add_relations_metadata.up.sql

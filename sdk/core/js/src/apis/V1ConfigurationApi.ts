@@ -107,6 +107,10 @@ export interface GetStripeConfigHistoryRequest {
     offset?: number;
 }
 
+export interface ResetDatabaseMigrationsRequest {
+    migrations: Blob;
+}
+
 export interface UpdateStripeConfigRequest {
     stripeConfigUpdateRequest: StripeConfigUpdateRequest;
 }
@@ -510,6 +514,69 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      */
     async pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PullStripeConfig200Response> {
         const response = await this.pullStripeConfigRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development 
+     * Reset database and re-apply migrations
+     */
+    async resetDatabaseMigrationsRaw(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>> {
+        if (requestParameters['migrations'] == null) {
+            throw new runtime.RequiredError(
+                'migrations',
+                'Required parameter "migrations" was null or undefined when calling resetDatabaseMigrations().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['migrations'] != null) {
+            formParams.append('migrations', requestParameters['migrations'] as any);
+        }
+
+
+        let urlPath = `/api/v1/database/migrations/reset`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MigrationSuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development 
+     * Reset database and re-apply migrations
+     */
+    async resetDatabaseMigrations(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse> {
+        const response = await this.resetDatabaseMigrationsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

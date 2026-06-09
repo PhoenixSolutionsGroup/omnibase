@@ -22,13 +22,10 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	router.Use(authMiddleware.RequireAuthHeaders())
 	router.Use(authMiddleware.RequireServiceKey())
 
-	logger.Logger.Info("Registering POST /migrations route with migration handler")
 	router.POST("/migrations", databaseHandler.HandleMigrations)
-
-	logger.Logger.Info("Registering POST /migrations/reset route for database reset")
+	router.GET("/migrations/status", databaseHandler.HandleMigrationsStatus)
+	router.POST("/migrations/down", databaseHandler.HandleMigrationsDown)
 	router.POST("/migrations/reset", databaseHandler.HandleMigrationsReset)
-
-	logger.Logger.Info("Registering GET /typegen route for TypeScript type generation")
 	router.GET("/typegen", databaseHandler.HandleTypegen)
 
 	logger.Logger.Info("Database routes registration completed")

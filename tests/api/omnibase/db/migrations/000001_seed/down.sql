@@ -1,0 +1,1 @@
+-- infra migration: 000001_seed.up.sql

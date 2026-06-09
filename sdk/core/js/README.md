@@ -70,6 +70,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
 *V1ConfigurationApi* | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe
+*V1ConfigurationApi* | [**resetDatabaseMigrations**](docs/V1ConfigurationApi.md#resetdatabasemigrations) | **POST** /api/v1/database/migrations/reset | Reset database and re-apply migrations
 *V1ConfigurationApi* | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config
 *V1ConfigurationApi* | [**uploadDatabaseMigrations**](docs/V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations
 *V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config

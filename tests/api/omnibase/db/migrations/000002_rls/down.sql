@@ -1,0 +1,1 @@
+-- infra migration: 000002_rls.up.sql

@@ -28,6 +28,9 @@ export interface GetStripeConfigHistoryRequest {
     limit?: number;
     offset?: number;
 }
+export interface ResetDatabaseMigrationsRequest {
+    migrations: Blob;
+}
 export interface UpdateStripeConfigRequest {
     stripeConfigUpdateRequest: StripeConfigUpdateRequest;
 }
@@ -131,6 +134,16 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Pull config from Stripe
      */
     pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PullStripeConfig200Response>;
+    /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
+     * Reset database and re-apply migrations
+     */
+    resetDatabaseMigrationsRaw(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>>;
+    /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
+     * Reset database and re-apply migrations
+     */
+    resetDatabaseMigrations(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse>;
     /**
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts.
      * Update Stripe config

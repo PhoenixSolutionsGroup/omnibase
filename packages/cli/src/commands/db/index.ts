@@ -1,18 +1,17 @@
 import { Command } from "commander";
 import * as fs from "fs";
 import * as path from "path";
-// @ts-ignore - adm-zip doesn't have types
 import AdmZip from "adm-zip";
 import {
   EnvironmentConfig,
   findOmnibaseRoot,
   selectEnvironment,
-} from "../utils/environment";
+} from "../../utils/environment";
 import { select } from "@inquirer/prompts";
-import { logger } from "../utils/logger";
-import { handleCommandError } from "../utils/errors";
-import { getCommandContextWithEnv } from "../utils/context";
-import { createOmnibaseSDKConfig } from "../utils/api-client";
+import { logger } from "../../utils/logger";
+import { handleCommandError } from "../../utils/errors";
+import { getCommandContextWithEnv } from "../../utils/context";
+import { createOmnibaseSDKConfig } from "../../utils/api-client";
 import {
   GenerateDatabaseTypesLanguageEnum,
   ResponseError,
@@ -52,7 +51,7 @@ export function addDbCommands(program: Command): void {
     .option(
       "-d, --dir <directory>",
       "Directory to create migration file in",
-      "omnibase/db"
+      "omnibase/db",
     )
     .option("-n, --name <name>", "Migration name (will prompt if not provided)")
     .action(async (options) => {
@@ -69,7 +68,7 @@ export function addDbCommands(program: Command): void {
     .option(
       "-d, --dir <directory>",
       "Directory containing migration files",
-      "omnibase/db"
+      "omnibase/db",
     )
     .action(async (options) => {
       try {
@@ -78,7 +77,7 @@ export function addDbCommands(program: Command): void {
 
         if (!ctx.env.omnibaseServiceKey) {
           throw new Error(
-            "OMNIBASE_SERVICE_KEY not found in environment configuration"
+            "OMNIBASE_SERVICE_KEY not found in environment configuration",
           );
         }
 
@@ -91,12 +90,12 @@ export function addDbCommands(program: Command): void {
   migrate
     .command("reset")
     .description(
-      "Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)"
+      "Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)",
     )
     .option(
       "-d, --dir <directory>",
       "Directory containing migration files",
-      "omnibase/db"
+      "omnibase/db",
     )
     .option("-y, --yes", "Skip confirmation prompt")
     .action(async (options) => {
@@ -106,7 +105,7 @@ export function addDbCommands(program: Command): void {
 
         if (!ctx.env.omnibaseServiceKey) {
           throw new Error(
-            "OMNIBASE_SERVICE_KEY not found in environment configuration"
+            "OMNIBASE_SERVICE_KEY not found in environment configuration",
           );
         }
 
@@ -123,7 +122,7 @@ export function addDbCommands(program: Command): void {
               "\x1b[31mWARNING: This will DROP ALL TABLES and re-apply migrations.\x1b[0m\nAll data will be lost. Are you sure? (yes/no): ",
               (answer) => {
                 resolve(answer.toLowerCase() === "yes");
-              }
+              },
             );
           });
 
@@ -138,7 +137,7 @@ export function addDbCommands(program: Command): void {
         await resetMigrations(
           ctx.env.omnibaseApiUrl,
           ctx.env.omnibaseServiceKey,
-          options.dir
+          options.dir,
         );
       } catch (error) {
         handleCommandError(error);
@@ -150,16 +149,38 @@ export function addDbCommands(program: Command): void {
   migrate
     .command("generate")
     .description("Generate migration SQL from Prisma schema + RLS policies")
-    .option("--db-url <url>", "Database URL (defaults to DATABASE_URL env)")
+    .option(
+      "--db-url <url>",
+      "Database URL (defaults to postgresql://postgres:postgres@localhost:5432)",
+    )
+    .option("-n, --name <name>", "Migration name")
+    .option(
+      "-b, --blank",
+      "Create an empty migration to fill in by hand (data backfills, manual DDL)",
+    )
     .action(async (options) => {
       try {
         const root = process.cwd();
-        logger.start("Generating migrations...");
 
-        const { generate } = await import("../db/generate");
+        let migrationName = options.name;
+        if (!migrationName) {
+          const { input } = await import("@inquirer/prompts");
+          migrationName = await input({ message: "Migration name:" });
+        }
+
+        logger.start(
+          options.blank
+            ? "Creating blank migration..."
+            : "Generating migrations...",
+        );
+
+        const { generate } =
+          await import("../../services/db/generate/generate");
         const files = await generate({
           projectRoot: root,
           dbUrl: options.dbUrl,
+          migrationName,
+          blank: options.blank,
         });
 
         logger.succeed(`Generated ${files.length} file(s):`);
@@ -173,57 +194,173 @@ export function addDbCommands(program: Command): void {
 
   migrate
     .command("down")
-    .description("Rollback a migration using its .down.sql file")
+    .description("Rollback a migration")
     .option("-d, --dir <directory>", "Migrations directory", "omnibase/db")
-    .option("-n, --name <name>", "Specific migration to rollback (non-interactive)")
+    .option(
+      "-n, --name <name>",
+      "Specific migration dir name to rollback to (non-interactive)",
+    )
+    .option(
+      "--steps <number>",
+      "Number of steps to rollback (non-interactive, overrides --name)",
+    )
     .action(async (options) => {
       try {
         const root = process.cwd();
-        const { default: { select } } = await import("@inquirer/prompts");
+        const ctx = await getCommandContextWithEnv(program);
         const migrateDir = options.dir || "omnibase/db";
         const migrationsPath = path.join(root, migrateDir);
+        const apiUrl = ctx.env.omnibaseApiUrl;
+        const serviceKey = ctx.env.omnibaseServiceKey;
+        const {
+          default: { select },
+        } = await import("@inquirer/prompts");
+        const migrationsDir = path.join(migrationsPath, "migrations");
 
-        if (!fs.existsSync(migrationsPath)) {
-          throw new Error(`No migrations directory found at ${migrationsPath}`);
+        if (!fs.existsSync(migrationsDir)) {
+          throw new Error(`No migrations directory found at ${migrationsDir}`);
         }
 
-        const downFiles = fs
-          .readdirSync(migrationsPath)
-          .filter((f) => f.endsWith(".down.sql"))
-          .sort()
-          .reverse();
+        // Fetch current version from API (golang-migrate only stores current, not full history)
+        let currentVersion = -1;
+        try {
+          const resp = await fetch(
+            `${apiUrl}/api/v1/database/migrations/status`,
+            {
+              headers: serviceKey ? { "X-Service-Key": serviceKey } : {},
+            },
+          );
+          if (resp.ok) {
+            const body = await resp.json();
+            const arr = (body.data || []).filter((m: any) => !m.dirty);
+            if (arr.length > 0) currentVersion = arr[0].version;
+          }
+        } catch {
+          logger.warn("Could not fetch migration status from API");
+        }
 
-        if (downFiles.length === 0) {
-          logger.info("No .down.sql files found");
+        if (currentVersion < 0) {
+          logger.info("No migrations have been applied yet");
           return;
         }
 
-        let selected: string;
-        if (options.name) {
-          const match = downFiles.find((f) => f.includes(options.name));
-          if (!match) throw new Error(`No migration matching "${options.name}"`);
-          selected = match;
+        // All local migration dirs with version <= current are considered applied
+        const localDirs = fs
+          .readdirSync(migrationsDir)
+          .filter((f) => fs.statSync(path.join(migrationsDir, f)).isDirectory())
+          .sort();
+
+        type MigrationEntry = { dir: string; version: number };
+        const applied: MigrationEntry[] = [];
+        for (const d of localDirs) {
+          const version = parseInt(d.split("_")[0], 10);
+          if (isNaN(version)) continue;
+          if (version <= currentVersion) {
+            applied.push({ dir: d, version });
+          }
+        }
+
+        if (applied.length <= 1) {
+          logger.info("No migrations available to rollback");
+          return;
+        }
+
+        const currentDir = applied[applied.length - 1].dir;
+        const lastVersion = applied[applied.length - 1].version;
+
+        let steps: number;
+
+        if (options.steps) {
+          steps = parseInt(options.steps, 10);
+          if (isNaN(steps) || steps < 1)
+            throw new Error("--steps must be a positive number");
+        } else if (options.name) {
+          const idx = applied.findIndex((e) => e.dir.includes(options.name));
+          if (idx === -1)
+            throw new Error(`No applied migration matching "${options.name}"`);
+          steps = applied.length - 1 - idx;
+          if (steps <= 0) {
+            logger.info(
+              `Migration "${options.name}" is already at or below the current version`,
+            );
+            return;
+          }
         } else {
-          selected = (await select({
-            message: "Select migration to rollback:",
+          const choices = applied
+            .slice(0, -1)
+            .reverse()
+            .map((e) => {
+              const isCurrent = e.version === lastVersion;
+              return {
+                name: isCurrent ? `${e.dir} (current)` : e.dir,
+                value: e.dir,
+              };
+            });
+
+          if (choices.length === 0) {
+            logger.info("No migrations available to rollback");
+            return;
+          }
+
+          const selected = (await select({
+            message: `Select migration to rollback to (currently at ${currentDir}):`,
             choices: [
-              ...downFiles.map((f) => ({
-                name: f.replace(".down.sql", ""),
-                value: f,
-              })),
+              { name: "None (rollback all)", value: "__none__" },
+              ...choices,
               { name: "Cancel", value: "" },
             ],
           })) as string;
+
           if (!selected) return;
+
+          if (selected === "__none__") {
+            steps = applied.length;
+          } else {
+            const idx = applied.findIndex((e) => e.dir === selected);
+            steps = applied.length - 1 - idx;
+          }
         }
 
-        const filePath = path.join(migrationsPath, selected);
-        const sql = fs.readFileSync(filePath, "utf-8");
-        logger.log(`\n${sql}\n`);
-        logger.warn(
-          `Rollback requires a database connection. Run this SQL manually via psql:\n` +
-          `  psql \$DATABASE_URL -f "${filePath}"`
-        );
+        // Zip migrations and POST to down endpoint
+        const zip = zipMigrationsDir(migrationsPath);
+        const zipBuffer = zip.toBuffer();
+
+        const formData = new FormData();
+        const blob = new Blob([zipBuffer], { type: "application/zip" });
+        formData.append("migrations", blob, "migrations.zip");
+
+        formData.append("steps", String(steps));
+
+        const downEndpoint = `${apiUrl}/api/v1/database/migrations/down`;
+        logger.start(`Rolling back ${steps} migration(s)...`);
+
+        try {
+          const headers: Record<string, string> = {};
+          if (serviceKey) headers["X-Service-Key"] = serviceKey;
+
+          const response = await fetch(downEndpoint, {
+            method: "POST",
+            headers,
+            body: formData,
+          });
+
+          if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(
+              body.error ||
+                body.message ||
+                `${response.status} - ${response.statusText}`,
+            );
+          }
+
+          const data = await response.json();
+          logger.succeed(
+            data.data?.message || `Rolled back ${steps} migration(s)`,
+          );
+        } catch (error) {
+          const errorMsg = await extractErrorMessage(error);
+          throw new Error(`Failed to rollback: ${errorMsg}`);
+        }
       } catch (error) {
         handleCommandError(error);
       }
@@ -234,14 +371,17 @@ export function addDbCommands(program: Command): void {
     .description("Generate types from database schema")
     .option(
       "-o, --output <path>",
-      "Output file path (default depends on language)"
+      "Output file path (default depends on language)",
     )
     .option(
       "-s, --schema <schemas>",
       "Comma-separated list of schemas to include",
-      "public"
+      "public",
     )
-    .option("-l, --language <language>", "Target language: typescript, go, swift")
+    .option(
+      "-l, --language <language>",
+      "Target language: typescript, go, swift",
+    )
     .action(async (options) => {
       try {
         const ctx = await getCommandContextWithEnv(program);
@@ -259,7 +399,7 @@ export function addDbCommands(program: Command): void {
           language = options.language as GenerateDatabaseTypesLanguageEnum;
           if (!validLanguages.includes(language)) {
             throw new Error(
-              `Unsupported language: ${language}. Supported: ${validLanguages.join(", ")}`
+              `Unsupported language: ${language}. Supported: ${validLanguages.join(", ")}`,
             );
           }
         } else {
@@ -294,7 +434,7 @@ export function addDbCommands(program: Command): void {
  */
 async function createMigration(
   migrationsDir: string,
-  name?: string
+  name?: string,
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
   const migrationsPath = path.join(projectRoot, migrationsDir);
@@ -367,52 +507,65 @@ export async function pushDbMigrations(envOverride?: string): Promise<void> {
 
   if (!env.omnibaseServiceKey) {
     throw new Error(
-      "OMNIBASE_SERVICE_KEY not found in environment configuration"
+      "OMNIBASE_SERVICE_KEY not found in environment configuration",
     );
   }
 
   await applyMigrations(env, "omnibase/db");
 }
 
-/**
- * Apply migrations by zipping SQL files and sending to API
- * Note: Using native fetch instead of SDK because SDK doesn't include filename in FormData
- */
-async function applyMigrations(
-  env: { omnibaseApiUrl: string; omnibaseServiceKey?: string },
-  migrationsDir: string
-): Promise<void> {
-  const projectRoot = findOmnibaseRoot();
-  const migrationsPath = path.join(projectRoot, migrationsDir);
-
-  if (!fs.existsSync(migrationsPath)) {
+function zipMigrationsDir(migrationsRoot: string): AdmZip {
+  const migrationsDir = path.join(migrationsRoot, "migrations");
+  if (!fs.existsSync(migrationsDir)) {
     throw new Error(
-      `Migrations directory not found: ${migrationsPath}\n` +
-        `Please ensure the directory exists and contains .sql migration files.`
+      `No migrations directory found at ${migrationsDir}\n` +
+        `Run \`omnibase db migrate generate\` first to create migrations.`,
     );
   }
 
-  const sqlFiles = fs
-    .readdirSync(migrationsPath)
-    .filter((file) => file.endsWith(".sql"))
+  const dirs = fs
+    .readdirSync(migrationsDir)
+    .filter((f) => fs.statSync(path.join(migrationsDir, f)).isDirectory())
     .sort();
 
-  if (sqlFiles.length === 0) {
+  if (dirs.length === 0) {
     throw new Error(
-      `No .sql files found in ${migrationsPath}\n` +
-        `Please add migration files (e.g., 001-seed.sql, 002-rls.sql)`
+      `No migration directories found in ${migrationsDir}\n` +
+        `Run \`omnibase db migrate generate\` first to create migrations.`,
     );
   }
 
-  logger.log(`Found ${sqlFiles.length} migration file(s):`);
-  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
-
   const zip = new AdmZip();
-  for (const file of sqlFiles) {
-    const filePath = path.join(migrationsPath, file);
-    zip.addLocalFile(filePath);
+  let fileCount = 0;
+  for (const dir of dirs) {
+    for (const f of ["migration.sql", "down.sql"]) {
+      const p = path.join(migrationsDir, dir, f);
+      if (fs.existsSync(p)) {
+        zip.addLocalFile(p, dir);
+        fileCount++;
+      }
+    }
   }
 
+  if (fileCount === 0) {
+    throw new Error(
+      `No migration.sql files found in ${migrationsDir}/<dir>/\n` +
+        `Run \`omnibase db migrate generate\` first to create migrations.`,
+    );
+  }
+
+  logger.log(`Found ${dirs.length} migration(s) (${fileCount} file(s)):`);
+  dirs.forEach((d) => logger.log(`   ${d}`));
+
+  return zip;
+}
+
+async function uploadMigrationsZip(
+  endpoint: string,
+  serviceKey: string | undefined,
+  zip: AdmZip,
+  successMessage: string,
+): Promise<void> {
   const zipBuffer = zip.toBuffer();
   logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
 
@@ -420,14 +573,11 @@ async function applyMigrations(
   const blob = new Blob([zipBuffer], { type: "application/zip" });
   formData.append("migrations", blob, "migrations.zip");
 
-  const endpoint = `${env.omnibaseApiUrl}/api/v1/database/migrations`;
   logger.start(`Uploading migrations...`);
 
   try {
     const headers: Record<string, string> = {};
-    if (env.omnibaseServiceKey) {
-      headers["X-Service-Key"] = env.omnibaseServiceKey;
-    }
+    if (serviceKey) headers["X-Service-Key"] = serviceKey;
 
     const response = await fetch(endpoint, {
       method: "POST",
@@ -440,29 +590,24 @@ async function applyMigrations(
       throw new Error(
         body.error ||
           body.message ||
-          `${response.status} - ${response.statusText}`
+          `${response.status} - ${response.statusText}`,
       );
     }
 
     const data = await response.json();
-    logger.succeed(data.message || "Migrations applied successfully");
+    logger.succeed(data.message || successMessage);
   } catch (error) {
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
       `Failed to apply migrations: ${errorMsg}\n` +
-        `Please ensure the API is running and accessible.`
+        `Please ensure the API is running and accessible.`,
     );
   }
 }
 
-/**
- * Reset database by dropping all tables and re-applying migrations
- * Note: Reset endpoint not in SDK, using native fetch
- */
-async function resetMigrations(
-  apiUrl: string,
-  apiKey: string,
-  migrationsDir: string
+async function applyMigrations(
+  env: { omnibaseApiUrl: string; omnibaseServiceKey?: string },
+  migrationsDir: string,
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
   const migrationsPath = path.join(projectRoot, migrationsDir);
@@ -470,73 +615,43 @@ async function resetMigrations(
   if (!fs.existsSync(migrationsPath)) {
     throw new Error(
       `Migrations directory not found: ${migrationsPath}\n` +
-        `Please ensure the directory exists and contains .sql migration files.`
+        `Please ensure the directory exists and contains migration directories.`,
     );
   }
 
-  const sqlFiles = fs
-    .readdirSync(migrationsPath)
-    .filter((file) => file.endsWith(".sql"))
-    .sort();
+  const zip = zipMigrationsDir(migrationsPath);
+  const endpoint = `${env.omnibaseApiUrl}/api/v1/database/migrations`;
+  await uploadMigrationsZip(
+    endpoint,
+    env.omnibaseServiceKey,
+    zip,
+    "Migrations applied successfully",
+  );
+}
 
-  if (sqlFiles.length === 0) {
+async function resetMigrations(
+  apiUrl: string,
+  apiKey: string,
+  migrationsDir: string,
+): Promise<void> {
+  const projectRoot = findOmnibaseRoot();
+  const migrationsPath = path.join(projectRoot, migrationsDir);
+
+  if (!fs.existsSync(migrationsPath)) {
     throw new Error(
-      `No .sql files found in ${migrationsPath}\n` +
-        `Please add migration files (e.g., 001-seed.sql, 002-rls.sql)`
+      `Migrations directory not found: ${migrationsPath}\n` +
+        `Please ensure the directory exists and contains migration directories.`,
     );
   }
 
-  logger.log(`Found ${sqlFiles.length} migration file(s):`);
-  sqlFiles.forEach((file) => logger.log(`   - ${file}`));
-
-  const zip = new AdmZip();
-  for (const file of sqlFiles) {
-    const filePath = path.join(migrationsPath, file);
-    zip.addLocalFile(filePath);
-  }
-
-  const zipBuffer = zip.toBuffer();
-  logger.log(`Created migration archive (${zipBuffer.length} bytes)`);
-
-  const formData = new FormData();
-  const blob = new Blob([zipBuffer], { type: "application/zip" });
-  formData.append("migrations", blob, "migrations.zip");
-
+  const zip = zipMigrationsDir(migrationsPath);
   const endpoint = `${apiUrl}/api/v1/database/migrations/reset`;
-  logger.start(`Resetting database and applying migrations...`);
-
-  try {
-    const headers: Record<string, string> = {};
-    if (apiKey) {
-      headers["X-Service-Key"] = apiKey;
-    }
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers,
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      throw new Error(
-        body.error ||
-          body.message ||
-          `${response.status} - ${response.statusText}`
-      );
-    }
-
-    const data = await response.json();
-    logger.succeed(
-      data.message || "Database reset and migrations applied successfully"
-    );
-  } catch (error) {
-    const errorMsg = await extractErrorMessage(error);
-    throw new Error(
-      `Failed to reset database: ${errorMsg}\n` +
-        `Please ensure the API is running and accessible.`
-    );
-  }
+  await uploadMigrationsZip(
+    endpoint,
+    apiKey,
+    zip,
+    "Database reset and migrations applied successfully",
+  );
 }
 
 /**
@@ -546,7 +661,7 @@ async function generateTypes(
   env: EnvironmentConfig,
   outputPath: string,
   schemas: string,
-  language: GenerateDatabaseTypesLanguageEnum
+  language: GenerateDatabaseTypesLanguageEnum,
 ): Promise<void> {
   const projectRoot = findOmnibaseRoot();
 
@@ -582,7 +697,7 @@ async function generateTypes(
     const errorMsg = await extractErrorMessage(error);
     throw new Error(
       `Failed to generate types: ${errorMsg}\n` +
-        `Please ensure the API is running and accessible.`
+        `Please ensure the API is running and accessible.`,
     );
   }
 }

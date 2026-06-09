@@ -1,0 +1,1 @@
+-- infra migration: 000009_not_null_fix.up.sql

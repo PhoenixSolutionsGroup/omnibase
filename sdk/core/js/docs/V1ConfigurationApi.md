@@ -13,6 +13,7 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**getStripeConfigHistory**](V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history |
 | [**getStripeConfigSchema**](V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema |
 | [**pullStripeConfig**](V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe |
+| [**resetDatabaseMigrations**](V1ConfigurationApi.md#resetdatabasemigrations) | **POST** /api/v1/database/migrations/reset | Reset database and re-apply migrations |
 | [**updateStripeConfig**](V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config |
 | [**uploadDatabaseMigrations**](V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations |
 | [**validateStripeConfig**](V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config |
@@ -661,6 +662,80 @@ This endpoint does not need any parameter.
 | **200** | Stripe configuration pulled successfully |  -  |
 | **401** | Invalid or missing admin token |  -  |
 | **500** | Failed to pull configuration from Stripe |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## resetDatabaseMigrations
+
+> MigrationSuccessResponse resetDatabaseMigrations(migrations)
+
+Reset database and re-apply migrations
+
+Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the &#x60;public&#x60; schema - All custom enum types in the &#x60;public&#x60; schema - The &#x60;migrations.schema_migrations&#x60; tracking table - The &#x60;migrations&#x60; schema  ## Migration Format Upload a zip file containing SQL files named like: &#x60;001-seed.sql&#x60;, &#x60;002-rls.sql&#x60;, etc. Files are automatically renamed to golang-migrate format: &#x60;001_seed.up.sql&#x60;, &#x60;002_rls.up.sql&#x60;.  ## Use Cases - Development database reset via &#x60;omnibase db migrate reset&#x60; - Clean slate testing - Schema redesign during development 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { ResetDatabaseMigrationsRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1ConfigurationApi(config);
+
+  const body = {
+    // Blob | Zip file containing SQL migration files
+    migrations: BINARY_DATA_HERE,
+  } satisfies ResetDatabaseMigrationsRequest;
+
+  try {
+    const data = await api.resetDatabaseMigrations(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **migrations** | `Blob` | Zip file containing SQL migration files | [Defaults to `undefined`] |
+
+### Return type
+
+[**MigrationSuccessResponse**](MigrationSuccessResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `multipart/form-data`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Database reset and migrations applied successfully |  -  |
+| **400** | No migrations zip file provided |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

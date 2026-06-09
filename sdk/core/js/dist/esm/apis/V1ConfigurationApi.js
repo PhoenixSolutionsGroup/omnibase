@@ -396,6 +396,59 @@ class V1ConfigurationApi extends runtime.BaseAPI {
         });
     }
     /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
+     * Reset database and re-apply migrations
+     */
+    resetDatabaseMigrationsRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['migrations'] == null) {
+                throw new runtime.RequiredError('migrations', 'Required parameter "migrations" was null or undefined when calling resetDatabaseMigrations().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            const consumes = [
+                { contentType: 'multipart/form-data' },
+            ];
+            // @ts-ignore: canConsumeForm may be unused
+            const canConsumeForm = runtime.canConsumeForm(consumes);
+            let formParams;
+            let useForm = false;
+            // use FormData to transmit files using content-type "multipart/form-data"
+            useForm = canConsumeForm;
+            if (useForm) {
+                formParams = new FormData();
+            }
+            else {
+                formParams = new URLSearchParams();
+            }
+            if (requestParameters['migrations'] != null) {
+                formParams.append('migrations', requestParameters['migrations']);
+            }
+            let urlPath = `/api/v1/database/migrations/reset`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'POST',
+                headers: headerParameters,
+                query: queryParameters,
+                body: formParams,
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.MigrationSuccessResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
+     * Reset database and re-apply migrations
+     */
+    resetDatabaseMigrations(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.resetDatabaseMigrationsRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts.
      * Update Stripe config
      */

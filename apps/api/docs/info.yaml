@@ -83,6 +83,9 @@ paths:
   /api/v1/database/migrations:
     $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations'
 
+  /api/v1/database/migrations/reset:
+    $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations~1reset'
+
   /api/v1/database/typegen:
     $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1typegen'
 

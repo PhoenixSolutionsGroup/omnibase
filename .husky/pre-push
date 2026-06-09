@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+set -e
+echo "🔍 Running API route audit..."
+bun run generate:openapi
+bun run audit
+echo "🔄 Regenerating JS SDK..."
+bun run generate:sdk --js-only
+echo "✅ Pre-push checks passed"
