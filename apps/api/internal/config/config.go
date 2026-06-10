@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -48,13 +49,17 @@ type S3Config struct {
 }
 
 type DatabaseConfig struct {
-	Host       string
-	Port       string
-	User       string
-	SigningKey string
-	Password   string
-	SSLMode    string
-	Name       string
+	Host            string
+	Port            string
+	User            string
+	SigningKey      string
+	Password        string
+	SSLMode         string
+	Name            string
+	MaxIdleConns    int
+	MaxOpenConns    int
+	ConnMaxLifetime time.Duration
+	ConnMaxIdleTime time.Duration
 }
 
 type StripeConfig struct {
@@ -93,13 +98,17 @@ func New() *Config {
 			ForcePathStyle: os.Getenv("S3_FORCE_PATH_STYLE") == "true",
 		},
 		Database: DatabaseConfig{
-			Host:       os.Getenv("DB_HOST"),
-			Port:       os.Getenv("DB_PORT"),
-			User:       os.Getenv("DB_USER"),
-			Password:   os.Getenv("DB_PASSWORD"),
-			SigningKey: os.Getenv("JWT_SIGNING_KEY"),
-			SSLMode:    getEnvOrDefault("DB_SSLMODE", "disable"),
-			Name:       getEnvOrDefault("DB_NAME", "db"),
+			Host:            os.Getenv("DB_HOST"),
+			Port:            os.Getenv("DB_PORT"),
+			User:            os.Getenv("DB_USER"),
+			Password:        os.Getenv("DB_PASSWORD"),
+			SigningKey:      os.Getenv("JWT_SIGNING_KEY"),
+			SSLMode:         getEnvOrDefault("DB_SSLMODE", "disable"),
+			Name:            getEnvOrDefault("DB_NAME", "db"),
+			MaxIdleConns:    getIntEnv("DB_MAX_IDLE_CONNS", 10),
+			MaxOpenConns:    getIntEnv("DB_MAX_OPEN_CONNS", 100),
+			ConnMaxLifetime: getDurationEnv("DB_CONN_MAX_LIFETIME", time.Hour),
+			ConnMaxIdleTime: getDurationEnv("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
 		},
 		StripeConfig: StripeConfig{
 			SecretKey:          os.Getenv("STRIPE_SECRET_KEY"),
@@ -153,6 +162,28 @@ func getFloat64Env(key string, defaultValue float64) float64 {
 		return defaultValue
 	}
 	logger.Logger.Trace("Loaded float64 config from environment", "key", key, "value", value)
+	return value
+}
+
+func getIntEnv(key string, defaultValue int) int {
+	envValue := os.Getenv(key)
+	value, err := strconv.Atoi(envValue)
+	if err != nil {
+		logger.Logger.Debug("Failed to parse int env var, using default", "key", key, "value", envValue, "default", defaultValue, "error", err)
+		return defaultValue
+	}
+	logger.Logger.Trace("Loaded int config from environment", "key", key, "value", value)
+	return value
+}
+
+func getDurationEnv(key string, defaultValue time.Duration) time.Duration {
+	envValue := os.Getenv(key)
+	value, err := time.ParseDuration(envValue)
+	if err != nil {
+		logger.Logger.Debug("Failed to parse duration env var, using default", "key", key, "value", envValue, "default", defaultValue.String(), "error", err)
+		return defaultValue
+	}
+	logger.Logger.Trace("Loaded duration config from environment", "key", key, "value", value.String())
 	return value
 }
 

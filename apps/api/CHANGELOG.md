@@ -1,3 +1,10 @@
+## [0.19.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.0...api-v0.19.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* make /health/ready checks accurate and concurrent ([0973b2d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0973b2db81f6c01ab23d6fdd3ff214d101464c8e))
+
 # [0.19.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.18.1...api-v0.19.0) (2026-05-30)
 
 

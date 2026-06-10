@@ -8,9 +8,15 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+const healthCheckTimeout = 15 * time.Second
 
 type HealthHandler struct {
 	cfg *config.Config
@@ -46,42 +52,49 @@ func (h *HealthHandler) HealthLive(c *gin.Context) {
 func (h *HealthHandler) HealthReady(c *gin.Context) {
 	logger.Logger.Debug("Health ready endpoint called")
 
-	services := make(map[string]ServiceHealth)
-	allReady := true
-
-	// Check database
-	dbHealth := h.checkDatabase()
-	services["database"] = dbHealth
-	if !dbHealth.Ready {
-		allReady = false
+	type namedHealth struct {
+		name   string
+		health ServiceHealth
 	}
 
-	// Check auth service
-	authHealth := h.checkHTTPService(h.cfg.AuthConfig.AuthURL, "/health/ready")
-	services["auth"] = authHealth
-	if !authHealth.Ready {
-		allReady = false
+	checks := []struct {
+		name string
+		fn   func() ServiceHealth
+	}{
+		{"database", h.checkDatabase},
+		{"auth", func() ServiceHealth {
+			return h.checkHTTPService(h.cfg.AuthConfig.AuthURL, "/health/ready", http.StatusOK)
+		}},
+		{"permissions", func() ServiceHealth {
+			return h.checkHTTPService(h.cfg.PermissionsConfig.ReadURL, "/health/ready", http.StatusOK)
+		}},
+		// PostgREST: a 404 on an unknown table means the process is up with its
+		// schema cache loaded. A 503 means no DB connection. Avoid GET "/" which
+		// generates the full OpenAPI spec and is slow.
+		{"postgrest", func() ServiceHealth {
+			return h.checkHTTPService(h.cfg.PostgRESTURL, "/__health_check", http.StatusOK, http.StatusNotFound)
+		}},
 	}
-
-	// Check permissions service
-	permHealth := h.checkHTTPService(h.cfg.PermissionsConfig.ReadURL, "/health/ready")
-	services["permissions"] = permHealth
-	if !permHealth.Ready {
-		allReady = false
-	}
-
-	// Check PostgREST service
-	postgrestHealth := h.checkHTTPService(h.cfg.PostgRESTURL, "/")
-	services["postgrest"] = postgrestHealth
-	if !postgrestHealth.Ready {
-		allReady = false
-	}
-
-	// Check storage service
 	if h.cfg.S3Config.Endpoint != "" {
-		storageHealth := h.checkHTTPService(h.cfg.S3Config.Endpoint, "/health")
-		services["storage"] = storageHealth
-		if !storageHealth.Ready {
+		checks = append(checks, struct {
+			name string
+			fn   func() ServiceHealth
+		}{"storage", h.checkStorage})
+	}
+
+	results := make(chan namedHealth, len(checks))
+	for _, chk := range checks {
+		go func(name string, fn func() ServiceHealth) {
+			results <- namedHealth{name: name, health: fn()}
+		}(chk.name, chk.fn)
+	}
+
+	services := make(map[string]ServiceHealth, len(checks))
+	allReady := true
+	for range checks {
+		r := <-results
+		services[r.name] = r.health
+		if !r.health.Ready {
 			allReady = false
 		}
 	}
@@ -103,7 +116,7 @@ func (h *HealthHandler) HealthReady(c *gin.Context) {
 func (h *HealthHandler) checkDatabase() ServiceHealth {
 	start := time.Now()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), healthCheckTimeout)
 	defer cancel()
 
 	sqlDB, err := h.db.DB()
@@ -136,7 +149,7 @@ func (h *HealthHandler) checkDatabase() ServiceHealth {
 	}
 }
 
-func (h *HealthHandler) checkHTTPService(baseURL string, path string) ServiceHealth {
+func (h *HealthHandler) checkHTTPService(baseURL string, path string, okStatuses ...int) ServiceHealth {
 	if baseURL == "" {
 		return ServiceHealth{
 			Ready:   false,
@@ -144,12 +157,15 @@ func (h *HealthHandler) checkHTTPService(baseURL string, path string) ServiceHea
 			Error:   "service URL not configured",
 		}
 	}
+	if len(okStatuses) == 0 {
+		okStatuses = []int{http.StatusOK}
+	}
 
 	start := time.Now()
 	url := fmt.Sprintf("%s%s", baseURL, path)
 
 	client := &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: healthCheckTimeout,
 	}
 
 	resp, err := client.Get(url)
@@ -165,18 +181,64 @@ func (h *HealthHandler) checkHTTPService(baseURL string, path string) ServiceHea
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		logger.Logger.Warn("HTTP service health check returned non-200", "url", url, "status", resp.StatusCode, "latency_ms", latency)
-		return ServiceHealth{
-			Ready:   false,
-			Latency: latency,
-			Error:   fmt.Sprintf("status code %d", resp.StatusCode),
+	for _, ok := range okStatuses {
+		if resp.StatusCode == ok {
+			logger.Logger.Trace("HTTP service health check passed", "url", url, "status", resp.StatusCode, "latency_ms", latency)
+			return ServiceHealth{
+				Ready:   true,
+				Latency: latency,
+			}
 		}
 	}
 
-	logger.Logger.Trace("HTTP service health check passed", "url", url, "latency_ms", latency)
+	logger.Logger.Warn("HTTP service health check returned unexpected status", "url", url, "status", resp.StatusCode, "latency_ms", latency)
 	return ServiceHealth{
-		Ready:   true,
+		Ready:   false,
 		Latency: latency,
+		Error:   fmt.Sprintf("status code %d", resp.StatusCode),
 	}
+}
+
+func (h *HealthHandler) checkStorage() ServiceHealth {
+	start := time.Now()
+	s3cfg := h.cfg.S3Config
+
+	// R2 ignores region but the SDK needs one set; an empty region makes it try
+	// EC2 IMDS for a region lookup, which hangs off-EC2. Default to "auto".
+	region := s3cfg.Region
+	if region == "" {
+		region = "auto"
+	}
+
+	awsCfg, err := awsconfig.LoadDefaultConfig(context.TODO(),
+		awsconfig.WithRegion(region),
+		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			s3cfg.AccessKey, s3cfg.SecretKey, "")),
+	)
+	if err != nil {
+		latency := time.Since(start).Milliseconds()
+		logger.Logger.Warn("Storage health check failed to load AWS config", "error", err, "latency_ms", latency)
+		return ServiceHealth{Ready: false, Latency: latency, Error: err.Error()}
+	}
+
+	client := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
+		if s3cfg.Endpoint != "" {
+			o.BaseEndpoint = aws.String(s3cfg.Endpoint)
+		}
+		o.UsePathStyle = s3cfg.ForcePathStyle
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), healthCheckTimeout)
+	defer cancel()
+
+	_, err = client.HeadBucket(ctx, &s3.HeadBucketInput{Bucket: aws.String(s3cfg.BucketName)})
+	latency := time.Since(start).Milliseconds()
+
+	if err != nil {
+		logger.Logger.Warn("Storage health check failed", "bucket", s3cfg.BucketName, "error", err, "latency_ms", latency)
+		return ServiceHealth{Ready: false, Latency: latency, Error: err.Error()}
+	}
+
+	logger.Logger.Trace("Storage health check passed", "bucket", s3cfg.BucketName, "latency_ms", latency)
+	return ServiceHealth{Ready: true, Latency: latency}
 }

@@ -72,3 +72,8 @@ jobs:
             git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
             git push origin main
           fi
+
+      - name: Deploy docs site to Vercel
+        env:
+          VERCEL_DOCS_DEPLOY_HOOK: ${{ secrets.VERCEL_DOCS_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$VERCEL_DOCS_DEPLOY_HOOK"
