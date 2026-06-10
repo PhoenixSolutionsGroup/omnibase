@@ -75,5 +75,5 @@ jobs:
 
       - name: Deploy docs site to Vercel
         env:
-          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
-        run: curl -fsS -X POST "$VERCEL_DEPLOY_HOOK"
+          VERCEL_DOCS_DEPLOY_HOOK: ${{ secrets.VERCEL_DOCS_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$VERCEL_DOCS_DEPLOY_HOOK"

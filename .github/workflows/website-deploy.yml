@@ -1,0 +1,18 @@
+name: Deploy Website
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: website-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Website to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel production deploy
+        env:
+          VERCEL_WEBSITE_DEPLOY_HOOK: ${{ secrets.VERCEL_WEBSITE_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$VERCEL_WEBSITE_DEPLOY_HOOK"
