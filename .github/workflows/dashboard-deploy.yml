@@ -1,0 +1,25 @@
+name: Deploy Dashboard
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: dashboard-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy Dashboard to Vercel
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Trigger Vercel production deploy
+        env:
+          VERCEL_DASHBOARD_DEPLOY_HOOK: ${{ secrets.VERCEL_DASHBOARD_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "$VERCEL_DASHBOARD_DEPLOY_HOOK"
