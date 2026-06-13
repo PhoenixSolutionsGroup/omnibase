@@ -22,7 +22,7 @@
     "docker/"
   ],
   "scripts": {
-    "build": "rm -r dist && tsc && chmod +x dist/index.js",
+    "build": "rm -rf dist && tsc && chmod +x dist/index.js",
     "dev": "NODE_ENV=development bun src/index.ts",
     "test": "bun test",
     "start": "node dist/index.js",
