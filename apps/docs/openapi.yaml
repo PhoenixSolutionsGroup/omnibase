@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Omnibase REST API
-  version: 0.19.0
+  version: 0.19.1
   description: |
     Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
@@ -391,6 +391,109 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /api/v1/database/migrations/status:
+    get:
+      operationId: getDatabaseMigrationStatus
+      summary: Get applied migration status
+      description: |
+        Returns the migrations recorded in the `migrations.schema_migrations`
+        tracking table, ordered by version descending. A `dirty` migration
+        indicates a previous run failed partway and needs manual intervention.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Inspect applied migrations via `omnibase db migrate status`
+        - Detect dirty/failed migration state in CI
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Applied migrations retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AppliedMigration'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/database/migrations/down:
+    post:
+      operationId: rollbackDatabaseMigrations
+      summary: Roll back database migrations
+      description: |
+        Rolls back the last N migrations using the supplied migration files.
+
+        **WARNING: Rolling back migrations can be destructive.** Down migrations
+        may drop tables or columns and permanently delete data.
+
+        ## Authentication
+        Requires service key authentication (typically used by CLI tools).
+
+        ## Migration Format
+        Upload a zip file containing the SQL migration files (the same set used
+        to apply the migrations). Files are renamed to golang-migrate format so
+        the matching `*.down.sql` files can be executed.
+
+        ## Use Cases
+        - Roll back migrations via `omnibase db migrate down`
+        - Undo a faulty migration during development
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - steps
+                - migrations
+              properties:
+                steps:
+                  type: integer
+                  minimum: 1
+                  description: Number of migrations to roll back
+                  example: 1
+                migrations:
+                  type: string
+                  format: binary
+                  description: Zip file containing SQL migration files
+      responses:
+        '200':
+          description: Migrations rolled back successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Rolled back 1 migration(s)
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/database/typegen:
     get:
       operationId: generateDatabaseTypes
@@ -613,6 +716,116 @@ paths:
                           message:
                             type: string
                             example: Template deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/email/send:
+    post:
+      operationId: sendEmail
+      summary: Send an email
+      description: |
+        Sends an email to the specified recipient using the configured SMTP server.
+
+        ## Email Content
+        - Supports HTML body content
+        - Optional plain text version for email clients that don't support HTML
+        - If both HTML and plain text are provided, sends as multipart/alternative
+
+        ## Use Cases
+        - Send transactional emails
+        - Send notifications to users
+        - Custom email communications
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailRequest'
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Email sent successfully
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v1/email/templates/{template_name}/{type}:
+    get:
+      operationId: serveEmailTemplate
+      summary: Serve an email template file
+      description: |
+        Serves the raw contents of an email template used by Ory Kratos for
+        transactional emails (verification, recovery, etc.).
+
+        A custom template is looked up in object storage first, falling back to
+        the built-in default template shipped with the API.
+
+        ## Template Types
+        - `body` — HTML body template (`email.body.gotmpl`)
+        - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`)
+        - `subject` — subject line template (`email.subject.gotmpl`)
+
+        ## Use Cases
+        - Kratos courier template rendering
+        - Previewing the active template for a given flow
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - name: template_name
+          in: path
+          required: true
+          description: Kratos flow/template name
+          schema:
+            type: string
+          example: verification
+        - name: type
+          in: path
+          required: true
+          description: Which part of the template to serve
+          schema:
+            type: string
+            enum:
+              - body
+              - plaintext
+              - subject
+          example: body
+      responses:
+        '200':
+          description: Template contents
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Raw Go template (gotmpl) contents
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -4803,6 +5016,21 @@ components:
           type: string
           description: Error message
           example: No migrations zip file provided
+    AppliedMigration:
+      type: object
+      required:
+        - version
+        - dirty
+      properties:
+        version:
+          type: integer
+          format: int64
+          description: Migration version number
+          example: 18
+        dirty:
+          type: boolean
+          description: Whether the migration is in a dirty (failed) state requiring manual repair
+          example: false
     EmailTemplate:
       type: object
       required:
@@ -4891,6 +5119,29 @@ components:
       required:
         - status
         - error
+    SendEmailRequest:
+      type: object
+      required:
+        - to
+        - subject
+        - body
+      properties:
+        to:
+          type: string
+          description: Recipient email address
+          example: user@example.com
+        subject:
+          type: string
+          description: Email subject line
+          example: Welcome to Our Platform
+        body:
+          type: string
+          description: HTML email body content
+          example: <h1>Hello!</h1><p>Welcome to our platform.</p>
+        plain:
+          type: string
+          description: Optional plain text version of the email body
+          example: Hello! Welcome to our platform.
     CreateCheckoutRequest:
       type: object
       required:
