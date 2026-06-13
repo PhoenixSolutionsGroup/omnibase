@@ -2,7 +2,7 @@
   "$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
   "version": "1.0.0",
   "webhooks": [
-     {
+    {
       "id": "subscription-events-3",
       "connect": false,
       "url": "https://some-endpoint-3.com/webhook",
@@ -14,7 +14,7 @@
         "invoice.payment_failed"
       ]
     }
-  ], 
+  ],
   "products": [
     {
       "id": "prod_test_basic",

@@ -14,6 +14,9 @@ import { spawn } from "bun";
 import { rm, mkdir, readdir, readFile, writeFile, rename } from "fs/promises";
 import { join, dirname, basename } from "path";
 import { existsSync } from "fs";
+import { type Command } from "commander";
+
+import { program } from "../packages/cli/src/index";
 
 const ROOT = dirname(dirname(import.meta.path));
 const DOCS_CONTENT = join(ROOT, "apps/docs/content/docs");
@@ -573,6 +576,179 @@ async function createMetaFiles(): Promise<void> {
   }
 }
 
+function cmdShort(cmd: Command): string {
+  return cmd.summary() || cmd.description()?.split("\n")[0] || "";
+}
+
+async function generateCommandDocPage(
+  cmd: Command,
+  parentDir: string,
+  urlPrefix: string,
+): Promise<void> {
+  const isLeaf = cmd.commands.length === 0;
+  const slug = cmd.name();
+  const fullUrl = urlPrefix + "/" + slug;
+
+  // Display name like "db migrate generate"
+  const baseRe = /^\/reference\/cli\/?/;
+  const cmdPath = urlPrefix.replace(baseRe, "").replace(/^\//, "").replace(/\//g, " ");
+  const displayName = cmdPath ? cmdPath + " " + slug : slug;
+
+  const aliases = cmd.aliases();
+  const rawArgs: any[] = (cmd as any)._args ?? [];
+
+  const lines: string[] = [
+    "---",
+    `title: "${capitalize(slug)}"`,
+    "---",
+    "",
+  ];
+
+  if (cmd.summary()) {
+    lines.push("## Summary", "", cmd.summary(), "");
+  }
+
+  lines.push("## Usage", "", "```bash", `omnibase ${displayName}`, "```", "");
+
+  if (cmd.description()) {
+    lines.push("## Description", "", cmd.description(), "");
+  }
+
+  if (aliases.length > 0) {
+    lines.push(`**Aliases:** ${aliases.map((a) => `\`${a}\``).join(", ")}`, "");
+  }
+
+  if (rawArgs.length > 0) {
+    lines.push("## Arguments", "");
+    for (const arg of rawArgs) {
+      const required = arg.required ? " (required)" : "";
+      const argChoices: string[] = arg.argChoices ?? [];
+      const choices =
+        argChoices.length > 0
+          ? ` (choices: ${argChoices.join(", ")})`
+          : "";
+      const defaultVal =
+        arg.defaultValue !== undefined
+          ? ` (default: \`${arg.defaultValue}\`)`
+          : "";
+      lines.push(`- \`${arg.name()}${required}${choices}${defaultVal}\``);
+      if (arg.description) {
+        lines.push(`  ${arg.description}`);
+      }
+    }
+    lines.push("");
+  }
+
+  if (cmd.options.length > 0) {
+    lines.push("## Options", "");
+    for (const opt of cmd.options) {
+      const mandatory = (opt as any).mandatory ? " (required)" : "";
+      const defaultVal =
+        opt.defaultValue !== undefined
+          ? ` (default: \`${opt.defaultValue}\`)`
+          : "";
+      lines.push(`- **\`${opt.flags}\`**${mandatory}${defaultVal}`);
+      if (opt.description) {
+        lines.push(`  ${opt.description}`);
+      }
+    }
+    lines.push("");
+  }
+
+  if (!isLeaf) {
+    lines.push("## Subcommands", "", ...cmd.commands.map((sub) => {
+      const subUrl = fullUrl + "/" + sub.name();
+      const desc = cmdShort(sub);
+      return `- [\`${sub.name()}\`](${subUrl})${desc ? ` — ${desc}` : ""}`;
+    }), "");
+
+    // Write as container: dir/index.md + meta.json
+    const dir = join(parentDir, slug);
+    await mkdir(dir, { recursive: true });
+    await writeFile(join(dir, "index.md"), lines.join("\n"));
+    await writeFile(
+      join(dir, "meta.json"),
+      JSON.stringify({
+        title: capitalize(slug),
+        pages: cmd.commands.map((c) => c.name()),
+      }, null, 2),
+    );
+
+    for (const sub of cmd.commands) {
+      await generateCommandDocPage(sub, dir, fullUrl);
+    }
+  } else {
+    // Write as leaf file: slug.md
+    await writeFile(join(parentDir, slug + ".md"), lines.join("\n"));
+  }
+}
+
+async function generateCliCommandDocs(): Promise<void> {
+  console.log("\n🔧 Generating CLI command documentation...\n");
+
+  const outputDir = join(DOCS_CONTENT, "reference/cli");
+  const rootUrl = "/reference/cli";
+  await cleanOutputDir("reference/cli");
+
+  const pages: string[] = [];
+
+  await writeFile(
+    join(outputDir, "index.md"),
+    [
+      "---",
+      'title: "CLI Reference"',
+      "---",
+      "",
+      "# OmniBase CLI",
+      "",
+      program.description(),
+      "",
+      "## Usage",
+      "",
+      `\`\`\`\n${program.name()} [command] [options]\n\`\`\``,
+      "",
+      ...(program.options.length > 0
+        ? [
+            "## Global Options",
+            "",
+            ...program.options.map((opt) => {
+              const defaultVal =
+                opt.defaultValue !== undefined
+                  ? ` (default: \`${opt.defaultValue}\`)`
+                  : "";
+              return `- **\`${opt.flags}\`**${defaultVal} — ${opt.description || ""}`;
+            }),
+            "",
+          ]
+        : []),
+      ...(program.commands.length > 0
+        ? [
+            "## Commands",
+            "",
+            ...program.commands.map((cmd) => {
+              const cmdUrl = rootUrl + "/" + cmd.name();
+              const desc = cmdShort(cmd);
+              return `- [\`${cmd.name()}\`](${cmdUrl})${desc ? ` — ${desc}` : ""}`;
+            }),
+            "",
+          ]
+        : []),
+    ].join("\n"),
+  );
+
+  for (const cmd of program.commands) {
+    pages.push(cmd.name());
+    await generateCommandDocPage(cmd, outputDir, rootUrl);
+  }
+
+  await writeFile(
+    join(outputDir, "meta.json"),
+    JSON.stringify({ title: "CLI Reference", pages }, null, 2),
+  );
+
+  console.log("  ✓ Generated CLI command docs");
+}
+
 async function main(): Promise<void> {
   console.log("🚀 OmniBase Documentation Generator\n");
   console.log(`   Root: ${ROOT}`);
@@ -581,7 +757,8 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const typedocOnly = args.includes("--typedoc");
   const openapiOnly = args.includes("--openapi");
-  const all = !typedocOnly && !openapiOnly;
+  const cliCommandsOnly = args.includes("--cli-commands");
+  const all = !typedocOnly && !openapiOnly && !cliCommandsOnly;
 
   try {
     if (all || typedocOnly) {
@@ -590,6 +767,10 @@ async function main(): Promise<void> {
 
     if (all || openapiOnly) {
       await generateOpenAPIDocs();
+    }
+
+    if (all || cliCommandsOnly) {
+      await generateCliCommandDocs();
     }
 
     await createMetaFiles();

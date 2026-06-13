@@ -3,10 +3,11 @@ import { checkbox } from "@inquirer/prompts";
 import { logger } from "../utils/logger";
 import { getCommandContextWithEnv } from "../utils/context";
 import { pushPermissions } from "./permissions";
-import { pushDbMigrations } from "./db";
 import { pushEmailTemplates } from "./email";
 import { pushStripeConfig } from "./stripe";
 import { pushEnvConfig } from "./cloud";
+import { DatabaseMigrationService } from "../services/db/migrate";
+import { selectEnvironment } from "../utils/environment";
 
 interface SyncService {
   name: string;
@@ -27,7 +28,11 @@ const SERVICES: SyncService[] = [
     name: "db",
     label: "Database",
     description: "SQL migration files",
-    push: pushDbMigrations,
+    push: async (env) =>
+      new DatabaseMigrationService().push(
+        "omnibase/db/migrations",
+        await selectEnvironment(env),
+      ),
   },
   {
     name: "email",
@@ -53,7 +58,7 @@ const SERVICES: SyncService[] = [
 async function runSync(
   services: string[],
   envOverride?: string,
-  mode?: string
+  mode?: string,
 ): Promise<void> {
   const results: { service: string; success: boolean; error?: string }[] = [];
 
@@ -71,8 +76,13 @@ async function runSync(
       await service.push(envOverride, mode);
       results.push({ service: service.name, success: true });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      results.push({ service: service.name, success: false, error: errorMessage });
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      results.push({
+        service: service.name,
+        success: false,
+        error: errorMessage,
+      });
       logger.fail(`${service.label} sync failed: ${errorMessage}`);
     }
   }
@@ -108,7 +118,7 @@ export function addSyncCommands(program: Command): void {
 
         // Filter services based on environment
         const availableServices = SERVICES.filter(
-          (s) => !s.cloudOnly || !isLocal
+          (s) => !s.cloudOnly || !isLocal,
         );
 
         let selectedServices: string[];
@@ -139,15 +149,17 @@ export function addSyncCommands(program: Command): void {
 
           // Validate service names
           const validNames = availableServices.map((s) => s.name);
-          const invalid = selectedServices.filter((s) => !validNames.includes(s));
+          const invalid = selectedServices.filter(
+            (s) => !validNames.includes(s),
+          );
           if (invalid.length > 0) {
             // Check if they're trying to use cloud-only services locally
             const cloudOnlyAttempts = invalid.filter((s) =>
-              SERVICES.find((svc) => svc.name === s && svc.cloudOnly)
+              SERVICES.find((svc) => svc.name === s && svc.cloudOnly),
             );
             if (cloudOnlyAttempts.length > 0 && isLocal) {
               logger.fail(
-                `Service(s) not available for local environment: ${cloudOnlyAttempts.join(", ")}`
+                `Service(s) not available for local environment: ${cloudOnlyAttempts.join(", ")}`,
               );
               logger.log("Use --env flag to specify a cloud environment");
             } else {
@@ -160,7 +172,10 @@ export function addSyncCommands(program: Command): void {
 
         await runSync(selectedServices, ctx.env.name, ctx.mode);
       } catch (error) {
-        if (error instanceof Error && error.message.includes("User force closed")) {
+        if (
+          error instanceof Error &&
+          error.message.includes("User force closed")
+        ) {
           logger.warn("Sync cancelled");
           return;
         }

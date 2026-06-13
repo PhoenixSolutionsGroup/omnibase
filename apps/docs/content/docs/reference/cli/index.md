@@ -1,19 +1,34 @@
 ---
-title: "cli"
+title: "CLI Reference"
 ---
 
-# @omnibase/cli
+# OmniBase CLI
 
-To install dependencies:
+OmniBase CLI - Manage Docker Compose services and environment configuration
 
-```bash
-bun install
+## Usage
+
+```
+omnibase [command] [options]
 ```
 
-To run:
+## Global Options
 
-```bash
-bun run dist/index.js
-```
+- **`-V, --version`** — output the version number
+- **`--env <environment>`** — Override environment for this command
+- **`--mode <mode>`** — Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)
 
-This project was created using `bun init` in bun v1.2.21. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Commands
+
+- [`init`](/reference/cli/init) — Initialize a new omnibase project with template files
+- [`start`](/reference/cli/start) — Start the Docker Compose services
+- [`stop`](/reference/cli/stop) — Stop the Docker Compose services
+- [`env`](/reference/cli/env) — List available environments
+- [`permissions`](/reference/cli/permissions) — Manage Ory Keto permissions
+- [`auth`](/reference/cli/auth) — Manage authentication service
+- [`stripe`](/reference/cli/stripe) — Manage Stripe configuration
+- [`email`](/reference/cli/email) — Manage email templates
+- [`db`](/reference/cli/db) — Database management commands
+- [`cloud`](/reference/cli/cloud) — Manage OmniBase Cloud (authentication and deployments)
+- [`sync`](/reference/cli/sync) — Sync local configuration to remote environment
+- [`restart`](/reference/cli/restart) — Restart services (interactive if none specified)

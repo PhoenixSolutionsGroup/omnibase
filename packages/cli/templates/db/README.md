@@ -25,9 +25,6 @@ Add your SQL commands to the generated file.
 ```bash
 # Apply to default environment
 omnibase db migrate apply
-
-# Apply to specific environment
-omnibase db migrate apply --env production
 ```
 
 ## File Naming Convention

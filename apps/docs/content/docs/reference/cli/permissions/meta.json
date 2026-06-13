@@ -1,0 +1,9 @@
+{
+  "title": "Permissions",
+  "pages": [
+    "push",
+    "validate",
+    "check",
+    "set"
+  ]
+}

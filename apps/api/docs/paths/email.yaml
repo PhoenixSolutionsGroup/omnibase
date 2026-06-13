@@ -213,3 +213,61 @@ paths:
           $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/email/templates/{template_name}/{type}:
+    get:
+      operationId: serveEmailTemplate
+      summary: Serve an email template file
+      description: |
+        Serves the raw contents of an email template used by Ory Kratos for
+        transactional emails (verification, recovery, etc.).
+
+        A custom template is looked up in object storage first, falling back to
+        the built-in default template shipped with the API.
+
+        ## Template Types
+        - `body` — HTML body template (`email.body.gotmpl`)
+        - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`)
+        - `subject` — subject line template (`email.subject.gotmpl`)
+
+        ## Use Cases
+        - Kratos courier template rendering
+        - Previewing the active template for a given flow
+      tags:
+        - V1 Configuration
+      security:
+        - CookieAuth: []
+        - SessionTokenAuth: []
+        - ServiceKeyAuth: []
+      parameters:
+        - name: template_name
+          in: path
+          required: true
+          description: Kratos flow/template name
+          schema:
+            type: string
+          example: verification
+        - name: type
+          in: path
+          required: true
+          description: Which part of the template to serve
+          schema:
+            type: string
+            enum: [body, plaintext, subject]
+          example: body
+      responses:
+        '200':
+          description: Template contents
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Raw Go template (gotmpl) contents
+        '400':
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '../schemas/errors.yaml#/components/responses/NotFoundError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'

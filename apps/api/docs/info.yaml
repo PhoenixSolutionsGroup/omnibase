@@ -83,15 +83,28 @@ paths:
   /api/v1/database/migrations:
     $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations'
 
+  /api/v1/database/migrations/status:
+    $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations~1status'
+
+  /api/v1/database/migrations/down:
+    $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1migrations~1down'
+
+
   /api/v1/database/typegen:
     $ref: './paths/database.yaml#/paths/~1api~1v1~1database~1typegen'
 
   # Email endpoints
   /api/v1/email/templates:
     $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1templates'
-  
+
   /api/v1/email/templates/{type}:
     $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1templates~1{type}'
+
+  /api/v1/email/send:
+    $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1send'
+
+  /api/v1/email/templates/{template_name}/{type}:
+    $ref: './paths/email.yaml#/paths/~1api~1v1~1email~1templates~1{template_name}~1{type}'
   
   # Payments endpoints
   /api/v1/payments/checkout:

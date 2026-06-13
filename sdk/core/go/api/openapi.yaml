@@ -353,6 +353,80 @@ paths:
       summary: Upload database migrations
       tags:
       - V1 Configuration
+  /api/v1/database/migrations/status:
+    get:
+      description: |
+        Returns the migrations recorded in the `migrations.schema_migrations`
+        tracking table, ordered by version descending. A `dirty` migration
+        indicates a previous run failed partway and needs manual intervention.
+
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Inspect applied migrations via `omnibase db migrate status`
+        - Detect dirty/failed migration state in CI
+      operationId: getDatabaseMigrationStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDatabaseMigrationStatus_200_response"
+          description: Applied migrations retrieved successfully
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+      - ServiceKeyAuth: []
+      summary: Get applied migration status
+      tags:
+      - V1 Configuration
+  /api/v1/database/migrations/down:
+    post:
+      description: |
+        Rolls back the last N migrations using the supplied migration files.
+
+        **WARNING: Rolling back migrations can be destructive.** Down migrations
+        may drop tables or columns and permanently delete data.
+
+        ## Authentication
+        Requires service key authentication (typically used by CLI tools).
+
+        ## Migration Format
+        Upload a zip file containing the SQL migration files (the same set used
+        to apply the migrations). Files are renamed to golang-migrate format so
+        the matching `*.down.sql` files can be executed.
+
+        ## Use Cases
+        - Roll back migrations via `omnibase db migrate down`
+        - Undo a faulty migration during development
+      operationId: rollbackDatabaseMigrations
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/rollbackDatabaseMigrations_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rollbackDatabaseMigrations_200_response"
+          description: Migrations rolled back successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+      - ServiceKeyAuth: []
+      summary: Roll back database migrations
+      tags:
+      - V1 Configuration
   /api/v1/database/typegen:
     get:
       description: |
@@ -555,6 +629,111 @@ paths:
       - SessionTokenAuth: []
       - ServiceKeyAuth: []
       summary: Delete email template
+      tags:
+      - V1 Configuration
+  /api/v1/email/send:
+    post:
+      description: |
+        Sends an email to the specified recipient using the configured SMTP server.
+
+        ## Email Content
+        - Supports HTML body content
+        - Optional plain text version for email clients that don't support HTML
+        - If both HTML and plain text are provided, sends as multipart/alternative
+
+        ## Use Cases
+        - Send transactional emails
+        - Send notifications to users
+        - Custom email communications
+      operationId: sendEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendEmailRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/sendEmail_200_response"
+          description: Email sent successfully
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Send an email
+      tags:
+      - V1 Configuration
+  /api/v1/email/templates/{template_name}/{type}:
+    get:
+      description: |
+        Serves the raw contents of an email template used by Ory Kratos for
+        transactional emails (verification, recovery, etc.).
+
+        A custom template is looked up in object storage first, falling back to
+        the built-in default template shipped with the API.
+
+        ## Template Types
+        - `body` — HTML body template (`email.body.gotmpl`)
+        - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`)
+        - `subject` — subject line template (`email.subject.gotmpl`)
+
+        ## Use Cases
+        - Kratos courier template rendering
+        - Previewing the active template for a given flow
+      operationId: serveEmailTemplate
+      parameters:
+      - description: Kratos flow/template name
+        example: verification
+        explode: false
+        in: path
+        name: template_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Which part of the template to serve
+        example: body
+        explode: false
+        in: path
+        name: type
+        required: true
+        schema:
+          enum:
+          - body
+          - plaintext
+          - subject
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                description: Raw Go template (gotmpl) contents
+                type: string
+          description: Template contents
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      security:
+      - CookieAuth: []
+      - SessionTokenAuth: []
+      - ServiceKeyAuth: []
+      summary: Serve an email template file
       tags:
       - V1 Configuration
   /api/v1/payments/checkout:
@@ -4685,6 +4864,24 @@ components:
       required:
       - message
       - status
+    AppliedMigration:
+      example:
+        dirty: false
+        version: 18
+      properties:
+        version:
+          description: Migration version number
+          example: 18
+          format: int64
+          type: integer
+        dirty:
+          description: Whether the migration is in a dirty (failed) state requiring
+            manual repair
+          example: false
+          type: boolean
+      required:
+      - dirty
+      - version
     EmailTemplate:
       example:
         updated_at: 2025-11-10T00:33:08.726632Z
@@ -4787,6 +4984,33 @@ components:
       required:
       - error
       - status
+    SendEmailRequest:
+      example:
+        subject: Welcome to Our Platform
+        plain: Hello! Welcome to our platform.
+        to: user@example.com
+        body: <h1>Hello!</h1><p>Welcome to our platform.</p>
+      properties:
+        to:
+          description: Recipient email address
+          example: user@example.com
+          type: string
+        subject:
+          description: Email subject line
+          example: Welcome to Our Platform
+          type: string
+        body:
+          description: HTML email body content
+          example: <h1>Hello!</h1><p>Welcome to our platform.</p>
+          type: string
+        plain:
+          description: Optional plain text version of the email body
+          example: Hello! Welcome to our platform.
+          type: string
+      required:
+      - body
+      - subject
+      - to
     CreateCheckoutRequest:
       example:
         allow_promotion_codes: true
@@ -12258,6 +12482,52 @@ components:
           type: string
       required:
       - migrations
+    getDatabaseMigrationStatus_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            items:
+              $ref: "#/components/schemas/AppliedMigration"
+            type: array
+      example:
+        data:
+        - dirty: false
+          version: 18
+        - dirty: false
+          version: 18
+        status: 200
+    rollbackDatabaseMigrations_request:
+      properties:
+        steps:
+          description: Number of migrations to roll back
+          example: 1
+          minimum: 1
+          type: integer
+        migrations:
+          description: Zip file containing SQL migration files
+          format: binary
+          type: string
+      required:
+      - migrations
+      - steps
+    rollbackDatabaseMigrations_200_response_allOf_data:
+      example:
+        message: Rolled back 1 migration(s)
+      properties:
+        message:
+          example: Rolled back 1 migration(s)
+          type: string
+    rollbackDatabaseMigrations_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/rollbackDatabaseMigrations_200_response_allOf_data"
+      example:
+        data:
+          message: Rolled back 1 migration(s)
+        status: 200
     getEmailTemplates_200_response_allOf_data:
       example:
         templates:
@@ -12354,6 +12624,23 @@ components:
       example:
         data:
           message: Template deleted successfully
+        status: 200
+    sendEmail_200_response_allOf_data:
+      example:
+        message: Email sent successfully
+      properties:
+        message:
+          example: Email sent successfully
+          type: string
+    sendEmail_200_response:
+      allOf:
+      - $ref: "#/components/schemas/SuccessResponse"
+      - properties:
+          data:
+            $ref: "#/components/schemas/sendEmail_200_response_allOf_data"
+      example:
+        data:
+          message: Email sent successfully
         status: 200
     createCheckout_200_response:
       allOf:

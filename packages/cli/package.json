@@ -7,6 +7,12 @@
     "url": "https://github.com/PhoenixSolutionsGroup/omnibase"
   },
   "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./db/policies": "./dist/services/db/generate/policies.js",
+    "./db/rls-policies": "./dist/services/db/generate/rls-policies.js",
+    "./db/generate": "./dist/services/db/generate/generate.js"
+  },
   "bin": {
     "omnibase": "./dist/index.js"
   },
@@ -16,8 +22,9 @@
     "docker/"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc && chmod +x dist/index.js",
     "dev": "NODE_ENV=development bun src/index.ts",
+    "test": "bun test",
     "start": "node dist/index.js",
     "prepare": "npm run build"
   },
@@ -40,9 +47,12 @@
     "dotenv": "^16.3.1",
     "form-data": "^4.0.0",
     "jszip": "^3.10.1",
-    "ora": "^9.0.0"
+    "ora": "^9.0.0",
+    "tsx": "^4.19.0"
   },
   "devDependencies": {
+    "@prisma/client": "^7.8.0",
+    "@types/adm-zip": "^0.5.8",
     "@types/bun": "latest",
     "@types/node": "^20.10.0",
     "ts-node": "^10.9.2",

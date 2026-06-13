@@ -1,0 +1,7 @@
+{
+  "name": "omnibase-test-api",
+  "private": true,
+  "dependencies": {
+    "@omnibase/cli": "file:../../packages/cli"
+  }
+}

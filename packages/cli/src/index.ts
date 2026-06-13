@@ -21,18 +21,18 @@ import {
   runDockerComposeCommand,
 } from "./utils/docker";
 
-const program = new Command();
+export const program = new Command();
 
 program
   .name("omnibase")
   .description(
-    "OmniBase CLI - Manage Docker Compose services and environment configuration"
+    "OmniBase CLI - Manage Docker Compose services and environment configuration",
   )
   .version(packageJson.version)
   .option("--env <environment>", "Override environment for this command")
   .option(
     "--mode <mode>",
-    "Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)"
+    "Docker compose mode: 'dev', 'test', 'perf-test', or 'default' (default: default)",
   );
 
 function createTemplateFiles(targetDir: string): void {
@@ -50,7 +50,7 @@ async function runDockerCompose(
   envOverride?: string,
   composeMode?: string,
   command?: string,
-  services: string[] = []
+  services: string[] = [],
 ): Promise<void> {
   try {
     const envConfig = await selectEnvironment(envOverride);
@@ -83,7 +83,7 @@ program
     if (fs.existsSync(omnibaseDir)) {
       logger.warn("omnibase directory already exists");
       logger.log(
-        "  Remove the existing omnibase directory if you want to reinitialize"
+        "  Remove the existing omnibase directory if you want to reinitialize",
       );
       return;
     }
@@ -158,4 +158,6 @@ addSyncCommands(program);
 // Add restart commands
 addRestartCommands(program);
 
-program.parse();
+if (require.main === module) {
+  program.parse();
+}

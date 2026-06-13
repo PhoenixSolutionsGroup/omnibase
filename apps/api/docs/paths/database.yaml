@@ -119,33 +119,65 @@ paths:
         '500':
           $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
 
-  /api/v1/database/migrations/reset:
-    post:
-      operationId: resetDatabaseMigrations
-      summary: Reset database and re-apply migrations
+  /api/v1/database/migrations/status:
+    get:
+      operationId: getDatabaseMigrationStatus
+      summary: Get applied migration status
       description: |
-        Drops all tables in the public schema and re-applies migrations from scratch.
+        Returns the migrations recorded in the `migrations.schema_migrations`
+        tracking table, ordered by version descending. A `dirty` migration
+        indicates a previous run failed partway and needs manual intervention.
 
-        **WARNING: This is a destructive operation intended for development use only.**
-        All data will be permanently lost.
+        ## Authentication
+        Requires service key authentication.
+
+        ## Use Cases
+        - Inspect applied migrations via `omnibase db migrate status`
+        - Detect dirty/failed migration state in CI
+      tags:
+        - V1 Configuration
+      security:
+        - ServiceKeyAuth: []
+      responses:
+        '200':
+          description: Applied migrations retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '../schemas/database.yaml#/components/schemas/AppliedMigration'
+        '401':
+          $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '../schemas/errors.yaml#/components/responses/InternalServerError'
+
+  /api/v1/database/migrations/down:
+    post:
+      operationId: rollbackDatabaseMigrations
+      summary: Roll back database migrations
+      description: |
+        Rolls back the last N migrations using the supplied migration files.
+
+        **WARNING: Rolling back migrations can be destructive.** Down migrations
+        may drop tables or columns and permanently delete data.
 
         ## Authentication
         Requires service key authentication (typically used by CLI tools).
 
-        ## What Gets Dropped
-        - All tables in the `public` schema
-        - All custom enum types in the `public` schema
-        - The `migrations.schema_migrations` tracking table
-        - The `migrations` schema
-
         ## Migration Format
-        Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
-        Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
+        Upload a zip file containing the SQL migration files (the same set used
+        to apply the migrations). Files are renamed to golang-migrate format so
+        the matching `*.down.sql` files can be executed.
 
         ## Use Cases
-        - Development database reset via `omnibase db migrate reset`
-        - Clean slate testing
-        - Schema redesign during development
+        - Roll back migrations via `omnibase db migrate down`
+        - Undo a faulty migration during development
       tags:
         - V1 Configuration
       security:
@@ -157,25 +189,36 @@ paths:
             schema:
               type: object
               required:
+                - steps
                 - migrations
               properties:
+                steps:
+                  type: integer
+                  minimum: 1
+                  description: Number of migrations to roll back
+                  example: 1
                 migrations:
                   type: string
                   format: binary
                   description: Zip file containing SQL migration files
       responses:
         '200':
-          description: Database reset and migrations applied successfully
+          description: Migrations rolled back successfully
           content:
             application/json:
               schema:
-                $ref: '../schemas/database.yaml#/components/schemas/MigrationSuccessResponse'
+                allOf:
+                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+                            example: Rolled back 1 migration(s)
         '400':
-          description: No migrations zip file provided
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/database.yaml#/components/schemas/MigrationErrorResponse'
+          $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
           $ref: '../schemas/errors.yaml#/components/responses/UnauthorizedError'
         '500':

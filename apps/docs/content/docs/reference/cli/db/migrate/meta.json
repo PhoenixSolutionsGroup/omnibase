@@ -1,0 +1,10 @@
+{
+  "title": "Migrate",
+  "pages": [
+    "new",
+    "push",
+    "reset",
+    "generate",
+    "down"
+  ]
+}

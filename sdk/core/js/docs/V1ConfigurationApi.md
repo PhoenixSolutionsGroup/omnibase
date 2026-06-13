@@ -9,10 +9,14 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**deleteEmailTemplate**](V1ConfigurationApi.md#deleteemailtemplate) | **DELETE** /api/v1/email/templates/{type} | Delete email template |
 | [**deployPermissionNamespaces**](V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations |
 | [**generateDatabaseTypes**](V1ConfigurationApi.md#generatedatabasetypes) | **GET** /api/v1/database/typegen | Generate types from database schema |
+| [**getDatabaseMigrationStatus**](V1ConfigurationApi.md#getdatabasemigrationstatus) | **GET** /api/v1/database/migrations/status | Get applied migration status |
 | [**getEmailTemplates**](V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates |
 | [**getStripeConfigHistory**](V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history |
 | [**getStripeConfigSchema**](V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema |
 | [**pullStripeConfig**](V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe |
+| [**rollbackDatabaseMigrations**](V1ConfigurationApi.md#rollbackdatabasemigrations) | **POST** /api/v1/database/migrations/down | Roll back database migrations |
+| [**sendEmail**](V1ConfigurationApi.md#sendemailoperation) | **POST** /api/v1/email/send | Send an email |
+| [**serveEmailTemplate**](V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file |
 | [**updateStripeConfig**](V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config |
 | [**uploadDatabaseMigrations**](V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations |
 | [**validateStripeConfig**](V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config |
@@ -393,6 +397,71 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## getDatabaseMigrationStatus
+
+> GetDatabaseMigrationStatus200Response getDatabaseMigrationStatus()
+
+Get applied migration status
+
+Returns the migrations recorded in the &#x60;migrations.schema_migrations&#x60; tracking table, ordered by version descending. A &#x60;dirty&#x60; migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via &#x60;omnibase db migrate status&#x60; - Detect dirty/failed migration state in CI 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { GetDatabaseMigrationStatusRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1ConfigurationApi(config);
+
+  try {
+    const data = await api.getDatabaseMigrationStatus();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**GetDatabaseMigrationStatus200Response**](GetDatabaseMigrationStatus200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Applied migrations retrieved successfully |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## getEmailTemplates
 
 > GetEmailTemplates200Response getEmailTemplates()
@@ -661,6 +730,243 @@ This endpoint does not need any parameter.
 | **200** | Stripe configuration pulled successfully |  -  |
 | **401** | Invalid or missing admin token |  -  |
 | **500** | Failed to pull configuration from Stripe |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## rollbackDatabaseMigrations
+
+> RollbackDatabaseMigrations200Response rollbackDatabaseMigrations(steps, migrations)
+
+Roll back database migrations
+
+Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching &#x60;*.down.sql&#x60; files can be executed.  ## Use Cases - Roll back migrations via &#x60;omnibase db migrate down&#x60; - Undo a faulty migration during development 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { RollbackDatabaseMigrationsRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1ConfigurationApi(config);
+
+  const body = {
+    // number | Number of migrations to roll back
+    steps: 56,
+    // Blob | Zip file containing SQL migration files
+    migrations: BINARY_DATA_HERE,
+  } satisfies RollbackDatabaseMigrationsRequest;
+
+  try {
+    const data = await api.rollbackDatabaseMigrations(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **steps** | `number` | Number of migrations to roll back | [Defaults to `undefined`] |
+| **migrations** | `Blob` | Zip file containing SQL migration files | [Defaults to `undefined`] |
+
+### Return type
+
+[**RollbackDatabaseMigrations200Response**](RollbackDatabaseMigrations200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `multipart/form-data`
+- **Accept**: `application/json`, `text/plain`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Migrations rolled back successfully |  -  |
+| **400** | Bad Request - Invalid request parameters |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## sendEmail
+
+> SendEmail200Response sendEmail(sendEmailRequest)
+
+Send an email
+
+Sends an email to the specified recipient using the configured SMTP server.  ## Email Content - Supports HTML body content - Optional plain text version for email clients that don\&#39;t support HTML - If both HTML and plain text are provided, sends as multipart/alternative  ## Use Cases - Send transactional emails - Send notifications to users - Custom email communications 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { SendEmailOperationRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1ConfigurationApi(config);
+
+  const body = {
+    // SendEmailRequest
+    sendEmailRequest: ...,
+  } satisfies SendEmailOperationRequest;
+
+  try {
+    const data = await api.sendEmail(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **sendEmailRequest** | [SendEmailRequest](SendEmailRequest.md) |  | |
+
+### Return type
+
+[**SendEmail200Response**](SendEmail200Response.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`, `text/plain`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Email sent successfully |  -  |
+| **400** | Bad Request - Invalid request parameters |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## serveEmailTemplate
+
+> string serveEmailTemplate(templateName, type)
+
+Serve an email template file
+
+Serves the raw contents of an email template used by Ory Kratos for transactional emails (verification, recovery, etc.).  A custom template is looked up in object storage first, falling back to the built-in default template shipped with the API.  ## Template Types - &#x60;body&#x60; — HTML body template (&#x60;email.body.gotmpl&#x60;) - &#x60;plaintext&#x60; — plain-text body template (&#x60;email.body.plaintext.gotmpl&#x60;) - &#x60;subject&#x60; — subject line template (&#x60;email.subject.gotmpl&#x60;)  ## Use Cases - Kratos courier template rendering - Previewing the active template for a given flow 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { ServeEmailTemplateRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1ConfigurationApi(config);
+
+  const body = {
+    // string | Kratos flow/template name
+    templateName: verification,
+    // 'body' | 'plaintext' | 'subject' | Which part of the template to serve
+    type: body,
+  } satisfies ServeEmailTemplateRequest;
+
+  try {
+    const data = await api.serveEmailTemplate(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **templateName** | `string` | Kratos flow/template name | [Defaults to `undefined`] |
+| **type** | `body`, `plaintext`, `subject` | Which part of the template to serve | [Defaults to `undefined`] [Enum: body, plaintext, subject] |
+
+### Return type
+
+**string**
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `text/plain`, `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Template contents |  -  |
+| **400** | Bad Request - Invalid request parameters |  -  |
+| **401** | Unauthorized - Authentication required |  -  |
+| **404** | Not Found - Resource not found |  -  |
+| **500** | Internal Server Error - Server encountered an error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

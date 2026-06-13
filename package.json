@@ -10,19 +10,19 @@
     "generate:docs:typedoc": "bun ./scripts/generate-docs.ts --typedoc",
     "generate:docs:openapi": "bun ./scripts/generate-docs.ts --openapi",
     "generate:k6": "./scripts/generate-k6-sdk.sh",
+    "test": "./scripts/test-all.sh",
     "test:api": "./scripts/test-api.sh",
     "test:api:local": "./scripts/test-api.sh --local",
     "test:api:k6": "./scripts/test-api.sh --k6-only --local",
     "test:api:contract": "./scripts/test-api.sh --contract-only --local",
     "test:api:integration": "./scripts/test-api.sh --k6-only --local --scenario integration",
+    "audit": "bun scripts/audit-routes.ts",
+    "prepush": "bash .husky/pre-push",
+    "prepare": "husky",
     "release:preview": "./scripts/preview-releases.sh"
   },
   "devDependencies": {
     "@grafana/openapi-to-k6": "^0.3.2",
-    "fumadocs-core": "^16.2.0",
-    "fumadocs-openapi": "^10.2.3",
-    "typedoc": "^0.28.5",
-    "typedoc-plugin-markdown": "^4.6.3",
     "@openapitools/openapi-generator-cli": "^2.27.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
@@ -30,8 +30,14 @@
     "@semantic-release/github": "^12.0.2",
     "@semantic-release/npm": "^13.1.3",
     "@types/bun": "latest",
+    "fumadocs-core": "^16.2.0",
+    "fumadocs-openapi": "^10.2.3",
+    "husky": "^9.1.7",
+    "prisma": "6.19.3",
     "semantic-release": "^25.0.2",
-    "semantic-release-commit-filter": "^1.0.2"
+    "semantic-release-commit-filter": "^1.0.2",
+    "typedoc": "^0.28.5",
+    "typedoc-plugin-markdown": "^4.6.3"
   },
   "workspaces": [
     "sdk/*/*",
@@ -42,6 +48,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@prisma/client": "6.19.3",
     "@redocly/cli": "^2.14.3",
     "yaml": "^2.8.2"
   }
