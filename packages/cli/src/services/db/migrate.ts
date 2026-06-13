@@ -5,7 +5,7 @@ import { logger } from "../../utils/logger";
 import { ensureMigrationDir, zipMigrationsDir } from "./utils";
 import { userInput } from "../../utils/user-input";
 import { createConfig } from "../../lib/omnibase";
-import { V1ConfigurationApi } from "@omnibase/core-js";
+import { GenerateDatabaseTypesLanguageEnum, V1ConfigurationApi } from "@omnibase/core-js";
 import { generate } from "./generate/generate";
 import {
   composeExec,
@@ -112,6 +112,7 @@ export class DatabaseMigrationService {
       if (error instanceof Error) {
         logger.fail(error.message);
       }
+      throw error;
     }
   }
 
@@ -182,24 +183,15 @@ export class DatabaseMigrationService {
     const vEnv = this.verifyEnv(env);
     ensureMigrationDir(migrationsDir);
 
+    const config = createConfig({ apiKey: vEnv.omnibaseServiceKey, basePath: vEnv.omnibaseApiUrl });
+    const client = new V1ConfigurationApi(config);
+
     // Fetch current version from API
     let currentVersion = -1;
     try {
-      const resp = await fetch(
-        `${vEnv.omnibaseApiUrl}/api/v1/database/migrations/status`,
-        {
-          headers: vEnv.omnibaseServiceKey
-            ? { "X-Service-Key": vEnv.omnibaseServiceKey }
-            : {},
-        },
-      );
-      if (resp.ok) {
-        const body = (await resp.json()) as {
-          data?: { version: number; dirty: boolean }[];
-        };
-        const arr = (body.data || []).filter((m) => !m.dirty);
-        if (arr.length > 0) currentVersion = arr[0].version;
-      }
+      const res = await client.getDatabaseMigrationStatus()
+      if (!res.data || res.data.length < 1) throw new Error()
+      currentVersion = res.data[0].version
     } catch {
       logger.warn("Could not fetch migration status from API");
     }
@@ -246,46 +238,54 @@ export class DatabaseMigrationService {
     const zipBuffer = zip.toBuffer();
     const blob = new Blob([zipBuffer], { type: "application/zip" });
 
-    const formData = new FormData();
-    formData.append("migrations", blob, "migrations.zip");
-    formData.append("steps", String(steps));
-
-    const downEndpoint = `${vEnv.omnibaseApiUrl}/api/v1/database/migrations/down`;
-    logger.start(`Rolling back ${steps} migration(s)...`);
-
     try {
-      const headers: Record<string, string> = {};
-      if (vEnv.omnibaseServiceKey)
-        headers["X-Service-Key"] = vEnv.omnibaseServiceKey;
-
-      const response = await fetch(downEndpoint, {
-        method: "POST",
-        headers,
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const body = (await response.json().catch(() => ({}))) as Record<
-          string,
-          string
-        >;
-        throw new Error(
-          body.error ||
-          body.message ||
-          `${response.status} - ${response.statusText}`,
-        );
-      }
-
-      const data = (await response.json()) as { data?: { message?: string } };
-      logger.succeed(data.data?.message || `Rolled back ${steps} migration(s)`);
+      logger.start(`Rolling back ${steps} migration(s)...`);
+      const res = await client.rollbackDatabaseMigrations({ migrations: blob, steps: steps })
+      if (!res.data) throw new Error()
+      logger.succeed(res.data?.message || `Rolled back ${steps} migration(s)`);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Unknown error";
-      throw new Error(
-        `Failed to rollback: ${errorMsg}\n` +
-        `Please ensure the API is running and accessible.`,
-      );
+      logger.fail("Failed to rollback migrations");
     }
   }
 
-  async typegen() { }
+  async typegen(
+    env: EnvironmentConfig,
+    language: GenerateDatabaseTypesLanguageEnum,
+    schemas: string,
+    outputPath: string,
+  ) {
+    const vEnv = this.verifyEnv(env);
+    const config = createConfig({
+      apiKey: vEnv.omnibaseServiceKey,
+      basePath: vEnv.omnibaseApiUrl,
+    });
+    const client = new V1ConfigurationApi(config);
+
+    try {
+      const data = await client.generateDatabaseTypes({ language, schemas });
+
+      if (!data) {
+        throw new Error("No type definitions returned from API");
+      }
+
+      const fullOutputPath = path.join(findOmnibaseRoot(), outputPath);
+      const outputDir = path.dirname(fullOutputPath);
+
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        logger.info(`Created types directory: ${outputDir}`);
+      }
+
+      fs.writeFileSync(fullOutputPath, data);
+
+      logger.succeed(`Generated ${language} types`);
+      logger.log(`   Location: ${fullOutputPath}`);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      throw new Error(
+        `Failed to generate types: ${errorMsg}\n` +
+        "Please ensure the API is running and accessible.",
+      );
+    }
+  }
 }

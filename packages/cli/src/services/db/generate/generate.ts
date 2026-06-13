@@ -157,6 +157,9 @@ export async function generate(options: GenerateOptions): Promise<string[]> {
     const upSQL = upDiff.stdout.trim();
     if (upSQL && !isEmptyPrismaDiff(upSQL)) {
       const rawDown = downDiff.exitCode === 0 ? downDiff.stdout.trim() : "";
+      if (downDiff.exitCode !== 0) {
+        logger.warn("Down diff failed — rollback SQL may be incomplete");
+      }
       const downSQL = isEmptyPrismaDiff(rawDown) ? "" : rawDown;
 
       const dirName = `${timestamp()}_${options.migrationName}`;

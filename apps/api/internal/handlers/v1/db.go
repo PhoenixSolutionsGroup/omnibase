@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -289,8 +290,8 @@ func (h *MigrationHandler) HandleMigrationsDown(c *gin.Context) {
 		return
 	}
 
-	var steps int
-	if _, err := fmt.Sscanf(stepsStr, "%d", &steps); err != nil || steps < 1 {
+	steps, err := strconv.Atoi(stepsStr)
+	if err != nil || steps < 1 {
 		handlers.NewBadRequestResponse(c, "steps must be a positive integer")
 		return
 	}
