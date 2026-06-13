@@ -30,7 +30,7 @@ const SERVICES: SyncService[] = [
     description: "SQL migration files",
     push: async (env) =>
       new DatabaseMigrationService().push(
-        "omnibase/db",
+        "omnibase/db/migrations",
         await selectEnvironment(env),
       ),
   },
