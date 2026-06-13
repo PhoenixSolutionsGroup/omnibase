@@ -21,7 +21,7 @@ import {
   runDockerComposeCommand,
 } from "./utils/docker";
 
-const program = new Command();
+export const program = new Command();
 
 program
   .name("omnibase")
@@ -158,4 +158,6 @@ addSyncCommands(program);
 // Add restart commands
 addRestartCommands(program);
 
-program.parse();
+if (require.main === module) {
+  program.parse();
+}

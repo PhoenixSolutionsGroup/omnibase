@@ -1,0 +1,8 @@
+{
+  "title": "Db",
+  "pages": [
+    "migrate",
+    "policy",
+    "typegen"
+  ]
+}

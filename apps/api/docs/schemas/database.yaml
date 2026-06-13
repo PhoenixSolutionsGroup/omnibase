@@ -29,3 +29,19 @@ components:
           type: string
           description: Error message
           example: No migrations zip file provided
+
+    AppliedMigration:
+      type: object
+      required:
+        - version
+        - dirty
+      properties:
+        version:
+          type: integer
+          format: int64
+          description: Migration version number
+          example: 18
+        dirty:
+          type: boolean
+          description: Whether the migration is in a dirty (failed) state requiring manual repair
+          example: false

@@ -1,1 +1,0 @@
--- infra migration: 000004_email.up.sql

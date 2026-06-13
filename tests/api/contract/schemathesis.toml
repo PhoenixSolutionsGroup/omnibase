@@ -75,6 +75,24 @@ fuzzing.enabled = false
 include-name = "POST /api/v1/database/migrations"
 enabled = false
 
+# Destructive + requires a valid migrations zip — fuzzing would roll back the
+# test database. Covered by k6 integration tests instead.
+[[operations]]
+include-name = "POST /api/v1/database/migrations/down"
+enabled = false
+
+# Destructive — drops all tables in the public schema and re-applies migrations.
+# Must never be fuzzed against a live database.
+[[operations]]
+include-name = "POST /api/v1/database/migrations/reset"
+enabled = false
+
+# Sends real email via SMTP — has external side effects and requires SMTP setup.
+# Same rationale as POST /api/v1/tenants/invites below. Covered by integration tests.
+[[operations]]
+include-name = "POST /api/v1/email/send"
+enabled = false
+
 # Disable typegen endpoint - depends on postgres-type-gen service which may not
 # be ready during contract tests. Returns 502 if service is unavailable.
 [[operations]]

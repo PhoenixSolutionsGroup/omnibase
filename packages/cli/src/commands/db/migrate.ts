@@ -4,25 +4,40 @@ import { DatabaseMigrationService } from "../../services/db/migrate";
 import { getCommandContextWithEnv } from "../../utils/context";
 import { userInput } from "../../utils/user-input";
 import { logger } from "../../utils/logger";
-import { generate } from "../../services/db/generate/generate";
+import { selectEnvironment } from "../../utils/environment";
 
 /**
  * @param program - The parent Command object
  */
-export function migrateCommands(program: Command): void {
+export function dbMigrateCommands(program: Command): void {
   const migrate = program
     .command("migrate")
-    .description("Database migration commands");
+    .summary("Database migration management")
+    .description(
+      "Create, apply, and roll back database migrations.\n\n" +
+      "Use `new` to scaffold a blank migration file, `generate` to produce " +
+      "migration SQL from your Prisma schema and RLS policies, `push` to " +
+      "apply pending migrations to the database, `reset` to drop and " +
+      "re-apply everything, and `down` to roll back applied migrations.",
+    );
 
   const service = new DatabaseMigrationService();
 
   migrate
     .command("new")
-    .description("Create a new database migration")
+    .summary("Create a new database migration")
+    .description(
+      "Create a blank migration file with a timestamp prefix.\n\n" +
+      "Use this when you need to write custom SQL that doesn't come from " +
+      "the Prisma schema diff — for example, data backfills, extensions, " +
+      "or manual DDL.\n\n" +
+      "Before: ensure the migrations directory exists (or use `--dir`).\n" +
+      "After: edit the generated file with your SQL statements.",
+    )
     .option(
       "-d, --dir <directory>",
       "Directory to create migration file in",
-      "omnibase/db",
+      "omnibase/db/migrations",
     )
     .option("-n, --name <name>", "Migration name (will prompt if not provided)")
     .action(async (options) => {
@@ -35,22 +50,24 @@ export function migrateCommands(program: Command): void {
 
   migrate
     .command("push")
-    .description("Push migrations from the db directory")
+    .summary("Apply pending migrations to the database")
+    .description(
+      "Apply any pending migration files to the connected database.\n\n" +
+      "Run this after creating or generating migration files to apply them " +
+      "to your database. Uses the API endpoint for the selected environment.\n\n" +
+      "Before: ensure migration files exist in the migrations directory.\n" +
+      "After: the database schema is updated to match the applied migrations.",
+    )
     .option(
       "-d, --dir <directory>",
       "Directory containing migration files",
-      "omnibase/db",
+      "omnibase/db/migrations",
     )
     .action(async (options) => {
       try {
-        const { env } = await getCommandContextWithEnv(program);
-        if (!env.omnibaseServiceKey) {
-          throw new Error(
-            "OMNIBASE_SERVICE_KEY not found in environment configuration",
-          );
-        }
-        const { omnibaseApiUrl, omnibaseServiceKey } = env;
-        await service.push(options.dir, { omnibaseApiUrl, omnibaseServiceKey });
+        const ctx = await getCommandContextWithEnv(program);
+
+        await service.push(options.dir, ctx.env);
       } catch (error) {
         handleCommandError(error);
       }
@@ -58,17 +75,24 @@ export function migrateCommands(program: Command): void {
 
   migrate
     .command("reset")
+    .summary("Drop all tables and re-apply all migrations (destructive)")
     .description(
-      "Reset database: drop all tables and re-apply migrations (DESTRUCTIVE)",
+      "Completely reset the database by dropping all tables and re-applying " +
+      "every migration from scratch.\n\n" +
+      "Use this during local development when you want a clean database state. " +
+      "This is **destructive** — all data will be lost.\n\n" +
+      "Before: ensure the database connection is configured and migrations exist.\n" +
+      "After: the database is recreated with all migrations applied.\n\n" +
+      "The command will prompt for confirmation unless `--yes` is provided.",
     )
     .option(
       "-d, --dir <directory>",
       "Directory containing migration files",
-      "omnibase/db",
+      "omnibase/db/migrations",
     )
     .option("-y, --yes", "Skip confirmation prompt")
     .action(async (options) => {
-      const { env } = await getCommandContextWithEnv(program);
+      const env = await selectEnvironment("local");
 
       if (!env.omnibaseServiceKey) {
         throw new Error(
@@ -82,19 +106,46 @@ export function migrateCommands(program: Command): void {
         );
         if (input.toLocaleLowerCase() !== "yes") {
           logger.info("Reset cancelled");
+          return;
         }
       }
 
-      const { omnibaseApiUrl, omnibaseServiceKey } = env;
-      await service.reset(options.dir, { omnibaseApiUrl, omnibaseServiceKey });
+      await service.reset(options.dir, env);
     });
 
   migrate
     .command("generate")
-    .description("Generate migration SQL from Prisma schema + RLS policies")
+    .summary("Generate migration files from Prisma schema + RLS policies")
+    .description(
+      "Generate migration SQL by diffing the Prisma schema against the " +
+      "applied migration history, then appending RLS policy changes.\n\n" +
+      "Use this as the primary way to create schema migrations. It uses a " +
+      "shadow database to replay the migration history and produce " +
+      "deterministic up/down diffs. RLS policies from `omnibase/db/policies/` " +
+      "are appended to the migration.\n\n" +
+      "Before: ensure your Prisma schema is up to date and a PostgreSQL " +
+      "instance is available for the shadow database.\n" +
+      "After: migration files are created in the migrations directory. " +
+      "Run `push` to apply them.",
+    )
     .option(
       "--db-url <url>",
       "Database URL (defaults to postgresql://postgres:postgres@localhost:5432)",
+    )
+    .option(
+      "-d, --dir <directory>",
+      "Directory containing migration files",
+      "omnibase/db/migrations",
+    )
+    .option(
+      "-s, --schema-dir <director>",
+      "Directory containing prisma schema file",
+      "omnibase/db/schema",
+    )
+    .option(
+      "-p, --policy-dir <directory>",
+      "Directory containing Omnibase policy definitions",
+      "omnibase/db/policies",
     )
     .option("-n, --name <name>", "Migration name")
     .action(async (options) => {
@@ -102,11 +153,26 @@ export function migrateCommands(program: Command): void {
       if (!name) name = await userInput("Migration name:");
 
       logger.start("Generating migrations...");
+      await service.generate(
+        options.dir,
+        name,
+        options.schemaDir,
+        options.policyDir,
+        options.dbUrl,
+      );
     });
 
   migrate
     .command("down")
-    .description("Rollback a migration")
+    .summary("Roll back one or more applied migrations")
+    .description(
+      "Roll back the most recent migration(s) by applying their down.sql files " +
+      "in reverse order.\n\n" +
+      "Use this to undo recently applied migrations during development. " +
+      "You can specify the number of steps or a target migration name.\n\n" +
+      "Before: ensure the API is running and the environment is configured.\n" +
+      "After: the specified migrations are rolled back from the database.",
+    )
     .option("-d, --dir <directory>", "Migrations directory", "omnibase/db")
     .option(
       "-n, --name <name>",
@@ -118,6 +184,6 @@ export function migrateCommands(program: Command): void {
     )
     .action(async (options) => {
       const ctx = await getCommandContextWithEnv(program);
-      await service.down(options.dir);
+      await service.down(options.dir, ctx.env);
     });
 }

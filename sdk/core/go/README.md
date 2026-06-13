@@ -104,10 +104,14 @@ Class | Method | HTTP request | Description
 *V1ConfigurationAPI* | [**DeleteEmailTemplate**](docs/V1ConfigurationAPI.md#deleteemailtemplate) | **Delete** /api/v1/email/templates/{type} | Delete email template
 *V1ConfigurationAPI* | [**DeployPermissionNamespaces**](docs/V1ConfigurationAPI.md#deploypermissionnamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 *V1ConfigurationAPI* | [**GenerateDatabaseTypes**](docs/V1ConfigurationAPI.md#generatedatabasetypes) | **Get** /api/v1/database/typegen | Generate types from database schema
+*V1ConfigurationAPI* | [**GetDatabaseMigrationStatus**](docs/V1ConfigurationAPI.md#getdatabasemigrationstatus) | **Get** /api/v1/database/migrations/status | Get applied migration status
 *V1ConfigurationAPI* | [**GetEmailTemplates**](docs/V1ConfigurationAPI.md#getemailtemplates) | **Get** /api/v1/email/templates | Get all email templates
 *V1ConfigurationAPI* | [**GetStripeConfigHistory**](docs/V1ConfigurationAPI.md#getstripeconfighistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationAPI* | [**GetStripeConfigSchema**](docs/V1ConfigurationAPI.md#getstripeconfigschema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
 *V1ConfigurationAPI* | [**PullStripeConfig**](docs/V1ConfigurationAPI.md#pullstripeconfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
+*V1ConfigurationAPI* | [**RollbackDatabaseMigrations**](docs/V1ConfigurationAPI.md#rollbackdatabasemigrations) | **Post** /api/v1/database/migrations/down | Roll back database migrations
+*V1ConfigurationAPI* | [**SendEmail**](docs/V1ConfigurationAPI.md#sendemail) | **Post** /api/v1/email/send | Send an email
+*V1ConfigurationAPI* | [**ServeEmailTemplate**](docs/V1ConfigurationAPI.md#serveemailtemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
 *V1ConfigurationAPI* | [**UpdateStripeConfig**](docs/V1ConfigurationAPI.md#updatestripeconfig) | **Post** /api/v1/stripe/admin/config | Update Stripe config
 *V1ConfigurationAPI* | [**UploadDatabaseMigrations**](docs/V1ConfigurationAPI.md#uploaddatabasemigrations) | **Post** /api/v1/database/migrations | Upload database migrations
 *V1ConfigurationAPI* | [**ValidateStripeConfig**](docs/V1ConfigurationAPI.md#validatestripeconfig) | **Post** /api/v1/stripe/admin/config/validate | Validate Stripe config
@@ -176,6 +180,7 @@ Class | Method | HTTP request | Description
  - [AddSubscription200Response](docs/AddSubscription200Response.md)
  - [AddSubscriptionRequest](docs/AddSubscriptionRequest.md)
  - [AddSubscriptionResponse](docs/AddSubscriptionResponse.md)
+ - [AppliedMigration](docs/AppliedMigration.md)
  - [ApplyEnterpriseCustomRequest](docs/ApplyEnterpriseCustomRequest.md)
  - [ApplyEnterpriseTemplate200Response](docs/ApplyEnterpriseTemplate200Response.md)
  - [ApplyEnterpriseTemplateRequest](docs/ApplyEnterpriseTemplateRequest.md)
@@ -250,6 +255,7 @@ Class | Method | HTTP request | Description
  - [FinalizeInvoiceRequest](docs/FinalizeInvoiceRequest.md)
  - [ForbiddenResponse](docs/ForbiddenResponse.md)
  - [GetActiveTenant200Response](docs/GetActiveTenant200Response.md)
+ - [GetDatabaseMigrationStatus200Response](docs/GetDatabaseMigrationStatus200Response.md)
  - [GetEmailTemplates200Response](docs/GetEmailTemplates200Response.md)
  - [GetEmailTemplates200ResponseAllOfData](docs/GetEmailTemplates200ResponseAllOfData.md)
  - [GetEnterprisePricesByTemplate200Response](docs/GetEnterprisePricesByTemplate200Response.md)
@@ -335,7 +341,12 @@ Class | Method | HTTP request | Description
  - [RemoveSubscriptionResponse](docs/RemoveSubscriptionResponse.md)
  - [Role](docs/Role.md)
  - [RolesListResponse](docs/RolesListResponse.md)
+ - [RollbackDatabaseMigrations200Response](docs/RollbackDatabaseMigrations200Response.md)
+ - [RollbackDatabaseMigrations200ResponseAllOfData](docs/RollbackDatabaseMigrations200ResponseAllOfData.md)
  - [SchemasConflictResponse](docs/SchemasConflictResponse.md)
+ - [SendEmail200Response](docs/SendEmail200Response.md)
+ - [SendEmail200ResponseAllOfData](docs/SendEmail200ResponseAllOfData.md)
+ - [SendEmailRequest](docs/SendEmailRequest.md)
  - [SessionResponse](docs/SessionResponse.md)
  - [StripeConfigChanges](docs/StripeConfigChanges.md)
  - [StripeConfigResponse](docs/StripeConfigResponse.md)

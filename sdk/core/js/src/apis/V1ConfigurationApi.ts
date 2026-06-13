@@ -23,6 +23,7 @@ import type {
   DeleteEmailTemplate200Response,
   DeployPermissionNamespaces200Response,
   ErrorResponse,
+  GetDatabaseMigrationStatus200Response,
   GetEmailTemplates200Response,
   GetStripeConfigHistory200Response,
   InternalServerError,
@@ -31,6 +32,9 @@ import type {
   MigrationSuccessResponse,
   NotFoundResponse,
   PullStripeConfig200Response,
+  RollbackDatabaseMigrations200Response,
+  SendEmail200Response,
+  SendEmailRequest,
   StripeConfigUpdateRequest,
   StripeConfigValidateRequest,
   SuccessResponse,
@@ -55,6 +59,8 @@ import {
     DeployPermissionNamespaces200ResponseToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    GetDatabaseMigrationStatus200ResponseFromJSON,
+    GetDatabaseMigrationStatus200ResponseToJSON,
     GetEmailTemplates200ResponseFromJSON,
     GetEmailTemplates200ResponseToJSON,
     GetStripeConfigHistory200ResponseFromJSON,
@@ -71,6 +77,12 @@ import {
     NotFoundResponseToJSON,
     PullStripeConfig200ResponseFromJSON,
     PullStripeConfig200ResponseToJSON,
+    RollbackDatabaseMigrations200ResponseFromJSON,
+    RollbackDatabaseMigrations200ResponseToJSON,
+    SendEmail200ResponseFromJSON,
+    SendEmail200ResponseToJSON,
+    SendEmailRequestFromJSON,
+    SendEmailRequestToJSON,
     StripeConfigUpdateRequestFromJSON,
     StripeConfigUpdateRequestToJSON,
     StripeConfigValidateRequestFromJSON,
@@ -107,8 +119,18 @@ export interface GetStripeConfigHistoryRequest {
     offset?: number;
 }
 
-export interface ResetDatabaseMigrationsRequest {
+export interface RollbackDatabaseMigrationsRequest {
+    steps: number;
     migrations: Blob;
+}
+
+export interface SendEmailOperationRequest {
+    sendEmailRequest: SendEmailRequest;
+}
+
+export interface ServeEmailTemplateRequest {
+    templateName: string;
+    type: ServeEmailTemplateTypeEnum;
 }
 
 export interface UpdateStripeConfigRequest {
@@ -370,6 +392,41 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     }
 
     /**
+     * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI 
+     * Get applied migration status
+     */
+    async getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetDatabaseMigrationStatus200Response>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/database/migrations/status`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetDatabaseMigrationStatus200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI 
+     * Get applied migration status
+     */
+    async getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetDatabaseMigrationStatus200Response> {
+        const response = await this.getDatabaseMigrationStatusRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Retrieves all email templates stored in the database.  ## Response Returns array of all templates with their type, subject, and HTML body.  ## Use Cases - List available email templates - Display template management interface - Audit email template inventory 
      * Get all email templates
      */
@@ -518,14 +575,21 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development 
-     * Reset database and re-apply migrations
+     * Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching `*.down.sql` files can be executed.  ## Use Cases - Roll back migrations via `omnibase db migrate down` - Undo a faulty migration during development 
+     * Roll back database migrations
      */
-    async resetDatabaseMigrationsRaw(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>> {
+    async rollbackDatabaseMigrationsRaw(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RollbackDatabaseMigrations200Response>> {
+        if (requestParameters['steps'] == null) {
+            throw new runtime.RequiredError(
+                'steps',
+                'Required parameter "steps" was null or undefined when calling rollbackDatabaseMigrations().'
+            );
+        }
+
         if (requestParameters['migrations'] == null) {
             throw new runtime.RequiredError(
                 'migrations',
-                'Required parameter "migrations" was null or undefined when calling resetDatabaseMigrations().'
+                'Required parameter "migrations" was null or undefined when calling rollbackDatabaseMigrations().'
             );
         }
 
@@ -553,12 +617,16 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             formParams = new URLSearchParams();
         }
 
+        if (requestParameters['steps'] != null) {
+            formParams.append('steps', requestParameters['steps'] as any);
+        }
+
         if (requestParameters['migrations'] != null) {
             formParams.append('migrations', requestParameters['migrations'] as any);
         }
 
 
-        let urlPath = `/api/v1/database/migrations/reset`;
+        let urlPath = `/api/v1/database/migrations/down`;
 
         const response = await this.request({
             path: urlPath,
@@ -568,15 +636,123 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             body: formParams,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => MigrationSuccessResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RollbackDatabaseMigrations200ResponseFromJSON(jsonValue));
     }
 
     /**
-     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development 
-     * Reset database and re-apply migrations
+     * Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching `*.down.sql` files can be executed.  ## Use Cases - Roll back migrations via `omnibase db migrate down` - Undo a faulty migration during development 
+     * Roll back database migrations
      */
-    async resetDatabaseMigrations(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse> {
-        const response = await this.resetDatabaseMigrationsRaw(requestParameters, initOverrides);
+    async rollbackDatabaseMigrations(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RollbackDatabaseMigrations200Response> {
+        const response = await this.rollbackDatabaseMigrationsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Sends an email to the specified recipient using the configured SMTP server.  ## Email Content - Supports HTML body content - Optional plain text version for email clients that don\'t support HTML - If both HTML and plain text are provided, sends as multipart/alternative  ## Use Cases - Send transactional emails - Send notifications to users - Custom email communications 
+     * Send an email
+     */
+    async sendEmailRaw(requestParameters: SendEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendEmail200Response>> {
+        if (requestParameters['sendEmailRequest'] == null) {
+            throw new runtime.RequiredError(
+                'sendEmailRequest',
+                'Required parameter "sendEmailRequest" was null or undefined when calling sendEmail().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/send`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SendEmailRequestToJSON(requestParameters['sendEmailRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SendEmail200ResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Sends an email to the specified recipient using the configured SMTP server.  ## Email Content - Supports HTML body content - Optional plain text version for email clients that don\'t support HTML - If both HTML and plain text are provided, sends as multipart/alternative  ## Use Cases - Send transactional emails - Send notifications to users - Custom email communications 
+     * Send an email
+     */
+    async sendEmail(requestParameters: SendEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendEmail200Response> {
+        const response = await this.sendEmailRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Serves the raw contents of an email template used by Ory Kratos for transactional emails (verification, recovery, etc.).  A custom template is looked up in object storage first, falling back to the built-in default template shipped with the API.  ## Template Types - `body` — HTML body template (`email.body.gotmpl`) - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`) - `subject` — subject line template (`email.subject.gotmpl`)  ## Use Cases - Kratos courier template rendering - Previewing the active template for a given flow 
+     * Serve an email template file
+     */
+    async serveEmailTemplateRaw(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        if (requestParameters['templateName'] == null) {
+            throw new runtime.RequiredError(
+                'templateName',
+                'Required parameter "templateName" was null or undefined when calling serveEmailTemplate().'
+            );
+        }
+
+        if (requestParameters['type'] == null) {
+            throw new runtime.RequiredError(
+                'type',
+                'Required parameter "type" was null or undefined when calling serveEmailTemplate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/templates/{template_name}/{type}`;
+        urlPath = urlPath.replace(`{${"template_name"}}`, encodeURIComponent(String(requestParameters['templateName'])));
+        urlPath = urlPath.replace(`{${"type"}}`, encodeURIComponent(String(requestParameters['type'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Serves the raw contents of an email template used by Ory Kratos for transactional emails (verification, recovery, etc.).  A custom template is looked up in object storage first, falling back to the built-in default template shipped with the API.  ## Template Types - `body` — HTML body template (`email.body.gotmpl`) - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`) - `subject` — subject line template (`email.subject.gotmpl`)  ## Use Cases - Kratos courier template rendering - Previewing the active template for a given flow 
+     * Serve an email template file
+     */
+    async serveEmailTemplate(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.serveEmailTemplateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -744,3 +920,12 @@ export const GenerateDatabaseTypesLanguageEnum = {
     Swift: 'swift'
 } as const;
 export type GenerateDatabaseTypesLanguageEnum = typeof GenerateDatabaseTypesLanguageEnum[keyof typeof GenerateDatabaseTypesLanguageEnum];
+/**
+ * @export
+ */
+export const ServeEmailTemplateTypeEnum = {
+    Body: 'body',
+    Plaintext: 'plaintext',
+    Subject: 'subject'
+} as const;
+export type ServeEmailTemplateTypeEnum = typeof ServeEmailTemplateTypeEnum[keyof typeof ServeEmailTemplateTypeEnum];

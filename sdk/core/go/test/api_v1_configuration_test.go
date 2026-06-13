@@ -84,6 +84,18 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1ConfigurationAPIService GetDatabaseMigrationStatus", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetDatabaseMigrationStatus(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1ConfigurationAPIService GetEmailTemplates", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -125,6 +137,45 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.PullStripeConfig(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1ConfigurationAPIService RollbackDatabaseMigrations", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.RollbackDatabaseMigrations(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1ConfigurationAPIService SendEmail", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.SendEmail(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1ConfigurationAPIService ServeEmailTemplate", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateName string
+		var type_ string
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.ServeEmailTemplate(context.Background(), templateName, type_).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

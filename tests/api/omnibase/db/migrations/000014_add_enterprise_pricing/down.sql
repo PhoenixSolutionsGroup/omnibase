@@ -1,1 +1,0 @@
--- infra migration: 000014_add_enterprise_pricing.up.sql

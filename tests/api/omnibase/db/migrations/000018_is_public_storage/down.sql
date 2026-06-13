@@ -1,1 +1,0 @@
--- infra migration: 000018_is_public_storage.up.sql

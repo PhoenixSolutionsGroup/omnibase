@@ -1,12 +1,21 @@
 import { definePolicy } from "@omnibase/cli/db/policies";
 import { Prisma } from "./generated";
 
-definePolicy<Prisma.Projects>("projects", {
+definePolicy<Prisma.projectsWhereInput>("projects", {
   select: {
-    anon: { published: true },
-    auth: (a) => ({ tenant_id: a.tenantId }),
+    anon: { using: { published: true } },
+    auth: { using: (a) => ({ tenant_id: a.tenantId }) },
   },
-  insert: { anon: false, auth: (a) => ({ tenant_id: a.tenantId }) },
-  update: { anon: false, auth: (a) => ({ tenant_id: a.tenantId }) },
-  delete: { anon: false, auth: true },
+  insert: {
+    anon: { check: false },
+    auth: { check: (a) => ({ tenant_id: a.tenantId }) },
+  },
+  update: {
+    anon: { check: false, using: false },
+    auth: {
+      check: (a) => ({ tenant_id: a.tenantId }),
+      using: (a) => ({ tenant_id: a.tenantId }),
+    },
+  },
+  delete: { anon: { using: false }, auth: { using: true } },
 });

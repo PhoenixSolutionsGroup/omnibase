@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ArchiveAllStripeConfig200Response, CreateEmailTemplateRequest, CreateOrUpdateEmailTemplate200Response, DeleteEmailTemplate200Response, DeployPermissionNamespaces200Response, GetEmailTemplates200Response, GetStripeConfigHistory200Response, MigrationSuccessResponse, PullStripeConfig200Response, StripeConfigUpdateRequest, StripeConfigValidateRequest, SuccessResponse, UpdateStripeConfig200Response } from '../models/index';
+import type { ArchiveAllStripeConfig200Response, CreateEmailTemplateRequest, CreateOrUpdateEmailTemplate200Response, DeleteEmailTemplate200Response, DeployPermissionNamespaces200Response, GetDatabaseMigrationStatus200Response, GetEmailTemplates200Response, GetStripeConfigHistory200Response, MigrationSuccessResponse, PullStripeConfig200Response, RollbackDatabaseMigrations200Response, SendEmail200Response, SendEmailRequest, StripeConfigUpdateRequest, StripeConfigValidateRequest, SuccessResponse, UpdateStripeConfig200Response } from '../models/index';
 export interface CreateOrUpdateEmailTemplateRequest {
     createEmailTemplateRequest: CreateEmailTemplateRequest;
 }
@@ -28,8 +28,16 @@ export interface GetStripeConfigHistoryRequest {
     limit?: number;
     offset?: number;
 }
-export interface ResetDatabaseMigrationsRequest {
+export interface RollbackDatabaseMigrationsRequest {
+    steps: number;
     migrations: Blob;
+}
+export interface SendEmailOperationRequest {
+    sendEmailRequest: SendEmailRequest;
+}
+export interface ServeEmailTemplateRequest {
+    templateName: string;
+    type: ServeEmailTemplateTypeEnum;
 }
 export interface UpdateStripeConfigRequest {
     stripeConfigUpdateRequest: StripeConfigUpdateRequest;
@@ -95,6 +103,16 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      */
     generateDatabaseTypes(requestParameters?: GenerateDatabaseTypesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
     /**
+     * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI
+     * Get applied migration status
+     */
+    getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetDatabaseMigrationStatus200Response>>;
+    /**
+     * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI
+     * Get applied migration status
+     */
+    getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetDatabaseMigrationStatus200Response>;
+    /**
      * Retrieves all email templates stored in the database.  ## Response Returns array of all templates with their type, subject, and HTML body.  ## Use Cases - List available email templates - Display template management interface - Audit email template inventory
      * Get all email templates
      */
@@ -135,15 +153,35 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      */
     pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PullStripeConfig200Response>;
     /**
-     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
-     * Reset database and re-apply migrations
+     * Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching `*.down.sql` files can be executed.  ## Use Cases - Roll back migrations via `omnibase db migrate down` - Undo a faulty migration during development
+     * Roll back database migrations
      */
-    resetDatabaseMigrationsRaw(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>>;
+    rollbackDatabaseMigrationsRaw(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RollbackDatabaseMigrations200Response>>;
     /**
-     * Drops all tables in the public schema and re-applies migrations from scratch.  **WARNING: This is a destructive operation intended for development use only.** All data will be permanently lost.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## What Gets Dropped - All tables in the `public` schema - All custom enum types in the `public` schema - The `migrations.schema_migrations` tracking table - The `migrations` schema  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - Development database reset via `omnibase db migrate reset` - Clean slate testing - Schema redesign during development
-     * Reset database and re-apply migrations
+     * Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching `*.down.sql` files can be executed.  ## Use Cases - Roll back migrations via `omnibase db migrate down` - Undo a faulty migration during development
+     * Roll back database migrations
      */
-    resetDatabaseMigrations(requestParameters: ResetDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse>;
+    rollbackDatabaseMigrations(requestParameters: RollbackDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RollbackDatabaseMigrations200Response>;
+    /**
+     * Sends an email to the specified recipient using the configured SMTP server.  ## Email Content - Supports HTML body content - Optional plain text version for email clients that don\'t support HTML - If both HTML and plain text are provided, sends as multipart/alternative  ## Use Cases - Send transactional emails - Send notifications to users - Custom email communications
+     * Send an email
+     */
+    sendEmailRaw(requestParameters: SendEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendEmail200Response>>;
+    /**
+     * Sends an email to the specified recipient using the configured SMTP server.  ## Email Content - Supports HTML body content - Optional plain text version for email clients that don\'t support HTML - If both HTML and plain text are provided, sends as multipart/alternative  ## Use Cases - Send transactional emails - Send notifications to users - Custom email communications
+     * Send an email
+     */
+    sendEmail(requestParameters: SendEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendEmail200Response>;
+    /**
+     * Serves the raw contents of an email template used by Ory Kratos for transactional emails (verification, recovery, etc.).  A custom template is looked up in object storage first, falling back to the built-in default template shipped with the API.  ## Template Types - `body` — HTML body template (`email.body.gotmpl`) - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`) - `subject` — subject line template (`email.subject.gotmpl`)  ## Use Cases - Kratos courier template rendering - Previewing the active template for a given flow
+     * Serve an email template file
+     */
+    serveEmailTemplateRaw(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
+    /**
+     * Serves the raw contents of an email template used by Ory Kratos for transactional emails (verification, recovery, etc.).  A custom template is looked up in object storage first, falling back to the built-in default template shipped with the API.  ## Template Types - `body` — HTML body template (`email.body.gotmpl`) - `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`) - `subject` — subject line template (`email.subject.gotmpl`)  ## Use Cases - Kratos courier template rendering - Previewing the active template for a given flow
+     * Serve an email template file
+     */
+    serveEmailTemplate(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
     /**
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts.
      * Update Stripe config
@@ -184,3 +222,12 @@ export declare const GenerateDatabaseTypesLanguageEnum: {
     readonly Swift: "swift";
 };
 export type GenerateDatabaseTypesLanguageEnum = typeof GenerateDatabaseTypesLanguageEnum[keyof typeof GenerateDatabaseTypesLanguageEnum];
+/**
+ * @export
+ */
+export declare const ServeEmailTemplateTypeEnum: {
+    readonly Body: "body";
+    readonly Plaintext: "plaintext";
+    readonly Subject: "subject";
+};
+export type ServeEmailTemplateTypeEnum = typeof ServeEmailTemplateTypeEnum[keyof typeof ServeEmailTemplateTypeEnum];

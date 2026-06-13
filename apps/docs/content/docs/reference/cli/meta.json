@@ -1,3 +1,17 @@
 {
-  "title": "CLI"
+  "title": "CLI Reference",
+  "pages": [
+    "init",
+    "start",
+    "stop",
+    "env",
+    "permissions",
+    "auth",
+    "stripe",
+    "email",
+    "db",
+    "cloud",
+    "sync",
+    "restart"
+  ]
 }

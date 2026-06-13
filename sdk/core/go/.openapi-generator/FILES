@@ -23,6 +23,7 @@ docs/AddInvoiceLineItemWithStripePriceRequest.md
 docs/AddSubscription200Response.md
 docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
+docs/AppliedMigration.md
 docs/ApplyEnterpriseCustomRequest.md
 docs/ApplyEnterpriseTemplate200Response.md
 docs/ApplyEnterpriseTemplateRequest.md
@@ -97,6 +98,7 @@ docs/ErrorResponse.md
 docs/FinalizeInvoiceRequest.md
 docs/ForbiddenResponse.md
 docs/GetActiveTenant200Response.md
+docs/GetDatabaseMigrationStatus200Response.md
 docs/GetEmailTemplates200Response.md
 docs/GetEmailTemplates200ResponseAllOfData.md
 docs/GetEnterprisePricesByTemplate200Response.md
@@ -182,7 +184,12 @@ docs/RemoveSubscriptionRequest.md
 docs/RemoveSubscriptionResponse.md
 docs/Role.md
 docs/RolesListResponse.md
+docs/RollbackDatabaseMigrations200Response.md
+docs/RollbackDatabaseMigrations200ResponseAllOfData.md
 docs/SchemasConflictResponse.md
+docs/SendEmail200Response.md
+docs/SendEmail200ResponseAllOfData.md
+docs/SendEmailRequest.md
 docs/SessionResponse.md
 docs/StripeConfigChanges.md
 docs/StripeConfigResponse.md
@@ -251,6 +258,7 @@ model_add_invoice_line_item_with_stripe_price_request.go
 model_add_subscription_200_response.go
 model_add_subscription_request.go
 model_add_subscription_response.go
+model_applied_migration.go
 model_apply_enterprise_custom_request.go
 model_apply_enterprise_template_200_response.go
 model_apply_enterprise_template_request.go
@@ -325,6 +333,7 @@ model_error_response.go
 model_finalize_invoice_request.go
 model_forbidden_response.go
 model_get_active_tenant_200_response.go
+model_get_database_migration_status_200_response.go
 model_get_email_templates_200_response.go
 model_get_email_templates_200_response_all_of_data.go
 model_get_enterprise_prices_by_template_200_response.go
@@ -410,7 +419,12 @@ model_remove_subscription_request.go
 model_remove_subscription_response.go
 model_role.go
 model_roles_list_response.go
+model_rollback_database_migrations_200_response.go
+model_rollback_database_migrations_200_response_all_of_data.go
 model_schemas_conflict_response.go
+model_send_email_200_response.go
+model_send_email_200_response_all_of_data.go
+model_send_email_request.go
 model_session_response.go
 model_stripe_config_changes.go
 model_stripe_config_response.go

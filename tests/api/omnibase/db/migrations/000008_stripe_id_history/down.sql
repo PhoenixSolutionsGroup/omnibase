@@ -1,1 +1,0 @@
--- infra migration: 000008_stripe_id_history.up.sql

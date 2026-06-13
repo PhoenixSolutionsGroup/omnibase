@@ -3,8 +3,6 @@ import { logger } from "../../utils/logger";
 import path from "path";
 import AdmZip from "adm-zip";
 
-const zip = new AdmZip();
-
 export const ensureMigrationDir = (path: string) => {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path, { recursive: true });
@@ -12,12 +10,11 @@ export const ensureMigrationDir = (path: string) => {
   }
 };
 
-export const zipMigrationsDir = (migrationsRoot: string) => {
-  const migrationsDir = path.join(migrationsRoot, "migrations");
+export const zipMigrationsDir = (migrationsDir: string) => {
   if (!fs.existsSync(migrationsDir)) {
     throw new Error(
       `No migrations directory found at ${migrationsDir}\n` +
-        `Run \`omnibase db migrate generate\` first to create migrations.`,
+      `Run \`omnibase db migrate generate\` first to create migrations.`,
     );
   }
 
@@ -29,10 +26,11 @@ export const zipMigrationsDir = (migrationsRoot: string) => {
   if (dirs.length === 0) {
     throw new Error(
       `No migration directories found in ${migrationsDir}\n` +
-        `Run \`omnibase db migrate generate\` first to create migrations.`,
+      `Run \`omnibase db migrate generate\` first to create migrations.`,
     );
   }
 
+  const zip = new AdmZip();
   let fileCount = 0;
   for (const dir of dirs) {
     for (const f of ["migration.sql", "down.sql"]) {
@@ -47,7 +45,7 @@ export const zipMigrationsDir = (migrationsRoot: string) => {
   if (fileCount === 0) {
     throw new Error(
       `No migration.sql files found in ${migrationsDir}/<dir>/\n` +
-        `Run \`omnibase db migrate generate\` first to create migrations.`,
+      `Run \`omnibase db migrate generate\` first to create migrations.`,
     );
   }
 

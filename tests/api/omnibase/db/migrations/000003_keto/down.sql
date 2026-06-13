@@ -1,1 +1,0 @@
--- infra migration: 000003_keto.up.sql

@@ -1,0 +1,11 @@
+{
+  "title": "Cloud",
+  "pages": [
+    "login",
+    "logout",
+    "switch",
+    "profiles",
+    "workers",
+    "env"
+  ]
+}

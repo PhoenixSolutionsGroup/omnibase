@@ -1,1 +1,0 @@
--- infra migration: 000007_add_rbac_system.up.sql

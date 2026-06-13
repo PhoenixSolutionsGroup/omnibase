@@ -13,6 +13,7 @@ docs/AddInvoiceLineItemWithStripePriceRequest.md
 docs/AddSubscription200Response.md
 docs/AddSubscriptionRequest.md
 docs/AddSubscriptionResponse.md
+docs/AppliedMigration.md
 docs/ApplyEnterpriseCustomRequest.md
 docs/ApplyEnterpriseTemplate200Response.md
 docs/ApplyEnterpriseTemplateRequest.md
@@ -87,6 +88,7 @@ docs/ErrorResponse.md
 docs/FinalizeInvoiceRequest.md
 docs/ForbiddenResponse.md
 docs/GetActiveTenant200Response.md
+docs/GetDatabaseMigrationStatus200Response.md
 docs/GetEmailTemplates200Response.md
 docs/GetEmailTemplates200ResponseAllOfData.md
 docs/GetEnterprisePricesByTemplate200Response.md
@@ -172,7 +174,12 @@ docs/RemoveSubscriptionRequest.md
 docs/RemoveSubscriptionResponse.md
 docs/Role.md
 docs/RolesListResponse.md
+docs/RollbackDatabaseMigrations200Response.md
+docs/RollbackDatabaseMigrations200ResponseAllOfData.md
 docs/SchemasConflictResponse.md
+docs/SendEmail200Response.md
+docs/SendEmail200ResponseAllOfData.md
+docs/SendEmailRequest.md
 docs/SessionResponse.md
 docs/StripeConfigChanges.md
 docs/StripeConfigResponse.md
@@ -248,6 +255,7 @@ src/models/AddInvoiceLineItemWithStripePriceRequest.ts
 src/models/AddSubscription200Response.ts
 src/models/AddSubscriptionRequest.ts
 src/models/AddSubscriptionResponse.ts
+src/models/AppliedMigration.ts
 src/models/ApplyEnterpriseCustomRequest.ts
 src/models/ApplyEnterpriseTemplate200Response.ts
 src/models/ApplyEnterpriseTemplateRequest.ts
@@ -322,6 +330,7 @@ src/models/ErrorResponse.ts
 src/models/FinalizeInvoiceRequest.ts
 src/models/ForbiddenResponse.ts
 src/models/GetActiveTenant200Response.ts
+src/models/GetDatabaseMigrationStatus200Response.ts
 src/models/GetEmailTemplates200Response.ts
 src/models/GetEmailTemplates200ResponseAllOfData.ts
 src/models/GetEnterprisePricesByTemplate200Response.ts
@@ -407,7 +416,12 @@ src/models/RemoveSubscriptionRequest.ts
 src/models/RemoveSubscriptionResponse.ts
 src/models/Role.ts
 src/models/RolesListResponse.ts
+src/models/RollbackDatabaseMigrations200Response.ts
+src/models/RollbackDatabaseMigrations200ResponseAllOfData.ts
 src/models/SchemasConflictResponse.ts
+src/models/SendEmail200Response.ts
+src/models/SendEmail200ResponseAllOfData.ts
+src/models/SendEmailRequest.ts
 src/models/SessionResponse.ts
 src/models/StripeConfigChanges.ts
 src/models/StripeConfigResponse.ts

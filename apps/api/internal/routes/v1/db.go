@@ -25,7 +25,6 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	router.POST("/migrations", databaseHandler.HandleMigrations)
 	router.GET("/migrations/status", databaseHandler.HandleMigrationsStatus)
 	router.POST("/migrations/down", databaseHandler.HandleMigrationsDown)
-	router.POST("/migrations/reset", databaseHandler.HandleMigrationsReset)
 	router.GET("/typegen", databaseHandler.HandleTypegen)
 
 	logger.Logger.Info("Database routes registration completed")
