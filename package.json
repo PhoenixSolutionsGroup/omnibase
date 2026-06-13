@@ -10,6 +10,7 @@
     "generate:docs:typedoc": "bun ./scripts/generate-docs.ts --typedoc",
     "generate:docs:openapi": "bun ./scripts/generate-docs.ts --openapi",
     "generate:k6": "./scripts/generate-k6-sdk.sh",
+    "test": "./scripts/test-all.sh",
     "test:api": "./scripts/test-api.sh",
     "test:api:local": "./scripts/test-api.sh --local",
     "test:api:k6": "./scripts/test-api.sh --k6-only --local",

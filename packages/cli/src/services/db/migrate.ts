@@ -13,6 +13,40 @@ import {
   runDockerComposeCommand,
 } from "../../utils/docker";
 
+export type MigrationEntry = { dir: string; version: number };
+
+export const ROLLBACK_ALL = "__none__";
+
+export function resolveAppliedMigrations(
+  localDirs: string[],
+  currentVersion: number,
+): MigrationEntry[] {
+  const applied: MigrationEntry[] = [];
+  for (const d of [...localDirs].sort()) {
+    const version = parseInt(d.split("_")[0], 10);
+    if (isNaN(version)) continue;
+    if (version <= currentVersion) applied.push({ dir: d, version });
+  }
+  return applied;
+}
+
+export function rollbackTargets(applied: MigrationEntry[]): string[] {
+  return applied
+    .slice(0, -1)
+    .reverse()
+    .map((e) => e.dir);
+}
+
+export function rollbackSteps(
+  applied: MigrationEntry[],
+  selected: string,
+): number {
+  if (selected === ROLLBACK_ALL) return applied.length;
+  const idx = applied.findIndex((e) => e.dir === selected);
+  if (idx < 0) return 0;
+  return applied.length - 1 - idx;
+}
+
 export class DatabaseMigrationService {
   private verifyEnv(
     env: EnvironmentConfig,
@@ -175,48 +209,29 @@ export class DatabaseMigrationService {
       return;
     }
 
-    // All local migration dirs with version <= current are considered applied
     const localDirs = fs
       .readdirSync(migrationsDir)
-      .filter((f) => fs.statSync(path.join(migrationsDir, f)).isDirectory())
-      .sort();
+      .filter((f) => fs.statSync(path.join(migrationsDir, f)).isDirectory());
 
-    type MigrationEntry = { dir: string; version: number };
-    const applied: MigrationEntry[] = [];
-    for (const d of localDirs) {
-      const version = parseInt(d.split("_")[0], 10);
-      if (isNaN(version)) continue;
-      if (version <= currentVersion) {
-        applied.push({ dir: d, version });
-      }
-    }
+    const applied = resolveAppliedMigrations(localDirs, currentVersion);
 
-    if (applied.length <= 1) {
+    if (applied.length < 1) {
       logger.info("No migrations available to rollback");
       return;
     }
 
-    const lastVersion = applied[applied.length - 1].version;
     const currentDir = applied[applied.length - 1].dir;
 
-    const choices = applied
-      .slice(0, -1)
-      .reverse()
-      .map((e) => ({
-        name: e.version === lastVersion ? `${e.dir} (current)` : e.dir,
-        value: e.dir,
-      }));
-
-    if (choices.length === 0) {
-      logger.info("No migrations available to rollback");
-      return;
-    }
+    const choices = rollbackTargets(applied).map((dir) => ({
+      name: dir,
+      value: dir,
+    }));
 
     const { select } = await import("@inquirer/prompts");
     const selected = (await select({
       message: `Select migration to rollback to (currently at ${currentDir}):`,
       choices: [
-        { name: "None (rollback all)", value: "__none__" },
+        { name: "None (rollback all)", value: ROLLBACK_ALL },
         ...choices,
         { name: "Cancel", value: "" },
       ],
@@ -224,13 +239,7 @@ export class DatabaseMigrationService {
 
     if (!selected) return;
 
-    let steps: number;
-    if (selected === "__none__") {
-      steps = applied.length;
-    } else {
-      const idx = applied.findIndex((e) => e.dir === selected);
-      steps = applied.length - 1 - idx;
-    }
+    const steps = rollbackSteps(applied, selected);
 
     // Zip migrations and POST to down endpoint
     const zip = zipMigrationsDir(migrationsDir);
@@ -262,8 +271,8 @@ export class DatabaseMigrationService {
         >;
         throw new Error(
           body.error ||
-            body.message ||
-            `${response.status} - ${response.statusText}`,
+          body.message ||
+          `${response.status} - ${response.statusText}`,
         );
       }
 
@@ -273,10 +282,10 @@ export class DatabaseMigrationService {
       const errorMsg = error instanceof Error ? error.message : "Unknown error";
       throw new Error(
         `Failed to rollback: ${errorMsg}\n` +
-          `Please ensure the API is running and accessible.`,
+        `Please ensure the API is running and accessible.`,
       );
     }
   }
 
-  async typegen() {}
+  async typegen() { }
 }

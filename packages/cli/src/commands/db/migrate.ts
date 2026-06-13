@@ -173,7 +173,7 @@ export function dbMigrateCommands(program: Command): void {
       "Before: ensure the API is running and the environment is configured.\n" +
       "After: the specified migrations are rolled back from the database.",
     )
-    .option("-d, --dir <directory>", "Migrations directory", "omnibase/db")
+    .option("-d, --dir <directory>", "Migrations directory", "omnibase/db/migrations")
     .option(
       "-n, --name <name>",
       "Specific migration dir name to rollback to (non-interactive)",
