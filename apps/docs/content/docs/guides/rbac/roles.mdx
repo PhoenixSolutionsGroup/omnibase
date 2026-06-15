@@ -181,6 +181,9 @@ The tree groups permissions by their `@group` and `@subGroup` annotations.
 
 Create a new role for the current tenant:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { V1TenantsApi } from '@omnibase/core-js';
 
@@ -200,7 +203,36 @@ const { data } = await tenantsApi.createRole({
 console.log('Created role:', data.data.role.id);
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+import omnibase "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+
+tenantsClient := omnibase.NewAPIClient(&omnibase.Configuration{
+    Servers: omnibase.ServerConfigurations{
+        {URL: apiURL},
+    },
+}).V1TenantsAPI
+
+result, _, err := tenantsClient.CreateRole(ctx).CreateRoleRequest(omnibase.CreateRoleRequest{
+    RoleName: "developer",
+    Permissions: []string{
+        "tenant#can_view_users",
+        "tenant#can_create_api_keys",
+        "tenant#can_view_api_keys",
+    },
+}).Execute()
+fmt.Printf("Created role: %s\n", result.Data.Role.Id)
+```
+
+</Tab>
+</Tabs>
+
 ### Listing Roles
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 const { data } = await tenantsApi.listRoles();
@@ -212,7 +244,25 @@ for (const role of data.data.roles) {
 }
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := tenantsClient.ListRoles(ctx).Execute()
+for _, role := range result.Data.Roles {
+    fmt.Printf("%s (%s)\n", role.RoleName, role.Id)
+    fmt.Printf("  Permissions: %s\n", strings.Join(role.Permissions, ", "))
+    fmt.Printf("  Users: %d\n", len(role.UserIds))
+}
+```
+
+</Tab>
+</Tabs>
+
 ### Updating Role Permissions
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await tenantsApi.updateRole({
@@ -226,15 +276,43 @@ await tenantsApi.updateRole({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := tenantsClient.UpdateRole(ctx, roleId).UpdateRoleRequest(omnibase.UpdateRoleRequest{
+    Permissions: []string{
+        "tenant#can_view_users",
+        "tenant#can_invite_user",
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 Permission changes propagate immediately. All users with this role will have updated permissions on their next request.
 
 ### Deleting Roles
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await tenantsApi.deleteRole({
   roleId: roleId,
 });
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := tenantsClient.DeleteRole(ctx, roleId).Execute()
+```
+
+</Tab>
+</Tabs>
 
 <Callout type="warn">
   Before deleting a role, all users must be reassigned to a different role. The `owner` role cannot be deleted.
@@ -248,6 +326,9 @@ await tenantsApi.deleteRole({
 
 When inviting users, specify their role:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 await tenantsApi.createInvite({
   createTenantUserInviteRequest: {
@@ -258,7 +339,24 @@ await tenantsApi.createInvite({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := tenantsClient.CreateInvite(ctx).CreateTenantUserInviteRequest(omnibase.CreateTenantUserInviteRequest{
+    Email:    "teammate@example.com",
+    Role:     "developer",
+    InviteUrl: "https://app.example.com/auth/onboarding",
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 ### Updating Existing User's Role
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await tenantsApi.updateTenantUserRole({
@@ -268,6 +366,19 @@ await tenantsApi.updateTenantUserRole({
   },
 });
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := tenantsClient.UpdateTenantUserRole(ctx).UpdateTenantUserRoleRequest(omnibase.UpdateTenantUserRoleRequest{
+    Role:   "admin",
+    UserId: targetUserId,
+}).Execute()
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -361,6 +472,9 @@ const viewerPermissions = [
 
 For fine-grained access to specific resources (projects, documents, etc.), use direct permission relationships:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 // Grant project-specific access
 await permissionsApi.createRelationship({
@@ -374,6 +488,24 @@ await permissionsApi.createRelationship({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := client.CreateRelationship(ctx).CreateRelationshipRequest(omnibase.CreateRelationshipRequest{
+    Namespace: "Project",
+    Object:    projectId,
+    Relation:  "can_write",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 This allows scenarios like:
 - **Contractor**: No tenant-wide permissions, only specific project access
 - **Project Lead**: Manage specific projects without tenant admin access
@@ -384,6 +516,9 @@ This allows scenarios like:
 ## Example: Setting Up a New Tenant
 
 When a new tenant is created, you might want to set up default roles:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 async function setupTenantRoles(tenantsApi: V1TenantsApi) {
@@ -428,6 +563,57 @@ async function setupTenantRoles(tenantsApi: V1TenantsApi) {
   });
 }
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+func setupTenantRoles(ctx context.Context, tenantsClient *omnibase.V1TenantsAPIService) error {
+    // Owner role is created automatically
+
+    // Create admin role
+    _, _, err := tenantsClient.CreateRole(ctx).CreateRoleRequest(omnibase.CreateRoleRequest{
+        RoleName: "admin",
+        Permissions: []string{
+            "tenant#can_invite_user",
+            "tenant#can_remove_user",
+            "tenant#can_update_user_role",
+            "tenant#can_view_users",
+            "tenant#can_create_api_keys",
+            "tenant#can_view_api_keys",
+        },
+    }).Execute()
+    if err != nil {
+        return err
+    }
+
+    // Create developer role
+    _, _, err = tenantsClient.CreateRole(ctx).CreateRoleRequest(omnibase.CreateRoleRequest{
+        RoleName: "developer",
+        Permissions: []string{
+            "tenant#can_view_users",
+            "tenant#can_create_api_keys",
+            "tenant#can_view_api_keys",
+            "tenant#can_view_database_connection_string",
+        },
+    }).Execute()
+    if err != nil {
+        return err
+    }
+
+    // Create member role
+    _, _, err = tenantsClient.CreateRole(ctx).CreateRoleRequest(omnibase.CreateRoleRequest{
+        RoleName: "member",
+        Permissions: []string{
+            "tenant#can_view_users",
+        },
+    }).Execute()
+    return err
+}
+```
+
+</Tab>
+</Tabs>
 
 ---
 

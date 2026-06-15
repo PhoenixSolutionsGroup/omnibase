@@ -4,6 +4,7 @@ description: Understanding the object-relationship permission model
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { FileCode, Share2, Shield } from 'lucide-react';
 
 # Permissions Overview
@@ -57,6 +58,9 @@ Traditional RBAC gives users flat roles with fixed permission sets. ReBAC gives 
 
 ## Quick Example
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 // Check if a user can invite others to a tenant
 const { data } = await permissionsApi.checkPermission({
@@ -69,6 +73,24 @@ const { data } = await permissionsApi.checkPermission({
   },
 });
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Tenant",
+    Object:    tenantId,
+    Relation:  "can_invite_user",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
 
 ## Related
 

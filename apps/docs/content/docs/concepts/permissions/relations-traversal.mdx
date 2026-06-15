@@ -4,6 +4,7 @@ description: How relations connect objects and permissions cascade through trave
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 
 # Relations & Traversal
 
@@ -37,6 +38,9 @@ Agent──can_push─────────▶ Codebase
 
 This is a flat check: does the subject have the relation on this specific object?
 
+<Tabs groupId="lang" items={['Go', 'TypeScript']}>
+<Tab value="Go">
+
 ```go
 // Check if user can invite on the tenant
 checkPermission(ctx, "Tenant", tenantId, "can_invite_user")
@@ -44,6 +48,36 @@ checkPermission(ctx, "Tenant", tenantId, "can_invite_user")
 // Check if agent can push to a codebase
 checkPermission(ctx, "Codebase", codebaseId, "push")
 ```
+
+</Tab>
+<Tab value="TypeScript">
+
+```typescript
+// Check if user can invite on the tenant
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Tenant',
+    object: tenantId,
+    relation: 'can_invite_user',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+
+// Check if agent can push to a codebase
+const { data: pushCheck } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Codebase',
+    object: codebaseId,
+    relation: 'push',
+    subjectId: agentId,
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+</Tab>
+</Tabs>
 
 No indirection. The `permits` block for this is a direct `includes` check:
 

@@ -130,6 +130,9 @@ export class Project implements Namespace {
 
 When you check a `Tenant` permission, Omnibase automatically uses the user's active tenant:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 // Check if user can invite others to the current tenant
 const result = await permissionsApi.checkPermission({
@@ -143,6 +146,24 @@ const result = await permissionsApi.checkPermission({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Tenant",
+    Object:    tenantId,
+    Relation:  "can_invite_user",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 ### Resource Permissions (UUID Required)
 
 <Callout type="warn">
@@ -150,6 +171,9 @@ const result = await permissionsApi.checkPermission({
 </Callout>
 
 For resources like projects, documents, or custom entities:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 // Grant access to a specific project
@@ -163,6 +187,24 @@ await permissionsApi.createRelationship({
   },
 });
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := client.CreateRelationship(ctx).CreateRelationshipRequest(omnibase.CreateRelationshipRequest{
+    Namespace: "Project",
+    Object:    "proj-123-uuid",
+    Relation:  "can_write",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
 
 ---
 
@@ -276,6 +318,9 @@ Lists all registered namespaces with their relations and metadata.
 
 The API returns all permission metadata including JSDoc annotations:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { V1TenantsApi } from '@omnibase/core-js';
 
@@ -295,6 +340,37 @@ for (const namespace of data.data.namespaces) {
   }
 }
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+import omnibase "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+
+tenantsClient := omnibase.NewAPIClient(&omnibase.Configuration{
+    Servers: omnibase.ServerConfigurations{
+        {URL: apiURL},
+    },
+}).V1TenantsAPI
+
+result, _, err := tenantsClient.GetRoleDefinitions(ctx).
+    Subject("User").
+    Execute()
+
+for _, ns := range result.Data.Namespaces {
+    fmt.Printf("Namespace: %s\n", ns.Name)
+    for _, rel := range ns.Relations {
+        fmt.Printf("  %s\n", rel.Name)
+        fmt.Printf("    Display: %s\n", rel.DisplayName)
+        fmt.Printf("    Group: %s\n", rel.Group)
+        fmt.Printf("    SubGroup: %s\n", rel.SubGroup)
+        fmt.Printf("    Roles: %s\n", strings.Join(rel.Roles, ", "))
+    }
+}
+```
+
+</Tab>
+</Tabs>
 
 ### Response Structure
 
@@ -619,6 +695,9 @@ export class Codebase implements Namespace {
 <Tab value="Direct Grant">
 Give an agent push access to a specific codebase:
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 await permissionsApi.createRelationship({
   createRelationshipRequest: {
@@ -631,11 +710,32 @@ await permissionsApi.createRelationship({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := client.CreateRelationship(ctx).CreateRelationshipRequest(omnibase.CreateRelationshipRequest{
+    Namespace: "Codebase",
+    Object:    "cb-123",
+    Relation:  "can_push",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "Agent",
+        Object:    "agent-456",
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 Now `agent-456` can push to `Codebase#cb-123`.
 </Tab>
 
 <Tab value="Tenant-Level Grant">
 Give a user push access to all codebases in a tenant. The `traverse()` call cascades this down:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await permissionsApi.createRelationship({
@@ -649,11 +749,32 @@ await permissionsApi.createRelationship({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := client.CreateRelationship(ctx).CreateRelationshipRequest(omnibase.CreateRelationshipRequest{
+    Namespace: "Tenant",
+    Object:    "tenant-789",
+    Relation:  "can_push",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    "user-abc",
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 Now `user-abc` can push to every codebase under `Tenant#tenant-789`, because `permits.push` traverses `this.related.tenant` as a fallback.
 </Tab>
 
 <Tab value="Owner Grant">
 Set a user as the owner of a codebase. The traversal to `owner` handles the rest:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await permissionsApi.createRelationship({
@@ -667,6 +788,24 @@ await permissionsApi.createRelationship({
 });
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := client.CreateRelationship(ctx).CreateRelationshipRequest(omnibase.CreateRelationshipRequest{
+    Namespace: "Codebase",
+    Object:    "cb-123",
+    Relation:  "owner",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    "user-abc",
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
 This creates the relation that `owner.includes()` uses in the `permits` block. Owners inherit edit, push, and view access without those needing to be granted separately.
 </Tab>
 </Tabs>
@@ -676,6 +815,9 @@ This creates the relation that `owner.includes()` uses in the `permits` block. O
 <Tabs items={['Agent Check', 'User via Tenant']}>
 <Tab value="Agent Check">
 Check if an agent can push to a codebase:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 const { data } = await permissionsApi.checkPermission({
@@ -690,12 +832,34 @@ const { data } = await permissionsApi.checkPermission({
 // data.allowed → true (from the direct grant above)
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Codebase",
+    Object:    "cb-123",
+    Relation:  "push",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "Agent",
+        Object:    "agent-456",
+    },
+}).Execute()
+// result.Data.Allowed → true
+```
+
+</Tab>
+</Tabs>
+
 **Evaluation path:**
 1. Is `agent-456` in `can_push` of `Codebase#cb-123`? → **Yes** → ALLOWED
 </Tab>
 
 <Tab value="User via Tenant">
 Check if a user can edit a codebase (granted at tenant level):
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 const { data } = await permissionsApi.checkPermission({
@@ -710,6 +874,25 @@ const { data } = await permissionsApi.checkPermission({
 // data.allowed → true (from the tenant-level grant above)
 ```
 
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Codebase",
+    Object:    "cb-123",
+    Relation:  "edit",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    "user-abc",
+    },
+}).Execute()
+// result.Data.Allowed → true
+```
+
+</Tab>
+</Tabs>
+
 **Evaluation path:**
 1. Is `user-abc` in `can_edit` of `Codebase#cb-123`? → No
 2. Follow `owner` relation → no owner set for this codebase
@@ -720,6 +903,9 @@ const { data } = await permissionsApi.checkPermission({
 ### Creating Roles for Agent Permissions
 
 Roles can include both User and Agent permissions. Create a "bot-admin" role that grants codebase permissions:
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
 
 ```typescript
 await tenantsApi.createRole({
@@ -733,6 +919,23 @@ await tenantsApi.createRole({
   },
 });
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+_, _, err := tenantsClient.CreateRole(ctx).CreateRoleRequest(omnibase.CreateRoleRequest{
+    RoleName: "bot-admin",
+    Permissions: []string{
+        "codebase#can_push",
+        "codebase#can_edit",
+        "codebase#can_view",
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
 
 When you assign this role to a user, they can push/edit/view all codebases in the tenant (assuming the defines use `traverse()` to cascade from `Tenant` → `Codebase`).
 

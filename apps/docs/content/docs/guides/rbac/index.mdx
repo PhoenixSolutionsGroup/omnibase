@@ -5,6 +5,7 @@ description: Role-based access control in Omnibase
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Shield, Users, FileCode, Key } from 'lucide-react';
 
 # Role-Based Access Control (RBAC)
@@ -109,6 +110,9 @@ await permissionsApi.createRelationship({
 
 ## Quick Example
 
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { V1PermissionsApi } from '@omnibase/core-js';
 
@@ -129,6 +133,37 @@ if (data.data.allowed) {
   // User has permission
 }
 ```
+
+</Tab>
+<Tab value="Go">
+
+```go
+import omnibase "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+
+client := omnibase.NewAPIClient(&omnibase.Configuration{
+    Servers: omnibase.ServerConfigurations{
+        {URL: apiURL},
+    },
+}).V1PermissionsAPI
+
+// Check if user can delete tenant
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Tenant",
+    Object:    tenantId,
+    Relation:  "can_delete_tenant",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+
+if result.Data.Allowed {
+    // User has permission
+}
+```
+
+</Tab>
+</Tabs>
 
 ## Related
 
