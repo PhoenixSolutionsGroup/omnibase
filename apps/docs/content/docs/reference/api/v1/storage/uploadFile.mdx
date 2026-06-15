@@ -23,7 +23,7 @@ _openapi:
 
           ## Permissions
 
-          Any authenticated tenant member can upload files. On upload, OmniBase
+          Any authenticated tenant member can upload files. On upload, Omnibase
           automatically creates an `owner` relation in Keto, granting the
           uploader read, delete, and make-public permissions on the file.
 
@@ -58,7 +58,7 @@ Generates a presigned S3 upload URL and creates per-object permissions in Keto.
 - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id headers
 
 ## Permissions
-Any authenticated tenant member can upload files. On upload, OmniBase automatically creates an `owner` relation in Keto, granting the uploader read, delete, and make-public permissions on the file.
+Any authenticated tenant member can upload files. On upload, Omnibase automatically creates an `owner` relation in Keto, granting the uploader read, delete, and make-public permissions on the file.
 
 ## Upload Process
 1. Request presigned URL from this endpoint

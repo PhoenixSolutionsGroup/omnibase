@@ -1,0 +1,364 @@
+---
+title: OmniGit Example
+description: Two agent scoping patterns with Agent + Codebase objects
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+# OmniGit Example
+
+This example walks through a complete permission setup for **OmniGit** — a code hosting platform where both human users and AI agents interact with codebases.
+
+## Scenario
+
+OmniGit has four object types:
+
+| Object | Type | Purpose |
+|--------|------|---------|
+| `User` | Built-in subject | Human developers |
+| `Tenant` | Built-in container | An organization owning repositories |
+| `Agent` | Custom subject | LLM-powered AI agent |
+| `Codebase` | Custom resource | A git repository |
+
+There are two ways to scope an agent:
+
+1. **Codebase Scoped Agent** — permissions granted directly on a specific codebase. The agent can only act on that repo.
+2. **Tenant Wide Agent** — permissions granted on the tenant, cascading to all codebases through `traverse()`. The agent can act on every repo in the org.
+
+## Relations Graph
+
+```
+        ┌──────────┐
+        │  User    │
+        └────┬─────┘
+             │ can_edit (direct)
+             │
+             ▼
+┌──────────────────────┐      tenant       ┌──────────┐
+│      Codebase        │──────────────────▶│  Tenant  │
+│  (git repository)    │                   │  (org)   │
+└──────────────────────┘                   └──────────┘
+        ▲    ▲                                   ▲
+        │    │                                   │
+        │    │ can_push (tenant-wide)            │ can_edit (tenant-wide)
+        │    └───────────────────────────────────┤
+        │                                        │
+  can_push (scoped)                              │ can_edit (tenant-wide)
+        │                                        │
+  ┌────┴─────┐                            ┌──────┴──────┐
+  │  Agent   │                            │    Agent    │
+  │ (scoped) │                            │ (tenant-wide)│
+  └──────────┘                            └─────────────┘
+```
+
+## Definitions
+
+### Agent
+
+```typescript title="omnibase/permissions/agents.ts"
+import { Context, Namespace } from "./types";
+
+export class Agent implements Namespace {}
+```
+
+The Agent namespace is empty — it exists only as a subject type, the same way `User` does. It has no relations of its own; it is the target of relations on other objects.
+
+### Codebase
+
+```typescript title="omnibase/permissions/codebases.ts"
+import { Agent, Context, Namespace, Tenant, User } from "./types";
+
+export class Codebase implements Namespace {
+  related: {
+    /** @hidden — link to owning org for tenant-wide traversal */
+    tenant: Tenant[];
+
+    /** @hidden — codebase owner inherits permissions */
+    owner: User[];
+
+    /**
+     * @group Codebase Access
+     * @displayName Edit Code
+     * @role owner
+     * @role developer
+     */
+    can_edit: (User | Agent)[];
+
+    /**
+     * @group Codebase Access
+     * @displayName Push Changes
+     * @role owner
+     * @role developer
+     */
+    can_push: (User | Agent)[];
+
+    /**
+     * @group Codebase Access
+     * @displayName View Code
+     * @role owner
+     * @role developer
+     * @role viewer
+     */
+    can_view: (User | Agent)[];
+
+    /**
+     * @group Codebase Access
+     * @displayName Delete Codebase
+     * @role owner
+     */
+    can_delete: (User | Agent)[];
+  };
+
+  permits = {
+    edit: (ctx: Context): boolean =>
+      this.related.can_edit.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_edit.includes(ctx.subject)
+      ),
+
+    push: (ctx: Context): boolean =>
+      this.related.can_push.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_push.includes(ctx.subject)
+      ),
+
+    view: (ctx: Context): boolean =>
+      this.related.can_view.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_view.includes(ctx.subject)
+      ),
+
+    delete: (ctx: Context): boolean =>
+      this.related.can_delete.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_delete.includes(ctx.subject)
+      ),
+  };
+}
+```
+
+The `permits` block checks three paths for every action:
+1. **Direct** — was the permission granted on this specific codebase?
+2. **Owner** — does the subject own this codebase?
+3. **Tenant** — was the permission granted at the tenant level?
+
+<Callout type="info">
+  The `owner.includes()` check works because the `owner` relation stores `User` subjects directly. If the subject matches one of the owners, the check passes — no traversal needed.
+</Callout>
+
+## Agent Scoping Patterns
+
+### Codebase Scoped Agent
+
+A codebase-scoped agent gets permissions directly on a specific codebase. It can only act on repos it has been explicitly granted access to.
+
+```
+Agent ──can_push──▶ Codebase#cb-123
+```
+
+**Grant:**
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'can_push',
+    subjectId: 'agent-pr-reviewer',
+    subjectNamespace: 'Agent',
+  },
+});
+
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'can_view',
+    subjectId: 'agent-pr-reviewer',
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+**Check:**
+
+```typescript
+// Can agent-pr-reviewer push to cb-123?
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'push',
+    subjectId: 'agent-pr-reviewer',
+    subjectNamespace: 'Agent',
+  },
+});
+// data.allowed → true
+```
+
+**Evaluation path:**
+1. Is `agent-pr-reviewer` in `can_push` of `Codebase#cb-123`? → **Yes** (direct grant) → ALLOWED
+
+```typescript
+// Can agent-pr-reviewer push to cb-456? (different repo, no grant)
+// data.allowed → false
+```
+
+**Evaluation path:**
+1. Is `agent-pr-reviewer` in `can_push` of `Codebase#cb-456`? → No
+2. Follow `owner` → no match
+3. Follow `tenant` → agent has no tenant-level grant → DENIED
+
+### Tenant Wide Agent
+
+A tenant-wide agent gets permissions on the tenant itself. Because `permits.push` includes `tenant.traverse()`, the agent can push to every codebase under that tenant.
+
+```
+Agent ──can_push──▶ Tenant#org-abc ────tenant───▶ Codebase#cb-123
+                                                    Codebase#cb-456
+                                                    Codebase#cb-789
+```
+
+**Grant:**
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Tenant',
+    object: 'org-abc',
+    relation: 'can_push',
+    subjectId: 'agent-ci-bot',
+    subjectNamespace: 'Agent',
+  },
+});
+
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Tenant',
+    object: 'org-abc',
+    relation: 'can_view',
+    subjectId: 'agent-ci-bot',
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+Now `agent-ci-bot` can push to and view every codebase in `Tenant#org-abc`.
+
+**Check:**
+
+```typescript
+// Can agent-ci-bot push to cb-123 (a repo in org-abc)?
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'push',
+    subjectId: 'agent-ci-bot',
+    subjectNamespace: 'Agent',
+  },
+});
+// data.allowed → true
+```
+
+**Evaluation path:**
+1. Is `agent-ci-bot` in `can_push` of `Codebase#cb-123`? → No (no direct grant)
+2. Follow `owner` → no match
+3. Follow `tenant` → the codebase belongs to `Tenant#org-abc`
+4. Is `agent-ci-bot` in `can_push` of `Tenant#org-abc`? → **Yes** (tenant-wide grant) → ALLOWED
+
+```typescript
+// Same check for cb-456:
+// data.allowed → true (same tenant, same traversal)
+```
+
+### Comparison
+
+| Aspect | Codebase Scoped Agent | Tenant Wide Agent |
+|--------|----------------------|-------------------|
+| Grant target | Specific codebase | Tenant |
+| Scope | Single repo | All repos in the org |
+| Grant calls | One per codebase | One for the whole org |
+| Use case | Dedicated PR reviewer per repo | CI bot that needs access to everything |
+| Traversal used | Direct relation only | `tenant.traverse()` fallback |
+
+## Practical Workflow
+
+### Creating a Codebase
+
+When a user creates a new codebase, the backend sets up ownership:
+
+```go
+// On codebase creation, set the owner
+keto.CreateRelationTuple(ctx, KetoRelationTuple{
+  Namespace: "Codebase",
+  Object:    codebaseID,
+  Relation:  "owner",
+  Subject:   fmt.Sprintf("User:%s", userID),
+})
+
+// Link to the tenant for traversal
+keto.CreateRelationTuple(ctx, KetoRelationTuple{
+  Namespace: "Codebase",
+  Object:    codebaseID,
+  Relation:  "tenant",
+  Subject:   fmt.Sprintf("Tenant:%s", tenantID),
+})
+```
+
+The `tenant` relation is what enables tenant-wide agents — it creates the edge that `traverse()` follows.
+
+### Adding a Scoped Agent
+
+```typescript
+// Deploy a PR-review agent scoped to a single repo
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'can_view',
+    subjectId: 'agent-pr-review',
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+### Adding a Tenant-Wide Agent
+
+```typescript
+// Deploy a CI bot that works across all repos
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Tenant',
+    object: 'org-abc',
+    relation: 'can_push',
+    subjectId: 'agent-ci-bot',
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+### Checking in Middleware
+
+In your Go handlers, use the standard permission check pattern. The subject namespace is resolved automatically from the auth context:
+
+```go
+// Handler that needs push permission
+func PushToCodebase(c *gin.Context) {
+  codebaseID := c.Param("codebase_id")
+
+  if err := keto.CheckPermission(c, "Codebase", codebaseID, "push"); err != nil {
+    c.JSON(403, gin.H{"error": "forbidden"})
+    return
+  }
+
+  // Agent or User has push — proceed
+}
+```
+
+The Keto engine evaluates the OPL `permits.push` logic, which includes all three traversal paths. Whether the permission was granted directly, through ownership, or through the tenant — the check resolves the same way.

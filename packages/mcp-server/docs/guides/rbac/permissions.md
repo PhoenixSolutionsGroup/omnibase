@@ -491,6 +491,226 @@ export class Project implements Namespace {
 
 ---
 
+## Example: Agent + Codebase
+
+This example shows how to define custom objects and wire up permission traversal between them. You're building a platform where both human users and LLM agents interact with codebases.
+
+### Scenario
+
+- **`User`** — built-in subject type for human users
+- **`Agent`** — custom subject type for LLM agents (like `User`)
+- **`Tenant`** — built-in organizational container
+- **`Codebase`** — custom resource object (git repository)
+
+Both `User` and `Agent` can have permissions on a `Codebase`. Permissions can be granted directly on the codebase or at the tenant level (with traversal cascading down).
+
+### Define the Agent Namespace
+
+```typescript title="omnibase/permissions/agents.ts"
+import { Context, Namespace } from "./types";
+
+export class Agent implements Namespace {}
+```
+
+### Define the Codebase Namespace
+
+```typescript title="omnibase/permissions/codebases.ts"
+import { Agent, Context, Namespace, Tenant, User } from "./types";
+
+export class Codebase implements Namespace {
+  related: {
+    /** @hidden */
+    tenant: Tenant[];
+
+    /** @hidden */
+    owner: User[];
+
+    /**
+     * @group Codebase Access
+     * @displayName Edit Code
+     * @role owner
+     * @role developer
+     */
+    can_edit: (User | Agent)[];
+
+    /**
+     * @group Codebase Access
+     * @displayName Push Changes
+     * @role owner
+     * @role developer
+     */
+    can_push: (User | Agent)[];
+
+    /**
+     * @group Codebase Access
+     * @displayName View Code
+     * @role owner
+     * @role developer
+     * @role viewer
+     */
+    can_view: (User | Agent)[];
+  };
+
+  permits = {
+    edit: (ctx: Context): boolean =>
+      this.related.can_edit.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_edit.includes(ctx.subject)
+      ),
+
+    push: (ctx: Context): boolean =>
+      this.related.can_push.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_push.includes(ctx.subject)
+      ),
+
+    view: (ctx: Context): boolean =>
+      this.related.can_view.includes(ctx.subject) ||
+      this.related.owner.includes(ctx.subject) ||
+      this.related.tenant.traverse((t) =>
+        t.related.can_view.includes(ctx.subject)
+      ),
+  };
+}
+```
+
+### Relations Graph
+
+```
+        ┌──────────┐
+        │  User    │
+        └────┬─────┘
+             │ can_edit
+             ▼
+       ┌──────────┐      tenant       ┌──────────┐
+       │ Codebase │──────────────────▶│  Tenant  │
+       └──────────┘                   └──────────┘
+             ▲                             ▲
+             │ can_push                    │ can_edit
+        ┌────┴─────┐              ┌───────┴──────┐
+        │  Agent   │              │    User      │
+        └──────────┘              └──────────────┘
+```
+
+### Granting Permissions
+
+**Direct Grant:**
+
+Give an agent push access to a specific codebase:
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'can_push',
+    subjectId: 'agent-456',
+    subjectNamespace: 'Agent',
+  },
+});
+```
+
+Now `agent-456` can push to `Codebase#cb-123`.
+
+**Tenant-Level Grant:**
+
+Give a user push access to all codebases in a tenant. The `traverse()` call cascades this down:
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Tenant',
+    object: 'tenant-789',
+    relation: 'can_push',
+    subjectId: 'user-abc',
+    subjectNamespace: 'User',
+  },
+});
+```
+
+Now `user-abc` can push to every codebase under `Tenant#tenant-789`, because `permits.push` traverses `this.related.tenant` as a fallback.
+
+**Owner Grant:**
+
+Set a user as the owner of a codebase. The traversal to `owner` handles the rest:
+
+```typescript
+await permissionsApi.createRelationship({
+  createRelationshipRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'owner',
+    subjectId: 'user-abc',
+    subjectNamespace: 'User',
+  },
+});
+```
+
+This creates the relation that `owner.includes()` uses in the `permits` block. Owners inherit edit, push, and view access without those needing to be granted separately.
+
+### Checking Permissions
+
+**Agent Check — check if an agent can push to a codebase:**
+
+```typescript
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'push',
+    subjectId: 'agent-456',
+    subjectNamespace: 'Agent',
+  },
+});
+// data.allowed → true (from the direct grant above)
+```
+
+Evaluation path:
+1. Is `agent-456` in `can_push` of `Codebase#cb-123`? → **Yes** → ALLOWED
+
+**User via Tenant — check if a user can edit a codebase (granted at tenant level):**
+
+```typescript
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Codebase',
+    object: 'cb-123',
+    relation: 'edit',
+    subjectId: 'user-abc',
+    subjectNamespace: 'User',
+  },
+});
+// data.allowed → true (from the tenant-level grant above)
+```
+
+Evaluation path:
+1. Is `user-abc` in `can_edit` of `Codebase#cb-123`? → No
+2. Follow `owner` relation → no owner set for this codebase
+3. Follow `tenant` relation → is `user-abc` in `can_edit` of `Tenant#tenant-789`? → **Yes** → ALLOWED
+
+### Creating Roles for Agent Permissions
+
+Roles can include both User and Agent permissions. Create a "bot-admin" role that grants codebase permissions:
+
+```typescript
+await tenantsApi.createRole({
+  createRoleRequest: {
+    roleName: 'bot-admin',
+    permissions: [
+      'codebase#can_push',
+      'codebase#can_edit',
+      'codebase#can_view',
+    ],
+  },
+});
+```
+
+When you assign this role to a user, they can push/edit/view all codebases in the tenant (assuming the defines use `traverse()` to cascade from `Tenant` → `Codebase`).
+
+---
+
 ## Next Steps
 
 - [Role Configuration](/guides/rbac/roles) — Create roles from permission templates

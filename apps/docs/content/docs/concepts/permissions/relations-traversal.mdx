@@ -1,0 +1,161 @@
+---
+title: Relations & Traversal
+description: How relations connect objects and permissions cascade through traversal
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Relations & Traversal
+
+Objects don't exist in isolation — they relate to each other. A **relation** is a directed edge from one object to another. Relations form a graph, and permission checks can *traverse* this graph to resolve access.
+
+## What Is a Relation?
+
+A relation connects a subject to an object for a specific action. It is stored as a tuple:
+
+```
+(Namespace, ObjectID, Relation, SubjectNamespace, SubjectID)
+```
+
+For example:
+
+```
+(Tenant, tenant_xyz, can_invite_user, User, user_abc)
+```
+
+This means: "User `user_abc` can invite users to Tenant `tenant_xyz`."
+
+## Simple Relations: Direct Permission
+
+The simplest form — a subject has a permission directly on an object.
+
+```
+User ──can_invite_user──▶ Tenant
+User ──can_edit─────────▶ Codebase
+Agent──can_push─────────▶ Codebase
+```
+
+This is a flat check: does the subject have the relation on this specific object?
+
+```go
+// Check if user can invite on the tenant
+checkPermission(ctx, "Tenant", tenantId, "can_invite_user")
+
+// Check if agent can push to a codebase
+checkPermission(ctx, "Codebase", codebaseId, "push")
+```
+
+No indirection. The `permits` block for this is a direct `includes` check:
+
+```typescript
+permits = {
+  invite_user: (ctx): boolean =>
+    this.related.can_invite_user.includes(ctx.subject),
+};
+```
+
+## Chained Relations: The `traverse()` Method
+
+Objects often relate to other objects. A `Codebase` belongs to a `Tenant`. A `Project` has a `parent_project`. These relations create chains, and you can follow them with `traverse()`.
+
+When you include a relation like `tenant: Tenant[]` in a `related` block, and that relation is marked `@hidden`, it exists purely for traversal. In the `permits` block, `traverse()` follows that edge and checks the permission on the related object:
+
+```typescript
+export class Codebase implements Namespace {
+  related: {
+    /** @hidden — link to owning tenant for traversal */
+    tenant: Tenant[];
+
+    can_edit: (User | Agent)[];
+  };
+
+  permits = {
+    edit: (ctx): boolean =>
+      // Check direct permission on codebase
+      this.related.can_edit.includes(ctx.subject) ||
+      // Fall back: does the subject have can_edit on the owning tenant?
+      this.related.tenant.traverse((t) =>
+        t.related.can_edit.includes(ctx.subject)
+      ),
+  };
+}
+```
+
+This creates a two-step check:
+
+```
+Subject ──can_edit──▶ Codebase
+                        └──tenant──▶ Tenant
+                                      └──can_edit──▶ (checked here as fallback)
+```
+
+### How Traversal Works
+
+1. Check if the subject has `can_edit` **directly** on `Codebase#cb-123`
+2. If **no**, follow the `tenant` relation to find the owning Tenant
+3. Check if the subject has `can_edit` on that Tenant instead
+4. If either check passes → ALLOWED
+
+The `||` operator chains multiple fallbacks. You can traverse through multiple relations:
+
+```typescript
+permits = {
+  edit: (ctx): boolean =>
+    this.related.can_edit.includes(ctx.subject) ||
+    this.related.owner.includes(ctx.subject) ||
+    this.related.tenant.traverse((t) =>
+      t.related.can_edit.includes(ctx.subject)
+    ),
+};
+```
+
+## Common Traversal Patterns
+
+### Tenant → Resource
+
+Resources belong to a tenant. Granting a permission at the tenant level cascades to all resources under it.
+
+```
+User ──can_push──▶ Codebase
+                    └──tenant──▶ Tenant → can_push (fallback)
+```
+
+A user with `can_push` on the tenant can push to every codebase in that tenant — no need to grant on each codebase individually.
+
+### Owner → Resource
+
+The owner of a resource inherits permissions through a direct `includes` check on the `owner` relation.
+
+```
+User ──can_delete──▶ Document
+                      └──owner──▶ User matched via includes()
+```
+
+Setting a User as the `owner` of a Document gives them all permissions that check `this.related.owner.includes(ctx.subject)` in the permits block.
+
+### Parent → Child
+
+Nested resources inherit from parents through multiple hops.
+
+```
+User ──can_write──▶ SubProject
+                     └──parent_project──▶ Project → can_write (checked here)
+```
+
+## Practical Implications
+
+| Grant Level | Effect |
+|-------------|--------|
+| Direct on resource | Only that specific resource |
+| On the parent/tenant | All child resources inherit (if traversal is configured) |
+| Via ownership | The owner inherits all owner-traversed permissions |
+
+This means you design your permission strategy by choosing which level to grant at:
+
+- **Per-resource** — grant `can_push` on `Codebase#cb-123` to Agent
+- **Tenant-wide** — grant `can_push` on `Tenant#tenant-xyz` to User (covers all codebases)
+- **Ownership** — set User as `owner` of `Codebase#cb-123` (covers all owner-traversed permissions)
+
+## Next
+
+See a complete example with two agent scoping patterns in the [OmniGit Example](/concepts/permissions/omni-git)

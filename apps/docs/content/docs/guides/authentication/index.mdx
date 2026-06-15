@@ -1,6 +1,6 @@
 ---
 title: Authentication Overview
-description: Learn how OmniBase Auth handles user authentication, sessions, and identity management
+description: Learn how Omnibase Auth handles user authentication, sessions, and identity management
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
@@ -12,7 +12,7 @@ import { KeyRound, Users, Shield, Settings } from 'lucide-react';
 
 # Authentication
 
-OmniBase Auth provides a complete authentication system with support for email/password login, social OAuth providers, multi-factor authentication, and secure session management.
+Omnibase Auth provides a complete authentication system with support for email/password login, social OAuth providers, multi-factor authentication, and secure session management.
 
 ## Key Features
 
@@ -131,9 +131,9 @@ export default async function RootLayout({
 Create a `middleware.ts` file in your project root to handle authentication and tenant checking:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
-export const middleware = createOmniBaseMiddleware(
+export const middleware = createOmnibaseMiddleware(
   process.env.OMNIBASE_API_URL!,
   {
     tenant_check: true,
@@ -159,7 +159,7 @@ See the [Middleware Guide](/guides/authentication/middleware) for detailed confi
 
 ## Project Structure
 
-A typical Next.js project with OmniBase Auth looks like this:
+A typical Next.js project with Omnibase Auth looks like this:
 
 <Files>
   <Folder name="app" defaultOpen>
@@ -181,7 +181,7 @@ A typical Next.js project with OmniBase Auth looks like this:
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   Browser   │────▶│  OmniBase    │────▶│   Session   │
+│   Browser   │────▶│  Omnibase    │────▶│   Session   │
 │   Request   │     │  Auth        │     │   Cookie    │
 └─────────────┘     └──────────────┘     └─────────────┘
                            │
@@ -193,13 +193,13 @@ A typical Next.js project with OmniBase Auth looks like this:
 ```
 
 1. User submits credentials via a form (login, registration, etc.)
-2. OmniBase Auth validates the credentials and creates a session
+2. Omnibase Auth validates the credentials and creates a session
 3. A secure HTTP-only cookie is set in the browser
 4. Subsequent requests include the cookie for authentication
 
 ## SDK Options
 
-OmniBase provides SDKs for different use cases:
+Omnibase provides SDKs for different use cases:
 
 <Tabs items={['Next.js', 'React', 'Core API']}>
 <Tab value="Next.js">
@@ -212,7 +212,7 @@ import {
   protectedRoute,
   FlowRouter
 } from '@omnibase/nextjs/auth';
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 ```
 
 Features:

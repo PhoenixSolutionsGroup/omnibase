@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Checkout & Customer Portal
 
-OmniBase integrates with Stripe Checkout for secure payment collection and Customer Portal for self-service billing management.
+Omnibase integrates with Stripe Checkout for secure payment collection and Customer Portal for self-service billing management.
 
 ## Stripe Checkout
 
@@ -47,7 +47,7 @@ window.location.href = data.url;
 
 ### Mode Detection
 
-OmniBase automatically detects the checkout mode based on the price:
+Omnibase automatically detects the checkout mode based on the price:
 
 | Price Type | Checkout Mode | Description |
 |------------|---------------|-------------|
@@ -380,7 +380,7 @@ case 'checkout.session.completed':
 
 ## Free Tier Handling
 
-For $0 prices, OmniBase bypasses Stripe Checkout since Stripe doesn't support free subscriptions:
+For $0 prices, Omnibase bypasses Stripe Checkout since Stripe doesn't support free subscriptions:
 
 ```typescript
 const { data } = await paymentsApi.createCheckout({

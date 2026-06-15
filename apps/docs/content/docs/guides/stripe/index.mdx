@@ -1,6 +1,6 @@
 ---
 title: Stripe Integration Overview
-description: Learn how OmniBase handles billing, subscriptions, and payment processing with Stripe
+description: Learn how Omnibase handles billing, subscriptions, and payment processing with Stripe
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
@@ -12,7 +12,7 @@ import { CreditCard, Package, Tag, Webhook, Receipt, Gauge, ShoppingCart, FileTe
 
 # Stripe Integration
 
-OmniBase provides a comprehensive "Stripe as Code" approach to billing configuration, enabling version control, rollbacks, audit trails, and enterprise-grade payment processing.
+Omnibase provides a comprehensive "Stripe as Code" approach to billing configuration, enabling version control, rollbacks, audit trails, and enterprise-grade payment processing.
 
 ## Key Features
 
@@ -61,9 +61,9 @@ Stripe's configuration presents several challenges for production systems:
 | **Free Tiers** | Stripe doesn't natively support $0 prices |
 | **Enterprise Pricing** | No built-in support for custom per-customer pricing |
 
-## OmniBase Solution
+## Omnibase Solution
 
-OmniBase stores your Stripe configuration in PostgreSQL and syncs it to Stripe, providing:
+Omnibase stores your Stripe configuration in PostgreSQL and syncs it to Stripe, providing:
 
 - **Version Control** — Every configuration change is tracked with full history
 - **Rollbacks** — Revert to any previous configuration instantly
@@ -258,7 +258,7 @@ console.log('Checkout URL:', checkout.url);
 
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
-│  Config Files   │────▶│  OmniBase API    │────▶│   Stripe    │
+│  Config Files   │────▶│  Omnibase API    │────▶│   Stripe    │
 │  (JSON/YAML)    │     │  (PostgreSQL)    │     │   (Live)    │
 └─────────────────┘     └──────────────────┘     └─────────────┘
         │                       │                       │
@@ -285,7 +285,7 @@ console.log('Checkout URL:', checkout.url);
 
 ## Configuration File Structure
 
-OmniBase supports multiple configuration files for better organization:
+Omnibase supports multiple configuration files for better organization:
 
 <Files>
   <Folder name="omnibase" defaultOpen>
@@ -314,7 +314,7 @@ Each file follows the same schema with optional sections:
 
 ## Supported Currencies
 
-OmniBase supports 20 currencies:
+Omnibase supports 20 currencies:
 
 | Currency | Code | Currency | Code |
 |----------|------|----------|------|

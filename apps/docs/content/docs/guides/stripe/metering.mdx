@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Usage-Based Billing
 
-OmniBase supports usage-based (metered) billing for scenarios where you charge based on consumption rather than a flat fee. This is ideal for API calls, compute time, storage, and similar metrics.
+Omnibase supports usage-based (metered) billing for scenarios where you charge based on consumption rather than a flat fee. This is ideal for API calls, compute time, storage, and similar metrics.
 
 ## Billing Meters
 
@@ -191,7 +191,7 @@ setInterval(recordBatchedUsage, 60000);
 
 ## Usage Calculation Service
 
-For complex usage scenarios (like managed hosting), OmniBase provides a usage calculation service:
+For complex usage scenarios (like managed hosting), Omnibase provides a usage calculation service:
 
 ### Project Usage Calculation
 
@@ -245,7 +245,7 @@ func (u *UsageCalculator) CalculateProjectUsage(
 
 ### Billing Period Normalization
 
-For VPS billing, OmniBase normalizes to 730 hours/month:
+For VPS billing, Omnibase normalizes to 730 hours/month:
 
 ```go
 const StandardMonthHours = 730 // 365 * 24 / 12

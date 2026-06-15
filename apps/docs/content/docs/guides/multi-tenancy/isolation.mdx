@@ -12,7 +12,7 @@ import { Database, Lock, Key, Shield } from 'lucide-react';
 
 # Data Isolation
 
-OmniBase uses PostgreSQL Row-Level Security (RLS) to enforce tenant isolation at the database level. This ensures that tenants can never access each other's data, even if application code has bugs.
+Omnibase uses PostgreSQL Row-Level Security (RLS) to enforce tenant isolation at the database level. This ensures that tenants can never access each other's data, even if application code has bugs.
 
 ## How It Works
 
@@ -32,7 +32,7 @@ OmniBase uses PostgreSQL Row-Level Security (RLS) to enforce tenant isolation at
 
 ## JWT Token Structure
 
-OmniBase generates JWT tokens with tenant context:
+Omnibase generates JWT tokens with tenant context:
 
 ```json
 {
@@ -49,7 +49,7 @@ OmniBase generates JWT tokens with tenant context:
 
 ## RLS Helper Functions
 
-OmniBase provides SQL helper functions for use in RLS policies:
+Omnibase provides SQL helper functions for use in RLS policies:
 
 ```sql
 -- Get current user ID (from JWT)
@@ -208,7 +208,7 @@ WHERE status = 'active'
 
 ## Database Roles
 
-OmniBase uses two PostgreSQL roles:
+Omnibase uses two PostgreSQL roles:
 
 ### anon_user
 
@@ -220,7 +220,7 @@ OmniBase uses two PostgreSQL roles:
 
 - Used for administrative operations
 - Bypasses RLS policies
-- Used by OmniBase API internally
+- Used by Omnibase API internally
 
 ```sql
 -- Create roles
@@ -427,7 +427,7 @@ RLS adds `tenant_id = ?` to every query. Having `tenant_id` as the leading colum
 
 ### k6 Integration Tests
 
-OmniBase includes tests that verify tenant isolation:
+Omnibase includes tests that verify tenant isolation:
 
 ```typescript
 // Create two separate users in separate tenants

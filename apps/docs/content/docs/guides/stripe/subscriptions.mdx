@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Subscriptions
 
-OmniBase provides a complete subscription management system built on Stripe, with tenant-level subscription tracking and automatic customer creation.
+Omnibase provides a complete subscription management system built on Stripe, with tenant-level subscription tracking and automatic customer creation.
 
 ## Subscription Lifecycle
 
@@ -29,7 +29,7 @@ OmniBase provides a complete subscription management system built on Stripe, wit
 
 ## Automatic Customer Creation
 
-When a tenant is created with a `billing_email`, OmniBase automatically creates a Stripe customer:
+When a tenant is created with a `billing_email`, Omnibase automatically creates a Stripe customer:
 
 ```typescript
 import { V1TenantsApi } from '@omnibase/core-js';
@@ -309,7 +309,7 @@ switch (event.type) {
 
 ## Legacy Price Handling
 
-When prices are updated in your configuration, OmniBase tracks the history:
+When prices are updated in your configuration, Omnibase tracks the history:
 
 ```typescript
 const { data: subscriptions } = await tenantsApi.listTenantSubscriptions();

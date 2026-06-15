@@ -9,7 +9,7 @@ import { Zap, Clock, Layers } from 'lucide-react';
 
 # Workers
 
-OmniBase Workers provide serverless compute on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Build globally distributed APIs, background jobs, and scheduled tasks that run at the edge.
+Omnibase Workers provide serverless compute on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Build globally distributed APIs, background jobs, and scheduled tasks that run at the edge.
 
 ## What Are Workers?
 
@@ -40,7 +40,7 @@ Workers are lightweight, serverless functions that run on Cloudflare's global ne
 ## Quick Start
 
 ```bash
-# Initialize OmniBase (creates omnibase/workers/)
+# Initialize Omnibase (creates omnibase/workers/)
 omnibase init
 
 # Navigate to workers directory
@@ -52,15 +52,15 @@ bun install
 # Start local development
 bun dev
 
-# Deploy to OmniBase
+# Deploy to Omnibase
 omnibase cloud workers deploy
 ```
 
-Your worker will be deployed globally on Cloudflare's edge network via OmniBase.
+Your worker will be deployed globally on Cloudflare's edge network via Omnibase.
 
 ## Architecture
 
-OmniBase Workers are built with:
+Omnibase Workers are built with:
 
 - **Hono** — Fast, lightweight web framework (Express-like API)
 - **Cloudflare Workers** — Edge runtime with V8 isolates
@@ -154,7 +154,7 @@ app.get("/old-path", (c) => {
 
 ## Environment Variables
 
-Environment variables are managed through OmniBase environment files in `omnibase/environments/`.
+Environment variables are managed through Omnibase environment files in `omnibase/environments/`.
 
 ### Configure Variables
 
@@ -204,9 +204,9 @@ bun dev
 
 Access at `http://localhost:8787`
 
-### Deploy to OmniBase
+### Deploy to Omnibase
 
-Deploy your workers to OmniBase Cloud:
+Deploy your workers to Omnibase Cloud:
 
 ```bash
 omnibase cloud workers deploy

@@ -7,7 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 # Document Storage
 
-OmniBase provides S3-compatible file storage with per-object permissions powered by Ory Keto (ReBAC). Every file gets its own permission tuples, so you can share individual files with specific users without exposing the rest of a tenant's files.
+Omnibase provides S3-compatible file storage with per-object permissions powered by Ory Keto (ReBAC). Every file gets its own permission tuples, so you can share individual files with specific users without exposing the rest of a tenant's files.
 
 **Key Features:**
 - Presigned URLs for direct browser uploads/downloads
@@ -24,7 +24,7 @@ OmniBase provides S3-compatible file storage with per-object permissions powered
 
 ```
 ┌─────────────┐     1. Request presigned URL     ┌─────────────┐
-│   Client    │ ────────────────────────────────►│  OmniBase   │
+│   Client    │ ────────────────────────────────►│  Omnibase   │
 │  (Browser)  │                                  │     API     │
 └─────────────┘                                  └──────┬──────┘
       │                                                 │
@@ -64,7 +64,7 @@ Files are never proxied through the API server. Clients upload and download dire
 
 ## Uploading Files
 
-When you upload a file, OmniBase automatically creates an `owner` relation in Keto. This gives you read, delete, and make-public permissions on the file without any extra setup.
+When you upload a file, Omnibase automatically creates an `owner` relation in Keto. This gives you read, delete, and make-public permissions on the file without any extra setup.
 
 ### Step 1: Request Upload URL
 

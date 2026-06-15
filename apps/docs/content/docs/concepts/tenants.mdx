@@ -5,7 +5,7 @@ description: Understanding the tenant model and data isolation
 
 # Understanding Tenants
 
-Tenants are the core organizational unit in OmniBase. This page explains the mental model behind multi-tenancy and how data isolation works.
+Tenants are the core organizational unit in Omnibase. This page explains the mental model behind multi-tenancy and how data isolation works.
 
 ## What is a Tenant?
 
@@ -28,7 +28,7 @@ Each tenant has:
 │                    TENANT CREATION                       │
 ├─────────────────────────────────────────────────────────┤
 │  1. User calls createTenant()                           │
-│  2. OmniBase creates tenant record                      │
+│  2. Omnibase creates tenant record                      │
 │  3. Stripe customer created automatically               │
 │  4. Creating user assigned as owner                     │
 │  5. Keto relationship created: user → owner → tenant    │
@@ -141,7 +141,7 @@ Tenant: Acme Corp
 
 ## Single-Tenant Applications
 
-OmniBase works for single-tenant apps too:
+Omnibase works for single-tenant apps too:
 
 1. Create one tenant at signup
 2. All users belong to that tenant

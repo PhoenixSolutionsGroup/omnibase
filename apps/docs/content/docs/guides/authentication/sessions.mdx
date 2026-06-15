@@ -1,6 +1,6 @@
 ---
 title: Session Management
-description: Managing user sessions in OmniBase applications
+description: Managing user sessions in Omnibase applications
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Session Management
 
-Sessions in OmniBase track authenticated users across requests. This guide covers how to set up session providers, retrieve session data, and protect routes.
+Sessions in Omnibase track authenticated users across requests. This guide covers how to set up session providers, retrieve session data, and protect routes.
 
 ## Session Architecture
 
@@ -23,7 +23,7 @@ Sessions in OmniBase track authenticated users across requests. This guide cover
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      OmniBase API                                │
+│                      Omnibase API                                │
 ├─────────────────────────────────────────────────────────────────┤
 │  1. Validates session cookie                                     │
 │  2. Extracts user identity                                       │
@@ -227,11 +227,11 @@ export function LogoutButton() {
 
 ## Session Cookies
 
-OmniBase uses these cookies for authentication:
+Omnibase uses these cookies for authentication:
 
 | Cookie | Purpose |
 |--------|---------|
-| `ory_kratos_session` | Main session token from OmniBase Auth |
+| `ory_kratos_session` | Main session token from Omnibase Auth |
 | `ory_kratos_continuity` | Flow continuity for multi-step auth flows |
 | `omnibase_postgrest_jwt` | JWT for database access with tenant context |
 
@@ -287,7 +287,7 @@ Browser sends request with session cookie to your Next.js app.
 <Step>
 ### Middleware Validates
 
-`createOmniBaseMiddleware` checks the session and tenant membership.
+`createOmnibaseMiddleware` checks the session and tenant membership.
 </Step>
 
 <Step>

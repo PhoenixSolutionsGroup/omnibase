@@ -1,6 +1,6 @@
 ---
 title: Multi-Tenancy Overview
-description: Learn how OmniBase handles organizations, team management, and data isolation
+description: Learn how Omnibase handles organizations, team management, and data isolation
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
@@ -11,7 +11,7 @@ import { Users, Shield, Database, UserPlus, Building2, Lock } from 'lucide-react
 
 # Multi-Tenancy
 
-OmniBase provides a complete multi-tenant architecture with organization management, team invitations, role-based access control, and automatic data isolation via PostgreSQL Row-Level Security.
+Omnibase provides a complete multi-tenant architecture with organization management, team invitations, role-based access control, and automatic data isolation via PostgreSQL Row-Level Security.
 
 ## Key Features
 
@@ -32,7 +32,7 @@ OmniBase provides a complete multi-tenant architecture with organization managem
 
 ## Architecture
 
-OmniBase implements a **Row-Level Security (RLS) based multi-tenancy model** with three layers:
+Omnibase implements a **Row-Level Security (RLS) based multi-tenancy model** with three layers:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -43,7 +43,7 @@ OmniBase implements a **Row-Level Security (RLS) based multi-tenancy model** wit
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                     AUTHENTICATION LAYER                         │
-│              OmniBase Auth (Identity + Sessions)                │
+│              Omnibase Auth (Identity + Sessions)                │
 │         ┌─────────────────────────────────────────┐             │
 │         │ JWT Claims: { user_id, tenant_id, role }│             │
 │         └─────────────────────────────────────────┘             │
@@ -52,7 +52,7 @@ OmniBase implements a **Row-Level Security (RLS) based multi-tenancy model** wit
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    AUTHORIZATION LAYER                           │
-│                OmniBase Permissions (ReBAC)                     │
+│                Omnibase Permissions (ReBAC)                     │
 │         ┌─────────────────────────────────────────┐             │
 │         │  Relation Tuples:                       │             │
 │         │  (Tenant, acme-corp, owner, user:alice) │             │

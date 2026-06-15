@@ -11,11 +11,11 @@ import { UserPlus, Mail, Users, UserMinus } from 'lucide-react';
 
 # Team Invitations
 
-OmniBase provides a complete invitation workflow for onboarding team members to your organization.
+Omnibase provides a complete invitation workflow for onboarding team members to your organization.
 
 ## UI Components
 
-OmniBase provides pre-built shadcn components for team management in `@omnibase/shadcn`:
+Omnibase provides pre-built shadcn components for team management in `@omnibase/shadcn`:
 
 <Accordions>
 <Accordion title="UserInvite Component">
@@ -160,14 +160,14 @@ console.log('Expires:', invite.data.expires_at);
 
 ### Automatic Email Delivery
 
-OmniBase automatically sends an invitation email to the invitee when you create an invite. The email includes:
+Omnibase automatically sends an invitation email to the invitee when you create an invite. The email includes:
 
 - The organization name
 - The assigned role
 - A link to accept the invitation (using the `inviteUrl` you provide)
 
 <Callout type="info">
-  Make sure your OmniBase instance has email configured. The invite URL you provide will have the token appended as a query parameter: `{inviteUrl}?token={token}`
+  Make sure your Omnibase instance has email configured. The invite URL you provide will have the token appended as a query parameter: `{inviteUrl}?token={token}`
 </Callout>
 
 The invitation email template can be customized. See the [Email Templates](/guides/email-templates) guide for details.
@@ -198,7 +198,7 @@ console.log('JWT Token:', data.data.token);
 <Steps>
 <Step>
 ### Token Validation
-OmniBase verifies the token is valid, not expired, and not already used.
+Omnibase verifies the token is valid, not expired, and not already used.
 </Step>
 
 <Step>

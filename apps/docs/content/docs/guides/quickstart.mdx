@@ -5,7 +5,7 @@ description: Go from zero to a working app with auth and multi-tenancy in 15 min
 
 # Quickstart
 
-This guide walks you through setting up OmniBase locally, creating your first user and tenant, and configuring Stripe billing. By the end, you'll have a working backend with authentication, multi-tenancy, and payments.
+This guide walks you through setting up Omnibase locally, creating your first user and tenant, and configuring Stripe billing. By the end, you'll have a working backend with authentication, multi-tenancy, and payments.
 
 **Time:** ~15 minutes
 **Prerequisites:** Docker, Node.js 18+ (or Bun)
@@ -28,7 +28,7 @@ omnibase --version
 
 ## 2. Initialize Your Project
 
-Create a new directory and initialize OmniBase:
+Create a new directory and initialize Omnibase:
 
 ```bash
 mkdir my-app && cd my-app
@@ -76,7 +76,7 @@ For local development, you can use your own Stripe keys. Real keys are required 
 
 ## 4. Start Services
 
-Launch all OmniBase services:
+Launch all Omnibase services:
 
 ```bash
 omnibase start
@@ -164,7 +164,7 @@ console.log('Stripe Customer:', tenantData.data.tenant.stripe_customer_id);
 ```
 
 <Callout type="info">
-When a tenant is created, OmniBase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
+When a tenant is created, Omnibase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
 </Callout>
 
 ---
@@ -264,7 +264,7 @@ console.log('Checkout URL:', checkout.data.url);
 
 ## Next Steps
 
-You now have a working OmniBase setup with:
+You now have a working Omnibase setup with:
 - User authentication via Ory Kratos
 - Multi-tenant organization support
 - Stripe billing integration

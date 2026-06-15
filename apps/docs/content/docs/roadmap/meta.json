@@ -1,6 +1,6 @@
 {
   "title": "Roadmap",
-  "description": "What's coming next for OmniBase",
+  "description": "What's coming next for Omnibase",
   "icon": "Map",
   "root": true,
   "pages": ["index"]

@@ -10,7 +10,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 # Configuration Guide
 
-OmniBase uses JSON configuration files to define your Stripe billing setup. This guide covers the complete schema and all available options.
+Omnibase uses JSON configuration files to define your Stripe billing setup. This guide covers the complete schema and all available options.
 
 ## Configuration Schema
 
@@ -92,7 +92,7 @@ You can split your configuration across multiple files for better organization:
     {
       "id": "free",
       "name": "Free Plan",
-      "description": "Get started with OmniBase",
+      "description": "Get started with Omnibase",
       "type": "service",
       "prices": [
         {
@@ -355,7 +355,7 @@ Returns paginated configuration history.
 
 ## Change Detection
 
-When you push a configuration, OmniBase calculates a diff and reports:
+When you push a configuration, Omnibase calculates a diff and reports:
 
 ```json
 {
@@ -386,7 +386,7 @@ When you push a configuration, OmniBase calculates a diff and reports:
 
 ### Archiving vs Deletion
 
-OmniBase archives resources instead of deleting them because Stripe doesn't allow deletion of resources with payment history. Archived resources:
+Omnibase archives resources instead of deleting them because Stripe doesn't allow deletion of resources with payment history. Archived resources:
 
 - Are marked as inactive in Stripe
 - Cannot be used for new subscriptions
@@ -394,7 +394,7 @@ OmniBase archives resources instead of deleting them because Stripe doesn't allo
 
 ## ID Mapping
 
-OmniBase maintains a mapping between your config IDs and Stripe's generated IDs:
+Omnibase maintains a mapping between your config IDs and Stripe's generated IDs:
 
 | Config ID | Stripe ID | Item Type |
 |-----------|-----------|-----------|
@@ -437,7 +437,7 @@ Returns:
 
 ### Duplicate Detection
 
-OmniBase rejects configurations with:
+Omnibase rejects configurations with:
 - Duplicate product IDs
 - Duplicate price IDs (across all products)
 - Duplicate meter IDs

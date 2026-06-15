@@ -1,0 +1,168 @@
+---
+title: Objects & Namespaces
+description: Object types, built-in defaults, and defining custom objects
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Objects & Namespaces
+
+In the Omnibase permission system, every **namespace** is an **object type** — a distinct kind of thing that can own, be acted upon, or be the subject of a permission check.
+
+## Built-in Objects
+
+Omnibase ships with these object types by default. They are defined in your project's `omnibase/permissions/` directory.
+
+### User
+
+Human users who authenticate via sessions. `User` is the primary **subject type** — the "who" in a permission check. It has no relations defined on it; it exists only to be the target of relations on other objects.
+
+```typescript
+// omnibase/permissions/tenants.ts
+export class User implements Namespace {}
+```
+
+### Tenant
+
+The organizational container. Each tenant has its own members, roles, and data isolation. Tenant permissions are auto-scoped from the user's active session.
+
+```typescript
+export class Tenant implements Namespace {
+  related: {
+    /** @group Tenant Administration */
+    can_delete_tenant: User[];
+
+    /** @group User Management */
+    can_invite_user: User[];
+
+    /** @group User Management */
+    can_update_user_role: User[];
+
+    /** @group User Management */
+    can_remove_user: User[];
+
+    /** @group User Management */
+    can_view_users: User[];
+
+    /** @group Roles & Permissions */
+    can_create_roles: User[];
+
+    /** @group Roles & Permissions */
+    can_update_roles: User[];
+
+    /** @group Roles & Permissions */
+    can_delete_roles: User[];
+  };
+
+  permits = {
+    invite_user: (ctx): boolean =>
+      this.related.can_invite_user.includes(ctx.subject),
+    delete_tenant: (ctx): boolean =>
+      this.related.can_delete_tenant.includes(ctx.subject),
+    // ... etc
+  };
+}
+```
+
+### StorageObject
+
+A file uploaded to object storage. Has its own owner-based permissions with read, delete, and make_public relations.
+
+```typescript
+// omnibase/permissions/storage.ts
+export class StorageObject implements Namespace {
+  related: {
+    /** @hidden */
+    owner: User[];
+    can_read: User[];
+    can_delete: User[];
+    can_make_public: User[];
+    /** @hidden */
+    tenant: Tenant[];
+  };
+
+  permits = {
+    read: (ctx): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_read.includes(ctx.subject),
+    delete: (ctx): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_delete.includes(ctx.subject),
+    make_public: (ctx): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_make_public.includes(ctx.subject),
+  };
+}
+```
+
+## Defining Custom Objects
+
+Create a new namespace class to define a custom object type. The class must implement `Namespace` and can define `related` relations and a `permits` block.
+
+```typescript
+// omnibase/permissions/agents.ts
+import { Context, Namespace } from "./types";
+
+export class Agent implements Namespace {}
+
+// omnibase/permissions/codebases.ts
+import { Agent, Context, Namespace, Tenant, User } from "./types";
+
+export class Codebase implements Namespace {
+  related: {
+    /** @hidden */
+    tenant: Tenant[];
+
+    /** @group Codebase Access */
+    can_edit: (User | Agent)[];
+
+    /** @group Codebase Access */
+    can_push: (User | Agent)[];
+
+    /** @group Codebase Access */
+    can_view: (User | Agent)[];
+  };
+
+  permits = {
+    edit: (ctx): boolean =>
+      this.related.can_edit.includes(ctx.subject),
+    push: (ctx): boolean =>
+      this.related.can_push.includes(ctx.subject),
+    view: (ctx): boolean =>
+      this.related.can_view.includes(ctx.subject),
+  };
+}
+```
+
+<Callout type="info">
+  See the full [OmniGit Example](/concepts/permissions/omni-git) for a complete walkthrough with two agent scoping patterns.
+</Callout>
+
+## JSDoc Annotations
+
+Every relation in a `related` block can carry JSDoc annotations. These provide metadata for the UI and role system — they are parsed by the API and consumed by frontend components.
+
+| Annotation | Purpose | Example |
+|------------|---------|---------|
+| `@group` | Primary UI grouping | `@group User Management` |
+| `@subGroup` | Secondary grouping within a group | `@subGroup Role Assignment` |
+| `@displayName` | Human-readable label | `@displayName Invite Users` |
+| `@role` | Suggested default role(s) | `@role owner` |
+| `@hidden` | Hide from UI (internal relations) | `@hidden` |
+
+```typescript
+/**
+ * @group User Management
+ * @subGroup Role Assignment
+ * @displayName Update User Roles
+ * @role owner
+ * @role admin
+ */
+can_update_user_role: User[];
+```
+
+The `@role` annotation serves as a suggestion when creating roles in the UI. The `@hidden` annotation is essential for relations used only for permission traversal (like `tenant: Tenant[]` or `owner: User[]`) — they should never appear in a role-editing UI.
+
+## Next
+
+Relations are how objects connect — [Relations & Traversal](/concepts/permissions/relations-traversal) explains how to chain permissions through intermediate objects.

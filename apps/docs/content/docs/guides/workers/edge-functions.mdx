@@ -9,7 +9,7 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 
 # Edge Functions
 
-OmniBase Workers are serverless functions that run on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Deploy globally distributed APIs that respond in milliseconds.
+Omnibase Workers are serverless functions that run on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Deploy globally distributed APIs that respond in milliseconds.
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ OmniBase Workers are serverless functions that run on [Cloudflare Workers](https
 <Step>
 ### Initialize Your Project
 
-If you haven't already initialized OmniBase, create a new project:
+If you haven't already initialized Omnibase, create a new project:
 
 ```bash
 omnibase init
@@ -96,9 +96,9 @@ Your edge function is now running at `http://localhost:8787`
 </Step>
 
 <Step>
-### Deploy to OmniBase
+### Deploy to Omnibase
 
-Deploy your workers to OmniBase Cloud:
+Deploy your workers to Omnibase Cloud:
 
 ```bash
 omnibase cloud workers deploy
@@ -163,7 +163,7 @@ app.delete("/api/posts/:id", async (c) => {
 
 ## Environment Variables
 
-Environment variables are managed through OmniBase environment files located in `omnibase/environments/`.
+Environment variables are managed through Omnibase environment files located in `omnibase/environments/`.
 
 ### Configure Environment Variables
 
@@ -387,7 +387,7 @@ app.get("/api/risky", async (c) => {
 
 ## Common Use Cases
 
-### Proxy to OmniBase API
+### Proxy to Omnibase API
 
 ```typescript
 app.get("/api/users", async (c) => {
