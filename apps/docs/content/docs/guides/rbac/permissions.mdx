@@ -215,7 +215,7 @@ Permissions can be granted to different subject types:
 
 | Subject | Description | Usage |
 |---------|-------------|-------|
-| `User` | Human users with sessions | Standard user permissions |
+| `User` | Users with sessions | Standard user permissions |
 | `ApiKey` | Programmatic API keys | Service-to-service access |
 
 Define which subjects can have a permission using TypeScript union types:
@@ -512,11 +512,11 @@ export class Project implements Namespace {
 
 ## Example: Agent + Codebase
 
-This example shows how to define custom objects and wire up permission traversal between them. You're building a platform where both human users and LLM agents interact with codebases.
+This example shows how to define custom objects and wire up permission traversal between them. You're building a platform where both users and LLM agents interact with codebases.
 
 ### Scenario
 
-- **`User`** — built-in subject type for human users
+- **`User`** — built-in subject type for users
 - **`Agent`** — custom subject type for LLM agents (like `User`)
 - **`Tenant`** — built-in organizational container
 - **`Codebase`** — custom resource object (git repository)
