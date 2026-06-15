@@ -5,5 +5,5 @@
       "main": false
     }
   },
-  "ignoreCommand": "git diff --quiet $VERCEL_GIT_PREVIOUS_SHA $VERCEL_GIT_COMMIT_SHA -- apps/website"
+  "ignoreCommand": "git fetch origin main --depth=1 2>/dev/null; git diff --quiet origin/main...HEAD -- apps/website"
 }
