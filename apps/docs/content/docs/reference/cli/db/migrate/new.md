@@ -23,7 +23,7 @@ After: edit the generated file with your SQL statements.
 
 ## Options
 
-- **`-d, --dir <directory>`** (default: `omnibase/db`)
+- **`-d, --dir <directory>`** (default: `omnibase/db/migrations`)
   Directory to create migration file in
 - **`-n, --name <name>`**
   Migration name (will prompt if not provided)

@@ -4,9 +4,9 @@ title: "react"
 
 # @omnibase/react
 
-**React SDK for Omnibase authentication and session management**
+**React SDK for OmniBase authentication and session management**
 
-The Omnibase React SDK provides React 19+ hooks, components, and context providers for integrating Ory Kratos authentication flows into your React applications. Built on top of `@omnibase/core-js`, it delivers type-safe session management, route protection, and seamless authentication state handling.
+The OmniBase React SDK provides React 19+ hooks, components, and context providers for integrating Ory Kratos authentication flows into your React applications. Built on top of `@omnibase/core-js`, it delivers type-safe session management, route protection, and seamless authentication state handling.
 
 ![npm version](https://img.shields.io/npm/v/@omnibase/react)
 ![License](https://img.shields.io/npm/l/@omnibase/react)
@@ -165,7 +165,7 @@ function SecureComponent() {
 ## Environment Configuration
 
 ```bash
-# Required: Omnibase API endpoint
+# Required: OmniBase API endpoint
 NEXT_PUBLIC_API_URL=https://your-api-endpoint.com
 
 # Or pass directly to AuthClientProvider

@@ -23,7 +23,7 @@ After: the specified migrations are rolled back from the database.
 
 ## Options
 
-- **`-d, --dir <directory>`** (default: `omnibase/db`)
+- **`-d, --dir <directory>`** (default: `omnibase/db/migrations`)
   Migrations directory
 - **`-n, --name <name>`**
   Specific migration dir name to rollback to (non-interactive)

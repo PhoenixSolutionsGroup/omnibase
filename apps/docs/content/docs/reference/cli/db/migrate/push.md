@@ -23,5 +23,5 @@ After: the database schema is updated to match the applied migrations.
 
 ## Options
 
-- **`-d, --dir <directory>`** (default: `omnibase/db`)
+- **`-d, --dir <directory>`** (default: `omnibase/db/migrations`)
   Directory containing migration files

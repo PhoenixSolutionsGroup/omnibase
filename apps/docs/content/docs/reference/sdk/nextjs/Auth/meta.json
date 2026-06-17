@@ -1,0 +1,10 @@
+{
+  "title": "Auth",
+  "pages": [
+    "authentication",
+    "flow-retrieval",
+    "flow-routing",
+    "interfaces",
+    "session-management"
+  ]
+}

@@ -2,9 +2,9 @@
 title: "CLI Reference"
 ---
 
-# Omnibase CLI
+# OmniBase CLI
 
-Omnibase CLI - Manage Docker Compose services and environment configuration
+OmniBase CLI - Manage Docker Compose services and environment configuration
 
 ## Usage
 
@@ -29,6 +29,6 @@ omnibase [command] [options]
 - [`stripe`](/reference/cli/stripe) — Manage Stripe configuration
 - [`email`](/reference/cli/email) — Manage email templates
 - [`db`](/reference/cli/db) — Database management commands
-- [`cloud`](/reference/cli/cloud) — Manage Omnibase Cloud (authentication and deployments)
+- [`cloud`](/reference/cli/cloud) — Manage OmniBase Cloud (authentication and deployments)
 - [`sync`](/reference/cli/sync) — Sync local configuration to remote environment
 - [`restart`](/reference/cli/restart) — Restart services (interactive if none specified)

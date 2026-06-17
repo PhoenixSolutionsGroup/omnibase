@@ -10,7 +10,7 @@ omnibase cloud login
 
 ## Description
 
-Login to Omnibase Cloud
+Login to OmniBase Cloud
 
 ## Arguments
 

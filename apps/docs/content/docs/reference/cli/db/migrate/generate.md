@@ -25,7 +25,11 @@ After: migration files are created in the migrations directory. Run `push` to ap
 
 - **`--db-url <url>`**
   Database URL (defaults to postgresql://postgres:postgres@localhost:5432)
-- **`-d, --dir <directory>`** (default: `omnibase/db`)
+- **`-d, --dir <directory>`** (default: `omnibase/db/migrations`)
   Directory containing migration files
+- **`-s, --schema-dir <director>`** (default: `omnibase/db/schema`)
+  Directory containing prisma schema file
+- **`-p, --policy-dir <directory>`** (default: `omnibase/db/policies`)
+  Directory containing Omnibase policy definitions
 - **`-n, --name <name>`**
   Migration name

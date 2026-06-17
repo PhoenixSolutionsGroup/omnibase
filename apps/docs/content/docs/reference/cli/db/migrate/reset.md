@@ -25,7 +25,7 @@ The command will prompt for confirmation unless `--yes` is provided.
 
 ## Options
 
-- **`-d, --dir <directory>`** (default: `omnibase/db`)
+- **`-d, --dir <directory>`** (default: `omnibase/db/migrations`)
   Directory containing migration files
 - **`-y, --yes`**
   Skip confirmation prompt
