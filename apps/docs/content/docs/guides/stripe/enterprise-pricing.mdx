@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Enterprise Pricing
 
-OmniBase supports enterprise pricing through two mechanisms: template-based pricing for discount tiers, and custom per-tenant pricing for negotiated rates.
+Omnibase supports enterprise pricing through two mechanisms: template-based pricing for discount tiers, and custom per-tenant pricing for negotiated rates.
 
 ## Pricing Models
 
@@ -95,7 +95,7 @@ console.log(`Prices swapped: ${data.pricesSwapped}`);
 
 ### What Happens
 
-1. OmniBase finds the tenant's active subscriptions
+1. Omnibase finds the tenant's active subscriptions
 2. For each subscription item, finds a matching price with the same base ID and template
 3. Swaps the subscription item to use the enterprise price
 4. Updates the tenant's `enterprise_template` field
@@ -201,7 +201,7 @@ A tenant can have either `enterprise_template` OR `enterprise_id`, not both. App
 
 ## Proration Behavior
 
-When swapping enterprise prices, OmniBase uses `proration_behavior: "none"`:
+When swapping enterprise prices, Omnibase uses `proration_behavior: "none"`:
 
 - No immediate charge or credit
 - New price takes effect at next billing cycle

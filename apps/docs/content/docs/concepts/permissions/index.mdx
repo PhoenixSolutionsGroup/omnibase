@@ -1,0 +1,98 @@
+---
+title: Permissions Overview
+description: Understanding the object-relationship permission model
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { FileCode, Share2, Shield } from 'lucide-react';
+
+# Permissions Overview
+
+Omnibase uses a **relationship-based access control (ReBAC)** system. Instead of rigid roles or complex policies, permissions are modeled as **relations between objects** in a graph.
+
+## The Core Idea
+
+Every **namespace** is an **object type**. Objects relate to each other through named **relations**. A permission check asks one question:
+
+> *Does subject **S** have relation **R** on object **O**?*
+
+```
+(User, user_abc, can_invite_user, Tenant, tenant_xyz)
+```
+
+These relations form a graph that you can traverse. A user can act on a tenant directly, or on all projects within a tenant through chained relations.
+
+## Built-in Defaults
+
+Omnibase ships with these object types out of the box:
+
+| Object | Purpose |
+|--------|---------|
+| `User` | End user — acts as a subject in permission checks |
+| `Tenant` | Organizational container — members, owners, permissions |
+| `StorageObject` | A file in object storage |
+
+## Why Relations, Not Roles
+
+Traditional RBAC gives users flat roles with fixed permission sets. ReBAC gives you:
+
+- **Fine-grained control** — grant a permission on a specific resource, not "all resources"
+- **Inheritance through traversal** — grant at the tenant level and cascade to all resources
+- **Multiple subject types** — both Users and API keys can hold permissions
+- **Per-resource ownership** — each object has its own access rules
+
+## Permissions Sub-Pages
+
+<Cards>
+  <Card title="Objects & Namespaces" icon={<FileCode />} href="/concepts/permissions/objects-and-namespaces">
+    What objects are, built-in defaults, defining custom objects, JSDoc annotations, and subject types
+  </Card>
+  <Card title="Relations & Traversal" icon={<Share2 />} href="/concepts/permissions/relations-traversal">
+    How relations connect objects, the traverse() method, chained permission checks, and common patterns
+  </Card>
+  <Card title="OmniGit Example" icon={<Shield />} href="/concepts/permissions/omni-git">
+    Complete walkthrough with custom objects, two agent scoping patterns, grant and check flows
+  </Card>
+</Cards>
+
+## Quick Example
+
+<Tabs groupId="lang" items={['TypeScript', 'Go']}>
+<Tab value="TypeScript">
+
+```typescript
+// Check if a user can invite others to a tenant
+const { data } = await permissionsApi.checkPermission({
+  checkPermissionRequest: {
+    namespace: 'Tenant',
+    object: tenantId,
+    relation: 'can_invite_user',
+    subjectId: userId,
+    subjectNamespace: 'User',
+  },
+});
+```
+
+</Tab>
+<Tab value="Go">
+
+```go
+result, _, err := client.CheckPermission(ctx).CheckPermissionRequest(omnibase.CheckPermissionRequest{
+    Namespace: "Tenant",
+    Object:    tenantId,
+    Relation:  "can_invite_user",
+    SubjectSet: omnibase.SubjectSetRequest{
+        Namespace: "User",
+        Object:    userId,
+    },
+}).Execute()
+```
+
+</Tab>
+</Tabs>
+
+## Related
+
+- [Defining Permissions Guide](/docs/guides/rbac/permissions) — How to write permission namespace files
+- [Managing Roles Guide](/docs/guides/rbac/roles) — Create roles, assign users

@@ -9,13 +9,13 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 Row-Level Security (RLS) is a PostgreSQL feature that restricts which rows a query can see or modify. Instead of relying on application code to filter data, the database itself enforces access rules on every query.
 
-OmniBase provides helper functions like `auth.active_tenant_id()` that make it easy to write RLS policies for tenant isolation. You enable RLS and write policies per table.
+Omnibase provides helper functions like `auth.active_tenant_id()` that make it easy to write RLS policies for tenant isolation. You enable RLS and write policies per table.
 
 ---
 
 ## Auth Helper Functions
 
-OmniBase provides helper functions for use in RLS policies:
+Omnibase provides helper functions for use in RLS policies:
 
 ```sql
 auth.active_tenant_id()                    -- current tenant UUID (from JWT)

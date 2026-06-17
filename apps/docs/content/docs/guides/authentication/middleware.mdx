@@ -9,7 +9,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 
 # Authentication Middleware
 
-OmniBase provides Next.js middleware that handles authentication validation, tenant membership checking, and PostgREST JWT management automatically.
+Omnibase provides Next.js middleware that handles authentication validation, tenant membership checking, and PostgREST JWT management automatically.
 
 ## Overview
 
@@ -40,11 +40,11 @@ The middleware runs on every request and performs:
 Create a `middleware.ts` file in your project root:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
 const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
 
-export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL);
+export const middleware = createOmnibaseMiddleware(OMNIBASE_API_URL);
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
@@ -66,9 +66,9 @@ The matcher excludes static files and images from middleware processing for bett
 ### Full Configuration Example
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
-export const middleware = createOmniBaseMiddleware(
+export const middleware = createOmnibaseMiddleware(
   process.env.OMNIBASE_API_URL!,
   {
     tenant_check: true,
@@ -136,9 +136,9 @@ Request continues to your Next.js application with all cookies merged.
 ### Protect Everything Except Auth Routes
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
-export const middleware = createOmniBaseMiddleware(
+export const middleware = createOmnibaseMiddleware(
   process.env.OMNIBASE_API_URL!,
   {
     tenant_check: true,
@@ -158,9 +158,9 @@ export const config = {
 For single-tenant applications or when handling tenants manually:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
-export const middleware = createOmniBaseMiddleware(
+export const middleware = createOmnibaseMiddleware(
   process.env.OMNIBASE_API_URL!,
   {
     tenant_check: false,
@@ -171,9 +171,9 @@ export const middleware = createOmniBaseMiddleware(
 ### Protect Specific Paths Only
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
-export const middleware = createOmniBaseMiddleware(
+export const middleware = createOmnibaseMiddleware(
   process.env.OMNIBASE_API_URL!,
   {
     tenant_check: true,
@@ -209,14 +209,14 @@ Page-level protection (`protectedRoute`) provides defense in depth and handles e
 
 ## Real-World Example
 
-Here's the complete middleware setup from the OmniBase dashboard:
+Here's the complete middleware setup from the Omnibase dashboard:
 
 ```typescript title="middleware.ts"
-import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
+import { createOmnibaseMiddleware } from '@omnibase/nextjs/middleware';
 
 const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
 
-export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL, {
+export const middleware = createOmnibaseMiddleware(OMNIBASE_API_URL, {
   tenant_check: true,
   tenant_check_paths: ['/'],
   tenant_check_redirect_url: '/auth/onboarding',

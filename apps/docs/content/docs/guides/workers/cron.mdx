@@ -12,7 +12,7 @@ Schedule automated tasks that run on Cloudflare's global network. Perfect for pe
 
 ## What Are Cron Jobs?
 
-Cron jobs are scheduled tasks that run automatically at specified times or intervals. OmniBase Workers support cron triggers, allowing you to execute code on a schedule without managing servers or infrastructure.
+Cron jobs are scheduled tasks that run automatically at specified times or intervals. Omnibase Workers support cron triggers, allowing you to execute code on a schedule without managing servers or infrastructure.
 
 ### Key Features
 
@@ -84,7 +84,7 @@ export default {
 };
 
 async function performScheduledTask(env: EnvVars) {
-  // Example: Call your OmniBase API
+  // Example: Call your Omnibase API
   const response = await fetch(`${env.OMNIBASE_API_URL}/api/v1/cleanup`, {
     method: "POST",
     headers: {
@@ -257,7 +257,7 @@ async scheduled(event, env, ctx) {
   const data = await fetch("https://api.external.com/data");
   const json = await data.json();
 
-  // Sync to your OmniBase API
+  // Sync to your Omnibase API
   await fetch(`${env.OMNIBASE_API_URL}/api/v1/sync`, {
     method: "POST",
     headers: {

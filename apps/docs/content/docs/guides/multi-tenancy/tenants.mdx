@@ -15,7 +15,7 @@ This guide covers creating tenants, switching between them, and handling tenant 
 
 ## UI Components
 
-OmniBase provides pre-built shadcn components for tenant management in `@omnibase/shadcn`:
+Omnibase provides pre-built shadcn components for tenant management in `@omnibase/shadcn`:
 
 <Accordions>
 <Accordion title="TenantCreator Component">
@@ -96,7 +96,7 @@ import { SwitchActiveTenant } from '@omnibase/shadcn';
 
 ## Creating Tenants
 
-When you create a tenant, OmniBase automatically:
+When you create a tenant, Omnibase automatically:
 
 1. Creates the tenant record in the database
 2. Creates a Stripe customer (if `billingEmail` is provided)
@@ -173,7 +173,7 @@ await tenantsApi.switchActiveTenant({
 ```
 
 <Callout type="info">
-  When switching tenants, OmniBase updates the `is_active` flag in `tenant_users`, generates a new JWT token, and all subsequent database queries automatically filter by the new tenant.
+  When switching tenants, Omnibase updates the `is_active` flag in `tenant_users`, generates a new JWT token, and all subsequent database queries automatically filter by the new tenant.
 </Callout>
 
 ### Get Active Tenant
@@ -290,7 +290,7 @@ await tenantsApi.deleteTenant();
 <Steps>
 <Step>
 ### Permission Check
-OmniBase verifies the user has `tenant#delete_tenant` permission.
+Omnibase verifies the user has `tenant#delete_tenant` permission.
 </Step>
 
 <Step>
@@ -332,7 +332,7 @@ Former members are reassigned to another tenant (if they have one) or their iden
 │                    TENANT CREATION                       │
 ├─────────────────────────────────────────────────────────┤
 │  1. User calls createTenant()                           │
-│  2. OmniBase creates tenant record                      │
+│  2. Omnibase creates tenant record                      │
 │  3. Stripe customer created automatically               │
 │  4. Creating user assigned as owner                     │
 │  5. Permission relationship: user → owner → tenant      │

@@ -5,7 +5,7 @@ description: How the Stripe configuration sync mechanism works
 
 # How Stripe Sync Works
 
-OmniBase's "Stripe as Code" approach stores billing configuration in PostgreSQL and syncs it to Stripe. This page explains the mechanism.
+Omnibase's "Stripe as Code" approach stores billing configuration in PostgreSQL and syncs it to Stripe. This page explains the mechanism.
 
 ## The Problem
 
@@ -18,7 +18,7 @@ Stripe has limitations for configuration management:
 
 ## The Solution
 
-OmniBase introduces a database-backed configuration layer:
+Omnibase introduces a database-backed configuration layer:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -57,7 +57,7 @@ OmniBase introduces a database-backed configuration layer:
 
 ## Config ID vs Stripe ID
 
-OmniBase maintains a mapping between your config IDs and Stripe IDs:
+Omnibase maintains a mapping between your config IDs and Stripe IDs:
 
 ```
 Config ID          →    Stripe ID
@@ -74,7 +74,7 @@ This means:
 
 ## The Diff Algorithm
 
-When you push a configuration, OmniBase:
+When you push a configuration, Omnibase:
 
 1. **Fetches current state** — Gets the latest config from PostgreSQL
 2. **Computes diff** — Determines what changed
@@ -101,7 +101,7 @@ When you push a configuration, OmniBase:
 
 ## Archiving vs Deleting
 
-Stripe doesn't allow deleting resources with history. OmniBase handles this by:
+Stripe doesn't allow deleting resources with history. Omnibase handles this by:
 
 1. **Archiving** — Marks the resource as inactive in Stripe
 2. **Removing from config** — Excludes from future syncs
@@ -139,7 +139,7 @@ omnibase stripe history
 
 ## Free Tier Support
 
-Stripe doesn't allow $0 prices. OmniBase handles this:
+Stripe doesn't allow $0 prices. Omnibase handles this:
 
 1. **Stores free prices in PostgreSQL** — Full config including $0 prices
 2. **Skips Stripe sync for free prices** — Doesn't create in Stripe
@@ -151,7 +151,7 @@ Stripe doesn't allow $0 prices. OmniBase handles this:
   "name": "Free",
   "prices": [{
     "id": "free_monthly",
-    "amount": 0,  // OmniBase handles this
+    "amount": 0,  // Omnibase handles this
     "currency": "usd",
     "interval": "month"
   }]
@@ -174,7 +174,7 @@ This:
 
 ## Multi-File Configs
 
-OmniBase merges all `*.config.json` files in `omnibase/stripe/`:
+Omnibase merges all `*.config.json` files in `omnibase/stripe/`:
 
 ```
 omnibase/stripe/

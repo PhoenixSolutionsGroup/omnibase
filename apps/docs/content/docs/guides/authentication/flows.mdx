@@ -11,7 +11,7 @@ import { File, Folder, Files } from 'fumadocs-ui/components/files';
 
 # Authentication Flows
 
-OmniBase Auth provides pre-built flows for all common authentication scenarios. This guide covers how to implement each flow using the `FlowRouter` and shadcn components.
+Omnibase Auth provides pre-built flows for all common authentication scenarios. This guide covers how to implement each flow using the `FlowRouter` and shadcn components.
 
 ## FlowRouter Overview
 
@@ -141,7 +141,7 @@ The registration flow creates new user accounts.
 
 ### Identity Traits
 
-By default, OmniBase collects these user traits:
+By default, Omnibase collects these user traits:
 
 ```json
 {
@@ -180,7 +180,7 @@ User enters their email address and submits the form.
 <Step>
 ### Email Sent
 
-OmniBase Auth sends a recovery link to the email address.
+Omnibase Auth sends a recovery link to the email address.
 </Step>
 
 <Step>
@@ -577,7 +577,7 @@ const inviteUrl = `/auth/registration?email=${encodeURIComponent(inviteeEmail)}`
 </Accordion>
 
 <Accordion title="Require email verification">
-This is configured in your OmniBase Auth settings. When enabled:
+This is configured in your Omnibase Auth settings. When enabled:
 
 1. User registers and receives verification email
 2. Login attempts redirect to verification if email unverified

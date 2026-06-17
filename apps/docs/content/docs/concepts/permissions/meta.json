@@ -1,0 +1,10 @@
+{
+  "title": "Permissions",
+  "description": "Fine-grained access control with ReBAC",
+  "icon": "Shield",
+  "pages": [
+    "objects-and-namespaces",
+    "relations-traversal",
+    "omni-git"
+  ]
+}
