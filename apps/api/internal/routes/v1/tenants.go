@@ -2,10 +2,19 @@ package v1
 
 import (
 	"api/internal/config"
+	"api/internal/database"
+	"api/internal/database/repository"
 	v1 "api/internal/handlers/v1"
-	tenants "api/internal/handlers/v1/tenants"
+	"api/internal/handlers/v1/tenants/invites"
+	"api/internal/handlers/v1/tenants/roles"
+	"api/internal/handlers/v1/tenants/users"
 	"api/internal/logger"
 	"api/internal/middleware"
+	"api/internal/services/auth"
+	"api/internal/services/email"
+	"api/internal/services/permissions"
+	"api/internal/services/permissions/rbac"
+	"api/internal/services/tenants"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +23,43 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	logger.Logger.Info("Initializing tenant routes")
 	cfg := config.New()
 
+	pool, err := database.GetPool(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get pgx pool", "error", err)
+		panic(err)
+	}
+	repo := repository.New(pool)
+	perms := permissions.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
+	authSvc := auth.New(auth.Deps{AdminURL: cfg.AuthConfig.AuthAdminURL})
+	tenantsSvc := tenants.New(tenants.Deps{Repo: repo, Auth: authSvc, SigningKey: cfg.Database.SigningKey})
+	rbacSvc := rbac.New(rbac.Deps{Repo: repo, Perms: perms})
+	emailSvc, err := email.New(email.Deps{
+		Repo:          repo,
+		ConnectionURI: cfg.SMTPConfig.ConnectionURI,
+		DefaultFrom:   cfg.SMTPConfig.FromEmail,
+	})
+	if err != nil {
+		logger.Logger.Error("Failed to initialize email service", "error", err)
+		panic(err)
+	}
+
 	tenantHandler := v1.NewTenantHandler(cfg)
-	rolesHandler := tenants.NewRolesHandler(cfg)
+	rolesHandler := roles.New(roles.Deps{Repo: repo, Perms: perms})
+	usersHandler := users.New(users.Deps{
+		Repo:    repo,
+		Perms:   perms,
+		Auth:    authSvc,
+		RBAC:    rbacSvc,
+		Tenants: tenantsSvc,
+	})
+	invitesHandler := invites.New(invites.Deps{
+		Repo:    repo,
+		Perms:   perms,
+		Auth:    authSvc,
+		RBAC:    rbacSvc,
+		Tenants: tenantsSvc,
+		Email:   emailSvc,
+	})
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
 	// Service-key only routes (lookup endpoints for service-to-service calls)
@@ -31,7 +75,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	authenticated.GET("/jwt", tenantHandler.GetPostgRESTJWTToken)
 
-	authenticated.GET("/users", tenantHandler.GetTenantUsers)
+	authenticated.GET("/users", usersHandler.List)
 
 	authenticated.GET("/subscriptions", tenantHandler.ListTenantSubscriptions)
 
@@ -45,21 +89,21 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	authenticated.POST("", tenantHandler.CreateTenant)
 
-	authenticated.POST("/invites", tenantHandler.CreateTenantUserInvite)
+	authenticated.POST("/invites", invitesHandler.Create)
 
-	authenticated.PUT("/users", tenantHandler.UpdateTenantUserRole)
+	authenticated.PUT("/users", usersHandler.UpdateRole)
 
-	authenticated.PUT("/invites/accept", tenantHandler.AcceptInvite)
+	authenticated.PUT("/invites/accept", invitesHandler.Accept)
 
 	authenticated.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
 
 	authenticated.DELETE("", tenantHandler.DeleteTenant)
 
-	authenticated.DELETE("/users", tenantHandler.DeleteTenantUser)
+	authenticated.DELETE("/users", usersHandler.Delete)
 
 	authenticated.GET("/roles", rolesHandler.ListRoles)
 
-	authenticated.GET("/roles/definitions", rolesHandler.GetDefinitions)
+	authenticated.GET("/roles/definitions", rolesHandler.ListDefinitions)
 
 	authenticated.POST("/roles", rolesHandler.CreateRole)
 

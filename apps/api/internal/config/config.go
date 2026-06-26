@@ -2,6 +2,7 @@ package config
 
 import (
 	"api/internal/logger"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -60,6 +61,15 @@ type DatabaseConfig struct {
 	MaxOpenConns    int
 	ConnMaxLifetime time.Duration
 	ConnMaxIdleTime time.Duration
+}
+
+func (d DatabaseConfig) DSN() string {
+	sslMode := d.SSLMode
+	if sslMode == "" {
+		sslMode = "disable"
+	}
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		d.User, d.Password, d.Host, d.Port, d.Name, sslMode)
 }
 
 type StripeConfig struct {
