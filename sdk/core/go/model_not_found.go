@@ -22,8 +22,6 @@ var _ MappedNullable = &NotFound{}
 
 // NotFound Not Found error response (404)
 type NotFound struct {
-	// HTTP status code
-	Status int32 `json:"status"`
 	// Error message
 	Error string `json:"error"`
 }
@@ -34,9 +32,8 @@ type _NotFound NotFound
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewNotFound(status int32, error_ string) *NotFound {
+func NewNotFound(error_ string) *NotFound {
 	this := NotFound{}
-	this.Status = status
 	this.Error = error_
 	return &this
 }
@@ -47,30 +44,6 @@ func NewNotFound(status int32, error_ string) *NotFound {
 func NewNotFoundWithDefaults() *NotFound {
 	this := NotFound{}
 	return &this
-}
-
-// GetStatus returns the Status field value
-func (o *NotFound) GetStatus() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *NotFound) GetStatusOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *NotFound) SetStatus(v int32) {
-	o.Status = v
 }
 
 // GetError returns the Error field value
@@ -107,7 +80,6 @@ func (o NotFound) MarshalJSON() ([]byte, error) {
 
 func (o NotFound) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
 	toSerialize["error"] = o.Error
 	return toSerialize, nil
 }
@@ -117,7 +89,6 @@ func (o *NotFound) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
 		"error",
 	}
 

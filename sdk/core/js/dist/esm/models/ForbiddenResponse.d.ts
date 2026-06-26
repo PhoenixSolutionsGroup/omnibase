@@ -16,12 +16,6 @@
  */
 export interface ForbiddenResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ForbiddenResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof ForbiddenResponse

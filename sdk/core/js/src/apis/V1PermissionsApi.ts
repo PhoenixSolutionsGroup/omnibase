@@ -16,8 +16,8 @@
 import * as runtime from '../runtime';
 import type {
   BadRequestResponse,
-  CheckPermission200Response,
   CheckPermissionRequest,
+  CheckPermissionResponse,
   CreateRelationship200Response,
   CreateRelationshipRequest,
   DeleteRelationship200Response,
@@ -29,10 +29,10 @@ import type {
 import {
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
-    CheckPermission200ResponseFromJSON,
-    CheckPermission200ResponseToJSON,
     CheckPermissionRequestFromJSON,
     CheckPermissionRequestToJSON,
+    CheckPermissionResponseFromJSON,
+    CheckPermissionResponseToJSON,
     CreateRelationship200ResponseFromJSON,
     CreateRelationship200ResponseToJSON,
     CreateRelationshipRequestFromJSON,
@@ -70,7 +70,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
      * Check permission
      */
-    async checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermission200Response>> {
+    async checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermissionResponse>> {
         if (requestParameters['checkPermissionRequest'] == null) {
             throw new runtime.RequiredError(
                 'checkPermissionRequest',
@@ -103,14 +103,14 @@ export class V1PermissionsApi extends runtime.BaseAPI {
             body: CheckPermissionRequestToJSON(requestParameters['checkPermissionRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CheckPermission200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CheckPermissionResponseFromJSON(jsonValue));
     }
 
     /**
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
      * Check permission
      */
-    async checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermission200Response> {
+    async checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermissionResponse> {
         const response = await this.checkPermissionRaw(requestParameters, initOverrides);
         return await response.value();
     }

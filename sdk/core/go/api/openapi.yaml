@@ -251,7 +251,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenants_200_response"
+                $ref: "#/components/schemas/ListTenantsResponse"
           description: Tenants retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -293,7 +293,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createUser_200_response"
+                $ref: "#/components/schemas/KratosIdentity"
           description: User created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1339,17 +1339,13 @@ paths:
                 allowed:
                   summary: Permission granted
                   value:
-                    status: 200
-                    data:
-                      allowed: true
+                    allowed: true
                 denied:
                   summary: Permission denied
                   value:
-                    status: 200
-                    data:
-                      allowed: false
+                    allowed: false
               schema:
-                $ref: "#/components/schemas/checkPermission_200_response"
+                $ref: "#/components/schemas/CheckPermissionResponse"
           description: Permission check result
         "400":
           content:
@@ -2887,10 +2883,6 @@ paths:
         style: simple
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/deleteTenant_200_response"
           description: Tenant deleted successfully
         "400":
           content:
@@ -2980,7 +2972,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createTenant_200_response"
+                $ref: "#/components/schemas/CreateTenantResponse"
           description: Tenant created successfully
         "400":
           content:
@@ -3040,7 +3032,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantByID_200_response"
+                $ref: "#/components/schemas/Tenant"
           description: Tenant found
         "400":
           content:
@@ -3099,7 +3091,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantByStripeCustomerID_200_response"
+                $ref: "#/components/schemas/Tenant"
           description: Tenant found
         "400":
           content:
@@ -3164,7 +3156,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/switchActiveTenant_200_response"
+                $ref: "#/components/schemas/SwitchTenantResponse"
           description: Successfully switched tenants
         "400":
           content:
@@ -3220,6 +3212,25 @@ paths:
         4. Removes from database
         5. Cleans up user's tenant state
       operationId: removeTenantUser
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -3228,10 +3239,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
           description: User removed successfully
         "400":
           content:
@@ -3311,7 +3318,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenantUsers_200_response"
+                items:
+                  $ref: "#/components/schemas/TenantUserResponse"
+                type: array
           description: Tenant users retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3386,10 +3395,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/updateTenantUserRole_200_response"
           description: User role updated successfully
         "400":
           content:
@@ -3461,7 +3466,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listRoles_200_response"
+                items:
+                  $ref: "#/components/schemas/Role"
+                type: array
           description: Roles retrieved successfully
         "400":
           content:
@@ -3538,7 +3545,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createRole_200_response"
+                $ref: "#/components/schemas/Role"
           description: Role created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3554,10 +3561,9 @@ paths:
           content:
             application/json:
               example:
-                status: 409
                 error: Role with this name already exists for tenant
               schema:
-                $ref: "#/components/schemas/schemas-ConflictResponse"
+                $ref: "#/components/schemas/ConflictResponse"
           description: Role with this name already exists for tenant
         "500":
           content:
@@ -3617,10 +3623,6 @@ paths:
         style: simple
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/deleteRole_200_response"
           description: Role deleted successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3707,7 +3709,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createRole_200_response"
+                $ref: "#/components/schemas/Role"
           description: Role updated successfully
         "400":
           content:
@@ -3759,7 +3761,7 @@ paths:
         - List relations for each namespace
         - Build dynamic permission UIs
         - Filter by subject type for API key creation
-      operationId: getRoleDefinitions
+      operationId: listRoleDefinitions
       parameters:
       - description: "Filter to only return relations that accept this subject type\
           \ (e.g., \"ApiKey\", \"User\")"
@@ -3776,7 +3778,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getRoleDefinitions_200_response"
+                items:
+                  $ref: "#/components/schemas/NamespaceDefinition"
+                type: array
           description: Namespace definitions retrieved successfully
         "401":
           content:
@@ -3794,7 +3798,7 @@ paths:
       - CookieAuth: []
       - SessionTokenAuth: []
       - ServiceKeyAuth: []
-      summary: Get namespace definitions
+      summary: List namespace definitions
       tags:
       - V1 Tenants
   /api/v1/tenants/subscriptions:
@@ -3837,7 +3841,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/removeSubscription_200_response"
+                $ref: "#/components/schemas/RemoveSubscriptionResponse"
           description: Subscription canceled successfully
         "400":
           content:
@@ -3891,7 +3895,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenantSubscriptions_200_response"
+                items:
+                  $ref: "#/components/schemas/SubscriptionResponse"
+                type: array
           description: Tenant subscriptions retrieved successfully
         "401":
           content:
@@ -3956,7 +3962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/addSubscription_200_response"
+                $ref: "#/components/schemas/AddSubscriptionResponse"
           description: Subscription added successfully
         "400":
           content:
@@ -4022,7 +4028,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantSubscription_200_response"
+                $ref: "#/components/schemas/SubscriptionResponse"
           description: Subscription found
         "400":
           content:
@@ -4103,7 +4109,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvite_200_response"
+                $ref: "#/components/schemas/CreateTenantUserInviteResponse"
           description: Invite sent successfully
         "400":
           content:
@@ -4184,7 +4190,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/acceptInvite_200_response"
+                $ref: "#/components/schemas/AcceptInviteResponse"
           description: Successfully joined organization
         "400":
           content:
@@ -4508,36 +4514,24 @@ components:
       description: Bad Request error response (400)
       example:
         error: Invalid request parameters
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: Invalid request parameters
           type: string
       required:
       - error
-      - status
     UnauthorizedResponse:
       description: Unauthorized error response (401)
       example:
         error: Unauthorized
-        status: 401
       properties:
-        status:
-          description: HTTP status code
-          example: 401
-          type: integer
         error:
           description: Error message
           example: Unauthorized
           type: string
       required:
       - error
-      - status
     LogoutResponse:
       example:
         logout_url: http://auth.test.example.com/self-service/logout?token=tok_test_abc123xyz
@@ -4558,19 +4552,13 @@ components:
       description: Internal Server Error response (500)
       example:
         error: Internal Server Error
-        status: 500
       properties:
-        status:
-          description: HTTP status code
-          example: 500
-          type: integer
         error:
           description: Error message
           example: Internal Server Error
           type: string
       required:
       - error
-      - status
     WhoAmIResponse:
       example:
         authenticated: true
@@ -4819,19 +4807,13 @@ components:
       description: Conflict error response (409)
       example:
         error: Conflict
-        status: 409
       properties:
-        status:
-          description: HTTP status code
-          example: 409
-          type: integer
         error:
           description: Error message
           example: Conflict
           type: string
       required:
       - error
-      - status
     MigrationSuccessResponse:
       example:
         message: Migrations applied successfully
@@ -4954,36 +4936,24 @@ components:
       description: Generic error response
       example:
         error: An error occurred
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: An error occurred
           type: string
       required:
       - error
-      - status
     NotFoundResponse:
       description: Not Found error response (404)
       example:
         error: Not Found
-        status: 404
       properties:
-        status:
-          description: HTTP status code
-          example: 404
-          type: integer
         error:
           description: Error message
           example: Not Found
           type: string
       required:
       - error
-      - status
     SendEmailRequest:
       example:
         subject: Welcome to Our Platform
@@ -5074,19 +5044,13 @@ components:
       description: Too Many Requests error response (429)
       example:
         error: Too Many Requests
-        status: 429
       properties:
-        status:
-          description: HTTP status code
-          example: 429
-          type: integer
         error:
           description: Error message
           example: Too Many Requests
           type: string
       required:
       - error
-      - status
     CreatePortalRequest:
       example:
         return_url: https://test.example.com/dashboard
@@ -5675,19 +5639,13 @@ components:
       description: Forbidden error response (403)
       example:
         error: Forbidden
-        status: 403
       properties:
-        status:
-          description: HTTP status code
-          example: 403
-          type: integer
         error:
           description: Error message
           example: Forbidden
           type: string
       required:
       - error
-      - status
     DownloadRequest:
       additionalProperties: false
       example:
@@ -5757,19 +5715,13 @@ components:
       description: Internal Server Error response (500)
       example:
         error: Internal Server Error
-        status: 500
       properties:
-        status:
-          description: HTTP status code
-          example: 500
-          type: integer
         error:
           description: Error message
           example: Internal Server Error
           type: string
       required:
       - error
-      - status
     WebhookEndpointConfig:
       example:
         id: account_events
@@ -7155,19 +7107,13 @@ components:
       description: Unauthorized error response (401)
       example:
         error: Unauthorized
-        status: 401
       properties:
-        status:
-          description: HTTP status code
-          example: 401
-          type: integer
         error:
           description: Error message
           example: Unauthorized
           type: string
       required:
       - error
-      - status
     Meter:
       example:
         default_aggregation:
@@ -9421,19 +9367,13 @@ components:
       description: Bad Request error response (400)
       example:
         error: Invalid request parameters
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: Invalid request parameters
           type: string
       required:
       - error
-      - status
     ConfigHistoryItem:
       example:
         updated_at: 2025-11-10T00:29:19Z
@@ -10862,19 +10802,13 @@ components:
       description: Not Found error response (404)
       example:
         error: Not Found
-        status: 404
       properties:
-        status:
-          description: HTTP status code
-          example: 404
-          type: integer
         error:
           description: Error message
           example: Not Found
           type: string
       required:
       - error
-      - status
     CalculatePriceCostRequest:
       example:
         quantity: 1500
@@ -11412,59 +11346,6 @@ components:
       - message
       - tenant
       - token
-    DeleteTenantResponse:
-      description: Response after deleting a tenant
-      example:
-        message: Tenant deleted successfully
-      properties:
-        message:
-          description: Success message
-          example: Tenant deleted successfully
-          type: string
-      required:
-      - message
-    GetTenantByIDResponse:
-      description: Response containing a tenant by ID
-      example:
-        tenant:
-          stripe_customer_id: cus_TOWEstcga5ou7a
-          settings:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            allow_user_invites: true
-            max_members: 10
-          updated_at: 2025-11-10T00:42:29.440300172Z
-          name: Test Organization
-          created_at: 2025-11-10T00:42:29.440300124Z
-          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-          enterprise_id: acme_corp
-          type: organization
-          enterprise_template: tier1_10pct_off
-      properties:
-        tenant:
-          $ref: "#/components/schemas/Tenant"
-      required:
-      - tenant
-    GetTenantByStripeCustomerIDResponse:
-      description: Response containing a tenant by Stripe customer ID
-      example:
-        tenant:
-          stripe_customer_id: cus_TOWEstcga5ou7a
-          settings:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            allow_user_invites: true
-            max_members: 10
-          updated_at: 2025-11-10T00:42:29.440300172Z
-          name: Test Organization
-          created_at: 2025-11-10T00:42:29.440300124Z
-          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-          enterprise_id: acme_corp
-          type: organization
-          enterprise_template: tier1_10pct_off
-      properties:
-        tenant:
-          $ref: "#/components/schemas/Tenant"
-      required:
-      - tenant
     SwitchTenantRequest:
       description: Request to switch active tenant
       example:
@@ -11551,17 +11432,6 @@ components:
       required:
       - role
       - user_id
-    UpdateTenantUserRoleResponse:
-      description: Response after updating user role
-      example:
-        message: User role updated successfully
-      properties:
-        message:
-          description: Success message
-          example: User role updated successfully
-          type: string
-      required:
-      - message
     DeleteTenantUserRequest:
       description: Request to remove a user from tenant
       example:
@@ -11588,6 +11458,7 @@ components:
         - 550e8400-e29b-41d4-a716-446655440000
         - 550e8400-e29b-41d4-a716-446655440001
         created_at: 2025-11-10T00:18:19.653645Z
+        template_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
       properties:
         id:
@@ -11612,6 +11483,12 @@ components:
           items:
             type: string
           type: array
+        template_id:
+          description: ID of the role template this role was cloned from (NULL for
+            custom roles)
+          format: uuid
+          type: string
+          nullable: true
         user_ids:
           description: Array of user IDs assigned to this role
           example:
@@ -11638,40 +11515,6 @@ components:
       - role_name
       - updated_at
       - user_ids
-    RolesListResponse:
-      description: List of roles in a tenant
-      example:
-        roles:
-        - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-      properties:
-        roles:
-          description: List of roles (including system roles)
-          items:
-            $ref: "#/components/schemas/Role"
-          type: array
-      required:
-      - roles
     CreateRoleRequest:
       description: Request to create a new role
       example:
@@ -11700,23 +11543,6 @@ components:
       required:
       - permissions
       - role_name
-    schemas-ConflictResponse:
-      description: 409 Conflict response when resource already exists
-      example:
-        error: Role with this name already exists for tenant
-        status: 409
-      properties:
-        status:
-          description: HTTP status code
-          example: 409
-          type: integer
-        error:
-          description: Error message describing the conflict
-          example: Role with this name already exists for tenant
-          type: string
-      required:
-      - error
-      - status
     UpdateRoleRequest:
       description: Request to update an existing role
       example:
@@ -11734,17 +11560,6 @@ components:
           type: array
       required:
       - permissions
-    DeleteRoleResponse:
-      description: Response after deleting a role
-      example:
-        message: Role deleted successfully
-      properties:
-        message:
-          description: Success message
-          example: Role deleted successfully
-          type: string
-      required:
-      - message
     RelationMetadata:
       description: Enriched metadata for a single relation including JSDoc annotations
       example:
@@ -11883,90 +11698,6 @@ components:
       - namespace
       - relations
       - updated_at
-    NamespaceDefinitionsResponse:
-      description: Available permission namespace definitions
-      example:
-        definitions:
-        - updated_at: 2025-11-10T00:33:08.720326Z
-          relations_metadata:
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          namespace: Tenant
-          id: bfab650b-f834-4904-a4e8-41343fea86bc
-          subject_relations:
-            User:
-            - can_delete_tenant
-            - can_invite_user
-            - can_rotate_keys
-            ApiKey:
-            - can_rotate_keys
-            - can_view_db_secret_key
-          relations:
-          - can_delete_tenant
-          - can_invite_user
-          - can_update_user_role
-        - updated_at: 2025-11-10T00:33:08.720326Z
-          relations_metadata:
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          namespace: Tenant
-          id: bfab650b-f834-4904-a4e8-41343fea86bc
-          subject_relations:
-            User:
-            - can_delete_tenant
-            - can_invite_user
-            - can_rotate_keys
-            ApiKey:
-            - can_rotate_keys
-            - can_view_db_secret_key
-          relations:
-          - can_delete_tenant
-          - can_invite_user
-          - can_update_user_role
-      properties:
-        definitions:
-          description: List of namespace definitions
-          items:
-            $ref: "#/components/schemas/NamespaceDefinition"
-          type: array
-      required:
-      - definitions
     SubscriptionResponse:
       description: Stripe subscription information
       example:
@@ -12287,27 +12018,6 @@ components:
       - message
       - tenant_id
       - token
-    JWTTokenResponse:
-      description: PostgREST JWT token for direct database access
-      example:
-        token: eyJhbGciOiJIUzI1NiIs...
-      properties:
-        token:
-          description: PostgREST JWT token
-          example: eyJhbGciOiJIUzI1NiIs...
-          type: string
-      required:
-      - token
-    BillingStatusResponse:
-      example:
-        is_active: true
-      properties:
-        is_active:
-          description: Whether tenant has active billing configured
-          example: true
-          type: boolean
-      required:
-      - is_active
     getSession_200_response:
       allOf:
       - $ref: "#/components/schemas/SuccessResponse"
@@ -12379,100 +12089,6 @@ components:
             enterprise_id: acme_corp
             type: organization
             enterprise_template: tier1_10pct_off
-        status: 200
-    listTenants_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ListTenantsResponse"
-      example:
-        data:
-          tenants:
-          - is_active: true
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-          - is_active: true
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-        status: 200
-    createUser_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/KratosIdentity"
-      example:
-        data:
-          recovery_addresses:
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: 586ff4ca-f7d6-4a99-8f3c-2b46dbcedb4e
-            value: user@example.com
-            via: email
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: 586ff4ca-f7d6-4a99-8f3c-2b46dbcedb4e
-            value: user@example.com
-            via: email
-          traits:
-            name:
-              last: Doe
-              first: John
-            email: user@example.com
-          updated_at: 2025-11-12T09:18:51.829324Z
-          credentials:
-            password:
-              updated_at: 2000-01-23T04:56:07.000+00:00
-              identifiers:
-              - user@example.com
-              created_at: 2000-01-23T04:56:07.000+00:00
-              type: password
-              version: 0
-          verifiable_addresses:
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            verified: false
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: a25b4bd7-3629-4aa5-bec5-212dc13b2395
-            value: user@example.com
-            via: email
-            status: pending
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            verified: false
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: a25b4bd7-3629-4aa5-bec5-212dc13b2395
-            value: user@example.com
-            via: email
-            status: pending
-          organization_id: organization_id
-          schema_id: default
-          state_changed_at: 2025-11-12T09:18:51.828257251Z
-          schema_url: http://127.0.0.1:4433/schemas/ZGVmYXVsdA
-          created_at: 2025-11-12T09:18:51.829324Z
-          id: 319fc51a-9684-4f4f-87ea-6feefcfcc334
-          state: active
         status: 200
     uploadDatabaseMigrations_request:
       properties:
@@ -12690,16 +12306,6 @@ components:
           amount: 1000
           description: Platform fee
           id: ii_1234567890
-        status: 200
-    checkPermission_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CheckPermissionResponse"
-      example:
-        data:
-          allowed: true
         status: 200
     createRelationship_200_response:
       allOf:
@@ -14834,409 +14440,26 @@ components:
             tax_included_in_price: false
             stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
         status: 200
-    createTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateTenantResponse"
-      example:
-        data:
-          message: Tenant created successfully
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
-    deleteTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DeleteTenantResponse"
-      example:
-        data:
-          message: Tenant deleted successfully
-        status: 200
-    getTenantByID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/GetTenantByIDResponse"
-      example:
-        data:
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-        status: 200
-    getTenantByStripeCustomerID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/GetTenantByStripeCustomerIDResponse"
-      example:
-        data:
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-        status: 200
-    switchActiveTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/SwitchTenantResponse"
-      example:
-        data:
-          message: Successfully switched tenants
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
-    listTenantUsers_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            items:
-              $ref: "#/components/schemas/TenantUserResponse"
-            type: array
-      example:
-        data:
-        - role: member
-          user_id: 550e8400-e29b-41d4-a716-446655440000
-          last_name: Doe
-          first_name: John
-          email: test@example.com
-        - role: member
-          user_id: 550e8400-e29b-41d4-a716-446655440000
-          last_name: Doe
-          first_name: John
-          email: test@example.com
-        status: 200
-    updateTenantUserRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/UpdateTenantUserRoleResponse"
-      example:
-        data:
-          message: User role updated successfully
-        status: 200
-    listRoles_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/RolesListResponse"
-      example:
-        data:
-          roles:
-          - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            role_name: member
-            updated_at: 2025-11-10T00:33:08.726632Z
-            permissions:
-            - tenant#invite_user
-            - tenant#remove_user
-            user_ids:
-            - 550e8400-e29b-41d4-a716-446655440000
-            - 550e8400-e29b-41d4-a716-446655440001
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-          - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            role_name: member
-            updated_at: 2025-11-10T00:33:08.726632Z
-            permissions:
-            - tenant#invite_user
-            - tenant#remove_user
-            user_ids:
-            - 550e8400-e29b-41d4-a716-446655440000
-            - 550e8400-e29b-41d4-a716-446655440001
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        status: 200
-    createRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/Role"
-      example:
-        data:
-          tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        status: 200
-    deleteRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DeleteRoleResponse"
-      example:
-        data:
-          message: Role deleted successfully
-        status: 200
-    getRoleDefinitions_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/NamespaceDefinitionsResponse"
-      example:
-        data:
-          definitions:
-          - updated_at: 2025-11-10T00:33:08.720326Z
-            relations_metadata:
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            namespace: Tenant
-            id: bfab650b-f834-4904-a4e8-41343fea86bc
-            subject_relations:
-              User:
-              - can_delete_tenant
-              - can_invite_user
-              - can_rotate_keys
-              ApiKey:
-              - can_rotate_keys
-              - can_view_db_secret_key
-            relations:
-            - can_delete_tenant
-            - can_invite_user
-            - can_update_user_role
-          - updated_at: 2025-11-10T00:33:08.720326Z
-            relations_metadata:
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            namespace: Tenant
-            id: bfab650b-f834-4904-a4e8-41343fea86bc
-            subject_relations:
-              User:
-              - can_delete_tenant
-              - can_invite_user
-              - can_rotate_keys
-              ApiKey:
-              - can_rotate_keys
-              - can_view_db_secret_key
-            relations:
-            - can_delete_tenant
-            - can_invite_user
-            - can_update_user_role
-        status: 200
-    listTenantSubscriptions_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            items:
-              $ref: "#/components/schemas/SubscriptionResponse"
-            type: array
-      example:
-        data:
-        - subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        - subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        status: 200
-    addSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/AddSubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_test_123
-          message: Subscription added successfully
-          status: active
-        status: 200
-    removeSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/RemoveSubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_test_123
-          message: Subscription canceled successfully
-          status: canceled
-        status: 200
-    getTenantSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/SubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        status: 200
-    createInvite_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateTenantUserInviteResponse"
-      example:
-        data:
-          invite:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            used_at: 2000-01-23T04:56:07.000+00:00
-            role: member
-            expires_at: 2025-11-17T00:42:29.440300124Z
-            inviter_id: 550e8400-e29b-41d4-a716-446655440000
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 550e8400-e29b-41d4-a716-446655440001
-            email: test@example.com
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-            token: tok_test_abc123xyz
-          message: Invite sent successfully
-        status: 200
-    acceptInvite_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/AcceptInviteResponse"
-      example:
-        data:
-          tenant_id: tenant_test_123
-          message: Successfully joined organization
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
     getTenantJWT_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/JWTTokenResponse"
       example:
-        data:
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        token:
+          description: PostgREST JWT token
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      required:
+      - token
     getTenantBillingStatus_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/BillingStatusResponse"
       example:
-        data:
-          is_active: true
-        status: 200
+        is_active: true
+      properties:
+        is_active:
+          description: Whether tenant has active billing configured
+          example: true
+          type: boolean
+      required:
+      - is_active
     SuccessResponse_data:
       description: Response data payload
       nullable: true

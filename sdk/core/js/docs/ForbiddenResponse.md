@@ -7,7 +7,6 @@ Forbidden error response (403)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { ForbiddenResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 403,
   "error": Forbidden,
 } satisfies ForbiddenResponse
 

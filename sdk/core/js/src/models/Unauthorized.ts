@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface Unauthorized {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof Unauthorized
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof Unauthorized
@@ -37,7 +31,6 @@ export interface Unauthorized {
  * Check if a given object implements the Unauthorized interface.
  */
 export function instanceOfUnauthorized(value: object): value is Unauthorized {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function UnauthorizedFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function UnauthorizedToJSONTyped(value?: Unauthorized | null, ignoreDiscr
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

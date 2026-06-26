@@ -12,7 +12,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## checkPermission
 
-> CheckPermission200Response checkPermission(checkPermissionRequest)
+> CheckPermissionResponse checkPermission(checkPermissionRequest)
 
 Check permission
 
@@ -65,7 +65,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CheckPermission200Response**](CheckPermission200Response.md)
+[**CheckPermissionResponse**](CheckPermissionResponse.md)
 
 ### Authorization
 

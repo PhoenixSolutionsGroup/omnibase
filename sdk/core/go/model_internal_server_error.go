@@ -22,8 +22,6 @@ var _ MappedNullable = &InternalServerError{}
 
 // InternalServerError Internal Server Error response (500)
 type InternalServerError struct {
-	// HTTP status code
-	Status int32 `json:"status"`
 	// Error message
 	Error string `json:"error"`
 }
@@ -34,9 +32,8 @@ type _InternalServerError InternalServerError
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInternalServerError(status int32, error_ string) *InternalServerError {
+func NewInternalServerError(error_ string) *InternalServerError {
 	this := InternalServerError{}
-	this.Status = status
 	this.Error = error_
 	return &this
 }
@@ -47,30 +44,6 @@ func NewInternalServerError(status int32, error_ string) *InternalServerError {
 func NewInternalServerErrorWithDefaults() *InternalServerError {
 	this := InternalServerError{}
 	return &this
-}
-
-// GetStatus returns the Status field value
-func (o *InternalServerError) GetStatus() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *InternalServerError) GetStatusOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *InternalServerError) SetStatus(v int32) {
-	o.Status = v
 }
 
 // GetError returns the Error field value
@@ -107,7 +80,6 @@ func (o InternalServerError) MarshalJSON() ([]byte, error) {
 
 func (o InternalServerError) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
 	toSerialize["error"] = o.Error
 	return toSerialize, nil
 }
@@ -117,7 +89,6 @@ func (o *InternalServerError) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
 		"error",
 	}
 

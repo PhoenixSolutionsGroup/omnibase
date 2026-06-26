@@ -88,10 +88,9 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 		var roleId string
 
-		resp, httpRes, err := apiClient.V1TenantsAPI.DeleteRole(context.Background(), roleId).Execute()
+		httpRes, err := apiClient.V1TenantsAPI.DeleteRole(context.Background(), roleId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -100,22 +99,9 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1TenantsAPI.DeleteTenant(context.Background()).Execute()
+		httpRes, err := apiClient.V1TenantsAPI.DeleteTenant(context.Background()).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test V1TenantsAPIService GetRoleDefinitions", func(t *testing.T) {
-
-		t.Skip("skip test")  // remove to run test
-
-		resp, httpRes, err := apiClient.V1TenantsAPI.GetRoleDefinitions(context.Background()).Execute()
-
-		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -186,6 +172,18 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1TenantsAPIService ListRoleDefinitions", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1TenantsAPI.ListRoleDefinitions(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1TenantsAPIService ListRoles", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -238,10 +236,9 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).Execute()
+		httpRes, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -276,10 +273,9 @@ func Test_omnibase_V1TenantsAPIService(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).Execute()
+		httpRes, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})

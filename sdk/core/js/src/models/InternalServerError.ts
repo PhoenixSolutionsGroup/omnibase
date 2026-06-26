@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface InternalServerError {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof InternalServerError
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof InternalServerError
@@ -37,7 +31,6 @@ export interface InternalServerError {
  * Check if a given object implements the InternalServerError interface.
  */
 export function instanceOfInternalServerError(value: object): value is InternalServerError {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function InternalServerErrorFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function InternalServerErrorToJSONTyped(value?: InternalServerError | nul
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

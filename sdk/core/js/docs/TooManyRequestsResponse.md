@@ -7,7 +7,6 @@ Too Many Requests error response (429)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { TooManyRequestsResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 429,
   "error": Too Many Requests,
 } satisfies TooManyRequestsResponse
 

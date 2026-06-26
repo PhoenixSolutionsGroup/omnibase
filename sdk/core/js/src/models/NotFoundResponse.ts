@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface NotFoundResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof NotFoundResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof NotFoundResponse
@@ -37,7 +31,6 @@ export interface NotFoundResponse {
  * Check if a given object implements the NotFoundResponse interface.
  */
 export function instanceOfNotFoundResponse(value: object): value is NotFoundResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function NotFoundResponseFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function NotFoundResponseToJSONTyped(value?: NotFoundResponse | null, ign
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

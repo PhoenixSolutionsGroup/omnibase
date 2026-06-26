@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { BillingStatusResponse } from './BillingStatusResponse';
-import {
-    BillingStatusResponseFromJSON,
-    BillingStatusResponseFromJSONTyped,
-    BillingStatusResponseToJSON,
-    BillingStatusResponseToJSONTyped,
-} from './BillingStatusResponse';
-
 /**
  * 
  * @export
@@ -28,24 +20,18 @@ import {
  */
 export interface GetTenantBillingStatus200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     * Whether tenant has active billing configured
+     * @type {boolean}
      * @memberof GetTenantBillingStatus200Response
      */
-    status: number;
-    /**
-     * 
-     * @type {BillingStatusResponse}
-     * @memberof GetTenantBillingStatus200Response
-     */
-    data?: BillingStatusResponse;
+    isActive: boolean;
 }
 
 /**
  * Check if a given object implements the GetTenantBillingStatus200Response interface.
  */
 export function instanceOfGetTenantBillingStatus200Response(value: object): value is GetTenantBillingStatus200Response {
-    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('isActive' in value) || value['isActive'] === undefined) return false;
     return true;
 }
 
@@ -59,8 +45,7 @@ export function GetTenantBillingStatus200ResponseFromJSONTyped(json: any, ignore
     }
     return {
         
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : BillingStatusResponseFromJSON(json['data']),
+        'isActive': json['is_active'],
     };
 }
 
@@ -75,8 +60,7 @@ export function GetTenantBillingStatus200ResponseToJSONTyped(value?: GetTenantBi
 
     return {
         
-        'status': value['status'],
-        'data': BillingStatusResponseToJSON(value['data']),
+        'is_active': value['isActive'],
     };
 }
 

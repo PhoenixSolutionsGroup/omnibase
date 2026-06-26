@@ -16,12 +16,6 @@
  */
 export interface InternalServerErrorResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof InternalServerErrorResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof InternalServerErrorResponse

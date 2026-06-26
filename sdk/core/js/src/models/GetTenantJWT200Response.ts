@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { JWTTokenResponse } from './JWTTokenResponse';
-import {
-    JWTTokenResponseFromJSON,
-    JWTTokenResponseFromJSONTyped,
-    JWTTokenResponseToJSON,
-    JWTTokenResponseToJSONTyped,
-} from './JWTTokenResponse';
-
 /**
  * 
  * @export
@@ -28,24 +20,18 @@ import {
  */
 export interface GetTenantJWT200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     * PostgREST JWT token
+     * @type {string}
      * @memberof GetTenantJWT200Response
      */
-    status: number;
-    /**
-     * 
-     * @type {JWTTokenResponse}
-     * @memberof GetTenantJWT200Response
-     */
-    data?: JWTTokenResponse;
+    token: string;
 }
 
 /**
  * Check if a given object implements the GetTenantJWT200Response interface.
  */
 export function instanceOfGetTenantJWT200Response(value: object): value is GetTenantJWT200Response {
-    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('token' in value) || value['token'] === undefined) return false;
     return true;
 }
 
@@ -59,8 +45,7 @@ export function GetTenantJWT200ResponseFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : JWTTokenResponseFromJSON(json['data']),
+        'token': json['token'],
     };
 }
 
@@ -75,8 +60,7 @@ export function GetTenantJWT200ResponseToJSONTyped(value?: GetTenantJWT200Respon
 
     return {
         
-        'status': value['status'],
-        'data': JWTTokenResponseToJSON(value['data']),
+        'token': value['token'],
     };
 }
 

@@ -31,6 +31,8 @@ type Role struct {
 	RoleName string `json:"role_name"`
 	// List of permissions in namespace:resource#relation format
 	Permissions []string `json:"permissions"`
+	// ID of the role template this role was cloned from (NULL for custom roles)
+	TemplateId *string `json:"template_id,omitempty"`
 	// Array of user IDs assigned to this role
 	UserIds []string `json:"user_ids"`
 	// Timestamp when role was created
@@ -168,6 +170,38 @@ func (o *Role) SetPermissions(v []string) {
 	o.Permissions = v
 }
 
+// GetTemplateId returns the TemplateId field value if set, zero value otherwise.
+func (o *Role) GetTemplateId() string {
+	if o == nil || IsNil(o.TemplateId) {
+		var ret string
+		return ret
+	}
+	return *o.TemplateId
+}
+
+// GetTemplateIdOk returns a tuple with the TemplateId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Role) GetTemplateIdOk() (*string, bool) {
+	if o == nil || IsNil(o.TemplateId) {
+		return nil, false
+	}
+	return o.TemplateId, true
+}
+
+// HasTemplateId returns a boolean if a field has been set.
+func (o *Role) HasTemplateId() bool {
+	if o != nil && !IsNil(o.TemplateId) {
+		return true
+	}
+
+	return false
+}
+
+// SetTemplateId gets a reference to the given string and assigns it to the TemplateId field.
+func (o *Role) SetTemplateId(v string) {
+	o.TemplateId = &v
+}
+
 // GetUserIds returns the UserIds field value
 func (o *Role) GetUserIds() []string {
 	if o == nil {
@@ -256,6 +290,9 @@ func (o Role) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["role_name"] = o.RoleName
 	toSerialize["permissions"] = o.Permissions
+	if !IsNil(o.TemplateId) {
+		toSerialize["template_id"] = o.TemplateId
+	}
 	toSerialize["user_ids"] = o.UserIds
 	toSerialize["created_at"] = o.CreatedAt
 	toSerialize["updated_at"] = o.UpdatedAt

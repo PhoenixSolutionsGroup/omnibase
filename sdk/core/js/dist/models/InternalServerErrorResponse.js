@@ -22,8 +22,6 @@ exports.InternalServerErrorResponseToJSONTyped = InternalServerErrorResponseToJS
  * Check if a given object implements the InternalServerErrorResponse interface.
  */
 function instanceOfInternalServerErrorResponse(value) {
-    if (!('status' in value) || value['status'] === undefined)
-        return false;
     if (!('error' in value) || value['error'] === undefined)
         return false;
     return true;
@@ -36,7 +34,6 @@ function InternalServerErrorResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -48,7 +45,6 @@ function InternalServerErrorResponseToJSONTyped(value, ignoreDiscriminator = fal
         return value;
     }
     return {
-        'status': value['status'],
         'error': value['error'],
     };
 }

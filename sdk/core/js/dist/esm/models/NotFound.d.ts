@@ -16,12 +16,6 @@
  */
 export interface NotFound {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof NotFound
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof NotFound

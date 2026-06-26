@@ -22,8 +22,6 @@ var _ MappedNullable = &UnauthorizedResponse{}
 
 // UnauthorizedResponse Unauthorized error response (401)
 type UnauthorizedResponse struct {
-	// HTTP status code
-	Status int32 `json:"status"`
 	// Error message
 	Error string `json:"error"`
 }
@@ -34,9 +32,8 @@ type _UnauthorizedResponse UnauthorizedResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUnauthorizedResponse(status int32, error_ string) *UnauthorizedResponse {
+func NewUnauthorizedResponse(error_ string) *UnauthorizedResponse {
 	this := UnauthorizedResponse{}
-	this.Status = status
 	this.Error = error_
 	return &this
 }
@@ -47,30 +44,6 @@ func NewUnauthorizedResponse(status int32, error_ string) *UnauthorizedResponse 
 func NewUnauthorizedResponseWithDefaults() *UnauthorizedResponse {
 	this := UnauthorizedResponse{}
 	return &this
-}
-
-// GetStatus returns the Status field value
-func (o *UnauthorizedResponse) GetStatus() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *UnauthorizedResponse) GetStatusOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *UnauthorizedResponse) SetStatus(v int32) {
-	o.Status = v
 }
 
 // GetError returns the Error field value
@@ -107,7 +80,6 @@ func (o UnauthorizedResponse) MarshalJSON() ([]byte, error) {
 
 func (o UnauthorizedResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
 	toSerialize["error"] = o.Error
 	return toSerialize, nil
 }
@@ -117,7 +89,6 @@ func (o *UnauthorizedResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
 		"error",
 	}
 

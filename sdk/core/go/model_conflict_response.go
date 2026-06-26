@@ -22,8 +22,6 @@ var _ MappedNullable = &ConflictResponse{}
 
 // ConflictResponse Conflict error response (409)
 type ConflictResponse struct {
-	// HTTP status code
-	Status int32 `json:"status"`
 	// Error message
 	Error string `json:"error"`
 }
@@ -34,9 +32,8 @@ type _ConflictResponse ConflictResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConflictResponse(status int32, error_ string) *ConflictResponse {
+func NewConflictResponse(error_ string) *ConflictResponse {
 	this := ConflictResponse{}
-	this.Status = status
 	this.Error = error_
 	return &this
 }
@@ -47,30 +44,6 @@ func NewConflictResponse(status int32, error_ string) *ConflictResponse {
 func NewConflictResponseWithDefaults() *ConflictResponse {
 	this := ConflictResponse{}
 	return &this
-}
-
-// GetStatus returns the Status field value
-func (o *ConflictResponse) GetStatus() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *ConflictResponse) GetStatusOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *ConflictResponse) SetStatus(v int32) {
-	o.Status = v
 }
 
 // GetError returns the Error field value
@@ -107,7 +80,6 @@ func (o ConflictResponse) MarshalJSON() ([]byte, error) {
 
 func (o ConflictResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
 	toSerialize["error"] = o.Error
 	return toSerialize, nil
 }
@@ -117,7 +89,6 @@ func (o *ConflictResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
 		"error",
 	}
 

@@ -18,12 +18,11 @@ exports.GetTenantBillingStatus200ResponseFromJSON = GetTenantBillingStatus200Res
 exports.GetTenantBillingStatus200ResponseFromJSONTyped = GetTenantBillingStatus200ResponseFromJSONTyped;
 exports.GetTenantBillingStatus200ResponseToJSON = GetTenantBillingStatus200ResponseToJSON;
 exports.GetTenantBillingStatus200ResponseToJSONTyped = GetTenantBillingStatus200ResponseToJSONTyped;
-const BillingStatusResponse_1 = require("./BillingStatusResponse");
 /**
  * Check if a given object implements the GetTenantBillingStatus200Response interface.
  */
 function instanceOfGetTenantBillingStatus200Response(value) {
-    if (!('status' in value) || value['status'] === undefined)
+    if (!('isActive' in value) || value['isActive'] === undefined)
         return false;
     return true;
 }
@@ -35,8 +34,7 @@ function GetTenantBillingStatus200ResponseFromJSONTyped(json, ignoreDiscriminato
         return json;
     }
     return {
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : (0, BillingStatusResponse_1.BillingStatusResponseFromJSON)(json['data']),
+        'isActive': json['is_active'],
     };
 }
 function GetTenantBillingStatus200ResponseToJSON(json) {
@@ -47,7 +45,6 @@ function GetTenantBillingStatus200ResponseToJSONTyped(value, ignoreDiscriminator
         return value;
     }
     return {
-        'status': value['status'],
-        'data': (0, BillingStatusResponse_1.BillingStatusResponseToJSON)(value['data']),
+        'is_active': value['isActive'],
     };
 }

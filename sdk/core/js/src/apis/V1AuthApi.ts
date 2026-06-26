@@ -17,13 +17,13 @@ import * as runtime from '../runtime';
 import type {
   BadRequestResponse,
   ConflictResponse,
-  CreateUser200Response,
   CreateUserRequest,
   GetActiveTenant200Response,
   GetIdentity200Response,
   GetSession200Response,
   InternalServerErrorResponse,
-  ListTenants200Response,
+  KratosIdentity,
+  ListTenantsResponse,
   Logout200Response,
   UnauthorizedResponse,
   WhoAmI200Response,
@@ -33,8 +33,6 @@ import {
     BadRequestResponseToJSON,
     ConflictResponseFromJSON,
     ConflictResponseToJSON,
-    CreateUser200ResponseFromJSON,
-    CreateUser200ResponseToJSON,
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
     GetActiveTenant200ResponseFromJSON,
@@ -45,8 +43,10 @@ import {
     GetSession200ResponseToJSON,
     InternalServerErrorResponseFromJSON,
     InternalServerErrorResponseToJSON,
-    ListTenants200ResponseFromJSON,
-    ListTenants200ResponseToJSON,
+    KratosIdentityFromJSON,
+    KratosIdentityToJSON,
+    ListTenantsResponseFromJSON,
+    ListTenantsResponseToJSON,
     Logout200ResponseFromJSON,
     Logout200ResponseToJSON,
     UnauthorizedResponseFromJSON,
@@ -76,7 +76,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication. 
      * Create new user
      */
-    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateUser200Response>> {
+    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KratosIdentity>> {
         if (requestParameters['createUserRequest'] == null) {
             throw new runtime.RequiredError(
                 'createUserRequest',
@@ -105,14 +105,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             body: CreateUserRequestToJSON(requestParameters['createUserRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateUser200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => KratosIdentityFromJSON(jsonValue));
     }
 
     /**
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication. 
      * Create new user
      */
-    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateUser200Response> {
+    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KratosIdentity> {
         const response = await this.createUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -234,7 +234,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenants200Response>> {
+    async listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantsResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -261,14 +261,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenants200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenantsResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenants(requestParameters: ListTenantsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenants200Response> {
+    async listTenants(requestParameters: ListTenantsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantsResponse> {
         const response = await this.listTenantsRaw(requestParameters, initOverrides);
         return await response.value();
     }

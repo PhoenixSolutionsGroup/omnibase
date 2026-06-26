@@ -16,12 +16,6 @@
  */
 export interface BadRequestResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof BadRequestResponse
-     */
-    status: number;
-    /**
      * Error message or details
      * @type {string}
      * @memberof BadRequestResponse

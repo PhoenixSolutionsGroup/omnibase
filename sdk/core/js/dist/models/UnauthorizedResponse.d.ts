@@ -16,12 +16,6 @@
  */
 export interface UnauthorizedResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof UnauthorizedResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof UnauthorizedResponse

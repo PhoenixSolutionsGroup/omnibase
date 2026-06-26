@@ -9,7 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { BillingStatusResponse } from './BillingStatusResponse';
 /**
  *
  * @export
@@ -17,17 +16,11 @@ import type { BillingStatusResponse } from './BillingStatusResponse';
  */
 export interface GetTenantBillingStatus200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     * Whether tenant has active billing configured
+     * @type {boolean}
      * @memberof GetTenantBillingStatus200Response
      */
-    status: number;
-    /**
-     *
-     * @type {BillingStatusResponse}
-     * @memberof GetTenantBillingStatus200Response
-     */
-    data?: BillingStatusResponse;
+    isActive: boolean;
 }
 /**
  * Check if a given object implements the GetTenantBillingStatus200Response interface.

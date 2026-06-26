@@ -16,7 +16,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## createUser
 
-> CreateUser200Response createUser(createUserRequest)
+> KratosIdentity createUser(createUserRequest)
 
 Create new user
 
@@ -65,7 +65,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateUser200Response**](CreateUser200Response.md)
+[**KratosIdentity**](KratosIdentity.md)
 
 ### Authorization
 
@@ -302,7 +302,7 @@ This endpoint does not need any parameter.
 
 ## listTenants
 
-> ListTenants200Response listTenants(xUserId)
+> ListTenantsResponse listTenants(xUserId)
 
 List user\&#39;s tenants
 
@@ -355,7 +355,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ListTenants200Response**](ListTenants200Response.md)
+[**ListTenantsResponse**](ListTenantsResponse.md)
 
 ### Authorization
 

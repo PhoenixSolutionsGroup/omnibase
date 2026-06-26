@@ -16,7 +16,7 @@ Method | HTTP request | Description
 
 ## CreateUser
 
-> CreateUser200Response CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
+> KratosIdentity CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
 
 Create new user
 
@@ -44,7 +44,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.CreateUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateUser`: CreateUser200Response
+	// response from `CreateUser`: KratosIdentity
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.CreateUser`: %v\n", resp)
 }
 ```
@@ -64,7 +64,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateUser200Response**](CreateUser200Response.md)
+[**KratosIdentity**](KratosIdentity.md)
 
 ### Authorization
 
@@ -270,7 +270,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 
 ## ListTenants
 
-> ListTenants200Response ListTenants(ctx).XUserId(xUserId).Execute()
+> ListTenantsResponse ListTenants(ctx).XUserId(xUserId).Execute()
 
 List user's tenants
 
@@ -298,7 +298,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ListTenants``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListTenants`: ListTenants200Response
+	// response from `ListTenants`: ListTenantsResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ListTenants`: %v\n", resp)
 }
 ```
@@ -318,7 +318,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListTenants200Response**](ListTenants200Response.md)
+[**ListTenantsResponse**](ListTenantsResponse.md)
 
 ### Authorization
 

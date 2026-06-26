@@ -35,7 +35,7 @@ func (r ApiCheckPermissionRequest) CheckPermissionRequest(checkPermissionRequest
 	return r
 }
 
-func (r ApiCheckPermissionRequest) Execute() (*CheckPermission200Response, *http.Response, error) {
+func (r ApiCheckPermissionRequest) Execute() (*CheckPermissionResponse, *http.Response, error) {
 	return r.ApiService.CheckPermissionExecute(r)
 }
 
@@ -68,13 +68,13 @@ func (a *V1PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckP
 }
 
 // Execute executes the request
-//  @return CheckPermission200Response
-func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckPermission200Response, *http.Response, error) {
+//  @return CheckPermissionResponse
+func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckPermissionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CheckPermission200Response
+		localVarReturnValue  *CheckPermissionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CheckPermission")

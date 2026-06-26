@@ -85,7 +85,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateUserRequestToJSON)(requestParameters['createUserRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateUser200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.KratosIdentityFromJSON)(jsonValue));
         });
     }
     /**
@@ -221,7 +221,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenants200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenantsResponseFromJSON)(jsonValue));
         });
     }
     /**

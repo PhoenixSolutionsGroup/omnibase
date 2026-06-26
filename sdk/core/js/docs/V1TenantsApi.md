@@ -11,12 +11,12 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**createTenant**](V1TenantsApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create tenant |
 | [**deleteRole**](V1TenantsApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete role |
 | [**deleteTenant**](V1TenantsApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete tenant |
-| [**getRoleDefinitions**](V1TenantsApi.md#getroledefinitions) | **GET** /api/v1/tenants/roles/definitions | Get namespace definitions |
 | [**getTenantBillingStatus**](V1TenantsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get billing status |
 | [**getTenantByID**](V1TenantsApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID |
 | [**getTenantByStripeCustomerID**](V1TenantsApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID |
 | [**getTenantJWT**](V1TenantsApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get PostgREST JWT token |
 | [**getTenantSubscription**](V1TenantsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan |
+| [**listRoleDefinitions**](V1TenantsApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List namespace definitions |
 | [**listRoles**](V1TenantsApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles |
 | [**listTenantSubscriptions**](V1TenantsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | Get tenant subscriptions |
 | [**listTenantUsers**](V1TenantsApi.md#listtenantusers) | **GET** /api/v1/tenants/users | Get tenant users |
@@ -30,7 +30,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## acceptInvite
 
-> AcceptInvite200Response acceptInvite(acceptInviteRequest, xUserId)
+> AcceptInviteResponse acceptInvite(acceptInviteRequest, xUserId)
 
 Accept tenant invite
 
@@ -86,7 +86,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**AcceptInvite200Response**](AcceptInvite200Response.md)
+[**AcceptInviteResponse**](AcceptInviteResponse.md)
 
 ### Authorization
 
@@ -112,7 +112,7 @@ example().catch(console.error);
 
 ## addSubscription
 
-> AddSubscription200Response addSubscription(addSubscriptionRequest)
+> AddSubscriptionResponse addSubscription(addSubscriptionRequest)
 
 Add subscription
 
@@ -165,7 +165,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**AddSubscription200Response**](AddSubscription200Response.md)
+[**AddSubscriptionResponse**](AddSubscriptionResponse.md)
 
 ### Authorization
 
@@ -191,7 +191,7 @@ example().catch(console.error);
 
 ## createInvite
 
-> CreateInvite200Response createInvite(createTenantUserInviteRequest, xUserId, xTenantId)
+> CreateTenantUserInviteResponse createInvite(createTenantUserInviteRequest, xUserId, xTenantId)
 
 Create tenant invite
 
@@ -250,7 +250,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateInvite200Response**](CreateInvite200Response.md)
+[**CreateTenantUserInviteResponse**](CreateTenantUserInviteResponse.md)
 
 ### Authorization
 
@@ -277,7 +277,7 @@ example().catch(console.error);
 
 ## createRole
 
-> CreateRole200Response createRole(createRoleRequest, xUserId, xTenantId)
+> Role createRole(createRoleRequest, xUserId, xTenantId)
 
 Create role
 
@@ -336,7 +336,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateRole200Response**](CreateRole200Response.md)
+[**Role**](Role.md)
 
 ### Authorization
 
@@ -363,7 +363,7 @@ example().catch(console.error);
 
 ## createTenant
 
-> CreateTenant200Response createTenant(createTenantRequest, xUserId)
+> CreateTenantResponse createTenant(createTenantRequest, xUserId)
 
 Create tenant
 
@@ -419,7 +419,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateTenant200Response**](CreateTenant200Response.md)
+[**CreateTenantResponse**](CreateTenantResponse.md)
 
 ### Authorization
 
@@ -444,7 +444,7 @@ example().catch(console.error);
 
 ## deleteRole
 
-> DeleteRole200Response deleteRole(roleId, xUserId, xTenantId)
+> deleteRole(roleId, xUserId, xTenantId)
 
 Delete role
 
@@ -503,7 +503,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeleteRole200Response**](DeleteRole200Response.md)
+`void` (Empty response body)
 
 ### Authorization
 
@@ -530,7 +530,7 @@ example().catch(console.error);
 
 ## deleteTenant
 
-> DeleteTenant200Response deleteTenant(xUserId, xTenantId)
+> deleteTenant(xUserId, xTenantId)
 
 Delete tenant
 
@@ -586,7 +586,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeleteTenant200Response**](DeleteTenant200Response.md)
+`void` (Empty response body)
 
 ### Authorization
 
@@ -608,83 +608,6 @@ example().catch(console.error);
 | **404** | Tenant not found |  -  |
 | **409** | Tenant has associated resources that must be deleted first |  -  |
 | **500** | Failed to delete tenant |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-
-## getRoleDefinitions
-
-> GetRoleDefinitions200Response getRoleDefinitions(subject)
-
-Get namespace definitions
-
-Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
-
-### Example
-
-```ts
-import {
-  Configuration,
-  V1TenantsApi,
-} from '@omnibase/core-js';
-import type { GetRoleDefinitionsRequest } from '@omnibase/core-js';
-
-async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsApi(config);
-
-  const body = {
-    // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
-    subject: ApiKey,
-  } satisfies GetRoleDefinitionsRequest;
-
-  try {
-    const data = await api.getRoleDefinitions(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
-```
-
-### Parameters
-
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **subject** | `string` | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | [Optional] [Defaults to `undefined`] |
-
-### Return type
-
-[**GetRoleDefinitions200Response**](GetRoleDefinitions200Response.md)
-
-### Authorization
-
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | Namespace definitions retrieved successfully |  -  |
-| **401** | Invalid or missing JWT token |  -  |
-| **500** | Failed to fetch definitions |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -761,7 +684,7 @@ This endpoint does not need any parameter.
 
 ## getTenantByID
 
-> GetTenantByID200Response getTenantByID(tenantId)
+> Tenant getTenantByID(tenantId)
 
 Get tenant by ID
 
@@ -810,7 +733,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetTenantByID200Response**](GetTenantByID200Response.md)
+[**Tenant**](Tenant.md)
 
 ### Authorization
 
@@ -836,7 +759,7 @@ example().catch(console.error);
 
 ## getTenantByStripeCustomerID
 
-> GetTenantByStripeCustomerID200Response getTenantByStripeCustomerID(stripeCustomerId)
+> Tenant getTenantByStripeCustomerID(stripeCustomerId)
 
 Get tenant by Stripe customer ID
 
@@ -885,7 +808,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetTenantByStripeCustomerID200Response**](GetTenantByStripeCustomerID200Response.md)
+[**Tenant**](Tenant.md)
 
 ### Authorization
 
@@ -993,7 +916,7 @@ example().catch(console.error);
 
 ## getTenantSubscription
 
-> GetTenantSubscription200Response getTenantSubscription(configPriceId)
+> SubscriptionResponse getTenantSubscription(configPriceId)
 
 Get tenant subscription by plan
 
@@ -1046,7 +969,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetTenantSubscription200Response**](GetTenantSubscription200Response.md)
+[**SubscriptionResponse**](SubscriptionResponse.md)
 
 ### Authorization
 
@@ -1070,9 +993,86 @@ example().catch(console.error);
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
+## listRoleDefinitions
+
+> Array&lt;NamespaceDefinition&gt; listRoleDefinitions(subject)
+
+List namespace definitions
+
+Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1TenantsApi,
+} from '@omnibase/core-js';
+import type { ListRoleDefinitionsRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1TenantsApi(config);
+
+  const body = {
+    // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
+    subject: ApiKey,
+  } satisfies ListRoleDefinitionsRequest;
+
+  try {
+    const data = await api.listRoleDefinitions(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **subject** | `string` | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | [Optional] [Defaults to `undefined`] |
+
+### Return type
+
+[**Array&lt;NamespaceDefinition&gt;**](NamespaceDefinition.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Namespace definitions retrieved successfully |  -  |
+| **401** | Invalid or missing JWT token |  -  |
+| **500** | Failed to fetch definitions |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## listRoles
 
-> ListRoles200Response listRoles(xTenantId)
+> Array&lt;Role&gt; listRoles(xTenantId)
 
 List roles
 
@@ -1125,7 +1125,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ListRoles200Response**](ListRoles200Response.md)
+[**Array&lt;Role&gt;**](Role.md)
 
 ### Authorization
 
@@ -1150,7 +1150,7 @@ example().catch(console.error);
 
 ## listTenantSubscriptions
 
-> ListTenantSubscriptions200Response listTenantSubscriptions()
+> Array&lt;SubscriptionResponse&gt; listTenantSubscriptions()
 
 Get tenant subscriptions
 
@@ -1195,7 +1195,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**ListTenantSubscriptions200Response**](ListTenantSubscriptions200Response.md)
+[**Array&lt;SubscriptionResponse&gt;**](SubscriptionResponse.md)
 
 ### Authorization
 
@@ -1220,7 +1220,7 @@ This endpoint does not need any parameter.
 
 ## listTenantUsers
 
-> ListTenantUsers200Response listTenantUsers(xUserId, xTenantId)
+> Array&lt;TenantUserResponse&gt; listTenantUsers(xUserId, xTenantId)
 
 Get tenant users
 
@@ -1276,7 +1276,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ListTenantUsers200Response**](ListTenantUsers200Response.md)
+[**Array&lt;TenantUserResponse&gt;**](TenantUserResponse.md)
 
 ### Authorization
 
@@ -1302,7 +1302,7 @@ example().catch(console.error);
 
 ## removeSubscription
 
-> RemoveSubscription200Response removeSubscription(removeSubscriptionRequest)
+> RemoveSubscriptionResponse removeSubscription(removeSubscriptionRequest)
 
 Remove subscription
 
@@ -1355,7 +1355,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**RemoveSubscription200Response**](RemoveSubscription200Response.md)
+[**RemoveSubscriptionResponse**](RemoveSubscriptionResponse.md)
 
 ### Authorization
 
@@ -1381,7 +1381,7 @@ example().catch(console.error);
 
 ## removeTenantUser
 
-> SuccessResponse removeTenantUser(deleteTenantUserRequest)
+> removeTenantUser(deleteTenantUserRequest, xUserId, xTenantId)
 
 Remove tenant user
 
@@ -1411,6 +1411,10 @@ async function example() {
   const body = {
     // DeleteTenantUserRequest
     deleteTenantUserRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies RemoveTenantUserRequest;
 
   try {
@@ -1431,10 +1435,12 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **deleteTenantUserRequest** | [DeleteTenantUserRequest](DeleteTenantUserRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+`void` (Empty response body)
 
 ### Authorization
 
@@ -1461,7 +1467,7 @@ example().catch(console.error);
 
 ## switchActiveTenant
 
-> SwitchActiveTenant200Response switchActiveTenant(switchTenantRequest, xUserId)
+> SwitchTenantResponse switchActiveTenant(switchTenantRequest, xUserId)
 
 Switch active tenant
 
@@ -1517,7 +1523,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**SwitchActiveTenant200Response**](SwitchActiveTenant200Response.md)
+[**SwitchTenantResponse**](SwitchTenantResponse.md)
 
 ### Authorization
 
@@ -1543,7 +1549,7 @@ example().catch(console.error);
 
 ## updateRole
 
-> CreateRole200Response updateRole(roleId, updateRoleRequest, xUserId, xTenantId)
+> Role updateRole(roleId, updateRoleRequest, xUserId, xTenantId)
 
 Update role
 
@@ -1605,7 +1611,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateRole200Response**](CreateRole200Response.md)
+[**Role**](Role.md)
 
 ### Authorization
 
@@ -1632,7 +1638,7 @@ example().catch(console.error);
 
 ## updateTenantUserRole
 
-> UpdateTenantUserRole200Response updateTenantUserRole(updateTenantUserRoleRequest, xUserId, xTenantId)
+> updateTenantUserRole(updateTenantUserRoleRequest, xUserId, xTenantId)
 
 Update user role
 
@@ -1691,7 +1697,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**UpdateTenantUserRole200Response**](UpdateTenantUserRole200Response.md)
+`void` (Empty response body)
 
 ### Authorization
 

@@ -6,8 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`status` | number
-`data` | [BillingStatusResponse](BillingStatusResponse.md)
+`isActive` | boolean
 
 ## Example
 
@@ -16,8 +15,7 @@ import type { GetTenantBillingStatus200Response } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 200,
-  "data": null,
+  "isActive": true,
 } satisfies GetTenantBillingStatus200Response
 
 console.log(example)

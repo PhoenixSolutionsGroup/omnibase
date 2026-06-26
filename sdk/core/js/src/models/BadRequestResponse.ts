@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface BadRequestResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof BadRequestResponse
-     */
-    status: number;
-    /**
      * Error message or details
      * @type {string}
      * @memberof BadRequestResponse
@@ -37,7 +31,6 @@ export interface BadRequestResponse {
  * Check if a given object implements the BadRequestResponse interface.
  */
 export function instanceOfBadRequestResponse(value: object): value is BadRequestResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function BadRequestResponseFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function BadRequestResponseToJSONTyped(value?: BadRequestResponse | null,
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

@@ -4,14 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Status** | **int32** | HTTP status code | 
-**Data** | Pointer to [**JWTTokenResponse**](JWTTokenResponse.md) |  | [optional] 
+**Token** | **string** | PostgREST JWT token | 
 
 ## Methods
 
 ### NewGetTenantJWT200Response
 
-`func NewGetTenantJWT200Response(status int32, ) *GetTenantJWT200Response`
+`func NewGetTenantJWT200Response(token string, ) *GetTenantJWT200Response`
 
 NewGetTenantJWT200Response instantiates a new GetTenantJWT200Response object
 This constructor will assign default values to properties that have it defined,
@@ -26,50 +25,25 @@ NewGetTenantJWT200ResponseWithDefaults instantiates a new GetTenantJWT200Respons
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetStatus
+### GetToken
 
-`func (o *GetTenantJWT200Response) GetStatus() int32`
+`func (o *GetTenantJWT200Response) GetToken() string`
 
-GetStatus returns the Status field if non-nil, zero value otherwise.
+GetToken returns the Token field if non-nil, zero value otherwise.
 
-### GetStatusOk
+### GetTokenOk
 
-`func (o *GetTenantJWT200Response) GetStatusOk() (*int32, bool)`
+`func (o *GetTenantJWT200Response) GetTokenOk() (*string, bool)`
 
-GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
+GetTokenOk returns a tuple with the Token field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetStatus
+### SetToken
 
-`func (o *GetTenantJWT200Response) SetStatus(v int32)`
+`func (o *GetTenantJWT200Response) SetToken(v string)`
 
-SetStatus sets Status field to given value.
+SetToken sets Token field to given value.
 
-
-### GetData
-
-`func (o *GetTenantJWT200Response) GetData() JWTTokenResponse`
-
-GetData returns the Data field if non-nil, zero value otherwise.
-
-### GetDataOk
-
-`func (o *GetTenantJWT200Response) GetDataOk() (*JWTTokenResponse, bool)`
-
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetData
-
-`func (o *GetTenantJWT200Response) SetData(v JWTTokenResponse)`
-
-SetData sets Data field to given value.
-
-### HasData
-
-`func (o *GetTenantJWT200Response) HasData() bool`
-
-HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

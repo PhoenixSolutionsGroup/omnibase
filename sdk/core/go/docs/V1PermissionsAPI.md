@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## CheckPermission
 
-> CheckPermission200Response CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
+> CheckPermissionResponse CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
 
 Check permission
 
@@ -40,7 +40,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CheckPermission``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CheckPermission`: CheckPermission200Response
+	// response from `CheckPermission`: CheckPermissionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CheckPermission`: %v\n", resp)
 }
 ```
@@ -60,7 +60,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CheckPermission200Response**](CheckPermission200Response.md)
+[**CheckPermissionResponse**](CheckPermissionResponse.md)
 
 ### Authorization
 

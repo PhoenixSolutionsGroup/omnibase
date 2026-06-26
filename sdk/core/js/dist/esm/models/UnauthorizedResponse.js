@@ -22,8 +22,6 @@ exports.UnauthorizedResponseToJSONTyped = UnauthorizedResponseToJSONTyped;
  * Check if a given object implements the UnauthorizedResponse interface.
  */
 function instanceOfUnauthorizedResponse(value) {
-    if (!('status' in value) || value['status'] === undefined)
-        return false;
     if (!('error' in value) || value['error'] === undefined)
         return false;
     return true;
@@ -36,7 +34,6 @@ function UnauthorizedResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -48,7 +45,6 @@ function UnauthorizedResponseToJSONTyped(value, ignoreDiscriminator = false) {
         return value;
     }
     return {
-        'status': value['status'],
         'error': value['error'],
     };
 }

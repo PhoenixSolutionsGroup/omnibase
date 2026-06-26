@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { CheckPermission200Response, CheckPermissionRequest, CreateRelationship200Response, CreateRelationshipRequest, DeleteRelationship200Response, DeleteRelationshipRequest } from '../models/index';
+import type { CheckPermissionRequest, CheckPermissionResponse, CreateRelationship200Response, CreateRelationshipRequest, DeleteRelationship200Response, DeleteRelationshipRequest } from '../models/index';
 export interface CheckPermissionOperationRequest {
     checkPermissionRequest: CheckPermissionRequest;
 }
@@ -28,12 +28,12 @@ export declare class V1PermissionsApi extends runtime.BaseAPI {
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions
      * Check permission
      */
-    checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermission200Response>>;
+    checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermissionResponse>>;
     /**
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions
      * Check permission
      */
-    checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermission200Response>;
+    checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermissionResponse>;
     /**
      * Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships
      * Create relationship

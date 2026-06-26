@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface TooManyRequestsResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof TooManyRequestsResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof TooManyRequestsResponse
@@ -37,7 +31,6 @@ export interface TooManyRequestsResponse {
  * Check if a given object implements the TooManyRequestsResponse interface.
  */
 export function instanceOfTooManyRequestsResponse(value: object): value is TooManyRequestsResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function TooManyRequestsResponseFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function TooManyRequestsResponseToJSONTyped(value?: TooManyRequestsRespon
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

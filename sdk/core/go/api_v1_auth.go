@@ -34,7 +34,7 @@ func (r ApiCreateUserRequest) CreateUserRequest(createUserRequest CreateUserRequ
 	return r
 }
 
-func (r ApiCreateUserRequest) Execute() (*CreateUser200Response, *http.Response, error) {
+func (r ApiCreateUserRequest) Execute() (*KratosIdentity, *http.Response, error) {
 	return r.ApiService.CreateUserExecute(r)
 }
 
@@ -66,13 +66,13 @@ func (a *V1AuthAPIService) CreateUser(ctx context.Context) ApiCreateUserRequest 
 }
 
 // Execute executes the request
-//  @return CreateUser200Response
-func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*CreateUser200Response, *http.Response, error) {
+//  @return KratosIdentity
+func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIdentity, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateUser200Response
+		localVarReturnValue  *KratosIdentity
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.CreateUser")
@@ -671,7 +671,7 @@ func (r ApiListTenantsRequest) XUserId(xUserId string) ApiListTenantsRequest {
 	return r
 }
 
-func (r ApiListTenantsRequest) Execute() (*ListTenants200Response, *http.Response, error) {
+func (r ApiListTenantsRequest) Execute() (*ListTenantsResponse, *http.Response, error) {
 	return r.ApiService.ListTenantsExecute(r)
 }
 
@@ -704,13 +704,13 @@ func (a *V1AuthAPIService) ListTenants(ctx context.Context) ApiListTenantsReques
 }
 
 // Execute executes the request
-//  @return ListTenants200Response
-func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTenants200Response, *http.Response, error) {
+//  @return ListTenantsResponse
+func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTenantsResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListTenants200Response
+		localVarReturnValue  *ListTenantsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.ListTenants")

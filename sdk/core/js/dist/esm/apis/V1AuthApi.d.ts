@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { CreateUser200Response, CreateUserRequest, GetActiveTenant200Response, GetIdentity200Response, GetSession200Response, ListTenants200Response, Logout200Response, WhoAmI200Response } from '../models/index';
+import type { CreateUserRequest, GetActiveTenant200Response, GetIdentity200Response, GetSession200Response, KratosIdentity, ListTenantsResponse, Logout200Response, WhoAmI200Response } from '../models/index';
 export interface CreateUserOperationRequest {
     createUserRequest: CreateUserRequest;
 }
@@ -28,12 +28,12 @@ export declare class V1AuthApi extends runtime.BaseAPI {
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication.
      * Create new user
      */
-    createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateUser200Response>>;
+    createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KratosIdentity>>;
     /**
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication.
      * Create new user
      */
-    createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateUser200Response>;
+    createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KratosIdentity>;
     /**
      * Returns the full tenant object for the user\'s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering.
      * Get active tenant
@@ -68,12 +68,12 @@ export declare class V1AuthApi extends runtime.BaseAPI {
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to.
      * List user\'s tenants
      */
-    listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenants200Response>>;
+    listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantsResponse>>;
     /**
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to.
      * List user\'s tenants
      */
-    listTenants(requestParameters?: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenants200Response>;
+    listTenants(requestParameters?: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantsResponse>;
     /**
      * Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically.
      * Logout user

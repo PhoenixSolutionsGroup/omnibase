@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface ForbiddenResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ForbiddenResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof ForbiddenResponse
@@ -37,7 +31,6 @@ export interface ForbiddenResponse {
  * Check if a given object implements the ForbiddenResponse interface.
  */
 export function instanceOfForbiddenResponse(value: object): value is ForbiddenResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function ForbiddenResponseFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function ForbiddenResponseToJSONTyped(value?: ForbiddenResponse | null, i
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

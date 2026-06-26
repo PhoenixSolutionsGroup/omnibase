@@ -40,6 +40,12 @@ export interface Role {
      */
     permissions: Array<string>;
     /**
+     * ID of the role template this role was cloned from (NULL for custom roles)
+     * @type {string}
+     * @memberof Role
+     */
+    templateId?: string;
+    /**
      * Array of user IDs assigned to this role
      * @type {Array<string>}
      * @memberof Role

@@ -11,6 +11,7 @@ Name | Type
 `tenantId` | string
 `roleName` | string
 `permissions` | Array&lt;string&gt;
+`templateId` | string
 `userIds` | Array&lt;string&gt;
 `createdAt` | Date
 `updatedAt` | Date
@@ -26,6 +27,7 @@ const example = {
   "tenantId": null,
   "roleName": member,
   "permissions": [tenant#invite_user, tenant#remove_user],
+  "templateId": null,
   "userIds": [550e8400-e29b-41d4-a716-446655440000, 550e8400-e29b-41d4-a716-446655440001],
   "createdAt": 2025-11-10T00:18:19.653645Z,
   "updatedAt": 2025-11-10T00:33:08.726632Z,

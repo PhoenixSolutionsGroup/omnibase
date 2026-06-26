@@ -16,12 +16,6 @@
  */
 export interface TooManyRequestsResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof TooManyRequestsResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof TooManyRequestsResponse

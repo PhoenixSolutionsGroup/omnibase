@@ -7,7 +7,6 @@ Generic error response
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { ErrorResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 400,
   "error": An error occurred,
 } satisfies ErrorResponse
 
