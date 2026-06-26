@@ -6,6 +6,7 @@ import (
 	"api/internal/database/repository"
 	v1 "api/internal/handlers/v1"
 	"api/internal/handlers/v1/tenants/invites"
+	"api/internal/handlers/v1/tenants/lifecycle"
 	"api/internal/handlers/v1/tenants/roles"
 	"api/internal/handlers/v1/tenants/users"
 	"api/internal/logger"
@@ -60,6 +61,10 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 		Tenants: tenantsSvc,
 		Email:   emailSvc,
 	})
+	lifecycleHandler := lifecycle.New(lifecycle.Deps{
+		Repo:    repo,
+		Tenants: tenantsSvc,
+	})
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
 	// Service-key only routes (lookup endpoints for service-to-service calls)
@@ -73,7 +78,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	authenticated.Use(authMiddleware.RequireAuthHeaders())
 	authenticated.Use(authMiddleware.RequireSessionOrServiceKey())
 
-	authenticated.GET("/jwt", tenantHandler.GetPostgRESTJWTToken)
+	authenticated.GET("/jwt", lifecycleHandler.GetJWT)
 
 	authenticated.GET("/users", usersHandler.List)
 
@@ -95,7 +100,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	authenticated.PUT("/invites/accept", invitesHandler.Accept)
 
-	authenticated.PUT("/switch-active", tenantHandler.UpdateUsersActiveTenant)
+	authenticated.PUT("/switch-active", lifecycleHandler.SwitchActive)
 
 	authenticated.DELETE("", tenantHandler.DeleteTenant)
 

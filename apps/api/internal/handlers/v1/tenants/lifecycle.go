@@ -35,30 +35,10 @@ type CreateTenantResponse struct {
 	Message string `json:"message" binding:"required" example:"Tenant created successfully"`
 }
 
-// SwitchTenantRequest represents the request to switch active tenant
-type SwitchTenantRequest struct {
-	// Target tenant ID
-	TenantID string `json:"tenant_id" binding:"required,min=1" example:"tenant_test_123"`
-}
-
-// SwitchTenantResponse represents the tenant switch response
-type SwitchTenantResponse struct {
-	// New JWT token with updated tenant context
-	Token string `json:"token" binding:"required" example:"eyJhbGciOiJIUzI1NiIs..."`
-	// Success message
-	Message string `json:"message" binding:"required" example:"Successfully switched tenants"`
-}
-
 // DeleteTenantResponse represents the tenant deletion response
 type DeleteTenantResponse struct {
 	// Success message
 	Message string `json:"message" binding:"required" example:"Tenant deleted successfully"`
-}
-
-// JWTTokenResponse represents the JWT token response
-type JWTTokenResponse struct {
-	// PostgREST JWT token
-	Token string `json:"token" binding:"required" example:"eyJhbGciOiJIUzI1NiIs..."`
 }
 
 func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
@@ -255,71 +235,6 @@ func (h *TenantHandler) DeleteTenant(ctx *gin.Context) {
 		Message: "Tenant deleted successfully",
 	})
 
-}
-
-func (h *TenantHandler) UpdateUsersActiveTenant(ctx *gin.Context) {
-	var req SwitchTenantRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
-		return
-	}
-
-	userID := ctx.GetString("user_id")
-	if userID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
-	}
-
-	token, err := h.tenants.SetActiveTenant(userID, req.TenantID)
-	if err != nil {
-		// Check if error is due to tenant not found or user not having access
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			handlers.NewNotFoundResponse(ctx, "Tenant not found or you don't have access to it")
-			return
-		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to set active tenant: %s", err))
-		return
-	}
-
-	handlers.NewSuccessResponse(ctx, SwitchTenantResponse{
-		Token:   token,
-		Message: "Successfully switched tenants",
-	})
-}
-
-func (h *TenantHandler) GetPostgRESTJWTToken(ctx *gin.Context) {
-	userID := ctx.GetString("user_id")
-	if userID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
-	}
-
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "Tenant not authenticated")
-		return
-	}
-
-	var tenantUser models.TenantUser
-	if err := h.db.Where("user_id = ? AND tenant_id = ?", userID, tenantID).First(&tenantUser).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			handlers.NewForbiddenResponse(ctx, "User is not a member of this tenant")
-			return
-		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to verify tenant membership: %s", err))
-		return
-	}
-
-	// Create JWT token
-	token, err := h.tenants.CreateJWTToken(userID, tenantID)
-	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Failed to create JWT token: %s", err))
-		return
-	}
-
-	handlers.NewSuccessResponse(ctx, JWTTokenResponse{
-		Token: token,
-	})
 }
 
 // cloneRoleTemplates creates tenant-specific copies of all role templates
