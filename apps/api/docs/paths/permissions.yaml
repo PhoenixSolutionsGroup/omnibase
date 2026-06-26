@@ -58,25 +58,16 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/permissions.yaml#/components/schemas/CheckPermissionResponse'
+                $ref: '../schemas/permissions.yaml#/components/schemas/CheckPermissionResponse'
               examples:
                 allowed:
                   summary: Permission granted
                   value:
-                    status: 200
-                    data:
-                      allowed: true
+                    allowed: true
                 denied:
                   summary: Permission denied
                   value:
-                    status: 200
-                    data:
-                      allowed: false
+                    allowed: false
         '400':
           description: Invalid request body - namespace, object, relation, and subject_set are required
           content:

@@ -101,24 +101,6 @@ components:
         tenant:
           $ref: '#/components/schemas/Tenant'
 
-    GetTenantByIDResponse:
-      type: object
-      description: Response containing a tenant by ID
-      required:
-        - tenant
-      properties:
-        tenant:
-          $ref: '#/components/schemas/Tenant'
-
-    GetTenantByStripeCustomerIDResponse:
-      type: object
-      description: Response containing a tenant by Stripe customer ID
-      required:
-        - tenant
-      properties:
-        tenant:
-          $ref: '#/components/schemas/Tenant'
-
     ListTenantsResponse:
       type: object
       required:
@@ -161,6 +143,11 @@ components:
           items:
             type: string
           example: ["tenant#invite_user", "tenant#remove_user"]
+        template_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the role template this role was cloned from (NULL for custom roles)
         user_ids:
           type: array
           description: Array of user IDs assigned to this role
@@ -382,16 +369,6 @@ components:
           description: Whether this is a legacy price
           example: false
 
-    BillingStatusResponse:
-      type: object
-      required:
-        - is_active
-      properties:
-        is_active:
-          type: boolean
-          description: Whether tenant has active billing configured
-          example: true
-
     # Request/Response Models - Lifecycle
     CreateTenantRequest:
       type: object
@@ -436,17 +413,6 @@ components:
           type: string
           description: JWT token with tenant context
           example: "eyJhbGciOiJIUzI1NiIs..."
-
-    DeleteTenantResponse:
-      type: object
-      description: Response after deleting a tenant
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: Success message
-          example: "Tenant deleted successfully"
 
     SwitchTenantRequest:
       type: object
@@ -542,30 +508,7 @@ components:
           description: Target user ID
           example: "550e8400-e29b-41d4-a716-446655440001"
 
-    UpdateTenantUserRoleResponse:
-      type: object
-      description: Response after updating user role
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: Success message
-          example: "User role updated successfully"
-
     # Request/Response Models - Roles
-    RolesListResponse:
-      type: object
-      description: List of roles in a tenant
-      required:
-        - roles
-      properties:
-        roles:
-          type: array
-          description: List of roles (including system roles)
-          items:
-            $ref: '#/components/schemas/Role'
-
     CreateRoleRequest:
       type: object
       description: Request to create a new role
@@ -599,17 +542,6 @@ components:
           items:
             type: string
           example: ["tenant#read", "tenant#write"]
-
-    DeleteRoleResponse:
-      type: object
-      description: Response after deleting a role
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          description: Success message
-          example: "Role deleted successfully"
 
     # Named variants for AssignRoleRequest
     AssignRoleRequestWithRoleId:
@@ -655,18 +587,6 @@ components:
           type: string
           description: Success message
           example: "Role assigned successfully"
-
-    NamespaceDefinitionsResponse:
-      type: object
-      description: Available permission namespace definitions
-      required:
-        - definitions
-      properties:
-        definitions:
-          type: array
-          description: List of namespace definitions
-          items:
-            $ref: '#/components/schemas/NamespaceDefinition'
 
     # Request/Response Models - Invitations
     CreateTenantUserInviteRequest:
@@ -805,15 +725,3 @@ components:
           type: string
           description: Message confirming the cancellation
           example: "Subscription canceled successfully"
-
-    # JWT Token Response
-    JWTTokenResponse:
-      type: object
-      description: PostgREST JWT token for direct database access
-      required:
-        - token
-      properties:
-        token:
-          type: string
-          description: PostgREST JWT token
-          example: "eyJhbGciOiJIUzI1NiIs..."

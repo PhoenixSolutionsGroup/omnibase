@@ -230,12 +230,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/ListTenantsResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/ListTenantsResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -276,12 +271,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/auth.yaml#/components/schemas/KratosIdentity'
+                $ref: '../schemas/auth.yaml#/components/schemas/KratosIdentity'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
