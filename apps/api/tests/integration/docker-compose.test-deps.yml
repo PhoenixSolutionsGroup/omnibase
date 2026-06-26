@@ -1,0 +1,192 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    command: postgres -c max_connections=300
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - target: 5432
+        protocol: tcp
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d db"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/db
+      AUTH_TYPE: scram-sha-256
+    volumes:
+      - ../../../../packages/cli/docker/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:z
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - target: 6432
+        protocol: tcp
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 6432 -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  db-migrate:
+    image: migrate/migrate:latest
+    volumes:
+      - ../../../../packages/cli/docker/db:/migrations:z
+    command:
+      - "-path"
+      - "/migrations"
+      - "-database"
+      - "postgres://postgres:postgres@postgres:5432/db?sslmode=disable&x-migrations-table=migrations.init_migrations"
+      - "up"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  auth-migrate:
+    image: phoenixsolutionsgroup/omnibase-auth:latest
+    environment:
+      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
+      - AUTH_JWT_JWKS={}
+      - WAIT_FOR_API_HEALTH=false
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
+    command: migrate sql -e --yes
+    restart: on-failure
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  auth:
+    image: phoenixsolutionsgroup/omnibase-auth:latest
+    depends_on:
+      auth-migrate:
+        condition: service_completed_successfully
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      - DSN=postgres://auth:auth@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
+      - WEBSITE_URL=http://127.0.0.1:3000
+      - COOKIE_SECRET=test-cookie-secret-not-secure-but-long-enough-32
+      - CIPHER_SECRET=integration-test-cipher-32chars0
+      - COOKIE_DOMAIN=127.0.0.1
+      - LOG_LEVEL=info
+      - AUTH_URL=http://auth:4433
+      - AUTH_ADMIN_URL=http://auth:4434
+      - WEBSITE_AUTH_ERROR_URL=http://127.0.0.1:3000/auth/error
+      - WEBSITE_SETTING_URL=http://127.0.0.1:3000/auth/settings
+      - WEBSITE_RECOVERY_URL=http://127.0.0.1:3000/auth/recovery
+      - WEBSITE_VERIFICATION_RECOVERY_URL=http://127.0.0.1:3000/auth/verification
+      - WEBSITE_LOGIN_URL=http://127.0.0.1:3000/auth/login
+      - WEBSITE_REGISTRATION_URL=http://127.0.0.1:3000/auth/registration
+      - SMTP_CONNECTION_URI=smtp://mailpit:1025?disable_starttls=true
+      - SMTP_FROM_ADDRESS=no-reply@test.omnibase
+      - SMTP_FROM_NAME=Test Auth
+      - AUTH_JWT_JWKS={}
+      - API_URL=http://host.docker.internal:8080
+      - SERVICE_KEY=VERY_SECRET_KEY
+      - WAIT_FOR_API_HEALTH=false
+      - APP_NAME=Test App
+      - HASHER_ARGON2_PARALLELISM=1
+      - HASHER_ARGON2_MEMORY=19MB
+      - HASHER_ARGON2_ITERATIONS=2
+      - HASHER_ARGON2_SALT_LENGTH=16
+      - HASHER_ARGON2_KEY_LENGTH=32
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
+    command: serve --dev --watch-courier
+    ports:
+      - target: 4433
+        protocol: tcp
+      - target: 4434
+        protocol: tcp
+
+  permissions-migrate:
+    image: phoenixsolutionsgroup/omnibase-permissions:latest
+    environment:
+      - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
+    volumes:
+      - ./fixtures/keto-namespaces:/etc/config/permissions/namespaces:z
+      - ./fixtures/permissions.yml:/etc/config/permissions/permissions.yml:z
+    command: migrate up -c /etc/config/permissions/permissions.yml --yes
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    restart: on-failure
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+
+  permissions:
+    image: phoenixsolutionsgroup/omnibase-permissions:latest
+    depends_on:
+      permissions-migrate:
+        condition: service_completed_successfully
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
+      - LOG_LEVEL=warn
+    volumes:
+      - ./fixtures/keto-namespaces:/etc/config/permissions/namespaces:z
+      - ./fixtures/permissions.yml:/etc/config/permissions/permissions.yml:z
+    command: serve -c /etc/config/permissions/permissions.yml
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    ports:
+      - target: 4466
+        protocol: tcp
+      - target: 4467
+        protocol: tcp
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    environment:
+      RUSTFS_ACCESS_KEY: rustfsadmin
+      RUSTFS_SECRET_KEY: rustfsadmin123
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+    command: /data
+    ports:
+      - target: 9000
+        protocol: tcp
+      - target: 9001
+        protocol: tcp
+
+  rustfs-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      - rustfs
+    environment:
+      AWS_ACCESS_KEY_ID: rustfsadmin
+      AWS_SECRET_ACCESS_KEY: rustfsadmin123
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint: >
+      /bin/sh -c "
+      until aws --endpoint-url http://rustfs:9000 s3 ls 2>/dev/null; do
+        echo 'Waiting for RustFS to be ready...';
+        sleep 2;
+      done;
+      aws --endpoint-url http://rustfs:9000 s3 mb s3://dev --region us-east-1 || true;
+      echo 'RustFS buckets created successfully';
+      "
+
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    ports:
+      - target: 1025
+        protocol: tcp
+      - target: 8025
+        protocol: tcp
+
+  stripe-mock:
+    image: stripe/stripe-mock:latest
+    ports:
+      - target: 12111
+        protocol: tcp
+      - target: 12112
+        protocol: tcp

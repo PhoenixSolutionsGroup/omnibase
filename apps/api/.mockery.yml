@@ -1,0 +1,12 @@
+template: testify
+all: false
+formatter: goimports
+dir: "internal/mocks/{{.SrcPackageName}}"
+filename: "mock_{{.InterfaceName | snakecase}}.go"
+pkgname: "{{.SrcPackageName}}_mocks"
+structname: "Mock{{.InterfaceName}}"
+include-auto-generated: true
+packages:
+  api/internal/database/repository:
+    interfaces:
+      Querier:
