@@ -124,6 +124,15 @@ func GetTenantJWT(t *testing.T, client *sdk.APIClient, userID, tenantID string) 
 	return out.Token
 }
 
+func GetTenantJWTRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
+	t.Helper()
+	_, resp, err := client.V1TenantsAPI.GetTenantJWT(helpers.Ctx()).
+		XUserId(userID).
+		XTenantId(tenantID).
+		Execute()
+	return resp, err
+}
+
 func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) string {
 	t.Helper()
 	req := sdk.SwitchTenantRequest{TenantId: tenantID}
@@ -134,6 +143,16 @@ func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID st
 	helpers.EnsureOK(t, resp, err, "switchActiveTenant")
 	require.NotNil(t, out)
 	return out.Token
+}
+
+func SwitchActiveTenantRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
+	t.Helper()
+	req := sdk.SwitchTenantRequest{TenantId: tenantID}
+	_, resp, err := client.V1TenantsAPI.SwitchActiveTenant(helpers.Ctx()).
+		XUserId(userID).
+		SwitchTenantRequest(req).
+		Execute()
+	return resp, err
 }
 
 func DeleteTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
