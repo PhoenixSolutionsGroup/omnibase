@@ -3,6 +3,7 @@ package tenants
 import (
 	"api/internal/config"
 	"api/internal/database"
+	"api/internal/database/repository"
 	"api/internal/logger"
 	services_v1 "api/internal/service/v1"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 
 type TenantHandler struct {
 	db      *gorm.DB
+	repo    repository.Querier
 	cfg     *config.Config
 	email   *services_v1.EmailService
 	stripe  *services_v1.StripeService
@@ -29,6 +31,13 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 		logger.Logger.Error("Failed to connect to database", "error", err)
 		panic(err)
 	}
+
+	pool, err := database.GetPool(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get pgx pool", "error", err)
+		panic(err)
+	}
+	repo := repository.New(pool)
 
 	stripe.Key = cfg.StripeConfig.SecretKey
 
@@ -49,6 +58,7 @@ func NewTenantHandler(cfg *config.Config) *TenantHandler {
 	logger.Logger.Info("TenantHandler initialized successfully")
 	return &TenantHandler{
 		db:      db,
+		repo:    repo,
 		cfg:     cfg,
 		email:   emailService,
 		stripe:  stripeService,
