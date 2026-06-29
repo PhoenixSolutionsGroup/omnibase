@@ -51,6 +51,8 @@ type Querier interface {
 	UpdateMappingStripeID(ctx context.Context, arg UpdateMappingStripeIDParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
 	UpdateStripeWebhook(ctx context.Context, arg UpdateStripeWebhookParams) error
+	UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error
+	UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
 }
 

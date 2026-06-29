@@ -19,3 +19,9 @@ VALUES ($1, $2, $3);
 
 -- name: DeleteTenant :exec
 DELETE FROM auth.tenants WHERE id = $1;
+
+-- name: UpdateTenantEnterpriseTemplate :exec
+UPDATE auth.tenants SET enterprise_template = $2 WHERE id = $1;
+
+-- name: UpdateTenantEnterpriseID :exec
+UPDATE auth.tenants SET enterprise_id = $2 WHERE id = $1;

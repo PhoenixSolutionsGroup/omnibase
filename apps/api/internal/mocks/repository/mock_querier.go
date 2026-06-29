@@ -2557,6 +2557,120 @@ func (_c *MockQuerier_UpdateStripeWebhook_Call) RunAndReturn(run func(ctx contex
 	return _c
 }
 
+// UpdateTenantEnterpriseID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpdateTenantEnterpriseID(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateTenantEnterpriseID")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateTenantEnterpriseIDParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpdateTenantEnterpriseID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateTenantEnterpriseID'
+type MockQuerier_UpdateTenantEnterpriseID_Call struct {
+	*mock.Call
+}
+
+// UpdateTenantEnterpriseID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpdateTenantEnterpriseIDParams
+func (_e *MockQuerier_Expecter) UpdateTenantEnterpriseID(ctx any, arg any) *MockQuerier_UpdateTenantEnterpriseID_Call {
+	return &MockQuerier_UpdateTenantEnterpriseID_Call{Call: _e.mock.On("UpdateTenantEnterpriseID", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) Run(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams)) *MockQuerier_UpdateTenantEnterpriseID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpdateTenantEnterpriseIDParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpdateTenantEnterpriseIDParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) Return(err error) *MockQuerier_UpdateTenantEnterpriseID_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseID_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseIDParams) error) *MockQuerier_UpdateTenantEnterpriseID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateTenantEnterpriseTemplate provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpdateTenantEnterpriseTemplate(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateTenantEnterpriseTemplate")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateTenantEnterpriseTemplateParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpdateTenantEnterpriseTemplate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateTenantEnterpriseTemplate'
+type MockQuerier_UpdateTenantEnterpriseTemplate_Call struct {
+	*mock.Call
+}
+
+// UpdateTenantEnterpriseTemplate is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpdateTenantEnterpriseTemplateParams
+func (_e *MockQuerier_Expecter) UpdateTenantEnterpriseTemplate(ctx any, arg any) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
+	return &MockQuerier_UpdateTenantEnterpriseTemplate_Call{Call: _e.mock.On("UpdateTenantEnterpriseTemplate", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) Run(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams)) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpdateTenantEnterpriseTemplateParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpdateTenantEnterpriseTemplateParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) Return(err error) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpdateTenantEnterpriseTemplate_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateTenantEnterpriseTemplateParams) error) *MockQuerier_UpdateTenantEnterpriseTemplate_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateTenantUserRole provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) UpdateTenantUserRole(ctx context.Context, arg repository.UpdateTenantUserRoleParams) error {
 	ret := _mock.Called(ctx, arg)

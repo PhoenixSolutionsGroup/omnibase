@@ -145,3 +145,31 @@ func (q *Queries) GetTenantByStripeCustomerID(ctx context.Context, stripeCustome
 	)
 	return i, err
 }
+
+const updateTenantEnterpriseID = `-- name: UpdateTenantEnterpriseID :exec
+UPDATE auth.tenants SET enterprise_id = $2 WHERE id = $1
+`
+
+type UpdateTenantEnterpriseIDParams struct {
+	ID           string  `json:"id"`
+	EnterpriseID *string `json:"enterprise_id"`
+}
+
+func (q *Queries) UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error {
+	_, err := q.db.Exec(ctx, updateTenantEnterpriseID, arg.ID, arg.EnterpriseID)
+	return err
+}
+
+const updateTenantEnterpriseTemplate = `-- name: UpdateTenantEnterpriseTemplate :exec
+UPDATE auth.tenants SET enterprise_template = $2 WHERE id = $1
+`
+
+type UpdateTenantEnterpriseTemplateParams struct {
+	ID                 string  `json:"id"`
+	EnterpriseTemplate *string `json:"enterprise_template"`
+}
+
+func (q *Queries) UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error {
+	_, err := q.db.Exec(ctx, updateTenantEnterpriseTemplate, arg.ID, arg.EnterpriseTemplate)
+	return err
+}
