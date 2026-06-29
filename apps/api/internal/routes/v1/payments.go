@@ -2,8 +2,14 @@ package v1
 
 import (
 	"api/internal/config"
-	v1 "api/internal/handlers/v1"
+	"api/internal/database"
+	"api/internal/database/repository"
+	"api/internal/handlers/v1/payments"
+	"api/internal/handlers/v1/payments/invoices"
+	"api/internal/logger"
 	"api/internal/middleware"
+	"api/internal/services/billing"
+	"api/internal/services/stripe_client"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,16 +17,27 @@ import (
 func SetUpPaymentRoutes(router *gin.RouterGroup) {
 	cfg := config.New()
 
-	paymentHandler := v1.NewPaymentsHandler(cfg)
+	pool, err := database.GetPool(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get pgx pool", "error", err)
+		panic(err)
+	}
+	repo := repository.New(pool)
+	stripeClient := stripe_client.New(cfg.StripeConfig)
+	billingSvc := billing.New(billing.Deps{
+		Repo:   repo,
+		Stripe: stripeClient,
+		FeePct: cfg.StripeConfig.PlatformFeePercent,
+	})
+
+	paymentHandler := payments.New(payments.Deps{Billing: billingSvc})
+	invoiceHandler := invoices.New(invoices.Deps{Billing: billingSvc})
 	paymentsMiddleware := middleware.NewPaymentsMiddleware(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
 	invoicesRouter := router.Group("invoices")
 
-	// Apply authentication middleware (session or service key + tenant ID)
 	router.Use(authMiddleware.RequireSessionOrServiceKey())
-
-	// Apply payment-specific middleware to set stripe_customer_id
 	router.Use(
 		paymentsMiddleware.GetCustomerIDFromAuthSession(),
 		paymentsMiddleware.GetCustomerIDFromTenant(),
@@ -37,10 +54,10 @@ func SetUpPaymentRoutes(router *gin.RouterGroup) {
 		paymentsMiddleware.GetCustomerIDFromHeader(),
 	)
 
-	invoicesRouter.POST("", paymentHandler.CreateInvoice)
-	invoicesRouter.GET("/:invoice_id", paymentHandler.GetInvoice)
-	invoicesRouter.PATCH("/:invoice_id", paymentHandler.UpdateInvoice)
-	invoicesRouter.POST("/:invoice_id/items", paymentHandler.AddInvoiceLineItem)
-	invoicesRouter.POST("/:invoice_id/items/price", paymentHandler.AddInvoiceLineItemWithPriceID)
-	invoicesRouter.POST("/:invoice_id/finalize", paymentHandler.FinalizeInvoice)
+	invoicesRouter.POST("", invoiceHandler.Create)
+	invoicesRouter.GET("/:invoice_id", invoiceHandler.Get)
+	invoicesRouter.PATCH("/:invoice_id", invoiceHandler.Update)
+	invoicesRouter.POST("/:invoice_id/items", invoiceHandler.AddLineItem)
+	invoicesRouter.POST("/:invoice_id/items/price", invoiceHandler.AddLineItemByPrice)
+	invoicesRouter.POST("/:invoice_id/finalize", invoiceHandler.Finalize)
 }
