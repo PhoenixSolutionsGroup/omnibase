@@ -351,6 +351,138 @@ func (_c *MockQuerier_CreateRole_Call) RunAndReturn(run func(ctx context.Context
 	return _c
 }
 
+// CreateStripeConfig provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateStripeConfig(ctx context.Context, arg repository.CreateStripeConfigParams) (repository.StripeStripeConfig, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateStripeConfig")
+	}
+
+	var r0 repository.StripeStripeConfig
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStripeConfigParams) (repository.StripeStripeConfig, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStripeConfigParams) repository.StripeStripeConfig); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.StripeStripeConfig)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateStripeConfigParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateStripeConfig_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateStripeConfig'
+type MockQuerier_CreateStripeConfig_Call struct {
+	*mock.Call
+}
+
+// CreateStripeConfig is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateStripeConfigParams
+func (_e *MockQuerier_Expecter) CreateStripeConfig(ctx any, arg any) *MockQuerier_CreateStripeConfig_Call {
+	return &MockQuerier_CreateStripeConfig_Call{Call: _e.mock.On("CreateStripeConfig", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateStripeConfig_Call) Run(run func(ctx context.Context, arg repository.CreateStripeConfigParams)) *MockQuerier_CreateStripeConfig_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateStripeConfigParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateStripeConfigParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateStripeConfig_Call) Return(stripeStripeConfig repository.StripeStripeConfig, err error) *MockQuerier_CreateStripeConfig_Call {
+	_c.Call.Return(stripeStripeConfig, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateStripeConfig_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateStripeConfigParams) (repository.StripeStripeConfig, error)) *MockQuerier_CreateStripeConfig_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateStripeWebhook provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateStripeWebhook(ctx context.Context, arg repository.CreateStripeWebhookParams) (repository.CreateStripeWebhookRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateStripeWebhook")
+	}
+
+	var r0 repository.CreateStripeWebhookRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStripeWebhookParams) (repository.CreateStripeWebhookRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStripeWebhookParams) repository.CreateStripeWebhookRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.CreateStripeWebhookRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateStripeWebhookParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateStripeWebhook_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateStripeWebhook'
+type MockQuerier_CreateStripeWebhook_Call struct {
+	*mock.Call
+}
+
+// CreateStripeWebhook is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateStripeWebhookParams
+func (_e *MockQuerier_Expecter) CreateStripeWebhook(ctx any, arg any) *MockQuerier_CreateStripeWebhook_Call {
+	return &MockQuerier_CreateStripeWebhook_Call{Call: _e.mock.On("CreateStripeWebhook", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateStripeWebhook_Call) Run(run func(ctx context.Context, arg repository.CreateStripeWebhookParams)) *MockQuerier_CreateStripeWebhook_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateStripeWebhookParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateStripeWebhookParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateStripeWebhook_Call) Return(createStripeWebhookRow repository.CreateStripeWebhookRow, err error) *MockQuerier_CreateStripeWebhook_Call {
+	_c.Call.Return(createStripeWebhookRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateStripeWebhook_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateStripeWebhookParams) (repository.CreateStripeWebhookRow, error)) *MockQuerier_CreateStripeWebhook_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateTenant(ctx context.Context, arg repository.CreateTenantParams) (repository.CreateTenantRow, error) {
 	ret := _mock.Called(ctx, arg)
@@ -720,6 +852,63 @@ func (_c *MockQuerier_DeleteRoleByIDAndTenant_Call) RunAndReturn(run func(ctx co
 	return _c
 }
 
+// DeleteStripeWebhookByStripeID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error {
+	ret := _mock.Called(ctx, stripeID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteStripeWebhookByStripeID")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = returnFunc(ctx, stripeID)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_DeleteStripeWebhookByStripeID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteStripeWebhookByStripeID'
+type MockQuerier_DeleteStripeWebhookByStripeID_Call struct {
+	*mock.Call
+}
+
+// DeleteStripeWebhookByStripeID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - stripeID string
+func (_e *MockQuerier_Expecter) DeleteStripeWebhookByStripeID(ctx any, stripeID any) *MockQuerier_DeleteStripeWebhookByStripeID_Call {
+	return &MockQuerier_DeleteStripeWebhookByStripeID_Call{Call: _e.mock.On("DeleteStripeWebhookByStripeID", ctx, stripeID)}
+}
+
+func (_c *MockQuerier_DeleteStripeWebhookByStripeID_Call) Run(run func(ctx context.Context, stripeID string)) *MockQuerier_DeleteStripeWebhookByStripeID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStripeWebhookByStripeID_Call) Return(err error) *MockQuerier_DeleteStripeWebhookByStripeID_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStripeWebhookByStripeID_Call) RunAndReturn(run func(ctx context.Context, stripeID string) error) *MockQuerier_DeleteStripeWebhookByStripeID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) DeleteTenant(ctx context.Context, id string) error {
 	ret := _mock.Called(ctx, id)
@@ -962,6 +1151,66 @@ func (_c *MockQuerier_GetEmailTemplateByType_Call) Return(emailTemplate reposito
 }
 
 func (_c *MockQuerier_GetEmailTemplateByType_Call) RunAndReturn(run func(ctx context.Context, type_ string) (repository.EmailTemplate, error)) *MockQuerier_GetEmailTemplateByType_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetLatestStripeConfig provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetLatestStripeConfig(ctx context.Context) (repository.StripeStripeConfig, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetLatestStripeConfig")
+	}
+
+	var r0 repository.StripeStripeConfig
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) (repository.StripeStripeConfig, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) repository.StripeStripeConfig); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		r0 = ret.Get(0).(repository.StripeStripeConfig)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetLatestStripeConfig_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetLatestStripeConfig'
+type MockQuerier_GetLatestStripeConfig_Call struct {
+	*mock.Call
+}
+
+// GetLatestStripeConfig is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) GetLatestStripeConfig(ctx any) *MockQuerier_GetLatestStripeConfig_Call {
+	return &MockQuerier_GetLatestStripeConfig_Call{Call: _e.mock.On("GetLatestStripeConfig", ctx)}
+}
+
+func (_c *MockQuerier_GetLatestStripeConfig_Call) Run(run func(ctx context.Context)) *MockQuerier_GetLatestStripeConfig_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetLatestStripeConfig_Call) Return(stripeStripeConfig repository.StripeStripeConfig, err error) *MockQuerier_GetLatestStripeConfig_Call {
+	_c.Call.Return(stripeStripeConfig, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetLatestStripeConfig_Call) RunAndReturn(run func(ctx context.Context) (repository.StripeStripeConfig, error)) *MockQuerier_GetLatestStripeConfig_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -1226,6 +1475,72 @@ func (_c *MockQuerier_GetRoleByNameAndTenant_Call) Return(getRoleByNameAndTenant
 }
 
 func (_c *MockQuerier_GetRoleByNameAndTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetRoleByNameAndTenantParams) (repository.GetRoleByNameAndTenantRow, error)) *MockQuerier_GetRoleByNameAndTenant_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetStripeWebhookByStripeID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetStripeWebhookByStripeID(ctx context.Context, stripeID string) (repository.GetStripeWebhookByStripeIDRow, error) {
+	ret := _mock.Called(ctx, stripeID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetStripeWebhookByStripeID")
+	}
+
+	var r0 repository.GetStripeWebhookByStripeIDRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.GetStripeWebhookByStripeIDRow, error)); ok {
+		return returnFunc(ctx, stripeID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.GetStripeWebhookByStripeIDRow); ok {
+		r0 = returnFunc(ctx, stripeID)
+	} else {
+		r0 = ret.Get(0).(repository.GetStripeWebhookByStripeIDRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, stripeID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetStripeWebhookByStripeID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetStripeWebhookByStripeID'
+type MockQuerier_GetStripeWebhookByStripeID_Call struct {
+	*mock.Call
+}
+
+// GetStripeWebhookByStripeID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - stripeID string
+func (_e *MockQuerier_Expecter) GetStripeWebhookByStripeID(ctx any, stripeID any) *MockQuerier_GetStripeWebhookByStripeID_Call {
+	return &MockQuerier_GetStripeWebhookByStripeID_Call{Call: _e.mock.On("GetStripeWebhookByStripeID", ctx, stripeID)}
+}
+
+func (_c *MockQuerier_GetStripeWebhookByStripeID_Call) Run(run func(ctx context.Context, stripeID string)) *MockQuerier_GetStripeWebhookByStripeID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetStripeWebhookByStripeID_Call) Return(getStripeWebhookByStripeIDRow repository.GetStripeWebhookByStripeIDRow, err error) *MockQuerier_GetStripeWebhookByStripeID_Call {
+	_c.Call.Return(getStripeWebhookByStripeIDRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetStripeWebhookByStripeID_Call) RunAndReturn(run func(ctx context.Context, stripeID string) (repository.GetStripeWebhookByStripeIDRow, error)) *MockQuerier_GetStripeWebhookByStripeID_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -1620,6 +1935,198 @@ func (_c *MockQuerier_ListRolesByTenant_Call) RunAndReturn(run func(ctx context.
 	return _c
 }
 
+// ListStripeConfigs provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListStripeConfigs(ctx context.Context) ([]repository.StripeStripeConfig, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListStripeConfigs")
+	}
+
+	var r0 []repository.StripeStripeConfig
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]repository.StripeStripeConfig, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []repository.StripeStripeConfig); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.StripeStripeConfig)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListStripeConfigs_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListStripeConfigs'
+type MockQuerier_ListStripeConfigs_Call struct {
+	*mock.Call
+}
+
+// ListStripeConfigs is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) ListStripeConfigs(ctx any) *MockQuerier_ListStripeConfigs_Call {
+	return &MockQuerier_ListStripeConfigs_Call{Call: _e.mock.On("ListStripeConfigs", ctx)}
+}
+
+func (_c *MockQuerier_ListStripeConfigs_Call) Run(run func(ctx context.Context)) *MockQuerier_ListStripeConfigs_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeConfigs_Call) Return(stripeStripeConfigs []repository.StripeStripeConfig, err error) *MockQuerier_ListStripeConfigs_Call {
+	_c.Call.Return(stripeStripeConfigs, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeConfigs_Call) RunAndReturn(run func(ctx context.Context) ([]repository.StripeStripeConfig, error)) *MockQuerier_ListStripeConfigs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListStripeWebhooks provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListStripeWebhooks(ctx context.Context) ([]repository.ListStripeWebhooksRow, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListStripeWebhooks")
+	}
+
+	var r0 []repository.ListStripeWebhooksRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]repository.ListStripeWebhooksRow, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []repository.ListStripeWebhooksRow); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.ListStripeWebhooksRow)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListStripeWebhooks_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListStripeWebhooks'
+type MockQuerier_ListStripeWebhooks_Call struct {
+	*mock.Call
+}
+
+// ListStripeWebhooks is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) ListStripeWebhooks(ctx any) *MockQuerier_ListStripeWebhooks_Call {
+	return &MockQuerier_ListStripeWebhooks_Call{Call: _e.mock.On("ListStripeWebhooks", ctx)}
+}
+
+func (_c *MockQuerier_ListStripeWebhooks_Call) Run(run func(ctx context.Context)) *MockQuerier_ListStripeWebhooks_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeWebhooks_Call) Return(listStripeWebhooksRows []repository.ListStripeWebhooksRow, err error) *MockQuerier_ListStripeWebhooks_Call {
+	_c.Call.Return(listStripeWebhooksRows, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeWebhooks_Call) RunAndReturn(run func(ctx context.Context) ([]repository.ListStripeWebhooksRow, error)) *MockQuerier_ListStripeWebhooks_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListStripeWebhooksByConfigID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]repository.ListStripeWebhooksByConfigIDRow, error) {
+	ret := _mock.Called(ctx, configID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListStripeWebhooksByConfigID")
+	}
+
+	var r0 []repository.ListStripeWebhooksByConfigIDRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) ([]repository.ListStripeWebhooksByConfigIDRow, error)); ok {
+		return returnFunc(ctx, configID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) []repository.ListStripeWebhooksByConfigIDRow); ok {
+		r0 = returnFunc(ctx, configID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.ListStripeWebhooksByConfigIDRow)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, configID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListStripeWebhooksByConfigID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListStripeWebhooksByConfigID'
+type MockQuerier_ListStripeWebhooksByConfigID_Call struct {
+	*mock.Call
+}
+
+// ListStripeWebhooksByConfigID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - configID *uuid.UUID
+func (_e *MockQuerier_Expecter) ListStripeWebhooksByConfigID(ctx any, configID any) *MockQuerier_ListStripeWebhooksByConfigID_Call {
+	return &MockQuerier_ListStripeWebhooksByConfigID_Call{Call: _e.mock.On("ListStripeWebhooksByConfigID", ctx, configID)}
+}
+
+func (_c *MockQuerier_ListStripeWebhooksByConfigID_Call) Run(run func(ctx context.Context, configID *uuid.UUID)) *MockQuerier_ListStripeWebhooksByConfigID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(*uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeWebhooksByConfigID_Call) Return(listStripeWebhooksByConfigIDRows []repository.ListStripeWebhooksByConfigIDRow, err error) *MockQuerier_ListStripeWebhooksByConfigID_Call {
+	_c.Call.Return(listStripeWebhooksByConfigIDRows, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeWebhooksByConfigID_Call) RunAndReturn(run func(ctx context.Context, configID *uuid.UUID) ([]repository.ListStripeWebhooksByConfigIDRow, error)) *MockQuerier_ListStripeWebhooksByConfigID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListTenantUsersByTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]repository.AuthTenantUser, error) {
 	ret := _mock.Called(ctx, tenantID)
@@ -1989,6 +2496,63 @@ func (_c *MockQuerier_UpdateRolePermissions_Call) Return(updateRolePermissionsRo
 }
 
 func (_c *MockQuerier_UpdateRolePermissions_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateRolePermissionsParams) (repository.UpdateRolePermissionsRow, error)) *MockQuerier_UpdateRolePermissions_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateStripeWebhook provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpdateStripeWebhook(ctx context.Context, arg repository.UpdateStripeWebhookParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateStripeWebhook")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateStripeWebhookParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpdateStripeWebhook_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateStripeWebhook'
+type MockQuerier_UpdateStripeWebhook_Call struct {
+	*mock.Call
+}
+
+// UpdateStripeWebhook is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpdateStripeWebhookParams
+func (_e *MockQuerier_Expecter) UpdateStripeWebhook(ctx any, arg any) *MockQuerier_UpdateStripeWebhook_Call {
+	return &MockQuerier_UpdateStripeWebhook_Call{Call: _e.mock.On("UpdateStripeWebhook", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpdateStripeWebhook_Call) Run(run func(ctx context.Context, arg repository.UpdateStripeWebhookParams)) *MockQuerier_UpdateStripeWebhook_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpdateStripeWebhookParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpdateStripeWebhookParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpdateStripeWebhook_Call) Return(err error) *MockQuerier_UpdateStripeWebhook_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpdateStripeWebhook_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateStripeWebhookParams) error) *MockQuerier_UpdateStripeWebhook_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -16,32 +16,41 @@ type Querier interface {
 	CountOwnersByTenant(ctx context.Context, tenantID string) (int64, error)
 	CreateMapping(ctx context.Context, arg CreateMappingParams) (CreateMappingRow, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (CreateRoleRow, error)
+	CreateStripeConfig(ctx context.Context, arg CreateStripeConfigParams) (StripeStripeConfig, error)
+	CreateStripeWebhook(ctx context.Context, arg CreateStripeWebhookParams) (CreateStripeWebhookRow, error)
 	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
 	CreateTenantInvite(ctx context.Context, arg CreateTenantInviteParams) (AuthTenantInvite, error)
 	CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error
 	CreateTenantUser(ctx context.Context, arg CreateTenantUserParams) (AuthTenantUser, error)
 	DeactivateAllUserTenants(ctx context.Context, userID string) error
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
+	DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error
 	DeleteTenant(ctx context.Context, id string) error
 	DeleteTenantUser(ctx context.Context, arg DeleteTenantUserParams) error
 	GetActiveInviteByToken(ctx context.Context, token string) (AuthTenantInvite, error)
 	GetEmailTemplateByType(ctx context.Context, type_ string) (EmailTemplate, error)
+	GetLatestStripeConfig(ctx context.Context) (StripeStripeConfig, error)
 	GetMappingByConfigItemID(ctx context.Context, arg GetMappingByConfigItemIDParams) (GetMappingByConfigItemIDRow, error)
 	GetMappingByStripeID(ctx context.Context, stripeID string) (GetMappingByStripeIDRow, error)
 	GetRoleByIDAndTenant(ctx context.Context, arg GetRoleByIDAndTenantParams) (GetRoleByIDAndTenantRow, error)
 	GetRoleByNameAndTenant(ctx context.Context, arg GetRoleByNameAndTenantParams) (GetRoleByNameAndTenantRow, error)
+	GetStripeWebhookByStripeID(ctx context.Context, stripeID string) (GetStripeWebhookByStripeIDRow, error)
 	GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error)
 	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error)
 	GetTenantUser(ctx context.Context, arg GetTenantUserParams) (AuthTenantUser, error)
 	ListNamespaceDefinitions(ctx context.Context) ([]ListNamespaceDefinitionsRow, error)
 	ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTemplate, error)
 	ListRolesByTenant(ctx context.Context, tenantID uuid.UUID) ([]ListRolesByTenantRow, error)
+	ListStripeConfigs(ctx context.Context) ([]StripeStripeConfig, error)
+	ListStripeWebhooks(ctx context.Context) ([]ListStripeWebhooksRow, error)
+	ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error)
 	ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]AuthTenantUser, error)
 	ListTenantUsersByUser(ctx context.Context, userID string) ([]AuthTenantUser, error)
 	MarkInviteUsed(ctx context.Context, id string) error
 	RemoveUserFromRole(ctx context.Context, arg RemoveUserFromRoleParams) error
 	UpdateMappingStripeID(ctx context.Context, arg UpdateMappingStripeIDParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
+	UpdateStripeWebhook(ctx context.Context, arg UpdateStripeWebhookParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
 }
 
