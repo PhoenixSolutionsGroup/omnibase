@@ -10,7 +10,6 @@ import (
 
 	"api/internal/database/repository"
 	"api/internal/logger"
-	"api/internal/models"
 )
 
 var (
@@ -37,7 +36,7 @@ type StripeWebhookInfo struct {
 	Status  string
 }
 
-func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webhooks []models.WebhookEndpointConfig) ([]WebhookResult, error) {
+func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
 	if s.managed != nil {
 		return s.processWebhooksManaged(ctx, configID, webhooks)
 	}
@@ -47,7 +46,7 @@ func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webho
 		return nil, fmt.Errorf("%w: %w", ProcessWebhooksError, err)
 	}
 
-	desiredByURL := make(map[string]models.WebhookEndpointConfig)
+	desiredByURL := make(map[string]WebhookEndpointConfig)
 	for _, w := range webhooks {
 		desiredByURL[w.URL] = w
 	}
@@ -131,7 +130,7 @@ func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webho
 	return results, nil
 }
 
-func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID, webhooks []models.WebhookEndpointConfig) ([]WebhookResult, error) {
+func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
 	var results []WebhookResult
 	for _, w := range webhooks {
 		req := RegisterWebhookRequest{

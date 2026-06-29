@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetPricesByTemplateError = errors.New("Failed to list enterprise prices by template")
 
 type EnterprisePricesResponse struct {
-	Prices []models.PriceWithStripeID `json:"prices"`
+	Prices []stripe_config.PriceWithStripeID `json:"prices"`
 	Count  int                        `json:"count"`
 }
 
@@ -25,20 +25,20 @@ func (h *Handler) GetPricesByTemplate(ctx *gin.Context) {
 		return
 	}
 	template := ctx.Param("template")
-	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p models.Price) bool {
+	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p stripe_config.Price) bool {
 		return p.EnterpriseTemplate == template
 	})
 	handlers.NewSuccessResponse(ctx, EnterprisePricesResponse{Prices: prices, Count: len(prices)})
 }
 
-func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *models.StripeConfiguration, match func(p models.Price) bool) []models.PriceWithStripeID {
-	out := []models.PriceWithStripeID{}
+func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *stripe_config.Configuration, match func(p stripe_config.Price) bool) []stripe_config.PriceWithStripeID {
+	out := []stripe_config.PriceWithStripeID{}
 	for _, product := range parsed.Products {
 		for _, price := range product.Prices {
 			if !match(price) {
 				continue
 			}
-			pwid := models.PriceWithStripeID{Price: price}
+			pwid := stripe_config.PriceWithStripeID{Price: price}
 			if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, price.ID, "price"); err == nil && id != "" {
 				pwid.StripeID = &id
 			}

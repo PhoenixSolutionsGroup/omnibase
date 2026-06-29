@@ -8,19 +8,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 
-	"api/internal/models"
 )
 
 var CreateCouponError = errors.New("Failed to create stripe coupon")
 
-func (s *Service) createCoupon(ctx context.Context, couponConfig models.Coupon, configID uuid.UUID) (*models.CouponChange, error) {
+func (s *Service) createCoupon(ctx context.Context, couponConfig Coupon, configID uuid.UUID) (*CouponChange, error) {
 	if couponConfig.StripeID != "" {
 		existing, err := s.GetMapping(ctx, couponConfig.ID, "coupon")
 		if err != nil {
 			return nil, err
 		}
 		if existing != nil {
-			return &models.CouponChange{
+			return &CouponChange{
 				CouponID: couponConfig.ID,
 				Name:     couponConfig.Name,
 				Action:   "skipped",
@@ -31,7 +30,7 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig models.Coupon, 
 				return nil, err
 			}
 		}
-		return &models.CouponChange{
+		return &CouponChange{
 			CouponID: couponConfig.ID,
 			Name:     couponConfig.Name,
 			Action:   "linked",
@@ -51,7 +50,7 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig models.Coupon, 
 			return nil, err
 		}
 	}
-	return &models.CouponChange{
+	return &CouponChange{
 		CouponID: couponConfig.ID,
 		Name:     couponConfig.Name,
 		Action:   "created",
@@ -59,7 +58,7 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig models.Coupon, 
 	}, nil
 }
 
-func (s *Service) updateCoupon(ctx context.Context, update models.CouponUpdate) (*models.CouponChange, error) {
+func (s *Service) updateCoupon(ctx context.Context, update CouponUpdate) (*CouponChange, error) {
 	if len(update.FieldChanges) > 0 {
 		params := &stripe.CouponUpdateParams{}
 		if name, ok := update.FieldChanges["name"].(string); ok {
@@ -77,20 +76,20 @@ func (s *Service) updateCoupon(ctx context.Context, update models.CouponUpdate) 
 	if n, ok := update.FieldChanges["name"].(string); ok {
 		name = n
 	}
-	return &models.CouponChange{
+	return &CouponChange{
 		CouponID: update.ID,
 		Name:     name,
 		Action:   "updated",
 	}, nil
 }
 
-func (s *Service) deleteCoupon(ctx context.Context, couponID string) (*models.CouponChange, error) {
+func (s *Service) deleteCoupon(ctx context.Context, couponID string) (*CouponChange, error) {
 	getParams := &stripe.CouponRetrieveParams{}
 	s.stripe.ApplyAccount(getParams)
 	stripeCoupon, err := s.stripe.Stripe.V1Coupons.Retrieve(ctx, couponID, getParams)
 	if err != nil {
 		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
-			return &models.CouponChange{
+			return &CouponChange{
 				CouponID: couponID,
 				Name:     couponID,
 				Action:   "archived",
@@ -103,7 +102,7 @@ func (s *Service) deleteCoupon(ctx context.Context, couponID string) (*models.Co
 	if _, err := s.stripe.Stripe.V1Coupons.Delete(ctx, couponID, deleteParams); err != nil {
 		return nil, fmt.Errorf("failed to delete coupon: %w", err)
 	}
-	return &models.CouponChange{
+	return &CouponChange{
 		CouponID: couponID,
 		Name:     stripeCoupon.Name,
 		Action:   "archived",
@@ -111,7 +110,7 @@ func (s *Service) deleteCoupon(ctx context.Context, couponID string) (*models.Co
 	}, nil
 }
 
-func (s *Service) recreateCoupon(ctx context.Context, couponConfig models.Coupon, configID uuid.UUID) (*models.CouponChange, string, error) {
+func (s *Service) recreateCoupon(ctx context.Context, couponConfig Coupon, configID uuid.UUID) (*CouponChange, string, error) {
 	newConfig := couponConfig
 	newConfig.ID = couponConfig.ID + "_v2"
 	params := buildCouponCreateParams(newConfig)
@@ -125,7 +124,7 @@ func (s *Service) recreateCoupon(ctx context.Context, couponConfig models.Coupon
 			return nil, "", err
 		}
 	}
-	return &models.CouponChange{
+	return &CouponChange{
 		CouponID: couponConfig.ID,
 		Name:     couponConfig.Name,
 		Action:   "recreated",
@@ -133,7 +132,7 @@ func (s *Service) recreateCoupon(ctx context.Context, couponConfig models.Coupon
 	}, stripeCoupon.ID, nil
 }
 
-func buildCouponCreateParams(c models.Coupon) *stripe.CouponCreateParams {
+func buildCouponCreateParams(c Coupon) *stripe.CouponCreateParams {
 	params := &stripe.CouponCreateParams{
 		ID: stripe.String(c.ID),
 	}

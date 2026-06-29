@@ -9,12 +9,11 @@ import (
 
 	"github.com/stripe/stripe-go/v82"
 
-	"api/internal/models"
 )
 
 var PullConfigError = errors.New("Failed to pull stripe configuration")
 
-func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error) {
+func (s *Service) Pull(ctx context.Context) (*Configuration, error) {
 	meterParams := &stripe.BillingMeterListParams{Status: stripe.String("active")}
 	s.stripe.ApplyAccount(meterParams)
 	var stripeMeters []*stripe.BillingMeter
@@ -50,14 +49,14 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 
 	webhookParams := &stripe.WebhookEndpointListParams{}
 	s.stripe.ApplyAccount(webhookParams)
-	var configWebhooks []models.WebhookEndpointConfig
+	var configWebhooks []WebhookEndpointConfig
 	for ep, err := range s.stripe.Stripe.V1WebhookEndpoints.List(ctx, webhookParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: webhooks: %w", PullConfigError, err)
 		}
 		events := make([]string, len(ep.EnabledEvents))
 		copy(events, ep.EnabledEvents)
-		configWebhooks = append(configWebhooks, models.WebhookEndpointConfig{
+		configWebhooks = append(configWebhooks, WebhookEndpointConfig{
 			ID:      ep.ID,
 			URL:     ep.URL,
 			Events:  events,
@@ -67,7 +66,7 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 
 	couponListParams := &stripe.CouponListParams{}
 	s.stripe.ApplyAccount(couponListParams)
-	var configCoupons []models.Coupon
+	var configCoupons []Coupon
 	for cpn, err := range s.stripe.Stripe.V1Coupons.List(ctx, couponListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: coupons: %w", PullConfigError, err)
@@ -84,7 +83,7 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 	promoListParams := &stripe.PromotionCodeListParams{}
 	promoListParams.Filters.AddFilter("active", "", "true")
 	s.stripe.ApplyAccount(promoListParams)
-	var configPromos []models.PromotionCode
+	var configPromos []PromotionCode
 	for promo, err := range s.stripe.Stripe.V1PromotionCodes.List(ctx, promoListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: promotion codes: %w", PullConfigError, err)
@@ -98,7 +97,7 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 		configPromos = append(configPromos, pp)
 	}
 
-	configMeters := make([]models.Meter, 0, len(stripeMeters))
+	configMeters := make([]Meter, 0, len(stripeMeters))
 	for _, sm := range stripeMeters {
 		m := convertStripeMeterToConfig(sm)
 		m.ID = normalizeConfigID(sm.DisplayName)
@@ -113,10 +112,10 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 		}
 	}
 
-	configProducts := make([]models.Product, 0, len(stripeProducts))
+	configProducts := make([]Product, 0, len(stripeProducts))
 	for _, sp := range stripeProducts {
 		normalizedID := normalizeConfigID(sp.Name)
-		cp := models.Product{
+		cp := Product{
 			ID:          normalizedID,
 			StripeID:    sp.ID,
 			Name:        sp.Name,
@@ -139,7 +138,7 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 
 	version := "1.0.0"
 	if latest, err := s.repo.GetLatestStripeConfig(ctx); err == nil {
-		var raw models.StripeConfigData
+		var raw ConfigData
 		if err := json.Unmarshal(latest.Config, &raw); err == nil {
 			if parsed, err := s.validator.ParseAndValidateConfig(raw); err == nil {
 				version = parsed.Version
@@ -148,15 +147,15 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 	}
 
 	if configWebhooks == nil {
-		configWebhooks = []models.WebhookEndpointConfig{}
+		configWebhooks = []WebhookEndpointConfig{}
 	}
 	if configCoupons == nil {
-		configCoupons = []models.Coupon{}
+		configCoupons = []Coupon{}
 	}
 	if configPromos == nil {
-		configPromos = []models.PromotionCode{}
+		configPromos = []PromotionCode{}
 	}
-	return &models.StripeConfiguration{
+	return &Configuration{
 		Version:        version,
 		Webhooks:       configWebhooks,
 		Meters:         configMeters,
@@ -166,30 +165,30 @@ func (s *Service) Pull(ctx context.Context) (*models.StripeConfiguration, error)
 	}, nil
 }
 
-func convertStripeMeterToConfig(sm *stripe.BillingMeter) models.Meter {
-	cm := models.Meter{
+func convertStripeMeterToConfig(sm *stripe.BillingMeter) Meter {
+	cm := Meter{
 		DisplayName: sm.DisplayName,
 		EventName:   sm.EventName,
-		DefaultAggregation: models.MeterDefaultAggregation{
+		DefaultAggregation: MeterDefaultAggregation{
 			Formula: string(sm.DefaultAggregation.Formula),
 		},
 	}
 	if sm.CustomerMapping != nil {
-		cm.CustomerMapping = &models.MeterCustomerMapping{
+		cm.CustomerMapping = &MeterCustomerMapping{
 			EventPayloadKey: sm.CustomerMapping.EventPayloadKey,
 			Type:            string(sm.CustomerMapping.Type),
 		}
 	}
 	if sm.ValueSettings != nil {
-		cm.ValueSettings = &models.MeterValueSettings{
+		cm.ValueSettings = &MeterValueSettings{
 			EventPayloadKey: sm.ValueSettings.EventPayloadKey,
 		}
 	}
 	return cm
 }
 
-func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Price) models.Price {
-	cp := models.Price{
+func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Price) Price {
+	cp := Price{
 		Amount:   float64(sp.UnitAmount),
 		Currency: string(sp.Currency),
 	}
@@ -221,7 +220,7 @@ func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Pric
 			cp.TiersMode = "graduated"
 		}
 		for _, t := range sp.Tiers {
-			ct := models.Tier{}
+			ct := Tier{}
 			if t.UpTo == 0 {
 				ct.UpTo = "inf"
 			} else {
@@ -239,8 +238,8 @@ func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Pric
 	return cp
 }
 
-func convertStripeCouponToConfig(sc *stripe.Coupon) models.Coupon {
-	cc := models.Coupon{
+func convertStripeCouponToConfig(sc *stripe.Coupon) Coupon {
+	cc := Coupon{
 		Name:     sc.Name,
 		Duration: string(sc.Duration),
 	}
@@ -270,8 +269,8 @@ func convertStripeCouponToConfig(sc *stripe.Coupon) models.Coupon {
 	return cc
 }
 
-func convertStripePromoCodeToConfig(sp *stripe.PromotionCode, coupons []models.Coupon) models.PromotionCode {
-	cp := models.PromotionCode{Code: sp.Code}
+func convertStripePromoCodeToConfig(sp *stripe.PromotionCode, coupons []Coupon) PromotionCode {
+	cp := PromotionCode{Code: sp.Code}
 	if sp.Coupon != nil {
 		couponStripeID := sp.Coupon.ID
 		for _, c := range coupons {

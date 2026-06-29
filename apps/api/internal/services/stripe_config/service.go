@@ -2,7 +2,6 @@ package stripe_config
 
 import (
 	"api/internal/database/repository"
-	"api/internal/models"
 	"api/internal/services"
 	"api/internal/services/stripe_client"
 )
@@ -34,6 +33,6 @@ func New(deps Deps) *Service {
 	}
 }
 
-func (s *Service) ParseAndValidate(configData models.StripeConfigData) (*models.StripeConfiguration, error) {
+func (s *Service) ParseAndValidate(configData ConfigData) (*Configuration, error) {
 	return s.validator.ParseAndValidateConfig(configData)
 }

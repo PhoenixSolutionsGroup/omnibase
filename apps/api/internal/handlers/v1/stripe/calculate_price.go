@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var CalculatePriceCostError = errors.New("Failed to calculate price cost")
@@ -42,7 +42,7 @@ func (h *Handler) CalculatePriceCost(ctx *gin.Context) {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CalculatePriceCostError, err))
 		return
 	}
-	var found *models.Price
+	var found *stripe_config.Price
 	for _, product := range parsed.Products {
 		for i := range product.Prices {
 			if product.Prices[i].ID == priceID {
@@ -79,7 +79,7 @@ func (h *Handler) CalculatePriceCost(ctx *gin.Context) {
 	})
 }
 
-func calculatePriceCost(price *models.Price, quantity int64) int64 {
+func calculatePriceCost(price *stripe_config.Price, quantity int64) int64 {
 	if quantity <= 0 {
 		return 0
 	}
@@ -89,7 +89,7 @@ func calculatePriceCost(price *models.Price, quantity int64) int64 {
 	return int64(price.Amount) * quantity
 }
 
-func calculateTieredCost(price *models.Price, quantity int64) int64 {
+func calculateTieredCost(price *stripe_config.Price, quantity int64) int64 {
 	if len(price.Tiers) == 0 {
 		return 0
 	}

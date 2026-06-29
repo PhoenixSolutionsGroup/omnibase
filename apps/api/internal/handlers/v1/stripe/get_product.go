@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetProductError = errors.New("Failed to get product by id")
 
 type GetProductResponse struct {
-	Product models.ProductWithStripeIDs `json:"product" binding:"required"`
+	Product stripe_config.ProductWithStripeIDs `json:"product" binding:"required"`
 }
 
 func (h *Handler) GetProductByID(ctx *gin.Context) {
@@ -28,7 +28,7 @@ func (h *Handler) GetProductByID(ctx *gin.Context) {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetProductError, err))
 		return
 	}
-	var raw models.StripeConfigData
+	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetProductError, err))
 		return

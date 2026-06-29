@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetConfigAdminError = errors.New("Failed to get stripe configuration (admin)")
@@ -19,7 +19,7 @@ func (h *Handler) GetConfigAdmin(ctx *gin.Context) {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetConfigAdminError, err))
 		return
 	}
-	var raw models.StripeConfigData
+	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetConfigAdminError, err))
 		return

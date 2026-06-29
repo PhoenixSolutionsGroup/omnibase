@@ -9,12 +9,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 
-	"api/internal/models"
 )
 
 var CreateMeterError = errors.New("Failed to create stripe meter")
 
-func (s *Service) createMeter(ctx context.Context, configID uuid.UUID, meterConfig models.Meter) (string, error) {
+func (s *Service) createMeter(ctx context.Context, configID uuid.UUID, meterConfig Meter) (string, error) {
 	if meterConfig.StripeID != "" {
 		existing, err := s.GetMapping(ctx, meterConfig.ID, "meter")
 		if err != nil {
@@ -90,7 +89,7 @@ func (s *Service) createMeter(ctx context.Context, configID uuid.UUID, meterConf
 	return result.ID, nil
 }
 
-func (s *Service) deactivateMeter(ctx context.Context, stripeID string) (*models.MeterChange, error) {
+func (s *Service) deactivateMeter(ctx context.Context, stripeID string) (*MeterChange, error) {
 	getParams := &stripe.BillingMeterRetrieveParams{}
 	s.stripe.ApplyAccount(getParams)
 	meterDetails, err := s.stripe.Stripe.V1BillingMeters.Retrieve(ctx, stripeID, getParams)
@@ -107,7 +106,7 @@ func (s *Service) deactivateMeter(ctx context.Context, stripeID string) (*models
 			return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
 		}
 	}
-	return &models.MeterChange{
+	return &MeterChange{
 		MeterID:     stripeID,
 		DisplayName: meterDetails.DisplayName,
 		Action:      "archived",

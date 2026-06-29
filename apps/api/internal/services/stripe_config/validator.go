@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"api/internal/models"
 )
 
 type Validator struct{}
@@ -14,7 +13,7 @@ func NewValidator() *Validator {
 	return &Validator{}
 }
 
-func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (*models.StripeConfiguration, error) {
+func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*Configuration, error) {
 	productsValue, hasProducts := configData["products"]
 	if !hasProducts {
 		return nil, fmt.Errorf("products is required")
@@ -40,7 +39,7 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal config data: %w", err)
 	}
-	var config models.StripeConfiguration
+	var config Configuration
 	if err := json.Unmarshal(configBytes, &config); err != nil {
 		return nil, fmt.Errorf("invalid JSON structure: %w", err)
 	}
@@ -127,7 +126,7 @@ func (v *Validator) ParseAndValidateConfig(configData models.StripeConfigData) (
 	return &config, nil
 }
 
-func filterEmptyObjects(configData models.StripeConfigData, key string) {
+func filterEmptyObjects(configData ConfigData, key string) {
 	arr, ok := configData[key].([]interface{})
 	if !ok {
 		return
@@ -141,7 +140,7 @@ func filterEmptyObjects(configData models.StripeConfigData, key string) {
 	configData[key] = filtered
 }
 
-func (v *Validator) validateProduct(product models.Product) error {
+func (v *Validator) validateProduct(product Product) error {
 	if product.ID == "" {
 		return fmt.Errorf("product ID is required")
 	}
@@ -159,7 +158,7 @@ func (v *Validator) validateProduct(product models.Product) error {
 	return nil
 }
 
-func (v *Validator) validatePrice(price models.Price, productType string) error {
+func (v *Validator) validatePrice(price Price, productType string) error {
 	if price.ID == "" {
 		return fmt.Errorf("price ID is required")
 	}
@@ -236,7 +235,7 @@ func (v *Validator) isValidCurrency(currency string) bool {
 	return false
 }
 
-func (v *Validator) validateMeter(meter models.Meter) error {
+func (v *Validator) validateMeter(meter Meter) error {
 	if meter.ID == "" {
 		return fmt.Errorf("meter ID is required")
 	}
@@ -269,7 +268,7 @@ func (v *Validator) validateMeter(meter models.Meter) error {
 	return nil
 }
 
-func (v *Validator) validateMeterReferences(config models.StripeConfiguration) error {
+func (v *Validator) validateMeterReferences(config Configuration) error {
 	defined := make(map[string]bool)
 	for _, m := range config.Meters {
 		defined[m.ID] = true
@@ -293,7 +292,7 @@ func (v *Validator) isValidAggregationFormula(formula string) bool {
 	return false
 }
 
-func (v *Validator) validateWebhooks(webhooks []models.WebhookEndpointConfig) error {
+func (v *Validator) validateWebhooks(webhooks []WebhookEndpointConfig) error {
 	seenIDs := make(map[string]bool)
 	seenURLs := make(map[string]bool)
 	for i, w := range webhooks {
@@ -327,7 +326,7 @@ func (v *Validator) validateWebhooks(webhooks []models.WebhookEndpointConfig) er
 	return nil
 }
 
-func (v *Validator) validateCoupon(coupon models.Coupon, productIDs map[string]bool) error {
+func (v *Validator) validateCoupon(coupon Coupon, productIDs map[string]bool) error {
 	if coupon.ID == "" {
 		return fmt.Errorf("coupon ID is required")
 	}
@@ -380,7 +379,7 @@ func (v *Validator) validateCoupon(coupon models.Coupon, productIDs map[string]b
 	return nil
 }
 
-func (v *Validator) validatePromotionCode(promo models.PromotionCode, couponIDs map[string]bool) error {
+func (v *Validator) validatePromotionCode(promo PromotionCode, couponIDs map[string]bool) error {
 	if promo.ID == "" {
 		return fmt.Errorf("promotion code ID is required")
 	}
@@ -404,6 +403,6 @@ func (v *Validator) validatePromotionCode(promo models.PromotionCode, couponIDs 
 	return nil
 }
 
-func (v *Validator) ParseAndValidate(configData models.StripeConfigData) (*models.StripeConfiguration, error) {
+func (v *Validator) ParseAndValidate(configData ConfigData) (*Configuration, error) {
 	return v.ParseAndValidateConfig(configData)
 }

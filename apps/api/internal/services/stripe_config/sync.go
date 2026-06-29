@@ -10,19 +10,18 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
-	"api/internal/models"
 )
 
 var SyncError = errors.New("Failed to sync stripe configuration")
 
 type SyncArgs struct {
-	Config models.StripeConfigData
+	Config ConfigData
 }
 
-func (s *Service) Sync(ctx context.Context, args SyncArgs) (*models.StripeConfigResponse, error) {
+func (s *Service) Sync(ctx context.Context, args SyncArgs) (*ConfigResponse, error) {
 	config, err := s.validator.ParseAndValidateConfig(args.Config)
 	if err != nil {
-		return &models.StripeConfigResponse{
+		return &ConfigResponse{
 			Message: "Configuration validation failed",
 			Errors:  []string{err.Error()},
 		}, nil
@@ -37,7 +36,7 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*models.StripeConfig
 		return s.handleFirstTimeSetup(ctx, config, args.Config)
 	}
 
-	var prevConfigData models.StripeConfigData
+	var prevConfigData ConfigData
 	if err := json.Unmarshal(prevRow.Config, &prevConfigData); err != nil {
 		return nil, fmt.Errorf("%w: failed to decode previous config: %w", SyncError, err)
 	}
@@ -48,7 +47,7 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*models.StripeConfig
 
 	diff := s.differ.CalculateConfigDiff(previousConfig, config)
 	if !hasDiffChanges(diff) {
-		return &models.StripeConfigResponse{
+		return &ConfigResponse{
 			Message: "no change was made",
 			Config:  config,
 		}, nil
@@ -72,24 +71,24 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*models.StripeConfig
 		changes.Webhooks = convertWebhookResultsToChanges(webhookResults)
 	}
 
-	return &models.StripeConfigResponse{
+	return &ConfigResponse{
 		Message: "Configuration updated successfully",
 		Changes: changes,
 		Config:  config,
 	}, nil
 }
 
-func (s *Service) handleFirstTimeSetup(ctx context.Context, config *models.StripeConfiguration, raw models.StripeConfigData) (*models.StripeConfigResponse, error) {
+func (s *Service) handleFirstTimeSetup(ctx context.Context, config *Configuration, raw ConfigData) (*ConfigResponse, error) {
 	newConfig, err := s.saveConfig(ctx, raw, config.Version)
 	if err != nil {
 		return nil, err
 	}
 
-	changes := &models.StripeConfigChanges{
-		Products: &models.ProductChanges{Created: []models.ProductChange{}},
+	changes := &ConfigChanges{
+		Products: &ProductChanges{Created: []ProductChange{}},
 	}
 	if len(config.Meters) > 0 {
-		changes.Meters = &models.MeterChanges{Created: []models.MeterChange{}}
+		changes.Meters = &MeterChanges{Created: []MeterChange{}}
 		meterChanges, err := s.createMetersWithMapping(ctx, config.Meters, newConfig.ID)
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to create meters: %w", SyncError, err)
@@ -106,7 +105,7 @@ func (s *Service) handleFirstTimeSetup(ctx context.Context, config *models.Strip
 	}
 
 	if len(config.Coupons) > 0 {
-		changes.Coupons = &models.CouponChanges{Created: []models.CouponChange{}}
+		changes.Coupons = &CouponChanges{Created: []CouponChange{}}
 		for _, c := range config.Coupons {
 			cc, err := s.createCoupon(ctx, c, newConfig.ID)
 			if err != nil {
@@ -117,7 +116,7 @@ func (s *Service) handleFirstTimeSetup(ctx context.Context, config *models.Strip
 	}
 
 	if len(config.PromotionCodes) > 0 {
-		changes.PromotionCodes = &models.PromotionCodeChanges{Created: []models.PromotionCodeChange{}}
+		changes.PromotionCodes = &PromotionCodeChanges{Created: []PromotionCodeChange{}}
 		for _, p := range config.PromotionCodes {
 			pc, err := s.createPromotionCode(ctx, p, newConfig.ID)
 			if err != nil {
@@ -135,39 +134,39 @@ func (s *Service) handleFirstTimeSetup(ctx context.Context, config *models.Strip
 		changes.Webhooks = convertWebhookResultsToChanges(webhookResults)
 	}
 
-	return &models.StripeConfigResponse{
+	return &ConfigResponse{
 		Message: "Initial Stripe configuration created successfully",
 		Changes: changes,
 		Config:  config,
 	}, nil
 }
 
-func (s *Service) applyDiff(ctx context.Context, diff *models.ConfigDiff, config *models.StripeConfiguration, configID uuid.UUID) (*models.StripeConfigChanges, error) {
-	changes := &models.StripeConfigChanges{
-		Products: &models.ProductChanges{
-			Created:  []models.ProductChange{},
-			Updated:  []models.ProductChange{},
-			Archived: []models.ProductChange{},
+func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Configuration, configID uuid.UUID) (*ConfigChanges, error) {
+	changes := &ConfigChanges{
+		Products: &ProductChanges{
+			Created:  []ProductChange{},
+			Updated:  []ProductChange{},
+			Archived: []ProductChange{},
 		},
 	}
 	if len(diff.NewMeters) > 0 || len(diff.ArchivedMeters) > 0 {
-		changes.Meters = &models.MeterChanges{
-			Created:  []models.MeterChange{},
-			Archived: []models.MeterChange{},
+		changes.Meters = &MeterChanges{
+			Created:  []MeterChange{},
+			Archived: []MeterChange{},
 		}
 	}
 	if len(diff.NewCoupons) > 0 || len(diff.UpdatedCoupons) > 0 || len(diff.ArchivedCoupons) > 0 {
-		changes.Coupons = &models.CouponChanges{
-			Created:  []models.CouponChange{},
-			Updated:  []models.CouponChange{},
-			Archived: []models.CouponChange{},
+		changes.Coupons = &CouponChanges{
+			Created:  []CouponChange{},
+			Updated:  []CouponChange{},
+			Archived: []CouponChange{},
 		}
 	}
 	if len(diff.NewPromotionCodes) > 0 || len(diff.UpdatedPromotionCodes) > 0 || len(diff.DeactivatedPromoCodes) > 0 {
-		changes.PromotionCodes = &models.PromotionCodeChanges{
-			Created:     []models.PromotionCodeChange{},
-			Updated:     []models.PromotionCodeChange{},
-			Deactivated: []models.PromotionCodeChange{},
+		changes.PromotionCodes = &PromotionCodeChanges{
+			Created:     []PromotionCodeChange{},
+			Updated:     []PromotionCodeChange{},
+			Deactivated: []PromotionCodeChange{},
 		}
 	}
 
@@ -231,7 +230,7 @@ func (s *Service) applyDiff(ctx context.Context, diff *models.ConfigDiff, config
 
 	for _, update := range diff.UpdatedCoupons {
 		if requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool); requiresRecreate {
-			var couponConfig *models.Coupon
+			var couponConfig *Coupon
 			for i := range config.Coupons {
 				if config.Coupons[i].ID == update.ID {
 					couponConfig = &config.Coupons[i]
@@ -257,7 +256,7 @@ func (s *Service) applyDiff(ctx context.Context, diff *models.ConfigDiff, config
 					return nil, fmt.Errorf("failed to recreate promotion code %s after coupon recreation: %w", promo.ID, err)
 				}
 				if changes.PromotionCodes == nil {
-					changes.PromotionCodes = &models.PromotionCodeChanges{Updated: []models.PromotionCodeChange{}}
+					changes.PromotionCodes = &PromotionCodeChanges{Updated: []PromotionCodeChange{}}
 				}
 				changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *pc)
 			}
@@ -279,7 +278,7 @@ func (s *Service) applyDiff(ctx context.Context, diff *models.ConfigDiff, config
 
 	for _, update := range diff.UpdatedPromotionCodes {
 		if requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool); requiresRecreate {
-			var promoConfig *models.PromotionCode
+			var promoConfig *PromotionCode
 			for i := range config.PromotionCodes {
 				if config.PromotionCodes[i].ID == update.ID {
 					promoConfig = &config.PromotionCodes[i]
@@ -313,7 +312,7 @@ func (s *Service) applyDiff(ctx context.Context, diff *models.ConfigDiff, config
 	return changes, nil
 }
 
-func (s *Service) saveConfig(ctx context.Context, raw models.StripeConfigData, version string) (*repository.StripeStripeConfig, error) {
+func (s *Service) saveConfig(ctx context.Context, raw ConfigData, version string) (*repository.StripeStripeConfig, error) {
 	configBytes, err := json.Marshal(raw)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to marshal config: %w", SyncError, err)
@@ -328,7 +327,7 @@ func (s *Service) saveConfig(ctx context.Context, raw models.StripeConfigData, v
 	return &row, nil
 }
 
-func (s *Service) createProductWithPrices(ctx context.Context, product models.Product, configID uuid.UUID) (*models.ProductChange, error) {
+func (s *Service) createProductWithPrices(ctx context.Context, product Product, configID uuid.UUID) (*ProductChange, error) {
 	productChange, err := s.createProduct(ctx, product, configID)
 	if err != nil {
 		return nil, err
@@ -341,7 +340,7 @@ func (s *Service) createProductWithPrices(ctx context.Context, product models.Pr
 	return productChange, nil
 }
 
-func (s *Service) updateProductWithPrices(ctx context.Context, update models.ProductUpdate, configID uuid.UUID) (*models.ProductChange, error) {
+func (s *Service) updateProductWithPrices(ctx context.Context, update ProductUpdate, configID uuid.UUID) (*ProductChange, error) {
 	productChange, err := s.updateProduct(ctx, update)
 	if err != nil {
 		return nil, err
@@ -366,14 +365,14 @@ func (s *Service) updateProductWithPrices(ctx context.Context, update models.Pro
 	return productChange, nil
 }
 
-func (s *Service) createMetersWithMapping(ctx context.Context, meters []models.Meter, configID uuid.UUID) ([]models.MeterChange, error) {
-	var out []models.MeterChange
+func (s *Service) createMetersWithMapping(ctx context.Context, meters []Meter, configID uuid.UUID) ([]MeterChange, error) {
+	var out []MeterChange
 	for _, m := range meters {
 		stripeID, err := s.createMeter(ctx, configID, m)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create meter %s: %w", m.ID, err)
 		}
-		out = append(out, models.MeterChange{
+		out = append(out, MeterChange{
 			MeterID:     m.ID,
 			DisplayName: m.DisplayName,
 			Action:      "created",
@@ -383,7 +382,7 @@ func (s *Service) createMetersWithMapping(ctx context.Context, meters []models.M
 	return out, nil
 }
 
-func hasDiffChanges(diff *models.ConfigDiff) bool {
+func hasDiffChanges(diff *ConfigDiff) bool {
 	return len(diff.NewProducts) > 0 ||
 		len(diff.UpdatedProducts) > 0 ||
 		len(diff.ArchivedProducts) > 0 ||
@@ -397,17 +396,17 @@ func hasDiffChanges(diff *models.ConfigDiff) bool {
 		len(diff.DeactivatedPromoCodes) > 0
 }
 
-func convertWebhookResultsToChanges(results []WebhookResult) *models.WebhookChanges {
+func convertWebhookResultsToChanges(results []WebhookResult) *WebhookChanges {
 	if len(results) == 0 {
 		return nil
 	}
-	changes := &models.WebhookChanges{
-		Created:   []models.WebhookChange{},
-		Updated:   []models.WebhookChange{},
-		Unchanged: []models.WebhookChange{},
+	changes := &WebhookChanges{
+		Created:   []WebhookChange{},
+		Updated:   []WebhookChange{},
+		Unchanged: []WebhookChange{},
 	}
 	for _, r := range results {
-		c := models.WebhookChange{
+		c := WebhookChange{
 			WebhookID: r.ID,
 			URL:       r.URL,
 			Action:    r.Action,

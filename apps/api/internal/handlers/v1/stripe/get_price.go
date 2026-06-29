@@ -8,14 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetPriceError = errors.New("Failed to get price by id")
 
 type GetPriceResponse struct {
-	Price   models.PriceWithStripeID    `json:"price" binding:"required"`
-	Product models.ProductWithStripeIDs `json:"product" binding:"required"`
+	Price   stripe_config.PriceWithStripeID    `json:"price" binding:"required"`
+	Product stripe_config.ProductWithStripeIDs `json:"product" binding:"required"`
 }
 
 func (h *Handler) GetPriceByID(ctx *gin.Context) {
@@ -29,7 +29,7 @@ func (h *Handler) GetPriceByID(ctx *gin.Context) {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPriceError, err))
 		return
 	}
-	var raw models.StripeConfigData
+	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPriceError, err))
 		return

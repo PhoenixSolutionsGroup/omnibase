@@ -8,12 +8,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 
-	"api/internal/models"
 )
 
 var CreatePriceError = errors.New("Failed to create stripe price")
 
-func (s *Service) createPricesForProduct(ctx context.Context, productConfig models.Product, stripeProductID string, configID uuid.UUID) ([]string, error) {
+func (s *Service) createPricesForProduct(ctx context.Context, productConfig Product, stripeProductID string, configID uuid.UUID) ([]string, error) {
 	var details []string
 	for _, priceConfig := range productConfig.Prices {
 		stripeID, detail, err := s.createPriceInternal(ctx, priceConfig, stripeProductID, configID)
@@ -35,7 +34,7 @@ func (s *Service) createPricesForProduct(ctx context.Context, productConfig mode
 	return details, nil
 }
 
-func (s *Service) createPrice(ctx context.Context, priceConfig models.Price, productID string, configID uuid.UUID) (string, error) {
+func (s *Service) createPrice(ctx context.Context, priceConfig Price, productID string, configID uuid.UUID) (string, error) {
 	stripeID, _, err := s.createPriceInternal(ctx, priceConfig, productID, configID)
 	if err != nil {
 		return "", err
@@ -50,7 +49,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig models.Price, pro
 	return stripeID, nil
 }
 
-func (s *Service) createPriceInternal(ctx context.Context, priceConfig models.Price, stripeProductID string, configID uuid.UUID) (string, string, error) {
+func (s *Service) createPriceInternal(ctx context.Context, priceConfig Price, stripeProductID string, configID uuid.UUID) (string, string, error) {
 	if priceConfig.StripeID != "" {
 		existing, err := s.GetMapping(ctx, priceConfig.ID, "price")
 		if err != nil {
@@ -150,7 +149,7 @@ func (s *Service) archivePrice(ctx context.Context, priceConfigID string) error 
 	return nil
 }
 
-func buildTierParams(tiers []models.Tier) []*stripe.PriceCreateTierParams {
+func buildTierParams(tiers []Tier) []*stripe.PriceCreateTierParams {
 	out := make([]*stripe.PriceCreateTierParams, 0, len(tiers))
 	for _, tier := range tiers {
 		t := &stripe.PriceCreateTierParams{}

@@ -51,7 +51,7 @@ func (h *Handler) Remove(ctx *gin.Context) {
 		customerID = *row.StripeCustomerID
 	}
 
-	err := h.billing.RemoveTenantSubscription(ctx.Request.Context(), billing.RemoveTenantSubscriptionArgs{
+	result, err := h.billing.RemoveTenantSubscription(ctx.Request.Context(), billing.RemoveTenantSubscriptionArgs{
 		StripeCustomerID: customerID,
 		ConfigPriceID:    req.PlanID,
 	})
@@ -66,7 +66,8 @@ func (h *Handler) Remove(ctx *gin.Context) {
 	}
 
 	handlers.NewSuccessResponse(ctx, &RemoveResponse{
-		Status:  "canceled",
-		Message: "Subscription canceled successfully",
+		SubscriptionID: result.SubscriptionID,
+		Status:         result.Status,
+		Message:        "Subscription canceled successfully",
 	})
 }

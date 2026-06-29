@@ -8,19 +8,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 
-	"api/internal/models"
 )
 
 var CreatePromotionCodeError = errors.New("Failed to create stripe promotion code")
 
-func (s *Service) createPromotionCode(ctx context.Context, promoConfig models.PromotionCode, configID uuid.UUID) (*models.PromotionCodeChange, error) {
+func (s *Service) createPromotionCode(ctx context.Context, promoConfig PromotionCode, configID uuid.UUID) (*PromotionCodeChange, error) {
 	if promoConfig.StripeID != "" {
 		existing, err := s.GetMapping(ctx, promoConfig.ID, "promotion_code")
 		if err != nil {
 			return nil, err
 		}
 		if existing != nil {
-			return &models.PromotionCodeChange{
+			return &PromotionCodeChange{
 				PromoID: promoConfig.ID,
 				Code:    promoConfig.Code,
 				Action:  "skipped",
@@ -31,7 +30,7 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig models.Pr
 				return nil, err
 			}
 		}
-		return &models.PromotionCodeChange{
+		return &PromotionCodeChange{
 			PromoID:  promoConfig.ID,
 			Code:     promoConfig.Code,
 			Action:   "linked",
@@ -54,7 +53,7 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig models.Pr
 			return nil, err
 		}
 	}
-	return &models.PromotionCodeChange{
+	return &PromotionCodeChange{
 		PromoID:  promoConfig.ID,
 		Code:     promoConfig.Code,
 		Action:   "created",
@@ -62,7 +61,7 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig models.Pr
 	}, nil
 }
 
-func (s *Service) updatePromotionCode(ctx context.Context, update models.PromoCodeUpdate) (*models.PromotionCodeChange, error) {
+func (s *Service) updatePromotionCode(ctx context.Context, update PromoCodeUpdate) (*PromotionCodeChange, error) {
 	stripeID, err := s.GetStripeIDByConfigItemID(ctx, update.ID, "promotion_code")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Stripe ID for promotion code: %w", err)
@@ -84,7 +83,7 @@ func (s *Service) updatePromotionCode(ctx context.Context, update models.PromoCo
 	if c, ok := update.FieldChanges["code"].(string); ok {
 		code = c
 	}
-	return &models.PromotionCodeChange{
+	return &PromotionCodeChange{
 		PromoID:  update.ID,
 		Code:     code,
 		Action:   "updated",
@@ -92,10 +91,10 @@ func (s *Service) updatePromotionCode(ctx context.Context, update models.PromoCo
 	}, nil
 }
 
-func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (*models.PromotionCodeChange, error) {
+func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (*PromotionCodeChange, error) {
 	stripeID, err := s.GetStripeIDByConfigItemID(ctx, promoID, "promotion_code")
 	if err != nil || stripeID == "" {
-		return &models.PromotionCodeChange{
+		return &PromotionCodeChange{
 			PromoID: promoID,
 			Code:    promoID,
 			Action:  "deactivated",
@@ -106,7 +105,7 @@ func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (
 	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, stripeID, params)
 	if err != nil {
 		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
-			return &models.PromotionCodeChange{
+			return &PromotionCodeChange{
 				PromoID: promoID,
 				Code:    promoID,
 				Action:  "deactivated",
@@ -114,7 +113,7 @@ func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (
 		}
 		return nil, fmt.Errorf("failed to deactivate promotion code: %w", err)
 	}
-	return &models.PromotionCodeChange{
+	return &PromotionCodeChange{
 		PromoID:  promoID,
 		Code:     stripePromo.Code,
 		Action:   "deactivated",
@@ -122,7 +121,7 @@ func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (
 	}, nil
 }
 
-func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig models.PromotionCode, configID uuid.UUID) (*models.PromotionCodeChange, error) {
+func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig PromotionCode, configID uuid.UUID) (*PromotionCodeChange, error) {
 	_, _ = s.deactivatePromotionCode(ctx, promoConfig.ID)
 
 	couponStripeID, err := s.GetStripeIDByConfigItemID(ctx, promoConfig.Coupon, "coupon")
@@ -143,7 +142,7 @@ func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig models.
 			return nil, err
 		}
 	}
-	return &models.PromotionCodeChange{
+	return &PromotionCodeChange{
 		PromoID:  promoConfig.ID,
 		Code:     promoConfig.Code,
 		Action:   "recreated",
@@ -151,7 +150,7 @@ func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig models.
 	}, nil
 }
 
-func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoConfig models.PromotionCode, newCouponStripeID string, configID uuid.UUID) (*models.PromotionCodeChange, error) {
+func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoConfig PromotionCode, newCouponStripeID string, configID uuid.UUID) (*PromotionCodeChange, error) {
 	params := buildPromotionCodeCreateParams(promoConfig, newCouponStripeID)
 	if promoConfig.Active == nil {
 		params.Active = stripe.Bool(true)
@@ -166,7 +165,7 @@ func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoCon
 			return nil, err
 		}
 	}
-	return &models.PromotionCodeChange{
+	return &PromotionCodeChange{
 		PromoID:  promoConfig.ID,
 		Code:     promoConfig.Code,
 		Action:   "recreated",
@@ -174,7 +173,7 @@ func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoCon
 	}, nil
 }
 
-func buildPromotionCodeCreateParams(p models.PromotionCode, couponStripeID string) *stripe.PromotionCodeCreateParams {
+func buildPromotionCodeCreateParams(p PromotionCode, couponStripeID string) *stripe.PromotionCodeCreateParams {
 	params := &stripe.PromotionCodeCreateParams{
 		Code:   stripe.String(p.Code),
 		Coupon: stripe.String(couponStripeID),

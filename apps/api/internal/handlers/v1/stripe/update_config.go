@@ -8,14 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
 	"api/internal/services/stripe_config"
 )
 
 var UpdateConfigError = errors.New("Failed to update stripe configuration")
 
 func (h *Handler) UpdateConfig(ctx *gin.Context) {
-	var configData models.StripeConfigData
+	var configData stripe_config.ConfigData
 	if err := ctx.ShouldBindJSON(&configData); err != nil {
 		handlers.NewBadRequestResponse(ctx, "Invalid JSON format")
 		return

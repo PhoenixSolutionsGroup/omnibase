@@ -9,7 +9,6 @@ import (
 	"github.com/stripe/stripe-go/v82"
 
 	"api/internal/database/repository"
-	"api/internal/models"
 )
 
 var ArchiveAllError = errors.New("Failed to archive all stripe resources")
@@ -102,7 +101,7 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 
 	version := "1.0.0"
 	if latest, err := s.repo.GetLatestStripeConfig(ctx); err == nil {
-		var raw models.StripeConfigData
+		var raw ConfigData
 		if err := json.Unmarshal(latest.Config, &raw); err == nil {
 			if parsed, err := s.validator.ParseAndValidateConfig(raw); err == nil {
 				version = parsed.Version
@@ -110,7 +109,7 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 		}
 	}
 
-	empty := models.StripeConfigData{
+	empty := ConfigData{
 		"version":         version,
 		"meters":          []any{},
 		"products":        []any{},

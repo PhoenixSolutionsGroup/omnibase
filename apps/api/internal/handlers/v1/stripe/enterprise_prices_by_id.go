@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetPricesByEnterpriseIDError = errors.New("Failed to list enterprise prices by id")
@@ -19,7 +19,7 @@ func (h *Handler) GetPricesByEnterpriseID(ctx *gin.Context) {
 		return
 	}
 	enterpriseID := ctx.Param("enterprise_id")
-	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p models.Price) bool {
+	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p stripe_config.Price) bool {
 		return p.EnterpriseID == enterpriseID
 	})
 	handlers.NewSuccessResponse(ctx, EnterprisePricesResponse{Prices: prices, Count: len(prices)})

@@ -10,14 +10,14 @@ import (
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetConfigHistoryError = errors.New("Failed to get stripe configuration history")
 
 type ConfigHistoryItem struct {
 	ID         uuid.UUID                         `json:"id" binding:"required"`
-	Config     models.StripeConfigurationWithIDs `json:"config" binding:"required"`
+	Config     stripe_config.ConfigurationWithIDs `json:"config" binding:"required"`
 	Version    string                            `json:"version" binding:"required"`
 	CreatedAt  string                            `json:"created_at" binding:"required"`
 	UpdatedAt  string                            `json:"updated_at" binding:"required"`
@@ -94,16 +94,16 @@ func (h *Handler) GetConfigHistory(ctx *gin.Context) {
 
 	items := make([]ConfigHistoryItem, 0, len(rows))
 	for _, row := range rows {
-		var raw models.StripeConfigData
+		var raw stripe_config.ConfigData
 		if err := json.Unmarshal(row.Config, &raw); err != nil {
 			msg := err.Error()
 			items = append(items, ConfigHistoryItem{
 				ID:      row.ID,
 				Version: row.Version,
-				Config: models.StripeConfigurationWithIDs{
+				Config: stripe_config.ConfigurationWithIDs{
 					Version:  row.Version,
-					Meters:   []models.MeterWithStripeID{},
-					Products: []models.ProductWithStripeIDs{},
+					Meters:   []stripe_config.MeterWithStripeID{},
+					Products: []stripe_config.ProductWithStripeIDs{},
 				},
 				CreatedAt:  row.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 				UpdatedAt:  row.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
@@ -117,10 +117,10 @@ func (h *Handler) GetConfigHistory(ctx *gin.Context) {
 			items = append(items, ConfigHistoryItem{
 				ID:      row.ID,
 				Version: row.Version,
-				Config: models.StripeConfigurationWithIDs{
+				Config: stripe_config.ConfigurationWithIDs{
 					Version:  row.Version,
-					Meters:   []models.MeterWithStripeID{},
-					Products: []models.ProductWithStripeIDs{},
+					Meters:   []stripe_config.MeterWithStripeID{},
+					Products: []stripe_config.ProductWithStripeIDs{},
 				},
 				CreatedAt:  row.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 				UpdatedAt:  row.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),

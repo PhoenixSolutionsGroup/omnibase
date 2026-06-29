@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
 var GetMeterError = errors.New("Failed to get meter by id")
 
 type GetMeterResponse struct {
-	Meter models.MeterWithStripeID `json:"meter" binding:"required"`
+	Meter stripe_config.MeterWithStripeID `json:"meter" binding:"required"`
 }
 
 func (h *Handler) GetMeterByID(ctx *gin.Context) {
@@ -28,7 +28,7 @@ func (h *Handler) GetMeterByID(ctx *gin.Context) {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetMeterError, err))
 		return
 	}
-	var raw models.StripeConfigData
+	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
 		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetMeterError, err))
 		return

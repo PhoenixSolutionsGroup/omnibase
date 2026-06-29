@@ -14,10 +14,6 @@ import (
 	"api/tests/testenv"
 )
 
-// This package runs as its own test binary, so the sandbox setup + stripe state
-// are isolated from tests/e2e/. Tests here can safely archive-all and recreate
-// config without disturbing other e2e suites.
-
 func archiveAll(t *testing.T, client *sdk.APIClient) {
 	t.Helper()
 	_, resp, err := client.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background()).Execute()

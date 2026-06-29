@@ -4,7 +4,6 @@ import (
 	"reflect"
 
 	"api/internal/logger"
-	"api/internal/models"
 )
 
 type Differ struct{}
@@ -13,7 +12,7 @@ func NewDiffer() *Differ {
 	return &Differ{}
 }
 
-func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfiguration) *models.ConfigDiff {
+func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *Configuration) *ConfigDiff {
 	logger.Logger.Info("Calculating configuration diff",
 		"oldProductCount", len(oldConfig.Products),
 		"newProductCount", len(newConfig.Products),
@@ -24,22 +23,22 @@ func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfigur
 		"oldPromoCount", len(oldConfig.PromotionCodes),
 		"newPromoCount", len(newConfig.PromotionCodes))
 
-	diff := &models.ConfigDiff{
-		NewProducts:           []models.Product{},
-		UpdatedProducts:       []models.ProductUpdate{},
+	diff := &ConfigDiff{
+		NewProducts:           []Product{},
+		UpdatedProducts:       []ProductUpdate{},
 		ArchivedProducts:      []string{},
-		NewMeters:             []models.Meter{},
+		NewMeters:             []Meter{},
 		ArchivedMeters:        []string{},
-		NewCoupons:            []models.Coupon{},
-		UpdatedCoupons:        []models.CouponUpdate{},
+		NewCoupons:            []Coupon{},
+		UpdatedCoupons:        []CouponUpdate{},
 		ArchivedCoupons:       []string{},
-		NewPromotionCodes:     []models.PromotionCode{},
-		UpdatedPromotionCodes: []models.PromoCodeUpdate{},
+		NewPromotionCodes:     []PromotionCode{},
+		UpdatedPromotionCodes: []PromoCodeUpdate{},
 		DeactivatedPromoCodes: []string{},
 	}
 
-	oldProductMap := make(map[string]models.Product)
-	newProductMap := make(map[string]models.Product)
+	oldProductMap := make(map[string]Product)
+	newProductMap := make(map[string]Product)
 	for _, p := range oldConfig.Products {
 		oldProductMap[p.ID] = p
 	}
@@ -60,8 +59,8 @@ func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfigur
 		}
 	}
 
-	oldMeterMap := make(map[string]models.Meter)
-	newMeterMap := make(map[string]models.Meter)
+	oldMeterMap := make(map[string]Meter)
+	newMeterMap := make(map[string]Meter)
 	for _, m := range oldConfig.Meters {
 		oldMeterMap[m.ID] = m
 	}
@@ -79,8 +78,8 @@ func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfigur
 		}
 	}
 
-	oldCouponMap := make(map[string]models.Coupon)
-	newCouponMap := make(map[string]models.Coupon)
+	oldCouponMap := make(map[string]Coupon)
+	newCouponMap := make(map[string]Coupon)
 	for _, c := range oldConfig.Coupons {
 		oldCouponMap[c.ID] = c
 	}
@@ -100,8 +99,8 @@ func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfigur
 		}
 	}
 
-	oldPromoMap := make(map[string]models.PromotionCode)
-	newPromoMap := make(map[string]models.PromotionCode)
+	oldPromoMap := make(map[string]PromotionCode)
+	newPromoMap := make(map[string]PromotionCode)
 	for _, p := range oldConfig.PromotionCodes {
 		oldPromoMap[p.ID] = p
 	}
@@ -124,12 +123,12 @@ func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *models.StripeConfigur
 	return diff
 }
 
-func (d *Differ) calculateProductUpdate(oldProduct, newProduct models.Product) *models.ProductUpdate {
-	update := &models.ProductUpdate{
+func (d *Differ) calculateProductUpdate(oldProduct, newProduct Product) *ProductUpdate {
+	update := &ProductUpdate{
 		ID:               newProduct.ID,
 		FieldChanges:     make(map[string]interface{}),
-		NewPrices:        []models.Price{},
-		UpdatedPrices:    []models.Price{},
+		NewPrices:        []Price{},
+		UpdatedPrices:    []Price{},
 		ArchivedPrices:   []string{},
 		RequiresRecreate: false,
 	}
@@ -149,8 +148,8 @@ func (d *Differ) calculateProductUpdate(oldProduct, newProduct models.Product) *
 		hasChanges = true
 	}
 
-	oldPriceMap := make(map[string]models.Price)
-	newPriceMap := make(map[string]models.Price)
+	oldPriceMap := make(map[string]Price)
+	newPriceMap := make(map[string]Price)
 	for _, p := range oldProduct.Prices {
 		oldPriceMap[p.ID] = p
 	}
@@ -181,8 +180,8 @@ func (d *Differ) calculateProductUpdate(oldProduct, newProduct models.Product) *
 	return update
 }
 
-func (d *Differ) calculateCouponUpdate(oldCoupon, newCoupon models.Coupon) *models.CouponUpdate {
-	update := &models.CouponUpdate{
+func (d *Differ) calculateCouponUpdate(oldCoupon, newCoupon Coupon) *CouponUpdate {
+	update := &CouponUpdate{
 		ID:           newCoupon.ID,
 		FieldChanges: make(map[string]interface{}),
 	}
@@ -224,8 +223,8 @@ func (d *Differ) calculateCouponUpdate(oldCoupon, newCoupon models.Coupon) *mode
 	return update
 }
 
-func (d *Differ) calculatePromoCodeUpdate(oldPromo, newPromo models.PromotionCode) *models.PromoCodeUpdate {
-	update := &models.PromoCodeUpdate{
+func (d *Differ) calculatePromoCodeUpdate(oldPromo, newPromo PromotionCode) *PromoCodeUpdate {
+	update := &PromoCodeUpdate{
 		ID:           newPromo.ID,
 		FieldChanges: make(map[string]interface{}),
 	}

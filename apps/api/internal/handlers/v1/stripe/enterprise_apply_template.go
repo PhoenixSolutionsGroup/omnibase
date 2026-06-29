@@ -10,7 +10,7 @@ import (
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 	"api/internal/services/billing"
 )
 
@@ -110,12 +110,12 @@ func (h *Handler) enterpriseCandidatesByTemplate(ctx context.Context, template s
 	return out, nil
 }
 
-func (h *Handler) latestParsedConfig(ctx context.Context) (*models.StripeConfiguration, error) {
+func (h *Handler) latestParsedConfig(ctx context.Context) (*stripe_config.Configuration, error) {
 	row, err := h.repo.GetLatestStripeConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest config: %w", err)
 	}
-	var raw models.StripeConfigData
+	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
 		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}

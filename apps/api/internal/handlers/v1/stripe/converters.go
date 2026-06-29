@@ -5,24 +5,24 @@ import (
 
 	"github.com/google/uuid"
 
-	"api/internal/models"
+	"api/internal/services/stripe_config"
 )
 
-func (h *Handler) addStripeIDsToConfig(ctx context.Context, config models.StripeConfiguration, configID uuid.UUID) models.StripeConfigurationWithIDs {
+func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config.Configuration, configID uuid.UUID) stripe_config.ConfigurationWithIDs {
 	_ = configID
 
-	meters := make([]models.MeterWithStripeID, 0, len(config.Meters))
+	meters := make([]stripe_config.MeterWithStripeID, 0, len(config.Meters))
 	for _, m := range config.Meters {
-		mWith := models.MeterWithStripeID{Meter: m}
+		mWith := stripe_config.MeterWithStripeID{Meter: m}
 		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, m.ID, "meter"); err == nil && id != "" && id != m.ID {
 			mWith.StripeID = &id
 		}
 		meters = append(meters, mWith)
 	}
 
-	products := make([]models.ProductWithStripeIDs, 0, len(config.Products))
+	products := make([]stripe_config.ProductWithStripeIDs, 0, len(config.Products))
 	for _, p := range config.Products {
-		pWith := models.ProductWithStripeIDs{
+		pWith := stripe_config.ProductWithStripeIDs{
 			ID:          p.ID,
 			Name:        p.Name,
 			Description: p.Description,
@@ -32,9 +32,9 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config models.Stripe
 		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, p.ID, "product"); err == nil && id != "" {
 			pWith.StripeID = &id
 		}
-		prices := make([]models.PriceWithStripeID, 0, len(p.Prices))
+		prices := make([]stripe_config.PriceWithStripeID, 0, len(p.Prices))
 		for _, price := range p.Prices {
-			priceWith := models.PriceWithStripeID{Price: price}
+			priceWith := stripe_config.PriceWithStripeID{Price: price}
 			if price.ID != "free" {
 				if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, price.ID, "price"); err == nil && id != "" {
 					priceWith.StripeID = &id
@@ -46,25 +46,25 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config models.Stripe
 		products = append(products, pWith)
 	}
 
-	coupons := make([]models.CouponWithStripeID, 0, len(config.Coupons))
+	coupons := make([]stripe_config.CouponWithStripeID, 0, len(config.Coupons))
 	for _, c := range config.Coupons {
-		cWith := models.CouponWithStripeID{Coupon: c}
+		cWith := stripe_config.CouponWithStripeID{Coupon: c}
 		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, c.ID, "coupon"); err == nil && id != "" {
 			cWith.StripeID = &id
 		}
 		coupons = append(coupons, cWith)
 	}
 
-	promos := make([]models.PromotionCodeWithStripeID, 0, len(config.PromotionCodes))
+	promos := make([]stripe_config.PromotionCodeWithStripeID, 0, len(config.PromotionCodes))
 	for _, p := range config.PromotionCodes {
-		pWith := models.PromotionCodeWithStripeID{PromotionCode: p}
+		pWith := stripe_config.PromotionCodeWithStripeID{PromotionCode: p}
 		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, p.ID, "promotion_code"); err == nil && id != "" {
 			pWith.StripeID = &id
 		}
 		promos = append(promos, pWith)
 	}
 
-	return models.StripeConfigurationWithIDs{
+	return stripe_config.ConfigurationWithIDs{
 		Version:        config.Version,
 		Meters:         meters,
 		Products:       products,
@@ -73,11 +73,11 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config models.Stripe
 	}
 }
 
-func filterPublicPrices(config models.StripeConfiguration) models.StripeConfiguration {
+func filterPublicPrices(config stripe_config.Configuration) stripe_config.Configuration {
 	filtered := config
-	filtered.Products = []models.Product{}
+	filtered.Products = []stripe_config.Product{}
 	for _, product := range config.Products {
-		var publicPrices []models.Price
+		var publicPrices []stripe_config.Price
 		for _, p := range product.Prices {
 			if p.Public == nil || *p.Public {
 				publicPrices = append(publicPrices, p)
