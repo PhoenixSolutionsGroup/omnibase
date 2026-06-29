@@ -14,21 +14,9 @@ import (
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v82"
 )
 
 func New(cfg *config.Config) *gin.Engine {
-	logger.Logger.Debug("Configuring Stripe")
-	stripe.Key = cfg.StripeConfig.SecretKey
-	if cfg.StripeConfig.APIBaseURL != "" {
-		mockBackend := stripe.GetBackendWithConfig(stripe.APIBackend, &stripe.BackendConfig{
-			URL: stripe.String(cfg.StripeConfig.APIBaseURL),
-		})
-		stripe.SetBackend(stripe.APIBackend, mockBackend)
-		logger.Logger.Debug("Using custom Stripe API URL", "url", cfg.StripeConfig.APIBaseURL)
-	}
-	logger.Logger.Debug("Stripe configured", "account_id", cfg.StripeConfig.StripeAccountID)
-
 	logger.Logger.Debug("Initializing Gin router")
 	r := gin.New()
 	r.RedirectTrailingSlash = false

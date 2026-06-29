@@ -6,15 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"api/internal/database/repository"
 	"api/internal/handlers"
-	"api/internal/models"
 )
 
 var ListWebhooksError = errors.New("Failed to list stripe webhooks")
 
 type ListWebhooksResponse struct {
-	Webhooks []models.StripeWebhook `json:"webhooks"`
-	Count    int                    `json:"count"`
+	Webhooks []repository.ListStripeWebhooksRow `json:"webhooks"`
+	Count    int                                `json:"count"`
 }
 
 func (h *Handler) ListWebhooks(ctx *gin.Context) {

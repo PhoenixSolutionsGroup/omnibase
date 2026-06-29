@@ -278,61 +278,35 @@ func (s *Service) DeleteWebhook(ctx context.Context, stripeID string) error {
 	return nil
 }
 
-func (s *Service) ListWebhooks(ctx context.Context) ([]models.StripeWebhook, error) {
+func (s *Service) ListWebhooks(ctx context.Context) ([]repository.ListStripeWebhooksRow, error) {
 	rows, err := s.repo.ListStripeWebhooks(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ListWebhooksError, err)
 	}
-	out := make([]models.StripeWebhook, 0, len(rows))
-	for _, r := range rows {
-		w := models.StripeWebhook{
-			ID:        r.ID,
-			StripeID:  r.StripeID,
-			URL:       r.Url,
-			Secret:    r.Secret,
-			Events:    r.Events,
-			Connect:   r.Connect,
-			ConfigID:  r.ConfigID,
-			CreatedAt: r.CreatedAt,
-			UpdatedAt: r.UpdatedAt,
-		}
-		if s.encryption != nil && w.Secret != "" {
-			if dec, decErr := s.encryption.Decrypt(w.Secret); decErr == nil {
-				w.Secret = dec
-			}
-		}
-		out = append(out, w)
+	for i := range rows {
+		s.decryptSecret(&rows[i].Secret)
 	}
-	return out, nil
+	return rows, nil
 }
 
-func (s *Service) GetWebhooksForConfig(ctx context.Context, configID uuid.UUID) ([]models.StripeWebhook, error) {
-	cfgID := &configID
-	rows, err := s.repo.ListStripeWebhooksByConfigID(ctx, cfgID)
+func (s *Service) GetWebhooksForConfig(ctx context.Context, configID uuid.UUID) ([]repository.ListStripeWebhooksByConfigIDRow, error) {
+	rows, err := s.repo.ListStripeWebhooksByConfigID(ctx, &configID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ListWebhooksError, err)
 	}
-	out := make([]models.StripeWebhook, 0, len(rows))
-	for _, r := range rows {
-		w := models.StripeWebhook{
-			ID:        r.ID,
-			StripeID:  r.StripeID,
-			URL:       r.Url,
-			Secret:    r.Secret,
-			Events:    r.Events,
-			Connect:   r.Connect,
-			ConfigID:  r.ConfigID,
-			CreatedAt: r.CreatedAt,
-			UpdatedAt: r.UpdatedAt,
-		}
-		if s.encryption != nil && w.Secret != "" {
-			if dec, decErr := s.encryption.Decrypt(w.Secret); decErr == nil {
-				w.Secret = dec
-			}
-		}
-		out = append(out, w)
+	for i := range rows {
+		s.decryptSecret(&rows[i].Secret)
 	}
-	return out, nil
+	return rows, nil
+}
+
+func (s *Service) decryptSecret(secret *string) {
+	if s.encryption == nil || *secret == "" {
+		return
+	}
+	if dec, err := s.encryption.Decrypt(*secret); err == nil {
+		*secret = dec
+	}
 }
 
 func eventsEqual(a, b []string) bool {

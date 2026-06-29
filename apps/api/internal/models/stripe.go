@@ -3,11 +3,6 @@ package models
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/lib/pq"
-	"gorm.io/gorm"
 )
 
 // StripeConfigData represents the raw JSON configuration data
@@ -32,43 +27,6 @@ func (s *StripeConfigData) Scan(value interface{}) error {
 	}
 
 	return json.Unmarshal(bytes, s)
-}
-
-// StripeConfig represents a stored stripe configuration
-type StripeConfig struct {
-	ID        uuid.UUID        `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
-	Config    StripeConfigData `json:"config" gorm:"type:jsonb;not null" binding:"required"`
-	Version   string           `json:"version" gorm:"not null" binding:"required"`
-	CreatedAt time.Time        `json:"created_at" binding:"required"`
-	UpdatedAt time.Time        `json:"updated_at" binding:"required"`
-}
-
-func (StripeConfig) TableName() string {
-	return "stripe.stripe_configs"
-}
-
-// StripeWebhook represents a stored webhook endpoint configuration
-type StripeWebhook struct {
-	ID        uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
-	StripeID  string         `json:"stripe_id" gorm:"not null;uniqueIndex" binding:"required"` // Stripe webhook endpoint ID (we_xxx)
-	URL       string         `json:"url" gorm:"not null" binding:"required"`
-	Secret    string         `json:"secret" gorm:"not null" binding:"required"` // Webhook signing secret (whsec_xxx)
-	Events    pq.StringArray `json:"events" gorm:"type:text[];not null;default:'{}'" binding:"required"`
-	Connect   bool           `json:"connect" gorm:"not null;default:false"` // If true, listens to connected account events
-	ConfigID  *uuid.UUID     `json:"config_id,omitempty" gorm:"type:uuid;index"` // Optional link to StripeConfig
-	CreatedAt time.Time      `json:"created_at" binding:"required"`
-	UpdatedAt time.Time      `json:"updated_at" binding:"required"`
-}
-
-func (StripeWebhook) TableName() string {
-	return "stripe.stripe_webhooks"
-}
-
-func (s *StripeWebhook) BeforeCreate(tx *gorm.DB) error {
-	if s.ID == uuid.Nil {
-		s.ID = uuid.New()
-	}
-	return nil
 }
 
 // Parsed configuration structs that match the JSON schema
@@ -312,29 +270,6 @@ type CouponUpdate struct {
 type PromoCodeUpdate struct {
 	ID           string
 	FieldChanges map[string]interface{}
-}
-
-// StripeIDMapping stores the relationship between config IDs and actual Stripe IDs
-type StripeIDMapping struct {
-	ID              uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()" binding:"required"`
-	ConfigID        uuid.UUID      `json:"config_id" gorm:"type:uuid;not null;index" binding:"required"`            // References StripeConfig.ID
-	ConfigItemID    string         `json:"config_item_id" gorm:"not null;index" binding:"required"`                 // Our config ID (e.g., "price_test_basic_monthly")
-	StripeID        string         `json:"stripe_id" gorm:"not null;index" binding:"required"`                      // Stripe's generated ID (e.g., "price_1S7p7w...")
-	StripeIDHistory pq.StringArray `json:"stripe_id_history" gorm:"type:text[];default:ARRAY[]" binding:"required"` // Historical Stripe IDs for legacy price tracking
-	ItemType        string         `json:"item_type" gorm:"not null" binding:"required"`                            // "product" or "price"
-	CreatedAt       time.Time      `json:"created_at" binding:"required"`
-	UpdatedAt       time.Time      `json:"updated_at" binding:"required"`
-}
-
-func (StripeIDMapping) TableName() string {
-	return "stripe.stripe_id_mappings"
-}
-
-func (s *StripeIDMapping) BeforeCreate(tx *gorm.DB) error {
-	if s.ID == uuid.Nil {
-		s.ID = uuid.New()
-	}
-	return nil
 }
 
 // Meter represents a billing meter configuration
