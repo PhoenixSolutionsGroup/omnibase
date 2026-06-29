@@ -107,6 +107,8 @@ export interface AcceptInviteOperationRequest {
 
 export interface AddSubscriptionOperationRequest {
     addSubscriptionRequest: AddSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface CreateInviteRequest {
@@ -137,6 +139,11 @@ export interface DeleteTenantRequest {
     xTenantId?: string;
 }
 
+export interface GetTenantBillingStatusRequest {
+    xUserId?: string;
+    xTenantId?: string;
+}
+
 export interface GetTenantByIDRequest {
     tenantId: string;
 }
@@ -152,6 +159,8 @@ export interface GetTenantJWTRequest {
 
 export interface GetTenantSubscriptionRequest {
     configPriceId: string;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface ListRoleDefinitionsRequest {
@@ -162,6 +171,11 @@ export interface ListRolesRequest {
     xTenantId?: string;
 }
 
+export interface ListTenantSubscriptionsRequest {
+    xUserId?: string;
+    xTenantId?: string;
+}
+
 export interface ListTenantUsersRequest {
     xUserId?: string;
     xTenantId?: string;
@@ -169,6 +183,8 @@ export interface ListTenantUsersRequest {
 
 export interface RemoveSubscriptionOperationRequest {
     removeSubscriptionRequest: RemoveSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface RemoveTenantUserRequest {
@@ -270,6 +286,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -573,10 +597,18 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification 
      * Get billing status
      */
-    async getTenantBillingStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>> {
+    async getTenantBillingStatusRaw(requestParameters: GetTenantBillingStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -603,8 +635,8 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification 
      * Get billing status
      */
-    async getTenantBillingStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response> {
-        const response = await this.getTenantBillingStatusRaw(initOverrides);
+    async getTenantBillingStatus(requestParameters: GetTenantBillingStatusRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response> {
+        const response = await this.getTenantBillingStatusRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -757,6 +789,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
+
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
         }
@@ -878,10 +918,18 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI 
      * Get tenant subscriptions
      */
-    async listTenantSubscriptionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>> {
+    async listTenantSubscriptionsRaw(requestParameters: ListTenantSubscriptionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -908,8 +956,8 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI 
      * Get tenant subscriptions
      */
-    async listTenantSubscriptions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>> {
-        const response = await this.listTenantSubscriptionsRaw(initOverrides);
+    async listTenantSubscriptions(requestParameters: ListTenantSubscriptionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>> {
+        const response = await this.listTenantSubscriptionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -977,6 +1025,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication

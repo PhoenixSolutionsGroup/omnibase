@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { CheckPermissionRequest, CheckPermissionResponse, CreateRelationship200Response, CreateRelationshipRequest, DeleteRelationship200Response, DeleteRelationshipRequest } from '../models/index';
+import type { CheckPermissionRequest, CheckPermissionResponse, CreateRelationshipRequest, CreateRelationshipResponse, DeleteRelationshipRequest, DeleteRelationshipResponse } from '../models/index';
 export interface CheckPermissionOperationRequest {
     checkPermissionRequest: CheckPermissionRequest;
 }
@@ -38,20 +38,20 @@ export declare class V1PermissionsApi extends runtime.BaseAPI {
      * Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships
      * Create relationship
      */
-    createRelationshipRaw(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRelationship200Response>>;
+    createRelationshipRaw(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRelationshipResponse>>;
     /**
      * Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships
      * Create relationship
      */
-    createRelationship(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRelationship200Response>;
+    createRelationship(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRelationshipResponse>;
     /**
      * Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships
      * Delete relationship
      */
-    deleteRelationshipRaw(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRelationship200Response>>;
+    deleteRelationshipRaw(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRelationshipResponse>>;
     /**
      * Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships
      * Delete relationship
      */
-    deleteRelationship(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRelationship200Response>;
+    deleteRelationship(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRelationshipResponse>;
 }

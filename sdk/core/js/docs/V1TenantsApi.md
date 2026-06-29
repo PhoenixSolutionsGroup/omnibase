@@ -112,7 +112,7 @@ example().catch(console.error);
 
 ## addSubscription
 
-> AddSubscriptionResponse addSubscription(addSubscriptionRequest)
+> AddSubscriptionResponse addSubscription(addSubscriptionRequest, xUserId, xTenantId)
 
 Add subscription
 
@@ -142,6 +142,10 @@ async function example() {
   const body = {
     // AddSubscriptionRequest
     addSubscriptionRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies AddSubscriptionOperationRequest;
 
   try {
@@ -162,6 +166,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **addSubscriptionRequest** | [AddSubscriptionRequest](AddSubscriptionRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -614,7 +620,7 @@ example().catch(console.error);
 
 ## getTenantBillingStatus
 
-> GetTenantBillingStatus200Response getTenantBillingStatus()
+> GetTenantBillingStatus200Response getTenantBillingStatus(xUserId, xTenantId)
 
 Get billing status
 
@@ -641,8 +647,15 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies GetTenantBillingStatusRequest;
+
   try {
-    const data = await api.getTenantBillingStatus();
+    const data = await api.getTenantBillingStatus(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -655,7 +668,11 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -916,7 +933,7 @@ example().catch(console.error);
 
 ## getTenantSubscription
 
-> SubscriptionResponse getTenantSubscription(configPriceId)
+> SubscriptionResponse getTenantSubscription(configPriceId, xUserId, xTenantId)
 
 Get tenant subscription by plan
 
@@ -946,6 +963,10 @@ async function example() {
   const body = {
     // string | The configuration price ID (plan ID) to look up
     configPriceId: neon_compute_starter,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies GetTenantSubscriptionRequest;
 
   try {
@@ -966,6 +987,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **configPriceId** | `string` | The configuration price ID (plan ID) to look up | [Defaults to `undefined`] |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1150,7 +1173,7 @@ example().catch(console.error);
 
 ## listTenantSubscriptions
 
-> Array&lt;SubscriptionResponse&gt; listTenantSubscriptions()
+> Array&lt;SubscriptionResponse&gt; listTenantSubscriptions(xUserId, xTenantId)
 
 Get tenant subscriptions
 
@@ -1177,8 +1200,15 @@ async function example() {
   });
   const api = new V1TenantsApi(config);
 
+  const body = {
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+  } satisfies ListTenantSubscriptionsRequest;
+
   try {
-    const data = await api.listTenantSubscriptions();
+    const data = await api.listTenantSubscriptions(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -1191,7 +1221,11 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -1302,7 +1336,7 @@ example().catch(console.error);
 
 ## removeSubscription
 
-> RemoveSubscriptionResponse removeSubscription(removeSubscriptionRequest)
+> RemoveSubscriptionResponse removeSubscription(removeSubscriptionRequest, xUserId, xTenantId)
 
 Remove subscription
 
@@ -1332,6 +1366,10 @@ async function example() {
   const body = {
     // RemoveSubscriptionRequest
     removeSubscriptionRequest: ...,
+    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies RemoveSubscriptionOperationRequest;
 
   try {
@@ -1352,6 +1390,8 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **removeSubscriptionRequest** | [RemoveSubscriptionRequest](RemoveSubscriptionRequest.md) |  | |
+| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+| **xTenantId** | `string` | Tenant ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 

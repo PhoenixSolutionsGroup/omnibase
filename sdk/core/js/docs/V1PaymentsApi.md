@@ -18,7 +18,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## addInvoiceLineItem
 
-> AddInvoiceLineItem200Response addInvoiceLineItem(xServiceKey, invoiceId, addInvoiceLineItemRequest, xTenantId, xStripeCustomerId)
+> InvoiceLineItemResponse addInvoiceLineItem(xServiceKey, invoiceId, addInvoiceLineItemRequest, xTenantId, xStripeCustomerId)
 
 Add invoice line item
 
@@ -75,7 +75,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+[**InvoiceLineItemResponse**](InvoiceLineItemResponse.md)
 
 ### Authorization
 
@@ -103,7 +103,7 @@ No authorization required
 
 ## addInvoiceLineItemWithPriceId
 
-> AddInvoiceLineItem200Response addInvoiceLineItemWithPriceId(xServiceKey, invoiceId, addInvoiceLineItemWithPriceIDRequest, xTenantId, xStripeCustomerId)
+> InvoiceLineItemResponse addInvoiceLineItemWithPriceId(xServiceKey, invoiceId, addInvoiceLineItemWithPriceIDRequest, xTenantId, xStripeCustomerId)
 
 Add invoice line item with price ID
 
@@ -160,7 +160,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+[**InvoiceLineItemResponse**](InvoiceLineItemResponse.md)
 
 ### Authorization
 
@@ -188,7 +188,7 @@ No authorization required
 
 ## createCheckout
 
-> CreateCheckout200Response createCheckout(createCheckoutRequest)
+> CreateCheckoutResponse createCheckout(createCheckoutRequest)
 
 Create checkout session
 
@@ -233,7 +233,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateCheckout200Response**](CreateCheckout200Response.md)
+[**CreateCheckoutResponse**](CreateCheckoutResponse.md)
 
 ### Authorization
 
@@ -261,7 +261,7 @@ No authorization required
 
 ## createCustomerPortal
 
-> CreateCustomerPortal200Response createCustomerPortal(createPortalRequest)
+> CreatePortalResponse createCustomerPortal(createPortalRequest)
 
 Create customer portal session
 
@@ -306,7 +306,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateCustomerPortal200Response**](CreateCustomerPortal200Response.md)
+[**CreatePortalResponse**](CreatePortalResponse.md)
 
 ### Authorization
 
@@ -332,7 +332,7 @@ No authorization required
 
 ## createInvoice
 
-> CreateInvoice200Response createInvoice(xServiceKey, createInvoiceRequest, xTenantId, xStripeCustomerId)
+> InvoiceResponse createInvoice(xServiceKey, createInvoiceRequest, xTenantId, xStripeCustomerId)
 
 Create invoice
 
@@ -386,7 +386,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -413,7 +413,7 @@ No authorization required
 
 ## finalizeInvoice
 
-> CreateInvoice200Response finalizeInvoice(xServiceKey, invoiceId, finalizeInvoiceRequest)
+> InvoiceResponse finalizeInvoice(xServiceKey, invoiceId, finalizeInvoiceRequest)
 
 Finalize invoice
 
@@ -464,7 +464,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -492,7 +492,7 @@ No authorization required
 
 ## getInvoice
 
-> CreateInvoice200Response getInvoice(xServiceKey, invoiceId)
+> InvoiceResponse getInvoice(xServiceKey, invoiceId)
 
 Get invoice
 
@@ -540,7 +540,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -567,11 +567,11 @@ No authorization required
 
 ## recordUsage
 
-> SuccessResponse recordUsage(recordUsageRequest)
+> object recordUsage(recordUsageRequest, xTenantId, xStripeCustomerId)
 
 Record metered usage
 
-Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \&quot;stripe_customer_id not found in context\&quot;  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario 
+Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\&#39;s active tenant - &#x60;X-Service-Key&#x60; + &#x60;X-Tenant-Id&#x60; — customer resolved from the tenant record - &#x60;X-Service-Key&#x60; + &#x60;X-Stripe-Customer-Id&#x60; — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario 
 
 ### Example
 
@@ -589,6 +589,10 @@ async function example() {
   const body = {
     // RecordUsageRequest
     recordUsageRequest: ...,
+    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. (optional)
+    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
+    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. (optional)
+    xStripeCustomerId: xStripeCustomerId_example,
   } satisfies RecordUsageOperationRequest;
 
   try {
@@ -609,10 +613,12 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **recordUsageRequest** | [RecordUsageRequest](RecordUsageRequest.md) |  | |
+| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. | [Optional] [Defaults to `undefined`] |
+| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+**object**
 
 ### Authorization
 
@@ -638,7 +644,7 @@ No authorization required
 
 ## updateInvoice
 
-> CreateInvoice200Response updateInvoice(xServiceKey, invoiceId, updateInvoiceRequest)
+> InvoiceResponse updateInvoice(xServiceKey, invoiceId, updateInvoiceRequest)
 
 Update invoice
 
@@ -689,7 +695,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 

@@ -18,13 +18,11 @@ exports.CreateOrUpdateEmailTemplate200ResponseFromJSON = CreateOrUpdateEmailTemp
 exports.CreateOrUpdateEmailTemplate200ResponseFromJSONTyped = CreateOrUpdateEmailTemplate200ResponseFromJSONTyped;
 exports.CreateOrUpdateEmailTemplate200ResponseToJSON = CreateOrUpdateEmailTemplate200ResponseToJSON;
 exports.CreateOrUpdateEmailTemplate200ResponseToJSONTyped = CreateOrUpdateEmailTemplate200ResponseToJSONTyped;
-const CreateOrUpdateEmailTemplate200ResponseAllOfData_1 = require("./CreateOrUpdateEmailTemplate200ResponseAllOfData");
+const EmailTemplate_1 = require("./EmailTemplate");
 /**
  * Check if a given object implements the CreateOrUpdateEmailTemplate200Response interface.
  */
 function instanceOfCreateOrUpdateEmailTemplate200Response(value) {
-    if (!('status' in value) || value['status'] === undefined)
-        return false;
     return true;
 }
 function CreateOrUpdateEmailTemplate200ResponseFromJSON(json) {
@@ -35,8 +33,8 @@ function CreateOrUpdateEmailTemplate200ResponseFromJSONTyped(json, ignoreDiscrim
         return json;
     }
     return {
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : (0, CreateOrUpdateEmailTemplate200ResponseAllOfData_1.CreateOrUpdateEmailTemplate200ResponseAllOfDataFromJSON)(json['data']),
+        'message': json['message'] == null ? undefined : json['message'],
+        'template': json['template'] == null ? undefined : (0, EmailTemplate_1.EmailTemplateFromJSON)(json['template']),
     };
 }
 function CreateOrUpdateEmailTemplate200ResponseToJSON(json) {
@@ -47,7 +45,7 @@ function CreateOrUpdateEmailTemplate200ResponseToJSONTyped(value, ignoreDiscrimi
         return value;
     }
     return {
-        'status': value['status'],
-        'data': (0, CreateOrUpdateEmailTemplate200ResponseAllOfData_1.CreateOrUpdateEmailTemplate200ResponseAllOfDataToJSON)(value['data']),
+        'message': value['message'],
+        'template': (0, EmailTemplate_1.EmailTemplateToJSON)(value['template']),
     };
 }

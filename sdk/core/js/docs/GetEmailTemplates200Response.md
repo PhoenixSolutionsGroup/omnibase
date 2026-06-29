@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`status` | number
-`data` | [GetEmailTemplates200ResponseAllOfData](GetEmailTemplates200ResponseAllOfData.md)
+`templates` | [Array&lt;EmailTemplate&gt;](EmailTemplate.md)
+`count` | number
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { GetEmailTemplates200Response } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 200,
-  "data": null,
+  "templates": null,
+  "count": 3,
 } satisfies GetEmailTemplates200Response
 
 console.log(example)

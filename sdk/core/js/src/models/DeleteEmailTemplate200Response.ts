@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { DeleteEmailTemplate200ResponseAllOfData } from './DeleteEmailTemplate200ResponseAllOfData';
-import {
-    DeleteEmailTemplate200ResponseAllOfDataFromJSON,
-    DeleteEmailTemplate200ResponseAllOfDataFromJSONTyped,
-    DeleteEmailTemplate200ResponseAllOfDataToJSON,
-    DeleteEmailTemplate200ResponseAllOfDataToJSONTyped,
-} from './DeleteEmailTemplate200ResponseAllOfData';
-
 /**
  * 
  * @export
@@ -28,24 +20,17 @@ import {
  */
 export interface DeleteEmailTemplate200Response {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof DeleteEmailTemplate200Response
-     */
-    status: number;
-    /**
      * 
-     * @type {DeleteEmailTemplate200ResponseAllOfData}
+     * @type {string}
      * @memberof DeleteEmailTemplate200Response
      */
-    data?: DeleteEmailTemplate200ResponseAllOfData;
+    message?: string;
 }
 
 /**
  * Check if a given object implements the DeleteEmailTemplate200Response interface.
  */
 export function instanceOfDeleteEmailTemplate200Response(value: object): value is DeleteEmailTemplate200Response {
-    if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
 
@@ -59,8 +44,7 @@ export function DeleteEmailTemplate200ResponseFromJSONTyped(json: any, ignoreDis
     }
     return {
         
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : DeleteEmailTemplate200ResponseAllOfDataFromJSON(json['data']),
+        'message': json['message'] == null ? undefined : json['message'],
     };
 }
 
@@ -75,8 +59,7 @@ export function DeleteEmailTemplate200ResponseToJSONTyped(value?: DeleteEmailTem
 
     return {
         
-        'status': value['status'],
-        'data': DeleteEmailTemplate200ResponseAllOfDataToJSON(value['data']),
+        'message': value['message'],
     };
 }
 

@@ -98,7 +98,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.AddInvoiceLineItemRequestToJSON)(requestParameters['addInvoiceLineItemRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AddInvoiceLineItem200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceLineItemResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -147,7 +147,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.AddInvoiceLineItemWithPriceIDRequestToJSON)(requestParameters['addInvoiceLineItemWithPriceIDRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AddInvoiceLineItem200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceLineItemResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -180,7 +180,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateCheckoutRequestToJSON)(requestParameters['createCheckoutRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateCheckout200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateCheckoutResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -213,7 +213,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreatePortalRequestToJSON)(requestParameters['createPortalRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateCustomerPortal200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreatePortalResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -258,7 +258,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateInvoiceRequestToJSON)(requestParameters['createInvoiceRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateInvoice200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -301,7 +301,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.FinalizeInvoiceRequestToJSON)(requestParameters['finalizeInvoiceRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateInvoice200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -339,7 +339,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateInvoice200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -353,7 +353,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
         });
     }
     /**
-     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
+     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\'s active tenant - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
      * Record metered usage
      */
     recordUsageRaw(requestParameters, initOverrides) {
@@ -364,6 +364,12 @@ class V1PaymentsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
+            if (requestParameters['xStripeCustomerId'] != null) {
+                headerParameters['X-Stripe-Customer-Id'] = String(requestParameters['xStripeCustomerId']);
+            }
             let urlPath = `/api/v1/payments/usage`;
             const response = yield this.request({
                 path: urlPath,
@@ -372,11 +378,11 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.RecordUsageRequestToJSON)(requestParameters['recordUsageRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SuccessResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response);
         });
     }
     /**
-     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
+     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\'s active tenant - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
      * Record metered usage
      */
     recordUsage(requestParameters, initOverrides) {
@@ -415,7 +421,7 @@ class V1PaymentsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.UpdateInvoiceRequestToJSON)(requestParameters['updateInvoiceRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateInvoice200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.InvoiceResponseFromJSON)(jsonValue));
         });
     }
     /**

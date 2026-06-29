@@ -116,6 +116,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -361,10 +367,16 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatusRaw(initOverrides) {
+    getTenantBillingStatusRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -385,9 +397,9 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatus(initOverrides) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.getTenantBillingStatusRaw(initOverrides);
+    getTenantBillingStatus() {
+        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
+            const response = yield this.getTenantBillingStatusRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -512,6 +524,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             }
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -617,10 +635,16 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptionsRaw(initOverrides) {
+    listTenantSubscriptionsRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -641,9 +665,9 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptions(initOverrides) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.listTenantSubscriptionsRaw(initOverrides);
+    listTenantSubscriptions() {
+        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
+            const response = yield this.listTenantSubscriptionsRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -699,6 +723,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }

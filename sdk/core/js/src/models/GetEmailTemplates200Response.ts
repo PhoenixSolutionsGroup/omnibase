@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { GetEmailTemplates200ResponseAllOfData } from './GetEmailTemplates200ResponseAllOfData';
+import type { EmailTemplate } from './EmailTemplate';
 import {
-    GetEmailTemplates200ResponseAllOfDataFromJSON,
-    GetEmailTemplates200ResponseAllOfDataFromJSONTyped,
-    GetEmailTemplates200ResponseAllOfDataToJSON,
-    GetEmailTemplates200ResponseAllOfDataToJSONTyped,
-} from './GetEmailTemplates200ResponseAllOfData';
+    EmailTemplateFromJSON,
+    EmailTemplateFromJSONTyped,
+    EmailTemplateToJSON,
+    EmailTemplateToJSONTyped,
+} from './EmailTemplate';
 
 /**
  * 
@@ -28,24 +28,23 @@ import {
  */
 export interface GetEmailTemplates200Response {
     /**
-     * HTTP status code
+     * 
+     * @type {Array<EmailTemplate>}
+     * @memberof GetEmailTemplates200Response
+     */
+    templates?: Array<EmailTemplate>;
+    /**
+     * 
      * @type {number}
      * @memberof GetEmailTemplates200Response
      */
-    status: number;
-    /**
-     * 
-     * @type {GetEmailTemplates200ResponseAllOfData}
-     * @memberof GetEmailTemplates200Response
-     */
-    data?: GetEmailTemplates200ResponseAllOfData;
+    count?: number;
 }
 
 /**
  * Check if a given object implements the GetEmailTemplates200Response interface.
  */
 export function instanceOfGetEmailTemplates200Response(value: object): value is GetEmailTemplates200Response {
-    if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
 
@@ -59,8 +58,8 @@ export function GetEmailTemplates200ResponseFromJSONTyped(json: any, ignoreDiscr
     }
     return {
         
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : GetEmailTemplates200ResponseAllOfDataFromJSON(json['data']),
+        'templates': json['templates'] == null ? undefined : ((json['templates'] as Array<any>).map(EmailTemplateFromJSON)),
+        'count': json['count'] == null ? undefined : json['count'],
     };
 }
 
@@ -75,8 +74,8 @@ export function GetEmailTemplates200ResponseToJSONTyped(value?: GetEmailTemplate
 
     return {
         
-        'status': value['status'],
-        'data': GetEmailTemplates200ResponseAllOfDataToJSON(value['data']),
+        'templates': value['templates'] == null ? undefined : ((value['templates'] as Array<any>).map(EmailTemplateToJSON)),
+        'count': value['count'],
     };
 }
 

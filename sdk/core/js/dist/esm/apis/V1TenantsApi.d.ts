@@ -17,6 +17,8 @@ export interface AcceptInviteOperationRequest {
 }
 export interface AddSubscriptionOperationRequest {
     addSubscriptionRequest: AddSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 export interface CreateInviteRequest {
     createTenantUserInviteRequest: CreateTenantUserInviteRequest;
@@ -41,6 +43,10 @@ export interface DeleteTenantRequest {
     xUserId?: string;
     xTenantId?: string;
 }
+export interface GetTenantBillingStatusRequest {
+    xUserId?: string;
+    xTenantId?: string;
+}
 export interface GetTenantByIDRequest {
     tenantId: string;
 }
@@ -53,11 +59,17 @@ export interface GetTenantJWTRequest {
 }
 export interface GetTenantSubscriptionRequest {
     configPriceId: string;
+    xUserId?: string;
+    xTenantId?: string;
 }
 export interface ListRoleDefinitionsRequest {
     subject?: string;
 }
 export interface ListRolesRequest {
+    xTenantId?: string;
+}
+export interface ListTenantSubscriptionsRequest {
+    xUserId?: string;
     xTenantId?: string;
 }
 export interface ListTenantUsersRequest {
@@ -66,6 +78,8 @@ export interface ListTenantUsersRequest {
 }
 export interface RemoveSubscriptionOperationRequest {
     removeSubscriptionRequest: RemoveSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 export interface RemoveTenantUserRequest {
     deleteTenantUserRequest: DeleteTenantUserRequest;
@@ -165,12 +179,12 @@ export declare class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>>;
+    getTenantBillingStatusRaw(requestParameters: GetTenantBillingStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>>;
     /**
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response>;
+    getTenantBillingStatus(requestParameters?: GetTenantBillingStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response>;
     /**
      * Returns a tenant by its ID.  ## Authentication - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)  ## Use Cases - Service-to-service tenant resolution - Webhook processing - Backend tenant lookup
      * Get tenant by ID
@@ -235,12 +249,12 @@ export declare class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>>;
+    listTenantSubscriptionsRaw(requestParameters: ListTenantSubscriptionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>>;
     /**
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>>;
+    listTenantSubscriptions(requestParameters?: ListTenantSubscriptionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>>;
     /**
      * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission  ## Use Cases - Display team members list - User management UI - Member directory
      * Get tenant users

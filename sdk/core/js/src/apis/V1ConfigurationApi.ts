@@ -15,68 +15,62 @@
 
 import * as runtime from '../runtime';
 import type {
-  ArchiveAllStripeConfig200Response,
+  AppliedMigration,
+  ArchiveAllResponse,
   BadRequest,
   BadRequestResponse,
+  ConfigHistoryResponse,
   CreateEmailTemplateRequest,
   CreateOrUpdateEmailTemplate200Response,
   DeleteEmailTemplate200Response,
-  DeployPermissionNamespaces200Response,
   ErrorResponse,
-  GetDatabaseMigrationStatus200Response,
   GetEmailTemplates200Response,
-  GetStripeConfigHistory200Response,
   InternalServerError,
   InternalServerErrorResponse,
   MigrationErrorResponse,
-  MigrationSuccessResponse,
+  NamespaceDeploymentResponse,
   NotFoundResponse,
-  PullStripeConfig200Response,
   RollbackDatabaseMigrations200Response,
   SendEmail200Response,
   SendEmailRequest,
   StripeConfigUpdateRequest,
+  StripeConfigUpdateResponse,
   StripeConfigValidateRequest,
-  SuccessResponse,
+  StripeConfigurationWithIDs,
   Unauthorized,
   UnauthorizedResponse,
-  UpdateStripeConfig200Response,
 } from '../models/index';
 import {
-    ArchiveAllStripeConfig200ResponseFromJSON,
-    ArchiveAllStripeConfig200ResponseToJSON,
+    AppliedMigrationFromJSON,
+    AppliedMigrationToJSON,
+    ArchiveAllResponseFromJSON,
+    ArchiveAllResponseToJSON,
     BadRequestFromJSON,
     BadRequestToJSON,
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
+    ConfigHistoryResponseFromJSON,
+    ConfigHistoryResponseToJSON,
     CreateEmailTemplateRequestFromJSON,
     CreateEmailTemplateRequestToJSON,
     CreateOrUpdateEmailTemplate200ResponseFromJSON,
     CreateOrUpdateEmailTemplate200ResponseToJSON,
     DeleteEmailTemplate200ResponseFromJSON,
     DeleteEmailTemplate200ResponseToJSON,
-    DeployPermissionNamespaces200ResponseFromJSON,
-    DeployPermissionNamespaces200ResponseToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    GetDatabaseMigrationStatus200ResponseFromJSON,
-    GetDatabaseMigrationStatus200ResponseToJSON,
     GetEmailTemplates200ResponseFromJSON,
     GetEmailTemplates200ResponseToJSON,
-    GetStripeConfigHistory200ResponseFromJSON,
-    GetStripeConfigHistory200ResponseToJSON,
     InternalServerErrorFromJSON,
     InternalServerErrorToJSON,
     InternalServerErrorResponseFromJSON,
     InternalServerErrorResponseToJSON,
     MigrationErrorResponseFromJSON,
     MigrationErrorResponseToJSON,
-    MigrationSuccessResponseFromJSON,
-    MigrationSuccessResponseToJSON,
+    NamespaceDeploymentResponseFromJSON,
+    NamespaceDeploymentResponseToJSON,
     NotFoundResponseFromJSON,
     NotFoundResponseToJSON,
-    PullStripeConfig200ResponseFromJSON,
-    PullStripeConfig200ResponseToJSON,
     RollbackDatabaseMigrations200ResponseFromJSON,
     RollbackDatabaseMigrations200ResponseToJSON,
     SendEmail200ResponseFromJSON,
@@ -85,16 +79,16 @@ import {
     SendEmailRequestToJSON,
     StripeConfigUpdateRequestFromJSON,
     StripeConfigUpdateRequestToJSON,
+    StripeConfigUpdateResponseFromJSON,
+    StripeConfigUpdateResponseToJSON,
     StripeConfigValidateRequestFromJSON,
     StripeConfigValidateRequestToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+    StripeConfigurationWithIDsFromJSON,
+    StripeConfigurationWithIDsToJSON,
     UnauthorizedFromJSON,
     UnauthorizedToJSON,
     UnauthorizedResponseFromJSON,
     UnauthorizedResponseToJSON,
-    UpdateStripeConfig200ResponseFromJSON,
-    UpdateStripeConfig200ResponseToJSON,
 } from '../models/index';
 
 export interface CreateOrUpdateEmailTemplateRequest {
@@ -154,7 +148,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Archives all active products, prices, and meters in Stripe and clears the local configuration.  ## Authentication Requires admin JWT token.  ## Warning This is a destructive operation that will archive ALL active Stripe resources.  ## Use Cases - Clean slate for new configuration - Remove all test data - Reset Stripe account 
      * Archive all Stripe config
      */
-    async archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllStripeConfig200Response>> {
+    async archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -173,14 +167,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ArchiveAllStripeConfig200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ArchiveAllResponseFromJSON(jsonValue));
     }
 
     /**
      * Archives all active products, prices, and meters in Stripe and clears the local configuration.  ## Authentication Requires admin JWT token.  ## Warning This is a destructive operation that will archive ALL active Stripe resources.  ## Use Cases - Clean slate for new configuration - Remove all test data - Reset Stripe account 
      * Archive all Stripe config
      */
-    async archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllStripeConfig200Response> {
+    async archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse> {
         const response = await this.archiveAllStripeConfigRaw(initOverrides);
         return await response.value();
     }
@@ -285,7 +279,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Uploads and deploys permission namespace configurations as a zip file.  ## Authentication Requires JWT token with appropriate permissions.  ## File Format Upload a zip file containing namespace definition files and optionally a `roles.config.json` file. The namespace files are stored in S3 and parsed to extract permission definitions.  **roles.config.json format:** ```json {   \"roles\": [     {       \"role\": \"admin\",       \"permissions\": [\"projects:read\", \"projects:write\", \"projects:delete\"]     },     {       \"role\": \"viewer\",       \"permissions\": [\"projects:read\"]     }   ] } ```  ## Managed Mode If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.  ## Use Cases - CLI namespace deployment via `omnibase permissions push` - CI/CD pipeline integrations - Programmatic permission management 
      * Deploy Keto namespace configurations
      */
-    async deployPermissionNamespacesRaw(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeployPermissionNamespaces200Response>> {
+    async deployPermissionNamespacesRaw(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NamespaceDeploymentResponse>> {
         if (requestParameters['namespaces'] == null) {
             throw new runtime.RequiredError(
                 'namespaces',
@@ -332,14 +326,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             body: formParams,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeployPermissionNamespaces200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => NamespaceDeploymentResponseFromJSON(jsonValue));
     }
 
     /**
      * Uploads and deploys permission namespace configurations as a zip file.  ## Authentication Requires JWT token with appropriate permissions.  ## File Format Upload a zip file containing namespace definition files and optionally a `roles.config.json` file. The namespace files are stored in S3 and parsed to extract permission definitions.  **roles.config.json format:** ```json {   \"roles\": [     {       \"role\": \"admin\",       \"permissions\": [\"projects:read\", \"projects:write\", \"projects:delete\"]     },     {       \"role\": \"viewer\",       \"permissions\": [\"projects:read\"]     }   ] } ```  ## Managed Mode If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.  ## Use Cases - CLI namespace deployment via `omnibase permissions push` - CI/CD pipeline integrations - Programmatic permission management 
      * Deploy Keto namespace configurations
      */
-    async deployPermissionNamespaces(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeployPermissionNamespaces200Response> {
+    async deployPermissionNamespaces(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NamespaceDeploymentResponse> {
         const response = await this.deployPermissionNamespacesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -395,7 +389,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI 
      * Get applied migration status
      */
-    async getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetDatabaseMigrationStatus200Response>> {
+    async getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AppliedMigration>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -414,14 +408,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetDatabaseMigrationStatus200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(AppliedMigrationFromJSON));
     }
 
     /**
      * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI 
      * Get applied migration status
      */
-    async getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetDatabaseMigrationStatus200Response> {
+    async getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AppliedMigration>> {
         const response = await this.getDatabaseMigrationStatusRaw(initOverrides);
         return await response.value();
     }
@@ -469,7 +463,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Returns paginated history of all Stripe configurations.  ## Authentication Requires admin JWT token.  ## Query Parameters - limit: Items per page (default: 10, max: 100, min: 1) - offset: Number of items to skip (default: 0, min: 0) 
      * Get config history
      */
-    async getStripeConfigHistoryRaw(requestParameters: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfigHistory200Response>> {
+    async getStripeConfigHistoryRaw(requestParameters: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConfigHistoryResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters['limit'] != null) {
@@ -496,14 +490,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetStripeConfigHistory200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConfigHistoryResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns paginated history of all Stripe configurations.  ## Authentication Requires admin JWT token.  ## Query Parameters - limit: Items per page (default: 10, max: 100, min: 1) - offset: Number of items to skip (default: 0, min: 0) 
      * Get config history
      */
-    async getStripeConfigHistory(requestParameters: GetStripeConfigHistoryRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfigHistory200Response> {
+    async getStripeConfigHistory(requestParameters: GetStripeConfigHistoryRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConfigHistoryResponse> {
         const response = await this.getStripeConfigHistoryRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -543,7 +537,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.  ## Authentication Requires admin JWT token.  ## Use Cases - Sync remote Stripe config to local - Import existing Stripe setup - Configuration backup 
      * Pull config from Stripe
      */
-    async pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PullStripeConfig200Response>> {
+    async pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigurationWithIDs>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -562,14 +556,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PullStripeConfig200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigurationWithIDsFromJSON(jsonValue));
     }
 
     /**
      * Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.  ## Authentication Requires admin JWT token.  ## Use Cases - Sync remote Stripe config to local - Import existing Stripe setup - Configuration backup 
      * Pull config from Stripe
      */
-    async pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PullStripeConfig200Response> {
+    async pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigurationWithIDs> {
         const response = await this.pullStripeConfigRaw(initOverrides);
         return await response.value();
     }
@@ -760,7 +754,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts. 
      * Update Stripe config
      */
-    async updateStripeConfigRaw(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateStripeConfig200Response>> {
+    async updateStripeConfigRaw(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigUpdateResponse>> {
         if (requestParameters['stripeConfigUpdateRequest'] == null) {
             throw new runtime.RequiredError(
                 'stripeConfigUpdateRequest',
@@ -789,14 +783,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             body: StripeConfigUpdateRequestToJSON(requestParameters['stripeConfigUpdateRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateStripeConfig200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigUpdateResponseFromJSON(jsonValue));
     }
 
     /**
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts. 
      * Update Stripe config
      */
-    async updateStripeConfig(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateStripeConfig200Response> {
+    async updateStripeConfig(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigUpdateResponse> {
         const response = await this.updateStripeConfigRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -805,7 +799,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Uploads SQL migration files and applies them to the user\'s PostgreSQL database.  ## Authentication Requires JWT token (typically used by CLI tools, not browser sessions).  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - CLI migration uploads via `omnibase db migration push` - CI/CD pipeline integrations - Programmatic schema management 
      * Upload database migrations
      */
-    async uploadDatabaseMigrationsRaw(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>> {
+    async uploadDatabaseMigrationsRaw(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters['migrations'] == null) {
             throw new runtime.RequiredError(
                 'migrations',
@@ -852,14 +846,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             body: formParams,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => MigrationSuccessResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Uploads SQL migration files and applies them to the user\'s PostgreSQL database.  ## Authentication Requires JWT token (typically used by CLI tools, not browser sessions).  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - CLI migration uploads via `omnibase db migration push` - CI/CD pipeline integrations - Programmatic schema management 
      * Upload database migrations
      */
-    async uploadDatabaseMigrations(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse> {
+    async uploadDatabaseMigrations(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.uploadDatabaseMigrationsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -868,7 +862,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      * Validates a Stripe configuration against the schema without saving or deploying it.  ## Authentication Requires admin JWT token.  ## Use Cases - Pre-deployment validation - Configuration testing - Schema compliance checking 
      * Validate Stripe config
      */
-    async validateStripeConfigRaw(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async validateStripeConfigRaw(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         if (requestParameters['stripeConfigValidateRequest'] == null) {
             throw new runtime.RequiredError(
                 'stripeConfigValidateRequest',
@@ -897,14 +891,14 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             body: StripeConfigValidateRequestToJSON(requestParameters['stripeConfigValidateRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Validates a Stripe configuration against the schema without saving or deploying it.  ## Authentication Requires admin JWT token.  ## Use Cases - Pre-deployment validation - Configuration testing - Schema compliance checking 
      * Validate Stripe config
      */
-    async validateStripeConfig(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+    async validateStripeConfig(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.validateStripeConfigRaw(requestParameters, initOverrides);
         return await response.value();
     }

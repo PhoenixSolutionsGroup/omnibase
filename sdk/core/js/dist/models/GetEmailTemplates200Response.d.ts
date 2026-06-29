@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { GetEmailTemplates200ResponseAllOfData } from './GetEmailTemplates200ResponseAllOfData';
+import type { EmailTemplate } from './EmailTemplate';
 /**
  *
  * @export
@@ -17,17 +17,17 @@ import type { GetEmailTemplates200ResponseAllOfData } from './GetEmailTemplates2
  */
 export interface GetEmailTemplates200Response {
     /**
-     * HTTP status code
+     *
+     * @type {Array<EmailTemplate>}
+     * @memberof GetEmailTemplates200Response
+     */
+    templates?: Array<EmailTemplate>;
+    /**
+     *
      * @type {number}
      * @memberof GetEmailTemplates200Response
      */
-    status: number;
-    /**
-     *
-     * @type {GetEmailTemplates200ResponseAllOfData}
-     * @memberof GetEmailTemplates200Response
-     */
-    data?: GetEmailTemplates200ResponseAllOfData;
+    count?: number;
 }
 /**
  * Check if a given object implements the GetEmailTemplates200Response interface.

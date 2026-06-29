@@ -18,13 +18,11 @@ exports.GetEmailTemplates200ResponseFromJSON = GetEmailTemplates200ResponseFromJ
 exports.GetEmailTemplates200ResponseFromJSONTyped = GetEmailTemplates200ResponseFromJSONTyped;
 exports.GetEmailTemplates200ResponseToJSON = GetEmailTemplates200ResponseToJSON;
 exports.GetEmailTemplates200ResponseToJSONTyped = GetEmailTemplates200ResponseToJSONTyped;
-const GetEmailTemplates200ResponseAllOfData_1 = require("./GetEmailTemplates200ResponseAllOfData");
+const EmailTemplate_1 = require("./EmailTemplate");
 /**
  * Check if a given object implements the GetEmailTemplates200Response interface.
  */
 function instanceOfGetEmailTemplates200Response(value) {
-    if (!('status' in value) || value['status'] === undefined)
-        return false;
     return true;
 }
 function GetEmailTemplates200ResponseFromJSON(json) {
@@ -35,8 +33,8 @@ function GetEmailTemplates200ResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : (0, GetEmailTemplates200ResponseAllOfData_1.GetEmailTemplates200ResponseAllOfDataFromJSON)(json['data']),
+        'templates': json['templates'] == null ? undefined : (json['templates'].map(EmailTemplate_1.EmailTemplateFromJSON)),
+        'count': json['count'] == null ? undefined : json['count'],
     };
 }
 function GetEmailTemplates200ResponseToJSON(json) {
@@ -47,7 +45,7 @@ function GetEmailTemplates200ResponseToJSONTyped(value, ignoreDiscriminator = fa
         return value;
     }
     return {
-        'status': value['status'],
-        'data': (0, GetEmailTemplates200ResponseAllOfData_1.GetEmailTemplates200ResponseAllOfDataToJSON)(value['data']),
+        'templates': value['templates'] == null ? undefined : (value['templates'].map(EmailTemplate_1.EmailTemplateToJSON)),
+        'count': value['count'],
     };
 }

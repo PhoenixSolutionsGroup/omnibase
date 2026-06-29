@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ArchiveAllStripeConfig200Response, CreateEmailTemplateRequest, CreateOrUpdateEmailTemplate200Response, DeleteEmailTemplate200Response, DeployPermissionNamespaces200Response, GetDatabaseMigrationStatus200Response, GetEmailTemplates200Response, GetStripeConfigHistory200Response, MigrationSuccessResponse, PullStripeConfig200Response, RollbackDatabaseMigrations200Response, SendEmail200Response, SendEmailRequest, StripeConfigUpdateRequest, StripeConfigValidateRequest, SuccessResponse, UpdateStripeConfig200Response } from '../models/index';
+import type { AppliedMigration, ArchiveAllResponse, ConfigHistoryResponse, CreateEmailTemplateRequest, CreateOrUpdateEmailTemplate200Response, DeleteEmailTemplate200Response, GetEmailTemplates200Response, NamespaceDeploymentResponse, RollbackDatabaseMigrations200Response, SendEmail200Response, SendEmailRequest, StripeConfigUpdateRequest, StripeConfigUpdateResponse, StripeConfigValidateRequest, StripeConfigurationWithIDs } from '../models/index';
 export interface CreateOrUpdateEmailTemplateRequest {
     createEmailTemplateRequest: CreateEmailTemplateRequest;
 }
@@ -56,12 +56,12 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Archives all active products, prices, and meters in Stripe and clears the local configuration.  ## Authentication Requires admin JWT token.  ## Warning This is a destructive operation that will archive ALL active Stripe resources.  ## Use Cases - Clean slate for new configuration - Remove all test data - Reset Stripe account
      * Archive all Stripe config
      */
-    archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllStripeConfig200Response>>;
+    archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>>;
     /**
      * Archives all active products, prices, and meters in Stripe and clears the local configuration.  ## Authentication Requires admin JWT token.  ## Warning This is a destructive operation that will archive ALL active Stripe resources.  ## Use Cases - Clean slate for new configuration - Remove all test data - Reset Stripe account
      * Archive all Stripe config
      */
-    archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllStripeConfig200Response>;
+    archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse>;
     /**
      * Creates a new email template or updates an existing one based on template type.  ## Template Management - If template type exists: updates subject and HTML body - If template type is new: creates new template entry  ## Template Types Template types are user-defined identifiers (e.g., \"welcome\", \"password-reset\", \"invoice\").  ## Use Cases - Store custom email templates for transactional emails - Update email content without code deployments - Maintain versioned email templates
      * Create or update email template
@@ -86,12 +86,12 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Uploads and deploys permission namespace configurations as a zip file.  ## Authentication Requires JWT token with appropriate permissions.  ## File Format Upload a zip file containing namespace definition files and optionally a `roles.config.json` file. The namespace files are stored in S3 and parsed to extract permission definitions.  **roles.config.json format:** ```json {   \"roles\": [     {       \"role\": \"admin\",       \"permissions\": [\"projects:read\", \"projects:write\", \"projects:delete\"]     },     {       \"role\": \"viewer\",       \"permissions\": [\"projects:read\"]     }   ] } ```  ## Managed Mode If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.  ## Use Cases - CLI namespace deployment via `omnibase permissions push` - CI/CD pipeline integrations - Programmatic permission management
      * Deploy Keto namespace configurations
      */
-    deployPermissionNamespacesRaw(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeployPermissionNamespaces200Response>>;
+    deployPermissionNamespacesRaw(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NamespaceDeploymentResponse>>;
     /**
      * Uploads and deploys permission namespace configurations as a zip file.  ## Authentication Requires JWT token with appropriate permissions.  ## File Format Upload a zip file containing namespace definition files and optionally a `roles.config.json` file. The namespace files are stored in S3 and parsed to extract permission definitions.  **roles.config.json format:** ```json {   \"roles\": [     {       \"role\": \"admin\",       \"permissions\": [\"projects:read\", \"projects:write\", \"projects:delete\"]     },     {       \"role\": \"viewer\",       \"permissions\": [\"projects:read\"]     }   ] } ```  ## Managed Mode If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.  ## Use Cases - CLI namespace deployment via `omnibase permissions push` - CI/CD pipeline integrations - Programmatic permission management
      * Deploy Keto namespace configurations
      */
-    deployPermissionNamespaces(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeployPermissionNamespaces200Response>;
+    deployPermissionNamespaces(requestParameters: DeployPermissionNamespacesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NamespaceDeploymentResponse>;
     /**
      * Generates type definitions from the database schema using postgres-meta.  ## Supported Languages - `typescript` (default) - TypeScript type definitions - `go` - Go struct definitions - `swift` (beta) - Swift type definitions  ## Authentication Requires service key authentication.  ## Use Cases - CLI type generation via `omnibase db typegen` - CI/CD pipeline type generation - Programmatic type generation for SDKs
      * Generate types from database schema
@@ -106,12 +106,12 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI
      * Get applied migration status
      */
-    getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetDatabaseMigrationStatus200Response>>;
+    getDatabaseMigrationStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<AppliedMigration>>>;
     /**
      * Returns the migrations recorded in the `migrations.schema_migrations` tracking table, ordered by version descending. A `dirty` migration indicates a previous run failed partway and needs manual intervention.  ## Authentication Requires service key authentication.  ## Use Cases - Inspect applied migrations via `omnibase db migrate status` - Detect dirty/failed migration state in CI
      * Get applied migration status
      */
-    getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetDatabaseMigrationStatus200Response>;
+    getDatabaseMigrationStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<AppliedMigration>>;
     /**
      * Retrieves all email templates stored in the database.  ## Response Returns array of all templates with their type, subject, and HTML body.  ## Use Cases - List available email templates - Display template management interface - Audit email template inventory
      * Get all email templates
@@ -126,12 +126,12 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Returns paginated history of all Stripe configurations.  ## Authentication Requires admin JWT token.  ## Query Parameters - limit: Items per page (default: 10, max: 100, min: 1) - offset: Number of items to skip (default: 0, min: 0)
      * Get config history
      */
-    getStripeConfigHistoryRaw(requestParameters: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfigHistory200Response>>;
+    getStripeConfigHistoryRaw(requestParameters: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConfigHistoryResponse>>;
     /**
      * Returns paginated history of all Stripe configurations.  ## Authentication Requires admin JWT token.  ## Query Parameters - limit: Items per page (default: 10, max: 100, min: 1) - offset: Number of items to skip (default: 0, min: 0)
      * Get config history
      */
-    getStripeConfigHistory(requestParameters?: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfigHistory200Response>;
+    getStripeConfigHistory(requestParameters?: GetStripeConfigHistoryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConfigHistoryResponse>;
     /**
      * Returns the JSON schema definition for validating Stripe configuration files.  ## Use Cases - Validate configuration before upload - IDE autocomplete support - Generate configuration templates
      * Get Stripe config schema
@@ -146,12 +146,12 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.  ## Authentication Requires admin JWT token.  ## Use Cases - Sync remote Stripe config to local - Import existing Stripe setup - Configuration backup
      * Pull config from Stripe
      */
-    pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PullStripeConfig200Response>>;
+    pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigurationWithIDs>>;
     /**
      * Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.  ## Authentication Requires admin JWT token.  ## Use Cases - Sync remote Stripe config to local - Import existing Stripe setup - Configuration backup
      * Pull config from Stripe
      */
-    pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PullStripeConfig200Response>;
+    pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigurationWithIDs>;
     /**
      * Rolls back the last N migrations using the supplied migration files.  **WARNING: Rolling back migrations can be destructive.** Down migrations may drop tables or columns and permanently delete data.  ## Authentication Requires service key authentication (typically used by CLI tools).  ## Migration Format Upload a zip file containing the SQL migration files (the same set used to apply the migrations). Files are renamed to golang-migrate format so the matching `*.down.sql` files can be executed.  ## Use Cases - Roll back migrations via `omnibase db migrate down` - Undo a faulty migration during development
      * Roll back database migrations
@@ -186,32 +186,32 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts.
      * Update Stripe config
      */
-    updateStripeConfigRaw(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateStripeConfig200Response>>;
+    updateStripeConfigRaw(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigUpdateResponse>>;
     /**
      * Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.  ## Authentication Requires admin JWT token.  ## Use Cases - Deploy new pricing - Update product definitions - Modify metered billing settings - Configure webhook endpoints  ## Webhooks Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted. Each webhook can have `connect: true` to listen to events from connected accounts.
      * Update Stripe config
      */
-    updateStripeConfig(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateStripeConfig200Response>;
+    updateStripeConfig(requestParameters: UpdateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigUpdateResponse>;
     /**
      * Uploads SQL migration files and applies them to the user\'s PostgreSQL database.  ## Authentication Requires JWT token (typically used by CLI tools, not browser sessions).  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - CLI migration uploads via `omnibase db migration push` - CI/CD pipeline integrations - Programmatic schema management
      * Upload database migrations
      */
-    uploadDatabaseMigrationsRaw(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MigrationSuccessResponse>>;
+    uploadDatabaseMigrationsRaw(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
     /**
      * Uploads SQL migration files and applies them to the user\'s PostgreSQL database.  ## Authentication Requires JWT token (typically used by CLI tools, not browser sessions).  ## Migration Format Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc. Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.  ## Use Cases - CLI migration uploads via `omnibase db migration push` - CI/CD pipeline integrations - Programmatic schema management
      * Upload database migrations
      */
-    uploadDatabaseMigrations(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MigrationSuccessResponse>;
+    uploadDatabaseMigrations(requestParameters: UploadDatabaseMigrationsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
     /**
      * Validates a Stripe configuration against the schema without saving or deploying it.  ## Authentication Requires admin JWT token.  ## Use Cases - Pre-deployment validation - Configuration testing - Schema compliance checking
      * Validate Stripe config
      */
-    validateStripeConfigRaw(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>>;
+    validateStripeConfigRaw(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
     /**
      * Validates a Stripe configuration against the schema without saving or deploying it.  ## Authentication Requires admin JWT token.  ## Use Cases - Pre-deployment validation - Configuration testing - Schema compliance checking
      * Validate Stripe config
      */
-    validateStripeConfig(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse>;
+    validateStripeConfig(requestParameters: ValidateStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
 }
 /**
  * @export

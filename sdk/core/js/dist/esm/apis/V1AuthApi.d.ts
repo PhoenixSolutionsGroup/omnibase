@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { CreateUserRequest, GetActiveTenant200Response, GetIdentity200Response, GetSession200Response, KratosIdentity, ListTenantsResponse, Logout200Response, WhoAmI200Response } from '../models/index';
+import type { ActiveTenantResponse, CreateUserRequest, KratosIdentity, ListTenantsResponse, LogoutResponse, SessionResponse, WhoAmIResponse } from '../models/index';
 export interface CreateUserOperationRequest {
     createUserRequest: CreateUserRequest;
 }
@@ -38,32 +38,32 @@ export declare class V1AuthApi extends runtime.BaseAPI {
      * Returns the full tenant object for the user\'s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering.
      * Get active tenant
      */
-    getActiveTenantRaw(requestParameters: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetActiveTenant200Response>>;
+    getActiveTenantRaw(requestParameters: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ActiveTenantResponse>>;
     /**
      * Returns the full tenant object for the user\'s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering.
      * Get active tenant
      */
-    getActiveTenant(requestParameters?: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetActiveTenant200Response>;
+    getActiveTenant(requestParameters?: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ActiveTenantResponse>;
     /**
      * Returns the current authenticated user\'s identity information (traits like email, name).  ## Identity Data - User ID (unique identifier) - Traits (email, first name, last name based on identity schema) - Schema ID - Created/updated timestamps  ## Use Case Lighter alternative to full session when you only need user profile data.
      * Get current identity
      */
-    getIdentityRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetIdentity200Response>>;
+    getIdentityRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
     /**
      * Returns the current authenticated user\'s identity information (traits like email, name).  ## Identity Data - User ID (unique identifier) - Traits (email, first name, last name based on identity schema) - Schema ID - Created/updated timestamps  ## Use Case Lighter alternative to full session when you only need user profile data.
      * Get current identity
      */
-    getIdentity(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetIdentity200Response>;
+    getIdentity(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
     /**
      * Returns the current authenticated user\'s session including identity and tenant information.  ## Session Data - Session metadata (ID, expiry, authentication methods) - Identity information (user ID, traits like email, name) - Active tenant context (if user has tenant membership)  ## Authentication Requires valid session via Cookie or X-Session-Token header.
      * Get current session
      */
-    getSessionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetSession200Response>>;
+    getSessionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionResponse>>;
     /**
      * Returns the current authenticated user\'s session including identity and tenant information.  ## Session Data - Session metadata (ID, expiry, authentication methods) - Identity information (user ID, traits like email, name) - Active tenant context (if user has tenant membership)  ## Authentication Requires valid session via Cookie or X-Session-Token header.
      * Get current session
      */
-    getSession(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetSession200Response>;
+    getSession(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SessionResponse>;
     /**
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to.
      * List user\'s tenants
@@ -78,20 +78,20 @@ export declare class V1AuthApi extends runtime.BaseAPI {
      * Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically.
      * Logout user
      */
-    logoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Logout200Response>>;
+    logoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LogoutResponse>>;
     /**
      * Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically.
      * Logout user
      */
-    logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Logout200Response>;
+    logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LogoutResponse>;
     /**
      * Lightweight endpoint to check if the user is authenticated.  ## Response Returns boolean authentication status and user ID if authenticated.  ## Use Case Quick auth checks for route guards without fetching full session data.
      * Check authentication status
      */
-    whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WhoAmI200Response>>;
+    whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WhoAmIResponse>>;
     /**
      * Lightweight endpoint to check if the user is authenticated.  ## Response Returns boolean authentication status and user ID if authenticated.  ## Use Case Quick auth checks for route guards without fetching full session data.
      * Check authentication status
      */
-    whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WhoAmI200Response>;
+    whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WhoAmIResponse>;
 }

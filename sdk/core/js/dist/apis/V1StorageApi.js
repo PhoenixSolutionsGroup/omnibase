@@ -97,7 +97,7 @@ class V1StorageApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.DeleteObjectRequestToJSON)(requestParameters['deleteObjectRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteObject200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.MessageResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -145,7 +145,7 @@ class V1StorageApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.DownloadRequestToJSON)(requestParameters['downloadRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DownloadFile200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DownloadResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -193,7 +193,7 @@ class V1StorageApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.MakePublicRequestToJSON)(requestParameters['makePublicRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteObject200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.MessageResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -241,7 +241,7 @@ class V1StorageApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.UploadRequestToJSON)(requestParameters['uploadRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.UploadFile200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.UploadResponseFromJSON)(jsonValue));
         });
     }
     /**

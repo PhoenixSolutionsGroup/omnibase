@@ -22,6 +22,12 @@ exports.AddSubscriptionResponseToJSONTyped = AddSubscriptionResponseToJSONTyped;
  * Check if a given object implements the AddSubscriptionResponse interface.
  */
 function instanceOfAddSubscriptionResponse(value) {
+    if (!('subscriptionId' in value) || value['subscriptionId'] === undefined)
+        return false;
+    if (!('status' in value) || value['status'] === undefined)
+        return false;
+    if (!('message' in value) || value['message'] === undefined)
+        return false;
     return true;
 }
 function AddSubscriptionResponseFromJSON(json) {
@@ -32,9 +38,9 @@ function AddSubscriptionResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'subscriptionId': json['subscription_id'] == null ? undefined : json['subscription_id'],
-        'status': json['status'] == null ? undefined : json['status'],
-        'message': json['message'] == null ? undefined : json['message'],
+        'subscriptionId': json['subscription_id'],
+        'status': json['status'],
+        'message': json['message'],
     };
 }
 function AddSubscriptionResponseToJSON(json) {

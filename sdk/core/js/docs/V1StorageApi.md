@@ -13,7 +13,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## deleteObject
 
-> DeleteObject200Response deleteObject(deleteObjectRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
+> MessageResponse deleteObject(deleteObjectRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
 
 Delete file from storage
 
@@ -78,7 +78,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeleteObject200Response**](DeleteObject200Response.md)
+[**MessageResponse**](MessageResponse.md)
 
 ### Authorization
 
@@ -104,7 +104,7 @@ example().catch(console.error);
 
 ## downloadFile
 
-> DownloadFile200Response downloadFile(downloadRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
+> DownloadResponse downloadFile(downloadRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
 
 Download file from storage
 
@@ -169,7 +169,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DownloadFile200Response**](DownloadFile200Response.md)
+[**DownloadResponse**](DownloadResponse.md)
 
 ### Authorization
 
@@ -196,7 +196,7 @@ example().catch(console.error);
 
 ## makeFilePublic
 
-> DeleteObject200Response makeFilePublic(makePublicRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
+> MessageResponse makeFilePublic(makePublicRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
 
 Make a file publicly accessible
 
@@ -261,7 +261,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeleteObject200Response**](DeleteObject200Response.md)
+[**MessageResponse**](MessageResponse.md)
 
 ### Authorization
 
@@ -288,7 +288,7 @@ example().catch(console.error);
 
 ## uploadFile
 
-> UploadFile200Response uploadFile(uploadRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
+> UploadResponse uploadFile(uploadRequest, xUserId, xTenantId, xPostgrestToken, omnibasePostgrestJwt)
 
 Upload file to storage
 
@@ -353,7 +353,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**UploadFile200Response**](UploadFile200Response.md)
+[**UploadResponse**](UploadResponse.md)
 
 ### Authorization
 

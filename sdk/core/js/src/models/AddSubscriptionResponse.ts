@@ -24,25 +24,28 @@ export interface AddSubscriptionResponse {
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    subscriptionId?: string;
+    subscriptionId: string;
     /**
      * Subscription status (active, trialing, etc.)
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    status?: string;
+    status: string;
     /**
      * Message confirming the addition
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    message?: string;
+    message: string;
 }
 
 /**
  * Check if a given object implements the AddSubscriptionResponse interface.
  */
 export function instanceOfAddSubscriptionResponse(value: object): value is AddSubscriptionResponse {
+    if (!('subscriptionId' in value) || value['subscriptionId'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('message' in value) || value['message'] === undefined) return false;
     return true;
 }
 
@@ -56,9 +59,9 @@ export function AddSubscriptionResponseFromJSONTyped(json: any, ignoreDiscrimina
     }
     return {
         
-        'subscriptionId': json['subscription_id'] == null ? undefined : json['subscription_id'],
-        'status': json['status'] == null ? undefined : json['status'],
-        'message': json['message'] == null ? undefined : json['message'],
+        'subscriptionId': json['subscription_id'],
+        'status': json['status'],
+        'message': json['message'],
     };
 }
 

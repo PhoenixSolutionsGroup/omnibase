@@ -18,13 +18,10 @@ exports.DeleteEmailTemplate200ResponseFromJSON = DeleteEmailTemplate200ResponseF
 exports.DeleteEmailTemplate200ResponseFromJSONTyped = DeleteEmailTemplate200ResponseFromJSONTyped;
 exports.DeleteEmailTemplate200ResponseToJSON = DeleteEmailTemplate200ResponseToJSON;
 exports.DeleteEmailTemplate200ResponseToJSONTyped = DeleteEmailTemplate200ResponseToJSONTyped;
-const DeleteEmailTemplate200ResponseAllOfData_1 = require("./DeleteEmailTemplate200ResponseAllOfData");
 /**
  * Check if a given object implements the DeleteEmailTemplate200Response interface.
  */
 function instanceOfDeleteEmailTemplate200Response(value) {
-    if (!('status' in value) || value['status'] === undefined)
-        return false;
     return true;
 }
 function DeleteEmailTemplate200ResponseFromJSON(json) {
@@ -35,8 +32,7 @@ function DeleteEmailTemplate200ResponseFromJSONTyped(json, ignoreDiscriminator) 
         return json;
     }
     return {
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : (0, DeleteEmailTemplate200ResponseAllOfData_1.DeleteEmailTemplate200ResponseAllOfDataFromJSON)(json['data']),
+        'message': json['message'] == null ? undefined : json['message'],
     };
 }
 function DeleteEmailTemplate200ResponseToJSON(json) {
@@ -47,7 +43,6 @@ function DeleteEmailTemplate200ResponseToJSONTyped(value, ignoreDiscriminator = 
         return value;
     }
     return {
-        'status': value['status'],
-        'data': (0, DeleteEmailTemplate200ResponseAllOfData_1.DeleteEmailTemplate200ResponseAllOfDataToJSON)(value['data']),
+        'message': value['message'],
     };
 }

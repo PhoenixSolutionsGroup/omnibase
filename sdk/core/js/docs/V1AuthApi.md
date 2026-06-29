@@ -91,7 +91,7 @@ example().catch(console.error);
 
 ## getActiveTenant
 
-> GetActiveTenant200Response getActiveTenant(xUserId)
+> ActiveTenantResponse getActiveTenant(xUserId)
 
 Get active tenant
 
@@ -144,7 +144,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetActiveTenant200Response**](GetActiveTenant200Response.md)
+[**ActiveTenantResponse**](ActiveTenantResponse.md)
 
 ### Authorization
 
@@ -168,7 +168,7 @@ example().catch(console.error);
 
 ## getIdentity
 
-> GetIdentity200Response getIdentity()
+> object getIdentity()
 
 Get current identity
 
@@ -211,7 +211,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**GetIdentity200Response**](GetIdentity200Response.md)
+**object**
 
 ### Authorization
 
@@ -235,7 +235,7 @@ This endpoint does not need any parameter.
 
 ## getSession
 
-> GetSession200Response getSession()
+> SessionResponse getSession()
 
 Get current session
 
@@ -278,7 +278,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**GetSession200Response**](GetSession200Response.md)
+[**SessionResponse**](SessionResponse.md)
 
 ### Authorization
 
@@ -380,7 +380,7 @@ example().catch(console.error);
 
 ## logout
 
-> Logout200Response logout()
+> LogoutResponse logout()
 
 Logout user
 
@@ -423,7 +423,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**Logout200Response**](Logout200Response.md)
+[**LogoutResponse**](LogoutResponse.md)
 
 ### Authorization
 
@@ -448,7 +448,7 @@ This endpoint does not need any parameter.
 
 ## whoAmI
 
-> WhoAmI200Response whoAmI()
+> WhoAmIResponse whoAmI()
 
 Check authentication status
 
@@ -491,7 +491,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**WhoAmI200Response**](WhoAmI200Response.md)
+[**WhoAmIResponse**](WhoAmIResponse.md)
 
 ### Authorization
 
