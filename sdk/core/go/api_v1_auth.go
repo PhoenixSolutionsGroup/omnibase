@@ -214,7 +214,7 @@ func (r ApiGetActiveTenantRequest) XUserId(xUserId string) ApiGetActiveTenantReq
 	return r
 }
 
-func (r ApiGetActiveTenantRequest) Execute() (*GetActiveTenant200Response, *http.Response, error) {
+func (r ApiGetActiveTenantRequest) Execute() (*ActiveTenantResponse, *http.Response, error) {
 	return r.ApiService.GetActiveTenantExecute(r)
 }
 
@@ -246,13 +246,13 @@ func (a *V1AuthAPIService) GetActiveTenant(ctx context.Context) ApiGetActiveTena
 }
 
 // Execute executes the request
-//  @return GetActiveTenant200Response
-func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (*GetActiveTenant200Response, *http.Response, error) {
+//  @return ActiveTenantResponse
+func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (*ActiveTenantResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetActiveTenant200Response
+		localVarReturnValue  *ActiveTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetActiveTenant")
@@ -377,7 +377,7 @@ type ApiGetIdentityRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiGetIdentityRequest) Execute() (*GetIdentity200Response, *http.Response, error) {
+func (r ApiGetIdentityRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.GetIdentityExecute(r)
 }
 
@@ -407,13 +407,13 @@ func (a *V1AuthAPIService) GetIdentity(ctx context.Context) ApiGetIdentityReques
 }
 
 // Execute executes the request
-//  @return GetIdentity200Response
-func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*GetIdentity200Response, *http.Response, error) {
+//  @return map[string]interface{}
+func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetIdentity200Response
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetIdentity")
@@ -521,7 +521,7 @@ type ApiGetSessionRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiGetSessionRequest) Execute() (*GetSession200Response, *http.Response, error) {
+func (r ApiGetSessionRequest) Execute() (*SessionResponse, *http.Response, error) {
 	return r.ApiService.GetSessionExecute(r)
 }
 
@@ -550,13 +550,13 @@ func (a *V1AuthAPIService) GetSession(ctx context.Context) ApiGetSessionRequest 
 }
 
 // Execute executes the request
-//  @return GetSession200Response
-func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*GetSession200Response, *http.Response, error) {
+//  @return SessionResponse
+func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetSession200Response
+		localVarReturnValue  *SessionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetSession")
@@ -846,7 +846,7 @@ type ApiLogoutRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiLogoutRequest) Execute() (*Logout200Response, *http.Response, error) {
+func (r ApiLogoutRequest) Execute() (*LogoutResponse, *http.Response, error) {
 	return r.ApiService.LogoutExecute(r)
 }
 
@@ -875,13 +875,13 @@ func (a *V1AuthAPIService) Logout(ctx context.Context) ApiLogoutRequest {
 }
 
 // Execute executes the request
-//  @return Logout200Response
-func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*Logout200Response, *http.Response, error) {
+//  @return LogoutResponse
+func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *Logout200Response
+		localVarReturnValue  *LogoutResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.Logout")
@@ -1000,7 +1000,7 @@ type ApiWhoAmIRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiWhoAmIRequest) Execute() (*WhoAmI200Response, *http.Response, error) {
+func (r ApiWhoAmIRequest) Execute() (*WhoAmIResponse, *http.Response, error) {
 	return r.ApiService.WhoAmIExecute(r)
 }
 
@@ -1027,13 +1027,13 @@ func (a *V1AuthAPIService) WhoAmI(ctx context.Context) ApiWhoAmIRequest {
 }
 
 // Execute executes the request
-//  @return WhoAmI200Response
-func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmI200Response, *http.Response, error) {
+//  @return WhoAmIResponse
+func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *WhoAmI200Response
+		localVarReturnValue  *WhoAmIResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.WhoAmI")

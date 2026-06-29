@@ -219,7 +219,7 @@ func (r ApiCreateRelationshipRequest) CreateRelationshipRequest(createRelationsh
 	return r
 }
 
-func (r ApiCreateRelationshipRequest) Execute() (*CreateRelationship200Response, *http.Response, error) {
+func (r ApiCreateRelationshipRequest) Execute() (*CreateRelationshipResponse, *http.Response, error) {
 	return r.ApiService.CreateRelationshipExecute(r)
 }
 
@@ -252,13 +252,13 @@ func (a *V1PermissionsAPIService) CreateRelationship(ctx context.Context) ApiCre
 }
 
 // Execute executes the request
-//  @return CreateRelationship200Response
-func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshipRequest) (*CreateRelationship200Response, *http.Response, error) {
+//  @return CreateRelationshipResponse
+func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelationshipRequest) (*CreateRelationshipResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateRelationship200Response
+		localVarReturnValue  *CreateRelationshipResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CreateRelationship")
@@ -414,7 +414,7 @@ func (r ApiDeleteRelationshipRequest) DeleteRelationshipRequest(deleteRelationsh
 	return r
 }
 
-func (r ApiDeleteRelationshipRequest) Execute() (*DeleteRelationship200Response, *http.Response, error) {
+func (r ApiDeleteRelationshipRequest) Execute() (*DeleteRelationshipResponse, *http.Response, error) {
 	return r.ApiService.DeleteRelationshipExecute(r)
 }
 
@@ -447,13 +447,13 @@ func (a *V1PermissionsAPIService) DeleteRelationship(ctx context.Context) ApiDel
 }
 
 // Execute executes the request
-//  @return DeleteRelationship200Response
-func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelationshipRequest) (*DeleteRelationship200Response, *http.Response, error) {
+//  @return DeleteRelationshipResponse
+func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelationshipRequest) (*DeleteRelationshipResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteRelationship200Response
+		localVarReturnValue  *DeleteRelationshipResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.DeleteRelationship")

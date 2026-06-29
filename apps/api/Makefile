@@ -30,20 +30,29 @@ sdk-if-changed:
 		echo "✓ SDK generated"; \
 	fi
 
-integration-down:
-	cd tests/integration && docker compose -f docker-compose.test-deps.yml -p ob-api-test-deps down --volumes --remove-orphans
+testenv-down:
+	cd tests/testenv && docker compose -f docker-compose.test-deps.yml -p ob-api-test-deps down --volumes --remove-orphans
 
-integration-logs:
-	cd tests/integration && docker compose -f docker-compose.test-deps.yml -p ob-api-test-deps logs -f
+testenv-logs:
+	cd tests/testenv && docker compose -f docker-compose.test-deps.yml -p ob-api-test-deps logs -f
 
 # Default: silent (no per-handler logs, no timing prints). Stack kept warm between runs.
 # Verbose: `make test-integration VERBOSE=1` — shows server logs + test trace.
 GO_TEST_FLAGS := -count=1 -timeout 5m
-LOG_LEVEL := error
+LOG_LEVEL := ERROR
 ifeq ($(VERBOSE),1)
 	GO_TEST_FLAGS += -v
-	LOG_LEVEL := debug
+	LOG_LEVEL := DEBUG
 endif
+TEST_ENV := GIN_MODE=release LOG_LEVEL=$(LOG_LEVEL) LOG_FORMAT=pretty
+
+test: test-unit test-integration test-e2e
+
+test-unit:
+	$(TEST_ENV) go test ./internal/... $(GO_TEST_FLAGS)
 
 test-integration: sdk-if-changed
-	GIN_MODE=release LOG_LEVEL=$(LOG_LEVEL) KEEP_STACK=1 go test ./tests/integration/... $(GO_TEST_FLAGS)
+	$(TEST_ENV) KEEP_STACK=1 go test ./tests/integration/... $(GO_TEST_FLAGS)
+
+test-e2e: sdk-if-changed
+	$(TEST_ENV) KEEP_STACK=1 go test ./tests/e2e/... $(GO_TEST_FLAGS)

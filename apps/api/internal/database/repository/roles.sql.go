@@ -211,6 +211,39 @@ func (q *Queries) ListNamespaceDefinitions(ctx context.Context) ([]ListNamespace
 	return items, nil
 }
 
+const listRoleTemplates = `-- name: ListRoleTemplates :many
+SELECT id, role_name, permissions, description, created_at, updated_at
+FROM permissions.role_templates
+ORDER BY role_name
+`
+
+func (q *Queries) ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTemplate, error) {
+	rows, err := q.db.Query(ctx, listRoleTemplates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PermissionsRoleTemplate
+	for rows.Next() {
+		var i PermissionsRoleTemplate
+		if err := rows.Scan(
+			&i.ID,
+			&i.RoleName,
+			&i.Permissions,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRolesByTenant = `-- name: ListRolesByTenant :many
 SELECT id, tenant_id, role_name, permissions, template_id, user_ids, created_at, updated_at
 FROM permissions.roles

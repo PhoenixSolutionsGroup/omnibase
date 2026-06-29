@@ -18,7 +18,7 @@ Method | HTTP request | Description
 
 ## AddInvoiceLineItem
 
-> AddInvoiceLineItem200Response AddInvoiceLineItem(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemRequest(addInvoiceLineItemRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceLineItemResponse AddInvoiceLineItem(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemRequest(addInvoiceLineItemRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
 
 Add invoice line item
 
@@ -50,7 +50,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.AddInvoiceLineItem``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `AddInvoiceLineItem`: AddInvoiceLineItem200Response
+	// response from `AddInvoiceLineItem`: InvoiceLineItemResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.AddInvoiceLineItem`: %v\n", resp)
 }
 ```
@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+[**InvoiceLineItemResponse**](InvoiceLineItemResponse.md)
 
 ### Authorization
 
@@ -96,7 +96,7 @@ No authorization required
 
 ## AddInvoiceLineItemWithPriceId
 
-> AddInvoiceLineItem200Response AddInvoiceLineItemWithPriceId(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceLineItemResponse AddInvoiceLineItemWithPriceId(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
 
 Add invoice line item with price ID
 
@@ -128,7 +128,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.AddInvoiceLineItemWithPriceId``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `AddInvoiceLineItemWithPriceId`: AddInvoiceLineItem200Response
+	// response from `AddInvoiceLineItemWithPriceId`: InvoiceLineItemResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.AddInvoiceLineItemWithPriceId`: %v\n", resp)
 }
 ```
@@ -156,7 +156,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AddInvoiceLineItem200Response**](AddInvoiceLineItem200Response.md)
+[**InvoiceLineItemResponse**](InvoiceLineItemResponse.md)
 
 ### Authorization
 
@@ -174,7 +174,7 @@ No authorization required
 
 ## CreateCheckout
 
-> CreateCheckout200Response CreateCheckout(ctx).CreateCheckoutRequest(createCheckoutRequest).Execute()
+> CreateCheckoutResponse CreateCheckout(ctx).CreateCheckoutRequest(createCheckoutRequest).Execute()
 
 Create checkout session
 
@@ -202,7 +202,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCheckout``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateCheckout`: CreateCheckout200Response
+	// response from `CreateCheckout`: CreateCheckoutResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateCheckout`: %v\n", resp)
 }
 ```
@@ -222,7 +222,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateCheckout200Response**](CreateCheckout200Response.md)
+[**CreateCheckoutResponse**](CreateCheckoutResponse.md)
 
 ### Authorization
 
@@ -240,7 +240,7 @@ No authorization required
 
 ## CreateCustomerPortal
 
-> CreateCustomerPortal200Response CreateCustomerPortal(ctx).CreatePortalRequest(createPortalRequest).Execute()
+> CreatePortalResponse CreateCustomerPortal(ctx).CreatePortalRequest(createPortalRequest).Execute()
 
 Create customer portal session
 
@@ -268,7 +268,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateCustomerPortal``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateCustomerPortal`: CreateCustomerPortal200Response
+	// response from `CreateCustomerPortal`: CreatePortalResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateCustomerPortal`: %v\n", resp)
 }
 ```
@@ -288,7 +288,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateCustomerPortal200Response**](CreateCustomerPortal200Response.md)
+[**CreatePortalResponse**](CreatePortalResponse.md)
 
 ### Authorization
 
@@ -306,7 +306,7 @@ No authorization required
 
 ## CreateInvoice
 
-> CreateInvoice200Response CreateInvoice(ctx).XServiceKey(xServiceKey).CreateInvoiceRequest(createInvoiceRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceResponse CreateInvoice(ctx).XServiceKey(xServiceKey).CreateInvoiceRequest(createInvoiceRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
 
 Create invoice
 
@@ -337,7 +337,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateInvoice`: CreateInvoice200Response
+	// response from `CreateInvoice`: InvoiceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.CreateInvoice`: %v\n", resp)
 }
 ```
@@ -360,7 +360,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -378,7 +378,7 @@ No authorization required
 
 ## FinalizeInvoice
 
-> CreateInvoice200Response FinalizeInvoice(ctx, invoiceId).XServiceKey(xServiceKey).FinalizeInvoiceRequest(finalizeInvoiceRequest).Execute()
+> InvoiceResponse FinalizeInvoice(ctx, invoiceId).XServiceKey(xServiceKey).FinalizeInvoiceRequest(finalizeInvoiceRequest).Execute()
 
 Finalize invoice
 
@@ -408,7 +408,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.FinalizeInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `FinalizeInvoice`: CreateInvoice200Response
+	// response from `FinalizeInvoice`: InvoiceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.FinalizeInvoice`: %v\n", resp)
 }
 ```
@@ -434,7 +434,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -452,7 +452,7 @@ No authorization required
 
 ## GetInvoice
 
-> CreateInvoice200Response GetInvoice(ctx, invoiceId).XServiceKey(xServiceKey).Execute()
+> InvoiceResponse GetInvoice(ctx, invoiceId).XServiceKey(xServiceKey).Execute()
 
 Get invoice
 
@@ -481,7 +481,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.GetInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetInvoice`: CreateInvoice200Response
+	// response from `GetInvoice`: InvoiceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.GetInvoice`: %v\n", resp)
 }
 ```
@@ -506,7 +506,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 
@@ -524,7 +524,7 @@ No authorization required
 
 ## RecordUsage
 
-> SuccessResponse RecordUsage(ctx).RecordUsageRequest(recordUsageRequest).Execute()
+> map[string]interface{} RecordUsage(ctx).RecordUsageRequest(recordUsageRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
 
 Record metered usage
 
@@ -544,15 +544,17 @@ import (
 
 func main() {
 	recordUsageRequest := *openapiclient.NewRecordUsageRequest("api_requests", "100") // RecordUsageRequest | 
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. (optional)
+	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).RecordUsageRequest(recordUsageRequest).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).RecordUsageRequest(recordUsageRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.RecordUsage``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RecordUsage`: SuccessResponse
+	// response from `RecordUsage`: map[string]interface{}
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.RecordUsage`: %v\n", resp)
 }
 ```
@@ -569,10 +571,12 @@ Other parameters are passed through a pointer to a apiRecordUsageRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **recordUsageRequest** | [**RecordUsageRequest**](RecordUsageRequest.md) |  | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. | 
+ **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+**map[string]interface{}**
 
 ### Authorization
 
@@ -590,7 +594,7 @@ No authorization required
 
 ## UpdateInvoice
 
-> CreateInvoice200Response UpdateInvoice(ctx, invoiceId).XServiceKey(xServiceKey).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
+> InvoiceResponse UpdateInvoice(ctx, invoiceId).XServiceKey(xServiceKey).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
 
 Update invoice
 
@@ -620,7 +624,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.UpdateInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateInvoice`: CreateInvoice200Response
+	// response from `UpdateInvoice`: InvoiceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.UpdateInvoice`: %v\n", resp)
 }
 ```
@@ -646,7 +650,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateInvoice200Response**](CreateInvoice200Response.md)
+[**InvoiceResponse**](InvoiceResponse.md)
 
 ### Authorization
 

@@ -79,12 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/SessionResponse'
+                $ref: '#/components/schemas/SessionResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -115,12 +110,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
+                type: object
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -150,12 +140,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/LogoutResponse'
+                $ref: '#/components/schemas/LogoutResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -185,12 +170,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/WhoAmIResponse'
+                $ref: '#/components/schemas/WhoAmIResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -232,12 +212,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ActiveTenantResponse'
+                $ref: '#/components/schemas/ActiveTenantResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -370,7 +345,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MigrationSuccessResponse'
+                type: object
         '400':
           description: No migrations zip file provided
           content:
@@ -406,14 +381,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/AppliedMigration'
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppliedMigration'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -468,16 +438,11 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          message:
-                            type: string
-                            example: Rolled back 1 migration(s)
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Rolled back 1 migration(s)
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -579,20 +544,15 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          templates:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/EmailTemplate'
-                          count:
-                            type: integer
-                            example: 3
+                type: object
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmailTemplate'
+                  count:
+                    type: integer
+                    example: 3
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -634,18 +594,13 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          message:
-                            type: string
-                            example: Template created successfully
-                          template:
-                            $ref: '#/components/schemas/EmailTemplate'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Template created successfully
+                  template:
+                    $ref: '#/components/schemas/EmailTemplate'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -696,16 +651,11 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          message:
-                            type: string
-                            example: Template deleted successfully
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Template deleted successfully
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -748,16 +698,11 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          message:
-                            type: string
-                            example: Email sent successfully
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email sent successfully
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -853,12 +798,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/CreateCheckoutResponse'
+                $ref: '#/components/schemas/CreateCheckoutResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -905,12 +845,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/CreatePortalResponse'
+                $ref: '#/components/schemas/CreatePortalResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -927,12 +862,10 @@ paths:
         Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
 
         ## Authentication
-        Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-
-        ## Prerequisites
-        - User must be authenticated
-        - Tenant must have a Stripe customer ID configured
-        - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+        Either:
+        - Session cookie (Kratos) — customer resolved from the user's active tenant
+        - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record
+        - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly
 
         ## Use Cases
         - API request metering
@@ -941,6 +874,20 @@ paths:
         - Any metered billing scenario
       tags:
         - V1 Payments
+      parameters:
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -953,7 +900,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1015,12 +962,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceResponse'
+                $ref: '#/components/schemas/InvoiceResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1067,12 +1009,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceResponse'
+                $ref: '#/components/schemas/InvoiceResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1127,12 +1064,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceResponse'
+                $ref: '#/components/schemas/InvoiceResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1208,12 +1140,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceLineItemResponse'
+                $ref: '#/components/schemas/InvoiceLineItemResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1294,12 +1221,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceLineItemResponse'
+                $ref: '#/components/schemas/InvoiceLineItemResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1357,12 +1279,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/InvoiceResponse'
+                $ref: '#/components/schemas/InvoiceResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1522,12 +1439,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/DeleteRelationshipResponse'
+                $ref: '#/components/schemas/DeleteRelationshipResponse'
               example:
                 status: 200
                 data:
@@ -1613,12 +1525,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/CreateRelationshipResponse'
+                $ref: '#/components/schemas/CreateRelationshipResponse'
               example:
                 status: 200
                 data:
@@ -1716,12 +1623,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/NamespaceDeploymentResponse'
+                $ref: '#/components/schemas/NamespaceDeploymentResponse'
         '400':
           $ref: '#/components/responses/BadRequestError'
         '401':
@@ -1795,12 +1697,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/UploadResponse'
+                $ref: '#/components/schemas/UploadResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -1895,12 +1792,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/DownloadResponse'
+                $ref: '#/components/schemas/DownloadResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -1983,12 +1875,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/MessageResponse'
+                $ref: '#/components/schemas/MessageResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -2068,12 +1955,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/MessageResponse'
+                $ref: '#/components/schemas/MessageResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -2140,12 +2022,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/StripeConfigResponse'
+                $ref: '#/components/schemas/StripeConfigResponse'
         '500':
           description: Failed to retrieve configuration
           content:
@@ -2176,12 +2053,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/StripeConfigResponse'
+                $ref: '#/components/schemas/StripeConfigResponse'
         '401':
           description: Invalid or missing admin token
           content:
@@ -2228,12 +2100,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/StripeConfigUpdateResponse'
+                $ref: '#/components/schemas/StripeConfigUpdateResponse'
         '400':
           description: Invalid configuration, validation errors, or configuration data is required
           content:
@@ -2287,12 +2154,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ConfigHistoryResponse'
+                $ref: '#/components/schemas/ConfigHistoryResponse'
         '400':
           description: Invalid limit/offset parameters or unknown query parameter
           content:
@@ -2342,7 +2204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: object
         '400':
           description: Configuration validation failed or version is required
           content:
@@ -2379,12 +2241,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/StripeConfigurationWithIDs'
+                $ref: '#/components/schemas/StripeConfigurationWithIDs'
         '401':
           description: Invalid or missing admin token
           content:
@@ -2424,12 +2281,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ArchiveAllResponse'
+                $ref: '#/components/schemas/ArchiveAllResponse'
         '401':
           description: Invalid or missing admin token
           content:
@@ -2472,12 +2324,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/PriceResponse'
+                $ref: '#/components/schemas/PriceResponse'
         '400':
           description: Missing price_id
           content:
@@ -2537,12 +2384,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/CalculatePriceCostResponse'
+                $ref: '#/components/schemas/CalculatePriceCostResponse'
         '400':
           description: Invalid request or missing quantity
           content:
@@ -2591,12 +2433,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ProductResponse'
+                $ref: '#/components/schemas/ProductResponse'
         '400':
           description: Missing product_id
           content:
@@ -2645,12 +2482,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/MeterResponse'
+                $ref: '#/components/schemas/MeterResponse'
         '400':
           description: Missing meter_id
           content:
@@ -2699,12 +2531,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/StripeIDConversionResponse'
+                $ref: '#/components/schemas/StripeIDConversionResponse'
         '400':
           description: Missing Stripe ID
           content:
@@ -2747,12 +2574,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/ListWebhooksResponse'
+                $ref: '#/components/schemas/ListWebhooksResponse'
         '401':
           description: Invalid or missing service key
           content:
@@ -2802,12 +2624,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/EnterpriseApplyResponse'
+                $ref: '#/components/schemas/EnterpriseApplyResponse'
         '400':
           description: Invalid request or tenant has no Stripe customer ID
           content:
@@ -2869,12 +2686,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/EnterpriseApplyResponse'
+                $ref: '#/components/schemas/EnterpriseApplyResponse'
         '400':
           description: Invalid request or tenant has no Stripe customer ID
           content:
@@ -2930,12 +2742,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/EnterprisePricesResponse'
+                $ref: '#/components/schemas/EnterprisePricesResponse'
         '401':
           description: Invalid or missing service key
           content:
@@ -2979,12 +2786,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '#/components/schemas/EnterprisePricesResponse'
+                $ref: '#/components/schemas/EnterprisePricesResponse'
         '401':
           description: Invalid or missing service key
           content:
@@ -3921,6 +3723,21 @@ paths:
         - Billing overview
         - Subscription management UI
       operationId: listTenantSubscriptions
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -3982,6 +3799,21 @@ paths:
         - Enable usage-based billing for resources
         - Add additional services to tenant's billing
       operationId: addSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -4058,6 +3890,21 @@ paths:
         - Downgrade by removing premium features
         - Stop billing for unused resources
       operationId: removeSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -4131,6 +3978,20 @@ paths:
           schema:
             type: string
           example: neon_compute_starter
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Subscription found
@@ -4400,6 +4261,21 @@ paths:
         - Conditional feature access
         - Payment method verification
       operationId: getTenantBillingStatus
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -4460,25 +4336,6 @@ components:
         Service-to-service authentication key for backend operations. When
         used with tenant endpoints, must include X-Tenant-ID header.
   schemas:
-    SuccessResponse:
-      type: object
-      description: Standard success response wrapper
-      properties:
-        status:
-          type: integer
-          description: HTTP status code
-          example: 200
-        data:
-          description: Response data payload
-          oneOf:
-            - type: object
-            - type: array
-            - type: string
-            - type: number
-            - type: boolean
-            - type: 'null'
-      required:
-        - status
     TenantSettings:
       type: object
       description: Tenant configuration settings
@@ -4865,20 +4722,6 @@ components:
           example: Conflict
       required:
         - error
-    MigrationSuccessResponse:
-      type: object
-      required:
-        - status
-        - message
-      properties:
-        status:
-          type: integer
-          description: HTTP status code
-          example: 200
-        message:
-          type: string
-          description: Success message
-          example: Migrations applied successfully
     MigrationErrorResponse:
       type: object
       required:
@@ -5140,6 +4983,19 @@ components:
           type: boolean
           description: Whether to auto-advance the invoice (send immediately after finalization)
           example: false
+        collection_method:
+          type: string
+          enum:
+            - charge_automatically
+            - send_invoice
+          description: How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
+          example: send_invoice
+        days_until_due:
+          type: integer
+          minimum: 0
+          maximum: 365
+          description: Days until invoice is due. Required when `collection_method` is `send_invoice`.
+          example: 7
         description:
           type: string
           description: Optional description for the invoice
@@ -7881,6 +7737,10 @@ components:
           example: cus_test_123
     AddSubscriptionResponse:
       type: object
+      required:
+        - subscription_id
+        - status
+        - message
       properties:
         subscription_id:
           type: string
@@ -7912,6 +7772,10 @@ components:
           example: cus_test_123
     RemoveSubscriptionResponse:
       type: object
+      required:
+        - subscription_id
+        - status
+        - message
       properties:
         subscription_id:
           type: string

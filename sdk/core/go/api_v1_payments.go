@@ -57,7 +57,7 @@ func (r ApiAddInvoiceLineItemRequest) XStripeCustomerId(xStripeCustomerId string
 	return r
 }
 
-func (r ApiAddInvoiceLineItemRequest) Execute() (*AddInvoiceLineItem200Response, *http.Response, error) {
+func (r ApiAddInvoiceLineItemRequest) Execute() (*InvoiceLineItemResponse, *http.Response, error) {
 	return r.ApiService.AddInvoiceLineItemExecute(r)
 }
 
@@ -96,13 +96,13 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItem(ctx context.Context, invoiceId
 }
 
 // Execute executes the request
-//  @return AddInvoiceLineItem200Response
-func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItemRequest) (*AddInvoiceLineItem200Response, *http.Response, error) {
+//  @return InvoiceLineItemResponse
+func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItemRequest) (*InvoiceLineItemResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *AddInvoiceLineItem200Response
+		localVarReturnValue  *InvoiceLineItemResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.AddInvoiceLineItem")
@@ -284,7 +284,7 @@ func (r ApiAddInvoiceLineItemWithPriceIdRequest) XStripeCustomerId(xStripeCustom
 	return r
 }
 
-func (r ApiAddInvoiceLineItemWithPriceIdRequest) Execute() (*AddInvoiceLineItem200Response, *http.Response, error) {
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) Execute() (*InvoiceLineItemResponse, *http.Response, error) {
 	return r.ApiService.AddInvoiceLineItemWithPriceIdExecute(r)
 }
 
@@ -328,13 +328,13 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceId(ctx context.Context
 }
 
 // Execute executes the request
-//  @return AddInvoiceLineItem200Response
-func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvoiceLineItemWithPriceIdRequest) (*AddInvoiceLineItem200Response, *http.Response, error) {
+//  @return InvoiceLineItemResponse
+func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvoiceLineItemWithPriceIdRequest) (*InvoiceLineItemResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *AddInvoiceLineItem200Response
+		localVarReturnValue  *InvoiceLineItemResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.AddInvoiceLineItemWithPriceId")
@@ -494,7 +494,7 @@ func (r ApiCreateCheckoutRequest) CreateCheckoutRequest(createCheckoutRequest Cr
 	return r
 }
 
-func (r ApiCreateCheckoutRequest) Execute() (*CreateCheckout200Response, *http.Response, error) {
+func (r ApiCreateCheckoutRequest) Execute() (*CreateCheckoutResponse, *http.Response, error) {
 	return r.ApiService.CreateCheckoutExecute(r)
 }
 
@@ -524,13 +524,13 @@ func (a *V1PaymentsAPIService) CreateCheckout(ctx context.Context) ApiCreateChec
 }
 
 // Execute executes the request
-//  @return CreateCheckout200Response
-func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (*CreateCheckout200Response, *http.Response, error) {
+//  @return CreateCheckoutResponse
+func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest) (*CreateCheckoutResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateCheckout200Response
+		localVarReturnValue  *CreateCheckoutResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateCheckout")
@@ -679,7 +679,7 @@ func (r ApiCreateCustomerPortalRequest) CreatePortalRequest(createPortalRequest 
 	return r
 }
 
-func (r ApiCreateCustomerPortalRequest) Execute() (*CreateCustomerPortal200Response, *http.Response, error) {
+func (r ApiCreateCustomerPortalRequest) Execute() (*CreatePortalResponse, *http.Response, error) {
 	return r.ApiService.CreateCustomerPortalExecute(r)
 }
 
@@ -714,13 +714,13 @@ func (a *V1PaymentsAPIService) CreateCustomerPortal(ctx context.Context) ApiCrea
 }
 
 // Execute executes the request
-//  @return CreateCustomerPortal200Response
-func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPortalRequest) (*CreateCustomerPortal200Response, *http.Response, error) {
+//  @return CreatePortalResponse
+func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPortalRequest) (*CreatePortalResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateCustomerPortal200Response
+		localVarReturnValue  *CreatePortalResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateCustomerPortal")
@@ -868,7 +868,7 @@ func (r ApiCreateInvoiceRequest) XStripeCustomerId(xStripeCustomerId string) Api
 	return r
 }
 
-func (r ApiCreateInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+func (r ApiCreateInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error) {
 	return r.ApiService.CreateInvoiceExecute(r)
 }
 
@@ -902,13 +902,13 @@ func (a *V1PaymentsAPIService) CreateInvoice(ctx context.Context) ApiCreateInvoi
 }
 
 // Execute executes the request
-//  @return CreateInvoice200Response
-func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+//  @return InvoiceResponse
+func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (*InvoiceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateInvoice200Response
+		localVarReturnValue  *InvoiceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.CreateInvoice")
@@ -1064,7 +1064,7 @@ func (r ApiFinalizeInvoiceRequest) FinalizeInvoiceRequest(finalizeInvoiceRequest
 	return r
 }
 
-func (r ApiFinalizeInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+func (r ApiFinalizeInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error) {
 	return r.ApiService.FinalizeInvoiceExecute(r)
 }
 
@@ -1098,13 +1098,13 @@ func (a *V1PaymentsAPIService) FinalizeInvoice(ctx context.Context, invoiceId st
 }
 
 // Execute executes the request
-//  @return CreateInvoice200Response
-func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+//  @return InvoiceResponse
+func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceRequest) (*InvoiceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateInvoice200Response
+		localVarReturnValue  *InvoiceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.FinalizeInvoice")
@@ -1260,7 +1260,7 @@ func (r ApiGetInvoiceRequest) XServiceKey(xServiceKey string) ApiGetInvoiceReque
 	return r
 }
 
-func (r ApiGetInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+func (r ApiGetInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error) {
 	return r.ApiService.GetInvoiceExecute(r)
 }
 
@@ -1291,13 +1291,13 @@ func (a *V1PaymentsAPIService) GetInvoice(ctx context.Context, invoiceId string)
 }
 
 // Execute executes the request
-//  @return CreateInvoice200Response
-func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+//  @return InvoiceResponse
+func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*InvoiceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateInvoice200Response
+		localVarReturnValue  *InvoiceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.GetInvoice")
@@ -1428,6 +1428,8 @@ type ApiRecordUsageRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
 	recordUsageRequest *RecordUsageRequest
+	xTenantId *string
+	xStripeCustomerId *string
 }
 
 func (r ApiRecordUsageRequest) RecordUsageRequest(recordUsageRequest RecordUsageRequest) ApiRecordUsageRequest {
@@ -1435,7 +1437,19 @@ func (r ApiRecordUsageRequest) RecordUsageRequest(recordUsageRequest RecordUsage
 	return r
 }
 
-func (r ApiRecordUsageRequest) Execute() (*SuccessResponse, *http.Response, error) {
+// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent.
+func (r ApiRecordUsageRequest) XTenantId(xTenantId string) ApiRecordUsageRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent.
+func (r ApiRecordUsageRequest) XStripeCustomerId(xStripeCustomerId string) ApiRecordUsageRequest {
+	r.xStripeCustomerId = &xStripeCustomerId
+	return r
+}
+
+func (r ApiRecordUsageRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.RecordUsageExecute(r)
 }
 
@@ -1445,12 +1459,10 @@ RecordUsage Record metered usage
 Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
 
 ## Authentication
-Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-
-## Prerequisites
-- User must be authenticated
-- Tenant must have a Stripe customer ID configured
-- If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+Either:
+- Session cookie (Kratos) — customer resolved from the user's active tenant
+- `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record
+- `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly
 
 ## Use Cases
 - API request metering
@@ -1470,13 +1482,13 @@ func (a *V1PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRe
 }
 
 // Execute executes the request
-//  @return SuccessResponse
-func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*SuccessResponse, *http.Response, error) {
+//  @return map[string]interface{}
+func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *SuccessResponse
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.RecordUsage")
@@ -1509,6 +1521,12 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (*Suc
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
+	}
+	if r.xStripeCustomerId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.recordUsageRequest
@@ -1611,7 +1629,7 @@ func (r ApiUpdateInvoiceRequest) UpdateInvoiceRequest(updateInvoiceRequest Updat
 	return r
 }
 
-func (r ApiUpdateInvoiceRequest) Execute() (*CreateInvoice200Response, *http.Response, error) {
+func (r ApiUpdateInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error) {
 	return r.ApiService.UpdateInvoiceExecute(r)
 }
 
@@ -1645,13 +1663,13 @@ func (a *V1PaymentsAPIService) UpdateInvoice(ctx context.Context, invoiceId stri
 }
 
 // Execute executes the request
-//  @return CreateInvoice200Response
-func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (*CreateInvoice200Response, *http.Response, error) {
+//  @return InvoiceResponse
+func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (*InvoiceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPatch
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateInvoice200Response
+		localVarReturnValue  *InvoiceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.UpdateInvoice")

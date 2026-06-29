@@ -232,10 +232,24 @@ type ApiAddSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	addSubscriptionRequest *AddSubscriptionRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiAddSubscriptionRequest) AddSubscriptionRequest(addSubscriptionRequest AddSubscriptionRequest) ApiAddSubscriptionRequest {
 	r.addSubscriptionRequest = &addSubscriptionRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiAddSubscriptionRequest) XUserId(xUserId string) ApiAddSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiAddSubscriptionRequest) XTenantId(xTenantId string) ApiAddSubscriptionRequest {
+	r.xTenantId = &xTenantId
 	return r
 }
 
@@ -322,6 +336,12 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.addSubscriptionRequest
@@ -1502,6 +1522,20 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*ht
 type ApiGetTenantBillingStatusRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantBillingStatusRequest) XUserId(xUserId string) ApiGetTenantBillingStatusRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantBillingStatusRequest) XTenantId(xTenantId string) ApiGetTenantBillingStatusRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiGetTenantBillingStatusRequest) Execute() (*GetTenantBillingStatus200Response, *http.Response, error) {
@@ -1569,6 +1603,12 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2209,6 +2249,20 @@ type ApiGetTenantSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	configPriceId string
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantSubscriptionRequest) XUserId(xUserId string) ApiGetTenantSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantSubscriptionRequest) XTenantId(xTenantId string) ApiGetTenantSubscriptionRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiGetTenantSubscriptionRequest) Execute() (*SubscriptionResponse, *http.Response, error) {
@@ -2279,6 +2333,12 @@ func (a *V1TenantsAPIService) GetTenantSubscriptionExecute(r ApiGetTenantSubscri
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2738,6 +2798,20 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Role, *
 type ApiListTenantSubscriptionsRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantSubscriptionsRequest) XUserId(xUserId string) ApiListTenantSubscriptionsRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantSubscriptionsRequest) XTenantId(xTenantId string) ApiListTenantSubscriptionsRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiListTenantSubscriptionsRequest) Execute() ([]SubscriptionResponse, *http.Response, error) {
@@ -2805,6 +2879,12 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -3107,10 +3187,24 @@ type ApiRemoveSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	removeSubscriptionRequest *RemoveSubscriptionRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiRemoveSubscriptionRequest) RemoveSubscriptionRequest(removeSubscriptionRequest RemoveSubscriptionRequest) ApiRemoveSubscriptionRequest {
 	r.removeSubscriptionRequest = &removeSubscriptionRequest
+	return r
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveSubscriptionRequest) XUserId(xUserId string) ApiRemoveSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveSubscriptionRequest) XTenantId(xTenantId string) ApiRemoveSubscriptionRequest {
+	r.xTenantId = &xTenantId
 	return r
 }
 
@@ -3198,6 +3292,12 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.removeSubscriptionRequest

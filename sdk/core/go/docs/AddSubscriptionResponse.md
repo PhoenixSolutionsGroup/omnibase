@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**SubscriptionId** | Pointer to **string** | Stripe Subscription ID | [optional] 
-**Status** | Pointer to **string** | Subscription status (active, trialing, etc.) | [optional] 
-**Message** | Pointer to **string** | Message confirming the addition | [optional] 
+**SubscriptionId** | **string** | Stripe Subscription ID | 
+**Status** | **string** | Subscription status (active, trialing, etc.) | 
+**Message** | **string** | Message confirming the addition | 
 
 ## Methods
 
 ### NewAddSubscriptionResponse
 
-`func NewAddSubscriptionResponse() *AddSubscriptionResponse`
+`func NewAddSubscriptionResponse(subscriptionId string, status string, message string, ) *AddSubscriptionResponse`
 
 NewAddSubscriptionResponse instantiates a new AddSubscriptionResponse object
 This constructor will assign default values to properties that have it defined,
@@ -46,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetSubscriptionId sets SubscriptionId field to given value.
 
-### HasSubscriptionId
-
-`func (o *AddSubscriptionResponse) HasSubscriptionId() bool`
-
-HasSubscriptionId returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -71,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
-
-`func (o *AddSubscriptionResponse) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 ### GetMessage
 
@@ -96,11 +86,6 @@ and a boolean to check if the value has been set.
 
 SetMessage sets Message field to given value.
 
-### HasMessage
-
-`func (o *AddSubscriptionResponse) HasMessage() bool`
-
-HasMessage returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

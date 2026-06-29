@@ -13,8 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
-	"fmt"
 )
 
 // checks if the DeleteEmailTemplate200Response type satisfies the MappedNullable interface at compile time
@@ -22,20 +20,15 @@ var _ MappedNullable = &DeleteEmailTemplate200Response{}
 
 // DeleteEmailTemplate200Response struct for DeleteEmailTemplate200Response
 type DeleteEmailTemplate200Response struct {
-	// HTTP status code
-	Status int32 `json:"status"`
-	Data *DeleteEmailTemplate200ResponseAllOfData `json:"data,omitempty"`
+	Message *string `json:"message,omitempty"`
 }
-
-type _DeleteEmailTemplate200Response DeleteEmailTemplate200Response
 
 // NewDeleteEmailTemplate200Response instantiates a new DeleteEmailTemplate200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDeleteEmailTemplate200Response(status int32) *DeleteEmailTemplate200Response {
+func NewDeleteEmailTemplate200Response() *DeleteEmailTemplate200Response {
 	this := DeleteEmailTemplate200Response{}
-	this.Status = status
 	return &this
 }
 
@@ -47,60 +40,36 @@ func NewDeleteEmailTemplate200ResponseWithDefaults() *DeleteEmailTemplate200Resp
 	return &this
 }
 
-// GetStatus returns the Status field value
-func (o *DeleteEmailTemplate200Response) GetStatus() int32 {
-	if o == nil {
-		var ret int32
+// GetMessage returns the Message field value if set, zero value otherwise.
+func (o *DeleteEmailTemplate200Response) GetMessage() string {
+	if o == nil || IsNil(o.Message) {
+		var ret string
 		return ret
 	}
-
-	return o.Status
+	return *o.Message
 }
 
-// GetStatusOk returns a tuple with the Status field value
+// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DeleteEmailTemplate200Response) GetStatusOk() (*int32, bool) {
-	if o == nil {
+func (o *DeleteEmailTemplate200Response) GetMessageOk() (*string, bool) {
+	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
-	return &o.Status, true
+	return o.Message, true
 }
 
-// SetStatus sets field value
-func (o *DeleteEmailTemplate200Response) SetStatus(v int32) {
-	o.Status = v
-}
-
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *DeleteEmailTemplate200Response) GetData() DeleteEmailTemplate200ResponseAllOfData {
-	if o == nil || IsNil(o.Data) {
-		var ret DeleteEmailTemplate200ResponseAllOfData
-		return ret
-	}
-	return *o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *DeleteEmailTemplate200Response) GetDataOk() (*DeleteEmailTemplate200ResponseAllOfData, bool) {
-	if o == nil || IsNil(o.Data) {
-		return nil, false
-	}
-	return o.Data, true
-}
-
-// HasData returns a boolean if a field has been set.
-func (o *DeleteEmailTemplate200Response) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
+// HasMessage returns a boolean if a field has been set.
+func (o *DeleteEmailTemplate200Response) HasMessage() bool {
+	if o != nil && !IsNil(o.Message) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given DeleteEmailTemplate200ResponseAllOfData and assigns it to the Data field.
-func (o *DeleteEmailTemplate200Response) SetData(v DeleteEmailTemplate200ResponseAllOfData) {
-	o.Data = &v
+// SetMessage gets a reference to the given string and assigns it to the Message field.
+func (o *DeleteEmailTemplate200Response) SetMessage(v string) {
+	o.Message = &v
 }
 
 func (o DeleteEmailTemplate200Response) MarshalJSON() ([]byte, error) {
@@ -113,48 +82,10 @@ func (o DeleteEmailTemplate200Response) MarshalJSON() ([]byte, error) {
 
 func (o DeleteEmailTemplate200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
+	if !IsNil(o.Message) {
+		toSerialize["message"] = o.Message
 	}
 	return toSerialize, nil
-}
-
-func (o *DeleteEmailTemplate200Response) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"status",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varDeleteEmailTemplate200Response := _DeleteEmailTemplate200Response{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDeleteEmailTemplate200Response)
-
-	if err != nil {
-		return err
-	}
-
-	*o = DeleteEmailTemplate200Response(varDeleteEmailTemplate200Response)
-
-	return err
 }
 
 type NullableDeleteEmailTemplate200Response struct {

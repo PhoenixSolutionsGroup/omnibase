@@ -59,12 +59,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/keto_namespaces.yaml#/components/schemas/NamespaceDeploymentResponse'
+                $ref: '../schemas/keto_namespaces.yaml#/components/schemas/NamespaceDeploymentResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':

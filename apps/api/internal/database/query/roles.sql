@@ -45,3 +45,8 @@ WHERE id = sqlc.arg(role_id) AND tenant_id = sqlc.arg(tenant_id);
 SELECT id, namespace, relations, subject_relations, updated_at
 FROM permissions.definitions
 ORDER BY namespace;
+
+-- name: ListRoleTemplates :many
+SELECT id, role_name, permissions, description, created_at, updated_at
+FROM permissions.role_templates
+ORDER BY role_name;

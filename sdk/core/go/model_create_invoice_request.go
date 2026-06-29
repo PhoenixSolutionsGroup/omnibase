@@ -25,6 +25,10 @@ type CreateInvoiceRequest struct {
 	Currency CurrencyCode `json:"currency"`
 	// Whether to auto-advance the invoice (send immediately after finalization)
 	AutoAdvance *bool `json:"auto_advance,omitempty"`
+	// How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
+	CollectionMethod *string `json:"collection_method,omitempty"`
+	// Days until invoice is due. Required when `collection_method` is `send_invoice`.
+	DaysUntilDue *int32 `json:"days_until_due,omitempty"`
 	// Optional description for the invoice
 	Description *string `json:"description,omitempty"`
 	// Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
@@ -107,6 +111,70 @@ func (o *CreateInvoiceRequest) SetAutoAdvance(v bool) {
 	o.AutoAdvance = &v
 }
 
+// GetCollectionMethod returns the CollectionMethod field value if set, zero value otherwise.
+func (o *CreateInvoiceRequest) GetCollectionMethod() string {
+	if o == nil || IsNil(o.CollectionMethod) {
+		var ret string
+		return ret
+	}
+	return *o.CollectionMethod
+}
+
+// GetCollectionMethodOk returns a tuple with the CollectionMethod field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateInvoiceRequest) GetCollectionMethodOk() (*string, bool) {
+	if o == nil || IsNil(o.CollectionMethod) {
+		return nil, false
+	}
+	return o.CollectionMethod, true
+}
+
+// HasCollectionMethod returns a boolean if a field has been set.
+func (o *CreateInvoiceRequest) HasCollectionMethod() bool {
+	if o != nil && !IsNil(o.CollectionMethod) {
+		return true
+	}
+
+	return false
+}
+
+// SetCollectionMethod gets a reference to the given string and assigns it to the CollectionMethod field.
+func (o *CreateInvoiceRequest) SetCollectionMethod(v string) {
+	o.CollectionMethod = &v
+}
+
+// GetDaysUntilDue returns the DaysUntilDue field value if set, zero value otherwise.
+func (o *CreateInvoiceRequest) GetDaysUntilDue() int32 {
+	if o == nil || IsNil(o.DaysUntilDue) {
+		var ret int32
+		return ret
+	}
+	return *o.DaysUntilDue
+}
+
+// GetDaysUntilDueOk returns a tuple with the DaysUntilDue field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int32, bool) {
+	if o == nil || IsNil(o.DaysUntilDue) {
+		return nil, false
+	}
+	return o.DaysUntilDue, true
+}
+
+// HasDaysUntilDue returns a boolean if a field has been set.
+func (o *CreateInvoiceRequest) HasDaysUntilDue() bool {
+	if o != nil && !IsNil(o.DaysUntilDue) {
+		return true
+	}
+
+	return false
+}
+
+// SetDaysUntilDue gets a reference to the given int32 and assigns it to the DaysUntilDue field.
+func (o *CreateInvoiceRequest) SetDaysUntilDue(v int32) {
+	o.DaysUntilDue = &v
+}
+
 // GetDescription returns the Description field value if set, zero value otherwise.
 func (o *CreateInvoiceRequest) GetDescription() string {
 	if o == nil || IsNil(o.Description) {
@@ -184,6 +252,12 @@ func (o CreateInvoiceRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize["currency"] = o.Currency
 	if !IsNil(o.AutoAdvance) {
 		toSerialize["auto_advance"] = o.AutoAdvance
+	}
+	if !IsNil(o.CollectionMethod) {
+		toSerialize["collection_method"] = o.CollectionMethod
+	}
+	if !IsNil(o.DaysUntilDue) {
+		toSerialize["days_until_due"] = o.DaysUntilDue
 	}
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description

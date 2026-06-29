@@ -90,6 +90,10 @@ type CreateInvoiceRequest struct {
 	Currency string `json:"currency" binding:"required,len=3" example:"usd"`
 	// Whether to auto-advance the invoice (send immediately after finalization)
 	AutoAdvance bool `json:"auto_advance" example:"false"`
+	// How to collect payment: "charge_automatically" (default) or "send_invoice"
+	CollectionMethod string `json:"collection_method,omitempty" binding:"omitempty,oneof=charge_automatically send_invoice" example:"send_invoice"`
+	// Days until invoice is due (required when collection_method=send_invoice)
+	DaysUntilDue int64 `json:"days_until_due,omitempty" binding:"omitempty,min=0,max=365" example:"7"`
 	// Optional description for the invoice
 	Description string `json:"description,omitempty" example:"Monthly platform fees"`
 	// Optional metadata key-value pairs
@@ -300,8 +304,8 @@ func (h *PaymentsHandler) CreateInvoice(ctx *gin.Context) {
 		return
 	}
 
-	logger.Logger.Debug("Creating invoice", "customer_id", customerID.(string), "currency", req.Currency)
-	inv, err := h.stripe.CreateInvoice(customerID.(string), req.Currency, req.AutoAdvance, req.Description, req.Metadata)
+	logger.Logger.Debug("Creating invoice", "customer_id", customerID.(string), "currency", req.Currency, "collection_method", req.CollectionMethod)
+	inv, err := h.stripe.CreateInvoice(customerID.(string), req.Currency, req.AutoAdvance, req.CollectionMethod, req.DaysUntilDue, req.Description, req.Metadata)
 	if err != nil {
 		logger.Logger.Error("Failed to create invoice", "customer_id", customerID.(string), "error", err)
 		if handlers.HandleStripeError(ctx, err) {

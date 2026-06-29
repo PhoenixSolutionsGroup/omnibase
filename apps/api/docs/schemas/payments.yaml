@@ -101,6 +101,19 @@ components:
           type: boolean
           description: Whether to auto-advance the invoice (send immediately after finalization)
           example: false
+        collection_method:
+          type: string
+          enum:
+            - charge_automatically
+            - send_invoice
+          description: How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
+          example: send_invoice
+        days_until_due:
+          type: integer
+          minimum: 0
+          maximum: 365
+          description: Days until invoice is due. Required when `collection_method` is `send_invoice`.
+          example: 7
         description:
           type: string
           description: Optional description for the invoice

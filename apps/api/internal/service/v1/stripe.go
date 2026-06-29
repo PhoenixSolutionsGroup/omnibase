@@ -477,11 +477,18 @@ func (s *StripeService) CancelSubscription(subscriptionID string) (*stripe.Subsc
 }
 
 // CreateInvoice creates a new draft invoice for a customer
-func (s *StripeService) CreateInvoice(customerID string, currency string, autoAdvance bool, description string, metadata map[string]string) (*stripe.Invoice, error) {
+func (s *StripeService) CreateInvoice(customerID string, currency string, autoAdvance bool, collectionMethod string, daysUntilDue int64, description string, metadata map[string]string) (*stripe.Invoice, error) {
 	params := &stripe.InvoiceParams{
 		Customer:    stripe.String(customerID),
 		Currency:    stripe.String(currency),
 		AutoAdvance: stripe.Bool(autoAdvance),
+	}
+
+	if collectionMethod != "" {
+		params.CollectionMethod = stripe.String(collectionMethod)
+	}
+	if daysUntilDue > 0 {
+		params.DaysUntilDue = stripe.Int64(daysUntilDue)
 	}
 
 	if description != "" {

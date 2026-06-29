@@ -8,13 +8,16 @@ import (
 	"api/internal/handlers/v1/tenants/invites"
 	"api/internal/handlers/v1/tenants/lifecycle"
 	"api/internal/handlers/v1/tenants/roles"
+	"api/internal/handlers/v1/tenants/subscriptions"
 	"api/internal/handlers/v1/tenants/users"
 	"api/internal/logger"
 	"api/internal/middleware"
 	"api/internal/services/auth"
+	"api/internal/services/billing"
 	"api/internal/services/email"
 	"api/internal/services/permissions"
 	"api/internal/services/permissions/rbac"
+	"api/internal/services/stripe_client"
 	"api/internal/services/tenants"
 
 	"github.com/gin-gonic/gin"
@@ -61,9 +64,23 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 		Tenants: tenantsSvc,
 		Email:   emailSvc,
 	})
+	stripeClient := stripe_client.New(cfg.StripeConfig)
+	billingSvc := billing.New(billing.Deps{
+		Repo:   repo,
+		Stripe: stripeClient,
+		FeePct: cfg.StripeConfig.PlatformFeePercent,
+	})
 	lifecycleHandler := lifecycle.New(lifecycle.Deps{
 		Repo:    repo,
 		Tenants: tenantsSvc,
+		Billing: billingSvc,
+		RBAC:    rbacSvc,
+		Perms:   perms,
+		Auth:    authSvc,
+	})
+	subscriptionsHandler := subscriptions.New(subscriptions.Deps{
+		Repo:    repo,
+		Billing: billingSvc,
 	})
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
@@ -82,17 +99,17 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	authenticated.GET("/users", usersHandler.List)
 
-	authenticated.GET("/subscriptions", tenantHandler.ListTenantSubscriptions)
+	authenticated.GET("/subscriptions", subscriptionsHandler.List)
 
-	authenticated.GET("/subscriptions/:config_price_id", tenantHandler.GetTenantSubscription)
+	authenticated.GET("/subscriptions/:config_price_id", subscriptionsHandler.Get)
 
-	authenticated.DELETE("/subscriptions", tenantHandler.RemoveSubscription)
+	authenticated.DELETE("/subscriptions", subscriptionsHandler.Remove)
 
-	authenticated.POST("/subscriptions", tenantHandler.AddSubscription)
+	authenticated.POST("/subscriptions", subscriptionsHandler.Add)
 
-	authenticated.GET("/billing-status", tenantHandler.GetBillingStatus)
+	authenticated.GET("/billing-status", subscriptionsHandler.BillingStatus)
 
-	authenticated.POST("", tenantHandler.CreateTenant)
+	authenticated.POST("", lifecycleHandler.CreateTenant)
 
 	authenticated.POST("/invites", invitesHandler.Create)
 
@@ -102,7 +119,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 
 	authenticated.PUT("/switch-active", lifecycleHandler.SwitchActive)
 
-	authenticated.DELETE("", tenantHandler.DeleteTenant)
+	authenticated.DELETE("", lifecycleHandler.DeleteTenant)
 
 	authenticated.DELETE("/users", usersHandler.Delete)
 

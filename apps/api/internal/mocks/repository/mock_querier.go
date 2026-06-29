@@ -219,6 +219,72 @@ func (_c *MockQuerier_CountOwnersByTenant_Call) RunAndReturn(run func(ctx contex
 	return _c
 }
 
+// CreateMapping provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateMapping(ctx context.Context, arg repository.CreateMappingParams) (repository.CreateMappingRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateMapping")
+	}
+
+	var r0 repository.CreateMappingRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateMappingParams) (repository.CreateMappingRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateMappingParams) repository.CreateMappingRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.CreateMappingRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateMappingParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateMapping_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateMapping'
+type MockQuerier_CreateMapping_Call struct {
+	*mock.Call
+}
+
+// CreateMapping is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateMappingParams
+func (_e *MockQuerier_Expecter) CreateMapping(ctx any, arg any) *MockQuerier_CreateMapping_Call {
+	return &MockQuerier_CreateMapping_Call{Call: _e.mock.On("CreateMapping", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateMapping_Call) Run(run func(ctx context.Context, arg repository.CreateMappingParams)) *MockQuerier_CreateMapping_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateMappingParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateMappingParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateMapping_Call) Return(createMappingRow repository.CreateMappingRow, err error) *MockQuerier_CreateMapping_Call {
+	_c.Call.Return(createMappingRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateMapping_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateMappingParams) (repository.CreateMappingRow, error)) *MockQuerier_CreateMapping_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateRole provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateRole(ctx context.Context, arg repository.CreateRoleParams) (repository.CreateRoleRow, error) {
 	ret := _mock.Called(ctx, arg)
@@ -285,6 +351,72 @@ func (_c *MockQuerier_CreateRole_Call) RunAndReturn(run func(ctx context.Context
 	return _c
 }
 
+// CreateTenant provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateTenant(ctx context.Context, arg repository.CreateTenantParams) (repository.CreateTenantRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateTenant")
+	}
+
+	var r0 repository.CreateTenantRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) (repository.CreateTenantRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantParams) repository.CreateTenantRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.CreateTenantRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateTenantParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateTenant_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateTenant'
+type MockQuerier_CreateTenant_Call struct {
+	*mock.Call
+}
+
+// CreateTenant is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateTenantParams
+func (_e *MockQuerier_Expecter) CreateTenant(ctx any, arg any) *MockQuerier_CreateTenant_Call {
+	return &MockQuerier_CreateTenant_Call{Call: _e.mock.On("CreateTenant", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateTenant_Call) Run(run func(ctx context.Context, arg repository.CreateTenantParams)) *MockQuerier_CreateTenant_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateTenantParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateTenantParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateTenant_Call) Return(createTenantRow repository.CreateTenantRow, err error) *MockQuerier_CreateTenant_Call {
+	_c.Call.Return(createTenantRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantParams) (repository.CreateTenantRow, error)) *MockQuerier_CreateTenant_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateTenantInvite provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateTenantInvite(ctx context.Context, arg repository.CreateTenantInviteParams) (repository.AuthTenantInvite, error) {
 	ret := _mock.Called(ctx, arg)
@@ -347,6 +479,63 @@ func (_c *MockQuerier_CreateTenantInvite_Call) Return(authTenantInvite repositor
 }
 
 func (_c *MockQuerier_CreateTenantInvite_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantInviteParams) (repository.AuthTenantInvite, error)) *MockQuerier_CreateTenantInvite_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateTenantSettings provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateTenantSettings(ctx context.Context, arg repository.CreateTenantSettingsParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateTenantSettings")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateTenantSettingsParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_CreateTenantSettings_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateTenantSettings'
+type MockQuerier_CreateTenantSettings_Call struct {
+	*mock.Call
+}
+
+// CreateTenantSettings is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateTenantSettingsParams
+func (_e *MockQuerier_Expecter) CreateTenantSettings(ctx any, arg any) *MockQuerier_CreateTenantSettings_Call {
+	return &MockQuerier_CreateTenantSettings_Call{Call: _e.mock.On("CreateTenantSettings", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateTenantSettings_Call) Run(run func(ctx context.Context, arg repository.CreateTenantSettingsParams)) *MockQuerier_CreateTenantSettings_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateTenantSettingsParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateTenantSettingsParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateTenantSettings_Call) Return(err error) *MockQuerier_CreateTenantSettings_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateTenantSettings_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantSettingsParams) error) *MockQuerier_CreateTenantSettings_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -527,6 +716,63 @@ func (_c *MockQuerier_DeleteRoleByIDAndTenant_Call) Return(err error) *MockQueri
 }
 
 func (_c *MockQuerier_DeleteRoleByIDAndTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.DeleteRoleByIDAndTenantParams) error) *MockQuerier_DeleteRoleByIDAndTenant_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// DeleteTenant provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteTenant(ctx context.Context, id string) error {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteTenant")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_DeleteTenant_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteTenant'
+type MockQuerier_DeleteTenant_Call struct {
+	*mock.Call
+}
+
+// DeleteTenant is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id string
+func (_e *MockQuerier_Expecter) DeleteTenant(ctx any, id any) *MockQuerier_DeleteTenant_Call {
+	return &MockQuerier_DeleteTenant_Call{Call: _e.mock.On("DeleteTenant", ctx, id)}
+}
+
+func (_c *MockQuerier_DeleteTenant_Call) Run(run func(ctx context.Context, id string)) *MockQuerier_DeleteTenant_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteTenant_Call) Return(err error) *MockQuerier_DeleteTenant_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteTenant_Call) RunAndReturn(run func(ctx context.Context, id string) error) *MockQuerier_DeleteTenant_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -716,6 +962,138 @@ func (_c *MockQuerier_GetEmailTemplateByType_Call) Return(emailTemplate reposito
 }
 
 func (_c *MockQuerier_GetEmailTemplateByType_Call) RunAndReturn(run func(ctx context.Context, type_ string) (repository.EmailTemplate, error)) *MockQuerier_GetEmailTemplateByType_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetMappingByConfigItemID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetMappingByConfigItemID(ctx context.Context, arg repository.GetMappingByConfigItemIDParams) (repository.GetMappingByConfigItemIDRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMappingByConfigItemID")
+	}
+
+	var r0 repository.GetMappingByConfigItemIDRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetMappingByConfigItemIDParams) (repository.GetMappingByConfigItemIDRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetMappingByConfigItemIDParams) repository.GetMappingByConfigItemIDRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.GetMappingByConfigItemIDRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.GetMappingByConfigItemIDParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetMappingByConfigItemID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMappingByConfigItemID'
+type MockQuerier_GetMappingByConfigItemID_Call struct {
+	*mock.Call
+}
+
+// GetMappingByConfigItemID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.GetMappingByConfigItemIDParams
+func (_e *MockQuerier_Expecter) GetMappingByConfigItemID(ctx any, arg any) *MockQuerier_GetMappingByConfigItemID_Call {
+	return &MockQuerier_GetMappingByConfigItemID_Call{Call: _e.mock.On("GetMappingByConfigItemID", ctx, arg)}
+}
+
+func (_c *MockQuerier_GetMappingByConfigItemID_Call) Run(run func(ctx context.Context, arg repository.GetMappingByConfigItemIDParams)) *MockQuerier_GetMappingByConfigItemID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.GetMappingByConfigItemIDParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.GetMappingByConfigItemIDParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetMappingByConfigItemID_Call) Return(getMappingByConfigItemIDRow repository.GetMappingByConfigItemIDRow, err error) *MockQuerier_GetMappingByConfigItemID_Call {
+	_c.Call.Return(getMappingByConfigItemIDRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetMappingByConfigItemID_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetMappingByConfigItemIDParams) (repository.GetMappingByConfigItemIDRow, error)) *MockQuerier_GetMappingByConfigItemID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetMappingByStripeID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetMappingByStripeID(ctx context.Context, stripeID string) (repository.GetMappingByStripeIDRow, error) {
+	ret := _mock.Called(ctx, stripeID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMappingByStripeID")
+	}
+
+	var r0 repository.GetMappingByStripeIDRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.GetMappingByStripeIDRow, error)); ok {
+		return returnFunc(ctx, stripeID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.GetMappingByStripeIDRow); ok {
+		r0 = returnFunc(ctx, stripeID)
+	} else {
+		r0 = ret.Get(0).(repository.GetMappingByStripeIDRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, stripeID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetMappingByStripeID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMappingByStripeID'
+type MockQuerier_GetMappingByStripeID_Call struct {
+	*mock.Call
+}
+
+// GetMappingByStripeID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - stripeID string
+func (_e *MockQuerier_Expecter) GetMappingByStripeID(ctx any, stripeID any) *MockQuerier_GetMappingByStripeID_Call {
+	return &MockQuerier_GetMappingByStripeID_Call{Call: _e.mock.On("GetMappingByStripeID", ctx, stripeID)}
+}
+
+func (_c *MockQuerier_GetMappingByStripeID_Call) Run(run func(ctx context.Context, stripeID string)) *MockQuerier_GetMappingByStripeID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetMappingByStripeID_Call) Return(getMappingByStripeIDRow repository.GetMappingByStripeIDRow, err error) *MockQuerier_GetMappingByStripeID_Call {
+	_c.Call.Return(getMappingByStripeIDRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetMappingByStripeID_Call) RunAndReturn(run func(ctx context.Context, stripeID string) (repository.GetMappingByStripeIDRow, error)) *MockQuerier_GetMappingByStripeID_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -1112,6 +1490,68 @@ func (_c *MockQuerier_ListNamespaceDefinitions_Call) RunAndReturn(run func(ctx c
 	return _c
 }
 
+// ListRoleTemplates provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListRoleTemplates(ctx context.Context) ([]repository.PermissionsRoleTemplate, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListRoleTemplates")
+	}
+
+	var r0 []repository.PermissionsRoleTemplate
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]repository.PermissionsRoleTemplate, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []repository.PermissionsRoleTemplate); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.PermissionsRoleTemplate)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListRoleTemplates_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListRoleTemplates'
+type MockQuerier_ListRoleTemplates_Call struct {
+	*mock.Call
+}
+
+// ListRoleTemplates is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) ListRoleTemplates(ctx any) *MockQuerier_ListRoleTemplates_Call {
+	return &MockQuerier_ListRoleTemplates_Call{Call: _e.mock.On("ListRoleTemplates", ctx)}
+}
+
+func (_c *MockQuerier_ListRoleTemplates_Call) Run(run func(ctx context.Context)) *MockQuerier_ListRoleTemplates_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListRoleTemplates_Call) Return(permissionsRoleTemplates []repository.PermissionsRoleTemplate, err error) *MockQuerier_ListRoleTemplates_Call {
+	_c.Call.Return(permissionsRoleTemplates, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListRoleTemplates_Call) RunAndReturn(run func(ctx context.Context) ([]repository.PermissionsRoleTemplate, error)) *MockQuerier_ListRoleTemplates_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListRolesByTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) ListRolesByTenant(ctx context.Context, tenantID uuid.UUID) ([]repository.ListRolesByTenantRow, error) {
 	ret := _mock.Called(ctx, tenantID)
@@ -1426,6 +1866,63 @@ func (_c *MockQuerier_RemoveUserFromRole_Call) Return(err error) *MockQuerier_Re
 }
 
 func (_c *MockQuerier_RemoveUserFromRole_Call) RunAndReturn(run func(ctx context.Context, arg repository.RemoveUserFromRoleParams) error) *MockQuerier_RemoveUserFromRole_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateMappingStripeID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpdateMappingStripeID(ctx context.Context, arg repository.UpdateMappingStripeIDParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateMappingStripeID")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateMappingStripeIDParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpdateMappingStripeID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateMappingStripeID'
+type MockQuerier_UpdateMappingStripeID_Call struct {
+	*mock.Call
+}
+
+// UpdateMappingStripeID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpdateMappingStripeIDParams
+func (_e *MockQuerier_Expecter) UpdateMappingStripeID(ctx any, arg any) *MockQuerier_UpdateMappingStripeID_Call {
+	return &MockQuerier_UpdateMappingStripeID_Call{Call: _e.mock.On("UpdateMappingStripeID", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpdateMappingStripeID_Call) Run(run func(ctx context.Context, arg repository.UpdateMappingStripeIDParams)) *MockQuerier_UpdateMappingStripeID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpdateMappingStripeIDParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpdateMappingStripeIDParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpdateMappingStripeID_Call) Return(err error) *MockQuerier_UpdateMappingStripeID_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpdateMappingStripeID_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateMappingStripeIDParams) error) *MockQuerier_UpdateMappingStripeID_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -13,8 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
-	"fmt"
 )
 
 // checks if the CreateOrUpdateEmailTemplate200Response type satisfies the MappedNullable interface at compile time
@@ -22,20 +20,16 @@ var _ MappedNullable = &CreateOrUpdateEmailTemplate200Response{}
 
 // CreateOrUpdateEmailTemplate200Response struct for CreateOrUpdateEmailTemplate200Response
 type CreateOrUpdateEmailTemplate200Response struct {
-	// HTTP status code
-	Status int32 `json:"status"`
-	Data *CreateOrUpdateEmailTemplate200ResponseAllOfData `json:"data,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Template *EmailTemplate `json:"template,omitempty"`
 }
-
-type _CreateOrUpdateEmailTemplate200Response CreateOrUpdateEmailTemplate200Response
 
 // NewCreateOrUpdateEmailTemplate200Response instantiates a new CreateOrUpdateEmailTemplate200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateOrUpdateEmailTemplate200Response(status int32) *CreateOrUpdateEmailTemplate200Response {
+func NewCreateOrUpdateEmailTemplate200Response() *CreateOrUpdateEmailTemplate200Response {
 	this := CreateOrUpdateEmailTemplate200Response{}
-	this.Status = status
 	return &this
 }
 
@@ -47,60 +41,68 @@ func NewCreateOrUpdateEmailTemplate200ResponseWithDefaults() *CreateOrUpdateEmai
 	return &this
 }
 
-// GetStatus returns the Status field value
-func (o *CreateOrUpdateEmailTemplate200Response) GetStatus() int32 {
-	if o == nil {
-		var ret int32
+// GetMessage returns the Message field value if set, zero value otherwise.
+func (o *CreateOrUpdateEmailTemplate200Response) GetMessage() string {
+	if o == nil || IsNil(o.Message) {
+		var ret string
 		return ret
 	}
-
-	return o.Status
+	return *o.Message
 }
 
-// GetStatusOk returns a tuple with the Status field value
+// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateOrUpdateEmailTemplate200Response) GetStatusOk() (*int32, bool) {
-	if o == nil {
+func (o *CreateOrUpdateEmailTemplate200Response) GetMessageOk() (*string, bool) {
+	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
-	return &o.Status, true
+	return o.Message, true
 }
 
-// SetStatus sets field value
-func (o *CreateOrUpdateEmailTemplate200Response) SetStatus(v int32) {
-	o.Status = v
-}
-
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateOrUpdateEmailTemplate200Response) GetData() CreateOrUpdateEmailTemplate200ResponseAllOfData {
-	if o == nil || IsNil(o.Data) {
-		var ret CreateOrUpdateEmailTemplate200ResponseAllOfData
-		return ret
-	}
-	return *o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *CreateOrUpdateEmailTemplate200Response) GetDataOk() (*CreateOrUpdateEmailTemplate200ResponseAllOfData, bool) {
-	if o == nil || IsNil(o.Data) {
-		return nil, false
-	}
-	return o.Data, true
-}
-
-// HasData returns a boolean if a field has been set.
-func (o *CreateOrUpdateEmailTemplate200Response) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
+// HasMessage returns a boolean if a field has been set.
+func (o *CreateOrUpdateEmailTemplate200Response) HasMessage() bool {
+	if o != nil && !IsNil(o.Message) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given CreateOrUpdateEmailTemplate200ResponseAllOfData and assigns it to the Data field.
-func (o *CreateOrUpdateEmailTemplate200Response) SetData(v CreateOrUpdateEmailTemplate200ResponseAllOfData) {
-	o.Data = &v
+// SetMessage gets a reference to the given string and assigns it to the Message field.
+func (o *CreateOrUpdateEmailTemplate200Response) SetMessage(v string) {
+	o.Message = &v
+}
+
+// GetTemplate returns the Template field value if set, zero value otherwise.
+func (o *CreateOrUpdateEmailTemplate200Response) GetTemplate() EmailTemplate {
+	if o == nil || IsNil(o.Template) {
+		var ret EmailTemplate
+		return ret
+	}
+	return *o.Template
+}
+
+// GetTemplateOk returns a tuple with the Template field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateOrUpdateEmailTemplate200Response) GetTemplateOk() (*EmailTemplate, bool) {
+	if o == nil || IsNil(o.Template) {
+		return nil, false
+	}
+	return o.Template, true
+}
+
+// HasTemplate returns a boolean if a field has been set.
+func (o *CreateOrUpdateEmailTemplate200Response) HasTemplate() bool {
+	if o != nil && !IsNil(o.Template) {
+		return true
+	}
+
+	return false
+}
+
+// SetTemplate gets a reference to the given EmailTemplate and assigns it to the Template field.
+func (o *CreateOrUpdateEmailTemplate200Response) SetTemplate(v EmailTemplate) {
+	o.Template = &v
 }
 
 func (o CreateOrUpdateEmailTemplate200Response) MarshalJSON() ([]byte, error) {
@@ -113,48 +115,13 @@ func (o CreateOrUpdateEmailTemplate200Response) MarshalJSON() ([]byte, error) {
 
 func (o CreateOrUpdateEmailTemplate200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
+	if !IsNil(o.Message) {
+		toSerialize["message"] = o.Message
+	}
+	if !IsNil(o.Template) {
+		toSerialize["template"] = o.Template
 	}
 	return toSerialize, nil
-}
-
-func (o *CreateOrUpdateEmailTemplate200Response) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"status",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varCreateOrUpdateEmailTemplate200Response := _CreateOrUpdateEmailTemplate200Response{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreateOrUpdateEmailTemplate200Response)
-
-	if err != nil {
-		return err
-	}
-
-	*o = CreateOrUpdateEmailTemplate200Response(varCreateOrUpdateEmailTemplate200Response)
-
-	return err
 }
 
 type NullableCreateOrUpdateEmailTemplate200Response struct {

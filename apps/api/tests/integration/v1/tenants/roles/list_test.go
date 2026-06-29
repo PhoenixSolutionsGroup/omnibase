@@ -8,9 +8,9 @@ import (
 
 	sdk "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 
-	"api/tests/integration/helpers"
-	h "api/tests/integration/helpers/v1"
-	"api/tests/integration/testenv"
+	"api/tests/helpers"
+	h "api/tests/helpers/v1"
+	"api/tests/testenv"
 )
 
 func TestRolesList(t *testing.T) {

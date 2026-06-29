@@ -21,7 +21,7 @@ Method | HTTP request | Description
 
 ## ApplyEnterpriseCustom
 
-> ApplyEnterpriseTemplate200Response ApplyEnterpriseCustom(ctx).ApplyEnterpriseCustomRequest(applyEnterpriseCustomRequest).Execute()
+> EnterpriseApplyResponse ApplyEnterpriseCustom(ctx).ApplyEnterpriseCustomRequest(applyEnterpriseCustomRequest).Execute()
 
 Apply custom enterprise pricing
 
@@ -49,7 +49,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ApplyEnterpriseCustom``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApplyEnterpriseCustom`: ApplyEnterpriseTemplate200Response
+	// response from `ApplyEnterpriseCustom`: EnterpriseApplyResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ApplyEnterpriseCustom`: %v\n", resp)
 }
 ```
@@ -69,7 +69,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ApplyEnterpriseTemplate200Response**](ApplyEnterpriseTemplate200Response.md)
+[**EnterpriseApplyResponse**](EnterpriseApplyResponse.md)
 
 ### Authorization
 
@@ -87,7 +87,7 @@ Name | Type | Description  | Notes
 
 ## ApplyEnterpriseTemplate
 
-> ApplyEnterpriseTemplate200Response ApplyEnterpriseTemplate(ctx).ApplyEnterpriseTemplateRequest(applyEnterpriseTemplateRequest).Execute()
+> EnterpriseApplyResponse ApplyEnterpriseTemplate(ctx).ApplyEnterpriseTemplateRequest(applyEnterpriseTemplateRequest).Execute()
 
 Apply enterprise template pricing
 
@@ -115,7 +115,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ApplyEnterpriseTemplate``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ApplyEnterpriseTemplate`: ApplyEnterpriseTemplate200Response
+	// response from `ApplyEnterpriseTemplate`: EnterpriseApplyResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ApplyEnterpriseTemplate`: %v\n", resp)
 }
 ```
@@ -135,7 +135,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ApplyEnterpriseTemplate200Response**](ApplyEnterpriseTemplate200Response.md)
+[**EnterpriseApplyResponse**](EnterpriseApplyResponse.md)
 
 ### Authorization
 
@@ -153,7 +153,7 @@ Name | Type | Description  | Notes
 
 ## CalculatePriceCost
 
-> CalculatePriceCost200Response CalculatePriceCost(ctx, priceId).CalculatePriceCostRequest(calculatePriceCostRequest).Execute()
+> CalculatePriceCostResponse CalculatePriceCost(ctx, priceId).CalculatePriceCostRequest(calculatePriceCostRequest).Execute()
 
 Calculate cost for a price
 
@@ -182,7 +182,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.CalculatePriceCost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CalculatePriceCost`: CalculatePriceCost200Response
+	// response from `CalculatePriceCost`: CalculatePriceCostResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.CalculatePriceCost`: %v\n", resp)
 }
 ```
@@ -207,7 +207,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CalculatePriceCost200Response**](CalculatePriceCost200Response.md)
+[**CalculatePriceCostResponse**](CalculatePriceCostResponse.md)
 
 ### Authorization
 
@@ -225,7 +225,7 @@ No authorization required
 
 ## ConvertStripeIDToConfigID
 
-> ConvertStripeIDToConfigID200Response ConvertStripeIDToConfigID(ctx, stripeId).Execute()
+> StripeIDConversionResponse ConvertStripeIDToConfigID(ctx, stripeId).Execute()
 
 Convert Stripe ID to config ID
 
@@ -253,7 +253,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ConvertStripeIDToConfigID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ConvertStripeIDToConfigID`: ConvertStripeIDToConfigID200Response
+	// response from `ConvertStripeIDToConfigID`: StripeIDConversionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ConvertStripeIDToConfigID`: %v\n", resp)
 }
 ```
@@ -277,7 +277,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConvertStripeIDToConfigID200Response**](ConvertStripeIDToConfigID200Response.md)
+[**StripeIDConversionResponse**](StripeIDConversionResponse.md)
 
 ### Authorization
 
@@ -295,7 +295,7 @@ No authorization required
 
 ## GetEnterprisePricesByID
 
-> GetEnterprisePricesByTemplate200Response GetEnterprisePricesByID(ctx, enterpriseId).Execute()
+> EnterprisePricesResponse GetEnterprisePricesByID(ctx, enterpriseId).Execute()
 
 Get enterprise prices by ID
 
@@ -323,7 +323,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetEnterprisePricesByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetEnterprisePricesByID`: GetEnterprisePricesByTemplate200Response
+	// response from `GetEnterprisePricesByID`: EnterprisePricesResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetEnterprisePricesByID`: %v\n", resp)
 }
 ```
@@ -347,7 +347,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetEnterprisePricesByTemplate200Response**](GetEnterprisePricesByTemplate200Response.md)
+[**EnterprisePricesResponse**](EnterprisePricesResponse.md)
 
 ### Authorization
 
@@ -365,7 +365,7 @@ Name | Type | Description  | Notes
 
 ## GetEnterprisePricesByTemplate
 
-> GetEnterprisePricesByTemplate200Response GetEnterprisePricesByTemplate(ctx, template).Execute()
+> EnterprisePricesResponse GetEnterprisePricesByTemplate(ctx, template).Execute()
 
 Get enterprise prices by template
 
@@ -393,7 +393,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetEnterprisePricesByTemplate``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetEnterprisePricesByTemplate`: GetEnterprisePricesByTemplate200Response
+	// response from `GetEnterprisePricesByTemplate`: EnterprisePricesResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetEnterprisePricesByTemplate`: %v\n", resp)
 }
 ```
@@ -417,7 +417,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetEnterprisePricesByTemplate200Response**](GetEnterprisePricesByTemplate200Response.md)
+[**EnterprisePricesResponse**](EnterprisePricesResponse.md)
 
 ### Authorization
 
@@ -435,7 +435,7 @@ Name | Type | Description  | Notes
 
 ## GetMeterByID
 
-> GetMeterByID200Response GetMeterByID(ctx, meterId).Execute()
+> MeterResponse GetMeterByID(ctx, meterId).Execute()
 
 Get meter by ID
 
@@ -463,7 +463,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetMeterByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetMeterByID`: GetMeterByID200Response
+	// response from `GetMeterByID`: MeterResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetMeterByID`: %v\n", resp)
 }
 ```
@@ -487,7 +487,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetMeterByID200Response**](GetMeterByID200Response.md)
+[**MeterResponse**](MeterResponse.md)
 
 ### Authorization
 
@@ -505,7 +505,7 @@ No authorization required
 
 ## GetPriceByID
 
-> GetPriceByID200Response GetPriceByID(ctx, priceId).Execute()
+> PriceResponse GetPriceByID(ctx, priceId).Execute()
 
 Get price by ID
 
@@ -533,7 +533,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetPriceByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetPriceByID`: GetPriceByID200Response
+	// response from `GetPriceByID`: PriceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetPriceByID`: %v\n", resp)
 }
 ```
@@ -557,7 +557,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetPriceByID200Response**](GetPriceByID200Response.md)
+[**PriceResponse**](PriceResponse.md)
 
 ### Authorization
 
@@ -575,7 +575,7 @@ No authorization required
 
 ## GetProductByID
 
-> GetProductByID200Response GetProductByID(ctx, productId).Execute()
+> ProductResponse GetProductByID(ctx, productId).Execute()
 
 Get product by ID
 
@@ -603,7 +603,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetProductByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetProductByID`: GetProductByID200Response
+	// response from `GetProductByID`: ProductResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetProductByID`: %v\n", resp)
 }
 ```
@@ -627,7 +627,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetProductByID200Response**](GetProductByID200Response.md)
+[**ProductResponse**](ProductResponse.md)
 
 ### Authorization
 
@@ -645,7 +645,7 @@ No authorization required
 
 ## GetStripeConfig
 
-> GetStripeConfig200Response GetStripeConfig(ctx).Execute()
+> StripeConfigResponse GetStripeConfig(ctx).Execute()
 
 Get public Stripe config
 
@@ -672,7 +672,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetStripeConfig`: GetStripeConfig200Response
+	// response from `GetStripeConfig`: StripeConfigResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfig`: %v\n", resp)
 }
 ```
@@ -688,7 +688,7 @@ Other parameters are passed through a pointer to a apiGetStripeConfigRequest str
 
 ### Return type
 
-[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
+[**StripeConfigResponse**](StripeConfigResponse.md)
 
 ### Authorization
 
@@ -706,7 +706,7 @@ No authorization required
 
 ## GetStripeConfigAdmin
 
-> GetStripeConfig200Response GetStripeConfigAdmin(ctx).Execute()
+> StripeConfigResponse GetStripeConfigAdmin(ctx).Execute()
 
 Get full Stripe config (admin)
 
@@ -733,7 +733,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetStripeConfigAdmin``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetStripeConfigAdmin`: GetStripeConfig200Response
+	// response from `GetStripeConfigAdmin`: StripeConfigResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetStripeConfigAdmin`: %v\n", resp)
 }
 ```
@@ -749,7 +749,7 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 
 ### Return type
 
-[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
+[**StripeConfigResponse**](StripeConfigResponse.md)
 
 ### Authorization
 
@@ -767,7 +767,7 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 
 ## ListWebhooks
 
-> ListWebhooks200Response ListWebhooks(ctx).Execute()
+> ListWebhooksResponse ListWebhooks(ctx).Execute()
 
 List all webhooks
 
@@ -794,7 +794,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ListWebhooks``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListWebhooks`: ListWebhooks200Response
+	// response from `ListWebhooks`: ListWebhooksResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ListWebhooks`: %v\n", resp)
 }
 ```
@@ -810,7 +810,7 @@ Other parameters are passed through a pointer to a apiListWebhooksRequest struct
 
 ### Return type
 
-[**ListWebhooks200Response**](ListWebhooks200Response.md)
+[**ListWebhooksResponse**](ListWebhooksResponse.md)
 
 ### Authorization
 

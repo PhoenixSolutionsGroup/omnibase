@@ -949,6 +949,21 @@ paths:
         - Billing overview
         - Subscription management UI
       operationId: listTenantSubscriptions
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1011,6 +1026,21 @@ paths:
         - Enable usage-based billing for resources
         - Add additional services to tenant's billing
       operationId: addSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1088,6 +1118,21 @@ paths:
         - Downgrade by removing premium features
         - Stop billing for unused resources
       operationId: removeSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1162,6 +1207,20 @@ paths:
           schema:
             type: string
           example: "neon_compute_starter"
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Subscription found
@@ -1439,6 +1498,21 @@ paths:
         - Conditional feature access
         - Payment method verification
       operationId: getTenantBillingStatus
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []

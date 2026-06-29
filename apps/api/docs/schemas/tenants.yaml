@@ -679,6 +679,10 @@ components:
 
     AddSubscriptionResponse:
       type: object
+      required:
+        - subscription_id
+        - status
+        - message
       properties:
         subscription_id:
           type: string
@@ -712,6 +716,10 @@ components:
 
     RemoveSubscriptionResponse:
       type: object
+      required:
+        - subscription_id
+        - status
+        - message
       properties:
         subscription_id:
           type: string

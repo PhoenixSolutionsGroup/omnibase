@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (h *TenantHandler) GetTenantByStripeCustomerID(ctx *gin.Context) {
+func (h *Handler) GetTenantByStripeCustomerID(ctx *gin.Context) {
 	stripeCustomerID := ctx.Param("stripe_customer_id")
 	if stripeCustomerID == "" {
 		handlers.NewBadRequestResponse(ctx, "stripe_customer_id is required")

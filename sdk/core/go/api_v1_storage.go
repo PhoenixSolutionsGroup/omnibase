@@ -62,7 +62,7 @@ func (r ApiDeleteObjectRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string
 	return r
 }
 
-func (r ApiDeleteObjectRequest) Execute() (*DeleteObject200Response, *http.Response, error) {
+func (r ApiDeleteObjectRequest) Execute() (*MessageResponse, *http.Response, error) {
 	return r.ApiService.DeleteObjectExecute(r)
 }
 
@@ -96,13 +96,13 @@ func (a *V1StorageAPIService) DeleteObject(ctx context.Context) ApiDeleteObjectR
 }
 
 // Execute executes the request
-//  @return DeleteObject200Response
-func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*DeleteObject200Response, *http.Response, error) {
+//  @return MessageResponse
+func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*MessageResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteObject200Response
+		localVarReturnValue  *MessageResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DeleteObject")
@@ -294,7 +294,7 @@ func (r ApiDownloadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string
 	return r
 }
 
-func (r ApiDownloadFileRequest) Execute() (*DownloadFile200Response, *http.Response, error) {
+func (r ApiDownloadFileRequest) Execute() (*DownloadResponse, *http.Response, error) {
 	return r.ApiService.DownloadFileExecute(r)
 }
 
@@ -330,13 +330,13 @@ func (a *V1StorageAPIService) DownloadFile(ctx context.Context) ApiDownloadFileR
 }
 
 // Execute executes the request
-//  @return DownloadFile200Response
-func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*DownloadFile200Response, *http.Response, error) {
+//  @return DownloadResponse
+func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*DownloadResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DownloadFile200Response
+		localVarReturnValue  *DownloadResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DownloadFile")
@@ -539,7 +539,7 @@ func (r ApiMakeFilePublicRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt stri
 	return r
 }
 
-func (r ApiMakeFilePublicRequest) Execute() (*DeleteObject200Response, *http.Response, error) {
+func (r ApiMakeFilePublicRequest) Execute() (*MessageResponse, *http.Response, error) {
 	return r.ApiService.MakeFilePublicExecute(r)
 }
 
@@ -572,13 +572,13 @@ func (a *V1StorageAPIService) MakeFilePublic(ctx context.Context) ApiMakeFilePub
 }
 
 // Execute executes the request
-//  @return DeleteObject200Response
-func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) (*DeleteObject200Response, *http.Response, error) {
+//  @return MessageResponse
+func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) (*MessageResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteObject200Response
+		localVarReturnValue  *MessageResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.MakeFilePublic")
@@ -781,7 +781,7 @@ func (r ApiUploadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) 
 	return r
 }
 
-func (r ApiUploadFileRequest) Execute() (*UploadFile200Response, *http.Response, error) {
+func (r ApiUploadFileRequest) Execute() (*UploadResponse, *http.Response, error) {
 	return r.ApiService.UploadFileExecute(r)
 }
 
@@ -818,13 +818,13 @@ func (a *V1StorageAPIService) UploadFile(ctx context.Context) ApiUploadFileReque
 }
 
 // Execute executes the request
-//  @return UploadFile200Response
-func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*UploadFile200Response, *http.Response, error) {
+//  @return UploadResponse
+func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*UploadResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *UploadFile200Response
+		localVarReturnValue  *UploadResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.UploadFile")

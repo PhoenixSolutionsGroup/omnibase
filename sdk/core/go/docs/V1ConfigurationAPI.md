@@ -25,7 +25,7 @@ Method | HTTP request | Description
 
 ## ArchiveAllStripeConfig
 
-> ArchiveAllStripeConfig200Response ArchiveAllStripeConfig(ctx).Execute()
+> ArchiveAllResponse ArchiveAllStripeConfig(ctx).Execute()
 
 Archive all Stripe config
 
@@ -52,7 +52,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.ArchiveAllStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ArchiveAllStripeConfig`: ArchiveAllStripeConfig200Response
+	// response from `ArchiveAllStripeConfig`: ArchiveAllResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.ArchiveAllStripeConfig`: %v\n", resp)
 }
 ```
@@ -68,7 +68,7 @@ Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequ
 
 ### Return type
 
-[**ArchiveAllStripeConfig200Response**](ArchiveAllStripeConfig200Response.md)
+[**ArchiveAllResponse**](ArchiveAllResponse.md)
 
 ### Authorization
 
@@ -222,7 +222,7 @@ Name | Type | Description  | Notes
 
 ## DeployPermissionNamespaces
 
-> DeployPermissionNamespaces200Response DeployPermissionNamespaces(ctx).Namespaces(namespaces).Execute()
+> NamespaceDeploymentResponse DeployPermissionNamespaces(ctx).Namespaces(namespaces).Execute()
 
 Deploy Keto namespace configurations
 
@@ -250,7 +250,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.DeployPermissionNamespaces``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeployPermissionNamespaces`: DeployPermissionNamespaces200Response
+	// response from `DeployPermissionNamespaces`: NamespaceDeploymentResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.DeployPermissionNamespaces`: %v\n", resp)
 }
 ```
@@ -270,7 +270,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeployPermissionNamespaces200Response**](DeployPermissionNamespaces200Response.md)
+[**NamespaceDeploymentResponse**](NamespaceDeploymentResponse.md)
 
 ### Authorization
 
@@ -356,7 +356,7 @@ Name | Type | Description  | Notes
 
 ## GetDatabaseMigrationStatus
 
-> GetDatabaseMigrationStatus200Response GetDatabaseMigrationStatus(ctx).Execute()
+> []AppliedMigration GetDatabaseMigrationStatus(ctx).Execute()
 
 Get applied migration status
 
@@ -383,7 +383,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetDatabaseMigrationStatus``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetDatabaseMigrationStatus`: GetDatabaseMigrationStatus200Response
+	// response from `GetDatabaseMigrationStatus`: []AppliedMigration
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetDatabaseMigrationStatus`: %v\n", resp)
 }
 ```
@@ -399,7 +399,7 @@ Other parameters are passed through a pointer to a apiGetDatabaseMigrationStatus
 
 ### Return type
 
-[**GetDatabaseMigrationStatus200Response**](GetDatabaseMigrationStatus200Response.md)
+[**[]AppliedMigration**](AppliedMigration.md)
 
 ### Authorization
 
@@ -478,7 +478,7 @@ Other parameters are passed through a pointer to a apiGetEmailTemplatesRequest s
 
 ## GetStripeConfigHistory
 
-> GetStripeConfigHistory200Response GetStripeConfigHistory(ctx).Limit(limit).Offset(offset).Execute()
+> ConfigHistoryResponse GetStripeConfigHistory(ctx).Limit(limit).Offset(offset).Execute()
 
 Get config history
 
@@ -507,7 +507,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetStripeConfigHistory``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetStripeConfigHistory`: GetStripeConfigHistory200Response
+	// response from `GetStripeConfigHistory`: ConfigHistoryResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetStripeConfigHistory`: %v\n", resp)
 }
 ```
@@ -528,7 +528,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetStripeConfigHistory200Response**](GetStripeConfigHistory200Response.md)
+[**ConfigHistoryResponse**](ConfigHistoryResponse.md)
 
 ### Authorization
 
@@ -607,7 +607,7 @@ No authorization required
 
 ## PullStripeConfig
 
-> PullStripeConfig200Response PullStripeConfig(ctx).Execute()
+> StripeConfigurationWithIDs PullStripeConfig(ctx).Execute()
 
 Pull config from Stripe
 
@@ -634,7 +634,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.PullStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `PullStripeConfig`: PullStripeConfig200Response
+	// response from `PullStripeConfig`: StripeConfigurationWithIDs
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.PullStripeConfig`: %v\n", resp)
 }
 ```
@@ -650,7 +650,7 @@ Other parameters are passed through a pointer to a apiPullStripeConfigRequest st
 
 ### Return type
 
-[**PullStripeConfig200Response**](PullStripeConfig200Response.md)
+[**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md)
 
 ### Authorization
 
@@ -875,7 +875,7 @@ Name | Type | Description  | Notes
 
 ## UpdateStripeConfig
 
-> UpdateStripeConfig200Response UpdateStripeConfig(ctx).StripeConfigUpdateRequest(stripeConfigUpdateRequest).Execute()
+> StripeConfigUpdateResponse UpdateStripeConfig(ctx).StripeConfigUpdateRequest(stripeConfigUpdateRequest).Execute()
 
 Update Stripe config
 
@@ -903,7 +903,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.UpdateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateStripeConfig`: UpdateStripeConfig200Response
+	// response from `UpdateStripeConfig`: StripeConfigUpdateResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.UpdateStripeConfig`: %v\n", resp)
 }
 ```
@@ -923,7 +923,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**UpdateStripeConfig200Response**](UpdateStripeConfig200Response.md)
+[**StripeConfigUpdateResponse**](StripeConfigUpdateResponse.md)
 
 ### Authorization
 
@@ -941,7 +941,7 @@ Name | Type | Description  | Notes
 
 ## UploadDatabaseMigrations
 
-> MigrationSuccessResponse UploadDatabaseMigrations(ctx).Migrations(migrations).Execute()
+> map[string]interface{} UploadDatabaseMigrations(ctx).Migrations(migrations).Execute()
 
 Upload database migrations
 
@@ -969,7 +969,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.UploadDatabaseMigrations``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UploadDatabaseMigrations`: MigrationSuccessResponse
+	// response from `UploadDatabaseMigrations`: map[string]interface{}
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.UploadDatabaseMigrations`: %v\n", resp)
 }
 ```
@@ -989,7 +989,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**MigrationSuccessResponse**](MigrationSuccessResponse.md)
+**map[string]interface{}**
 
 ### Authorization
 
@@ -1007,7 +1007,7 @@ Name | Type | Description  | Notes
 
 ## ValidateStripeConfig
 
-> SuccessResponse ValidateStripeConfig(ctx).StripeConfigValidateRequest(stripeConfigValidateRequest).Execute()
+> map[string]interface{} ValidateStripeConfig(ctx).StripeConfigValidateRequest(stripeConfigValidateRequest).Execute()
 
 Validate Stripe config
 
@@ -1035,7 +1035,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.ValidateStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ValidateStripeConfig`: SuccessResponse
+	// response from `ValidateStripeConfig`: map[string]interface{}
 	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.ValidateStripeConfig`: %v\n", resp)
 }
 ```
@@ -1055,7 +1055,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+**map[string]interface{}**
 
 ### Authorization
 

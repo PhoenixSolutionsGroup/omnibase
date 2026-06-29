@@ -149,12 +149,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/permissions.yaml#/components/schemas/DeleteRelationshipResponse'
+                $ref: '../schemas/permissions.yaml#/components/schemas/DeleteRelationshipResponse'
               example:
                 status: 200
                 data:
@@ -240,12 +235,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/permissions.yaml#/components/schemas/CreateRelationshipResponse'
+                $ref: '../schemas/permissions.yaml#/components/schemas/CreateRelationshipResponse'
               example:
                 status: 200
                 data:

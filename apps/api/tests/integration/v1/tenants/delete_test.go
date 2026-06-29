@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"api/tests/integration/helpers"
-	h "api/tests/integration/helpers/v1"
-	"api/tests/integration/testenv"
+	"api/tests/helpers"
+	h "api/tests/helpers/v1"
+	"api/tests/testenv"
 )
 
 func TestTenantDelete(t *testing.T) {

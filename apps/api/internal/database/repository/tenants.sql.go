@@ -10,6 +10,76 @@ import (
 	"time"
 )
 
+const createTenant = `-- name: CreateTenant :one
+INSERT INTO auth.tenants (id, name, stripe_customer_id, type)
+VALUES ($1, $2, $3, $4)
+RETURNING id, name, stripe_customer_id, enterprise_template, enterprise_id, type, created_at, updated_at
+`
+
+type CreateTenantParams struct {
+	ID               string  `json:"id"`
+	Name             string  `json:"name"`
+	StripeCustomerID *string `json:"stripe_customer_id"`
+	Type             string  `json:"type"`
+}
+
+type CreateTenantRow struct {
+	ID                 string    `json:"id"`
+	Name               string    `json:"name"`
+	StripeCustomerID   *string   `json:"stripe_customer_id"`
+	EnterpriseTemplate *string   `json:"enterprise_template"`
+	EnterpriseID       *string   `json:"enterprise_id"`
+	Type               string    `json:"type"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+}
+
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error) {
+	row := q.db.QueryRow(ctx, createTenant,
+		arg.ID,
+		arg.Name,
+		arg.StripeCustomerID,
+		arg.Type,
+	)
+	var i CreateTenantRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StripeCustomerID,
+		&i.EnterpriseTemplate,
+		&i.EnterpriseID,
+		&i.Type,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createTenantSettings = `-- name: CreateTenantSettings :exec
+INSERT INTO auth.tenant_settings (tenant_id, allow_user_invites, max_members)
+VALUES ($1, $2, $3)
+`
+
+type CreateTenantSettingsParams struct {
+	TenantID         string `json:"tenant_id"`
+	AllowUserInvites bool   `json:"allow_user_invites"`
+	MaxMembers       int32  `json:"max_members"`
+}
+
+func (q *Queries) CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error {
+	_, err := q.db.Exec(ctx, createTenantSettings, arg.TenantID, arg.AllowUserInvites, arg.MaxMembers)
+	return err
+}
+
+const deleteTenant = `-- name: DeleteTenant :exec
+DELETE FROM auth.tenants WHERE id = $1
+`
+
+func (q *Queries) DeleteTenant(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, deleteTenant, id)
+	return err
+}
+
 const getTenantByID = `-- name: GetTenantByID :one
 SELECT id, name, stripe_customer_id, enterprise_template, enterprise_id, type, created_at, updated_at
 FROM auth.tenants

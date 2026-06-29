@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (h *TenantHandler) GetTenantByID(ctx *gin.Context) {
+func (h *Handler) GetTenantByID(ctx *gin.Context) {
 	tenantID := ctx.Param("tenant_id")
 	if tenantID == "" {
 		handlers.NewBadRequestResponse(ctx, "tenant_id is required")

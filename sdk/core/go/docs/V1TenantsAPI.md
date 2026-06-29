@@ -98,7 +98,7 @@ Name | Type | Description  | Notes
 
 ## AddSubscription
 
-> AddSubscriptionResponse AddSubscription(ctx).AddSubscriptionRequest(addSubscriptionRequest).Execute()
+> AddSubscriptionResponse AddSubscription(ctx).AddSubscriptionRequest(addSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Add subscription
 
@@ -118,10 +118,12 @@ import (
 
 func main() {
 	addSubscriptionRequest := *openapiclient.NewAddSubscriptionRequest("price_test_basic") // AddSubscriptionRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).AddSubscriptionRequest(addSubscriptionRequest).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).AddSubscriptionRequest(addSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AddSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -143,6 +145,8 @@ Other parameters are passed through a pointer to a apiAddSubscriptionRequest str
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **addSubscriptionRequest** | [**AddSubscriptionRequest**](AddSubscriptionRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -510,7 +514,7 @@ Name | Type | Description  | Notes
 
 ## GetTenantBillingStatus
 
-> GetTenantBillingStatus200Response GetTenantBillingStatus(ctx).Execute()
+> GetTenantBillingStatus200Response GetTenantBillingStatus(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get billing status
 
@@ -529,10 +533,12 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantBillingStatus``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -544,12 +550,17 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -779,7 +790,7 @@ Name | Type | Description  | Notes
 
 ## GetTenantSubscription
 
-> SubscriptionResponse GetTenantSubscription(ctx, configPriceId).Execute()
+> SubscriptionResponse GetTenantSubscription(ctx, configPriceId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get tenant subscription by plan
 
@@ -799,10 +810,12 @@ import (
 
 func main() {
 	configPriceId := "neon_compute_starter" // string | The configuration price ID (plan ID) to look up
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetTenantSubscription(context.Background(), configPriceId).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantSubscription(context.Background(), configPriceId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -828,6 +841,8 @@ Other parameters are passed through a pointer to a apiGetTenantSubscriptionReque
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -981,7 +996,7 @@ Name | Type | Description  | Notes
 
 ## ListTenantSubscriptions
 
-> []SubscriptionResponse ListTenantSubscriptions(ctx).Execute()
+> []SubscriptionResponse ListTenantSubscriptions(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get tenant subscriptions
 
@@ -1000,10 +1015,12 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.ListTenantSubscriptions(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.ListTenantSubscriptions(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListTenantSubscriptions``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1015,12 +1032,17 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListTenantSubscriptionsRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -1110,7 +1132,7 @@ Name | Type | Description  | Notes
 
 ## RemoveSubscription
 
-> RemoveSubscriptionResponse RemoveSubscription(ctx).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
+> RemoveSubscriptionResponse RemoveSubscription(ctx).RemoveSubscriptionRequest(removeSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Remove subscription
 
@@ -1130,10 +1152,12 @@ import (
 
 func main() {
 	removeSubscriptionRequest := *openapiclient.NewRemoveSubscriptionRequest("price_test_basic") // RemoveSubscriptionRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).RemoveSubscriptionRequest(removeSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1155,6 +1179,8 @@ Other parameters are passed through a pointer to a apiRemoveSubscriptionRequest 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **removeSubscriptionRequest** | [**RemoveSubscriptionRequest**](RemoveSubscriptionRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 

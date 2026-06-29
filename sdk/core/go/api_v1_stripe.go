@@ -35,7 +35,7 @@ func (r ApiApplyEnterpriseCustomRequest) ApplyEnterpriseCustomRequest(applyEnter
 	return r
 }
 
-func (r ApiApplyEnterpriseCustomRequest) Execute() (*ApplyEnterpriseTemplate200Response, *http.Response, error) {
+func (r ApiApplyEnterpriseCustomRequest) Execute() (*EnterpriseApplyResponse, *http.Response, error) {
 	return r.ApiService.ApplyEnterpriseCustomExecute(r)
 }
 
@@ -71,13 +71,13 @@ func (a *V1StripeAPIService) ApplyEnterpriseCustom(ctx context.Context) ApiApply
 }
 
 // Execute executes the request
-//  @return ApplyEnterpriseTemplate200Response
-func (a *V1StripeAPIService) ApplyEnterpriseCustomExecute(r ApiApplyEnterpriseCustomRequest) (*ApplyEnterpriseTemplate200Response, *http.Response, error) {
+//  @return EnterpriseApplyResponse
+func (a *V1StripeAPIService) ApplyEnterpriseCustomExecute(r ApiApplyEnterpriseCustomRequest) (*EnterpriseApplyResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApplyEnterpriseTemplate200Response
+		localVarReturnValue  *EnterpriseApplyResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ApplyEnterpriseCustom")
@@ -218,7 +218,7 @@ func (r ApiApplyEnterpriseTemplateRequest) ApplyEnterpriseTemplateRequest(applyE
 	return r
 }
 
-func (r ApiApplyEnterpriseTemplateRequest) Execute() (*ApplyEnterpriseTemplate200Response, *http.Response, error) {
+func (r ApiApplyEnterpriseTemplateRequest) Execute() (*EnterpriseApplyResponse, *http.Response, error) {
 	return r.ApiService.ApplyEnterpriseTemplateExecute(r)
 }
 
@@ -254,13 +254,13 @@ func (a *V1StripeAPIService) ApplyEnterpriseTemplate(ctx context.Context) ApiApp
 }
 
 // Execute executes the request
-//  @return ApplyEnterpriseTemplate200Response
-func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterpriseTemplateRequest) (*ApplyEnterpriseTemplate200Response, *http.Response, error) {
+//  @return EnterpriseApplyResponse
+func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterpriseTemplateRequest) (*EnterpriseApplyResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ApplyEnterpriseTemplate200Response
+		localVarReturnValue  *EnterpriseApplyResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ApplyEnterpriseTemplate")
@@ -402,7 +402,7 @@ func (r ApiCalculatePriceCostRequest) CalculatePriceCostRequest(calculatePriceCo
 	return r
 }
 
-func (r ApiCalculatePriceCostRequest) Execute() (*CalculatePriceCost200Response, *http.Response, error) {
+func (r ApiCalculatePriceCostRequest) Execute() (*CalculatePriceCostResponse, *http.Response, error) {
 	return r.ApiService.CalculatePriceCostExecute(r)
 }
 
@@ -438,13 +438,13 @@ func (a *V1StripeAPIService) CalculatePriceCost(ctx context.Context, priceId str
 }
 
 // Execute executes the request
-//  @return CalculatePriceCost200Response
-func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRequest) (*CalculatePriceCost200Response, *http.Response, error) {
+//  @return CalculatePriceCostResponse
+func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRequest) (*CalculatePriceCostResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CalculatePriceCost200Response
+		localVarReturnValue  *CalculatePriceCostResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.CalculatePriceCost")
@@ -556,7 +556,7 @@ type ApiConvertStripeIDToConfigIDRequest struct {
 	stripeId string
 }
 
-func (r ApiConvertStripeIDToConfigIDRequest) Execute() (*ConvertStripeIDToConfigID200Response, *http.Response, error) {
+func (r ApiConvertStripeIDToConfigIDRequest) Execute() (*StripeIDConversionResponse, *http.Response, error) {
 	return r.ApiService.ConvertStripeIDToConfigIDExecute(r)
 }
 
@@ -587,13 +587,13 @@ func (a *V1StripeAPIService) ConvertStripeIDToConfigID(ctx context.Context, stri
 }
 
 // Execute executes the request
-//  @return ConvertStripeIDToConfigID200Response
-func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripeIDToConfigIDRequest) (*ConvertStripeIDToConfigID200Response, *http.Response, error) {
+//  @return StripeIDConversionResponse
+func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripeIDToConfigIDRequest) (*StripeIDConversionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ConvertStripeIDToConfigID200Response
+		localVarReturnValue  *StripeIDConversionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ConvertStripeIDToConfigID")
@@ -700,7 +700,7 @@ type ApiGetEnterprisePricesByIDRequest struct {
 	enterpriseId string
 }
 
-func (r ApiGetEnterprisePricesByIDRequest) Execute() (*GetEnterprisePricesByTemplate200Response, *http.Response, error) {
+func (r ApiGetEnterprisePricesByIDRequest) Execute() (*EnterprisePricesResponse, *http.Response, error) {
 	return r.ApiService.GetEnterprisePricesByIDExecute(r)
 }
 
@@ -730,13 +730,13 @@ func (a *V1StripeAPIService) GetEnterprisePricesByID(ctx context.Context, enterp
 }
 
 // Execute executes the request
-//  @return GetEnterprisePricesByTemplate200Response
-func (a *V1StripeAPIService) GetEnterprisePricesByIDExecute(r ApiGetEnterprisePricesByIDRequest) (*GetEnterprisePricesByTemplate200Response, *http.Response, error) {
+//  @return EnterprisePricesResponse
+func (a *V1StripeAPIService) GetEnterprisePricesByIDExecute(r ApiGetEnterprisePricesByIDRequest) (*EnterprisePricesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetEnterprisePricesByTemplate200Response
+		localVarReturnValue  *EnterprisePricesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetEnterprisePricesByID")
@@ -846,7 +846,7 @@ type ApiGetEnterprisePricesByTemplateRequest struct {
 	template string
 }
 
-func (r ApiGetEnterprisePricesByTemplateRequest) Execute() (*GetEnterprisePricesByTemplate200Response, *http.Response, error) {
+func (r ApiGetEnterprisePricesByTemplateRequest) Execute() (*EnterprisePricesResponse, *http.Response, error) {
 	return r.ApiService.GetEnterprisePricesByTemplateExecute(r)
 }
 
@@ -876,13 +876,13 @@ func (a *V1StripeAPIService) GetEnterprisePricesByTemplate(ctx context.Context, 
 }
 
 // Execute executes the request
-//  @return GetEnterprisePricesByTemplate200Response
-func (a *V1StripeAPIService) GetEnterprisePricesByTemplateExecute(r ApiGetEnterprisePricesByTemplateRequest) (*GetEnterprisePricesByTemplate200Response, *http.Response, error) {
+//  @return EnterprisePricesResponse
+func (a *V1StripeAPIService) GetEnterprisePricesByTemplateExecute(r ApiGetEnterprisePricesByTemplateRequest) (*EnterprisePricesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetEnterprisePricesByTemplate200Response
+		localVarReturnValue  *EnterprisePricesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetEnterprisePricesByTemplate")
@@ -992,7 +992,7 @@ type ApiGetMeterByIDRequest struct {
 	meterId string
 }
 
-func (r ApiGetMeterByIDRequest) Execute() (*GetMeterByID200Response, *http.Response, error) {
+func (r ApiGetMeterByIDRequest) Execute() (*MeterResponse, *http.Response, error) {
 	return r.ApiService.GetMeterByIDExecute(r)
 }
 
@@ -1023,13 +1023,13 @@ func (a *V1StripeAPIService) GetMeterByID(ctx context.Context, meterId string) A
 }
 
 // Execute executes the request
-//  @return GetMeterByID200Response
-func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*GetMeterByID200Response, *http.Response, error) {
+//  @return MeterResponse
+func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*MeterResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetMeterByID200Response
+		localVarReturnValue  *MeterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetMeterByID")
@@ -1136,7 +1136,7 @@ type ApiGetPriceByIDRequest struct {
 	priceId string
 }
 
-func (r ApiGetPriceByIDRequest) Execute() (*GetPriceByID200Response, *http.Response, error) {
+func (r ApiGetPriceByIDRequest) Execute() (*PriceResponse, *http.Response, error) {
 	return r.ApiService.GetPriceByIDExecute(r)
 }
 
@@ -1167,13 +1167,13 @@ func (a *V1StripeAPIService) GetPriceByID(ctx context.Context, priceId string) A
 }
 
 // Execute executes the request
-//  @return GetPriceByID200Response
-func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*GetPriceByID200Response, *http.Response, error) {
+//  @return PriceResponse
+func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*PriceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetPriceByID200Response
+		localVarReturnValue  *PriceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetPriceByID")
@@ -1280,7 +1280,7 @@ type ApiGetProductByIDRequest struct {
 	productId string
 }
 
-func (r ApiGetProductByIDRequest) Execute() (*GetProductByID200Response, *http.Response, error) {
+func (r ApiGetProductByIDRequest) Execute() (*ProductResponse, *http.Response, error) {
 	return r.ApiService.GetProductByIDExecute(r)
 }
 
@@ -1311,13 +1311,13 @@ func (a *V1StripeAPIService) GetProductByID(ctx context.Context, productId strin
 }
 
 // Execute executes the request
-//  @return GetProductByID200Response
-func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (*GetProductByID200Response, *http.Response, error) {
+//  @return ProductResponse
+func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (*ProductResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetProductByID200Response
+		localVarReturnValue  *ProductResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetProductByID")
@@ -1423,7 +1423,7 @@ type ApiGetStripeConfigRequest struct {
 	ApiService *V1StripeAPIService
 }
 
-func (r ApiGetStripeConfigRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
+func (r ApiGetStripeConfigRequest) Execute() (*StripeConfigResponse, *http.Response, error) {
 	return r.ApiService.GetStripeConfigExecute(r)
 }
 
@@ -1452,13 +1452,13 @@ func (a *V1StripeAPIService) GetStripeConfig(ctx context.Context) ApiGetStripeCo
 }
 
 // Execute executes the request
-//  @return GetStripeConfig200Response
-func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*GetStripeConfig200Response, *http.Response, error) {
+//  @return StripeConfigResponse
+func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest) (*StripeConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetStripeConfig200Response
+		localVarReturnValue  *StripeConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfig")
@@ -1541,7 +1541,7 @@ type ApiGetStripeConfigAdminRequest struct {
 	ApiService *V1StripeAPIService
 }
 
-func (r ApiGetStripeConfigAdminRequest) Execute() (*GetStripeConfig200Response, *http.Response, error) {
+func (r ApiGetStripeConfigAdminRequest) Execute() (*StripeConfigResponse, *http.Response, error) {
 	return r.ApiService.GetStripeConfigAdminExecute(r)
 }
 
@@ -1570,13 +1570,13 @@ func (a *V1StripeAPIService) GetStripeConfigAdmin(ctx context.Context) ApiGetStr
 }
 
 // Execute executes the request
-//  @return GetStripeConfig200Response
-func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*GetStripeConfig200Response, *http.Response, error) {
+//  @return StripeConfigResponse
+func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdminRequest) (*StripeConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetStripeConfig200Response
+		localVarReturnValue  *StripeConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetStripeConfigAdmin")
@@ -1684,7 +1684,7 @@ type ApiListWebhooksRequest struct {
 	ApiService *V1StripeAPIService
 }
 
-func (r ApiListWebhooksRequest) Execute() (*ListWebhooks200Response, *http.Response, error) {
+func (r ApiListWebhooksRequest) Execute() (*ListWebhooksResponse, *http.Response, error) {
 	return r.ApiService.ListWebhooksExecute(r)
 }
 
@@ -1713,13 +1713,13 @@ func (a *V1StripeAPIService) ListWebhooks(ctx context.Context) ApiListWebhooksRe
 }
 
 // Execute executes the request
-//  @return ListWebhooks200Response
-func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*ListWebhooks200Response, *http.Response, error) {
+//  @return ListWebhooksResponse
+func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*ListWebhooksResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListWebhooks200Response
+		localVarReturnValue  *ListWebhooksResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ListWebhooks")

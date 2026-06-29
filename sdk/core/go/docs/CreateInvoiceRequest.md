@@ -6,6 +6,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
 **AutoAdvance** | Pointer to **bool** | Whether to auto-advance the invoice (send immediately after finalization) | [optional] 
+**CollectionMethod** | Pointer to **string** | How to collect payment. &#x60;charge_automatically&#x60; (default) attempts to charge the customer&#39;s default payment method. &#x60;send_invoice&#x60; emails the customer (requires &#x60;days_until_due&#x60;). | [optional] 
+**DaysUntilDue** | Pointer to **int32** | Days until invoice is due. Required when &#x60;collection_method&#x60; is &#x60;send_invoice&#x60;. | [optional] 
 **Description** | Pointer to **string** | Optional description for the invoice | [optional] 
 **Metadata** | Pointer to **map[string]string** | Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) | [optional] 
 
@@ -72,6 +74,56 @@ SetAutoAdvance sets AutoAdvance field to given value.
 `func (o *CreateInvoiceRequest) HasAutoAdvance() bool`
 
 HasAutoAdvance returns a boolean if a field has been set.
+
+### GetCollectionMethod
+
+`func (o *CreateInvoiceRequest) GetCollectionMethod() string`
+
+GetCollectionMethod returns the CollectionMethod field if non-nil, zero value otherwise.
+
+### GetCollectionMethodOk
+
+`func (o *CreateInvoiceRequest) GetCollectionMethodOk() (*string, bool)`
+
+GetCollectionMethodOk returns a tuple with the CollectionMethod field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCollectionMethod
+
+`func (o *CreateInvoiceRequest) SetCollectionMethod(v string)`
+
+SetCollectionMethod sets CollectionMethod field to given value.
+
+### HasCollectionMethod
+
+`func (o *CreateInvoiceRequest) HasCollectionMethod() bool`
+
+HasCollectionMethod returns a boolean if a field has been set.
+
+### GetDaysUntilDue
+
+`func (o *CreateInvoiceRequest) GetDaysUntilDue() int32`
+
+GetDaysUntilDue returns the DaysUntilDue field if non-nil, zero value otherwise.
+
+### GetDaysUntilDueOk
+
+`func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int32, bool)`
+
+GetDaysUntilDueOk returns a tuple with the DaysUntilDue field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDaysUntilDue
+
+`func (o *CreateInvoiceRequest) SetDaysUntilDue(v int32)`
+
+SetDaysUntilDue sets DaysUntilDue field to given value.
+
+### HasDaysUntilDue
+
+`func (o *CreateInvoiceRequest) HasDaysUntilDue() bool`
+
+HasDaysUntilDue returns a boolean if a field has been set.
 
 ### GetDescription
 
