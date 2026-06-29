@@ -4,7 +4,6 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/database/repository"
-	v1 "api/internal/handlers/v1"
 	stripeHandlers "api/internal/handlers/v1/stripe"
 	"api/internal/logger"
 	"api/internal/middleware"
@@ -59,14 +58,13 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 		Billing:      billingSvc,
 		Stripe:       stripeClient,
 	})
-	legacyStripeHandler := v1.NewStripeHandler(cfg)
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
 	router.GET("/schema", stripeHandler.GetSchema)
 
 	router.GET("/config", stripeHandler.GetConfig)
 	router.GET("/config/prices/:price_id", stripeHandler.GetPriceByID)
-	router.POST("/config/prices/:price_id/calculate", legacyStripeHandler.CalculatePriceCost)
+	router.POST("/config/prices/:price_id/calculate", stripeHandler.CalculatePriceCost)
 	router.GET("/config/products/:product_id", stripeHandler.GetProductByID)
 	router.GET("/config/meters/:meter_id", stripeHandler.GetMeterByID)
 
@@ -77,11 +75,11 @@ func SetUpStripeRoutes(router *gin.RouterGroup) {
 	adminGroup.Use(authMiddleware.RequireServiceKey())
 
 	adminGroup.GET("/config", stripeHandler.GetConfigAdmin)
-	adminGroup.GET("/config/history", legacyStripeHandler.GetConfigHistory)
-	adminGroup.GET("/config/pull", legacyStripeHandler.PullConfig)
+	adminGroup.GET("/config/history", stripeHandler.GetConfigHistory)
+	adminGroup.GET("/config/pull", stripeHandler.PullConfig)
 	adminGroup.POST("/config", stripeHandler.UpdateConfig)
 	adminGroup.POST("/config/validate", stripeHandler.ValidateConfig)
-	adminGroup.POST("/config/archive-all", legacyStripeHandler.ArchiveAllConfig)
+	adminGroup.POST("/config/archive-all", stripeHandler.ArchiveAllConfig)
 	adminGroup.GET("/webhooks", stripeHandler.ListWebhooks)
 
 	enterpriseGroup := adminGroup.Group("/enterprise")

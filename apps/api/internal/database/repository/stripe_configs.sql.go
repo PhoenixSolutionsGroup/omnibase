@@ -9,6 +9,17 @@ import (
 	"context"
 )
 
+const countStripeConfigs = `-- name: CountStripeConfigs :one
+SELECT COUNT(*) FROM stripe.stripe_configs
+`
+
+func (q *Queries) CountStripeConfigs(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countStripeConfigs)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createStripeConfig = `-- name: CreateStripeConfig :one
 INSERT INTO stripe.stripe_configs (
     config, version
@@ -64,6 +75,44 @@ ORDER BY created_at DESC
 
 func (q *Queries) ListStripeConfigs(ctx context.Context) ([]StripeStripeConfig, error) {
 	rows, err := q.db.Query(ctx, listStripeConfigs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StripeStripeConfig
+	for rows.Next() {
+		var i StripeStripeConfig
+		if err := rows.Scan(
+			&i.ID,
+			&i.Config,
+			&i.Version,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listStripeConfigsPaginated = `-- name: ListStripeConfigsPaginated :many
+SELECT id, config, version, created_at, updated_at
+FROM stripe.stripe_configs
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2
+`
+
+type ListStripeConfigsPaginatedParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListStripeConfigsPaginated(ctx context.Context, arg ListStripeConfigsPaginatedParams) ([]StripeStripeConfig, error) {
+	rows, err := q.db.Query(ctx, listStripeConfigsPaginated, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

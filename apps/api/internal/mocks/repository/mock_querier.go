@@ -219,6 +219,66 @@ func (_c *MockQuerier_CountOwnersByTenant_Call) RunAndReturn(run func(ctx contex
 	return _c
 }
 
+// CountStripeConfigs provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CountStripeConfigs(ctx context.Context) (int64, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CountStripeConfigs")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) (int64, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) int64); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CountStripeConfigs_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CountStripeConfigs'
+type MockQuerier_CountStripeConfigs_Call struct {
+	*mock.Call
+}
+
+// CountStripeConfigs is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) CountStripeConfigs(ctx any) *MockQuerier_CountStripeConfigs_Call {
+	return &MockQuerier_CountStripeConfigs_Call{Call: _e.mock.On("CountStripeConfigs", ctx)}
+}
+
+func (_c *MockQuerier_CountStripeConfigs_Call) Run(run func(ctx context.Context)) *MockQuerier_CountStripeConfigs_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CountStripeConfigs_Call) Return(n int64, err error) *MockQuerier_CountStripeConfigs_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockQuerier_CountStripeConfigs_Call) RunAndReturn(run func(ctx context.Context) (int64, error)) *MockQuerier_CountStripeConfigs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateMapping provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateMapping(ctx context.Context, arg repository.CreateMappingParams) (repository.CreateMappingRow, error) {
 	ret := _mock.Called(ctx, arg)
@@ -1993,6 +2053,74 @@ func (_c *MockQuerier_ListStripeConfigs_Call) Return(stripeStripeConfigs []repos
 }
 
 func (_c *MockQuerier_ListStripeConfigs_Call) RunAndReturn(run func(ctx context.Context) ([]repository.StripeStripeConfig, error)) *MockQuerier_ListStripeConfigs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListStripeConfigsPaginated provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListStripeConfigsPaginated(ctx context.Context, arg repository.ListStripeConfigsPaginatedParams) ([]repository.StripeStripeConfig, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListStripeConfigsPaginated")
+	}
+
+	var r0 []repository.StripeStripeConfig
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.ListStripeConfigsPaginatedParams) ([]repository.StripeStripeConfig, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.ListStripeConfigsPaginatedParams) []repository.StripeStripeConfig); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.StripeStripeConfig)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.ListStripeConfigsPaginatedParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListStripeConfigsPaginated_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListStripeConfigsPaginated'
+type MockQuerier_ListStripeConfigsPaginated_Call struct {
+	*mock.Call
+}
+
+// ListStripeConfigsPaginated is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.ListStripeConfigsPaginatedParams
+func (_e *MockQuerier_Expecter) ListStripeConfigsPaginated(ctx any, arg any) *MockQuerier_ListStripeConfigsPaginated_Call {
+	return &MockQuerier_ListStripeConfigsPaginated_Call{Call: _e.mock.On("ListStripeConfigsPaginated", ctx, arg)}
+}
+
+func (_c *MockQuerier_ListStripeConfigsPaginated_Call) Run(run func(ctx context.Context, arg repository.ListStripeConfigsPaginatedParams)) *MockQuerier_ListStripeConfigsPaginated_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.ListStripeConfigsPaginatedParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.ListStripeConfigsPaginatedParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeConfigsPaginated_Call) Return(stripeStripeConfigs []repository.StripeStripeConfig, err error) *MockQuerier_ListStripeConfigsPaginated_Call {
+	_c.Call.Return(stripeStripeConfigs, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListStripeConfigsPaginated_Call) RunAndReturn(run func(ctx context.Context, arg repository.ListStripeConfigsPaginatedParams) ([]repository.StripeStripeConfig, error)) *MockQuerier_ListStripeConfigsPaginated_Call {
 	_c.Call.Return(run)
 	return _c
 }

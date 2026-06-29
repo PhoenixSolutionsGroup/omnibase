@@ -14,6 +14,7 @@ type Querier interface {
 	ActivateUserTenant(ctx context.Context, arg ActivateUserTenantParams) error
 	AddUserToRole(ctx context.Context, arg AddUserToRoleParams) error
 	CountOwnersByTenant(ctx context.Context, tenantID string) (int64, error)
+	CountStripeConfigs(ctx context.Context) (int64, error)
 	CreateMapping(ctx context.Context, arg CreateMappingParams) (CreateMappingRow, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (CreateRoleRow, error)
 	CreateStripeConfig(ctx context.Context, arg CreateStripeConfigParams) (StripeStripeConfig, error)
@@ -42,6 +43,7 @@ type Querier interface {
 	ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTemplate, error)
 	ListRolesByTenant(ctx context.Context, tenantID uuid.UUID) ([]ListRolesByTenantRow, error)
 	ListStripeConfigs(ctx context.Context) ([]StripeStripeConfig, error)
+	ListStripeConfigsPaginated(ctx context.Context, arg ListStripeConfigsPaginatedParams) ([]StripeStripeConfig, error)
 	ListStripeWebhooks(ctx context.Context) ([]ListStripeWebhooksRow, error)
 	ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error)
 	ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]AuthTenantUser, error)
