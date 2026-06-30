@@ -11,12 +11,12 @@ Method | HTTP request | Description
 [**CreateTenant**](V1TenantsAPI.md#CreateTenant) | **Post** /api/v1/tenants | Create tenant
 [**DeleteRole**](V1TenantsAPI.md#DeleteRole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete role
 [**DeleteTenant**](V1TenantsAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete tenant
-[**GetRoleDefinitions**](V1TenantsAPI.md#GetRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions | Get namespace definitions
 [**GetTenantBillingStatus**](V1TenantsAPI.md#GetTenantBillingStatus) | **Get** /api/v1/tenants/billing-status | Get billing status
 [**GetTenantByID**](V1TenantsAPI.md#GetTenantByID) | **Get** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
 [**GetTenantByStripeCustomerID**](V1TenantsAPI.md#GetTenantByStripeCustomerID) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
 [**GetTenantJWT**](V1TenantsAPI.md#GetTenantJWT) | **Get** /api/v1/tenants/jwt | Get PostgREST JWT token
 [**GetTenantSubscription**](V1TenantsAPI.md#GetTenantSubscription) | **Get** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan
+[**ListRoleDefinitions**](V1TenantsAPI.md#ListRoleDefinitions) | **Get** /api/v1/tenants/roles/definitions | List namespace definitions
 [**ListRoles**](V1TenantsAPI.md#ListRoles) | **Get** /api/v1/tenants/roles | List roles
 [**ListTenantSubscriptions**](V1TenantsAPI.md#ListTenantSubscriptions) | **Get** /api/v1/tenants/subscriptions | Get tenant subscriptions
 [**ListTenantUsers**](V1TenantsAPI.md#ListTenantUsers) | **Get** /api/v1/tenants/users | Get tenant users
@@ -30,7 +30,7 @@ Method | HTTP request | Description
 
 ## AcceptInvite
 
-> AcceptInvite200Response AcceptInvite(ctx).AcceptInviteRequest(acceptInviteRequest).XUserId(xUserId).Execute()
+> AcceptInviteResponse AcceptInvite(ctx).AcceptInviteRequest(acceptInviteRequest).XUserId(xUserId).Execute()
 
 Accept tenant invite
 
@@ -59,7 +59,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AcceptInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `AcceptInvite`: AcceptInvite200Response
+	// response from `AcceptInvite`: AcceptInviteResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.AcceptInvite`: %v\n", resp)
 }
 ```
@@ -80,7 +80,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AcceptInvite200Response**](AcceptInvite200Response.md)
+[**AcceptInviteResponse**](AcceptInviteResponse.md)
 
 ### Authorization
 
@@ -98,7 +98,7 @@ Name | Type | Description  | Notes
 
 ## AddSubscription
 
-> AddSubscription200Response AddSubscription(ctx).AddSubscriptionRequest(addSubscriptionRequest).Execute()
+> AddSubscriptionResponse AddSubscription(ctx).AddSubscriptionRequest(addSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Add subscription
 
@@ -118,15 +118,17 @@ import (
 
 func main() {
 	addSubscriptionRequest := *openapiclient.NewAddSubscriptionRequest("price_test_basic") // AddSubscriptionRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).AddSubscriptionRequest(addSubscriptionRequest).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.AddSubscription(context.Background()).AddSubscriptionRequest(addSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.AddSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `AddSubscription`: AddSubscription200Response
+	// response from `AddSubscription`: AddSubscriptionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.AddSubscription`: %v\n", resp)
 }
 ```
@@ -143,10 +145,12 @@ Other parameters are passed through a pointer to a apiAddSubscriptionRequest str
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **addSubscriptionRequest** | [**AddSubscriptionRequest**](AddSubscriptionRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
-[**AddSubscription200Response**](AddSubscription200Response.md)
+[**AddSubscriptionResponse**](AddSubscriptionResponse.md)
 
 ### Authorization
 
@@ -164,7 +168,7 @@ Name | Type | Description  | Notes
 
 ## CreateInvite
 
-> CreateInvite200Response CreateInvite(ctx).CreateTenantUserInviteRequest(createTenantUserInviteRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> CreateTenantUserInviteResponse CreateInvite(ctx).CreateTenantUserInviteRequest(createTenantUserInviteRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Create tenant invite
 
@@ -194,7 +198,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateInvite``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateInvite`: CreateInvite200Response
+	// response from `CreateInvite`: CreateTenantUserInviteResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateInvite`: %v\n", resp)
 }
 ```
@@ -216,7 +220,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateInvite200Response**](CreateInvite200Response.md)
+[**CreateTenantUserInviteResponse**](CreateTenantUserInviteResponse.md)
 
 ### Authorization
 
@@ -234,7 +238,7 @@ Name | Type | Description  | Notes
 
 ## CreateRole
 
-> CreateRole200Response CreateRole(ctx).CreateRoleRequest(createRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> Role CreateRole(ctx).CreateRoleRequest(createRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Create role
 
@@ -264,7 +268,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateRole`: CreateRole200Response
+	// response from `CreateRole`: Role
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateRole`: %v\n", resp)
 }
 ```
@@ -286,7 +290,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateRole200Response**](CreateRole200Response.md)
+[**Role**](Role.md)
 
 ### Authorization
 
@@ -304,7 +308,7 @@ Name | Type | Description  | Notes
 
 ## CreateTenant
 
-> CreateTenant200Response CreateTenant(ctx).CreateTenantRequest(createTenantRequest).XUserId(xUserId).Execute()
+> CreateTenantResponse CreateTenant(ctx).CreateTenantRequest(createTenantRequest).XUserId(xUserId).Execute()
 
 Create tenant
 
@@ -333,7 +337,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.CreateTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateTenant`: CreateTenant200Response
+	// response from `CreateTenant`: CreateTenantResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.CreateTenant`: %v\n", resp)
 }
 ```
@@ -354,7 +358,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateTenant200Response**](CreateTenant200Response.md)
+[**CreateTenantResponse**](CreateTenantResponse.md)
 
 ### Authorization
 
@@ -372,7 +376,7 @@ Name | Type | Description  | Notes
 
 ## DeleteRole
 
-> DeleteRole200Response DeleteRole(ctx, roleId).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> DeleteRole(ctx, roleId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Delete role
 
@@ -397,13 +401,11 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.DeleteRole(context.Background(), roleId).XUserId(xUserId).XTenantId(xTenantId).Execute()
+	r, err := apiClient.V1TenantsAPI.DeleteRole(context.Background(), roleId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.DeleteRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeleteRole`: DeleteRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.DeleteRole`: %v\n", resp)
 }
 ```
 
@@ -428,7 +430,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteRole200Response**](DeleteRole200Response.md)
+ (empty response body)
 
 ### Authorization
 
@@ -446,7 +448,7 @@ Name | Type | Description  | Notes
 
 ## DeleteTenant
 
-> DeleteTenant200Response DeleteTenant(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> DeleteTenant(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Delete tenant
 
@@ -470,13 +472,11 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.DeleteTenant(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
+	r, err := apiClient.V1TenantsAPI.DeleteTenant(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.DeleteTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeleteTenant`: DeleteTenant200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.DeleteTenant`: %v\n", resp)
 }
 ```
 
@@ -496,7 +496,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteTenant200Response**](DeleteTenant200Response.md)
+ (empty response body)
 
 ### Authorization
 
@@ -512,75 +512,9 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## GetRoleDefinitions
-
-> GetRoleDefinitions200Response GetRoleDefinitions(ctx).Subject(subject).Execute()
-
-Get namespace definitions
-
-
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-	subject := "ApiKey" // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetRoleDefinitions(context.Background()).Subject(subject).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetRoleDefinitions``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `GetRoleDefinitions`: GetRoleDefinitions200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetRoleDefinitions`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetRoleDefinitionsRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **subject** | **string** | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | 
-
-### Return type
-
-[**GetRoleDefinitions200Response**](GetRoleDefinitions200Response.md)
-
-### Authorization
-
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
 ## GetTenantBillingStatus
 
-> GetTenantBillingStatus200Response GetTenantBillingStatus(ctx).Execute()
+> GetTenantBillingStatus200Response GetTenantBillingStatus(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get billing status
 
@@ -599,10 +533,12 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantBillingStatus(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantBillingStatus``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -614,12 +550,17 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -641,7 +582,7 @@ Other parameters are passed through a pointer to a apiGetTenantBillingStatusRequ
 
 ## GetTenantByID
 
-> GetTenantByID200Response GetTenantByID(ctx, tenantId).Execute()
+> Tenant GetTenantByID(ctx, tenantId).Execute()
 
 Get tenant by ID
 
@@ -669,7 +610,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetTenantByID`: GetTenantByID200Response
+	// response from `GetTenantByID`: Tenant
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantByID`: %v\n", resp)
 }
 ```
@@ -693,7 +634,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetTenantByID200Response**](GetTenantByID200Response.md)
+[**Tenant**](Tenant.md)
 
 ### Authorization
 
@@ -711,7 +652,7 @@ Name | Type | Description  | Notes
 
 ## GetTenantByStripeCustomerID
 
-> GetTenantByStripeCustomerID200Response GetTenantByStripeCustomerID(ctx, stripeCustomerId).Execute()
+> Tenant GetTenantByStripeCustomerID(ctx, stripeCustomerId).Execute()
 
 Get tenant by Stripe customer ID
 
@@ -739,7 +680,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantByStripeCustomerID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetTenantByStripeCustomerID`: GetTenantByStripeCustomerID200Response
+	// response from `GetTenantByStripeCustomerID`: Tenant
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantByStripeCustomerID`: %v\n", resp)
 }
 ```
@@ -763,7 +704,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetTenantByStripeCustomerID200Response**](GetTenantByStripeCustomerID200Response.md)
+[**Tenant**](Tenant.md)
 
 ### Authorization
 
@@ -849,7 +790,7 @@ Name | Type | Description  | Notes
 
 ## GetTenantSubscription
 
-> GetTenantSubscription200Response GetTenantSubscription(ctx, configPriceId).Execute()
+> SubscriptionResponse GetTenantSubscription(ctx, configPriceId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get tenant subscription by plan
 
@@ -869,15 +810,17 @@ import (
 
 func main() {
 	configPriceId := "neon_compute_starter" // string | The configuration price ID (plan ID) to look up
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.GetTenantSubscription(context.Background(), configPriceId).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.GetTenantSubscription(context.Background(), configPriceId).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.GetTenantSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetTenantSubscription`: GetTenantSubscription200Response
+	// response from `GetTenantSubscription`: SubscriptionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.GetTenantSubscription`: %v\n", resp)
 }
 ```
@@ -898,10 +841,78 @@ Other parameters are passed through a pointer to a apiGetTenantSubscriptionReque
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
-[**GetTenantSubscription200Response**](GetTenantSubscription200Response.md)
+[**SubscriptionResponse**](SubscriptionResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListRoleDefinitions
+
+> []NamespaceDefinition ListRoleDefinitions(ctx).Subject(subject).Execute()
+
+List namespace definitions
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	subject := "ApiKey" // string | Filter to only return relations that accept this subject type (e.g., \"ApiKey\", \"User\") (optional)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1TenantsAPI.ListRoleDefinitions(context.Background()).Subject(subject).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListRoleDefinitions``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ListRoleDefinitions`: []NamespaceDefinition
+	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListRoleDefinitions`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListRoleDefinitionsRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **subject** | **string** | Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;) | 
+
+### Return type
+
+[**[]NamespaceDefinition**](NamespaceDefinition.md)
 
 ### Authorization
 
@@ -919,7 +930,7 @@ Name | Type | Description  | Notes
 
 ## ListRoles
 
-> ListRoles200Response ListRoles(ctx).XTenantId(xTenantId).Execute()
+> []Role ListRoles(ctx).XTenantId(xTenantId).Execute()
 
 List roles
 
@@ -947,7 +958,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListRoles``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListRoles`: ListRoles200Response
+	// response from `ListRoles`: []Role
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListRoles`: %v\n", resp)
 }
 ```
@@ -967,7 +978,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListRoles200Response**](ListRoles200Response.md)
+[**[]Role**](Role.md)
 
 ### Authorization
 
@@ -985,7 +996,7 @@ Name | Type | Description  | Notes
 
 ## ListTenantSubscriptions
 
-> ListTenantSubscriptions200Response ListTenantSubscriptions(ctx).Execute()
+> []SubscriptionResponse ListTenantSubscriptions(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get tenant subscriptions
 
@@ -1004,31 +1015,38 @@ import (
 )
 
 func main() {
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.ListTenantSubscriptions(context.Background()).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.ListTenantSubscriptions(context.Background()).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListTenantSubscriptions``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListTenantSubscriptions`: ListTenantSubscriptions200Response
+	// response from `ListTenantSubscriptions`: []SubscriptionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListTenantSubscriptions`: %v\n", resp)
 }
 ```
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListTenantSubscriptionsRequest struct via the builder pattern
 
 
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
+
 ### Return type
 
-[**ListTenantSubscriptions200Response**](ListTenantSubscriptions200Response.md)
+[**[]SubscriptionResponse**](SubscriptionResponse.md)
 
 ### Authorization
 
@@ -1046,7 +1064,7 @@ Other parameters are passed through a pointer to a apiListTenantSubscriptionsReq
 
 ## ListTenantUsers
 
-> ListTenantUsers200Response ListTenantUsers(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> []TenantUserResponse ListTenantUsers(ctx).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Get tenant users
 
@@ -1075,7 +1093,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.ListTenantUsers``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListTenantUsers`: ListTenantUsers200Response
+	// response from `ListTenantUsers`: []TenantUserResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.ListTenantUsers`: %v\n", resp)
 }
 ```
@@ -1096,7 +1114,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListTenantUsers200Response**](ListTenantUsers200Response.md)
+[**[]TenantUserResponse**](TenantUserResponse.md)
 
 ### Authorization
 
@@ -1114,7 +1132,7 @@ Name | Type | Description  | Notes
 
 ## RemoveSubscription
 
-> RemoveSubscription200Response RemoveSubscription(ctx).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
+> RemoveSubscriptionResponse RemoveSubscription(ctx).RemoveSubscriptionRequest(removeSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Remove subscription
 
@@ -1134,15 +1152,17 @@ import (
 
 func main() {
 	removeSubscriptionRequest := *openapiclient.NewRemoveSubscriptionRequest("price_test_basic") // RemoveSubscriptionRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).RemoveSubscriptionRequest(removeSubscriptionRequest).Execute()
+	resp, r, err := apiClient.V1TenantsAPI.RemoveSubscription(context.Background()).RemoveSubscriptionRequest(removeSubscriptionRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveSubscription``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RemoveSubscription`: RemoveSubscription200Response
+	// response from `RemoveSubscription`: RemoveSubscriptionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.RemoveSubscription`: %v\n", resp)
 }
 ```
@@ -1159,10 +1179,12 @@ Other parameters are passed through a pointer to a apiRemoveSubscriptionRequest 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **removeSubscriptionRequest** | [**RemoveSubscriptionRequest**](RemoveSubscriptionRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
-[**RemoveSubscription200Response**](RemoveSubscription200Response.md)
+[**RemoveSubscriptionResponse**](RemoveSubscriptionResponse.md)
 
 ### Authorization
 
@@ -1180,7 +1202,7 @@ Name | Type | Description  | Notes
 
 ## RemoveTenantUser
 
-> SuccessResponse RemoveTenantUser(ctx).DeleteTenantUserRequest(deleteTenantUserRequest).Execute()
+> RemoveTenantUser(ctx).DeleteTenantUserRequest(deleteTenantUserRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Remove tenant user
 
@@ -1200,16 +1222,16 @@ import (
 
 func main() {
 	deleteTenantUserRequest := *openapiclient.NewDeleteTenantUserRequest("550e8400-e29b-41d4-a716-446655440001") // DeleteTenantUserRequest | 
+	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
+	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).DeleteTenantUserRequest(deleteTenantUserRequest).Execute()
+	r, err := apiClient.V1TenantsAPI.RemoveTenantUser(context.Background()).DeleteTenantUserRequest(deleteTenantUserRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.RemoveTenantUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RemoveTenantUser`: SuccessResponse
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.RemoveTenantUser`: %v\n", resp)
 }
 ```
 
@@ -1225,10 +1247,12 @@ Other parameters are passed through a pointer to a apiRemoveTenantUserRequest st
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **deleteTenantUserRequest** | [**DeleteTenantUserRequest**](DeleteTenantUserRequest.md) |  | 
+ **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
+ **xTenantId** | **string** | Tenant ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+ (empty response body)
 
 ### Authorization
 
@@ -1246,7 +1270,7 @@ Name | Type | Description  | Notes
 
 ## SwitchActiveTenant
 
-> SwitchActiveTenant200Response SwitchActiveTenant(ctx).SwitchTenantRequest(switchTenantRequest).XUserId(xUserId).Execute()
+> SwitchTenantResponse SwitchActiveTenant(ctx).SwitchTenantRequest(switchTenantRequest).XUserId(xUserId).Execute()
 
 Switch active tenant
 
@@ -1275,7 +1299,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.SwitchActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `SwitchActiveTenant`: SwitchActiveTenant200Response
+	// response from `SwitchActiveTenant`: SwitchTenantResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.SwitchActiveTenant`: %v\n", resp)
 }
 ```
@@ -1296,7 +1320,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SwitchActiveTenant200Response**](SwitchActiveTenant200Response.md)
+[**SwitchTenantResponse**](SwitchTenantResponse.md)
 
 ### Authorization
 
@@ -1314,7 +1338,7 @@ Name | Type | Description  | Notes
 
 ## UpdateRole
 
-> CreateRole200Response UpdateRole(ctx, roleId).UpdateRoleRequest(updateRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> Role UpdateRole(ctx, roleId).UpdateRoleRequest(updateRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Update role
 
@@ -1345,7 +1369,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateRole`: CreateRole200Response
+	// response from `UpdateRole`: Role
 	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.UpdateRole`: %v\n", resp)
 }
 ```
@@ -1372,7 +1396,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateRole200Response**](CreateRole200Response.md)
+[**Role**](Role.md)
 
 ### Authorization
 
@@ -1390,7 +1414,7 @@ Name | Type | Description  | Notes
 
 ## UpdateTenantUserRole
 
-> UpdateTenantUserRole200Response UpdateTenantUserRole(ctx).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
+> UpdateTenantUserRole(ctx).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 
 Update user role
 
@@ -1415,13 +1439,11 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
+	r, err := apiClient.V1TenantsAPI.UpdateTenantUserRole(context.Background()).UpdateTenantUserRoleRequest(updateTenantUserRoleRequest).XUserId(xUserId).XTenantId(xTenantId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsAPI.UpdateTenantUserRole``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UpdateTenantUserRole`: UpdateTenantUserRole200Response
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsAPI.UpdateTenantUserRole`: %v\n", resp)
 }
 ```
 
@@ -1442,7 +1464,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**UpdateTenantUserRole200Response**](UpdateTenantUserRole200Response.md)
+ (empty response body)
 
 ### Authorization
 

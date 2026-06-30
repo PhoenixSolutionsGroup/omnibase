@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`status` | number
-`data` | [CreateOrUpdateEmailTemplate200ResponseAllOfData](CreateOrUpdateEmailTemplate200ResponseAllOfData.md)
+`message` | string
+`template` | [EmailTemplate](EmailTemplate.md)
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { CreateOrUpdateEmailTemplate200Response } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 200,
-  "data": null,
+  "message": Template created successfully,
+  "template": null,
 } satisfies CreateOrUpdateEmailTemplate200Response
 
 console.log(example)

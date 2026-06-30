@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface ConflictResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ConflictResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof ConflictResponse
@@ -37,7 +31,6 @@ export interface ConflictResponse {
  * Check if a given object implements the ConflictResponse interface.
  */
 export function instanceOfConflictResponse(value: object): value is ConflictResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function ConflictResponseFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function ConflictResponseToJSONTyped(value?: ConflictResponse | null, ign
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

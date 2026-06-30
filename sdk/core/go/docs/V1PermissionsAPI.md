@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## CheckPermission
 
-> CheckPermission200Response CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
+> CheckPermissionResponse CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
 
 Check permission
 
@@ -40,7 +40,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CheckPermission``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CheckPermission`: CheckPermission200Response
+	// response from `CheckPermission`: CheckPermissionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CheckPermission`: %v\n", resp)
 }
 ```
@@ -60,7 +60,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CheckPermission200Response**](CheckPermission200Response.md)
+[**CheckPermissionResponse**](CheckPermissionResponse.md)
 
 ### Authorization
 
@@ -78,7 +78,7 @@ Name | Type | Description  | Notes
 
 ## CreateRelationship
 
-> CreateRelationship200Response CreateRelationship(ctx).CreateRelationshipRequest(createRelationshipRequest).Execute()
+> CreateRelationshipResponse CreateRelationship(ctx).CreateRelationshipRequest(createRelationshipRequest).Execute()
 
 Create relationship
 
@@ -106,7 +106,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CreateRelationship``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateRelationship`: CreateRelationship200Response
+	// response from `CreateRelationship`: CreateRelationshipResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CreateRelationship`: %v\n", resp)
 }
 ```
@@ -126,7 +126,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateRelationship200Response**](CreateRelationship200Response.md)
+[**CreateRelationshipResponse**](CreateRelationshipResponse.md)
 
 ### Authorization
 
@@ -144,7 +144,7 @@ Name | Type | Description  | Notes
 
 ## DeleteRelationship
 
-> DeleteRelationship200Response DeleteRelationship(ctx).DeleteRelationshipRequest(deleteRelationshipRequest).Execute()
+> DeleteRelationshipResponse DeleteRelationship(ctx).DeleteRelationshipRequest(deleteRelationshipRequest).Execute()
 
 Delete relationship
 
@@ -172,7 +172,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.DeleteRelationship``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeleteRelationship`: DeleteRelationship200Response
+	// response from `DeleteRelationship`: DeleteRelationshipResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.DeleteRelationship`: %v\n", resp)
 }
 ```
@@ -192,7 +192,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteRelationship200Response**](DeleteRelationship200Response.md)
+[**DeleteRelationshipResponse**](DeleteRelationshipResponse.md)
 
 ### Authorization
 

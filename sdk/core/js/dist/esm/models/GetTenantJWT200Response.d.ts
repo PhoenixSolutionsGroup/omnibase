@@ -9,7 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { JWTTokenResponse } from './JWTTokenResponse';
 /**
  *
  * @export
@@ -17,17 +16,11 @@ import type { JWTTokenResponse } from './JWTTokenResponse';
  */
 export interface GetTenantJWT200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     * PostgREST JWT token
+     * @type {string}
      * @memberof GetTenantJWT200Response
      */
-    status: number;
-    /**
-     *
-     * @type {JWTTokenResponse}
-     * @memberof GetTenantJWT200Response
-     */
-    data?: JWTTokenResponse;
+    token: string;
 }
 /**
  * Check if a given object implements the GetTenantJWT200Response interface.

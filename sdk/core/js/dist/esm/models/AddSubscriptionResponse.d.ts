@@ -20,19 +20,19 @@ export interface AddSubscriptionResponse {
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    subscriptionId?: string;
+    subscriptionId: string;
     /**
      * Subscription status (active, trialing, etc.)
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    status?: string;
+    status: string;
     /**
      * Message confirming the addition
      * @type {string}
      * @memberof AddSubscriptionResponse
      */
-    message?: string;
+    message: string;
 }
 /**
  * Check if a given object implements the AddSubscriptionResponse interface.

@@ -15,111 +15,87 @@
 
 import * as runtime from '../runtime';
 import type {
-  AcceptInvite200Response,
   AcceptInviteRequest,
-  AddSubscription200Response,
+  AcceptInviteResponse,
   AddSubscriptionRequest,
+  AddSubscriptionResponse,
   BadRequestResponse,
   ConflictResponse,
-  CreateInvite200Response,
-  CreateRole200Response,
   CreateRoleRequest,
-  CreateTenant200Response,
   CreateTenantRequest,
+  CreateTenantResponse,
   CreateTenantUserInviteRequest,
-  DeleteRole200Response,
-  DeleteTenant200Response,
+  CreateTenantUserInviteResponse,
   DeleteTenantUserRequest,
   ErrorResponse,
   ForbiddenResponse,
-  GetRoleDefinitions200Response,
   GetTenantBillingStatus200Response,
-  GetTenantByID200Response,
-  GetTenantByStripeCustomerID200Response,
   GetTenantJWT200Response,
-  GetTenantSubscription200Response,
-  ListRoles200Response,
-  ListTenantSubscriptions200Response,
-  ListTenantUsers200Response,
-  RemoveSubscription200Response,
+  NamespaceDefinition,
   RemoveSubscriptionRequest,
-  SchemasConflictResponse,
-  SuccessResponse,
-  SwitchActiveTenant200Response,
+  RemoveSubscriptionResponse,
+  Role,
+  SubscriptionResponse,
   SwitchTenantRequest,
+  SwitchTenantResponse,
+  Tenant,
+  TenantUserResponse,
   UpdateRoleRequest,
-  UpdateTenantUserRole200Response,
   UpdateTenantUserRoleRequest,
 } from '../models/index';
 import {
-    AcceptInvite200ResponseFromJSON,
-    AcceptInvite200ResponseToJSON,
     AcceptInviteRequestFromJSON,
     AcceptInviteRequestToJSON,
-    AddSubscription200ResponseFromJSON,
-    AddSubscription200ResponseToJSON,
+    AcceptInviteResponseFromJSON,
+    AcceptInviteResponseToJSON,
     AddSubscriptionRequestFromJSON,
     AddSubscriptionRequestToJSON,
+    AddSubscriptionResponseFromJSON,
+    AddSubscriptionResponseToJSON,
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
     ConflictResponseFromJSON,
     ConflictResponseToJSON,
-    CreateInvite200ResponseFromJSON,
-    CreateInvite200ResponseToJSON,
-    CreateRole200ResponseFromJSON,
-    CreateRole200ResponseToJSON,
     CreateRoleRequestFromJSON,
     CreateRoleRequestToJSON,
-    CreateTenant200ResponseFromJSON,
-    CreateTenant200ResponseToJSON,
     CreateTenantRequestFromJSON,
     CreateTenantRequestToJSON,
+    CreateTenantResponseFromJSON,
+    CreateTenantResponseToJSON,
     CreateTenantUserInviteRequestFromJSON,
     CreateTenantUserInviteRequestToJSON,
-    DeleteRole200ResponseFromJSON,
-    DeleteRole200ResponseToJSON,
-    DeleteTenant200ResponseFromJSON,
-    DeleteTenant200ResponseToJSON,
+    CreateTenantUserInviteResponseFromJSON,
+    CreateTenantUserInviteResponseToJSON,
     DeleteTenantUserRequestFromJSON,
     DeleteTenantUserRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     ForbiddenResponseFromJSON,
     ForbiddenResponseToJSON,
-    GetRoleDefinitions200ResponseFromJSON,
-    GetRoleDefinitions200ResponseToJSON,
     GetTenantBillingStatus200ResponseFromJSON,
     GetTenantBillingStatus200ResponseToJSON,
-    GetTenantByID200ResponseFromJSON,
-    GetTenantByID200ResponseToJSON,
-    GetTenantByStripeCustomerID200ResponseFromJSON,
-    GetTenantByStripeCustomerID200ResponseToJSON,
     GetTenantJWT200ResponseFromJSON,
     GetTenantJWT200ResponseToJSON,
-    GetTenantSubscription200ResponseFromJSON,
-    GetTenantSubscription200ResponseToJSON,
-    ListRoles200ResponseFromJSON,
-    ListRoles200ResponseToJSON,
-    ListTenantSubscriptions200ResponseFromJSON,
-    ListTenantSubscriptions200ResponseToJSON,
-    ListTenantUsers200ResponseFromJSON,
-    ListTenantUsers200ResponseToJSON,
-    RemoveSubscription200ResponseFromJSON,
-    RemoveSubscription200ResponseToJSON,
+    NamespaceDefinitionFromJSON,
+    NamespaceDefinitionToJSON,
     RemoveSubscriptionRequestFromJSON,
     RemoveSubscriptionRequestToJSON,
-    SchemasConflictResponseFromJSON,
-    SchemasConflictResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
-    SwitchActiveTenant200ResponseFromJSON,
-    SwitchActiveTenant200ResponseToJSON,
+    RemoveSubscriptionResponseFromJSON,
+    RemoveSubscriptionResponseToJSON,
+    RoleFromJSON,
+    RoleToJSON,
+    SubscriptionResponseFromJSON,
+    SubscriptionResponseToJSON,
     SwitchTenantRequestFromJSON,
     SwitchTenantRequestToJSON,
+    SwitchTenantResponseFromJSON,
+    SwitchTenantResponseToJSON,
+    TenantFromJSON,
+    TenantToJSON,
+    TenantUserResponseFromJSON,
+    TenantUserResponseToJSON,
     UpdateRoleRequestFromJSON,
     UpdateRoleRequestToJSON,
-    UpdateTenantUserRole200ResponseFromJSON,
-    UpdateTenantUserRole200ResponseToJSON,
     UpdateTenantUserRoleRequestFromJSON,
     UpdateTenantUserRoleRequestToJSON,
 } from '../models/index';
@@ -131,6 +107,8 @@ export interface AcceptInviteOperationRequest {
 
 export interface AddSubscriptionOperationRequest {
     addSubscriptionRequest: AddSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface CreateInviteRequest {
@@ -161,8 +139,9 @@ export interface DeleteTenantRequest {
     xTenantId?: string;
 }
 
-export interface GetRoleDefinitionsRequest {
-    subject?: string;
+export interface GetTenantBillingStatusRequest {
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface GetTenantByIDRequest {
@@ -180,9 +159,20 @@ export interface GetTenantJWTRequest {
 
 export interface GetTenantSubscriptionRequest {
     configPriceId: string;
+    xUserId?: string;
+    xTenantId?: string;
+}
+
+export interface ListRoleDefinitionsRequest {
+    subject?: string;
 }
 
 export interface ListRolesRequest {
+    xTenantId?: string;
+}
+
+export interface ListTenantSubscriptionsRequest {
+    xUserId?: string;
     xTenantId?: string;
 }
 
@@ -193,10 +183,14 @@ export interface ListTenantUsersRequest {
 
 export interface RemoveSubscriptionOperationRequest {
     removeSubscriptionRequest: RemoveSubscriptionRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface RemoveTenantUserRequest {
     deleteTenantUserRequest: DeleteTenantUserRequest;
+    xUserId?: string;
+    xTenantId?: string;
 }
 
 export interface SwitchActiveTenantRequest {
@@ -226,7 +220,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - User\'s email must match the invite email - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
      * Accept tenant invite
      */
-    async acceptInviteRaw(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AcceptInvite200Response>> {
+    async acceptInviteRaw(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AcceptInviteResponse>> {
         if (requestParameters['acceptInviteRequest'] == null) {
             throw new runtime.RequiredError(
                 'acceptInviteRequest',
@@ -263,14 +257,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: AcceptInviteRequestToJSON(requestParameters['acceptInviteRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AcceptInvite200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AcceptInviteResponseFromJSON(jsonValue));
     }
 
     /**
      * Accepts a tenant invitation using the token from the invite email and adds the user to the organization.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - User\'s email must match the invite email - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Process 1. Validates invite token and expiry 2. Verifies user\'s email matches invite email 3. Marks invite as used 4. Adds user to tenant 5. Assigns role with permissions 6. Sets as active tenant and returns JWT token 
      * Accept tenant invite
      */
-    async acceptInvite(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AcceptInvite200Response> {
+    async acceptInvite(requestParameters: AcceptInviteOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AcceptInviteResponse> {
         const response = await this.acceptInviteRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -279,7 +273,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Adds a Stripe subscription for the authenticated tenant using the provided plan ID.  ## Authentication Requires JWT token with tenant context.  ## Request Parameters - **plan_id** (required): The configuration item ID (e.g., \"neon_compute_starter\") that maps to a Stripe price - **stripe_customer_id** (optional): Override tenant\'s Stripe customer ID if needed  ## Process Flow 1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table 2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id) 3. Checks if subscription already exists for this plan to prevent duplicates 4. Creates the subscription in Stripe with the specified price 5. Returns the subscription ID and status  ## Notes - If a subscription for this plan already exists, returns a 400 error - The subscription is created immediately and begins billing  ## Use Cases - Subscribe tenant to metered pricing plans (compute, storage, workers) - Enable usage-based billing for resources - Add additional services to tenant\'s billing 
      * Add subscription
      */
-    async addSubscriptionRaw(requestParameters: AddSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddSubscription200Response>> {
+    async addSubscriptionRaw(requestParameters: AddSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddSubscriptionResponse>> {
         if (requestParameters['addSubscriptionRequest'] == null) {
             throw new runtime.RequiredError(
                 'addSubscriptionRequest',
@@ -292,6 +286,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -312,14 +314,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: AddSubscriptionRequestToJSON(requestParameters['addSubscriptionRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AddSubscription200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AddSubscriptionResponseFromJSON(jsonValue));
     }
 
     /**
      * Adds a Stripe subscription for the authenticated tenant using the provided plan ID.  ## Authentication Requires JWT token with tenant context.  ## Request Parameters - **plan_id** (required): The configuration item ID (e.g., \"neon_compute_starter\") that maps to a Stripe price - **stripe_customer_id** (optional): Override tenant\'s Stripe customer ID if needed  ## Process Flow 1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table 2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id) 3. Checks if subscription already exists for this plan to prevent duplicates 4. Creates the subscription in Stripe with the specified price 5. Returns the subscription ID and status  ## Notes - If a subscription for this plan already exists, returns a 400 error - The subscription is created immediately and begins billing  ## Use Cases - Subscribe tenant to metered pricing plans (compute, storage, workers) - Enable usage-based billing for resources - Add additional services to tenant\'s billing 
      * Add subscription
      */
-    async addSubscription(requestParameters: AddSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddSubscription200Response> {
+    async addSubscription(requestParameters: AddSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddSubscriptionResponse> {
         const response = await this.addSubscriptionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -328,7 +330,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
      * Create tenant invite
      */
-    async createInviteRaw(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvite200Response>> {
+    async createInviteRaw(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateTenantUserInviteResponse>> {
         if (requestParameters['createTenantUserInviteRequest'] == null) {
             throw new runtime.RequiredError(
                 'createTenantUserInviteRequest',
@@ -369,14 +371,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: CreateTenantUserInviteRequestToJSON(requestParameters['createTenantUserInviteRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateInvite200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateTenantUserInviteResponseFromJSON(jsonValue));
     }
 
     /**
      * Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission  ## Process 1. Verifies user has invite permission 2. Creates invite with unique token (7-day expiry) 3. Sends invitation email asynchronously  ## Use Cases - Add team members to organization - Invite collaborators with specific roles 
      * Create tenant invite
      */
-    async createInvite(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvite200Response> {
+    async createInvite(requestParameters: CreateInviteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateTenantUserInviteResponse> {
         const response = await this.createInviteRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -385,7 +387,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Creates a new custom role for the tenant with specified permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
      * Create role
      */
-    async createRoleRaw(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRole200Response>> {
+    async createRoleRaw(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
         if (requestParameters['createRoleRequest'] == null) {
             throw new runtime.RequiredError(
                 'createRoleRequest',
@@ -426,14 +428,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: CreateRoleRequestToJSON(requestParameters['createRoleRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRole200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
     }
 
     /**
      * Creates a new custom role for the tenant with specified permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation` - Tenant-wide: `tenant#relation` - Resource-specific: `project:uuid#relation`  ## Use Cases - Create custom roles for specific workflows - Define project-specific permissions - Build granular access control 
      * Create role
      */
-    async createRole(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRole200Response> {
+    async createRole(requestParameters: CreateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
         const response = await this.createRoleRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -442,7 +444,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
      * Create tenant
      */
-    async createTenantRaw(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateTenant200Response>> {
+    async createTenantRaw(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateTenantResponse>> {
         if (requestParameters['createTenantRequest'] == null) {
             throw new runtime.RequiredError(
                 'createTenantRequest',
@@ -479,14 +481,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: CreateTenantRequestToJSON(requestParameters['createTenantRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateTenant200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateTenantResponseFromJSON(jsonValue));
     }
 
     /**
      * Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session) - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers  ## Service Key Usage When using service key authentication, provide the user_id via the X-User-ID header. The user_id must be a valid UUID matching an existing Kratos identity.  ## Process 1. Creates Stripe customer (if billing_email provided) 2. Creates tenant in database 3. Sets up default tenant settings 4. Adds creator as owner 5. Assigns owner role with all permissions 6. Sets as active tenant and returns JWT token 
      * Create tenant
      */
-    async createTenant(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateTenant200Response> {
+    async createTenant(requestParameters: CreateTenantOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateTenantResponse> {
         const response = await this.createTenantRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -495,7 +497,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
      * Delete role
      */
-    async deleteRoleRaw(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRole200Response>> {
+    async deleteRoleRaw(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['roleId'] == null) {
             throw new runtime.RequiredError(
                 'roleId',
@@ -534,23 +536,22 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteRole200ResponseFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Deletes a role and removes all associated Keto relationships for users who had this role assigned.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Use Cases - Remove obsolete roles - Clean up role definitions - Revoke all permissions from role users 
      * Delete role
      */
-    async deleteRole(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRole200Response> {
-        const response = await this.deleteRoleRaw(requestParameters, initOverrides);
-        return await response.value();
+    async deleteRole(requestParameters: DeleteRoleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteRoleRaw(requestParameters, initOverrides);
     }
 
     /**
      * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
      * Delete tenant
      */
-    async deleteTenantRaw(requestParameters: DeleteTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTenant200Response>> {
+    async deleteTenantRaw(requestParameters: DeleteTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -581,69 +582,33 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteTenant200ResponseFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission  ## Process 1. Verifies user has delete permission 2. Archives Stripe customer 3. Deletes tenant (cascades to users, settings, invites) 4. Cleans up all affected users\' tenant state 
      * Delete tenant
      */
-    async deleteTenant(requestParameters: DeleteTenantRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTenant200Response> {
-        const response = await this.deleteTenantRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
-     * Get namespace definitions
-     */
-    async getRoleDefinitionsRaw(requestParameters: GetRoleDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetRoleDefinitions200Response>> {
-        const queryParameters: any = {};
-
-        if (requestParameters['subject'] != null) {
-            queryParameters['subject'] = requestParameters['subject'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/roles/definitions`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetRoleDefinitions200ResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
-     * Get namespace definitions
-     */
-    async getRoleDefinitions(requestParameters: GetRoleDefinitionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetRoleDefinitions200Response> {
-        const response = await this.getRoleDefinitionsRaw(requestParameters, initOverrides);
-        return await response.value();
+    async deleteTenant(requestParameters: DeleteTenantRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.deleteTenantRaw(requestParameters, initOverrides);
     }
 
     /**
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification 
      * Get billing status
      */
-    async getTenantBillingStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>> {
+    async getTenantBillingStatusRaw(requestParameters: GetTenantBillingStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantBillingStatus200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -670,8 +635,8 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification 
      * Get billing status
      */
-    async getTenantBillingStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response> {
-        const response = await this.getTenantBillingStatusRaw(initOverrides);
+    async getTenantBillingStatus(requestParameters: GetTenantBillingStatusRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantBillingStatus200Response> {
+        const response = await this.getTenantBillingStatusRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -679,7 +644,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns a tenant by its ID.  ## Authentication - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)  ## Use Cases - Service-to-service tenant resolution - Webhook processing - Backend tenant lookup 
      * Get tenant by ID
      */
-    async getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByID200Response>> {
+    async getTenantByIDRaw(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Tenant>> {
         if (requestParameters['tenantId'] == null) {
             throw new runtime.RequiredError(
                 'tenantId',
@@ -706,14 +671,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantByID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => TenantFromJSON(jsonValue));
     }
 
     /**
      * Returns a tenant by its ID.  ## Authentication - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)  ## Use Cases - Service-to-service tenant resolution - Webhook processing - Backend tenant lookup 
      * Get tenant by ID
      */
-    async getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByID200Response> {
+    async getTenantByID(requestParameters: GetTenantByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Tenant> {
         const response = await this.getTenantByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -722,7 +687,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns a tenant by its Stripe customer ID.  ## Authentication - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)  ## Use Cases - Stripe webhook processing - Payment event correlation - Invoice/subscription tenant resolution 
      * Get tenant by Stripe customer ID
      */
-    async getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantByStripeCustomerID200Response>> {
+    async getTenantByStripeCustomerIDRaw(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Tenant>> {
         if (requestParameters['stripeCustomerId'] == null) {
             throw new runtime.RequiredError(
                 'stripeCustomerId',
@@ -749,14 +714,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantByStripeCustomerID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => TenantFromJSON(jsonValue));
     }
 
     /**
      * Returns a tenant by its Stripe customer ID.  ## Authentication - **Service Key Auth**: Requires X-Service-Key header (service-to-service only)  ## Use Cases - Stripe webhook processing - Payment event correlation - Invoice/subscription tenant resolution 
      * Get tenant by Stripe customer ID
      */
-    async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByStripeCustomerID200Response> {
+    async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Tenant> {
         const response = await this.getTenantByStripeCustomerIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -812,7 +777,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns a single subscription for the specified config_price_id (plan ID).  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if tenant has a specific subscription - Get subscription details for a specific plan - Retrieve Stripe subscription ID for a plan 
      * Get tenant subscription by plan
      */
-    async getTenantSubscriptionRaw(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetTenantSubscription200Response>> {
+    async getTenantSubscriptionRaw(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SubscriptionResponse>> {
         if (requestParameters['configPriceId'] == null) {
             throw new runtime.RequiredError(
                 'configPriceId',
@@ -823,6 +788,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -843,15 +816,58 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetTenantSubscription200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SubscriptionResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns a single subscription for the specified config_price_id (plan ID).  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if tenant has a specific subscription - Get subscription details for a specific plan - Retrieve Stripe subscription ID for a plan 
      * Get tenant subscription by plan
      */
-    async getTenantSubscription(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantSubscription200Response> {
+    async getTenantSubscription(requestParameters: GetTenantSubscriptionRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SubscriptionResponse> {
         const response = await this.getTenantSubscriptionRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
+     * List namespace definitions
+     */
+    async listRoleDefinitionsRaw(requestParameters: ListRoleDefinitionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<NamespaceDefinition>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['subject'] != null) {
+            queryParameters['subject'] = requestParameters['subject'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/tenants/roles/definitions`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(NamespaceDefinitionFromJSON));
+    }
+
+    /**
+     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation 
+     * List namespace definitions
+     */
+    async listRoleDefinitions(requestParameters: ListRoleDefinitionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<NamespaceDefinition>> {
+        const response = await this.listRoleDefinitionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -859,7 +875,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
      * List roles
      */
-    async listRolesRaw(requestParameters: ListRolesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListRoles200Response>> {
+    async listRolesRaw(requestParameters: ListRolesRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Role>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -886,14 +902,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListRoles200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(RoleFromJSON));
     }
 
     /**
      * Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header  ## Use Cases - Display available roles to assign - Role management UI - Permission auditing 
      * List roles
      */
-    async listRoles(requestParameters: ListRolesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListRoles200Response> {
+    async listRoles(requestParameters: ListRolesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Role>> {
         const response = await this.listRolesRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -902,10 +918,18 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI 
      * Get tenant subscriptions
      */
-    async listTenantSubscriptionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantSubscriptions200Response>> {
+    async listTenantSubscriptionsRaw(requestParameters: ListTenantSubscriptionsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SubscriptionResponse>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -925,15 +949,15 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenantSubscriptions200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SubscriptionResponseFromJSON));
     }
 
     /**
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI 
      * Get tenant subscriptions
      */
-    async listTenantSubscriptions(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantSubscriptions200Response> {
-        const response = await this.listTenantSubscriptionsRaw(initOverrides);
+    async listTenantSubscriptions(requestParameters: ListTenantSubscriptionsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<SubscriptionResponse>> {
+        const response = await this.listTenantSubscriptionsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -941,7 +965,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission  ## Use Cases - Display team members list - User management UI - Member directory 
      * Get tenant users
      */
-    async listTenantUsersRaw(requestParameters: ListTenantUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantUsers200Response>> {
+    async listTenantUsersRaw(requestParameters: ListTenantUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<TenantUserResponse>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -972,14 +996,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenantUsers200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TenantUserResponseFromJSON));
     }
 
     /**
      * Returns all users who are members of the tenant with their profile information and roles.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission  ## Use Cases - Display team members list - User management UI - Member directory 
      * Get tenant users
      */
-    async listTenantUsers(requestParameters: ListTenantUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantUsers200Response> {
+    async listTenantUsers(requestParameters: ListTenantUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<TenantUserResponse>> {
         const response = await this.listTenantUsersRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -988,7 +1012,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Cancels a Stripe subscription immediately for the authenticated tenant based on the plan ID.  ## Authentication Requires JWT token with tenant context.  ## Request Parameters - **plan_id** (required): The configuration item ID (e.g., \"neon_compute_starter\") to identify which subscription to cancel - **stripe_customer_id** (optional): Override tenant\'s Stripe customer ID if needed  ## Process Flow 1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table 2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id) 3. Finds the active subscription matching the price_id for the customer 4. Cancels the subscription immediately in Stripe 5. Returns the cancellation confirmation  ## Notes - The subscription is canceled immediately, not at the end of the billing period - If no matching subscription is found, returns a 404 error - Only active, trialing, or past_due subscriptions can be canceled  ## Use Cases - Remove specific service subscriptions from tenant - Downgrade by removing premium features - Stop billing for unused resources 
      * Remove subscription
      */
-    async removeSubscriptionRaw(requestParameters: RemoveSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RemoveSubscription200Response>> {
+    async removeSubscriptionRaw(requestParameters: RemoveSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RemoveSubscriptionResponse>> {
         if (requestParameters['removeSubscriptionRequest'] == null) {
             throw new runtime.RequiredError(
                 'removeSubscriptionRequest',
@@ -1001,6 +1025,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -1021,14 +1053,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: RemoveSubscriptionRequestToJSON(requestParameters['removeSubscriptionRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RemoveSubscription200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RemoveSubscriptionResponseFromJSON(jsonValue));
     }
 
     /**
      * Cancels a Stripe subscription immediately for the authenticated tenant based on the plan ID.  ## Authentication Requires JWT token with tenant context.  ## Request Parameters - **plan_id** (required): The configuration item ID (e.g., \"neon_compute_starter\") to identify which subscription to cancel - **stripe_customer_id** (optional): Override tenant\'s Stripe customer ID if needed  ## Process Flow 1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table 2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id) 3. Finds the active subscription matching the price_id for the customer 4. Cancels the subscription immediately in Stripe 5. Returns the cancellation confirmation  ## Notes - The subscription is canceled immediately, not at the end of the billing period - If no matching subscription is found, returns a 404 error - Only active, trialing, or past_due subscriptions can be canceled  ## Use Cases - Remove specific service subscriptions from tenant - Downgrade by removing premium features - Stop billing for unused resources 
      * Remove subscription
      */
-    async removeSubscription(requestParameters: RemoveSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RemoveSubscription200Response> {
+    async removeSubscription(requestParameters: RemoveSubscriptionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RemoveSubscriptionResponse> {
         const response = await this.removeSubscriptionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1037,7 +1069,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Removes a user from the tenant and cleans up all associated permissions and Keto relationships.  ## Authentication Requires JWT token with `remove_user` permission.  ## Restrictions - Cannot remove the last owner (must have at least one owner) - Removing an owner requires `remove_owner_role` permission  ## Process 1. Verifies permissions 2. Removes from role\'s user list 3. Deletes all Keto relationships 4. Removes from database 5. Cleans up user\'s tenant state 
      * Remove tenant user
      */
-    async removeTenantUserRaw(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async removeTenantUserRaw(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['deleteTenantUserRequest'] == null) {
             throw new runtime.RequiredError(
                 'deleteTenantUserRequest',
@@ -1050,6 +1082,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         headerParameters['Content-Type'] = 'application/json';
+
+        if (requestParameters['xUserId'] != null) {
+            headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+        }
+
+        if (requestParameters['xTenantId'] != null) {
+            headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+        }
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -1070,23 +1110,22 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: DeleteTenantUserRequestToJSON(requestParameters['deleteTenantUserRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Removes a user from the tenant and cleans up all associated permissions and Keto relationships.  ## Authentication Requires JWT token with `remove_user` permission.  ## Restrictions - Cannot remove the last owner (must have at least one owner) - Removing an owner requires `remove_owner_role` permission  ## Process 1. Verifies permissions 2. Removes from role\'s user list 3. Deletes all Keto relationships 4. Removes from database 5. Cleans up user\'s tenant state 
      * Remove tenant user
      */
-    async removeTenantUser(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.removeTenantUserRaw(requestParameters, initOverrides);
-        return await response.value();
+    async removeTenantUser(requestParameters: RemoveTenantUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.removeTenantUserRaw(requestParameters, initOverrides);
     }
 
     /**
      * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
      * Switch active tenant
      */
-    async switchActiveTenantRaw(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SwitchActiveTenant200Response>> {
+    async switchActiveTenantRaw(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SwitchTenantResponse>> {
         if (requestParameters['switchTenantRequest'] == null) {
             throw new runtime.RequiredError(
                 'switchTenantRequest',
@@ -1123,14 +1162,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: SwitchTenantRequestToJSON(requestParameters['switchTenantRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SwitchActiveTenant200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SwitchTenantResponseFromJSON(jsonValue));
     }
 
     /**
      * Updates the user\'s active tenant in Kratos identity and returns a new JWT token with updated tenant context.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Cases - Switch between organizations - Change context for multi-tenant users 
      * Switch active tenant
      */
-    async switchActiveTenant(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwitchActiveTenant200Response> {
+    async switchActiveTenant(requestParameters: SwitchActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SwitchTenantResponse> {
         const response = await this.switchActiveTenantRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1139,7 +1178,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
      * Update role
      */
-    async updateRoleRaw(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRole200Response>> {
+    async updateRoleRaw(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Role>> {
         if (requestParameters['roleId'] == null) {
             throw new runtime.RequiredError(
                 'roleId',
@@ -1188,14 +1227,14 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: UpdateRoleRequestToJSON(requestParameters['updateRoleRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRole200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => RoleFromJSON(jsonValue));
     }
 
     /**
      * Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions  ## Permission Format Permissions should be in the format: `namespace:resource#relation`  ## Use Cases - Modify role permissions - Grant or revoke access - Update role capabilities 
      * Update role
      */
-    async updateRole(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRole200Response> {
+    async updateRole(requestParameters: UpdateRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Role> {
         const response = await this.updateRoleRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -1204,7 +1243,7 @@ export class V1TenantsApi extends runtime.BaseAPI {
      * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
      * Update user role
      */
-    async updateTenantUserRoleRaw(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateTenantUserRole200Response>> {
+    async updateTenantUserRoleRaw(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['updateTenantUserRoleRequest'] == null) {
             throw new runtime.RequiredError(
                 'updateTenantUserRoleRequest',
@@ -1245,16 +1284,15 @@ export class V1TenantsApi extends runtime.BaseAPI {
             body: UpdateTenantUserRoleRequestToJSON(requestParameters['updateTenantUserRoleRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateTenantUserRole200ResponseFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Updates a user\'s role in the tenant and updates all associated Keto permissions.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission  ## Restrictions - Promoting to owner requires `update_user_role_to_owner` permission - Demoting from owner requires `remove_owner_role` permission - Cannot demote the last owner (must have at least one owner)  ## Process 1. Verifies permissions 2. Removes old role permissions 3. Updates database 4. Assigns new role permissions 
      * Update user role
      */
-    async updateTenantUserRole(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateTenantUserRole200Response> {
-        const response = await this.updateTenantUserRoleRaw(requestParameters, initOverrides);
-        return await response.value();
+    async updateTenantUserRole(requestParameters: UpdateTenantUserRoleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.updateTenantUserRoleRaw(requestParameters, initOverrides);
     }
 
 }

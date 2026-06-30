@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { AddInvoiceLineItem200Response, AddInvoiceLineItemRequest, AddInvoiceLineItemWithPriceIDRequest, CreateCheckout200Response, CreateCheckoutRequest, CreateCustomerPortal200Response, CreateInvoice200Response, CreateInvoiceRequest, CreatePortalRequest, FinalizeInvoiceRequest, RecordUsageRequest, SuccessResponse, UpdateInvoiceRequest } from '../models/index';
+import type { AddInvoiceLineItemRequest, AddInvoiceLineItemWithPriceIDRequest, CreateCheckoutRequest, CreateCheckoutResponse, CreateInvoiceRequest, CreatePortalRequest, CreatePortalResponse, FinalizeInvoiceRequest, InvoiceLineItemResponse, InvoiceResponse, RecordUsageRequest, UpdateInvoiceRequest } from '../models/index';
 export interface AddInvoiceLineItemOperationRequest {
     xServiceKey: string;
     invoiceId: string;
@@ -48,6 +48,8 @@ export interface GetInvoiceRequest {
 }
 export interface RecordUsageOperationRequest {
     recordUsageRequest: RecordUsageRequest;
+    xTenantId?: string;
+    xStripeCustomerId?: string;
 }
 export interface UpdateInvoiceOperationRequest {
     xServiceKey: string;
@@ -62,90 +64,90 @@ export declare class V1PaymentsApi extends runtime.BaseAPI {
      * Adds a new line item to a draft invoice.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding platform fees - Adding additional charges - Custom billing line items
      * Add invoice line item
      */
-    addInvoiceLineItemRaw(requestParameters: AddInvoiceLineItemOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddInvoiceLineItem200Response>>;
+    addInvoiceLineItemRaw(requestParameters: AddInvoiceLineItemOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceLineItemResponse>>;
     /**
      * Adds a new line item to a draft invoice.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding platform fees - Adding additional charges - Custom billing line items
      * Add invoice line item
      */
-    addInvoiceLineItem(requestParameters: AddInvoiceLineItemOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddInvoiceLineItem200Response>;
+    addInvoiceLineItem(requestParameters: AddInvoiceLineItemOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceLineItemResponse>;
     /**
      * Adds a new line item to a draft invoice using a price ID and quantity.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Price ID Resolution You must provide ONE of: - `price_id`: A config price ID (e.g., \"hetzner_cx23_nbg1_hourly\") that will be looked up via the Stripe ID mapping table - `stripe_price_id`: A raw Stripe price ID (e.g., \"price_1ABC...\") that will be used directly  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding metered usage line items - Adding subscription-based charges - Billing for compute hours, storage, etc.
      * Add invoice line item with price ID
      */
-    addInvoiceLineItemWithPriceIdRaw(requestParameters: AddInvoiceLineItemWithPriceIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AddInvoiceLineItem200Response>>;
+    addInvoiceLineItemWithPriceIdRaw(requestParameters: AddInvoiceLineItemWithPriceIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceLineItemResponse>>;
     /**
      * Adds a new line item to a draft invoice using a price ID and quantity.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Price ID Resolution You must provide ONE of: - `price_id`: A config price ID (e.g., \"hetzner_cx23_nbg1_hourly\") that will be looked up via the Stripe ID mapping table - `stripe_price_id`: A raw Stripe price ID (e.g., \"price_1ABC...\") that will be used directly  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding metered usage line items - Adding subscription-based charges - Billing for compute hours, storage, etc.
      * Add invoice line item with price ID
      */
-    addInvoiceLineItemWithPriceId(requestParameters: AddInvoiceLineItemWithPriceIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AddInvoiceLineItem200Response>;
+    addInvoiceLineItemWithPriceId(requestParameters: AddInvoiceLineItemWithPriceIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceLineItemResponse>;
     /**
      * Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.  ## Authentication Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.  ## Use Cases - Subscription sign-ups - One-time purchases - Trial period checkouts - Promotional code redemption
      * Create checkout session
      */
-    createCheckoutRaw(requestParameters: CreateCheckoutOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateCheckout200Response>>;
+    createCheckoutRaw(requestParameters: CreateCheckoutOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateCheckoutResponse>>;
     /**
      * Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.  ## Authentication Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.  ## Use Cases - Subscription sign-ups - One-time purchases - Trial period checkouts - Promotional code redemption
      * Create checkout session
      */
-    createCheckout(requestParameters: CreateCheckoutOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateCheckout200Response>;
+    createCheckout(requestParameters: CreateCheckoutOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateCheckoutResponse>;
     /**
      * Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - Subscription management - Payment method updates - Invoice history viewing - Subscription cancellation
      * Create customer portal session
      */
-    createCustomerPortalRaw(requestParameters: CreateCustomerPortalRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateCustomerPortal200Response>>;
+    createCustomerPortalRaw(requestParameters: CreateCustomerPortalRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreatePortalResponse>>;
     /**
      * Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - Subscription management - Payment method updates - Invoice history viewing - Subscription cancellation
      * Create customer portal session
      */
-    createCustomerPortal(requestParameters: CreateCustomerPortalRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateCustomerPortal200Response>;
+    createCustomerPortal(requestParameters: CreateCustomerPortalRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreatePortalResponse>;
     /**
      * Creates a new draft invoice for the specified customer.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Use Cases - Creating invoices for platform fees - Manual billing scenarios - Custom invoice generation
      * Create invoice
      */
-    createInvoiceRaw(requestParameters: CreateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvoice200Response>>;
+    createInvoiceRaw(requestParameters: CreateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceResponse>>;
     /**
      * Creates a new draft invoice for the specified customer.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID - `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant\'s configuration  ## Use Cases - Creating invoices for platform fees - Manual billing scenarios - Custom invoice generation
      * Create invoice
      */
-    createInvoice(requestParameters: CreateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvoice200Response>;
+    createInvoice(requestParameters: CreateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceResponse>;
     /**
      * Finalizes a draft invoice, optionally auto-advancing to send it immediately.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Approving invoices for sending - Completing invoice preparation - Triggering invoice emails
      * Finalize invoice
      */
-    finalizeInvoiceRaw(requestParameters: FinalizeInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvoice200Response>>;
+    finalizeInvoiceRaw(requestParameters: FinalizeInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceResponse>>;
     /**
      * Finalizes a draft invoice, optionally auto-advancing to send it immediately.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Approving invoices for sending - Completing invoice preparation - Triggering invoice emails
      * Finalize invoice
      */
-    finalizeInvoice(requestParameters: FinalizeInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvoice200Response>;
+    finalizeInvoice(requestParameters: FinalizeInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceResponse>;
     /**
      * Retrieves a Stripe invoice by its ID.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Use Cases - Webhook processing - Invoice status checking - Invoice data retrieval
      * Get invoice
      */
-    getInvoiceRaw(requestParameters: GetInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvoice200Response>>;
+    getInvoiceRaw(requestParameters: GetInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceResponse>>;
     /**
      * Retrieves a Stripe invoice by its ID.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Use Cases - Webhook processing - Invoice status checking - Invoice data retrieval
      * Get invoice
      */
-    getInvoice(requestParameters: GetInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvoice200Response>;
+    getInvoice(requestParameters: GetInvoiceRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceResponse>;
     /**
-     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
+     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\'s active tenant - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
      * Record metered usage
      */
-    recordUsageRaw(requestParameters: RecordUsageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>>;
+    recordUsageRaw(requestParameters: RecordUsageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>>;
     /**
-     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \"stripe_customer_id not found in context\"  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
+     * Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\'s active tenant - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario
      * Record metered usage
      */
-    recordUsage(requestParameters: RecordUsageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse>;
+    recordUsage(requestParameters: RecordUsageOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object>;
     /**
      * Updates a draft invoice\'s description and metadata.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding custom descriptions - Adding metadata for tracking - Customizing invoice before sending
      * Update invoice
      */
-    updateInvoiceRaw(requestParameters: UpdateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateInvoice200Response>>;
+    updateInvoiceRaw(requestParameters: UpdateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<InvoiceResponse>>;
     /**
      * Updates a draft invoice\'s description and metadata.  ## Authentication Requires service key authentication via `X-Service-Key` header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding custom descriptions - Adding metadata for tracking - Customizing invoice before sending
      * Update invoice
      */
-    updateInvoice(requestParameters: UpdateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateInvoice200Response>;
+    updateInvoice(requestParameters: UpdateInvoiceOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<InvoiceResponse>;
 }

@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the AddSubscriptionResponse type satisfies the MappedNullable interface at compile time
@@ -21,19 +23,24 @@ var _ MappedNullable = &AddSubscriptionResponse{}
 // AddSubscriptionResponse struct for AddSubscriptionResponse
 type AddSubscriptionResponse struct {
 	// Stripe Subscription ID
-	SubscriptionId *string `json:"subscription_id,omitempty"`
+	SubscriptionId string `json:"subscription_id"`
 	// Subscription status (active, trialing, etc.)
-	Status *string `json:"status,omitempty"`
+	Status string `json:"status"`
 	// Message confirming the addition
-	Message *string `json:"message,omitempty"`
+	Message string `json:"message"`
 }
+
+type _AddSubscriptionResponse AddSubscriptionResponse
 
 // NewAddSubscriptionResponse instantiates a new AddSubscriptionResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAddSubscriptionResponse() *AddSubscriptionResponse {
+func NewAddSubscriptionResponse(subscriptionId string, status string, message string) *AddSubscriptionResponse {
 	this := AddSubscriptionResponse{}
+	this.SubscriptionId = subscriptionId
+	this.Status = status
+	this.Message = message
 	return &this
 }
 
@@ -45,100 +52,76 @@ func NewAddSubscriptionResponseWithDefaults() *AddSubscriptionResponse {
 	return &this
 }
 
-// GetSubscriptionId returns the SubscriptionId field value if set, zero value otherwise.
+// GetSubscriptionId returns the SubscriptionId field value
 func (o *AddSubscriptionResponse) GetSubscriptionId() string {
-	if o == nil || IsNil(o.SubscriptionId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.SubscriptionId
+
+	return o.SubscriptionId
 }
 
-// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value if set, nil otherwise
+// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value
 // and a boolean to check if the value has been set.
 func (o *AddSubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
-	if o == nil || IsNil(o.SubscriptionId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.SubscriptionId, true
+	return &o.SubscriptionId, true
 }
 
-// HasSubscriptionId returns a boolean if a field has been set.
-func (o *AddSubscriptionResponse) HasSubscriptionId() bool {
-	if o != nil && !IsNil(o.SubscriptionId) {
-		return true
-	}
-
-	return false
-}
-
-// SetSubscriptionId gets a reference to the given string and assigns it to the SubscriptionId field.
+// SetSubscriptionId sets field value
 func (o *AddSubscriptionResponse) SetSubscriptionId(v string) {
-	o.SubscriptionId = &v
+	o.SubscriptionId = v
 }
 
-// GetStatus returns the Status field value if set, zero value otherwise.
+// GetStatus returns the Status field value
 func (o *AddSubscriptionResponse) GetStatus() string {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Status
+
+	return o.Status
 }
 
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
 func (o *AddSubscriptionResponse) GetStatusOk() (*string, bool) {
-	if o == nil || IsNil(o.Status) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Status, true
+	return &o.Status, true
 }
 
-// HasStatus returns a boolean if a field has been set.
-func (o *AddSubscriptionResponse) HasStatus() bool {
-	if o != nil && !IsNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given string and assigns it to the Status field.
+// SetStatus sets field value
 func (o *AddSubscriptionResponse) SetStatus(v string) {
-	o.Status = &v
+	o.Status = v
 }
 
-// GetMessage returns the Message field value if set, zero value otherwise.
+// GetMessage returns the Message field value
 func (o *AddSubscriptionResponse) GetMessage() string {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Message
+
+	return o.Message
 }
 
-// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value
 // and a boolean to check if the value has been set.
 func (o *AddSubscriptionResponse) GetMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.Message) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Message, true
+	return &o.Message, true
 }
 
-// HasMessage returns a boolean if a field has been set.
-func (o *AddSubscriptionResponse) HasMessage() bool {
-	if o != nil && !IsNil(o.Message) {
-		return true
-	}
-
-	return false
-}
-
-// SetMessage gets a reference to the given string and assigns it to the Message field.
+// SetMessage sets field value
 func (o *AddSubscriptionResponse) SetMessage(v string) {
-	o.Message = &v
+	o.Message = v
 }
 
 func (o AddSubscriptionResponse) MarshalJSON() ([]byte, error) {
@@ -151,16 +134,49 @@ func (o AddSubscriptionResponse) MarshalJSON() ([]byte, error) {
 
 func (o AddSubscriptionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.SubscriptionId) {
-		toSerialize["subscription_id"] = o.SubscriptionId
-	}
-	if !IsNil(o.Status) {
-		toSerialize["status"] = o.Status
-	}
-	if !IsNil(o.Message) {
-		toSerialize["message"] = o.Message
-	}
+	toSerialize["subscription_id"] = o.SubscriptionId
+	toSerialize["status"] = o.Status
+	toSerialize["message"] = o.Message
 	return toSerialize, nil
+}
+
+func (o *AddSubscriptionResponse) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"subscription_id",
+		"status",
+		"message",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varAddSubscriptionResponse := _AddSubscriptionResponse{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varAddSubscriptionResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = AddSubscriptionResponse(varAddSubscriptionResponse)
+
+	return err
 }
 
 type NullableAddSubscriptionResponse struct {

@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface UnauthorizedResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof UnauthorizedResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof UnauthorizedResponse
@@ -37,7 +31,6 @@ export interface UnauthorizedResponse {
  * Check if a given object implements the UnauthorizedResponse interface.
  */
 export function instanceOfUnauthorizedResponse(value: object): value is UnauthorizedResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function UnauthorizedResponseFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function UnauthorizedResponseToJSONTyped(value?: UnauthorizedResponse | n
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

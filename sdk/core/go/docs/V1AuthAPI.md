@@ -16,7 +16,7 @@ Method | HTTP request | Description
 
 ## CreateUser
 
-> CreateUser200Response CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
+> KratosIdentity CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
 
 Create new user
 
@@ -44,7 +44,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.CreateUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateUser`: CreateUser200Response
+	// response from `CreateUser`: KratosIdentity
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.CreateUser`: %v\n", resp)
 }
 ```
@@ -64,7 +64,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**CreateUser200Response**](CreateUser200Response.md)
+[**KratosIdentity**](KratosIdentity.md)
 
 ### Authorization
 
@@ -82,7 +82,7 @@ Name | Type | Description  | Notes
 
 ## GetActiveTenant
 
-> GetActiveTenant200Response GetActiveTenant(ctx).XUserId(xUserId).Execute()
+> ActiveTenantResponse GetActiveTenant(ctx).XUserId(xUserId).Execute()
 
 Get active tenant
 
@@ -110,7 +110,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetActiveTenant`: GetActiveTenant200Response
+	// response from `GetActiveTenant`: ActiveTenantResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetActiveTenant`: %v\n", resp)
 }
 ```
@@ -130,7 +130,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetActiveTenant200Response**](GetActiveTenant200Response.md)
+[**ActiveTenantResponse**](ActiveTenantResponse.md)
 
 ### Authorization
 
@@ -148,7 +148,7 @@ Name | Type | Description  | Notes
 
 ## GetIdentity
 
-> GetIdentity200Response GetIdentity(ctx).Execute()
+> map[string]interface{} GetIdentity(ctx).Execute()
 
 Get current identity
 
@@ -175,7 +175,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetIdentity``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetIdentity`: GetIdentity200Response
+	// response from `GetIdentity`: map[string]interface{}
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetIdentity`: %v\n", resp)
 }
 ```
@@ -191,7 +191,7 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 
 ### Return type
 
-[**GetIdentity200Response**](GetIdentity200Response.md)
+**map[string]interface{}**
 
 ### Authorization
 
@@ -209,7 +209,7 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 
 ## GetSession
 
-> GetSession200Response GetSession(ctx).Execute()
+> SessionResponse GetSession(ctx).Execute()
 
 Get current session
 
@@ -236,7 +236,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetSession``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetSession`: GetSession200Response
+	// response from `GetSession`: SessionResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetSession`: %v\n", resp)
 }
 ```
@@ -252,7 +252,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 
 ### Return type
 
-[**GetSession200Response**](GetSession200Response.md)
+[**SessionResponse**](SessionResponse.md)
 
 ### Authorization
 
@@ -270,7 +270,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 
 ## ListTenants
 
-> ListTenants200Response ListTenants(ctx).XUserId(xUserId).Execute()
+> ListTenantsResponse ListTenants(ctx).XUserId(xUserId).Execute()
 
 List user's tenants
 
@@ -298,7 +298,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ListTenants``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ListTenants`: ListTenants200Response
+	// response from `ListTenants`: ListTenantsResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.ListTenants`: %v\n", resp)
 }
 ```
@@ -318,7 +318,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListTenants200Response**](ListTenants200Response.md)
+[**ListTenantsResponse**](ListTenantsResponse.md)
 
 ### Authorization
 
@@ -336,7 +336,7 @@ Name | Type | Description  | Notes
 
 ## Logout
 
-> Logout200Response Logout(ctx).Execute()
+> LogoutResponse Logout(ctx).Execute()
 
 Logout user
 
@@ -363,7 +363,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.Logout``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `Logout`: Logout200Response
+	// response from `Logout`: LogoutResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.Logout`: %v\n", resp)
 }
 ```
@@ -379,7 +379,7 @@ Other parameters are passed through a pointer to a apiLogoutRequest struct via t
 
 ### Return type
 
-[**Logout200Response**](Logout200Response.md)
+[**LogoutResponse**](LogoutResponse.md)
 
 ### Authorization
 
@@ -397,7 +397,7 @@ Other parameters are passed through a pointer to a apiLogoutRequest struct via t
 
 ## WhoAmI
 
-> WhoAmI200Response WhoAmI(ctx).Execute()
+> WhoAmIResponse WhoAmI(ctx).Execute()
 
 Check authentication status
 
@@ -424,7 +424,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.WhoAmI``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `WhoAmI`: WhoAmI200Response
+	// response from `WhoAmI`: WhoAmIResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.WhoAmI`: %v\n", resp)
 }
 ```
@@ -440,7 +440,7 @@ Other parameters are passed through a pointer to a apiWhoAmIRequest struct via t
 
 ### Return type
 
-[**WhoAmI200Response**](WhoAmI200Response.md)
+[**WhoAmIResponse**](WhoAmIResponse.md)
 
 ### Authorization
 

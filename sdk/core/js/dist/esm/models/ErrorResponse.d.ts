@@ -16,12 +16,6 @@
  */
 export interface ErrorResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ErrorResponse
-     */
-    status: number;
-    /**
      * Error message or details
      * @type {string}
      * @memberof ErrorResponse

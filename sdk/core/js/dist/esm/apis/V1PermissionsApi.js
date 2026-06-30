@@ -88,7 +88,7 @@ class V1PermissionsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CheckPermissionRequestToJSON)(requestParameters['checkPermissionRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CheckPermission200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CheckPermissionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -127,7 +127,7 @@ class V1PermissionsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateRelationshipRequestToJSON)(requestParameters['createRelationshipRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateRelationship200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateRelationshipResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -166,7 +166,7 @@ class V1PermissionsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.DeleteRelationshipRequestToJSON)(requestParameters['deleteRelationshipRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteRelationship200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteRelationshipResponseFromJSON)(jsonValue));
         });
     }
     /**

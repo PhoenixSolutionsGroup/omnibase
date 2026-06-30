@@ -9,7 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { DeleteEmailTemplate200ResponseAllOfData } from './DeleteEmailTemplate200ResponseAllOfData';
 /**
  *
  * @export
@@ -17,17 +16,11 @@ import type { DeleteEmailTemplate200ResponseAllOfData } from './DeleteEmailTempl
  */
 export interface DeleteEmailTemplate200Response {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof DeleteEmailTemplate200Response
-     */
-    status: number;
-    /**
      *
-     * @type {DeleteEmailTemplate200ResponseAllOfData}
+     * @type {string}
      * @memberof DeleteEmailTemplate200Response
      */
-    data?: DeleteEmailTemplate200ResponseAllOfData;
+    message?: string;
 }
 /**
  * Check if a given object implements the DeleteEmailTemplate200Response interface.

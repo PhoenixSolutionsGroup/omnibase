@@ -7,7 +7,6 @@ Conflict error response (409)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { ConflictResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 409,
   "error": Conflict,
 } satisfies ConflictResponse
 

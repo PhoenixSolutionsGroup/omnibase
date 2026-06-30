@@ -40,6 +40,18 @@ export interface CreateInvoiceRequest {
      */
     autoAdvance?: boolean;
     /**
+     * How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
+     * @type {string}
+     * @memberof CreateInvoiceRequest
+     */
+    collectionMethod?: CreateInvoiceRequestCollectionMethodEnum;
+    /**
+     * Days until invoice is due. Required when `collection_method` is `send_invoice`.
+     * @type {number}
+     * @memberof CreateInvoiceRequest
+     */
+    daysUntilDue?: number;
+    /**
      * Optional description for the invoice
      * @type {string}
      * @memberof CreateInvoiceRequest
@@ -53,6 +65,15 @@ export interface CreateInvoiceRequest {
     metadata?: { [key: string]: string; };
 }
 
+
+/**
+ * @export
+ */
+export const CreateInvoiceRequestCollectionMethodEnum = {
+    ChargeAutomatically: 'charge_automatically',
+    SendInvoice: 'send_invoice'
+} as const;
+export type CreateInvoiceRequestCollectionMethodEnum = typeof CreateInvoiceRequestCollectionMethodEnum[keyof typeof CreateInvoiceRequestCollectionMethodEnum];
 
 
 /**
@@ -75,6 +96,8 @@ export function CreateInvoiceRequestFromJSONTyped(json: any, ignoreDiscriminator
         
         'currency': CurrencyCodeFromJSON(json['currency']),
         'autoAdvance': json['auto_advance'] == null ? undefined : json['auto_advance'],
+        'collectionMethod': json['collection_method'] == null ? undefined : json['collection_method'],
+        'daysUntilDue': json['days_until_due'] == null ? undefined : json['days_until_due'],
         'description': json['description'] == null ? undefined : json['description'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
     };
@@ -93,6 +116,8 @@ export function CreateInvoiceRequestToJSONTyped(value?: CreateInvoiceRequest | n
         
         'currency': CurrencyCodeToJSON(value['currency']),
         'auto_advance': value['autoAdvance'],
+        'collection_method': value['collectionMethod'],
+        'days_until_due': value['daysUntilDue'],
         'description': value['description'],
         'metadata': value['metadata'],
     };

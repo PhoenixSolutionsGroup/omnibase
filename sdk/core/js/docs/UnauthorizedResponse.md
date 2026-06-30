@@ -7,7 +7,6 @@ Unauthorized error response (401)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { UnauthorizedResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 401,
   "error": Unauthorized,
 } satisfies UnauthorizedResponse
 

@@ -16,53 +16,53 @@
 import * as runtime from '../runtime';
 import type {
   ApplyEnterpriseCustomRequest,
-  ApplyEnterpriseTemplate200Response,
   ApplyEnterpriseTemplateRequest,
   BadRequest,
-  CalculatePriceCost200Response,
   CalculatePriceCostRequest,
-  ConvertStripeIDToConfigID200Response,
-  GetEnterprisePricesByTemplate200Response,
-  GetMeterByID200Response,
-  GetPriceByID200Response,
-  GetProductByID200Response,
-  GetStripeConfig200Response,
+  CalculatePriceCostResponse,
+  EnterpriseApplyResponse,
+  EnterprisePricesResponse,
   InternalServerError,
-  ListWebhooks200Response,
+  ListWebhooksResponse,
+  MeterResponse,
   NotFound,
+  PriceResponse,
+  ProductResponse,
+  StripeConfigResponse,
+  StripeIDConversionResponse,
   Unauthorized,
 } from '../models/index';
 import {
     ApplyEnterpriseCustomRequestFromJSON,
     ApplyEnterpriseCustomRequestToJSON,
-    ApplyEnterpriseTemplate200ResponseFromJSON,
-    ApplyEnterpriseTemplate200ResponseToJSON,
     ApplyEnterpriseTemplateRequestFromJSON,
     ApplyEnterpriseTemplateRequestToJSON,
     BadRequestFromJSON,
     BadRequestToJSON,
-    CalculatePriceCost200ResponseFromJSON,
-    CalculatePriceCost200ResponseToJSON,
     CalculatePriceCostRequestFromJSON,
     CalculatePriceCostRequestToJSON,
-    ConvertStripeIDToConfigID200ResponseFromJSON,
-    ConvertStripeIDToConfigID200ResponseToJSON,
-    GetEnterprisePricesByTemplate200ResponseFromJSON,
-    GetEnterprisePricesByTemplate200ResponseToJSON,
-    GetMeterByID200ResponseFromJSON,
-    GetMeterByID200ResponseToJSON,
-    GetPriceByID200ResponseFromJSON,
-    GetPriceByID200ResponseToJSON,
-    GetProductByID200ResponseFromJSON,
-    GetProductByID200ResponseToJSON,
-    GetStripeConfig200ResponseFromJSON,
-    GetStripeConfig200ResponseToJSON,
+    CalculatePriceCostResponseFromJSON,
+    CalculatePriceCostResponseToJSON,
+    EnterpriseApplyResponseFromJSON,
+    EnterpriseApplyResponseToJSON,
+    EnterprisePricesResponseFromJSON,
+    EnterprisePricesResponseToJSON,
     InternalServerErrorFromJSON,
     InternalServerErrorToJSON,
-    ListWebhooks200ResponseFromJSON,
-    ListWebhooks200ResponseToJSON,
+    ListWebhooksResponseFromJSON,
+    ListWebhooksResponseToJSON,
+    MeterResponseFromJSON,
+    MeterResponseToJSON,
     NotFoundFromJSON,
     NotFoundToJSON,
+    PriceResponseFromJSON,
+    PriceResponseToJSON,
+    ProductResponseFromJSON,
+    ProductResponseToJSON,
+    StripeConfigResponseFromJSON,
+    StripeConfigResponseToJSON,
+    StripeIDConversionResponseFromJSON,
+    StripeIDConversionResponseToJSON,
     UnauthorizedFromJSON,
     UnauthorizedToJSON,
 } from '../models/index';
@@ -113,7 +113,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to custom enterprise prices identified by enterprise_id.  ## Authentication Requires service key authentication.  ## Use Cases - Apply custom negotiated pricing for specific enterprise customers - Tenant-specific pricing overrides - Custom enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_id` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_id` field for future provisioning 
      * Apply custom enterprise pricing
      */
-    async applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplyEnterpriseTemplate200Response>> {
+    async applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
         if (requestParameters['applyEnterpriseCustomRequest'] == null) {
             throw new runtime.RequiredError(
                 'applyEnterpriseCustomRequest',
@@ -142,14 +142,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             body: ApplyEnterpriseCustomRequestToJSON(requestParameters['applyEnterpriseCustomRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplyEnterpriseTemplate200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => EnterpriseApplyResponseFromJSON(jsonValue));
     }
 
     /**
      * Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to custom enterprise prices identified by enterprise_id.  ## Authentication Requires service key authentication.  ## Use Cases - Apply custom negotiated pricing for specific enterprise customers - Tenant-specific pricing overrides - Custom enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_id` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_id` field for future provisioning 
      * Apply custom enterprise pricing
      */
-    async applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplyEnterpriseTemplate200Response> {
+    async applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse> {
         const response = await this.applyEnterpriseCustomRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -158,7 +158,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Applies template-based enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to the corresponding enterprise template prices.  ## Authentication Requires service key authentication.  ## Use Cases - Apply pre-defined discount tiers to enterprise customers - Bulk pricing changes for enterprise accounts - Template-based enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_template` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_template` field for future provisioning 
      * Apply enterprise template pricing
      */
-    async applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplyEnterpriseTemplate200Response>> {
+    async applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>> {
         if (requestParameters['applyEnterpriseTemplateRequest'] == null) {
             throw new runtime.RequiredError(
                 'applyEnterpriseTemplateRequest',
@@ -187,14 +187,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             body: ApplyEnterpriseTemplateRequestToJSON(requestParameters['applyEnterpriseTemplateRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ApplyEnterpriseTemplate200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => EnterpriseApplyResponseFromJSON(jsonValue));
     }
 
     /**
      * Applies template-based enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to the corresponding enterprise template prices.  ## Authentication Requires service key authentication.  ## Use Cases - Apply pre-defined discount tiers to enterprise customers - Bulk pricing changes for enterprise accounts - Template-based enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_template` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_template` field for future provisioning 
      * Apply enterprise template pricing
      */
-    async applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplyEnterpriseTemplate200Response> {
+    async applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse> {
         const response = await this.applyEnterpriseTemplateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -203,7 +203,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost = unit_amount × quantity - **tiered (graduated)**: Each tier\'s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\'s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations 
      * Calculate cost for a price
      */
-    async calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCost200Response>> {
+    async calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCostResponse>> {
         if (requestParameters['priceId'] == null) {
             throw new runtime.RequiredError(
                 'priceId',
@@ -236,14 +236,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             body: CalculatePriceCostRequestToJSON(requestParameters['calculatePriceCostRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CalculatePriceCost200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CalculatePriceCostResponseFromJSON(jsonValue));
     }
 
     /**
      * Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost = unit_amount × quantity - **tiered (graduated)**: Each tier\'s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\'s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations 
      * Calculate cost for a price
      */
-    async calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCost200Response> {
+    async calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCostResponse> {
         const response = await this.calculatePriceCostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -252,7 +252,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Converts a Stripe ID (product, price, or meter) to the corresponding config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Webhook processing - Subscription mapping - Price lookups 
      * Convert Stripe ID to config ID
      */
-    async convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConvertStripeIDToConfigID200Response>> {
+    async convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeIDConversionResponse>> {
         if (requestParameters['stripeId'] == null) {
             throw new runtime.RequiredError(
                 'stripeId',
@@ -275,14 +275,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ConvertStripeIDToConfigID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StripeIDConversionResponseFromJSON(jsonValue));
     }
 
     /**
      * Converts a Stripe ID (product, price, or meter) to the corresponding config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Webhook processing - Subscription mapping - Price lookups 
      * Convert Stripe ID to config ID
      */
-    async convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConvertStripeIDToConfigID200Response> {
+    async convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeIDConversionResponse> {
         const response = await this.convertStripeIDToConfigIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -291,7 +291,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Retrieves prices filtered by enterprise ID.  ## Authentication Requires service key authentication.  ## Use Cases - View custom pricing for a specific enterprise - Provisioning services for enterprise tenants 
      * Get enterprise prices by ID
      */
-    async getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEnterprisePricesByTemplate200Response>> {
+    async getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
         if (requestParameters['enterpriseId'] == null) {
             throw new runtime.RequiredError(
                 'enterpriseId',
@@ -318,14 +318,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetEnterprisePricesByTemplate200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => EnterprisePricesResponseFromJSON(jsonValue));
     }
 
     /**
      * Retrieves prices filtered by enterprise ID.  ## Authentication Requires service key authentication.  ## Use Cases - View custom pricing for a specific enterprise - Provisioning services for enterprise tenants 
      * Get enterprise prices by ID
      */
-    async getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEnterprisePricesByTemplate200Response> {
+    async getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse> {
         const response = await this.getEnterprisePricesByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -334,7 +334,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Retrieves prices filtered by enterprise template.  ## Authentication Requires service key authentication.  ## Use Cases - List available enterprise prices for a template - Provisioning services for enterprise tenants 
      * Get enterprise prices by template
      */
-    async getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEnterprisePricesByTemplate200Response>> {
+    async getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>> {
         if (requestParameters['template'] == null) {
             throw new runtime.RequiredError(
                 'template',
@@ -361,14 +361,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetEnterprisePricesByTemplate200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => EnterprisePricesResponseFromJSON(jsonValue));
     }
 
     /**
      * Retrieves prices filtered by enterprise template.  ## Authentication Requires service key authentication.  ## Use Cases - List available enterprise prices for a template - Provisioning services for enterprise tenants 
      * Get enterprise prices by template
      */
-    async getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEnterprisePricesByTemplate200Response> {
+    async getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse> {
         const response = await this.getEnterprisePricesByTemplateRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -377,7 +377,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Returns a specific billing meter from the Stripe configuration by its config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch meter details for usage tracking - Display metered billing information - Usage reporting configuration 
      * Get meter by ID
      */
-    async getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetMeterByID200Response>> {
+    async getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MeterResponse>> {
         if (requestParameters['meterId'] == null) {
             throw new runtime.RequiredError(
                 'meterId',
@@ -400,14 +400,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetMeterByID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => MeterResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns a specific billing meter from the Stripe configuration by its config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch meter details for usage tracking - Display metered billing information - Usage reporting configuration 
      * Get meter by ID
      */
-    async getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetMeterByID200Response> {
+    async getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MeterResponse> {
         const response = await this.getMeterByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -416,7 +416,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Returns a specific price from the Stripe configuration by its config ID, along with its parent product.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch price details for checkout - Display specific pricing information - Subscription management 
      * Get price by ID
      */
-    async getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPriceByID200Response>> {
+    async getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PriceResponse>> {
         if (requestParameters['priceId'] == null) {
             throw new runtime.RequiredError(
                 'priceId',
@@ -439,14 +439,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetPriceByID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PriceResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns a specific price from the Stripe configuration by its config ID, along with its parent product.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch price details for checkout - Display specific pricing information - Subscription management 
      * Get price by ID
      */
-    async getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetPriceByID200Response> {
+    async getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PriceResponse> {
         const response = await this.getPriceByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -455,7 +455,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Returns a specific product from the Stripe configuration by its config ID, including all its prices.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch product details - Display product information with all price options - Product catalog pages 
      * Get product by ID
      */
-    async getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetProductByID200Response>> {
+    async getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProductResponse>> {
         if (requestParameters['productId'] == null) {
             throw new runtime.RequiredError(
                 'productId',
@@ -478,14 +478,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetProductByID200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ProductResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns a specific product from the Stripe configuration by its config ID, including all its prices.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch product details - Display product information with all price options - Product catalog pages 
      * Get product by ID
      */
-    async getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetProductByID200Response> {
+    async getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProductResponse> {
         const response = await this.getProductByIDRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -494,7 +494,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Returns the current Stripe configuration with public prices only (filters out enterprise prices).  ## Authentication No authentication required for public endpoint.  ## Use Cases - Display pricing to users - Build subscription selection UI - Public pricing pages 
      * Get public Stripe config
      */
-    async getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfig200Response>> {
+    async getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -509,14 +509,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetStripeConfig200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns the current Stripe configuration with public prices only (filters out enterprise prices).  ## Authentication No authentication required for public endpoint.  ## Use Cases - Display pricing to users - Build subscription selection UI - Public pricing pages 
      * Get public Stripe config
      */
-    async getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfig200Response> {
+    async getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
         const response = await this.getStripeConfigRaw(initOverrides);
         return await response.value();
     }
@@ -525,7 +525,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Returns the complete Stripe configuration including all prices (both public and enterprise).  ## Authentication Requires admin JWT token.  ## Use Cases - Admin configuration management - Enterprise pricing display - Configuration auditing 
      * Get full Stripe config (admin)
      */
-    async getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfig200Response>> {
+    async getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -544,14 +544,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetStripeConfig200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StripeConfigResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns the complete Stripe configuration including all prices (both public and enterprise).  ## Authentication Requires admin JWT token.  ## Use Cases - Admin configuration management - Enterprise pricing display - Configuration auditing 
      * Get full Stripe config (admin)
      */
-    async getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfig200Response> {
+    async getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse> {
         const response = await this.getStripeConfigAdminRaw(initOverrides);
         return await response.value();
     }
@@ -560,7 +560,7 @@ export class V1StripeApi extends runtime.BaseAPI {
      * Retrieves all configured webhook endpoints with their signing secrets.  ## Authentication Requires service key authentication.  ## Use Cases - List all webhook configurations - Retrieve signing secrets for webhook signature verification - Debug webhook configuration 
      * List all webhooks
      */
-    async listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooks200Response>> {
+    async listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooksResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -579,14 +579,14 @@ export class V1StripeApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListWebhooks200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListWebhooksResponseFromJSON(jsonValue));
     }
 
     /**
      * Retrieves all configured webhook endpoints with their signing secrets.  ## Authentication Requires service key authentication.  ## Use Cases - List all webhook configurations - Retrieve signing secrets for webhook signature verification - Debug webhook configuration 
      * List all webhooks
      */
-    async listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooks200Response> {
+    async listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooksResponse> {
         const response = await this.listWebhooksRaw(initOverrides);
         return await response.value();
     }

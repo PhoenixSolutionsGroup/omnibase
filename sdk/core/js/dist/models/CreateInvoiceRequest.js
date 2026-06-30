@@ -13,12 +13,20 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateInvoiceRequestCollectionMethodEnum = void 0;
 exports.instanceOfCreateInvoiceRequest = instanceOfCreateInvoiceRequest;
 exports.CreateInvoiceRequestFromJSON = CreateInvoiceRequestFromJSON;
 exports.CreateInvoiceRequestFromJSONTyped = CreateInvoiceRequestFromJSONTyped;
 exports.CreateInvoiceRequestToJSON = CreateInvoiceRequestToJSON;
 exports.CreateInvoiceRequestToJSONTyped = CreateInvoiceRequestToJSONTyped;
 const CurrencyCode_1 = require("./CurrencyCode");
+/**
+ * @export
+ */
+exports.CreateInvoiceRequestCollectionMethodEnum = {
+    ChargeAutomatically: 'charge_automatically',
+    SendInvoice: 'send_invoice'
+};
 /**
  * Check if a given object implements the CreateInvoiceRequest interface.
  */
@@ -37,6 +45,8 @@ function CreateInvoiceRequestFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'currency': (0, CurrencyCode_1.CurrencyCodeFromJSON)(json['currency']),
         'autoAdvance': json['auto_advance'] == null ? undefined : json['auto_advance'],
+        'collectionMethod': json['collection_method'] == null ? undefined : json['collection_method'],
+        'daysUntilDue': json['days_until_due'] == null ? undefined : json['days_until_due'],
         'description': json['description'] == null ? undefined : json['description'],
         'metadata': json['metadata'] == null ? undefined : json['metadata'],
     };
@@ -51,6 +61,8 @@ function CreateInvoiceRequestToJSONTyped(value, ignoreDiscriminator = false) {
     return {
         'currency': (0, CurrencyCode_1.CurrencyCodeToJSON)(value['currency']),
         'auto_advance': value['autoAdvance'],
+        'collection_method': value['collectionMethod'],
+        'days_until_due': value['daysUntilDue'],
         'description': value['description'],
         'metadata': value['metadata'],
     };

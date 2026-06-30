@@ -28,12 +28,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/CreateCheckoutResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/CreateCheckoutResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -81,12 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/CreatePortalResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/CreatePortalResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -104,12 +94,10 @@ paths:
         Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
 
         ## Authentication
-        Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-
-        ## Prerequisites
-        - User must be authenticated
-        - Tenant must have a Stripe customer ID configured
-        - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+        Either:
+        - Session cookie (Kratos) — customer resolved from the user's active tenant
+        - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record
+        - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly
 
         ## Use Cases
         - API request metering
@@ -118,6 +106,20 @@ paths:
         - Any metered billing scenario
       tags:
         - V1 Payments
+      parameters:
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent.
+          schema:
+            type: string
+            format: uuid
+        - name: X-Stripe-Customer-Id
+          in: header
+          required: false
+          description: Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -130,7 +132,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                type: object
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -193,12 +195,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -246,12 +243,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -306,12 +298,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -388,12 +375,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -475,12 +457,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceLineItemResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -539,12 +516,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
+                $ref: '../schemas/payments.yaml#/components/schemas/InvoiceResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':

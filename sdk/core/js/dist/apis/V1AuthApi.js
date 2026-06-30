@@ -85,7 +85,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateUserRequestToJSON)(requestParameters['createUserRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateUser200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.KratosIdentityFromJSON)(jsonValue));
         });
     }
     /**
@@ -122,7 +122,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetActiveTenant200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ActiveTenantResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -153,7 +153,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetIdentity200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response);
         });
     }
     /**
@@ -184,7 +184,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetSession200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SessionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -221,7 +221,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenants200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenantsResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -252,7 +252,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.Logout200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.LogoutResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -283,7 +283,7 @@ class V1AuthApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.WhoAmI200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.WhoAmIResponseFromJSON)(jsonValue));
         });
     }
     /**

@@ -85,7 +85,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.ApplyEnterpriseCustomRequestToJSON)(requestParameters['applyEnterpriseCustomRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ApplyEnterpriseTemplate200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.EnterpriseApplyResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -121,7 +121,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.ApplyEnterpriseTemplateRequestToJSON)(requestParameters['applyEnterpriseTemplateRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ApplyEnterpriseTemplate200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.EnterpriseApplyResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -158,7 +158,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CalculatePriceCostRequestToJSON)(requestParameters['calculatePriceCostRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CalculatePriceCost200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CalculatePriceCostResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -190,7 +190,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ConvertStripeIDToConfigID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.StripeIDConversionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -225,7 +225,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetEnterprisePricesByTemplate200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.EnterprisePricesResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -260,7 +260,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetEnterprisePricesByTemplate200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.EnterprisePricesResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -292,7 +292,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetMeterByID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.MeterResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -324,7 +324,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetPriceByID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.PriceResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -356,7 +356,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetProductByID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ProductResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -384,7 +384,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetStripeConfig200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.StripeConfigResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -415,7 +415,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetStripeConfig200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.StripeConfigResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -446,7 +446,7 @@ class V1StripeApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListWebhooks200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListWebhooksResponseFromJSON)(jsonValue));
         });
     }
     /**

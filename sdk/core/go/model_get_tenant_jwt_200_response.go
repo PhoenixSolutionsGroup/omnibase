@@ -22,9 +22,8 @@ var _ MappedNullable = &GetTenantJWT200Response{}
 
 // GetTenantJWT200Response struct for GetTenantJWT200Response
 type GetTenantJWT200Response struct {
-	// HTTP status code
-	Status int32 `json:"status"`
-	Data *JWTTokenResponse `json:"data,omitempty"`
+	// PostgREST JWT token
+	Token string `json:"token"`
 }
 
 type _GetTenantJWT200Response GetTenantJWT200Response
@@ -33,9 +32,9 @@ type _GetTenantJWT200Response GetTenantJWT200Response
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetTenantJWT200Response(status int32) *GetTenantJWT200Response {
+func NewGetTenantJWT200Response(token string) *GetTenantJWT200Response {
 	this := GetTenantJWT200Response{}
-	this.Status = status
+	this.Token = token
 	return &this
 }
 
@@ -47,60 +46,28 @@ func NewGetTenantJWT200ResponseWithDefaults() *GetTenantJWT200Response {
 	return &this
 }
 
-// GetStatus returns the Status field value
-func (o *GetTenantJWT200Response) GetStatus() int32 {
+// GetToken returns the Token field value
+func (o *GetTenantJWT200Response) GetToken() string {
 	if o == nil {
-		var ret int32
+		var ret string
 		return ret
 	}
 
-	return o.Status
+	return o.Token
 }
 
-// GetStatusOk returns a tuple with the Status field value
+// GetTokenOk returns a tuple with the Token field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantJWT200Response) GetStatusOk() (*int32, bool) {
+func (o *GetTenantJWT200Response) GetTokenOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Status, true
+	return &o.Token, true
 }
 
-// SetStatus sets field value
-func (o *GetTenantJWT200Response) SetStatus(v int32) {
-	o.Status = v
-}
-
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *GetTenantJWT200Response) GetData() JWTTokenResponse {
-	if o == nil || IsNil(o.Data) {
-		var ret JWTTokenResponse
-		return ret
-	}
-	return *o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *GetTenantJWT200Response) GetDataOk() (*JWTTokenResponse, bool) {
-	if o == nil || IsNil(o.Data) {
-		return nil, false
-	}
-	return o.Data, true
-}
-
-// HasData returns a boolean if a field has been set.
-func (o *GetTenantJWT200Response) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
-		return true
-	}
-
-	return false
-}
-
-// SetData gets a reference to the given JWTTokenResponse and assigns it to the Data field.
-func (o *GetTenantJWT200Response) SetData(v JWTTokenResponse) {
-	o.Data = &v
+// SetToken sets field value
+func (o *GetTenantJWT200Response) SetToken(v string) {
+	o.Token = v
 }
 
 func (o GetTenantJWT200Response) MarshalJSON() ([]byte, error) {
@@ -113,10 +80,7 @@ func (o GetTenantJWT200Response) MarshalJSON() ([]byte, error) {
 
 func (o GetTenantJWT200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
-	}
+	toSerialize["token"] = o.Token
 	return toSerialize, nil
 }
 
@@ -125,7 +89,7 @@ func (o *GetTenantJWT200Response) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
+		"token",
 	}
 
 	allProperties := make(map[string]interface{})

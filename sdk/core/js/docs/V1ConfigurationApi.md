@@ -25,7 +25,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## archiveAllStripeConfig
 
-> ArchiveAllStripeConfig200Response archiveAllStripeConfig()
+> ArchiveAllResponse archiveAllStripeConfig()
 
 Archive all Stripe config
 
@@ -66,7 +66,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**ArchiveAllStripeConfig200Response**](ArchiveAllStripeConfig200Response.md)
+[**ArchiveAllResponse**](ArchiveAllResponse.md)
 
 ### Authorization
 
@@ -247,7 +247,7 @@ example().catch(console.error);
 
 ## deployPermissionNamespaces
 
-> DeployPermissionNamespaces200Response deployPermissionNamespaces(namespaces)
+> NamespaceDeploymentResponse deployPermissionNamespaces(namespaces)
 
 Deploy Keto namespace configurations
 
@@ -296,7 +296,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeployPermissionNamespaces200Response**](DeployPermissionNamespaces200Response.md)
+[**NamespaceDeploymentResponse**](NamespaceDeploymentResponse.md)
 
 ### Authorization
 
@@ -399,7 +399,7 @@ example().catch(console.error);
 
 ## getDatabaseMigrationStatus
 
-> GetDatabaseMigrationStatus200Response getDatabaseMigrationStatus()
+> Array&lt;AppliedMigration&gt; getDatabaseMigrationStatus()
 
 Get applied migration status
 
@@ -440,7 +440,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**GetDatabaseMigrationStatus200Response**](GetDatabaseMigrationStatus200Response.md)
+[**Array&lt;AppliedMigration&gt;**](AppliedMigration.md)
 
 ### Authorization
 
@@ -534,7 +534,7 @@ This endpoint does not need any parameter.
 
 ## getStripeConfigHistory
 
-> GetStripeConfigHistory200Response getStripeConfigHistory(limit, offset)
+> ConfigHistoryResponse getStripeConfigHistory(limit, offset)
 
 Get config history
 
@@ -586,7 +586,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetStripeConfigHistory200Response**](GetStripeConfigHistory200Response.md)
+[**ConfigHistoryResponse**](ConfigHistoryResponse.md)
 
 ### Authorization
 
@@ -671,7 +671,7 @@ No authorization required
 
 ## pullStripeConfig
 
-> PullStripeConfig200Response pullStripeConfig()
+> StripeConfigurationWithIDs pullStripeConfig()
 
 Pull config from Stripe
 
@@ -712,7 +712,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**PullStripeConfig200Response**](PullStripeConfig200Response.md)
+[**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md)
 
 ### Authorization
 
@@ -973,7 +973,7 @@ example().catch(console.error);
 
 ## updateStripeConfig
 
-> UpdateStripeConfig200Response updateStripeConfig(stripeConfigUpdateRequest)
+> StripeConfigUpdateResponse updateStripeConfig(stripeConfigUpdateRequest)
 
 Update Stripe config
 
@@ -1022,7 +1022,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**UpdateStripeConfig200Response**](UpdateStripeConfig200Response.md)
+[**StripeConfigUpdateResponse**](StripeConfigUpdateResponse.md)
 
 ### Authorization
 
@@ -1046,7 +1046,7 @@ example().catch(console.error);
 
 ## uploadDatabaseMigrations
 
-> MigrationSuccessResponse uploadDatabaseMigrations(migrations)
+> object uploadDatabaseMigrations(migrations)
 
 Upload database migrations
 
@@ -1095,7 +1095,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**MigrationSuccessResponse**](MigrationSuccessResponse.md)
+**object**
 
 ### Authorization
 
@@ -1120,7 +1120,7 @@ example().catch(console.error);
 
 ## validateStripeConfig
 
-> SuccessResponse validateStripeConfig(stripeConfigValidateRequest)
+> object validateStripeConfig(stripeConfigValidateRequest)
 
 Validate Stripe config
 
@@ -1169,7 +1169,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+**object**
 
 ### Authorization
 

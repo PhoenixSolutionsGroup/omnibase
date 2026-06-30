@@ -44,6 +44,12 @@ export interface Role {
      */
     permissions: Array<string>;
     /**
+     * ID of the role template this role was cloned from (NULL for custom roles)
+     * @type {string}
+     * @memberof Role
+     */
+    templateId?: string;
+    /**
      * Array of user IDs assigned to this role
      * @type {Array<string>}
      * @memberof Role
@@ -90,6 +96,7 @@ export function RoleFromJSONTyped(json: any, ignoreDiscriminator: boolean): Role
         'tenantId': json['tenant_id'] == null ? undefined : json['tenant_id'],
         'roleName': json['role_name'],
         'permissions': json['permissions'],
+        'templateId': json['template_id'] == null ? undefined : json['template_id'],
         'userIds': json['user_ids'],
         'createdAt': (new Date(json['created_at'])),
         'updatedAt': (new Date(json['updated_at'])),
@@ -111,6 +118,7 @@ export function RoleToJSONTyped(value?: Role | null, ignoreDiscriminator: boolea
         'tenant_id': value['tenantId'],
         'role_name': value['roleName'],
         'permissions': value['permissions'],
+        'template_id': value['templateId'],
         'user_ids': value['userIds'],
         'created_at': value['createdAt'].toISOString(),
         'updated_at': value['updatedAt'].toISOString(),

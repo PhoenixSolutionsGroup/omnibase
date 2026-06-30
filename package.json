@@ -9,13 +9,8 @@
     "generate:docs": "bun ./scripts/generate-docs.ts",
     "generate:docs:typedoc": "bun ./scripts/generate-docs.ts --typedoc",
     "generate:docs:openapi": "bun ./scripts/generate-docs.ts --openapi",
-    "generate:k6": "./scripts/generate-k6-sdk.sh",
     "test": "./scripts/test-all.sh",
-    "test:api": "./scripts/test-api.sh",
-    "test:api:local": "./scripts/test-api.sh --local",
-    "test:api:k6": "./scripts/test-api.sh --k6-only --local",
-    "test:api:contract": "./scripts/test-api.sh --contract-only --local",
-    "test:api:integration": "./scripts/test-api.sh --k6-only --local --scenario integration",
+    "test:api": "make -C apps/api test",
     "audit": "bun scripts/audit-routes.ts",
     "prepush": "bash .husky/pre-push",
     "prepare": "husky",
@@ -41,7 +36,6 @@
   },
   "workspaces": [
     "sdk/*/*",
-    "tests/test-apps/*",
     "packages/*"
   ],
   "peerDependencies": {

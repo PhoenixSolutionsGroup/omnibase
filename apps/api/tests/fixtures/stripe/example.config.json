@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "webhooks": [
+    {
+      "id": "default-webhook",
+      "url": "https://your-app.com/webhook/stripe",
+      "connect": false,
+      "events": [
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+        "invoice.paid",
+        "invoice.payment_failed"
+      ]
+    }
+  ],
+  "meters": [
+    {
+      "id": "meter_test_api_calls",
+      "display_name": "Test API Calls",
+      "event_name": "test_api_call",
+      "default_aggregation": {
+        "formula": "sum"
+      }
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_test_enterprise_base",
+      "name": "Enterprise Test Base Plan",
+      "description": "Base plan covering subscription + enterprise pricing flows",
+      "type": "service",
+      "prices": [
+        {
+          "id": "price_test_base_monthly",
+          "public": true,
+          "amount": 10000,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1,
+          "default": true
+        },
+        {
+          "id": "price_test_base_monthly_tier1",
+          "public": false,
+          "amount": 9000,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1,
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "price_test_base_monthly_tier2",
+          "public": false,
+          "amount": 7500,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1,
+          "enterprise_template": "tier2_25pct_off"
+        },
+        {
+          "id": "price_test_base_monthly_acme",
+          "public": false,
+          "amount": 8000,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1,
+          "enterprise_id": "acme_corp"
+        }
+      ]
+    },
+    {
+      "id": "prod_test_basic",
+      "name": "Test Basic Plan",
+      "description": "Basic test product",
+      "type": "service",
+      "prices": [
+        {
+          "id": "price_test_basic_monthly",
+          "amount": 999,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1
+        }
+      ]
+    },
+    {
+      "id": "prod_test_tiered_seats",
+      "name": "Tiered Seats Plan",
+      "description": "Graduated tiered licensed pricing per seat",
+      "type": "service",
+      "prices": [
+        {
+          "id": "price_test_tiered_seats_graduated",
+          "public": true,
+          "currency": "usd",
+          "interval": "month",
+          "interval_count": 1,
+          "billing_scheme": "tiered",
+          "tiers_mode": "graduated",
+          "tiers": [
+            { "up_to": 10, "unit_amount": 2000 },
+            { "up_to": "inf", "unit_amount": 1500 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prod_test_enterprise_compute",
+      "name": "Enterprise Test Compute",
+      "description": "Metered compute for enterprise pricing tests",
+      "type": "service",
+      "prices": [
+        {
+          "id": "price_test_compute_hourly",
+          "public": true,
+          "amount": 0.50,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "meter_test_api_calls",
+          "default": true
+        },
+        {
+          "id": "price_test_compute_hourly_tier1",
+          "public": false,
+          "amount": 0.45,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "meter_test_api_calls",
+          "enterprise_template": "tier1_10pct_off"
+        },
+        {
+          "id": "price_test_compute_hourly_tier2",
+          "public": false,
+          "amount": 0.375,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "meter_test_api_calls",
+          "enterprise_template": "tier2_25pct_off"
+        },
+        {
+          "id": "price_test_compute_hourly_acme",
+          "public": false,
+          "amount": 0.40,
+          "currency": "usd",
+          "interval": "month",
+          "usage_type": "metered",
+          "meter": "meter_test_api_calls",
+          "enterprise_id": "acme_corp"
+        }
+      ]
+    }
+  ]
+}

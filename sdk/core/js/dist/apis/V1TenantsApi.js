@@ -91,7 +91,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.AcceptInviteRequestToJSON)(requestParameters['acceptInviteRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AcceptInvite200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AcceptInviteResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -116,6 +116,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -130,7 +136,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.AddSubscriptionRequestToJSON)(requestParameters['addSubscriptionRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AddSubscription200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.AddSubscriptionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -175,7 +181,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateTenantUserInviteRequestToJSON)(requestParameters['createTenantUserInviteRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateInvite200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateTenantUserInviteResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -220,7 +226,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateRoleRequestToJSON)(requestParameters['createRoleRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateRole200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.RoleFromJSON)(jsonValue));
         });
     }
     /**
@@ -262,7 +268,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.CreateTenantRequestToJSON)(requestParameters['createTenantRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateTenant200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateTenantResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -306,7 +312,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteRole200ResponseFromJSON)(jsonValue));
+            return new runtime.VoidApiResponse(response);
         });
     }
     /**
@@ -315,8 +321,7 @@ class V1TenantsApi extends runtime.BaseAPI {
      */
     deleteRole(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.deleteRoleRaw(requestParameters, initOverrides);
-            return yield response.value();
+            yield this.deleteRoleRaw(requestParameters, initOverrides);
         });
     }
     /**
@@ -346,7 +351,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteTenant200ResponseFromJSON)(jsonValue));
+            return new runtime.VoidApiResponse(response);
         });
     }
     /**
@@ -355,55 +360,23 @@ class V1TenantsApi extends runtime.BaseAPI {
      */
     deleteTenant() {
         return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
-            const response = yield this.deleteTenantRaw(requestParameters, initOverrides);
-            return yield response.value();
-        });
-    }
-    /**
-     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation
-     * Get namespace definitions
-     */
-    getRoleDefinitionsRaw(requestParameters, initOverrides) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const queryParameters = {};
-            if (requestParameters['subject'] != null) {
-                queryParameters['subject'] = requestParameters['subject'];
-            }
-            const headerParameters = {};
-            if (this.configuration && this.configuration.apiKey) {
-                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-            }
-            if (this.configuration && this.configuration.apiKey) {
-                headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-            }
-            let urlPath = `/api/v1/tenants/roles/definitions`;
-            const response = yield this.request({
-                path: urlPath,
-                method: 'GET',
-                headers: headerParameters,
-                query: queryParameters,
-            }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetRoleDefinitions200ResponseFromJSON)(jsonValue));
-        });
-    }
-    /**
-     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation
-     * Get namespace definitions
-     */
-    getRoleDefinitions() {
-        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
-            const response = yield this.getRoleDefinitionsRaw(requestParameters, initOverrides);
-            return yield response.value();
+            yield this.deleteTenantRaw(requestParameters, initOverrides);
         });
     }
     /**
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatusRaw(initOverrides) {
+    getTenantBillingStatusRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -424,9 +397,9 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Checks whether the tenant has billing information configured in Stripe and if it\'s active.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Check if billing setup is required - Conditional feature access - Payment method verification
      * Get billing status
      */
-    getTenantBillingStatus(initOverrides) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.getTenantBillingStatusRaw(initOverrides);
+    getTenantBillingStatus() {
+        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
+            const response = yield this.getTenantBillingStatusRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -452,7 +425,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetTenantByID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.TenantFromJSON)(jsonValue));
         });
     }
     /**
@@ -487,7 +460,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetTenantByStripeCustomerID200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.TenantFromJSON)(jsonValue));
         });
     }
     /**
@@ -551,6 +524,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             }
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -565,7 +544,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetTenantSubscription200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SubscriptionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -575,6 +554,43 @@ class V1TenantsApi extends runtime.BaseAPI {
     getTenantSubscription(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.getTenantSubscriptionRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
+     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation
+     * List namespace definitions
+     */
+    listRoleDefinitionsRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queryParameters = {};
+            if (requestParameters['subject'] != null) {
+                queryParameters['subject'] = requestParameters['subject'];
+            }
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+            }
+            let urlPath = `/api/v1/tenants/roles/definitions`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(index_1.NamespaceDefinitionFromJSON));
+        });
+    }
+    /**
+     * Returns all available permission namespaces and their relations from the database.  ## Authentication Requires JWT token with appropriate permissions.  ## Use Cases - Discover available permission namespaces - List relations for each namespace - Build dynamic permission UIs - Filter by subject type for API key creation
+     * List namespace definitions
+     */
+    listRoleDefinitions() {
+        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
+            const response = yield this.listRoleDefinitionsRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -602,7 +618,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListRoles200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(index_1.RoleFromJSON));
         });
     }
     /**
@@ -619,10 +635,16 @@ class V1TenantsApi extends runtime.BaseAPI {
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptionsRaw(initOverrides) {
+    listTenantSubscriptionsRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryParameters = {};
             const headerParameters = {};
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -636,16 +658,16 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenantSubscriptions200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(index_1.SubscriptionResponseFromJSON));
         });
     }
     /**
      * Returns all active Stripe subscriptions associated with the tenant\'s Stripe customer.  ## Authentication Requires JWT token with tenant context.  ## Use Cases - Display current subscriptions - Billing overview - Subscription management UI
      * Get tenant subscriptions
      */
-    listTenantSubscriptions(initOverrides) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.listTenantSubscriptionsRaw(initOverrides);
+    listTenantSubscriptions() {
+        return __awaiter(this, arguments, void 0, function* (requestParameters = {}, initOverrides) {
+            const response = yield this.listTenantSubscriptionsRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -676,7 +698,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListTenantUsers200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(index_1.TenantUserResponseFromJSON));
         });
     }
     /**
@@ -701,6 +723,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -715,7 +743,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.RemoveSubscriptionRequestToJSON)(requestParameters['removeSubscriptionRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.RemoveSubscription200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.RemoveSubscriptionResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -740,6 +768,12 @@ class V1TenantsApi extends runtime.BaseAPI {
             const queryParameters = {};
             const headerParameters = {};
             headerParameters['Content-Type'] = 'application/json';
+            if (requestParameters['xUserId'] != null) {
+                headerParameters['X-User-Id'] = String(requestParameters['xUserId']);
+            }
+            if (requestParameters['xTenantId'] != null) {
+                headerParameters['X-Tenant-Id'] = String(requestParameters['xTenantId']);
+            }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -754,7 +788,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.DeleteTenantUserRequestToJSON)(requestParameters['deleteTenantUserRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SuccessResponseFromJSON)(jsonValue));
+            return new runtime.VoidApiResponse(response);
         });
     }
     /**
@@ -763,8 +797,7 @@ class V1TenantsApi extends runtime.BaseAPI {
      */
     removeTenantUser(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.removeTenantUserRaw(requestParameters, initOverrides);
-            return yield response.value();
+            yield this.removeTenantUserRaw(requestParameters, initOverrides);
         });
     }
     /**
@@ -796,7 +829,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.SwitchTenantRequestToJSON)(requestParameters['switchTenantRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SwitchActiveTenant200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SwitchTenantResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -845,7 +878,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.UpdateRoleRequestToJSON)(requestParameters['updateRoleRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.CreateRole200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.RoleFromJSON)(jsonValue));
         });
     }
     /**
@@ -890,7 +923,7 @@ class V1TenantsApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.UpdateTenantUserRoleRequestToJSON)(requestParameters['updateTenantUserRoleRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.UpdateTenantUserRole200ResponseFromJSON)(jsonValue));
+            return new runtime.VoidApiResponse(response);
         });
     }
     /**
@@ -899,8 +932,7 @@ class V1TenantsApi extends runtime.BaseAPI {
      */
     updateTenantUserRole(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.updateTenantUserRoleRaw(requestParameters, initOverrides);
-            return yield response.value();
+            yield this.updateTenantUserRoleRaw(requestParameters, initOverrides);
         });
     }
 }

@@ -72,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getSession_200_response"
+                $ref: "#/components/schemas/SessionResponse"
           description: Session retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -103,7 +103,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getIdentity_200_response"
+                type: object
           description: Identity retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -133,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/logout_200_response"
+                $ref: "#/components/schemas/LogoutResponse"
           description: Logout flow created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -163,7 +163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/whoAmI_200_response"
+                $ref: "#/components/schemas/WhoAmIResponse"
           description: Authentication status checked
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -206,7 +206,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getActiveTenant_200_response"
+                $ref: "#/components/schemas/ActiveTenantResponse"
           description: Active tenant retrieved
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -251,7 +251,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenants_200_response"
+                $ref: "#/components/schemas/ListTenantsResponse"
           description: Tenants retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -293,7 +293,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createUser_200_response"
+                $ref: "#/components/schemas/KratosIdentity"
           description: User created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -336,7 +336,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MigrationSuccessResponse"
+                type: object
           description: Migrations applied successfully
         "400":
           content:
@@ -372,7 +372,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getDatabaseMigrationStatus_200_response"
+                items:
+                  $ref: "#/components/schemas/AppliedMigration"
+                type: array
           description: Applied migrations retrieved successfully
         "401":
           $ref: "#/components/responses/UnauthorizedError"
@@ -761,7 +763,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createCheckout_200_response"
+                $ref: "#/components/schemas/CreateCheckoutResponse"
           description: Checkout session created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -808,7 +810,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createCustomerPortal_200_response"
+                $ref: "#/components/schemas/CreatePortalResponse"
           description: Portal session created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -827,12 +829,10 @@ paths:
         Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
 
         ## Authentication
-        Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-
-        ## Prerequisites
-        - User must be authenticated
-        - Tenant must have a Stripe customer ID configured
-        - If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
+        Either:
+        - Session cookie (Kratos) — customer resolved from the user's active tenant
+        - `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record
+        - `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly
 
         ## Use Cases
         - API request metering
@@ -840,6 +840,27 @@ paths:
         - Storage usage recording
         - Any metered billing scenario
       operationId: recordUsage
+      parameters:
+      - description: Tenant ID (UUID) - Used to look up the Stripe customer ID from
+          tenant configuration. Required if X-Stripe-Customer-Id and session cookie
+          are absent.
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: "Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer.\
+          \ Required if X-Tenant-Id and session cookie are absent."
+        explode: false
+        in: header
+        name: X-Stripe-Customer-Id
+        required: false
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -851,7 +872,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                type: object
           description: Usage recorded successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -921,7 +942,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvoice_200_response"
+                $ref: "#/components/schemas/InvoiceResponse"
           description: Invoice created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -972,7 +993,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvoice_200_response"
+                $ref: "#/components/schemas/InvoiceResponse"
           description: Invoice retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1031,7 +1052,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvoice_200_response"
+                $ref: "#/components/schemas/InvoiceResponse"
           description: Invoice updated successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1117,7 +1138,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/addInvoiceLineItem_200_response"
+                $ref: "#/components/schemas/InvoiceLineItemResponse"
           description: Line item added successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1208,7 +1229,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/addInvoiceLineItem_200_response"
+                $ref: "#/components/schemas/InvoiceLineItemResponse"
           description: Line item added successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1270,7 +1291,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvoice_200_response"
+                $ref: "#/components/schemas/InvoiceResponse"
           description: Invoice finalized successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1339,17 +1360,13 @@ paths:
                 allowed:
                   summary: Permission granted
                   value:
-                    status: 200
-                    data:
-                      allowed: true
+                    allowed: true
                 denied:
                   summary: Permission denied
                   value:
-                    status: 200
-                    data:
-                      allowed: false
+                    allowed: false
               schema:
-                $ref: "#/components/schemas/checkPermission_200_response"
+                $ref: "#/components/schemas/CheckPermissionResponse"
           description: Permission check result
         "400":
           content:
@@ -1437,7 +1454,7 @@ paths:
                 data:
                   message: Relationship deleted successfully
               schema:
-                $ref: "#/components/schemas/deleteRelationship_200_response"
+                $ref: "#/components/schemas/DeleteRelationshipResponse"
           description: Relationship deleted successfully
         "400":
           content:
@@ -1533,7 +1550,7 @@ paths:
                       namespace: User
                       object: 550e8400-e29b-41d4-a716-446655440000
               schema:
-                $ref: "#/components/schemas/createRelationship_200_response"
+                $ref: "#/components/schemas/CreateRelationshipResponse"
           description: Relationship created successfully
         "400":
           content:
@@ -1618,7 +1635,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/deployPermissionNamespaces_200_response"
+                $ref: "#/components/schemas/NamespaceDeploymentResponse"
           description: Namespaces deployed successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -1698,7 +1715,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/uploadFile_200_response"
+                $ref: "#/components/schemas/UploadResponse"
           description: Upload URL generated successfully
         "400":
           content:
@@ -1801,7 +1818,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/downloadFile_200_response"
+                $ref: "#/components/schemas/DownloadResponse"
           description: Download URL generated successfully
         "400":
           content:
@@ -1892,7 +1909,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/deleteObject_200_response"
+                $ref: "#/components/schemas/MessageResponse"
           description: File deleted successfully
         "400":
           content:
@@ -1980,7 +1997,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/deleteObject_200_response"
+                $ref: "#/components/schemas/MessageResponse"
           description: File made public successfully
         "400":
           content:
@@ -2051,7 +2068,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getStripeConfig_200_response"
+                $ref: "#/components/schemas/StripeConfigResponse"
           description: Stripe configuration retrieved successfully
         "500":
           content:
@@ -2080,7 +2097,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getStripeConfig_200_response"
+                $ref: "#/components/schemas/StripeConfigResponse"
           description: Full Stripe configuration retrieved successfully
         "401":
           content:
@@ -2127,7 +2144,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/updateStripeConfig_200_response"
+                $ref: "#/components/schemas/StripeConfigUpdateResponse"
           description: Configuration updated successfully
         "400":
           content:
@@ -2186,7 +2203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getStripeConfigHistory_200_response"
+                $ref: "#/components/schemas/ConfigHistoryResponse"
           description: Configuration history retrieved successfully
         "400":
           content:
@@ -2236,7 +2253,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                type: object
           description: Configuration is valid
         "400":
           content:
@@ -2273,7 +2290,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/pullStripeConfig_200_response"
+                $ref: "#/components/schemas/StripeConfigurationWithIDs"
           description: Stripe configuration pulled successfully
         "401":
           content:
@@ -2313,7 +2330,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/archiveAllStripeConfig_200_response"
+                $ref: "#/components/schemas/ArchiveAllResponse"
           description: Archive operation completed
         "401":
           content:
@@ -2360,7 +2377,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getPriceByID_200_response"
+                $ref: "#/components/schemas/PriceResponse"
           description: Price found
         "400":
           content:
@@ -2422,7 +2439,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/calculatePriceCost_200_response"
+                $ref: "#/components/schemas/CalculatePriceCostResponse"
           description: Cost calculated successfully
         "400":
           content:
@@ -2473,7 +2490,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getProductByID_200_response"
+                $ref: "#/components/schemas/ProductResponse"
           description: Product found
         "400":
           content:
@@ -2524,7 +2541,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getMeterByID_200_response"
+                $ref: "#/components/schemas/MeterResponse"
           description: Meter found
         "400":
           content:
@@ -2575,7 +2592,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/convertStripeIDToConfigID_200_response"
+                $ref: "#/components/schemas/StripeIDConversionResponse"
           description: Config ID found
         "400":
           content:
@@ -2616,7 +2633,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listWebhooks_200_response"
+                $ref: "#/components/schemas/ListWebhooksResponse"
           description: Webhooks retrieved successfully
         "401":
           content:
@@ -2666,7 +2683,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/applyEnterpriseTemplate_200_response"
+                $ref: "#/components/schemas/EnterpriseApplyResponse"
           description: Enterprise template pricing applied successfully
         "400":
           content:
@@ -2728,7 +2745,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/applyEnterpriseTemplate_200_response"
+                $ref: "#/components/schemas/EnterpriseApplyResponse"
           description: Custom enterprise pricing applied successfully
         "400":
           content:
@@ -2786,7 +2803,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getEnterprisePricesByTemplate_200_response"
+                $ref: "#/components/schemas/EnterprisePricesResponse"
           description: Enterprise prices retrieved successfully
         "401":
           content:
@@ -2832,7 +2849,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getEnterprisePricesByTemplate_200_response"
+                $ref: "#/components/schemas/EnterprisePricesResponse"
           description: Enterprise prices retrieved successfully
         "401":
           content:
@@ -2887,10 +2904,6 @@ paths:
         style: simple
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/deleteTenant_200_response"
           description: Tenant deleted successfully
         "400":
           content:
@@ -2980,7 +2993,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createTenant_200_response"
+                $ref: "#/components/schemas/CreateTenantResponse"
           description: Tenant created successfully
         "400":
           content:
@@ -3040,7 +3053,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantByID_200_response"
+                $ref: "#/components/schemas/Tenant"
           description: Tenant found
         "400":
           content:
@@ -3099,7 +3112,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantByStripeCustomerID_200_response"
+                $ref: "#/components/schemas/Tenant"
           description: Tenant found
         "400":
           content:
@@ -3164,7 +3177,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/switchActiveTenant_200_response"
+                $ref: "#/components/schemas/SwitchTenantResponse"
           description: Successfully switched tenants
         "400":
           content:
@@ -3220,6 +3233,25 @@ paths:
         4. Removes from database
         5. Cleans up user's tenant state
       operationId: removeTenantUser
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -3228,10 +3260,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
           description: User removed successfully
         "400":
           content:
@@ -3311,7 +3339,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenantUsers_200_response"
+                items:
+                  $ref: "#/components/schemas/TenantUserResponse"
+                type: array
           description: Tenant users retrieved successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3386,10 +3416,6 @@ paths:
         required: true
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/updateTenantUserRole_200_response"
           description: User role updated successfully
         "400":
           content:
@@ -3461,7 +3487,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listRoles_200_response"
+                items:
+                  $ref: "#/components/schemas/Role"
+                type: array
           description: Roles retrieved successfully
         "400":
           content:
@@ -3538,7 +3566,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createRole_200_response"
+                $ref: "#/components/schemas/Role"
           description: Role created successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3554,10 +3582,9 @@ paths:
           content:
             application/json:
               example:
-                status: 409
                 error: Role with this name already exists for tenant
               schema:
-                $ref: "#/components/schemas/schemas-ConflictResponse"
+                $ref: "#/components/schemas/ConflictResponse"
           description: Role with this name already exists for tenant
         "500":
           content:
@@ -3617,10 +3644,6 @@ paths:
         style: simple
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/deleteRole_200_response"
           description: Role deleted successfully
         "400":
           $ref: "#/components/responses/BadRequestError"
@@ -3707,7 +3730,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createRole_200_response"
+                $ref: "#/components/schemas/Role"
           description: Role updated successfully
         "400":
           content:
@@ -3759,7 +3782,7 @@ paths:
         - List relations for each namespace
         - Build dynamic permission UIs
         - Filter by subject type for API key creation
-      operationId: getRoleDefinitions
+      operationId: listRoleDefinitions
       parameters:
       - description: "Filter to only return relations that accept this subject type\
           \ (e.g., \"ApiKey\", \"User\")"
@@ -3776,7 +3799,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getRoleDefinitions_200_response"
+                items:
+                  $ref: "#/components/schemas/NamespaceDefinition"
+                type: array
           description: Namespace definitions retrieved successfully
         "401":
           content:
@@ -3794,7 +3819,7 @@ paths:
       - CookieAuth: []
       - SessionTokenAuth: []
       - ServiceKeyAuth: []
-      summary: Get namespace definitions
+      summary: List namespace definitions
       tags:
       - V1 Tenants
   /api/v1/tenants/subscriptions:
@@ -3826,6 +3851,25 @@ paths:
         - Downgrade by removing premium features
         - Stop billing for unused resources
       operationId: removeSubscription
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -3837,7 +3881,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/removeSubscription_200_response"
+                $ref: "#/components/schemas/RemoveSubscriptionResponse"
           description: Subscription canceled successfully
         "400":
           content:
@@ -3886,12 +3930,33 @@ paths:
         - Billing overview
         - Subscription management UI
       operationId: listTenantSubscriptions
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listTenantSubscriptions_200_response"
+                items:
+                  $ref: "#/components/schemas/SubscriptionResponse"
+                type: array
           description: Tenant subscriptions retrieved successfully
         "401":
           content:
@@ -3945,6 +4010,25 @@ paths:
         - Enable usage-based billing for resources
         - Add additional services to tenant's billing
       operationId: addSubscription
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -3956,7 +4040,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/addSubscription_200_response"
+                $ref: "#/components/schemas/AddSubscriptionResponse"
           description: Subscription added successfully
         "400":
           content:
@@ -4017,12 +4101,30 @@ paths:
         schema:
           type: string
         style: simple
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTenantSubscription_200_response"
+                $ref: "#/components/schemas/SubscriptionResponse"
           description: Subscription found
         "400":
           content:
@@ -4103,7 +4205,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/createInvite_200_response"
+                $ref: "#/components/schemas/CreateTenantUserInviteResponse"
           description: Invite sent successfully
         "400":
           content:
@@ -4184,7 +4286,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/acceptInvite_200_response"
+                $ref: "#/components/schemas/AcceptInviteResponse"
           description: Successfully joined organization
         "400":
           content:
@@ -4293,6 +4395,25 @@ paths:
         - Conditional feature access
         - Payment method verification
       operationId: getTenantBillingStatus
+      parameters:
+      - description: User ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-User-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      - description: Tenant ID (UUID) - Required when using X-Service-Key header
+        explode: false
+        in: header
+        name: X-Tenant-Id
+        required: false
+        schema:
+          format: uuid
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -4374,20 +4495,6 @@ components:
             $ref: "#/components/schemas/ForbiddenResponse"
       description: Forbidden - Insufficient permissions
   schemas:
-    SuccessResponse:
-      description: Standard success response wrapper
-      example:
-        data: "{}"
-        status: 200
-      properties:
-        status:
-          description: HTTP status code
-          example: 200
-          type: integer
-        data:
-          $ref: "#/components/schemas/SuccessResponse_data"
-      required:
-      - status
     TenantSettings:
       description: Tenant configuration settings
       example:
@@ -4508,36 +4615,24 @@ components:
       description: Bad Request error response (400)
       example:
         error: Invalid request parameters
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: Invalid request parameters
           type: string
       required:
       - error
-      - status
     UnauthorizedResponse:
       description: Unauthorized error response (401)
       example:
         error: Unauthorized
-        status: 401
       properties:
-        status:
-          description: HTTP status code
-          example: 401
-          type: integer
         error:
           description: Error message
           example: Unauthorized
           type: string
       required:
       - error
-      - status
     LogoutResponse:
       example:
         logout_url: http://auth.test.example.com/self-service/logout?token=tok_test_abc123xyz
@@ -4558,19 +4653,13 @@ components:
       description: Internal Server Error response (500)
       example:
         error: Internal Server Error
-        status: 500
       properties:
-        status:
-          description: HTTP status code
-          example: 500
-          type: integer
         error:
           description: Error message
           example: Internal Server Error
           type: string
       required:
       - error
-      - status
     WhoAmIResponse:
       example:
         authenticated: true
@@ -4819,35 +4908,13 @@ components:
       description: Conflict error response (409)
       example:
         error: Conflict
-        status: 409
       properties:
-        status:
-          description: HTTP status code
-          example: 409
-          type: integer
         error:
           description: Error message
           example: Conflict
           type: string
       required:
       - error
-      - status
-    MigrationSuccessResponse:
-      example:
-        message: Migrations applied successfully
-        status: 200
-      properties:
-        status:
-          description: HTTP status code
-          example: 200
-          type: integer
-        message:
-          description: Success message
-          example: Migrations applied successfully
-          type: string
-      required:
-      - message
-      - status
     MigrationErrorResponse:
       example:
         message: No migrations zip file provided
@@ -4954,36 +5021,24 @@ components:
       description: Generic error response
       example:
         error: An error occurred
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: An error occurred
           type: string
       required:
       - error
-      - status
     NotFoundResponse:
       description: Not Found error response (404)
       example:
         error: Not Found
-        status: 404
       properties:
-        status:
-          description: HTTP status code
-          example: 404
-          type: integer
         error:
           description: Error message
           example: Not Found
           type: string
       required:
       - error
-      - status
     SendEmailRequest:
       example:
         subject: Welcome to Our Platform
@@ -5074,19 +5129,13 @@ components:
       description: Too Many Requests error response (429)
       example:
         error: Too Many Requests
-        status: 429
       properties:
-        status:
-          description: HTTP status code
-          example: 429
-          type: integer
         error:
           description: Error message
           example: Too Many Requests
           type: string
       required:
       - error
-      - status
     CreatePortalRequest:
       example:
         return_url: https://test.example.com/dashboard
@@ -5160,6 +5209,8 @@ components:
         metadata:
           key: metadata
         auto_advance: false
+        collection_method: send_invoice
+        days_until_due: 7
         description: Monthly platform fees
         currency: usd
       properties:
@@ -5170,6 +5221,22 @@ components:
             finalization)
           example: false
           type: boolean
+        collection_method:
+          description: How to collect payment. `charge_automatically` (default) attempts
+            to charge the customer's default payment method. `send_invoice` emails
+            the customer (requires `days_until_due`).
+          enum:
+          - charge_automatically
+          - send_invoice
+          example: send_invoice
+          type: string
+        days_until_due:
+          description: Days until invoice is due. Required when `collection_method`
+            is `send_invoice`.
+          example: 7
+          maximum: 365
+          minimum: 0
+          type: integer
         description:
           description: Optional description for the invoice
           example: Monthly platform fees
@@ -5675,19 +5742,13 @@ components:
       description: Forbidden error response (403)
       example:
         error: Forbidden
-        status: 403
       properties:
-        status:
-          description: HTTP status code
-          example: 403
-          type: integer
         error:
           description: Error message
           example: Forbidden
           type: string
       required:
       - error
-      - status
     DownloadRequest:
       additionalProperties: false
       example:
@@ -5757,19 +5818,13 @@ components:
       description: Internal Server Error response (500)
       example:
         error: Internal Server Error
-        status: 500
       properties:
-        status:
-          description: HTTP status code
-          example: 500
-          type: integer
         error:
           description: Error message
           example: Internal Server Error
           type: string
       required:
       - error
-      - status
     WebhookEndpointConfig:
       example:
         id: account_events
@@ -7155,19 +7210,13 @@ components:
       description: Unauthorized error response (401)
       example:
         error: Unauthorized
-        status: 401
       properties:
-        status:
-          description: HTTP status code
-          example: 401
-          type: integer
         error:
           description: Error message
           example: Unauthorized
           type: string
       required:
       - error
-      - status
     Meter:
       example:
         default_aggregation:
@@ -9421,19 +9470,13 @@ components:
       description: Bad Request error response (400)
       example:
         error: Invalid request parameters
-        status: 400
       properties:
-        status:
-          description: HTTP status code
-          example: 400
-          type: integer
         error:
           description: Error message or details
           example: Invalid request parameters
           type: string
       required:
       - error
-      - status
     ConfigHistoryItem:
       example:
         updated_at: 2025-11-10T00:29:19Z
@@ -10862,19 +10905,13 @@ components:
       description: Not Found error response (404)
       example:
         error: Not Found
-        status: 404
       properties:
-        status:
-          description: HTTP status code
-          example: 404
-          type: integer
         error:
           description: Error message
           example: Not Found
           type: string
       required:
       - error
-      - status
     CalculatePriceCostRequest:
       example:
         quantity: 1500
@@ -11412,59 +11449,6 @@ components:
       - message
       - tenant
       - token
-    DeleteTenantResponse:
-      description: Response after deleting a tenant
-      example:
-        message: Tenant deleted successfully
-      properties:
-        message:
-          description: Success message
-          example: Tenant deleted successfully
-          type: string
-      required:
-      - message
-    GetTenantByIDResponse:
-      description: Response containing a tenant by ID
-      example:
-        tenant:
-          stripe_customer_id: cus_TOWEstcga5ou7a
-          settings:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            allow_user_invites: true
-            max_members: 10
-          updated_at: 2025-11-10T00:42:29.440300172Z
-          name: Test Organization
-          created_at: 2025-11-10T00:42:29.440300124Z
-          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-          enterprise_id: acme_corp
-          type: organization
-          enterprise_template: tier1_10pct_off
-      properties:
-        tenant:
-          $ref: "#/components/schemas/Tenant"
-      required:
-      - tenant
-    GetTenantByStripeCustomerIDResponse:
-      description: Response containing a tenant by Stripe customer ID
-      example:
-        tenant:
-          stripe_customer_id: cus_TOWEstcga5ou7a
-          settings:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            allow_user_invites: true
-            max_members: 10
-          updated_at: 2025-11-10T00:42:29.440300172Z
-          name: Test Organization
-          created_at: 2025-11-10T00:42:29.440300124Z
-          id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-          enterprise_id: acme_corp
-          type: organization
-          enterprise_template: tier1_10pct_off
-      properties:
-        tenant:
-          $ref: "#/components/schemas/Tenant"
-      required:
-      - tenant
     SwitchTenantRequest:
       description: Request to switch active tenant
       example:
@@ -11551,17 +11535,6 @@ components:
       required:
       - role
       - user_id
-    UpdateTenantUserRoleResponse:
-      description: Response after updating user role
-      example:
-        message: User role updated successfully
-      properties:
-        message:
-          description: Success message
-          example: User role updated successfully
-          type: string
-      required:
-      - message
     DeleteTenantUserRequest:
       description: Request to remove a user from tenant
       example:
@@ -11588,6 +11561,7 @@ components:
         - 550e8400-e29b-41d4-a716-446655440000
         - 550e8400-e29b-41d4-a716-446655440001
         created_at: 2025-11-10T00:18:19.653645Z
+        template_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
       properties:
         id:
@@ -11612,6 +11586,12 @@ components:
           items:
             type: string
           type: array
+        template_id:
+          description: ID of the role template this role was cloned from (NULL for
+            custom roles)
+          format: uuid
+          type: string
+          nullable: true
         user_ids:
           description: Array of user IDs assigned to this role
           example:
@@ -11638,40 +11618,6 @@ components:
       - role_name
       - updated_at
       - user_ids
-    RolesListResponse:
-      description: List of roles in a tenant
-      example:
-        roles:
-        - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-      properties:
-        roles:
-          description: List of roles (including system roles)
-          items:
-            $ref: "#/components/schemas/Role"
-          type: array
-      required:
-      - roles
     CreateRoleRequest:
       description: Request to create a new role
       example:
@@ -11700,23 +11646,6 @@ components:
       required:
       - permissions
       - role_name
-    schemas-ConflictResponse:
-      description: 409 Conflict response when resource already exists
-      example:
-        error: Role with this name already exists for tenant
-        status: 409
-      properties:
-        status:
-          description: HTTP status code
-          example: 409
-          type: integer
-        error:
-          description: Error message describing the conflict
-          example: Role with this name already exists for tenant
-          type: string
-      required:
-      - error
-      - status
     UpdateRoleRequest:
       description: Request to update an existing role
       example:
@@ -11734,17 +11663,6 @@ components:
           type: array
       required:
       - permissions
-    DeleteRoleResponse:
-      description: Response after deleting a role
-      example:
-        message: Role deleted successfully
-      properties:
-        message:
-          description: Success message
-          example: Role deleted successfully
-          type: string
-      required:
-      - message
     RelationMetadata:
       description: Enriched metadata for a single relation including JSDoc annotations
       example:
@@ -11883,90 +11801,6 @@ components:
       - namespace
       - relations
       - updated_at
-    NamespaceDefinitionsResponse:
-      description: Available permission namespace definitions
-      example:
-        definitions:
-        - updated_at: 2025-11-10T00:33:08.720326Z
-          relations_metadata:
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          namespace: Tenant
-          id: bfab650b-f834-4904-a4e8-41343fea86bc
-          subject_relations:
-            User:
-            - can_delete_tenant
-            - can_invite_user
-            - can_rotate_keys
-            ApiKey:
-            - can_rotate_keys
-            - can_view_db_secret_key
-          relations:
-          - can_delete_tenant
-          - can_invite_user
-          - can_update_user_role
-        - updated_at: 2025-11-10T00:33:08.720326Z
-          relations_metadata:
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          - sub_group: Database
-            roles:
-            - owner
-            - admin
-            subjects:
-            - User
-            - ApiKey
-            name: can_view_db_secret_key
-            display_name: View Db Secret Key
-            group: Secrets
-          namespace: Tenant
-          id: bfab650b-f834-4904-a4e8-41343fea86bc
-          subject_relations:
-            User:
-            - can_delete_tenant
-            - can_invite_user
-            - can_rotate_keys
-            ApiKey:
-            - can_rotate_keys
-            - can_view_db_secret_key
-          relations:
-          - can_delete_tenant
-          - can_invite_user
-          - can_update_user_role
-      properties:
-        definitions:
-          description: List of namespace definitions
-          items:
-            $ref: "#/components/schemas/NamespaceDefinition"
-          type: array
-      required:
-      - definitions
     SubscriptionResponse:
       description: Stripe subscription information
       example:
@@ -12072,6 +11906,10 @@ components:
           description: Message confirming the addition
           example: Subscription added successfully
           type: string
+      required:
+      - message
+      - status
+      - subscription_id
     RemoveSubscriptionRequest:
       description: Request to remove/cancel a subscription
       example:
@@ -12110,6 +11948,10 @@ components:
           description: Message confirming the cancellation
           example: Subscription canceled successfully
           type: string
+      required:
+      - message
+      - status
+      - subscription_id
     CreateTenantUserInviteRequest:
       description: Request to invite a user to the tenant
       example:
@@ -12287,193 +12129,6 @@ components:
       - message
       - tenant_id
       - token
-    JWTTokenResponse:
-      description: PostgREST JWT token for direct database access
-      example:
-        token: eyJhbGciOiJIUzI1NiIs...
-      properties:
-        token:
-          description: PostgREST JWT token
-          example: eyJhbGciOiJIUzI1NiIs...
-          type: string
-      required:
-      - token
-    BillingStatusResponse:
-      example:
-        is_active: true
-      properties:
-        is_active:
-          description: Whether tenant has active billing configured
-          example: true
-          type: boolean
-      required:
-      - is_active
-    getSession_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/SessionResponse"
-      example:
-        data:
-          session:
-            id: session_test_123
-            active: true
-            expires_at: 2025-11-11T05:00:00Z
-          identity:
-            id: 550e8400-e29b-41d4-a716-446655440000
-            traits:
-              email: user@example.com
-              first_name: John
-              last_name: Doe
-        status: 200
-    getIdentity_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/getIdentity_200_response_allOf_data"
-      example:
-        data: null
-        status: 200
-    logout_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/LogoutResponse"
-      example:
-        data:
-          logout_url: http://auth.test.example.com/self-service/logout?token=tok_test_abc123xyz
-          logout_token: tok_test_abc123xyz
-        status: 200
-    whoAmI_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/WhoAmIResponse"
-      example:
-        data:
-          authenticated: true
-          user_id: 550e8400-e29b-41d4-a716-446655440000
-        status: 200
-    getActiveTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ActiveTenantResponse"
-      example:
-        data:
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-        status: 200
-    listTenants_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ListTenantsResponse"
-      example:
-        data:
-          tenants:
-          - is_active: true
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-          - is_active: true
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-        status: 200
-    createUser_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/KratosIdentity"
-      example:
-        data:
-          recovery_addresses:
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: 586ff4ca-f7d6-4a99-8f3c-2b46dbcedb4e
-            value: user@example.com
-            via: email
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: 586ff4ca-f7d6-4a99-8f3c-2b46dbcedb4e
-            value: user@example.com
-            via: email
-          traits:
-            name:
-              last: Doe
-              first: John
-            email: user@example.com
-          updated_at: 2025-11-12T09:18:51.829324Z
-          credentials:
-            password:
-              updated_at: 2000-01-23T04:56:07.000+00:00
-              identifiers:
-              - user@example.com
-              created_at: 2000-01-23T04:56:07.000+00:00
-              type: password
-              version: 0
-          verifiable_addresses:
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            verified: false
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: a25b4bd7-3629-4aa5-bec5-212dc13b2395
-            value: user@example.com
-            via: email
-            status: pending
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            verified: false
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: a25b4bd7-3629-4aa5-bec5-212dc13b2395
-            value: user@example.com
-            via: email
-            status: pending
-          organization_id: organization_id
-          schema_id: default
-          state_changed_at: 2025-11-12T09:18:51.828257251Z
-          schema_url: http://127.0.0.1:4433/schemas/ZGVmYXVsdA
-          created_at: 2025-11-12T09:18:51.829324Z
-          id: 319fc51a-9684-4f4f-87ea-6feefcfcc334
-          state: active
-        status: 200
     uploadDatabaseMigrations_request:
       properties:
         migrations:
@@ -12482,21 +12137,6 @@ components:
           type: string
       required:
       - migrations
-    getDatabaseMigrationStatus_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            items:
-              $ref: "#/components/schemas/AppliedMigration"
-            type: array
-      example:
-        data:
-        - dirty: false
-          version: 18
-        - dirty: false
-          version: 18
-        status: 200
     rollbackDatabaseMigrations_request:
       properties:
         steps:
@@ -12511,24 +12151,14 @@ components:
       required:
       - migrations
       - steps
-    rollbackDatabaseMigrations_200_response_allOf_data:
+    rollbackDatabaseMigrations_200_response:
       example:
         message: Rolled back 1 migration(s)
       properties:
         message:
           example: Rolled back 1 migration(s)
           type: string
-    rollbackDatabaseMigrations_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/rollbackDatabaseMigrations_200_response_allOf_data"
-      example:
-        data:
-          message: Rolled back 1 migration(s)
-        status: 200
-    getEmailTemplates_200_response_allOf_data:
+    getEmailTemplates_200_response:
       example:
         templates:
         - updated_at: 2025-11-10T00:33:08.726632Z
@@ -12552,30 +12182,7 @@ components:
         count:
           example: 3
           type: integer
-    getEmailTemplates_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/getEmailTemplates_200_response_allOf_data"
-      example:
-        data:
-          templates:
-          - updated_at: 2025-11-10T00:33:08.726632Z
-            subject: Welcome to Test Platform
-            html_body: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 550e8400-e29b-41d4-a716-446655440000
-            type: welcome
-          - updated_at: 2025-11-10T00:33:08.726632Z
-            subject: Welcome to Test Platform
-            html_body: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 550e8400-e29b-41d4-a716-446655440000
-            type: welcome
-          count: 3
-        status: 200
-    createOrUpdateEmailTemplate_200_response_allOf_data:
+    createOrUpdateEmailTemplate_200_response:
       example:
         template:
           updated_at: 2025-11-10T00:33:08.726632Z
@@ -12591,144 +12198,20 @@ components:
           type: string
         template:
           $ref: "#/components/schemas/EmailTemplate"
-    createOrUpdateEmailTemplate_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/createOrUpdateEmailTemplate_200_response_allOf_data"
-      example:
-        data:
-          template:
-            updated_at: 2025-11-10T00:33:08.726632Z
-            subject: Welcome to Test Platform
-            html_body: <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 550e8400-e29b-41d4-a716-446655440000
-            type: welcome
-          message: Template created successfully
-        status: 200
-    deleteEmailTemplate_200_response_allOf_data:
+    deleteEmailTemplate_200_response:
       example:
         message: Template deleted successfully
       properties:
         message:
           example: Template deleted successfully
           type: string
-    deleteEmailTemplate_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/deleteEmailTemplate_200_response_allOf_data"
-      example:
-        data:
-          message: Template deleted successfully
-        status: 200
-    sendEmail_200_response_allOf_data:
+    sendEmail_200_response:
       example:
         message: Email sent successfully
       properties:
         message:
           example: Email sent successfully
           type: string
-    sendEmail_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/sendEmail_200_response_allOf_data"
-      example:
-        data:
-          message: Email sent successfully
-        status: 200
-    createCheckout_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateCheckoutResponse"
-      example:
-        data:
-          session_id: cs_test_a1b2c3d4e5f6
-          url: https://checkout.stripe.com/pay/cs_test_...
-        status: 200
-    createCustomerPortal_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreatePortalResponse"
-      example:
-        data:
-          url: https://billing.stripe.com/session/live_...
-        status: 200
-    createInvoice_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/InvoiceResponse"
-      example:
-        data:
-          invoice_pdf: https://pay.stripe.com/invoice/...
-          hosted_invoice_url: https://invoice.stripe.com/i/...
-          amount_due: 2000
-          currency: usd
-          id: in_1234567890
-          customer_id: cus_1234567890
-          status: draft
-        status: 200
-    addInvoiceLineItem_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/InvoiceLineItemResponse"
-      example:
-        data:
-          amount: 1000
-          description: Platform fee
-          id: ii_1234567890
-        status: 200
-    checkPermission_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CheckPermissionResponse"
-      example:
-        data:
-          allowed: true
-        status: 200
-    createRelationship_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateRelationshipResponse"
-      example:
-        data:
-          message: Relationship created successfully
-          relationship:
-            namespace: Tenant
-            object: tenant_test_123
-            relation: owners
-            subject_set:
-              namespace: User
-              object: 550e8400-e29b-41d4-a716-446655440000
-              relation: ""
-        status: 200
-    deleteRelationship_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DeleteRelationshipResponse"
-      example:
-        data:
-          message: Relationship deleted successfully
-        status: 200
     deployPermissionNamespaces_request:
       properties:
         namespaces:
@@ -12737,2516 +12220,26 @@ components:
           type: string
       required:
       - namespaces
-    deployPermissionNamespaces_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/NamespaceDeploymentResponse"
-      example:
-        data:
-          tenant_id: tenant_test_123
-          path: tenant_test_123/latest.zip
-          managed_mode: true
-          message: Namespaces deployed successfully
-          roles_synced: 5
-        status: 200
-    uploadFile_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/UploadResponse"
-      example:
-        data:
-          path: avatars/user-123.png
-          upload_url: https://storage.test.example.com/bucket/path?signature=...
-          id: 550e8400-e29b-41d4-a716-446655440000
-        status: 200
-    downloadFile_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DownloadResponse"
-      example:
-        data:
-          download_url: https://storage.test.example.com/bucket/path?signature=...
-        status: 200
-    deleteObject_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/MessageResponse"
-      example:
-        data:
-          message: file deleted
-        status: 200
-    getStripeConfig_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/StripeConfigResponse"
-      example:
-        data:
-          updated_at: 2025-11-10T00:29:19Z
-          created_at: 2025-11-10T00:29:19Z
-          id: e056fa27-151d-4d25-b237-97e9de8d8dbf
-          config:
-            promotion_codes:
-            - metadata:
-                key: metadata
-              code: LAUNCH25
-              first_time_transaction: true
-              expires_at: 1735689600
-              coupon: launch_discount
-              max_redemptions: 100
-              active: true
-              minimum_amount_currency: usd
-              id: promo_launch25
-              minimum_amount: 5000
-              stripe_id: promo_1SRiyyCJIZaBlhY1
-            - metadata:
-                key: metadata
-              code: LAUNCH25
-              first_time_transaction: true
-              expires_at: 1735689600
-              coupon: launch_discount
-              max_redemptions: 100
-              active: true
-              minimum_amount_currency: usd
-              id: promo_launch25
-              minimum_amount: 5000
-              stripe_id: promo_1SRiyyCJIZaBlhY1
-            webhooks:
-            - id: account_events
-              url: https://example.com/webhooks/stripe
-              events:
-              - invoice.paid
-              - customer.subscription.created
-              connect: false
-            - id: account_events
-              url: https://example.com/webhooks/stripe
-              events:
-              - invoice.paid
-              - customer.subscription.created
-              connect: false
-            coupons:
-            - duration: once
-              duration_in_months: 3
-              redeem_by: 1735689600
-              metadata:
-                key: metadata
-              applies_to:
-              - applies_to
-              - applies_to
-              max_redemptions: 100
-              name: Launch Discount
-              percent_off: 20
-              currency: usd
-              id: launch_discount
-              stripe_id: coupon_1SRiyyCJIZaBlhY1
-              amount_off: 500
-            - duration: once
-              duration_in_months: 3
-              redeem_by: 1735689600
-              metadata:
-                key: metadata
-              applies_to:
-              - applies_to
-              - applies_to
-              max_redemptions: 100
-              name: Launch Discount
-              percent_off: 20
-              currency: usd
-              id: launch_discount
-              stripe_id: coupon_1SRiyyCJIZaBlhY1
-              amount_off: 500
-            version: 1.0.0
-            meters:
-            - default_aggregation:
-                formula: sum
-              value_settings:
-                event_payload_key: value
-              event_name: api_request
-              id: api_requests
-              customer_mapping:
-                event_payload_key: customer_id
-                type: by_id
-              display_name: API Requests
-              stripe_id: mtr_1SRiyyCJIZaBlhY1
-            - default_aggregation:
-                formula: sum
-              value_settings:
-                event_payload_key: value
-              event_name: api_request
-              id: api_requests
-              customer_mapping:
-                event_payload_key: customer_id
-                type: by_id
-              display_name: API Requests
-              stripe_id: mtr_1SRiyyCJIZaBlhY1
-            products:
-            - ui:
-                features:
-                - Unlimited projects
-                - Priority support
-                badge: Popular
-                cta_text: Get Started
-                highlighted: true
-                tagline: For growing teams
-                display_name: Professional
-                sort_order: 1
-              name: Basic Plan
-              description: Our basic subscription tier
-              id: basic_plan
-              type: service
-              prices:
-              - interval_count: 1
-                amount: 0.273
-                tiers:
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                tiers_mode: graduated
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: licensed
-                currency: usd
-                interval: month
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              - interval_count: 1
-                amount: 0.273
-                tiers:
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                tiers_mode: graduated
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: licensed
-                currency: usd
-                interval: month
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              stripe_id: prod_1SRiyyCJIZaBlhY1
-            - ui:
-                features:
-                - Unlimited projects
-                - Priority support
-                badge: Popular
-                cta_text: Get Started
-                highlighted: true
-                tagline: For growing teams
-                display_name: Professional
-                sort_order: 1
-              name: Basic Plan
-              description: Our basic subscription tier
-              id: basic_plan
-              type: service
-              prices:
-              - interval_count: 1
-                amount: 0.273
-                tiers:
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                tiers_mode: graduated
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: licensed
-                currency: usd
-                interval: month
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              - interval_count: 1
-                amount: 0.273
-                tiers:
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                - flat_amount: 0
-                  up_to: 100
-                  unit_amount: 10
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                tiers_mode: graduated
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: licensed
-                currency: usd
-                interval: month
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              stripe_id: prod_1SRiyyCJIZaBlhY1
-          version: 1.0.0
-        status: 200
-    updateStripeConfig_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/StripeConfigUpdateResponse"
-      example:
-        data:
-          changes:
-            promotion_codes:
-              created:
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-              updated:
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-              deactivated:
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-              - code: LAUNCH25
-                action: created
-                promo_id: promo_launch25
-                stripe_id: promo_123abc
-            webhooks:
-              created:
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-              unchanged:
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-              updated:
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-              - webhook_id: 550e8400-e29b-41d4-a716-446655440000
-                action: created
-                url: https://example.com/webhooks/stripe
-                stripe_id: we_123abc
-            coupons:
-              archived:
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-              created:
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-              updated:
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-              - coupon_id: launch_discount
-                name: Launch Discount
-                action: created
-                stripe_id: coupon_123abc
-            prices:
-              archived:
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-              created:
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-              updated:
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-              - product_id: basic_plan
-                price_id: basic_monthly
-                action: created
-                stripe_id: price_123abc
-            products:
-              archived:
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-              created:
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-              updated:
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-              - product_id: basic_plan
-                action: created
-                details:
-                - Price test_price created
-                - Price old_price archived
-                product_name: Basic Plan
-                stripe_id: prod_123abc
-            meters:
-              archived:
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-              created:
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-              updated:
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-              - action: created
-                display_name: API Calls
-                meter_id: api_calls
-                stripe_id: mtr_123abc
-          message: Configuration updated successfully
-          config:
-            promotion_codes:
-            - metadata:
-                key: metadata
-              code: LAUNCH25
-              first_time_transaction: true
-              expires_at: 1735689600
-              coupon: launch_discount
-              max_redemptions: 100
-              active: true
-              minimum_amount_currency: usd
-              id: promo_launch25
-              minimum_amount: 5000
-              stripe_id: promo_1SRiyyCJIZaBlhY1
-            - metadata:
-                key: metadata
-              code: LAUNCH25
-              first_time_transaction: true
-              expires_at: 1735689600
-              coupon: launch_discount
-              max_redemptions: 100
-              active: true
-              minimum_amount_currency: usd
-              id: promo_launch25
-              minimum_amount: 5000
-              stripe_id: promo_1SRiyyCJIZaBlhY1
-            webhooks:
-            - id: account_events
-              url: https://example.com/webhooks/stripe
-              events:
-              - invoice.paid
-              - customer.subscription.created
-              connect: false
-            - id: account_events
-              url: https://example.com/webhooks/stripe
-              events:
-              - invoice.paid
-              - customer.subscription.created
-              connect: false
-            coupons:
-            - duration: once
-              duration_in_months: 3
-              redeem_by: 1735689600
-              metadata:
-                campaign: launch_2025
-              applies_to:
-              - pro_plan
-              - enterprise_plan
-              max_redemptions: 100
-              name: Launch Discount
-              percent_off: 20
-              currency: usd
-              id: launch_discount
-              stripe_id: coupon_1SRiyyCJIZaBlhY1
-              amount_off: 500
-            - duration: once
-              duration_in_months: 3
-              redeem_by: 1735689600
-              metadata:
-                campaign: launch_2025
-              applies_to:
-              - pro_plan
-              - enterprise_plan
-              max_redemptions: 100
-              name: Launch Discount
-              percent_off: 20
-              currency: usd
-              id: launch_discount
-              stripe_id: coupon_1SRiyyCJIZaBlhY1
-              amount_off: 500
-            version: 1.0.0
-            meters:
-            - default_aggregation:
-                formula: sum
-              value_settings:
-                event_payload_key: value
-              event_name: api_request
-              id: api_requests
-              customer_mapping:
-                event_payload_key: customer_id
-                type: by_id
-              display_name: API Requests
-              stripe_id: mtr_1SRiyyCJIZaBlhY1
-            - default_aggregation:
-                formula: sum
-              value_settings:
-                event_payload_key: value
-              event_name: api_request
-              id: api_requests
-              customer_mapping:
-                event_payload_key: customer_id
-                type: by_id
-              display_name: API Requests
-              stripe_id: mtr_1SRiyyCJIZaBlhY1
-            products:
-            - ui:
-                features:
-                - Unlimited projects
-                - Priority support
-                badge: Popular
-                cta_text: Get Started
-                highlighted: true
-                tagline: For growing teams
-                display_name: Professional
-                sort_order: 1
-              name: Basic Plan
-              description: Our basic subscription tier
-              id: basic_plan
-              type: service
-              prices:
-              - interval_count: 1
-                amount: 0.273
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: ""
-                currency: usd
-                interval: ""
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              - interval_count: 1
-                amount: 0.273
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: ""
-                currency: usd
-                interval: ""
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              stripe_id: prod_1SRiyyCJIZaBlhY1
-            - ui:
-                features:
-                - Unlimited projects
-                - Priority support
-                badge: Popular
-                cta_text: Get Started
-                highlighted: true
-                tagline: For growing teams
-                display_name: Professional
-                sort_order: 1
-              name: Basic Plan
-              description: Our basic subscription tier
-              id: basic_plan
-              type: service
-              prices:
-              - interval_count: 1
-                amount: 0.273
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: ""
-                currency: usd
-                interval: ""
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              - interval_count: 1
-                amount: 0.273
-                meter: api_requests
-                billing_scheme: per_unit
-                enterprise_id: acme_corp
-                enterprise_template: tier1_10pct_off
-                default: false
-                public: true
-                ui:
-                  billing_period: per month
-                  features:
-                  - Billed monthly
-                  price_display:
-                    show_currency: true
-                    custom_text: Contact us
-                    suffix: /mo
-                  display_name: Monthly
-                  limits:
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                  - unit: requests
-                    text: Up to 1000 API calls
-                    value: 1000
-                usage_type: ""
-                currency: usd
-                interval: ""
-                id: basic_monthly
-                tax_included_in_price: false
-                stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-              stripe_id: prod_1SRiyyCJIZaBlhY1
-          errors: []
-        status: 200
-    getStripeConfigHistory_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ConfigHistoryResponse"
-      example:
-        data:
-          configs:
-          - updated_at: 2025-11-10T00:29:19Z
-            parse_error: Invalid product configuration
-            created_at: 2025-11-10T00:29:19Z
-            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
-            config:
-              promotion_codes:
-              - metadata:
-                  key: metadata
-                code: LAUNCH25
-                first_time_transaction: true
-                expires_at: 1735689600
-                coupon: launch_discount
-                max_redemptions: 100
-                active: true
-                minimum_amount_currency: usd
-                id: promo_launch25
-                minimum_amount: 5000
-                stripe_id: promo_1SRiyyCJIZaBlhY1
-              - metadata:
-                  key: metadata
-                code: LAUNCH25
-                first_time_transaction: true
-                expires_at: 1735689600
-                coupon: launch_discount
-                max_redemptions: 100
-                active: true
-                minimum_amount_currency: usd
-                id: promo_launch25
-                minimum_amount: 5000
-                stripe_id: promo_1SRiyyCJIZaBlhY1
-              webhooks:
-              - id: account_events
-                url: https://example.com/webhooks/stripe
-                events:
-                - invoice.paid
-                - customer.subscription.created
-                connect: false
-              - id: account_events
-                url: https://example.com/webhooks/stripe
-                events:
-                - invoice.paid
-                - customer.subscription.created
-                connect: false
-              coupons:
-              - duration: once
-                duration_in_months: 3
-                redeem_by: 1735689600
-                metadata:
-                  key: metadata
-                applies_to:
-                - applies_to
-                - applies_to
-                max_redemptions: 100
-                name: Launch Discount
-                percent_off: 20
-                currency: usd
-                id: launch_discount
-                stripe_id: coupon_1SRiyyCJIZaBlhY1
-                amount_off: 500
-              - duration: once
-                duration_in_months: 3
-                redeem_by: 1735689600
-                metadata:
-                  key: metadata
-                applies_to:
-                - applies_to
-                - applies_to
-                max_redemptions: 100
-                name: Launch Discount
-                percent_off: 20
-                currency: usd
-                id: launch_discount
-                stripe_id: coupon_1SRiyyCJIZaBlhY1
-                amount_off: 500
-              version: 1.0.0
-              meters:
-              - default_aggregation:
-                  formula: sum
-                value_settings:
-                  event_payload_key: value
-                event_name: api_request
-                id: api_requests
-                customer_mapping:
-                  event_payload_key: customer_id
-                  type: by_id
-                display_name: API Requests
-                stripe_id: mtr_1SRiyyCJIZaBlhY1
-              - default_aggregation:
-                  formula: sum
-                value_settings:
-                  event_payload_key: value
-                event_name: api_request
-                id: api_requests
-                customer_mapping:
-                  event_payload_key: customer_id
-                  type: by_id
-                display_name: API Requests
-                stripe_id: mtr_1SRiyyCJIZaBlhY1
-              products:
-              - ui:
-                  features:
-                  - Unlimited projects
-                  - Priority support
-                  badge: Popular
-                  cta_text: Get Started
-                  highlighted: true
-                  tagline: For growing teams
-                  display_name: Professional
-                  sort_order: 1
-                name: Basic Plan
-                description: Our basic subscription tier
-                id: basic_plan
-                type: service
-                prices:
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                stripe_id: prod_1SRiyyCJIZaBlhY1
-              - ui:
-                  features:
-                  - Unlimited projects
-                  - Priority support
-                  badge: Popular
-                  cta_text: Get Started
-                  highlighted: true
-                  tagline: For growing teams
-                  display_name: Professional
-                  sort_order: 1
-                name: Basic Plan
-                description: Our basic subscription tier
-                id: basic_plan
-                type: service
-                prices:
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                stripe_id: prod_1SRiyyCJIZaBlhY1
-            version: 1.0.0
-          - updated_at: 2025-11-10T00:29:19Z
-            parse_error: Invalid product configuration
-            created_at: 2025-11-10T00:29:19Z
-            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
-            config:
-              promotion_codes:
-              - metadata:
-                  key: metadata
-                code: LAUNCH25
-                first_time_transaction: true
-                expires_at: 1735689600
-                coupon: launch_discount
-                max_redemptions: 100
-                active: true
-                minimum_amount_currency: usd
-                id: promo_launch25
-                minimum_amount: 5000
-                stripe_id: promo_1SRiyyCJIZaBlhY1
-              - metadata:
-                  key: metadata
-                code: LAUNCH25
-                first_time_transaction: true
-                expires_at: 1735689600
-                coupon: launch_discount
-                max_redemptions: 100
-                active: true
-                minimum_amount_currency: usd
-                id: promo_launch25
-                minimum_amount: 5000
-                stripe_id: promo_1SRiyyCJIZaBlhY1
-              webhooks:
-              - id: account_events
-                url: https://example.com/webhooks/stripe
-                events:
-                - invoice.paid
-                - customer.subscription.created
-                connect: false
-              - id: account_events
-                url: https://example.com/webhooks/stripe
-                events:
-                - invoice.paid
-                - customer.subscription.created
-                connect: false
-              coupons:
-              - duration: once
-                duration_in_months: 3
-                redeem_by: 1735689600
-                metadata:
-                  key: metadata
-                applies_to:
-                - applies_to
-                - applies_to
-                max_redemptions: 100
-                name: Launch Discount
-                percent_off: 20
-                currency: usd
-                id: launch_discount
-                stripe_id: coupon_1SRiyyCJIZaBlhY1
-                amount_off: 500
-              - duration: once
-                duration_in_months: 3
-                redeem_by: 1735689600
-                metadata:
-                  key: metadata
-                applies_to:
-                - applies_to
-                - applies_to
-                max_redemptions: 100
-                name: Launch Discount
-                percent_off: 20
-                currency: usd
-                id: launch_discount
-                stripe_id: coupon_1SRiyyCJIZaBlhY1
-                amount_off: 500
-              version: 1.0.0
-              meters:
-              - default_aggregation:
-                  formula: sum
-                value_settings:
-                  event_payload_key: value
-                event_name: api_request
-                id: api_requests
-                customer_mapping:
-                  event_payload_key: customer_id
-                  type: by_id
-                display_name: API Requests
-                stripe_id: mtr_1SRiyyCJIZaBlhY1
-              - default_aggregation:
-                  formula: sum
-                value_settings:
-                  event_payload_key: value
-                event_name: api_request
-                id: api_requests
-                customer_mapping:
-                  event_payload_key: customer_id
-                  type: by_id
-                display_name: API Requests
-                stripe_id: mtr_1SRiyyCJIZaBlhY1
-              products:
-              - ui:
-                  features:
-                  - Unlimited projects
-                  - Priority support
-                  badge: Popular
-                  cta_text: Get Started
-                  highlighted: true
-                  tagline: For growing teams
-                  display_name: Professional
-                  sort_order: 1
-                name: Basic Plan
-                description: Our basic subscription tier
-                id: basic_plan
-                type: service
-                prices:
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                stripe_id: prod_1SRiyyCJIZaBlhY1
-              - ui:
-                  features:
-                  - Unlimited projects
-                  - Priority support
-                  badge: Popular
-                  cta_text: Get Started
-                  highlighted: true
-                  tagline: For growing teams
-                  display_name: Professional
-                  sort_order: 1
-                name: Basic Plan
-                description: Our basic subscription tier
-                id: basic_plan
-                type: service
-                prices:
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                - interval_count: 1
-                  amount: 0.273
-                  tiers:
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  - flat_amount: 0
-                    up_to: 100
-                    unit_amount: 10
-                  meter: api_requests
-                  billing_scheme: per_unit
-                  enterprise_id: acme_corp
-                  enterprise_template: tier1_10pct_off
-                  tiers_mode: graduated
-                  default: false
-                  public: true
-                  ui:
-                    billing_period: per month
-                    features:
-                    - Billed monthly
-                    price_display:
-                      show_currency: true
-                      custom_text: Contact us
-                      suffix: /mo
-                    display_name: Monthly
-                    limits:
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                    - unit: requests
-                      text: Up to 1000 API calls
-                      value: 1000
-                  usage_type: licensed
-                  currency: usd
-                  interval: month
-                  id: basic_monthly
-                  tax_included_in_price: false
-                  stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-                stripe_id: prod_1SRiyyCJIZaBlhY1
-            version: 1.0.0
-          pagination:
-            per_page: 10
-            total: 2
-            has_next: false
-            page: 1
-            total_pages: 1
-            has_prev: false
-        status: 200
-    pullStripeConfig_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/StripeConfigurationWithIDs"
-      example:
-        data:
-          promotion_codes:
-          - metadata:
-              key: metadata
-            code: LAUNCH25
-            first_time_transaction: true
-            expires_at: 1735689600
-            coupon: launch_discount
-            max_redemptions: 100
-            active: true
-            minimum_amount_currency: usd
-            id: promo_launch25
-            minimum_amount: 5000
-            stripe_id: promo_1SRiyyCJIZaBlhY1
-          - metadata:
-              key: metadata
-            code: LAUNCH25
-            first_time_transaction: true
-            expires_at: 1735689600
-            coupon: launch_discount
-            max_redemptions: 100
-            active: true
-            minimum_amount_currency: usd
-            id: promo_launch25
-            minimum_amount: 5000
-            stripe_id: promo_1SRiyyCJIZaBlhY1
-          webhooks:
-          - id: account_events
-            url: https://example.com/webhooks/stripe
-            events:
-            - invoice.paid
-            - customer.subscription.created
-            connect: false
-          - id: account_events
-            url: https://example.com/webhooks/stripe
-            events:
-            - invoice.paid
-            - customer.subscription.created
-            connect: false
-          coupons:
-          - duration: once
-            duration_in_months: 3
-            redeem_by: 1735689600
-            metadata:
-              key: metadata
-            applies_to:
-            - applies_to
-            - applies_to
-            max_redemptions: 100
-            name: Launch Discount
-            percent_off: 20
-            currency: usd
-            id: launch_discount
-            stripe_id: coupon_1SRiyyCJIZaBlhY1
-            amount_off: 500
-          - duration: once
-            duration_in_months: 3
-            redeem_by: 1735689600
-            metadata:
-              key: metadata
-            applies_to:
-            - applies_to
-            - applies_to
-            max_redemptions: 100
-            name: Launch Discount
-            percent_off: 20
-            currency: usd
-            id: launch_discount
-            stripe_id: coupon_1SRiyyCJIZaBlhY1
-            amount_off: 500
-          version: 1.0.0
-          meters:
-          - default_aggregation:
-              formula: sum
-            value_settings:
-              event_payload_key: value
-            event_name: api_request
-            id: api_requests
-            customer_mapping:
-              event_payload_key: customer_id
-              type: by_id
-            display_name: API Requests
-            stripe_id: mtr_1SRiyyCJIZaBlhY1
-          - default_aggregation:
-              formula: sum
-            value_settings:
-              event_payload_key: value
-            event_name: api_request
-            id: api_requests
-            customer_mapping:
-              event_payload_key: customer_id
-              type: by_id
-            display_name: API Requests
-            stripe_id: mtr_1SRiyyCJIZaBlhY1
-          products:
-          - ui:
-              features:
-              - Unlimited projects
-              - Priority support
-              badge: Popular
-              cta_text: Get Started
-              highlighted: true
-              tagline: For growing teams
-              display_name: Professional
-              sort_order: 1
-            name: Basic Plan
-            description: Our basic subscription tier
-            id: basic_plan
-            type: service
-            prices:
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            stripe_id: prod_1SRiyyCJIZaBlhY1
-          - ui:
-              features:
-              - Unlimited projects
-              - Priority support
-              badge: Popular
-              cta_text: Get Started
-              highlighted: true
-              tagline: For growing teams
-              display_name: Professional
-              sort_order: 1
-            name: Basic Plan
-            description: Our basic subscription tier
-            id: basic_plan
-            type: service
-            prices:
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            stripe_id: prod_1SRiyyCJIZaBlhY1
-        status: 200
-    archiveAllStripeConfig_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ArchiveAllResponse"
-      example:
-        data:
-          total_archived: 15
-          total_errors: 0
-          warning: Some items failed to archive - see archive_errors for details
-          archived_items:
-          - "product: prod_123 (Basic Plan)"
-          - "price: price_456"
-          message: Successfully archived all Stripe resources and cleared local config
-          archive_errors: []
-        status: 200
-    getPriceByID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/PriceResponse"
-      example:
-        data:
-          product:
-            ui:
-              features:
-              - Unlimited projects
-              - Priority support
-              badge: Popular
-              cta_text: Get Started
-              highlighted: true
-              tagline: For growing teams
-              display_name: Professional
-              sort_order: 1
-            name: Basic Plan
-            description: Our basic subscription tier
-            id: basic_plan
-            type: service
-            prices:
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            stripe_id: prod_1SRiyyCJIZaBlhY1
-          price:
-            interval_count: 1
-            amount: 0.273
-            tiers:
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            meter: api_requests
-            billing_scheme: per_unit
-            enterprise_id: acme_corp
-            enterprise_template: tier1_10pct_off
-            tiers_mode: graduated
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: licensed
-            currency: usd
-            interval: month
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-        status: 200
-    calculatePriceCost_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CalculatePriceCostResponse"
-      example:
-        data:
-          tiers_mode: graduated
-          cost_cents: 15000
-          quantity: 1500
-          price_id: compute_hourly
-          currency: usd
-          billing_scheme: per_unit
-          effective_unit_cost_cents: 10
-        status: 200
-    getProductByID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ProductResponse"
-      example:
-        data:
-          product:
-            ui:
-              features:
-              - Unlimited projects
-              - Priority support
-              badge: Popular
-              cta_text: Get Started
-              highlighted: true
-              tagline: For growing teams
-              display_name: Professional
-              sort_order: 1
-            name: Basic Plan
-            description: Our basic subscription tier
-            id: basic_plan
-            type: service
-            prices:
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            - interval_count: 1
-              amount: 0.273
-              tiers:
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              - flat_amount: 0
-                up_to: 100
-                unit_amount: 10
-              meter: api_requests
-              billing_scheme: per_unit
-              enterprise_id: acme_corp
-              enterprise_template: tier1_10pct_off
-              tiers_mode: graduated
-              default: false
-              public: true
-              ui:
-                billing_period: per month
-                features:
-                - Billed monthly
-                price_display:
-                  show_currency: true
-                  custom_text: Contact us
-                  suffix: /mo
-                display_name: Monthly
-                limits:
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-                - unit: requests
-                  text: Up to 1000 API calls
-                  value: 1000
-              usage_type: licensed
-              currency: usd
-              interval: month
-              id: basic_monthly
-              tax_included_in_price: false
-              stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-            stripe_id: prod_1SRiyyCJIZaBlhY1
-        status: 200
-    getMeterByID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/MeterResponse"
-      example:
-        data:
-          meter:
-            default_aggregation:
-              formula: sum
-            value_settings:
-              event_payload_key: value
-            event_name: api_request
-            id: api_requests
-            customer_mapping:
-              event_payload_key: customer_id
-              type: by_id
-            display_name: API Requests
-            stripe_id: mtr_1SRiyyCJIZaBlhY1
-        status: 200
-    convertStripeIDToConfigID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/StripeIDConversionResponse"
-      example:
-        data:
-          config_uuid: e056fa27-151d-4d25-b237-97e9de8d8dbf
-          config_id: price_test_basic_monthly
-          item_type: price
-          history_count: 1
-          stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-        status: 200
-    listWebhooks_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/ListWebhooksResponse"
-      example:
-        data:
-          webhooks:
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
-            secret: whsec_xxx
-            stripe_id: we_1SRiyyCJIZaBlhY1
-            url: https://example.com/webhooks/stripe
-            events:
-            - events
-            - events
-            connect: false
-          - updated_at: 2000-01-23T04:56:07.000+00:00
-            created_at: 2000-01-23T04:56:07.000+00:00
-            id: e056fa27-151d-4d25-b237-97e9de8d8dbf
-            secret: whsec_xxx
-            stripe_id: we_1SRiyyCJIZaBlhY1
-            url: https://example.com/webhooks/stripe
-            events:
-            - events
-            - events
-            connect: false
-        status: 200
-    applyEnterpriseTemplate_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/EnterpriseApplyResponse"
-      example:
-        data:
-          tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-          prices_swapped: 3
-          message: Enterprise pricing applied successfully
-          swapped_details:
-          - "basic_monthly -> basic_monthly_tier1 (subscription: sub_123)"
-        status: 200
-    getEnterprisePricesByTemplate_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/EnterprisePricesResponse"
-      example:
-        data:
-          count: 3
-          prices:
-          - interval_count: 1
-            amount: 0.273
-            tiers:
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            meter: api_requests
-            billing_scheme: per_unit
-            enterprise_id: acme_corp
-            enterprise_template: tier1_10pct_off
-            tiers_mode: graduated
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: licensed
-            currency: usd
-            interval: month
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-          - interval_count: 1
-            amount: 0.273
-            tiers:
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            - flat_amount: 0
-              up_to: 100
-              unit_amount: 10
-            meter: api_requests
-            billing_scheme: per_unit
-            enterprise_id: acme_corp
-            enterprise_template: tier1_10pct_off
-            tiers_mode: graduated
-            default: false
-            public: true
-            ui:
-              billing_period: per month
-              features:
-              - Billed monthly
-              price_display:
-                show_currency: true
-                custom_text: Contact us
-                suffix: /mo
-              display_name: Monthly
-              limits:
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-              - unit: requests
-                text: Up to 1000 API calls
-                value: 1000
-            usage_type: licensed
-            currency: usd
-            interval: month
-            id: basic_monthly
-            tax_included_in_price: false
-            stripe_id: price_1SRiyyCJIZaBlhY1NpAJFhNU
-        status: 200
-    createTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateTenantResponse"
-      example:
-        data:
-          message: Tenant created successfully
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
-    deleteTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DeleteTenantResponse"
-      example:
-        data:
-          message: Tenant deleted successfully
-        status: 200
-    getTenantByID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/GetTenantByIDResponse"
-      example:
-        data:
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-        status: 200
-    getTenantByStripeCustomerID_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/GetTenantByStripeCustomerIDResponse"
-      example:
-        data:
-          tenant:
-            stripe_customer_id: cus_TOWEstcga5ou7a
-            settings:
-              tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              allow_user_invites: true
-              max_members: 10
-            updated_at: 2025-11-10T00:42:29.440300172Z
-            name: Test Organization
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            enterprise_id: acme_corp
-            type: organization
-            enterprise_template: tier1_10pct_off
-        status: 200
-    switchActiveTenant_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/SwitchTenantResponse"
-      example:
-        data:
-          message: Successfully switched tenants
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
-    listTenantUsers_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            items:
-              $ref: "#/components/schemas/TenantUserResponse"
-            type: array
-      example:
-        data:
-        - role: member
-          user_id: 550e8400-e29b-41d4-a716-446655440000
-          last_name: Doe
-          first_name: John
-          email: test@example.com
-        - role: member
-          user_id: 550e8400-e29b-41d4-a716-446655440000
-          last_name: Doe
-          first_name: John
-          email: test@example.com
-        status: 200
-    updateTenantUserRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/UpdateTenantUserRoleResponse"
-      example:
-        data:
-          message: User role updated successfully
-        status: 200
-    listRoles_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/RolesListResponse"
-      example:
-        data:
-          roles:
-          - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            role_name: member
-            updated_at: 2025-11-10T00:33:08.726632Z
-            permissions:
-            - tenant#invite_user
-            - tenant#remove_user
-            user_ids:
-            - 550e8400-e29b-41d4-a716-446655440000
-            - 550e8400-e29b-41d4-a716-446655440001
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-          - tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            role_name: member
-            updated_at: 2025-11-10T00:33:08.726632Z
-            permissions:
-            - tenant#invite_user
-            - tenant#remove_user
-            user_ids:
-            - 550e8400-e29b-41d4-a716-446655440000
-            - 550e8400-e29b-41d4-a716-446655440001
-            created_at: 2025-11-10T00:18:19.653645Z
-            id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        status: 200
-    createRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/Role"
-      example:
-        data:
-          tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          role_name: member
-          updated_at: 2025-11-10T00:33:08.726632Z
-          permissions:
-          - tenant#invite_user
-          - tenant#remove_user
-          user_ids:
-          - 550e8400-e29b-41d4-a716-446655440000
-          - 550e8400-e29b-41d4-a716-446655440001
-          created_at: 2025-11-10T00:18:19.653645Z
-          id: 7bde7bd1-9be9-42f5-bc4b-be9f24cde432
-        status: 200
-    deleteRole_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/DeleteRoleResponse"
-      example:
-        data:
-          message: Role deleted successfully
-        status: 200
-    getRoleDefinitions_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/NamespaceDefinitionsResponse"
-      example:
-        data:
-          definitions:
-          - updated_at: 2025-11-10T00:33:08.720326Z
-            relations_metadata:
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            namespace: Tenant
-            id: bfab650b-f834-4904-a4e8-41343fea86bc
-            subject_relations:
-              User:
-              - can_delete_tenant
-              - can_invite_user
-              - can_rotate_keys
-              ApiKey:
-              - can_rotate_keys
-              - can_view_db_secret_key
-            relations:
-            - can_delete_tenant
-            - can_invite_user
-            - can_update_user_role
-          - updated_at: 2025-11-10T00:33:08.720326Z
-            relations_metadata:
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            - sub_group: Database
-              roles:
-              - owner
-              - admin
-              subjects:
-              - User
-              - ApiKey
-              name: can_view_db_secret_key
-              display_name: View Db Secret Key
-              group: Secrets
-            namespace: Tenant
-            id: bfab650b-f834-4904-a4e8-41343fea86bc
-            subject_relations:
-              User:
-              - can_delete_tenant
-              - can_invite_user
-              - can_rotate_keys
-              ApiKey:
-              - can_rotate_keys
-              - can_view_db_secret_key
-            relations:
-            - can_delete_tenant
-            - can_invite_user
-            - can_update_user_role
-        status: 200
-    listTenantSubscriptions_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            items:
-              $ref: "#/components/schemas/SubscriptionResponse"
-            type: array
-      example:
-        data:
-        - subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        - subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        status: 200
-    addSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/AddSubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_test_123
-          message: Subscription added successfully
-          status: active
-        status: 200
-    removeSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/RemoveSubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_test_123
-          message: Subscription canceled successfully
-          status: canceled
-        status: 200
-    getTenantSubscription_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/SubscriptionResponse"
-      example:
-        data:
-          subscription_id: sub_1234567890
-          is_legacy_price: false
-          cancel_at_period_end: false
-          canceled_at: 0
-          trial_start: 6
-          trial_end: 1
-          current_period_end: 1707999000
-          current_period_start: 1705320600
-          config_price_id: neon_compute_starter
-          status: active
-        status: 200
-    createInvite_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/CreateTenantUserInviteResponse"
-      example:
-        data:
-          invite:
-            tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-            used_at: 2000-01-23T04:56:07.000+00:00
-            role: member
-            expires_at: 2025-11-17T00:42:29.440300124Z
-            inviter_id: 550e8400-e29b-41d4-a716-446655440000
-            created_at: 2025-11-10T00:42:29.440300124Z
-            id: 550e8400-e29b-41d4-a716-446655440001
-            email: test@example.com
-            tenant:
-              stripe_customer_id: cus_TOWEstcga5ou7a
-              settings:
-                tenant_id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-                allow_user_invites: true
-                max_members: 10
-              updated_at: 2025-11-10T00:42:29.440300172Z
-              name: Test Organization
-              created_at: 2025-11-10T00:42:29.440300124Z
-              id: 7d5da463-8351-4abe-870c-8ccdefc4d78c
-              enterprise_id: acme_corp
-              type: organization
-              enterprise_template: tier1_10pct_off
-            token: tok_test_abc123xyz
-          message: Invite sent successfully
-        status: 200
-    acceptInvite_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/AcceptInviteResponse"
-      example:
-        data:
-          tenant_id: tenant_test_123
-          message: Successfully joined organization
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
     getTenantJWT_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/JWTTokenResponse"
       example:
-        data:
-          token: eyJhbGciOiJIUzI1NiIs...
-        status: 200
+        token: eyJhbGciOiJIUzI1NiIs...
+      properties:
+        token:
+          description: PostgREST JWT token
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+      required:
+      - token
     getTenantBillingStatus_200_response:
-      allOf:
-      - $ref: "#/components/schemas/SuccessResponse"
-      - properties:
-          data:
-            $ref: "#/components/schemas/BillingStatusResponse"
       example:
-        data:
-          is_active: true
-        status: 200
-    SuccessResponse_data:
-      description: Response data payload
-      nullable: true
-      oneOf:
-      - type: object
-      - items: {}
-        type: array
-      - type: string
-      - type: number
-      - type: boolean
+        is_active: true
+      properties:
+        is_active:
+          description: Whether tenant has active billing configured
+          example: true
+          type: boolean
+      required:
+      - is_active
     CreateUserRequest_name:
       additionalProperties: false
       example:
@@ -15404,8 +12397,6 @@ components:
         enum:
         - inf
         type: string
-    getIdentity_200_response_allOf_data:
-      type: object
   securitySchemes:
     CookieAuth:
       description: |

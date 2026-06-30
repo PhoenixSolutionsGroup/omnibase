@@ -16,12 +16,12 @@
 import * as runtime from '../runtime';
 import type {
   BadRequestResponse,
-  CheckPermission200Response,
   CheckPermissionRequest,
-  CreateRelationship200Response,
+  CheckPermissionResponse,
   CreateRelationshipRequest,
-  DeleteRelationship200Response,
+  CreateRelationshipResponse,
   DeleteRelationshipRequest,
+  DeleteRelationshipResponse,
   InternalServerErrorResponse,
   NotFoundResponse,
   UnauthorizedResponse,
@@ -29,18 +29,18 @@ import type {
 import {
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
-    CheckPermission200ResponseFromJSON,
-    CheckPermission200ResponseToJSON,
     CheckPermissionRequestFromJSON,
     CheckPermissionRequestToJSON,
-    CreateRelationship200ResponseFromJSON,
-    CreateRelationship200ResponseToJSON,
+    CheckPermissionResponseFromJSON,
+    CheckPermissionResponseToJSON,
     CreateRelationshipRequestFromJSON,
     CreateRelationshipRequestToJSON,
-    DeleteRelationship200ResponseFromJSON,
-    DeleteRelationship200ResponseToJSON,
+    CreateRelationshipResponseFromJSON,
+    CreateRelationshipResponseToJSON,
     DeleteRelationshipRequestFromJSON,
     DeleteRelationshipRequestToJSON,
+    DeleteRelationshipResponseFromJSON,
+    DeleteRelationshipResponseToJSON,
     InternalServerErrorResponseFromJSON,
     InternalServerErrorResponseToJSON,
     NotFoundResponseFromJSON,
@@ -70,7 +70,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
      * Check permission
      */
-    async checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermission200Response>> {
+    async checkPermissionRaw(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CheckPermissionResponse>> {
         if (requestParameters['checkPermissionRequest'] == null) {
             throw new runtime.RequiredError(
                 'checkPermissionRequest',
@@ -103,14 +103,14 @@ export class V1PermissionsApi extends runtime.BaseAPI {
             body: CheckPermissionRequestToJSON(requestParameters['checkPermissionRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CheckPermission200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CheckPermissionResponseFromJSON(jsonValue));
     }
 
     /**
      * Checks if a subject has a specific permission on an object using Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user permissions, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Verify user permissions before performing actions - Implement fine-grained access control - Check role-based permissions 
      * Check permission
      */
-    async checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermission200Response> {
+    async checkPermission(requestParameters: CheckPermissionOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CheckPermissionResponse> {
         const response = await this.checkPermissionRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -119,7 +119,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
      * Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships 
      * Create relationship
      */
-    async createRelationshipRaw(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRelationship200Response>> {
+    async createRelationshipRaw(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateRelationshipResponse>> {
         if (requestParameters['createRelationshipRequest'] == null) {
             throw new runtime.RequiredError(
                 'createRelationshipRequest',
@@ -152,14 +152,14 @@ export class V1PermissionsApi extends runtime.BaseAPI {
             body: CreateRelationshipRequestToJSON(requestParameters['createRelationshipRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRelationship200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateRelationshipResponseFromJSON(jsonValue));
     }
 
     /**
      * Creates a new relationship tuple in Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Link resources to tenants - Assign users to projects - Create permission relationships 
      * Create relationship
      */
-    async createRelationship(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRelationship200Response> {
+    async createRelationship(requestParameters: CreateRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateRelationshipResponse> {
         const response = await this.createRelationshipRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -168,7 +168,7 @@ export class V1PermissionsApi extends runtime.BaseAPI {
      * Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships 
      * Delete relationship
      */
-    async deleteRelationshipRaw(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRelationship200Response>> {
+    async deleteRelationshipRaw(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteRelationshipResponse>> {
         if (requestParameters['deleteRelationshipRequest'] == null) {
             throw new runtime.RequiredError(
                 'deleteRelationshipRequest',
@@ -201,14 +201,14 @@ export class V1PermissionsApi extends runtime.BaseAPI {
             body: DeleteRelationshipRequestToJSON(requestParameters['deleteRelationshipRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteRelationship200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteRelationshipResponseFromJSON(jsonValue));
     }
 
     /**
      * Deletes a relationship tuple from Ory Keto.  ## Authentication Requires session authentication.  ## Request Format Provide a `subject_set` to identify the subject. For user relationships, use `namespace: \"User\"` and `object: \"<user_id>\"`.  ## Use Cases - Remove resource links from tenants - Revoke user assignments from projects - Delete permission relationships 
      * Delete relationship
      */
-    async deleteRelationship(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRelationship200Response> {
+    async deleteRelationship(requestParameters: DeleteRelationshipOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteRelationshipResponse> {
         const response = await this.deleteRelationshipRaw(requestParameters, initOverrides);
         return await response.value();
     }

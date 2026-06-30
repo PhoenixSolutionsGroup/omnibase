@@ -7,7 +7,6 @@ Bad Request error response (400)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { BadRequestResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 400,
   "error": Invalid request parameters,
 } satisfies BadRequestResponse
 

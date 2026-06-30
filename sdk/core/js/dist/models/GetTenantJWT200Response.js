@@ -18,12 +18,11 @@ exports.GetTenantJWT200ResponseFromJSON = GetTenantJWT200ResponseFromJSON;
 exports.GetTenantJWT200ResponseFromJSONTyped = GetTenantJWT200ResponseFromJSONTyped;
 exports.GetTenantJWT200ResponseToJSON = GetTenantJWT200ResponseToJSON;
 exports.GetTenantJWT200ResponseToJSONTyped = GetTenantJWT200ResponseToJSONTyped;
-const JWTTokenResponse_1 = require("./JWTTokenResponse");
 /**
  * Check if a given object implements the GetTenantJWT200Response interface.
  */
 function instanceOfGetTenantJWT200Response(value) {
-    if (!('status' in value) || value['status'] === undefined)
+    if (!('token' in value) || value['token'] === undefined)
         return false;
     return true;
 }
@@ -35,8 +34,7 @@ function GetTenantJWT200ResponseFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : (0, JWTTokenResponse_1.JWTTokenResponseFromJSON)(json['data']),
+        'token': json['token'],
     };
 }
 function GetTenantJWT200ResponseToJSON(json) {
@@ -47,7 +45,6 @@ function GetTenantJWT200ResponseToJSONTyped(value, ignoreDiscriminator = false) 
         return value;
     }
     return {
-        'status': value['status'],
-        'data': (0, JWTTokenResponse_1.JWTTokenResponseToJSON)(value['data']),
+        'token': value['token'],
     };
 }

@@ -6,7 +6,7 @@ paths:
       summary: Get Stripe config schema
       description: |
         Returns the JSON schema definition for validating Stripe configuration files.
-        
+
         ## Use Cases
         - Validate configuration before upload
         - IDE autocomplete support
@@ -33,10 +33,10 @@ paths:
       summary: Get public Stripe config
       description: |
         Returns the current Stripe configuration with public prices only (filters out enterprise prices).
-        
+
         ## Authentication
         No authentication required for public endpoint.
-        
+
         ## Use Cases
         - Display pricing to users
         - Build subscription selection UI
@@ -48,12 +48,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
         '500':
           description: Failed to retrieve configuration
           content:
@@ -68,10 +63,10 @@ paths:
       summary: Get full Stripe config (admin)
       description: |
         Returns the complete Stripe configuration including all prices (both public and enterprise).
-        
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Use Cases
         - Admin configuration management
         - Enterprise pricing display
@@ -85,12 +80,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigResponse'
         '401':
           description: Invalid or missing admin token
           content:
@@ -138,12 +128,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigUpdateResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigUpdateResponse'
         '400':
           description: Invalid configuration, validation errors, or configuration data is required
           content:
@@ -164,10 +149,10 @@ paths:
       summary: Get config history
       description: |
         Returns paginated history of all Stripe configurations.
-        
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Query Parameters
         - limit: Items per page (default: 10, max: 100, min: 1)
         - offset: Number of items to skip (default: 0, min: 0)
@@ -198,12 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/ConfigHistoryResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/ConfigHistoryResponse'
         '400':
           description: Invalid limit/offset parameters or unknown query parameter
           content:
@@ -230,10 +210,10 @@ paths:
       summary: Validate Stripe config
       description: |
         Validates a Stripe configuration against the schema without saving or deploying it.
-        
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Use Cases
         - Pre-deployment validation
         - Configuration testing
@@ -254,7 +234,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
+                type: object
         '400':
           description: Configuration validation failed or version is required
           content:
@@ -275,10 +255,10 @@ paths:
       summary: Pull config from Stripe
       description: |
         Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
-        
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Use Cases
         - Sync remote Stripe config to local
         - Import existing Stripe setup
@@ -292,12 +272,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigurationWithIDs'
+                $ref: '../schemas/stripe.yaml#/components/schemas/StripeConfigurationWithIDs'
         '401':
           description: Invalid or missing admin token
           content:
@@ -318,13 +293,13 @@ paths:
       summary: Archive all Stripe config
       description: |
         Archives all active products, prices, and meters in Stripe and clears the local configuration.
-        
+
         ## Authentication
         Requires admin JWT token.
-        
+
         ## Warning
         This is a destructive operation that will archive ALL active Stripe resources.
-        
+
         ## Use Cases
         - Clean slate for new configuration
         - Remove all test data
@@ -338,12 +313,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/ArchiveAllResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/ArchiveAllResponse'
         '401':
           description: Invalid or missing admin token
           content:
@@ -387,12 +357,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/PriceResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/PriceResponse'
         '400':
           description: Missing price_id
           content:
@@ -453,12 +418,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/CalculatePriceCostResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/CalculatePriceCostResponse'
         '400':
           description: Invalid request or missing quantity
           content:
@@ -508,12 +468,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/ProductResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/ProductResponse'
         '400':
           description: Missing product_id
           content:
@@ -563,12 +518,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/MeterResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/MeterResponse'
         '400':
           description: Missing meter_id
           content:
@@ -595,10 +545,10 @@ paths:
       summary: Convert Stripe ID to config ID
       description: |
         Converts a Stripe ID (product, price, or meter) to the corresponding config ID.
-        
+
         ## Authentication
         No authentication required for public endpoint.
-        
+
         ## Use Cases
         - Webhook processing
         - Subscription mapping
@@ -618,12 +568,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/StripeIDConversionResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/StripeIDConversionResponse'
         '400':
           description: Missing Stripe ID
           content:
@@ -667,12 +612,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/ListWebhooksResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/ListWebhooksResponse'
         '401':
           description: Invalid or missing service key
           content:
@@ -723,12 +663,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
         '400':
           description: Invalid request or tenant has no Stripe customer ID
           content:
@@ -791,12 +726,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/EnterpriseApplyResponse'
         '400':
           description: Invalid request or tenant has no Stripe customer ID
           content:
@@ -853,12 +783,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
         '401':
           description: Invalid or missing service key
           content:
@@ -903,12 +828,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
+                $ref: '../schemas/stripe.yaml#/components/schemas/EnterprisePricesResponse'
         '401':
           description: Invalid or missing service key
           content:

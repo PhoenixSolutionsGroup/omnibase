@@ -13,8 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
-	"fmt"
 )
 
 // checks if the GetEmailTemplates200Response type satisfies the MappedNullable interface at compile time
@@ -22,20 +20,16 @@ var _ MappedNullable = &GetEmailTemplates200Response{}
 
 // GetEmailTemplates200Response struct for GetEmailTemplates200Response
 type GetEmailTemplates200Response struct {
-	// HTTP status code
-	Status int32 `json:"status"`
-	Data *GetEmailTemplates200ResponseAllOfData `json:"data,omitempty"`
+	Templates []EmailTemplate `json:"templates,omitempty"`
+	Count *int32 `json:"count,omitempty"`
 }
-
-type _GetEmailTemplates200Response GetEmailTemplates200Response
 
 // NewGetEmailTemplates200Response instantiates a new GetEmailTemplates200Response object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetEmailTemplates200Response(status int32) *GetEmailTemplates200Response {
+func NewGetEmailTemplates200Response() *GetEmailTemplates200Response {
 	this := GetEmailTemplates200Response{}
-	this.Status = status
 	return &this
 }
 
@@ -47,60 +41,68 @@ func NewGetEmailTemplates200ResponseWithDefaults() *GetEmailTemplates200Response
 	return &this
 }
 
-// GetStatus returns the Status field value
-func (o *GetEmailTemplates200Response) GetStatus() int32 {
-	if o == nil {
-		var ret int32
+// GetTemplates returns the Templates field value if set, zero value otherwise.
+func (o *GetEmailTemplates200Response) GetTemplates() []EmailTemplate {
+	if o == nil || IsNil(o.Templates) {
+		var ret []EmailTemplate
 		return ret
 	}
-
-	return o.Status
+	return o.Templates
 }
 
-// GetStatusOk returns a tuple with the Status field value
+// GetTemplatesOk returns a tuple with the Templates field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *GetEmailTemplates200Response) GetStatusOk() (*int32, bool) {
-	if o == nil {
+func (o *GetEmailTemplates200Response) GetTemplatesOk() ([]EmailTemplate, bool) {
+	if o == nil || IsNil(o.Templates) {
 		return nil, false
 	}
-	return &o.Status, true
+	return o.Templates, true
 }
 
-// SetStatus sets field value
-func (o *GetEmailTemplates200Response) SetStatus(v int32) {
-	o.Status = v
-}
-
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *GetEmailTemplates200Response) GetData() GetEmailTemplates200ResponseAllOfData {
-	if o == nil || IsNil(o.Data) {
-		var ret GetEmailTemplates200ResponseAllOfData
-		return ret
-	}
-	return *o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *GetEmailTemplates200Response) GetDataOk() (*GetEmailTemplates200ResponseAllOfData, bool) {
-	if o == nil || IsNil(o.Data) {
-		return nil, false
-	}
-	return o.Data, true
-}
-
-// HasData returns a boolean if a field has been set.
-func (o *GetEmailTemplates200Response) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
+// HasTemplates returns a boolean if a field has been set.
+func (o *GetEmailTemplates200Response) HasTemplates() bool {
+	if o != nil && !IsNil(o.Templates) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given GetEmailTemplates200ResponseAllOfData and assigns it to the Data field.
-func (o *GetEmailTemplates200Response) SetData(v GetEmailTemplates200ResponseAllOfData) {
-	o.Data = &v
+// SetTemplates gets a reference to the given []EmailTemplate and assigns it to the Templates field.
+func (o *GetEmailTemplates200Response) SetTemplates(v []EmailTemplate) {
+	o.Templates = v
+}
+
+// GetCount returns the Count field value if set, zero value otherwise.
+func (o *GetEmailTemplates200Response) GetCount() int32 {
+	if o == nil || IsNil(o.Count) {
+		var ret int32
+		return ret
+	}
+	return *o.Count
+}
+
+// GetCountOk returns a tuple with the Count field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *GetEmailTemplates200Response) GetCountOk() (*int32, bool) {
+	if o == nil || IsNil(o.Count) {
+		return nil, false
+	}
+	return o.Count, true
+}
+
+// HasCount returns a boolean if a field has been set.
+func (o *GetEmailTemplates200Response) HasCount() bool {
+	if o != nil && !IsNil(o.Count) {
+		return true
+	}
+
+	return false
+}
+
+// SetCount gets a reference to the given int32 and assigns it to the Count field.
+func (o *GetEmailTemplates200Response) SetCount(v int32) {
+	o.Count = &v
 }
 
 func (o GetEmailTemplates200Response) MarshalJSON() ([]byte, error) {
@@ -113,48 +115,13 @@ func (o GetEmailTemplates200Response) MarshalJSON() ([]byte, error) {
 
 func (o GetEmailTemplates200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
+	if !IsNil(o.Templates) {
+		toSerialize["templates"] = o.Templates
+	}
+	if !IsNil(o.Count) {
+		toSerialize["count"] = o.Count
 	}
 	return toSerialize, nil
-}
-
-func (o *GetEmailTemplates200Response) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"status",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err;
-	}
-
-	for _, requiredProperty := range(requiredProperties) {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varGetEmailTemplates200Response := _GetEmailTemplates200Response{}
-
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varGetEmailTemplates200Response)
-
-	if err != nil {
-		return err
-	}
-
-	*o = GetEmailTemplates200Response(varGetEmailTemplates200Response)
-
-	return err
 }
 
 type NullableGetEmailTemplates200Response struct {

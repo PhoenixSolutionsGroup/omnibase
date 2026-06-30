@@ -20,19 +20,19 @@ export interface RemoveSubscriptionResponse {
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    subscriptionId?: string;
+    subscriptionId: string;
     /**
      * Subscription status after cancellation
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    status?: string;
+    status: string;
     /**
      * Message confirming the cancellation
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    message?: string;
+    message: string;
 }
 /**
  * Check if a given object implements the RemoveSubscriptionResponse interface.

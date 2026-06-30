@@ -29,6 +29,18 @@ export interface CreateInvoiceRequest {
      */
     autoAdvance?: boolean;
     /**
+     * How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
+     * @type {string}
+     * @memberof CreateInvoiceRequest
+     */
+    collectionMethod?: CreateInvoiceRequestCollectionMethodEnum;
+    /**
+     * Days until invoice is due. Required when `collection_method` is `send_invoice`.
+     * @type {number}
+     * @memberof CreateInvoiceRequest
+     */
+    daysUntilDue?: number;
+    /**
      * Optional description for the invoice
      * @type {string}
      * @memberof CreateInvoiceRequest
@@ -43,6 +55,14 @@ export interface CreateInvoiceRequest {
         [key: string]: string;
     };
 }
+/**
+ * @export
+ */
+export declare const CreateInvoiceRequestCollectionMethodEnum: {
+    readonly ChargeAutomatically: "charge_automatically";
+    readonly SendInvoice: "send_invoice";
+};
+export type CreateInvoiceRequestCollectionMethodEnum = typeof CreateInvoiceRequestCollectionMethodEnum[keyof typeof CreateInvoiceRequestCollectionMethodEnum];
 /**
  * Check if a given object implements the CreateInvoiceRequest interface.
  */

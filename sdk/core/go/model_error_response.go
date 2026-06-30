@@ -22,8 +22,6 @@ var _ MappedNullable = &ErrorResponse{}
 
 // ErrorResponse Generic error response
 type ErrorResponse struct {
-	// HTTP status code
-	Status int32 `json:"status"`
 	// Error message or details
 	Error string `json:"error"`
 }
@@ -34,9 +32,8 @@ type _ErrorResponse ErrorResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewErrorResponse(status int32, error_ string) *ErrorResponse {
+func NewErrorResponse(error_ string) *ErrorResponse {
 	this := ErrorResponse{}
-	this.Status = status
 	this.Error = error_
 	return &this
 }
@@ -47,30 +44,6 @@ func NewErrorResponse(status int32, error_ string) *ErrorResponse {
 func NewErrorResponseWithDefaults() *ErrorResponse {
 	this := ErrorResponse{}
 	return &this
-}
-
-// GetStatus returns the Status field value
-func (o *ErrorResponse) GetStatus() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *ErrorResponse) GetStatusOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *ErrorResponse) SetStatus(v int32) {
-	o.Status = v
 }
 
 // GetError returns the Error field value
@@ -107,7 +80,6 @@ func (o ErrorResponse) MarshalJSON() ([]byte, error) {
 
 func (o ErrorResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
 	toSerialize["error"] = o.Error
 	return toSerialize, nil
 }
@@ -117,7 +89,6 @@ func (o *ErrorResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
 		"error",
 	}
 

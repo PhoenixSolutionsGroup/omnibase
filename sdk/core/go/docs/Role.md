@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **TenantId** | Pointer to **string** | ID of the tenant this role belongs to (NULL for system roles) | [optional] 
 **RoleName** | **string** | Role name | 
 **Permissions** | **[]string** | List of permissions in namespace:resource#relation format | 
+**TemplateId** | Pointer to **string** | ID of the role template this role was cloned from (NULL for custom roles) | [optional] 
 **UserIds** | **[]string** | Array of user IDs assigned to this role | 
 **CreatedAt** | **time.Time** | Timestamp when role was created | 
 **UpdatedAt** | **time.Time** | Timestamp when role was last updated | 
@@ -115,6 +116,31 @@ and a boolean to check if the value has been set.
 
 SetPermissions sets Permissions field to given value.
 
+
+### GetTemplateId
+
+`func (o *Role) GetTemplateId() string`
+
+GetTemplateId returns the TemplateId field if non-nil, zero value otherwise.
+
+### GetTemplateIdOk
+
+`func (o *Role) GetTemplateIdOk() (*string, bool)`
+
+GetTemplateIdOk returns a tuple with the TemplateId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTemplateId
+
+`func (o *Role) SetTemplateId(v string)`
+
+SetTemplateId sets TemplateId field to given value.
+
+### HasTemplateId
+
+`func (o *Role) HasTemplateId() bool`
+
+HasTemplateId returns a boolean if a field has been set.
 
 ### GetUserIds
 

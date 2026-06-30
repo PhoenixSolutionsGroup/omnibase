@@ -12,7 +12,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## checkPermission
 
-> CheckPermission200Response checkPermission(checkPermissionRequest)
+> CheckPermissionResponse checkPermission(checkPermissionRequest)
 
 Check permission
 
@@ -65,7 +65,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CheckPermission200Response**](CheckPermission200Response.md)
+[**CheckPermissionResponse**](CheckPermissionResponse.md)
 
 ### Authorization
 
@@ -90,7 +90,7 @@ example().catch(console.error);
 
 ## createRelationship
 
-> CreateRelationship200Response createRelationship(createRelationshipRequest)
+> CreateRelationshipResponse createRelationship(createRelationshipRequest)
 
 Create relationship
 
@@ -143,7 +143,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CreateRelationship200Response**](CreateRelationship200Response.md)
+[**CreateRelationshipResponse**](CreateRelationshipResponse.md)
 
 ### Authorization
 
@@ -169,7 +169,7 @@ example().catch(console.error);
 
 ## deleteRelationship
 
-> DeleteRelationship200Response deleteRelationship(deleteRelationshipRequest)
+> DeleteRelationshipResponse deleteRelationship(deleteRelationshipRequest)
 
 Delete relationship
 
@@ -222,7 +222,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**DeleteRelationship200Response**](DeleteRelationship200Response.md)
+[**DeleteRelationshipResponse**](DeleteRelationshipResponse.md)
 
 ### Authorization
 

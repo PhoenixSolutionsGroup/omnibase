@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import type { CreateOrUpdateEmailTemplate200ResponseAllOfData } from './CreateOrUpdateEmailTemplate200ResponseAllOfData';
+import type { EmailTemplate } from './EmailTemplate';
 /**
  *
  * @export
@@ -17,17 +17,17 @@ import type { CreateOrUpdateEmailTemplate200ResponseAllOfData } from './CreateOr
  */
 export interface CreateOrUpdateEmailTemplate200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     *
+     * @type {string}
      * @memberof CreateOrUpdateEmailTemplate200Response
      */
-    status: number;
+    message?: string;
     /**
      *
-     * @type {CreateOrUpdateEmailTemplate200ResponseAllOfData}
+     * @type {EmailTemplate}
      * @memberof CreateOrUpdateEmailTemplate200Response
      */
-    data?: CreateOrUpdateEmailTemplate200ResponseAllOfData;
+    template?: EmailTemplate;
 }
 /**
  * Check if a given object implements the CreateOrUpdateEmailTemplate200Response interface.

@@ -42,7 +42,7 @@ func (r ApiAcceptInviteRequest) XUserId(xUserId string) ApiAcceptInviteRequest {
 	return r
 }
 
-func (r ApiAcceptInviteRequest) Execute() (*AcceptInvite200Response, *http.Response, error) {
+func (r ApiAcceptInviteRequest) Execute() (*AcceptInviteResponse, *http.Response, error) {
 	return r.ApiService.AcceptInviteExecute(r)
 }
 
@@ -75,13 +75,13 @@ func (a *V1TenantsAPIService) AcceptInvite(ctx context.Context) ApiAcceptInviteR
 }
 
 // Execute executes the request
-//  @return AcceptInvite200Response
-func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*AcceptInvite200Response, *http.Response, error) {
+//  @return AcceptInviteResponse
+func (a *V1TenantsAPIService) AcceptInviteExecute(r ApiAcceptInviteRequest) (*AcceptInviteResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *AcceptInvite200Response
+		localVarReturnValue  *AcceptInviteResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.AcceptInvite")
@@ -232,6 +232,8 @@ type ApiAddSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	addSubscriptionRequest *AddSubscriptionRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiAddSubscriptionRequest) AddSubscriptionRequest(addSubscriptionRequest AddSubscriptionRequest) ApiAddSubscriptionRequest {
@@ -239,7 +241,19 @@ func (r ApiAddSubscriptionRequest) AddSubscriptionRequest(addSubscriptionRequest
 	return r
 }
 
-func (r ApiAddSubscriptionRequest) Execute() (*AddSubscription200Response, *http.Response, error) {
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiAddSubscriptionRequest) XUserId(xUserId string) ApiAddSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiAddSubscriptionRequest) XTenantId(xTenantId string) ApiAddSubscriptionRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiAddSubscriptionRequest) Execute() (*AddSubscriptionResponse, *http.Response, error) {
 	return r.ApiService.AddSubscriptionExecute(r)
 }
 
@@ -283,13 +297,13 @@ func (a *V1TenantsAPIService) AddSubscription(ctx context.Context) ApiAddSubscri
 }
 
 // Execute executes the request
-//  @return AddSubscription200Response
-func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest) (*AddSubscription200Response, *http.Response, error) {
+//  @return AddSubscriptionResponse
+func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest) (*AddSubscriptionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *AddSubscription200Response
+		localVarReturnValue  *AddSubscriptionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.AddSubscription")
@@ -322,6 +336,12 @@ func (a *V1TenantsAPIService) AddSubscriptionExecute(r ApiAddSubscriptionRequest
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.addSubscriptionRequest
@@ -458,7 +478,7 @@ func (r ApiCreateInviteRequest) XTenantId(xTenantId string) ApiCreateInviteReque
 	return r
 }
 
-func (r ApiCreateInviteRequest) Execute() (*CreateInvite200Response, *http.Response, error) {
+func (r ApiCreateInviteRequest) Execute() (*CreateTenantUserInviteResponse, *http.Response, error) {
 	return r.ApiService.CreateInviteExecute(r)
 }
 
@@ -492,13 +512,13 @@ func (a *V1TenantsAPIService) CreateInvite(ctx context.Context) ApiCreateInviteR
 }
 
 // Execute executes the request
-//  @return CreateInvite200Response
-func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*CreateInvite200Response, *http.Response, error) {
+//  @return CreateTenantUserInviteResponse
+func (a *V1TenantsAPIService) CreateInviteExecute(r ApiCreateInviteRequest) (*CreateTenantUserInviteResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateInvite200Response
+		localVarReturnValue  *CreateTenantUserInviteResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateInvite")
@@ -684,7 +704,7 @@ func (r ApiCreateRoleRequest) XTenantId(xTenantId string) ApiCreateRoleRequest {
 	return r
 }
 
-func (r ApiCreateRoleRequest) Execute() (*CreateRole200Response, *http.Response, error) {
+func (r ApiCreateRoleRequest) Execute() (*Role, *http.Response, error) {
 	return r.ApiService.CreateRoleExecute(r)
 }
 
@@ -719,13 +739,13 @@ func (a *V1TenantsAPIService) CreateRole(ctx context.Context) ApiCreateRoleReque
 }
 
 // Execute executes the request
-//  @return CreateRole200Response
-func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*CreateRole200Response, *http.Response, error) {
+//  @return Role
+func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Role, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateRole200Response
+		localVarReturnValue  *Role
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateRole")
@@ -851,7 +871,7 @@ func (a *V1TenantsAPIService) CreateRoleExecute(r ApiCreateRoleRequest) (*Create
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v SchemasConflictResponse
+			var v ConflictResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -904,7 +924,7 @@ func (r ApiCreateTenantRequest) XUserId(xUserId string) ApiCreateTenantRequest {
 	return r
 }
 
-func (r ApiCreateTenantRequest) Execute() (*CreateTenant200Response, *http.Response, error) {
+func (r ApiCreateTenantRequest) Execute() (*CreateTenantResponse, *http.Response, error) {
 	return r.ApiService.CreateTenantExecute(r)
 }
 
@@ -941,13 +961,13 @@ func (a *V1TenantsAPIService) CreateTenant(ctx context.Context) ApiCreateTenantR
 }
 
 // Execute executes the request
-//  @return CreateTenant200Response
-func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*CreateTenant200Response, *http.Response, error) {
+//  @return CreateTenantResponse
+func (a *V1TenantsAPIService) CreateTenantExecute(r ApiCreateTenantRequest) (*CreateTenantResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateTenant200Response
+		localVarReturnValue  *CreateTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.CreateTenant")
@@ -1103,7 +1123,7 @@ func (r ApiDeleteRoleRequest) XTenantId(xTenantId string) ApiDeleteRoleRequest {
 	return r
 }
 
-func (r ApiDeleteRoleRequest) Execute() (*DeleteRole200Response, *http.Response, error) {
+func (r ApiDeleteRoleRequest) Execute() (*http.Response, error) {
 	return r.ApiService.DeleteRoleExecute(r)
 }
 
@@ -1135,18 +1155,16 @@ func (a *V1TenantsAPIService) DeleteRole(ctx context.Context, roleId string) Api
 }
 
 // Execute executes the request
-//  @return DeleteRole200Response
-func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*DeleteRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteRole200Response
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.DeleteRole")
 	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/tenants/roles/{role_id}"
@@ -1209,19 +1227,19 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -1234,68 +1252,59 @@ func (a *V1TenantsAPIService) DeleteRoleExecute(r ApiDeleteRoleRequest) (*Delete
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v ForbiddenResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }
 
 type ApiDeleteTenantRequest struct {
@@ -1317,7 +1326,7 @@ func (r ApiDeleteTenantRequest) XTenantId(xTenantId string) ApiDeleteTenantReque
 	return r
 }
 
-func (r ApiDeleteTenantRequest) Execute() (*DeleteTenant200Response, *http.Response, error) {
+func (r ApiDeleteTenantRequest) Execute() (*http.Response, error) {
 	return r.ApiService.DeleteTenantExecute(r)
 }
 
@@ -1348,18 +1357,16 @@ func (a *V1TenantsAPIService) DeleteTenant(ctx context.Context) ApiDeleteTenantR
 }
 
 // Execute executes the request
-//  @return DeleteTenant200Response
-func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*DeleteTenant200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteTenant200Response
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.DeleteTenant")
 	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/tenants"
@@ -1421,19 +1428,19 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -1446,252 +1453,89 @@ func (a *V1TenantsAPIService) DeleteTenantExecute(r ApiDeleteTenantRequest) (*De
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
 			var v ConflictResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiGetRoleDefinitionsRequest struct {
-	ctx context.Context
-	ApiService *V1TenantsAPIService
-	subject *string
-}
-
-// Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;)
-func (r ApiGetRoleDefinitionsRequest) Subject(subject string) ApiGetRoleDefinitionsRequest {
-	r.subject = &subject
-	return r
-}
-
-func (r ApiGetRoleDefinitionsRequest) Execute() (*GetRoleDefinitions200Response, *http.Response, error) {
-	return r.ApiService.GetRoleDefinitionsExecute(r)
-}
-
-/*
-GetRoleDefinitions Get namespace definitions
-
-Returns all available permission namespaces and their relations from the database.
-
-## Authentication
-Requires JWT token with appropriate permissions.
-
-## Use Cases
-- Discover available permission namespaces
-- List relations for each namespace
-- Build dynamic permission UIs
-- Filter by subject type for API key creation
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetRoleDefinitionsRequest
-*/
-func (a *V1TenantsAPIService) GetRoleDefinitions(ctx context.Context) ApiGetRoleDefinitionsRequest {
-	return ApiGetRoleDefinitionsRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return GetRoleDefinitions200Response
-func (a *V1TenantsAPIService) GetRoleDefinitionsExecute(r ApiGetRoleDefinitionsRequest) (*GetRoleDefinitions200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetRoleDefinitions200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetRoleDefinitions")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/tenants/roles/definitions"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	if r.subject != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "subject", r.subject, "form", "")
-	}
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["SessionTokenAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Session-Token"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }
 
 type ApiGetTenantBillingStatusRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
+}
+
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantBillingStatusRequest) XUserId(xUserId string) ApiGetTenantBillingStatusRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantBillingStatusRequest) XTenantId(xTenantId string) ApiGetTenantBillingStatusRequest {
+	r.xTenantId = &xTenantId
+	return r
 }
 
 func (r ApiGetTenantBillingStatusRequest) Execute() (*GetTenantBillingStatus200Response, *http.Response, error) {
@@ -1759,6 +1603,12 @@ func (a *V1TenantsAPIService) GetTenantBillingStatusExecute(r ApiGetTenantBillin
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -1863,7 +1713,7 @@ type ApiGetTenantByIDRequest struct {
 	tenantId string
 }
 
-func (r ApiGetTenantByIDRequest) Execute() (*GetTenantByID200Response, *http.Response, error) {
+func (r ApiGetTenantByIDRequest) Execute() (*Tenant, *http.Response, error) {
 	return r.ApiService.GetTenantByIDExecute(r)
 }
 
@@ -1894,13 +1744,13 @@ func (a *V1TenantsAPIService) GetTenantByID(ctx context.Context, tenantId string
 }
 
 // Execute executes the request
-//  @return GetTenantByID200Response
-func (a *V1TenantsAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRequest) (*GetTenantByID200Response, *http.Response, error) {
+//  @return Tenant
+func (a *V1TenantsAPIService) GetTenantByIDExecute(r ApiGetTenantByIDRequest) (*Tenant, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetTenantByID200Response
+		localVarReturnValue  *Tenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetTenantByID")
@@ -2032,7 +1882,7 @@ type ApiGetTenantByStripeCustomerIDRequest struct {
 	stripeCustomerId string
 }
 
-func (r ApiGetTenantByStripeCustomerIDRequest) Execute() (*GetTenantByStripeCustomerID200Response, *http.Response, error) {
+func (r ApiGetTenantByStripeCustomerIDRequest) Execute() (*Tenant, *http.Response, error) {
 	return r.ApiService.GetTenantByStripeCustomerIDExecute(r)
 }
 
@@ -2063,13 +1913,13 @@ func (a *V1TenantsAPIService) GetTenantByStripeCustomerID(ctx context.Context, s
 }
 
 // Execute executes the request
-//  @return GetTenantByStripeCustomerID200Response
-func (a *V1TenantsAPIService) GetTenantByStripeCustomerIDExecute(r ApiGetTenantByStripeCustomerIDRequest) (*GetTenantByStripeCustomerID200Response, *http.Response, error) {
+//  @return Tenant
+func (a *V1TenantsAPIService) GetTenantByStripeCustomerIDExecute(r ApiGetTenantByStripeCustomerIDRequest) (*Tenant, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetTenantByStripeCustomerID200Response
+		localVarReturnValue  *Tenant
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetTenantByStripeCustomerID")
@@ -2399,9 +2249,23 @@ type ApiGetTenantSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	configPriceId string
+	xUserId *string
+	xTenantId *string
 }
 
-func (r ApiGetTenantSubscriptionRequest) Execute() (*GetTenantSubscription200Response, *http.Response, error) {
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantSubscriptionRequest) XUserId(xUserId string) ApiGetTenantSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiGetTenantSubscriptionRequest) XTenantId(xTenantId string) ApiGetTenantSubscriptionRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiGetTenantSubscriptionRequest) Execute() (*SubscriptionResponse, *http.Response, error) {
 	return r.ApiService.GetTenantSubscriptionExecute(r)
 }
 
@@ -2432,13 +2296,13 @@ func (a *V1TenantsAPIService) GetTenantSubscription(ctx context.Context, configP
 }
 
 // Execute executes the request
-//  @return GetTenantSubscription200Response
-func (a *V1TenantsAPIService) GetTenantSubscriptionExecute(r ApiGetTenantSubscriptionRequest) (*GetTenantSubscription200Response, *http.Response, error) {
+//  @return SubscriptionResponse
+func (a *V1TenantsAPIService) GetTenantSubscriptionExecute(r ApiGetTenantSubscriptionRequest) (*SubscriptionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetTenantSubscription200Response
+		localVarReturnValue  *SubscriptionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.GetTenantSubscription")
@@ -2469,6 +2333,12 @@ func (a *V1TenantsAPIService) GetTenantSubscriptionExecute(r ApiGetTenantSubscri
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2578,6 +2448,174 @@ func (a *V1TenantsAPIService) GetTenantSubscriptionExecute(r ApiGetTenantSubscri
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiListRoleDefinitionsRequest struct {
+	ctx context.Context
+	ApiService *V1TenantsAPIService
+	subject *string
+}
+
+// Filter to only return relations that accept this subject type (e.g., \&quot;ApiKey\&quot;, \&quot;User\&quot;)
+func (r ApiListRoleDefinitionsRequest) Subject(subject string) ApiListRoleDefinitionsRequest {
+	r.subject = &subject
+	return r
+}
+
+func (r ApiListRoleDefinitionsRequest) Execute() ([]NamespaceDefinition, *http.Response, error) {
+	return r.ApiService.ListRoleDefinitionsExecute(r)
+}
+
+/*
+ListRoleDefinitions List namespace definitions
+
+Returns all available permission namespaces and their relations from the database.
+
+## Authentication
+Requires JWT token with appropriate permissions.
+
+## Use Cases
+- Discover available permission namespaces
+- List relations for each namespace
+- Build dynamic permission UIs
+- Filter by subject type for API key creation
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListRoleDefinitionsRequest
+*/
+func (a *V1TenantsAPIService) ListRoleDefinitions(ctx context.Context) ApiListRoleDefinitionsRequest {
+	return ApiListRoleDefinitionsRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return []NamespaceDefinition
+func (a *V1TenantsAPIService) ListRoleDefinitionsExecute(r ApiListRoleDefinitionsRequest) ([]NamespaceDefinition, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  []NamespaceDefinition
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListRoleDefinitions")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/v1/tenants/roles/definitions"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if r.subject != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "subject", r.subject, "form", "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiListRolesRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
@@ -2590,7 +2628,7 @@ func (r ApiListRolesRequest) XTenantId(xTenantId string) ApiListRolesRequest {
 	return r
 }
 
-func (r ApiListRolesRequest) Execute() (*ListRoles200Response, *http.Response, error) {
+func (r ApiListRolesRequest) Execute() ([]Role, *http.Response, error) {
 	return r.ApiService.ListRolesExecute(r)
 }
 
@@ -2620,13 +2658,13 @@ func (a *V1TenantsAPIService) ListRoles(ctx context.Context) ApiListRolesRequest
 }
 
 // Execute executes the request
-//  @return ListRoles200Response
-func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRoles200Response, *http.Response, error) {
+//  @return []Role
+func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) ([]Role, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListRoles200Response
+		localVarReturnValue  []Role
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListRoles")
@@ -2760,9 +2798,23 @@ func (a *V1TenantsAPIService) ListRolesExecute(r ApiListRolesRequest) (*ListRole
 type ApiListTenantSubscriptionsRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
+	xUserId *string
+	xTenantId *string
 }
 
-func (r ApiListTenantSubscriptionsRequest) Execute() (*ListTenantSubscriptions200Response, *http.Response, error) {
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantSubscriptionsRequest) XUserId(xUserId string) ApiListTenantSubscriptionsRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiListTenantSubscriptionsRequest) XTenantId(xTenantId string) ApiListTenantSubscriptionsRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiListTenantSubscriptionsRequest) Execute() ([]SubscriptionResponse, *http.Response, error) {
 	return r.ApiService.ListTenantSubscriptionsExecute(r)
 }
 
@@ -2791,13 +2843,13 @@ func (a *V1TenantsAPIService) ListTenantSubscriptions(ctx context.Context) ApiLi
 }
 
 // Execute executes the request
-//  @return ListTenantSubscriptions200Response
-func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscriptionsRequest) (*ListTenantSubscriptions200Response, *http.Response, error) {
+//  @return []SubscriptionResponse
+func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubscriptionsRequest) ([]SubscriptionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListTenantSubscriptions200Response
+		localVarReturnValue  []SubscriptionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListTenantSubscriptions")
@@ -2827,6 +2879,12 @@ func (a *V1TenantsAPIService) ListTenantSubscriptionsExecute(r ApiListTenantSubs
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -2944,7 +3002,7 @@ func (r ApiListTenantUsersRequest) XTenantId(xTenantId string) ApiListTenantUser
 	return r
 }
 
-func (r ApiListTenantUsersRequest) Execute() (*ListTenantUsers200Response, *http.Response, error) {
+func (r ApiListTenantUsersRequest) Execute() ([]TenantUserResponse, *http.Response, error) {
 	return r.ApiService.ListTenantUsersExecute(r)
 }
 
@@ -2974,13 +3032,13 @@ func (a *V1TenantsAPIService) ListTenantUsers(ctx context.Context) ApiListTenant
 }
 
 // Execute executes the request
-//  @return ListTenantUsers200Response
-func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) (*ListTenantUsers200Response, *http.Response, error) {
+//  @return []TenantUserResponse
+func (a *V1TenantsAPIService) ListTenantUsersExecute(r ApiListTenantUsersRequest) ([]TenantUserResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ListTenantUsers200Response
+		localVarReturnValue  []TenantUserResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.ListTenantUsers")
@@ -3129,6 +3187,8 @@ type ApiRemoveSubscriptionRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	removeSubscriptionRequest *RemoveSubscriptionRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiRemoveSubscriptionRequest) RemoveSubscriptionRequest(removeSubscriptionRequest RemoveSubscriptionRequest) ApiRemoveSubscriptionRequest {
@@ -3136,7 +3196,19 @@ func (r ApiRemoveSubscriptionRequest) RemoveSubscriptionRequest(removeSubscripti
 	return r
 }
 
-func (r ApiRemoveSubscriptionRequest) Execute() (*RemoveSubscription200Response, *http.Response, error) {
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveSubscriptionRequest) XUserId(xUserId string) ApiRemoveSubscriptionRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveSubscriptionRequest) XTenantId(xTenantId string) ApiRemoveSubscriptionRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiRemoveSubscriptionRequest) Execute() (*RemoveSubscriptionResponse, *http.Response, error) {
 	return r.ApiService.RemoveSubscriptionExecute(r)
 }
 
@@ -3181,13 +3253,13 @@ func (a *V1TenantsAPIService) RemoveSubscription(ctx context.Context) ApiRemoveS
 }
 
 // Execute executes the request
-//  @return RemoveSubscription200Response
-func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionRequest) (*RemoveSubscription200Response, *http.Response, error) {
+//  @return RemoveSubscriptionResponse
+func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionRequest) (*RemoveSubscriptionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *RemoveSubscription200Response
+		localVarReturnValue  *RemoveSubscriptionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.RemoveSubscription")
@@ -3220,6 +3292,12 @@ func (a *V1TenantsAPIService) RemoveSubscriptionExecute(r ApiRemoveSubscriptionR
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.removeSubscriptionRequest
@@ -3335,6 +3413,8 @@ type ApiRemoveTenantUserRequest struct {
 	ctx context.Context
 	ApiService *V1TenantsAPIService
 	deleteTenantUserRequest *DeleteTenantUserRequest
+	xUserId *string
+	xTenantId *string
 }
 
 func (r ApiRemoveTenantUserRequest) DeleteTenantUserRequest(deleteTenantUserRequest DeleteTenantUserRequest) ApiRemoveTenantUserRequest {
@@ -3342,7 +3422,19 @@ func (r ApiRemoveTenantUserRequest) DeleteTenantUserRequest(deleteTenantUserRequ
 	return r
 }
 
-func (r ApiRemoveTenantUserRequest) Execute() (*SuccessResponse, *http.Response, error) {
+// User ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveTenantUserRequest) XUserId(xUserId string) ApiRemoveTenantUserRequest {
+	r.xUserId = &xUserId
+	return r
+}
+
+// Tenant ID (UUID) - Required when using X-Service-Key header
+func (r ApiRemoveTenantUserRequest) XTenantId(xTenantId string) ApiRemoveTenantUserRequest {
+	r.xTenantId = &xTenantId
+	return r
+}
+
+func (r ApiRemoveTenantUserRequest) Execute() (*http.Response, error) {
 	return r.ApiService.RemoveTenantUserExecute(r)
 }
 
@@ -3377,18 +3469,16 @@ func (a *V1TenantsAPIService) RemoveTenantUser(ctx context.Context) ApiRemoveTen
 }
 
 // Execute executes the request
-//  @return SuccessResponse
-func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*SuccessResponse, *http.Response, error) {
+func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *SuccessResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.RemoveTenantUser")
 	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/tenants/users"
@@ -3397,7 +3487,7 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.deleteTenantUserRequest == nil {
-		return localVarReturnValue, nil, reportError("deleteTenantUserRequest is required and must be specified")
+		return nil, reportError("deleteTenantUserRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -3416,6 +3506,12 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.xUserId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
+	}
+	if r.xTenantId != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.deleteTenantUserRequest
@@ -3449,19 +3545,19 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -3474,68 +3570,59 @@ func (a *V1TenantsAPIService) RemoveTenantUserExecute(r ApiRemoveTenantUserReque
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }
 
 type ApiSwitchActiveTenantRequest struct {
@@ -3556,7 +3643,7 @@ func (r ApiSwitchActiveTenantRequest) XUserId(xUserId string) ApiSwitchActiveTen
 	return r
 }
 
-func (r ApiSwitchActiveTenantRequest) Execute() (*SwitchActiveTenant200Response, *http.Response, error) {
+func (r ApiSwitchActiveTenantRequest) Execute() (*SwitchTenantResponse, *http.Response, error) {
 	return r.ApiService.SwitchActiveTenantExecute(r)
 }
 
@@ -3585,13 +3672,13 @@ func (a *V1TenantsAPIService) SwitchActiveTenant(ctx context.Context) ApiSwitchA
 }
 
 // Execute executes the request
-//  @return SwitchActiveTenant200Response
-func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantRequest) (*SwitchActiveTenant200Response, *http.Response, error) {
+//  @return SwitchTenantResponse
+func (a *V1TenantsAPIService) SwitchActiveTenantExecute(r ApiSwitchActiveTenantRequest) (*SwitchTenantResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *SwitchActiveTenant200Response
+		localVarReturnValue  *SwitchTenantResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.SwitchActiveTenant")
@@ -3764,7 +3851,7 @@ func (r ApiUpdateRoleRequest) XTenantId(xTenantId string) ApiUpdateRoleRequest {
 	return r
 }
 
-func (r ApiUpdateRoleRequest) Execute() (*CreateRole200Response, *http.Response, error) {
+func (r ApiUpdateRoleRequest) Execute() (*Role, *http.Response, error) {
 	return r.ApiService.UpdateRoleExecute(r)
 }
 
@@ -3799,13 +3886,13 @@ func (a *V1TenantsAPIService) UpdateRole(ctx context.Context, roleId string) Api
 }
 
 // Execute executes the request
-//  @return CreateRole200Response
-func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*CreateRole200Response, *http.Response, error) {
+//  @return Role
+func (a *V1TenantsAPIService) UpdateRoleExecute(r ApiUpdateRoleRequest) (*Role, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateRole200Response
+		localVarReturnValue  *Role
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateRole")
@@ -3992,7 +4079,7 @@ func (r ApiUpdateTenantUserRoleRequest) XTenantId(xTenantId string) ApiUpdateTen
 	return r
 }
 
-func (r ApiUpdateTenantUserRoleRequest) Execute() (*UpdateTenantUserRole200Response, *http.Response, error) {
+func (r ApiUpdateTenantUserRoleRequest) Execute() (*http.Response, error) {
 	return r.ApiService.UpdateTenantUserRoleExecute(r)
 }
 
@@ -4028,18 +4115,16 @@ func (a *V1TenantsAPIService) UpdateTenantUserRole(ctx context.Context) ApiUpdat
 }
 
 // Execute executes the request
-//  @return UpdateTenantUserRole200Response
-func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRoleRequest) (*UpdateTenantUserRole200Response, *http.Response, error) {
+func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserRoleRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *UpdateTenantUserRole200Response
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1TenantsAPIService.UpdateTenantUserRole")
 	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/api/v1/tenants/users"
@@ -4048,7 +4133,7 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 	if r.updateTenantUserRoleRequest == nil {
-		return localVarReturnValue, nil, reportError("updateTenantUserRoleRequest is required and must be specified")
+		return nil, reportError("updateTenantUserRoleRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -4106,19 +4191,19 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return localVarReturnValue, nil, err
+		return nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
+		return localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -4131,66 +4216,57 @@ func (a *V1TenantsAPIService) UpdateTenantUserRoleExecute(r ApiUpdateTenantUserR
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 404 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
+			return localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
 			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
+				return localVarHTTPResponse, newErr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
 		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
+		return localVarHTTPResponse, newErr
 	}
 
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
+	return localVarHTTPResponse, nil
 }

@@ -7,7 +7,6 @@ Internal Server Error response (500)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { InternalServerError } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 500,
   "error": Internal Server Error,
 } satisfies InternalServerError
 

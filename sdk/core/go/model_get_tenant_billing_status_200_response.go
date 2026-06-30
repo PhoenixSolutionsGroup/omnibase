@@ -22,9 +22,8 @@ var _ MappedNullable = &GetTenantBillingStatus200Response{}
 
 // GetTenantBillingStatus200Response struct for GetTenantBillingStatus200Response
 type GetTenantBillingStatus200Response struct {
-	// HTTP status code
-	Status int32 `json:"status"`
-	Data *BillingStatusResponse `json:"data,omitempty"`
+	// Whether tenant has active billing configured
+	IsActive bool `json:"is_active"`
 }
 
 type _GetTenantBillingStatus200Response GetTenantBillingStatus200Response
@@ -33,9 +32,9 @@ type _GetTenantBillingStatus200Response GetTenantBillingStatus200Response
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetTenantBillingStatus200Response(status int32) *GetTenantBillingStatus200Response {
+func NewGetTenantBillingStatus200Response(isActive bool) *GetTenantBillingStatus200Response {
 	this := GetTenantBillingStatus200Response{}
-	this.Status = status
+	this.IsActive = isActive
 	return &this
 }
 
@@ -47,60 +46,28 @@ func NewGetTenantBillingStatus200ResponseWithDefaults() *GetTenantBillingStatus2
 	return &this
 }
 
-// GetStatus returns the Status field value
-func (o *GetTenantBillingStatus200Response) GetStatus() int32 {
+// GetIsActive returns the IsActive field value
+func (o *GetTenantBillingStatus200Response) GetIsActive() bool {
 	if o == nil {
-		var ret int32
+		var ret bool
 		return ret
 	}
 
-	return o.Status
+	return o.IsActive
 }
 
-// GetStatusOk returns a tuple with the Status field value
+// GetIsActiveOk returns a tuple with the IsActive field value
 // and a boolean to check if the value has been set.
-func (o *GetTenantBillingStatus200Response) GetStatusOk() (*int32, bool) {
+func (o *GetTenantBillingStatus200Response) GetIsActiveOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Status, true
+	return &o.IsActive, true
 }
 
-// SetStatus sets field value
-func (o *GetTenantBillingStatus200Response) SetStatus(v int32) {
-	o.Status = v
-}
-
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *GetTenantBillingStatus200Response) GetData() BillingStatusResponse {
-	if o == nil || IsNil(o.Data) {
-		var ret BillingStatusResponse
-		return ret
-	}
-	return *o.Data
-}
-
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *GetTenantBillingStatus200Response) GetDataOk() (*BillingStatusResponse, bool) {
-	if o == nil || IsNil(o.Data) {
-		return nil, false
-	}
-	return o.Data, true
-}
-
-// HasData returns a boolean if a field has been set.
-func (o *GetTenantBillingStatus200Response) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
-		return true
-	}
-
-	return false
-}
-
-// SetData gets a reference to the given BillingStatusResponse and assigns it to the Data field.
-func (o *GetTenantBillingStatus200Response) SetData(v BillingStatusResponse) {
-	o.Data = &v
+// SetIsActive sets field value
+func (o *GetTenantBillingStatus200Response) SetIsActive(v bool) {
+	o.IsActive = v
 }
 
 func (o GetTenantBillingStatus200Response) MarshalJSON() ([]byte, error) {
@@ -113,10 +80,7 @@ func (o GetTenantBillingStatus200Response) MarshalJSON() ([]byte, error) {
 
 func (o GetTenantBillingStatus200Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["status"] = o.Status
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
-	}
+	toSerialize["is_active"] = o.IsActive
 	return toSerialize, nil
 }
 
@@ -125,7 +89,7 @@ func (o *GetTenantBillingStatus200Response) UnmarshalJSON(data []byte) (err erro
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"status",
+		"is_active",
 	}
 
 	allProperties := make(map[string]interface{})

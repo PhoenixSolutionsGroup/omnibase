@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Status** | **int32** | HTTP status code | 
-**Data** | Pointer to [**GetEmailTemplates200ResponseAllOfData**](GetEmailTemplates200ResponseAllOfData.md) |  | [optional] 
+**Templates** | Pointer to [**[]EmailTemplate**](EmailTemplate.md) |  | [optional] 
+**Count** | Pointer to **int32** |  | [optional] 
 
 ## Methods
 
 ### NewGetEmailTemplates200Response
 
-`func NewGetEmailTemplates200Response(status int32, ) *GetEmailTemplates200Response`
+`func NewGetEmailTemplates200Response() *GetEmailTemplates200Response`
 
 NewGetEmailTemplates200Response instantiates a new GetEmailTemplates200Response object
 This constructor will assign default values to properties that have it defined,
@@ -26,50 +26,55 @@ NewGetEmailTemplates200ResponseWithDefaults instantiates a new GetEmailTemplates
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetStatus
+### GetTemplates
 
-`func (o *GetEmailTemplates200Response) GetStatus() int32`
+`func (o *GetEmailTemplates200Response) GetTemplates() []EmailTemplate`
 
-GetStatus returns the Status field if non-nil, zero value otherwise.
+GetTemplates returns the Templates field if non-nil, zero value otherwise.
 
-### GetStatusOk
+### GetTemplatesOk
 
-`func (o *GetEmailTemplates200Response) GetStatusOk() (*int32, bool)`
+`func (o *GetEmailTemplates200Response) GetTemplatesOk() (*[]EmailTemplate, bool)`
 
-GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
+GetTemplatesOk returns a tuple with the Templates field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetStatus
+### SetTemplates
 
-`func (o *GetEmailTemplates200Response) SetStatus(v int32)`
+`func (o *GetEmailTemplates200Response) SetTemplates(v []EmailTemplate)`
 
-SetStatus sets Status field to given value.
+SetTemplates sets Templates field to given value.
 
+### HasTemplates
 
-### GetData
+`func (o *GetEmailTemplates200Response) HasTemplates() bool`
 
-`func (o *GetEmailTemplates200Response) GetData() GetEmailTemplates200ResponseAllOfData`
+HasTemplates returns a boolean if a field has been set.
 
-GetData returns the Data field if non-nil, zero value otherwise.
+### GetCount
 
-### GetDataOk
+`func (o *GetEmailTemplates200Response) GetCount() int32`
 
-`func (o *GetEmailTemplates200Response) GetDataOk() (*GetEmailTemplates200ResponseAllOfData, bool)`
+GetCount returns the Count field if non-nil, zero value otherwise.
 
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+### GetCountOk
+
+`func (o *GetEmailTemplates200Response) GetCountOk() (*int32, bool)`
+
+GetCountOk returns a tuple with the Count field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetData
+### SetCount
 
-`func (o *GetEmailTemplates200Response) SetData(v GetEmailTemplates200ResponseAllOfData)`
+`func (o *GetEmailTemplates200Response) SetCount(v int32)`
 
-SetData sets Data field to given value.
+SetCount sets Count field to given value.
 
-### HasData
+### HasCount
 
-`func (o *GetEmailTemplates200Response) HasData() bool`
+`func (o *GetEmailTemplates200Response) HasCount() bool`
 
-HasData returns a boolean if a field has been set.
+HasCount returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

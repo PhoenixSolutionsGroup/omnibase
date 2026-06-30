@@ -15,44 +15,41 @@
 
 import * as runtime from '../runtime';
 import type {
+  ActiveTenantResponse,
   BadRequestResponse,
   ConflictResponse,
-  CreateUser200Response,
   CreateUserRequest,
-  GetActiveTenant200Response,
-  GetIdentity200Response,
-  GetSession200Response,
   InternalServerErrorResponse,
-  ListTenants200Response,
-  Logout200Response,
+  KratosIdentity,
+  ListTenantsResponse,
+  LogoutResponse,
+  SessionResponse,
   UnauthorizedResponse,
-  WhoAmI200Response,
+  WhoAmIResponse,
 } from '../models/index';
 import {
+    ActiveTenantResponseFromJSON,
+    ActiveTenantResponseToJSON,
     BadRequestResponseFromJSON,
     BadRequestResponseToJSON,
     ConflictResponseFromJSON,
     ConflictResponseToJSON,
-    CreateUser200ResponseFromJSON,
-    CreateUser200ResponseToJSON,
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
-    GetActiveTenant200ResponseFromJSON,
-    GetActiveTenant200ResponseToJSON,
-    GetIdentity200ResponseFromJSON,
-    GetIdentity200ResponseToJSON,
-    GetSession200ResponseFromJSON,
-    GetSession200ResponseToJSON,
     InternalServerErrorResponseFromJSON,
     InternalServerErrorResponseToJSON,
-    ListTenants200ResponseFromJSON,
-    ListTenants200ResponseToJSON,
-    Logout200ResponseFromJSON,
-    Logout200ResponseToJSON,
+    KratosIdentityFromJSON,
+    KratosIdentityToJSON,
+    ListTenantsResponseFromJSON,
+    ListTenantsResponseToJSON,
+    LogoutResponseFromJSON,
+    LogoutResponseToJSON,
+    SessionResponseFromJSON,
+    SessionResponseToJSON,
     UnauthorizedResponseFromJSON,
     UnauthorizedResponseToJSON,
-    WhoAmI200ResponseFromJSON,
-    WhoAmI200ResponseToJSON,
+    WhoAmIResponseFromJSON,
+    WhoAmIResponseToJSON,
 } from '../models/index';
 
 export interface CreateUserOperationRequest {
@@ -76,7 +73,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication. 
      * Create new user
      */
-    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateUser200Response>> {
+    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<KratosIdentity>> {
         if (requestParameters['createUserRequest'] == null) {
             throw new runtime.RequiredError(
                 'createUserRequest',
@@ -105,14 +102,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             body: CreateUserRequestToJSON(requestParameters['createUserRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CreateUser200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => KratosIdentityFromJSON(jsonValue));
     }
 
     /**
      * Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication. 
      * Create new user
      */
-    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateUser200Response> {
+    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<KratosIdentity> {
         const response = await this.createUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -121,7 +118,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Returns the full tenant object for the user\'s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering. 
      * Get active tenant
      */
-    async getActiveTenantRaw(requestParameters: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetActiveTenant200Response>> {
+    async getActiveTenantRaw(requestParameters: GetActiveTenantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ActiveTenantResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -148,14 +145,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetActiveTenant200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ActiveTenantResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns the full tenant object for the user\'s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering. 
      * Get active tenant
      */
-    async getActiveTenant(requestParameters: GetActiveTenantRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetActiveTenant200Response> {
+    async getActiveTenant(requestParameters: GetActiveTenantRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ActiveTenantResponse> {
         const response = await this.getActiveTenantRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -164,7 +161,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Returns the current authenticated user\'s identity information (traits like email, name).  ## Identity Data - User ID (unique identifier) - Traits (email, first name, last name based on identity schema) - Schema ID - Created/updated timestamps  ## Use Case Lighter alternative to full session when you only need user profile data. 
      * Get current identity
      */
-    async getIdentityRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetIdentity200Response>> {
+    async getIdentityRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -183,14 +180,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetIdentity200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Returns the current authenticated user\'s identity information (traits like email, name).  ## Identity Data - User ID (unique identifier) - Traits (email, first name, last name based on identity schema) - Schema ID - Created/updated timestamps  ## Use Case Lighter alternative to full session when you only need user profile data. 
      * Get current identity
      */
-    async getIdentity(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetIdentity200Response> {
+    async getIdentity(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.getIdentityRaw(initOverrides);
         return await response.value();
     }
@@ -199,7 +196,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Returns the current authenticated user\'s session including identity and tenant information.  ## Session Data - Session metadata (ID, expiry, authentication methods) - Identity information (user ID, traits like email, name) - Active tenant context (if user has tenant membership)  ## Authentication Requires valid session via Cookie or X-Session-Token header. 
      * Get current session
      */
-    async getSessionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetSession200Response>> {
+    async getSessionRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SessionResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -218,14 +215,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => GetSession200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SessionResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns the current authenticated user\'s session including identity and tenant information.  ## Session Data - Session metadata (ID, expiry, authentication methods) - Identity information (user ID, traits like email, name) - Active tenant context (if user has tenant membership)  ## Authentication Requires valid session via Cookie or X-Session-Token header. 
      * Get current session
      */
-    async getSession(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetSession200Response> {
+    async getSession(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SessionResponse> {
         const response = await this.getSessionRaw(initOverrides);
         return await response.value();
     }
@@ -234,7 +231,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenants200Response>> {
+    async listTenantsRaw(requestParameters: ListTenantsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListTenantsResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -261,14 +258,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenants200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListTenantsResponseFromJSON(jsonValue));
     }
 
     /**
      * Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
      * List user\'s tenants
      */
-    async listTenants(requestParameters: ListTenantsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenants200Response> {
+    async listTenants(requestParameters: ListTenantsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTenantsResponse> {
         const response = await this.listTenantsRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -277,7 +274,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically. 
      * Logout user
      */
-    async logoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Logout200Response>> {
+    async logoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LogoutResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -296,14 +293,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => Logout200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => LogoutResponseFromJSON(jsonValue));
     }
 
     /**
      * Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically. 
      * Logout user
      */
-    async logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Logout200Response> {
+    async logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LogoutResponse> {
         const response = await this.logoutRaw(initOverrides);
         return await response.value();
     }
@@ -312,7 +309,7 @@ export class V1AuthApi extends runtime.BaseAPI {
      * Lightweight endpoint to check if the user is authenticated.  ## Response Returns boolean authentication status and user ID if authenticated.  ## Use Case Quick auth checks for route guards without fetching full session data. 
      * Check authentication status
      */
-    async whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WhoAmI200Response>> {
+    async whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WhoAmIResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -331,14 +328,14 @@ export class V1AuthApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WhoAmI200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => WhoAmIResponseFromJSON(jsonValue));
     }
 
     /**
      * Lightweight endpoint to check if the user is authenticated.  ## Response Returns boolean authentication status and user ID if authenticated.  ## Use Case Quick auth checks for route guards without fetching full session data. 
      * Check authentication status
      */
-    async whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WhoAmI200Response> {
+    async whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WhoAmIResponse> {
         const response = await this.whoAmIRaw(initOverrides);
         return await response.value();
     }

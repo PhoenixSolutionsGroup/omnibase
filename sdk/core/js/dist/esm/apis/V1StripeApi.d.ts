@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ApplyEnterpriseCustomRequest, ApplyEnterpriseTemplate200Response, ApplyEnterpriseTemplateRequest, CalculatePriceCost200Response, CalculatePriceCostRequest, ConvertStripeIDToConfigID200Response, GetEnterprisePricesByTemplate200Response, GetMeterByID200Response, GetPriceByID200Response, GetProductByID200Response, GetStripeConfig200Response, ListWebhooks200Response } from '../models/index';
+import type { ApplyEnterpriseCustomRequest, ApplyEnterpriseTemplateRequest, CalculatePriceCostRequest, CalculatePriceCostResponse, EnterpriseApplyResponse, EnterprisePricesResponse, ListWebhooksResponse, MeterResponse, PriceResponse, ProductResponse, StripeConfigResponse, StripeIDConversionResponse } from '../models/index';
 export interface ApplyEnterpriseCustomOperationRequest {
     applyEnterpriseCustomRequest: ApplyEnterpriseCustomRequest;
 }
@@ -47,120 +47,120 @@ export declare class V1StripeApi extends runtime.BaseAPI {
      * Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to custom enterprise prices identified by enterprise_id.  ## Authentication Requires service key authentication.  ## Use Cases - Apply custom negotiated pricing for specific enterprise customers - Tenant-specific pricing overrides - Custom enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_id` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_id` field for future provisioning
      * Apply custom enterprise pricing
      */
-    applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplyEnterpriseTemplate200Response>>;
+    applyEnterpriseCustomRaw(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>>;
     /**
      * Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to custom enterprise prices identified by enterprise_id.  ## Authentication Requires service key authentication.  ## Use Cases - Apply custom negotiated pricing for specific enterprise customers - Tenant-specific pricing overrides - Custom enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_id` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_id` field for future provisioning
      * Apply custom enterprise pricing
      */
-    applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplyEnterpriseTemplate200Response>;
+    applyEnterpriseCustom(requestParameters: ApplyEnterpriseCustomOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse>;
     /**
      * Applies template-based enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to the corresponding enterprise template prices.  ## Authentication Requires service key authentication.  ## Use Cases - Apply pre-defined discount tiers to enterprise customers - Bulk pricing changes for enterprise accounts - Template-based enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_template` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_template` field for future provisioning
      * Apply enterprise template pricing
      */
-    applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ApplyEnterpriseTemplate200Response>>;
+    applyEnterpriseTemplateRaw(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterpriseApplyResponse>>;
     /**
      * Applies template-based enterprise pricing to a tenant. This swaps the tenant\'s active subscription prices to the corresponding enterprise template prices.  ## Authentication Requires service key authentication.  ## Use Cases - Apply pre-defined discount tiers to enterprise customers - Bulk pricing changes for enterprise accounts - Template-based enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching `enterprise_template` 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\'s `enterprise_template` field for future provisioning
      * Apply enterprise template pricing
      */
-    applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ApplyEnterpriseTemplate200Response>;
+    applyEnterpriseTemplate(requestParameters: ApplyEnterpriseTemplateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterpriseApplyResponse>;
     /**
      * Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost = unit_amount × quantity - **tiered (graduated)**: Each tier\'s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\'s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations
      * Calculate cost for a price
      */
-    calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCost200Response>>;
+    calculatePriceCostRaw(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CalculatePriceCostResponse>>;
     /**
      * Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost = unit_amount × quantity - **tiered (graduated)**: Each tier\'s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\'s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations
      * Calculate cost for a price
      */
-    calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCost200Response>;
+    calculatePriceCost(requestParameters: CalculatePriceCostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CalculatePriceCostResponse>;
     /**
      * Converts a Stripe ID (product, price, or meter) to the corresponding config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Webhook processing - Subscription mapping - Price lookups
      * Convert Stripe ID to config ID
      */
-    convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConvertStripeIDToConfigID200Response>>;
+    convertStripeIDToConfigIDRaw(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeIDConversionResponse>>;
     /**
      * Converts a Stripe ID (product, price, or meter) to the corresponding config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Webhook processing - Subscription mapping - Price lookups
      * Convert Stripe ID to config ID
      */
-    convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConvertStripeIDToConfigID200Response>;
+    convertStripeIDToConfigID(requestParameters: ConvertStripeIDToConfigIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeIDConversionResponse>;
     /**
      * Retrieves prices filtered by enterprise ID.  ## Authentication Requires service key authentication.  ## Use Cases - View custom pricing for a specific enterprise - Provisioning services for enterprise tenants
      * Get enterprise prices by ID
      */
-    getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEnterprisePricesByTemplate200Response>>;
+    getEnterprisePricesByIDRaw(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>>;
     /**
      * Retrieves prices filtered by enterprise ID.  ## Authentication Requires service key authentication.  ## Use Cases - View custom pricing for a specific enterprise - Provisioning services for enterprise tenants
      * Get enterprise prices by ID
      */
-    getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEnterprisePricesByTemplate200Response>;
+    getEnterprisePricesByID(requestParameters: GetEnterprisePricesByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse>;
     /**
      * Retrieves prices filtered by enterprise template.  ## Authentication Requires service key authentication.  ## Use Cases - List available enterprise prices for a template - Provisioning services for enterprise tenants
      * Get enterprise prices by template
      */
-    getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEnterprisePricesByTemplate200Response>>;
+    getEnterprisePricesByTemplateRaw(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EnterprisePricesResponse>>;
     /**
      * Retrieves prices filtered by enterprise template.  ## Authentication Requires service key authentication.  ## Use Cases - List available enterprise prices for a template - Provisioning services for enterprise tenants
      * Get enterprise prices by template
      */
-    getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEnterprisePricesByTemplate200Response>;
+    getEnterprisePricesByTemplate(requestParameters: GetEnterprisePricesByTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EnterprisePricesResponse>;
     /**
      * Returns a specific billing meter from the Stripe configuration by its config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch meter details for usage tracking - Display metered billing information - Usage reporting configuration
      * Get meter by ID
      */
-    getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetMeterByID200Response>>;
+    getMeterByIDRaw(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MeterResponse>>;
     /**
      * Returns a specific billing meter from the Stripe configuration by its config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch meter details for usage tracking - Display metered billing information - Usage reporting configuration
      * Get meter by ID
      */
-    getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetMeterByID200Response>;
+    getMeterByID(requestParameters: GetMeterByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MeterResponse>;
     /**
      * Returns a specific price from the Stripe configuration by its config ID, along with its parent product.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch price details for checkout - Display specific pricing information - Subscription management
      * Get price by ID
      */
-    getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetPriceByID200Response>>;
+    getPriceByIDRaw(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PriceResponse>>;
     /**
      * Returns a specific price from the Stripe configuration by its config ID, along with its parent product.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch price details for checkout - Display specific pricing information - Subscription management
      * Get price by ID
      */
-    getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetPriceByID200Response>;
+    getPriceByID(requestParameters: GetPriceByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PriceResponse>;
     /**
      * Returns a specific product from the Stripe configuration by its config ID, including all its prices.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch product details - Display product information with all price options - Product catalog pages
      * Get product by ID
      */
-    getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetProductByID200Response>>;
+    getProductByIDRaw(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ProductResponse>>;
     /**
      * Returns a specific product from the Stripe configuration by its config ID, including all its prices.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch product details - Display product information with all price options - Product catalog pages
      * Get product by ID
      */
-    getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetProductByID200Response>;
+    getProductByID(requestParameters: GetProductByIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProductResponse>;
     /**
      * Returns the current Stripe configuration with public prices only (filters out enterprise prices).  ## Authentication No authentication required for public endpoint.  ## Use Cases - Display pricing to users - Build subscription selection UI - Public pricing pages
      * Get public Stripe config
      */
-    getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfig200Response>>;
+    getStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>>;
     /**
      * Returns the current Stripe configuration with public prices only (filters out enterprise prices).  ## Authentication No authentication required for public endpoint.  ## Use Cases - Display pricing to users - Build subscription selection UI - Public pricing pages
      * Get public Stripe config
      */
-    getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfig200Response>;
+    getStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse>;
     /**
      * Returns the complete Stripe configuration including all prices (both public and enterprise).  ## Authentication Requires admin JWT token.  ## Use Cases - Admin configuration management - Enterprise pricing display - Configuration auditing
      * Get full Stripe config (admin)
      */
-    getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetStripeConfig200Response>>;
+    getStripeConfigAdminRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfigResponse>>;
     /**
      * Returns the complete Stripe configuration including all prices (both public and enterprise).  ## Authentication Requires admin JWT token.  ## Use Cases - Admin configuration management - Enterprise pricing display - Configuration auditing
      * Get full Stripe config (admin)
      */
-    getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetStripeConfig200Response>;
+    getStripeConfigAdmin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfigResponse>;
     /**
      * Retrieves all configured webhook endpoints with their signing secrets.  ## Authentication Requires service key authentication.  ## Use Cases - List all webhook configurations - Retrieve signing secrets for webhook signature verification - Debug webhook configuration
      * List all webhooks
      */
-    listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooks200Response>>;
+    listWebhooksRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListWebhooksResponse>>;
     /**
      * Retrieves all configured webhook endpoints with their signing secrets.  ## Authentication Requires service key authentication.  ## Use Cases - List all webhook configurations - Retrieve signing secrets for webhook signature verification - Debug webhook configuration
      * List all webhooks
      */
-    listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooks200Response>;
+    listWebhooks(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListWebhooksResponse>;
 }

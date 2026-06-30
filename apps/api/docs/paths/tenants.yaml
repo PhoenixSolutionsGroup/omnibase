@@ -37,12 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/GetTenantByIDResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/Tenant'
         '400':
           description: Bad request - Invalid tenant_id
           content:
@@ -100,12 +95,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/GetTenantByStripeCustomerIDResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/Tenant'
         '400':
           description: Bad request - Invalid stripe_customer_id
           content:
@@ -140,15 +130,15 @@ paths:
       summary: Create tenant
       description: |
         Creates a new tenant organization with Stripe customer, sets up owner role, and makes it the active tenant for the creator.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session (user_id extracted from session)
         - **Service Key Auth**: Requires X-Service-Key + X-User-ID headers
-        
+
         ## Service Key Usage
         When using service key authentication, provide the user_id via the X-User-ID header.
         The user_id must be a valid UUID matching an existing Kratos identity.
-        
+
         ## Process
         1. Creates Stripe customer (if billing_email provided)
         2. Creates tenant in database
@@ -180,12 +170,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/CreateTenantResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/CreateTenantResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -215,11 +200,11 @@ paths:
       summary: Delete tenant
       description: |
         Deletes a tenant organization and performs cleanup of Stripe customer, Keto permissions, and user associations.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with `delete_tenant` permission
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `delete_tenant` permission
-        
+
         ## Process
         1. Verifies user has delete permission
         2. Archives Stripe customer
@@ -248,15 +233,6 @@ paths:
       responses:
         '200':
           description: Tenant deleted successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/DeleteTenantResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -305,11 +281,11 @@ paths:
       summary: Switch active tenant
       description: |
         Updates the user's active tenant in Kratos identity and returns a new JWT token with updated tenant context.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session
         - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
-        
+
         ## Use Cases
         - Switch between organizations
         - Change context for multi-tenant users
@@ -338,12 +314,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/SwitchTenantResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/SwitchTenantResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -374,7 +345,7 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
   # ==================== User Management Endpoints ====================
-  
+
   /api/v1/tenants/users:
     get:
       tags:
@@ -382,11 +353,11 @@ paths:
       summary: Get tenant users
       description: |
         Returns all users who are members of the tenant with their profile information and roles.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with `view_users` permission
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `view_users` permission
-        
+
         ## Use Cases
         - Display team members list
         - User management UI
@@ -417,14 +388,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '../schemas/tenants.yaml#/components/schemas/TenantUserResponse'
+                type: array
+                items:
+                  $ref: '../schemas/tenants.yaml#/components/schemas/TenantUserResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -452,14 +418,14 @@ paths:
       summary: Remove tenant user
       description: |
         Removes a user from the tenant and cleans up all associated permissions and Keto relationships.
-        
+
         ## Authentication
         Requires JWT token with `remove_user` permission.
-        
+
         ## Restrictions
         - Cannot remove the last owner (must have at least one owner)
         - Removing an owner requires `remove_owner_role` permission
-        
+
         ## Process
         1. Verifies permissions
         2. Removes from role's user list
@@ -467,6 +433,21 @@ paths:
         4. Removes from database
         5. Cleans up user's tenant state
       operationId: removeTenantUser
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -480,10 +461,6 @@ paths:
       responses:
         '200':
           description: User removed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -525,16 +502,16 @@ paths:
       summary: Update user role
       description: |
         Updates a user's role in the tenant and updates all associated Keto permissions.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with `update_user_role` permission
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `update_user_role` permission
-        
+
         ## Restrictions
         - Promoting to owner requires `update_user_role_to_owner` permission
         - Demoting from owner requires `remove_owner_role` permission
         - Cannot demote the last owner (must have at least one owner)
-        
+
         ## Process
         1. Verifies permissions
         2. Removes old role permissions
@@ -569,15 +546,6 @@ paths:
       responses:
         '200':
           description: User role updated successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/UpdateTenantUserRoleResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -614,7 +582,7 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
   # ==================== Role Management Endpoints ====================
-  
+
   /api/v1/tenants/roles:
     get:
       tags:
@@ -622,11 +590,11 @@ paths:
       summary: List roles
       description: |
         Returns all roles for the authenticated tenant, including both system roles and custom tenant-specific roles.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with tenant context
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID header
-        
+
         ## Use Cases
         - Display available roles to assign
         - Role management UI
@@ -650,12 +618,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/RolesListResponse'
+                type: array
+                items:
+                  $ref: '../schemas/tenants.yaml#/components/schemas/Role'
         '400':
           description: Missing tenant ID
           content:
@@ -681,16 +646,16 @@ paths:
       summary: Create role
       description: |
         Creates a new custom role for the tenant with specified permissions.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
-        
+
         ## Permission Format
         Permissions should be in the format: `namespace:resource#relation`
         - Tenant-wide: `tenant#relation`
         - Resource-specific: `project:uuid#relation`
-        
+
         ## Use Cases
         - Create custom roles for specific workflows
         - Define project-specific permissions
@@ -729,12 +694,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/Role'
+                $ref: '../schemas/tenants.yaml#/components/schemas/Role'
         '400':
            $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -750,9 +710,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../schemas/common.yaml#/components/schemas/ConflictResponse'
+                $ref: '../schemas/errors.yaml#/components/schemas/ConflictResponse'
               example:
-                status: 409
                 error: Role with this name already exists for tenant
         '500':
           description: Failed to create role
@@ -768,14 +727,14 @@ paths:
       summary: Update role
       description: |
         Updates the permissions for an existing role. This will update Keto relationships for all users assigned to this role.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
-        
+
         ## Permission Format
         Permissions should be in the format: `namespace:resource#relation`
-        
+
         ## Use Cases
         - Modify role permissions
         - Grant or revoke access
@@ -820,12 +779,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/Role'
+                $ref: '../schemas/tenants.yaml#/components/schemas/Role'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -863,11 +817,11 @@ paths:
       summary: Delete role
       description: |
         Deletes a role and removes all associated Keto relationships for users who had this role assigned.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with tenant context and appropriate permissions
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with appropriate permissions
-        
+
         ## Use Cases
         - Remove obsolete roles
         - Clean up role definitions
@@ -903,15 +857,6 @@ paths:
       responses:
         '200':
           description: Role deleted successfully
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/DeleteRoleResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -939,7 +884,7 @@ paths:
     get:
       tags:
         - V1 Tenants
-      summary: Get namespace definitions
+      summary: List namespace definitions
       description: |
         Returns all available permission namespaces and their relations from the database.
 
@@ -951,7 +896,7 @@ paths:
         - List relations for each namespace
         - Build dynamic permission UIs
         - Filter by subject type for API key creation
-      operationId: getRoleDefinitions
+      operationId: listRoleDefinitions
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -970,12 +915,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/NamespaceDefinitionsResponse'
+                type: array
+                items:
+                  $ref: '../schemas/tenants.yaml#/components/schemas/NamespaceDefinition'
         '401':
           description: Invalid or missing JWT token
           content:
@@ -990,7 +932,7 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
   # ==================== Subscription Management Endpoints ====================
-  
+
   /api/v1/tenants/subscriptions:
     get:
       tags:
@@ -998,15 +940,30 @@ paths:
       summary: Get tenant subscriptions
       description: |
         Returns all active Stripe subscriptions associated with the tenant's Stripe customer.
-        
+
         ## Authentication
         Requires JWT token with tenant context.
-        
+
         ## Use Cases
         - Display current subscriptions
         - Billing overview
         - Subscription management UI
       operationId: listTenantSubscriptions
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1017,14 +974,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: array
-                        items:
-                          $ref: '../schemas/tenants.yaml#/components/schemas/SubscriptionResponse'
+                type: array
+                items:
+                  $ref: '../schemas/tenants.yaml#/components/schemas/SubscriptionResponse'
         '401':
           description: User not authenticated
           content:
@@ -1050,30 +1002,45 @@ paths:
       summary: Add subscription
       description: |
         Adds a Stripe subscription for the authenticated tenant using the provided plan ID.
-        
+
         ## Authentication
         Requires JWT token with tenant context.
-        
+
         ## Request Parameters
         - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") that maps to a Stripe price
         - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
-        
+
         ## Process Flow
         1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
         2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
         3. Checks if subscription already exists for this plan to prevent duplicates
         4. Creates the subscription in Stripe with the specified price
         5. Returns the subscription ID and status
-        
+
         ## Notes
         - If a subscription for this plan already exists, returns a 400 error
         - The subscription is created immediately and begins billing
-        
+
         ## Use Cases
         - Subscribe tenant to metered pricing plans (compute, storage, workers)
         - Enable usage-based billing for resources
         - Add additional services to tenant's billing
       operationId: addSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1090,12 +1057,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/AddSubscriptionResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/AddSubscriptionResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -1131,31 +1093,46 @@ paths:
       summary: Remove subscription
       description: |
         Cancels a Stripe subscription immediately for the authenticated tenant based on the plan ID.
-        
+
         ## Authentication
         Requires JWT token with tenant context.
-        
+
         ## Request Parameters
         - **plan_id** (required): The configuration item ID (e.g., "neon_compute_starter") to identify which subscription to cancel
         - **stripe_customer_id** (optional): Override tenant's Stripe customer ID if needed
-        
+
         ## Process Flow
         1. Validates the plan_id and maps it to a Stripe price_id via the stripe_id_mappings table
         2. Resolves the Stripe customer ID from the authenticated tenant (or uses provided stripe_customer_id)
         3. Finds the active subscription matching the price_id for the customer
         4. Cancels the subscription immediately in Stripe
         5. Returns the cancellation confirmation
-        
+
         ## Notes
         - The subscription is canceled immediately, not at the end of the billing period
         - If no matching subscription is found, returns a 404 error
         - Only active, trialing, or past_due subscriptions can be canceled
-        
+
         ## Use Cases
         - Remove specific service subscriptions from tenant
         - Downgrade by removing premium features
         - Stop billing for unused resources
       operationId: removeSubscription
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1172,12 +1149,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/RemoveSubscriptionResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/RemoveSubscriptionResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -1235,18 +1207,27 @@ paths:
           schema:
             type: string
           example: "neon_compute_starter"
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Subscription found
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/SubscriptionResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/SubscriptionResponse'
         '400':
           description: Missing config_price_id parameter
           content:
@@ -1273,7 +1254,7 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
   # ==================== Invitation Endpoints ====================
-  
+
   /api/v1/tenants/invites:
     post:
       tags:
@@ -1281,16 +1262,16 @@ paths:
       summary: Create tenant invite
       description: |
         Creates a tenant invitation with a 7-day expiry token and sends an email to the invited user.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session with `invite_user` permission
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers with `invite_user` permission
-        
+
         ## Process
         1. Verifies user has invite permission
         2. Creates invite with unique token (7-day expiry)
         3. Sends invitation email asynchronously
-        
+
         ## Use Cases
         - Add team members to organization
         - Invite collaborators with specific roles
@@ -1326,12 +1307,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/CreateTenantUserInviteResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/CreateTenantUserInviteResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -1374,11 +1350,11 @@ paths:
       summary: Accept tenant invite
       description: |
         Accepts a tenant invitation using the token from the invite email and adds the user to the organization.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session - User's email must match the invite email
         - **Service Key Auth**: Requires X-Service-Key + X-User-ID header
-        
+
         ## Process
         1. Validates invite token and expiry
         2. Verifies user's email matches invite email
@@ -1411,12 +1387,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/AcceptInviteResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/AcceptInviteResponse'
         '400':
           description: Invalid or expired invite token
           content:
@@ -1443,7 +1414,7 @@ paths:
                 $ref: '../schemas/errors.yaml#/components/schemas/ErrorResponse'
 
   # ==================== Other Tenant Endpoints ====================
-  
+
   /api/v1/tenants/jwt:
     get:
       tags:
@@ -1451,11 +1422,11 @@ paths:
       summary: Get PostgREST JWT token
       description: |
         Generates a JWT token for direct PostgREST database access with the user's active tenant context.
-        
+
         ## Authentication
         - **Session Auth**: Requires JWT token / Cookie Session and active tenant
         - **Service Key Auth**: Requires X-Service-Key + X-Tenant-ID + X-User-ID headers
-        
+
         ## Use Cases
         - Client-side database queries
         - Real-time subscriptions
@@ -1486,12 +1457,14 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/JWTTokenResponse'
+                type: object
+                required:
+                  - token
+                properties:
+                  token:
+                    type: string
+                    description: PostgREST JWT token
+                    example: "eyJhbGciOiJIUzI1NiIs..."
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -1516,15 +1489,30 @@ paths:
       summary: Get billing status
       description: |
         Checks whether the tenant has billing information configured in Stripe and if it's active.
-        
+
         ## Authentication
         Requires JWT token with tenant context.
-        
+
         ## Use Cases
         - Check if billing setup is required
         - Conditional feature access
         - Payment method verification
       operationId: getTenantBillingStatus
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: false
+          description: User ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
+        - name: X-Tenant-Id
+          in: header
+          required: false
+          description: Tenant ID (UUID) - Required when using X-Service-Key header
+          schema:
+            type: string
+            format: uuid
       security:
         - CookieAuth: []
         - SessionTokenAuth: []
@@ -1535,12 +1523,14 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/BillingStatusResponse'
+                type: object
+                required:
+                  - is_active
+                properties:
+                  is_active:
+                    type: boolean
+                    description: Whether tenant has active billing configured
+                    example: true
         '401':
           description: User not authenticated
           content:

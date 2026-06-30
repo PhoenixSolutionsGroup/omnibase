@@ -7,7 +7,6 @@ Not Found error response (404)
 
 Name | Type
 ------------ | -------------
-`status` | number
 `error` | string
 
 ## Example
@@ -17,7 +16,6 @@ import type { NotFoundResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 404,
   "error": Not Found,
 } satisfies NotFoundResponse
 

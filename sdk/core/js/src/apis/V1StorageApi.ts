@@ -16,30 +16,28 @@
 import * as runtime from '../runtime';
 import type {
   ConflictResponse,
-  DeleteObject200Response,
   DeleteObjectRequest,
-  DownloadFile200Response,
   DownloadRequest,
+  DownloadResponse,
   ErrorResponse,
   ForbiddenResponse,
   InternalServerErrorResponse,
   MakePublicRequest,
+  MessageResponse,
   NotFoundResponse,
   UnauthorizedResponse,
-  UploadFile200Response,
   UploadRequest,
+  UploadResponse,
 } from '../models/index';
 import {
     ConflictResponseFromJSON,
     ConflictResponseToJSON,
-    DeleteObject200ResponseFromJSON,
-    DeleteObject200ResponseToJSON,
     DeleteObjectRequestFromJSON,
     DeleteObjectRequestToJSON,
-    DownloadFile200ResponseFromJSON,
-    DownloadFile200ResponseToJSON,
     DownloadRequestFromJSON,
     DownloadRequestToJSON,
+    DownloadResponseFromJSON,
+    DownloadResponseToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     ForbiddenResponseFromJSON,
@@ -48,14 +46,16 @@ import {
     InternalServerErrorResponseToJSON,
     MakePublicRequestFromJSON,
     MakePublicRequestToJSON,
+    MessageResponseFromJSON,
+    MessageResponseToJSON,
     NotFoundResponseFromJSON,
     NotFoundResponseToJSON,
     UnauthorizedResponseFromJSON,
     UnauthorizedResponseToJSON,
-    UploadFile200ResponseFromJSON,
-    UploadFile200ResponseToJSON,
     UploadRequestFromJSON,
     UploadRequestToJSON,
+    UploadResponseFromJSON,
+    UploadResponseToJSON,
 } from '../models/index';
 
 export interface DeleteObjectOperationRequest {
@@ -99,7 +99,7 @@ export class V1StorageApi extends runtime.BaseAPI {
      * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
      * Delete file from storage
      */
-    async deleteObjectRaw(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteObject200Response>> {
+    async deleteObjectRaw(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MessageResponse>> {
         if (requestParameters['deleteObjectRequest'] == null) {
             throw new runtime.RequiredError(
                 'deleteObjectRequest',
@@ -144,14 +144,14 @@ export class V1StorageApi extends runtime.BaseAPI {
             body: DeleteObjectRequestToJSON(requestParameters['deleteObjectRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteObject200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => MessageResponseFromJSON(jsonValue));
     }
 
     /**
      * Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Delete permission is checked via PostgREST against the `storage.objects` table. Users must have DELETE permission based on their custom RLS policies.  ## Deletion Process 1. Metadata is deleted from database (with RLS check) 2. File is deleted from S3 storage 3. If S3 deletion fails, metadata is already removed (eventual consistency) 
      * Delete file from storage
      */
-    async deleteObject(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteObject200Response> {
+    async deleteObject(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MessageResponse> {
         const response = await this.deleteObjectRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -160,7 +160,7 @@ export class V1StorageApi extends runtime.BaseAPI {
      * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Download file from storage
      */
-    async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DownloadFile200Response>> {
+    async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DownloadResponse>> {
         if (requestParameters['downloadRequest'] == null) {
             throw new runtime.RequiredError(
                 'downloadRequest',
@@ -205,14 +205,14 @@ export class V1StorageApi extends runtime.BaseAPI {
             body: DownloadRequestToJSON(requestParameters['downloadRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DownloadFile200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => DownloadResponseFromJSON(jsonValue));
     }
 
     /**
      * Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Download permission is checked via PostgREST against the `storage.objects` table. Users must have SELECT permission based on their custom RLS policies.  ## Download Process 1. Request presigned URL from this endpoint 2. Download file directly from S3 using returned URL (GET request)  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Download file from storage
      */
-    async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadFile200Response> {
+    async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadResponse> {
         const response = await this.downloadFileRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -221,7 +221,7 @@ export class V1StorageApi extends runtime.BaseAPI {
      * Makes a storage object publicly accessible to any authenticated user, regardless of tenant.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## Permission Check Requires `make_public` permission via Keto OPL. By default, only the file owner or users with the `can_make_public` relation can make a file public.  ## Effect Once public, any authenticated user can download the file without needing a Keto relation or tenant membership. 
      * Make a file publicly accessible
      */
-    async makeFilePublicRaw(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteObject200Response>> {
+    async makeFilePublicRaw(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MessageResponse>> {
         if (requestParameters['makePublicRequest'] == null) {
             throw new runtime.RequiredError(
                 'makePublicRequest',
@@ -266,14 +266,14 @@ export class V1StorageApi extends runtime.BaseAPI {
             body: MakePublicRequestToJSON(requestParameters['makePublicRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteObject200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => MessageResponseFromJSON(jsonValue));
     }
 
     /**
      * Makes a storage object publicly accessible to any authenticated user, regardless of tenant.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## Permission Check Requires `make_public` permission via Keto OPL. By default, only the file owner or users with the `can_make_public` relation can make a file public.  ## Effect Once public, any authenticated user can download the file without needing a Keto relation or tenant membership. 
      * Make a file publicly accessible
      */
-    async makeFilePublic(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteObject200Response> {
+    async makeFilePublic(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MessageResponse> {
         const response = await this.makeFilePublicRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -282,7 +282,7 @@ export class V1StorageApi extends runtime.BaseAPI {
      * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Upload file to storage
      */
-    async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadFile200Response>> {
+    async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadResponse>> {
         if (requestParameters['uploadRequest'] == null) {
             throw new runtime.RequiredError(
                 'uploadRequest',
@@ -327,14 +327,14 @@ export class V1StorageApi extends runtime.BaseAPI {
             body: UploadRequestToJSON(requestParameters['uploadRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UploadFile200ResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UploadResponseFromJSON(jsonValue));
     }
 
     /**
      * Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.  ## Authentication - **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`) - **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers  ## RLS Policy Upload permission is checked via PostgREST against the `storage.objects` table. Users must have INSERT permission based on their custom RLS policies.  ## Upload Process 1. Request presigned URL from this endpoint 2. Upload file directly to S3 using returned URL (PUT request) 3. File metadata is automatically stored in database  ## URL Expiration Presigned URLs are valid for 15 minutes after generation. 
      * Upload file to storage
      */
-    async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadFile200Response> {
+    async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadResponse> {
         const response = await this.uploadFileRaw(requestParameters, initOverrides);
         return await response.value();
     }

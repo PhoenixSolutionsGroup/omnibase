@@ -6,8 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`status` | number
-`data` | [DeleteEmailTemplate200ResponseAllOfData](DeleteEmailTemplate200ResponseAllOfData.md)
+`message` | string
 
 ## Example
 
@@ -16,8 +15,7 @@ import type { DeleteEmailTemplate200Response } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 200,
-  "data": null,
+  "message": Template deleted successfully,
 } satisfies DeleteEmailTemplate200Response
 
 console.log(example)

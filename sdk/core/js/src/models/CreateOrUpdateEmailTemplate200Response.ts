@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { CreateOrUpdateEmailTemplate200ResponseAllOfData } from './CreateOrUpdateEmailTemplate200ResponseAllOfData';
+import type { EmailTemplate } from './EmailTemplate';
 import {
-    CreateOrUpdateEmailTemplate200ResponseAllOfDataFromJSON,
-    CreateOrUpdateEmailTemplate200ResponseAllOfDataFromJSONTyped,
-    CreateOrUpdateEmailTemplate200ResponseAllOfDataToJSON,
-    CreateOrUpdateEmailTemplate200ResponseAllOfDataToJSONTyped,
-} from './CreateOrUpdateEmailTemplate200ResponseAllOfData';
+    EmailTemplateFromJSON,
+    EmailTemplateFromJSONTyped,
+    EmailTemplateToJSON,
+    EmailTemplateToJSONTyped,
+} from './EmailTemplate';
 
 /**
  * 
@@ -28,24 +28,23 @@ import {
  */
 export interface CreateOrUpdateEmailTemplate200Response {
     /**
-     * HTTP status code
-     * @type {number}
+     * 
+     * @type {string}
      * @memberof CreateOrUpdateEmailTemplate200Response
      */
-    status: number;
+    message?: string;
     /**
      * 
-     * @type {CreateOrUpdateEmailTemplate200ResponseAllOfData}
+     * @type {EmailTemplate}
      * @memberof CreateOrUpdateEmailTemplate200Response
      */
-    data?: CreateOrUpdateEmailTemplate200ResponseAllOfData;
+    template?: EmailTemplate;
 }
 
 /**
  * Check if a given object implements the CreateOrUpdateEmailTemplate200Response interface.
  */
 export function instanceOfCreateOrUpdateEmailTemplate200Response(value: object): value is CreateOrUpdateEmailTemplate200Response {
-    if (!('status' in value) || value['status'] === undefined) return false;
     return true;
 }
 
@@ -59,8 +58,8 @@ export function CreateOrUpdateEmailTemplate200ResponseFromJSONTyped(json: any, i
     }
     return {
         
-        'status': json['status'],
-        'data': json['data'] == null ? undefined : CreateOrUpdateEmailTemplate200ResponseAllOfDataFromJSON(json['data']),
+        'message': json['message'] == null ? undefined : json['message'],
+        'template': json['template'] == null ? undefined : EmailTemplateFromJSON(json['template']),
     };
 }
 
@@ -75,8 +74,8 @@ export function CreateOrUpdateEmailTemplate200ResponseToJSONTyped(value?: Create
 
     return {
         
-        'status': value['status'],
-        'data': CreateOrUpdateEmailTemplate200ResponseAllOfDataToJSON(value['data']),
+        'message': value['message'],
+        'template': EmailTemplateToJSON(value['template']),
     };
 }
 

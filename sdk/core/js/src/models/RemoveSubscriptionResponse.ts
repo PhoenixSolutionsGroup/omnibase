@@ -24,25 +24,28 @@ export interface RemoveSubscriptionResponse {
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    subscriptionId?: string;
+    subscriptionId: string;
     /**
      * Subscription status after cancellation
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    status?: string;
+    status: string;
     /**
      * Message confirming the cancellation
      * @type {string}
      * @memberof RemoveSubscriptionResponse
      */
-    message?: string;
+    message: string;
 }
 
 /**
  * Check if a given object implements the RemoveSubscriptionResponse interface.
  */
 export function instanceOfRemoveSubscriptionResponse(value: object): value is RemoveSubscriptionResponse {
+    if (!('subscriptionId' in value) || value['subscriptionId'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('message' in value) || value['message'] === undefined) return false;
     return true;
 }
 
@@ -56,9 +59,9 @@ export function RemoveSubscriptionResponseFromJSONTyped(json: any, ignoreDiscrim
     }
     return {
         
-        'subscriptionId': json['subscription_id'] == null ? undefined : json['subscription_id'],
-        'status': json['status'] == null ? undefined : json['status'],
-        'message': json['message'] == null ? undefined : json['message'],
+        'subscriptionId': json['subscription_id'],
+        'status': json['status'],
+        'message': json['message'],
     };
 }
 

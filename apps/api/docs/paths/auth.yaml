@@ -24,12 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/auth.yaml#/components/schemas/SessionResponse'
+                $ref: '../schemas/auth.yaml#/components/schemas/SessionResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -61,12 +56,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        type: object
+                type: object
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -97,12 +87,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/auth.yaml#/components/schemas/LogoutResponse'
+                $ref: '../schemas/auth.yaml#/components/schemas/LogoutResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -133,12 +118,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/auth.yaml#/components/schemas/WhoAmIResponse'
+                $ref: '../schemas/auth.yaml#/components/schemas/WhoAmIResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -181,12 +161,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/ActiveTenantResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/ActiveTenantResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -230,12 +205,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/tenants.yaml#/components/schemas/ListTenantsResponse'
+                $ref: '../schemas/tenants.yaml#/components/schemas/ListTenantsResponse'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':
@@ -276,12 +246,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/auth.yaml#/components/schemas/KratosIdentity'
+                $ref: '../schemas/auth.yaml#/components/schemas/KratosIdentity'
         '400':
           $ref: '../schemas/errors.yaml#/components/responses/BadRequestError'
         '401':

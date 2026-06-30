@@ -6,8 +6,7 @@
 
 Name | Type
 ------------ | -------------
-`status` | number
-`data` | [JWTTokenResponse](JWTTokenResponse.md)
+`token` | string
 
 ## Example
 
@@ -16,8 +15,7 @@ import type { GetTenantJWT200Response } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "status": 200,
-  "data": null,
+  "token": eyJhbGciOiJIUzI1NiIs...,
 } satisfies GetTenantJWT200Response
 
 console.log(example)

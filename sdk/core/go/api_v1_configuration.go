@@ -30,7 +30,7 @@ type ApiArchiveAllStripeConfigRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllStripeConfig200Response, *http.Response, error) {
+func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllResponse, *http.Response, error) {
 	return r.ApiService.ArchiveAllStripeConfigExecute(r)
 }
 
@@ -62,13 +62,13 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfig(ctx context.Context) 
 }
 
 // Execute executes the request
-//  @return ArchiveAllStripeConfig200Response
-func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllStripeConfig200Response, *http.Response, error) {
+//  @return ArchiveAllResponse
+func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAllStripeConfigRequest) (*ArchiveAllResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ArchiveAllStripeConfig200Response
+		localVarReturnValue  *ArchiveAllResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ArchiveAllStripeConfig")
@@ -551,7 +551,7 @@ func (r ApiDeployPermissionNamespacesRequest) Namespaces(namespaces *os.File) Ap
 	return r
 }
 
-func (r ApiDeployPermissionNamespacesRequest) Execute() (*DeployPermissionNamespaces200Response, *http.Response, error) {
+func (r ApiDeployPermissionNamespacesRequest) Execute() (*NamespaceDeploymentResponse, *http.Response, error) {
 	return r.ApiService.DeployPermissionNamespacesExecute(r)
 }
 
@@ -603,13 +603,13 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespaces(ctx context.Conte
 }
 
 // Execute executes the request
-//  @return DeployPermissionNamespaces200Response
-func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*DeployPermissionNamespaces200Response, *http.Response, error) {
+//  @return NamespaceDeploymentResponse
+func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*NamespaceDeploymentResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeployPermissionNamespaces200Response
+		localVarReturnValue  *NamespaceDeploymentResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeployPermissionNamespaces")
@@ -944,7 +944,7 @@ type ApiGetDatabaseMigrationStatusRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiGetDatabaseMigrationStatusRequest) Execute() (*GetDatabaseMigrationStatus200Response, *http.Response, error) {
+func (r ApiGetDatabaseMigrationStatusRequest) Execute() ([]AppliedMigration, *http.Response, error) {
 	return r.ApiService.GetDatabaseMigrationStatusExecute(r)
 }
 
@@ -974,13 +974,13 @@ func (a *V1ConfigurationAPIService) GetDatabaseMigrationStatus(ctx context.Conte
 }
 
 // Execute executes the request
-//  @return GetDatabaseMigrationStatus200Response
-func (a *V1ConfigurationAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabaseMigrationStatusRequest) (*GetDatabaseMigrationStatus200Response, *http.Response, error) {
+//  @return []AppliedMigration
+func (a *V1ConfigurationAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabaseMigrationStatusRequest) ([]AppliedMigration, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetDatabaseMigrationStatus200Response
+		localVarReturnValue  []AppliedMigration
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetDatabaseMigrationStatus")
@@ -1270,7 +1270,7 @@ func (r ApiGetStripeConfigHistoryRequest) Offset(offset int32) ApiGetStripeConfi
 	return r
 }
 
-func (r ApiGetStripeConfigHistoryRequest) Execute() (*GetStripeConfigHistory200Response, *http.Response, error) {
+func (r ApiGetStripeConfigHistoryRequest) Execute() (*ConfigHistoryResponse, *http.Response, error) {
 	return r.ApiService.GetStripeConfigHistoryExecute(r)
 }
 
@@ -1298,13 +1298,13 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistory(ctx context.Context) 
 }
 
 // Execute executes the request
-//  @return GetStripeConfigHistory200Response
-func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*GetStripeConfigHistory200Response, *http.Response, error) {
+//  @return ConfigHistoryResponse
+func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripeConfigHistoryRequest) (*ConfigHistoryResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetStripeConfigHistory200Response
+		localVarReturnValue  *ConfigHistoryResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetStripeConfigHistory")
@@ -1552,7 +1552,7 @@ type ApiPullStripeConfigRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiPullStripeConfigRequest) Execute() (*PullStripeConfig200Response, *http.Response, error) {
+func (r ApiPullStripeConfigRequest) Execute() (*StripeConfigurationWithIDs, *http.Response, error) {
 	return r.ApiService.PullStripeConfigExecute(r)
 }
 
@@ -1581,13 +1581,13 @@ func (a *V1ConfigurationAPIService) PullStripeConfig(ctx context.Context) ApiPul
 }
 
 // Execute executes the request
-//  @return PullStripeConfig200Response
-func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*PullStripeConfig200Response, *http.Response, error) {
+//  @return StripeConfigurationWithIDs
+func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*StripeConfigurationWithIDs, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *PullStripeConfig200Response
+		localVarReturnValue  *StripeConfigurationWithIDs
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.PullStripeConfig")
@@ -2274,7 +2274,7 @@ func (r ApiUpdateStripeConfigRequest) StripeConfigUpdateRequest(stripeConfigUpda
 	return r
 }
 
-func (r ApiUpdateStripeConfigRequest) Execute() (*UpdateStripeConfig200Response, *http.Response, error) {
+func (r ApiUpdateStripeConfigRequest) Execute() (*StripeConfigUpdateResponse, *http.Response, error) {
 	return r.ApiService.UpdateStripeConfigExecute(r)
 }
 
@@ -2308,13 +2308,13 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfig(ctx context.Context) ApiU
 }
 
 // Execute executes the request
-//  @return UpdateStripeConfig200Response
-func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*UpdateStripeConfig200Response, *http.Response, error) {
+//  @return StripeConfigUpdateResponse
+func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*StripeConfigUpdateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *UpdateStripeConfig200Response
+		localVarReturnValue  *StripeConfigUpdateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.UpdateStripeConfig")
@@ -2434,7 +2434,7 @@ func (r ApiUploadDatabaseMigrationsRequest) Migrations(migrations *os.File) ApiU
 	return r
 }
 
-func (r ApiUploadDatabaseMigrationsRequest) Execute() (*MigrationSuccessResponse, *http.Response, error) {
+func (r ApiUploadDatabaseMigrationsRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.UploadDatabaseMigrationsExecute(r)
 }
 
@@ -2467,13 +2467,13 @@ func (a *V1ConfigurationAPIService) UploadDatabaseMigrations(ctx context.Context
 }
 
 // Execute executes the request
-//  @return MigrationSuccessResponse
-func (a *V1ConfigurationAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (*MigrationSuccessResponse, *http.Response, error) {
+//  @return map[string]interface{}
+func (a *V1ConfigurationAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *MigrationSuccessResponse
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.UploadDatabaseMigrations")
@@ -2617,7 +2617,7 @@ func (r ApiValidateStripeConfigRequest) StripeConfigValidateRequest(stripeConfig
 	return r
 }
 
-func (r ApiValidateStripeConfigRequest) Execute() (*SuccessResponse, *http.Response, error) {
+func (r ApiValidateStripeConfigRequest) Execute() (map[string]interface{}, *http.Response, error) {
 	return r.ApiService.ValidateStripeConfigExecute(r)
 }
 
@@ -2646,13 +2646,13 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfig(ctx context.Context) Ap
 }
 
 // Execute executes the request
-//  @return SuccessResponse
-func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (*SuccessResponse, *http.Response, error) {
+//  @return map[string]interface{}
+func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *SuccessResponse
+		localVarReturnValue  map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ValidateStripeConfig")

@@ -4,23 +4,12 @@ components:
   schemas:
     SuccessResponse:
       type: object
-      description: Standard success response wrapper
+      description: Generic success response (no wrapper)
       properties:
-        status:
-          type: integer
-          description: HTTP status code
-          example: 200
-        data:
-          description: Response data payload
-          oneOf:
-            - type: object
-            - type: array
-            - type: string
-            - type: number
-            - type: boolean
-            - type: 'null'
-      required:
-        - status
+        message:
+          type: string
+          description: Optional success message
+          example: Operation completed successfully
     
     ErrorResponse:
       type: object

@@ -16,12 +16,6 @@
  */
 export interface ConflictResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ConflictResponse
-     */
-    status: number;
-    /**
      * Error message
      * @type {string}
      * @memberof ConflictResponse

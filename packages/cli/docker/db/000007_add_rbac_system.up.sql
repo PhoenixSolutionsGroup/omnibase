@@ -28,6 +28,25 @@ CREATE INDEX idx_roles_users ON permissions.roles USING GIN(user_ids);
 
 -- Seed default roles (tenant_id NULL = system roles)
 INSERT INTO permissions.roles (tenant_id, role_name, permissions) VALUES
-  (NULL, 'owner', ARRAY['tenant#delete_tenant', 'tenant#invite_user', 'tenant#remove_user', 'tenant#update_user_role']),
-  (NULL, 'admin', ARRAY['tenant#invite_user', 'tenant#remove_user', 'tenant#update_user_role']),
-  (NULL, 'member', ARRAY[]::TEXT[]);
+  (NULL, 'owner', ARRAY[
+    'tenant#delete_tenant',
+    'tenant#invite_user',
+    'tenant#remove_user',
+    'tenant#update_user_role',
+    'tenant#view_users',
+    'tenant#create_roles',
+    'tenant#update_roles',
+    'tenant#delete_roles',
+    'tenant#remove_owner_role',
+    'tenant#update_user_role_to_owner'
+  ]),
+  (NULL, 'admin', ARRAY[
+    'tenant#invite_user',
+    'tenant#remove_user',
+    'tenant#update_user_role',
+    'tenant#view_users',
+    'tenant#create_roles',
+    'tenant#update_roles',
+    'tenant#delete_roles'
+  ]),
+  (NULL, 'member', ARRAY['tenant#view_users']);

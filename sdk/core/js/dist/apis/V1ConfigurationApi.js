@@ -80,7 +80,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ArchiveAllStripeConfig200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ArchiveAllResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -210,7 +210,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: formParams,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeployPermissionNamespaces200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.NamespaceDeploymentResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -283,7 +283,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetDatabaseMigrationStatus200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(index_1.AppliedMigrationFromJSON));
         });
     }
     /**
@@ -354,7 +354,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.GetStripeConfigHistory200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ConfigHistoryResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -413,7 +413,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headers: headerParameters,
                 query: queryParameters,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.PullStripeConfig200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.StripeConfigurationWithIDsFromJSON)(jsonValue));
         });
     }
     /**
@@ -594,7 +594,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.StripeConfigUpdateRequestToJSON)(requestParameters['stripeConfigUpdateRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.UpdateStripeConfig200ResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.StripeConfigUpdateResponseFromJSON)(jsonValue));
         });
     }
     /**
@@ -647,7 +647,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: formParams,
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.MigrationSuccessResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response);
         });
     }
     /**
@@ -683,7 +683,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 query: queryParameters,
                 body: (0, index_1.StripeConfigValidateRequestToJSON)(requestParameters['stripeConfigValidateRequest']),
             }, initOverrides);
-            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SuccessResponseFromJSON)(jsonValue));
+            return new runtime.JSONApiResponse(response);
         });
     }
     /**

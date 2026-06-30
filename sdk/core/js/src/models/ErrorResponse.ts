@@ -20,12 +20,6 @@ import { mapValues } from '../runtime';
  */
 export interface ErrorResponse {
     /**
-     * HTTP status code
-     * @type {number}
-     * @memberof ErrorResponse
-     */
-    status: number;
-    /**
      * Error message or details
      * @type {string}
      * @memberof ErrorResponse
@@ -37,7 +31,6 @@ export interface ErrorResponse {
  * Check if a given object implements the ErrorResponse interface.
  */
 export function instanceOfErrorResponse(value: object): value is ErrorResponse {
-    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('error' in value) || value['error'] === undefined) return false;
     return true;
 }
@@ -52,7 +45,6 @@ export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'status': json['status'],
         'error': json['error'],
     };
 }
@@ -68,7 +60,6 @@ export function ErrorResponseToJSONTyped(value?: ErrorResponse | null, ignoreDis
 
     return {
         
-        'status': value['status'],
         'error': value['error'],
     };
 }

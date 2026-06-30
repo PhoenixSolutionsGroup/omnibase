@@ -66,12 +66,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/storage.yaml#/components/schemas/UploadResponse'
+                $ref: '../schemas/storage.yaml#/components/schemas/UploadResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -167,12 +162,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/storage.yaml#/components/schemas/DownloadResponse'
+                $ref: '../schemas/storage.yaml#/components/schemas/DownloadResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -256,12 +246,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/storage.yaml#/components/schemas/MessageResponse'
+                $ref: '../schemas/storage.yaml#/components/schemas/MessageResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:
@@ -342,12 +327,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '../schemas/common.yaml#/components/schemas/SuccessResponse'
-                  - type: object
-                    properties:
-                      data:
-                        $ref: '../schemas/storage.yaml#/components/schemas/MessageResponse'
+                $ref: '../schemas/storage.yaml#/components/schemas/MessageResponse'
         '400':
           description: Bad request - Invalid or missing required headers/body
           content:

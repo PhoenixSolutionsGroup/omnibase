@@ -21,7 +21,7 @@ All URIs are relative to *https://api.omnibase.tech*
 
 ## applyEnterpriseCustom
 
-> ApplyEnterpriseTemplate200Response applyEnterpriseCustom(applyEnterpriseCustomRequest)
+> EnterpriseApplyResponse applyEnterpriseCustom(applyEnterpriseCustomRequest)
 
 Apply custom enterprise pricing
 
@@ -70,7 +70,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ApplyEnterpriseTemplate200Response**](ApplyEnterpriseTemplate200Response.md)
+[**EnterpriseApplyResponse**](EnterpriseApplyResponse.md)
 
 ### Authorization
 
@@ -96,7 +96,7 @@ example().catch(console.error);
 
 ## applyEnterpriseTemplate
 
-> ApplyEnterpriseTemplate200Response applyEnterpriseTemplate(applyEnterpriseTemplateRequest)
+> EnterpriseApplyResponse applyEnterpriseTemplate(applyEnterpriseTemplateRequest)
 
 Apply enterprise template pricing
 
@@ -145,7 +145,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ApplyEnterpriseTemplate200Response**](ApplyEnterpriseTemplate200Response.md)
+[**EnterpriseApplyResponse**](EnterpriseApplyResponse.md)
 
 ### Authorization
 
@@ -171,7 +171,7 @@ example().catch(console.error);
 
 ## calculatePriceCost
 
-> CalculatePriceCost200Response calculatePriceCost(priceId, calculatePriceCostRequest)
+> CalculatePriceCostResponse calculatePriceCost(priceId, calculatePriceCostRequest)
 
 Calculate cost for a price
 
@@ -219,7 +219,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**CalculatePriceCost200Response**](CalculatePriceCost200Response.md)
+[**CalculatePriceCostResponse**](CalculatePriceCostResponse.md)
 
 ### Authorization
 
@@ -244,7 +244,7 @@ No authorization required
 
 ## convertStripeIDToConfigID
 
-> ConvertStripeIDToConfigID200Response convertStripeIDToConfigID(stripeId)
+> StripeIDConversionResponse convertStripeIDToConfigID(stripeId)
 
 Convert Stripe ID to config ID
 
@@ -289,7 +289,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**ConvertStripeIDToConfigID200Response**](ConvertStripeIDToConfigID200Response.md)
+[**StripeIDConversionResponse**](StripeIDConversionResponse.md)
 
 ### Authorization
 
@@ -314,7 +314,7 @@ No authorization required
 
 ## getEnterprisePricesByID
 
-> GetEnterprisePricesByTemplate200Response getEnterprisePricesByID(enterpriseId)
+> EnterprisePricesResponse getEnterprisePricesByID(enterpriseId)
 
 Get enterprise prices by ID
 
@@ -363,7 +363,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetEnterprisePricesByTemplate200Response**](GetEnterprisePricesByTemplate200Response.md)
+[**EnterprisePricesResponse**](EnterprisePricesResponse.md)
 
 ### Authorization
 
@@ -387,7 +387,7 @@ example().catch(console.error);
 
 ## getEnterprisePricesByTemplate
 
-> GetEnterprisePricesByTemplate200Response getEnterprisePricesByTemplate(template)
+> EnterprisePricesResponse getEnterprisePricesByTemplate(template)
 
 Get enterprise prices by template
 
@@ -436,7 +436,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetEnterprisePricesByTemplate200Response**](GetEnterprisePricesByTemplate200Response.md)
+[**EnterprisePricesResponse**](EnterprisePricesResponse.md)
 
 ### Authorization
 
@@ -460,7 +460,7 @@ example().catch(console.error);
 
 ## getMeterByID
 
-> GetMeterByID200Response getMeterByID(meterId)
+> MeterResponse getMeterByID(meterId)
 
 Get meter by ID
 
@@ -505,7 +505,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetMeterByID200Response**](GetMeterByID200Response.md)
+[**MeterResponse**](MeterResponse.md)
 
 ### Authorization
 
@@ -530,7 +530,7 @@ No authorization required
 
 ## getPriceByID
 
-> GetPriceByID200Response getPriceByID(priceId)
+> PriceResponse getPriceByID(priceId)
 
 Get price by ID
 
@@ -575,7 +575,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetPriceByID200Response**](GetPriceByID200Response.md)
+[**PriceResponse**](PriceResponse.md)
 
 ### Authorization
 
@@ -600,7 +600,7 @@ No authorization required
 
 ## getProductByID
 
-> GetProductByID200Response getProductByID(productId)
+> ProductResponse getProductByID(productId)
 
 Get product by ID
 
@@ -645,7 +645,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**GetProductByID200Response**](GetProductByID200Response.md)
+[**ProductResponse**](ProductResponse.md)
 
 ### Authorization
 
@@ -670,7 +670,7 @@ No authorization required
 
 ## getStripeConfig
 
-> GetStripeConfig200Response getStripeConfig()
+> StripeConfigResponse getStripeConfig()
 
 Get public Stripe config
 
@@ -707,7 +707,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
+[**StripeConfigResponse**](StripeConfigResponse.md)
 
 ### Authorization
 
@@ -730,7 +730,7 @@ No authorization required
 
 ## getStripeConfigAdmin
 
-> GetStripeConfig200Response getStripeConfigAdmin()
+> StripeConfigResponse getStripeConfigAdmin()
 
 Get full Stripe config (admin)
 
@@ -771,7 +771,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**GetStripeConfig200Response**](GetStripeConfig200Response.md)
+[**StripeConfigResponse**](StripeConfigResponse.md)
 
 ### Authorization
 
@@ -795,7 +795,7 @@ This endpoint does not need any parameter.
 
 ## listWebhooks
 
-> ListWebhooks200Response listWebhooks()
+> ListWebhooksResponse listWebhooks()
 
 List all webhooks
 
@@ -836,7 +836,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**ListWebhooks200Response**](ListWebhooks200Response.md)
+[**ListWebhooksResponse**](ListWebhooksResponse.md)
 
 ### Authorization
 

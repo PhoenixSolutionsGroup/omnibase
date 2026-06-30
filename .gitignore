@@ -24,3 +24,5 @@ __pycache__
 .hypothesis
 .test-env
 lerna-debug.log
+
+.sdk-docs.hash

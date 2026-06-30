@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## DeleteObject
 
-> DeleteObject200Response DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
+> MessageResponse DeleteObject(ctx).DeleteObjectRequest(deleteObjectRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Delete file from storage
 
@@ -45,7 +45,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DeleteObject``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DeleteObject`: DeleteObject200Response
+	// response from `DeleteObject`: MessageResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.DeleteObject`: %v\n", resp)
 }
 ```
@@ -69,7 +69,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteObject200Response**](DeleteObject200Response.md)
+[**MessageResponse**](MessageResponse.md)
 
 ### Authorization
 
@@ -87,7 +87,7 @@ Name | Type | Description  | Notes
 
 ## DownloadFile
 
-> DownloadFile200Response DownloadFile(ctx).DownloadRequest(downloadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
+> DownloadResponse DownloadFile(ctx).DownloadRequest(downloadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Download file from storage
 
@@ -119,7 +119,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.DownloadFile``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `DownloadFile`: DownloadFile200Response
+	// response from `DownloadFile`: DownloadResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.DownloadFile`: %v\n", resp)
 }
 ```
@@ -143,7 +143,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DownloadFile200Response**](DownloadFile200Response.md)
+[**DownloadResponse**](DownloadResponse.md)
 
 ### Authorization
 
@@ -161,7 +161,7 @@ Name | Type | Description  | Notes
 
 ## MakeFilePublic
 
-> DeleteObject200Response MakeFilePublic(ctx).MakePublicRequest(makePublicRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
+> MessageResponse MakeFilePublic(ctx).MakePublicRequest(makePublicRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Make a file publicly accessible
 
@@ -193,7 +193,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.MakeFilePublic``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `MakeFilePublic`: DeleteObject200Response
+	// response from `MakeFilePublic`: MessageResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.MakeFilePublic`: %v\n", resp)
 }
 ```
@@ -217,7 +217,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeleteObject200Response**](DeleteObject200Response.md)
+[**MessageResponse**](MessageResponse.md)
 
 ### Authorization
 
@@ -235,7 +235,7 @@ Name | Type | Description  | Notes
 
 ## UploadFile
 
-> UploadFile200Response UploadFile(ctx).UploadRequest(uploadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
+> UploadResponse UploadFile(ctx).UploadRequest(uploadRequest).XUserId(xUserId).XTenantId(xTenantId).XPostgrestToken(xPostgrestToken).OmnibasePostgrestJwt(omnibasePostgrestJwt).Execute()
 
 Upload file to storage
 
@@ -267,7 +267,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StorageAPI.UploadFile``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `UploadFile`: UploadFile200Response
+	// response from `UploadFile`: UploadResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StorageAPI.UploadFile`: %v\n", resp)
 }
 ```
@@ -291,7 +291,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**UploadFile200Response**](UploadFile200Response.md)
+[**UploadResponse**](UploadResponse.md)
 
 ### Authorization
 
