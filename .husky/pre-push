@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 set -e
 echo "Regenerating SDK from huma spec..."
-bun run generate:sdk --js-only
+bun run generate:sdk
 echo "Pre-push checks passed"
