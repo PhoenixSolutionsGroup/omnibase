@@ -17,7 +17,6 @@ require (
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/ory/keto-client-go v0.11.0-alpha.0
 	github.com/ory/kratos-client-go v1.3.8
 	github.com/phoenixsolutionsgroup/omnibase/sdk/core/go v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.11.1
@@ -25,6 +24,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/testcontainers/testcontainers-go v0.43.0
 	github.com/testcontainers/testcontainers-go/modules/compose v0.43.0
+	golang.org/x/text v0.37.0
 	google.golang.org/api v0.259.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.0
@@ -219,7 +219,6 @@ require (
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9 // indirect
