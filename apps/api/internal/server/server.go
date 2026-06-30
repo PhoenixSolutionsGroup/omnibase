@@ -78,10 +78,22 @@ func New(cfg *config.Config) *gin.Engine {
 
 	logger.Logger.Debug("Initializing huma API")
 	humaCfg := huma.DefaultConfig("OmniBase API", "0.20.0")
+	humaCfg.CreateHooks = nil
 	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
 		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token"},
 		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key"},
 		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session"},
+	}
+	huma.NewErrorWithContext = func(ctx huma.Context, status int, msg string, errs ...error) huma.StatusError {
+		if status >= http.StatusInternalServerError {
+			path := ""
+			if ctx != nil {
+				u := ctx.URL()
+				path = u.Path
+			}
+			logger.Logger.Error("Internal server error", "status", status, "path", path, "message", msg, "errs", errs)
+		}
+		return huma.NewError(status, msg, errs...)
 	}
 	api := humagin.New(r, humaCfg)
 

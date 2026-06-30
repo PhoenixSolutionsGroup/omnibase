@@ -1,45 +1,43 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/mail"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 	kratos "github.com/ory/kratos-client-go"
 
-	"api/internal/handlers"
 	"api/internal/logger"
 )
 
 var CreateUserError = errors.New("Failed to create user")
 
 type IdentityName struct {
-	First string `json:"first" binding:"required" example:"John"`
-	Last  string `json:"last" binding:"required" example:"Doe"`
+	First string `json:"first" required:"true" example:"John"`
+	Last  string `json:"last" required:"true" example:"Doe"`
 }
 
 type CreateUserRequest struct {
-	Email    string       `json:"email" binding:"required,email" example:"user@example.com"`
-	Password string       `json:"password" binding:"required,min=8" example:"securepassword123"`
-	Name     IdentityName `json:"name" binding:"required"`
+	Email    string       `json:"email" required:"true" format:"email" example:"user@example.com"`
+	Password string       `json:"password" required:"true" minLength:"8" maxLength:"72" example:"securepassword123"`
+	Name     IdentityName `json:"name" required:"true"`
 }
 
-func (h *Handler) CreateUser(c *gin.Context) {
-	var req CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
+type CreateUserInput struct {
+	Body CreateUserRequest
+}
+
+type CreateUserOutput struct {
+	Body *kratos.Identity
+}
+
+func (h *Handler) CreateUser(ctx context.Context, in *CreateUserInput) (*CreateUserOutput, error) {
+	req := in.Body
 
 	if _, err := mail.ParseAddress(req.Email); err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid email format")
-		return
-	}
-
-	if len(req.Password) > 72 {
-		handlers.NewBadRequestResponse(c, "Password must be at most 72 characters long")
-		return
+		return nil, huma.Error400BadRequest("Invalid email format")
 	}
 
 	traits := map[string]any{
@@ -62,7 +60,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		},
 	}
 
-	identity, resp, err := h.kratosAdmin.IdentityAPI.CreateIdentity(c.Request.Context()).CreateIdentityBody(body).Execute()
+	identity, resp, err := h.kratosAdmin.IdentityAPI.CreateIdentity(ctx).CreateIdentityBody(body).Execute()
 	if err != nil {
 		statusCode := 0
 		if resp != nil {
@@ -73,16 +71,13 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		if resp != nil {
 			switch resp.StatusCode {
 			case 409:
-				handlers.NewConflictResponse(c, "A user with this email already exists")
-				return
+				return nil, huma.Error409Conflict("A user with this email already exists")
 			case 400:
-				handlers.NewBadRequestResponse(c, "Invalid user data provided")
-				return
+				return nil, huma.Error400BadRequest("Invalid user data provided")
 			}
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", CreateUserError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateUserError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(c, identity)
+	return &CreateUserOutput{Body: identity}, nil
 }

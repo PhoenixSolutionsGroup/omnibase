@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"context"
 	"errors"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 	kratos "github.com/ory/kratos-client-go"
 
 	"api/internal/database/repository"
@@ -14,29 +16,37 @@ import (
 var GetSessionError = errors.New("Failed to get session")
 
 type SessionResponse struct {
-	Session  *kratos.Session              `json:"session" binding:"required"`
-	Identity *kratos.Identity             `json:"identity" binding:"required"`
+	Session  *kratos.Session              `json:"session" required:"true"`
+	Identity *kratos.Identity             `json:"identity" required:"true"`
 	Tenant   *repository.GetTenantByIDRow `json:"tenant,omitempty"`
 }
 
-func (h *Handler) GetSession(c *gin.Context) {
-	session := c.MustGet("session").(*kratos.Session)
-	identity := c.MustGet("identity").(*kratos.Identity)
-	tenantID, hasTenant := c.Get("tenant_id")
+type GetSessionInput struct {
+	handlers.AuthCtx
+}
 
-	resp := SessionResponse{
-		Session:  session,
-		Identity: identity,
+type GetSessionOutput struct {
+	Body SessionResponse
+}
+
+func (h *Handler) GetSession(ctx context.Context, in *GetSessionInput) (*GetSessionOutput, error) {
+	if in.Session == nil || in.Identity == nil {
+		return nil, huma.Error401Unauthorized("no session")
 	}
 
-	if hasTenant {
-		tenant, err := h.repo.GetTenantByID(c.Request.Context(), tenantID.(string))
+	resp := SessionResponse{
+		Session:  in.Session,
+		Identity: in.Identity,
+	}
+
+	if in.TenantID != uuid.Nil {
+		tenant, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 		if err != nil {
-			logger.Logger.Warn("Failed to fetch tenant", "tenant_id", tenantID, "error", err)
+			logger.Logger.Warn("Failed to fetch tenant", "tenant_id", in.TenantID, "error", err)
 		} else {
 			resp.Tenant = &tenant
 		}
 	}
 
-	handlers.NewSuccessResponse(c, resp)
+	return &GetSessionOutput{Body: resp}, nil
 }

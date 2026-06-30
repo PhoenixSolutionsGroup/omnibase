@@ -1,22 +1,40 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
+	"github.com/google/uuid"
 	kratos "github.com/ory/kratos-client-go"
 )
 
 type AuthCtx struct {
-	UserID   string
-	TenantID string
+	UserID   uuid.UUID
+	TenantID uuid.UUID
 	Session  *kratos.Session
 	Identity *kratos.Identity
 }
 
 func (a *AuthCtx) Resolve(ctx huma.Context) []error {
 	gc := humagin.Unwrap(ctx)
-	a.UserID = gc.GetString("user_id")
-	a.TenantID = gc.GetString("tenant_id")
+
+	if v := gc.GetString("user_id"); v != "" {
+		parsed, err := uuid.Parse(v)
+		if err != nil {
+			return []error{fmt.Errorf("invalid user_id: %w", err)}
+		}
+		a.UserID = parsed
+	}
+
+	if v := gc.GetString("tenant_id"); v != "" {
+		parsed, err := uuid.Parse(v)
+		if err != nil {
+			return []error{fmt.Errorf("invalid tenant_id: %w", err)}
+		}
+		a.TenantID = parsed
+	}
+
 	if s, ok := gc.Get("session"); ok {
 		a.Session, _ = s.(*kratos.Session)
 	}
