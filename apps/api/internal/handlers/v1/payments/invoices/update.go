@@ -1,12 +1,14 @@
 package invoices
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/handlers/v1/payments"
 	"api/internal/services/billing"
 )
 
@@ -17,34 +19,35 @@ type UpdateInvoiceRequest struct {
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
-func (h *Handler) Update(ctx *gin.Context) {
-	invoiceID := ctx.Param("invoice_id")
-	if invoiceID == "" {
-		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
-		return
+type UpdateInvoiceInput struct {
+	payments.PaymentsCtx
+	InvoiceID string `path:"invoice_id"`
+	Body      UpdateInvoiceRequest
+}
+
+type UpdateInvoiceOutput struct {
+	Body InvoiceResponse
+}
+
+func (h *Handler) Update(ctx context.Context, in *UpdateInvoiceInput) (*UpdateInvoiceOutput, error) {
+	if in.InvoiceID == "" {
+		return nil, huma.Error400BadRequest("invoice_id is required")
 	}
-	if !isValidInvoiceID(invoiceID) {
-		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
-		return
+	if !isValidInvoiceID(in.InvoiceID) {
+		return nil, huma.Error400BadRequest("Invalid invoice ID format: must start with 'in_'")
 	}
-	var req UpdateInvoiceRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
-	}
-	inv, err := h.billing.UpdateInvoice(ctx.Request.Context(), billing.UpdateInvoiceArgs{
-		InvoiceID:   invoiceID,
-		Description: req.Description,
-		Metadata:    req.Metadata,
+	inv, err := h.billing.UpdateInvoice(ctx, billing.UpdateInvoiceArgs{
+		InvoiceID:   in.InvoiceID,
+		Description: in.Body.Description,
+		Metadata:    in.Body.Metadata,
 	})
 	if err != nil {
-		if handlers.HandleStripeError(ctx, err) {
-			return
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", UpdateInvoiceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateInvoiceError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+	return &UpdateInvoiceOutput{Body: InvoiceResponse{
 		ID:               inv.ID,
 		Status:           string(inv.Status),
 		AmountDue:        inv.AmountDue,
@@ -52,5 +55,5 @@ func (h *Handler) Update(ctx *gin.Context) {
 		CustomerID:       inv.Customer.ID,
 		InvoicePDF:       inv.InvoicePDF,
 		HostedInvoiceURL: inv.HostedInvoiceURL,
-	})
+	}}, nil
 }

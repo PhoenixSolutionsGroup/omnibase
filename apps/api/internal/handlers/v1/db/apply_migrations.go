@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/golang-migrate/migrate/v4"
 
 	"api/internal/handlers"
@@ -18,54 +19,58 @@ import (
 var ApplyMigrationsError = errors.New("Failed to apply migrations")
 
 type ApplyMigrationsResponse struct {
-	Status  int    `json:"status" binding:"required"`
-	Message string `json:"message" binding:"required"`
+	Status  int    `json:"status" required:"true"`
+	Message string `json:"message" required:"true"`
 }
 
-func (h *Handler) ApplyMigrations(c *gin.Context) {
+type ApplyMigrationsInput struct {
+	handlers.AuthCtx
+	RawBody multipart.Form
+}
+
+type ApplyMigrationsOutput struct {
+	Body ApplyMigrationsResponse
+}
+
+func (h *Handler) ApplyMigrations(ctx context.Context, in *ApplyMigrationsInput) (*ApplyMigrationsOutput, error) {
+	files := in.RawBody.File["migrations"]
+	if len(files) == 0 {
+		return nil, huma.Error400BadRequest("No migrations zip file provided")
+	}
+	fileHeader := files[0]
+	if fileHeader.Size == 0 {
+		return nil, huma.Error400BadRequest("Empty file provided")
+	}
+
 	dir := filepath.Join(os.TempDir(), fmt.Sprintf("%d-migrations", time.Now().UnixNano()))
 	defer os.RemoveAll(dir)
 
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ApplyMigrationsError, err))
-		return
-	}
-
-	fileHeader, err := c.FormFile("migrations")
-	if err != nil {
-		handlers.NewBadRequestResponse(c, "No migrations zip file provided")
-		return
-	}
-	if fileHeader.Size == 0 {
-		handlers.NewBadRequestResponse(c, "Empty file provided")
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 
 	zipFile, err := fileHeader.Open()
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ApplyMigrationsError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 	defer zipFile.Close()
 
 	if err := extractMigrationZip(zipFile, dir); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ApplyMigrationsError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 
-	if err := h.runMigrations(c.Request.Context(), dir); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ApplyMigrationsError, err))
-		return
+	if err := h.runMigrations(ctx, dir); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 
 	if err := h.reloadPostgREST(); err != nil {
 		logger.Logger.Warn("PostgREST schema reload failed (migrations still applied)", "error", err)
 	}
 
-	handlers.NewSuccessResponse(c, ApplyMigrationsResponse{
+	return &ApplyMigrationsOutput{Body: ApplyMigrationsResponse{
 		Status:  200,
 		Message: "Migrations applied successfully",
-	})
+	}}, nil
 }
 
 func (h *Handler) runMigrations(ctx context.Context, dir string) error {

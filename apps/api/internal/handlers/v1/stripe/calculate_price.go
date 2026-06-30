@@ -1,10 +1,11 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -13,39 +14,41 @@ import (
 var CalculatePriceCostError = errors.New("Failed to calculate price cost")
 
 type CalculatePriceCostRequest struct {
-	Quantity int64 `json:"quantity" binding:"required,min=0"`
+	Quantity int64 `json:"quantity" required:"true" minimum:"0"`
 }
 
 type CalculatePriceCostResponse struct {
-	PriceID                string  `json:"price_id" binding:"required"`
-	Quantity               int64   `json:"quantity" binding:"required"`
-	CostCents              int64   `json:"cost_cents" binding:"required"`
-	EffectiveUnitCostCents float64 `json:"effective_unit_cost_cents" binding:"required"`
-	Currency               string  `json:"currency" binding:"required"`
-	BillingScheme          string  `json:"billing_scheme" binding:"required"`
+	PriceID                string  `json:"price_id" required:"true"`
+	Quantity               int64   `json:"quantity" required:"true"`
+	CostCents              int64   `json:"cost_cents" required:"true"`
+	EffectiveUnitCostCents float64 `json:"effective_unit_cost_cents" required:"true"`
+	Currency               string  `json:"currency" required:"true"`
+	BillingScheme          string  `json:"billing_scheme" required:"true"`
 	TiersMode              string  `json:"tiers_mode,omitempty"`
 }
 
-func (h *Handler) CalculatePriceCost(ctx *gin.Context) {
-	priceID := ctx.Param("price_id")
-	if priceID == "" {
-		handlers.NewBadRequestResponse(ctx, "price_id is required")
-		return
+type CalculatePriceCostInput struct {
+	handlers.AuthCtx
+	PriceID string `path:"price_id"`
+	Body    CalculatePriceCostRequest
+}
+
+type CalculatePriceCostOutput struct {
+	Body CalculatePriceCostResponse
+}
+
+func (h *Handler) CalculatePriceCost(ctx context.Context, in *CalculatePriceCostInput) (*CalculatePriceCostOutput, error) {
+	if in.PriceID == "" {
+		return nil, huma.Error400BadRequest("price_id is required")
 	}
-	var req CalculatePriceCostRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request: quantity is required and must be >= 0")
-		return
-	}
-	parsed, err := h.latestParsedConfig(ctx.Request.Context())
+	parsed, err := h.latestParsedConfig(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CalculatePriceCostError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CalculatePriceCostError, err).Error())
 	}
 	var found *stripe_config.Price
 	for _, product := range parsed.Products {
 		for i := range product.Prices {
-			if product.Prices[i].ID == priceID {
+			if product.Prices[i].ID == in.PriceID {
 				found = &product.Prices[i]
 				break
 			}
@@ -55,28 +58,27 @@ func (h *Handler) CalculatePriceCost(ctx *gin.Context) {
 		}
 	}
 	if found == nil {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Price not found: %s", priceID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("Price not found: %s", in.PriceID))
 	}
 
-	costCents := calculatePriceCost(found, req.Quantity)
+	costCents := calculatePriceCost(found, in.Body.Quantity)
 	var effective float64
-	if req.Quantity > 0 {
-		effective = float64(costCents) / float64(req.Quantity)
+	if in.Body.Quantity > 0 {
+		effective = float64(costCents) / float64(in.Body.Quantity)
 	}
 	billingScheme := found.BillingScheme
 	if billingScheme == "" {
 		billingScheme = "per_unit"
 	}
-	handlers.NewSuccessResponse(ctx, CalculatePriceCostResponse{
-		PriceID:                priceID,
-		Quantity:               req.Quantity,
+	return &CalculatePriceCostOutput{Body: CalculatePriceCostResponse{
+		PriceID:                in.PriceID,
+		Quantity:               in.Body.Quantity,
 		CostCents:              costCents,
 		EffectiveUnitCostCents: effective,
 		Currency:               found.Currency,
 		BillingScheme:          billingScheme,
 		TiersMode:              found.TiersMode,
-	})
+	}}, nil
 }
 
 func calculatePriceCost(price *stripe_config.Price, quantity int64) int64 {

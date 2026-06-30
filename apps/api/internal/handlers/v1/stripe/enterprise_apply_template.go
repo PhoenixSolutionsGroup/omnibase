@@ -6,19 +6,19 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
-	"api/internal/services/stripe_config"
 	"api/internal/services/billing"
+	"api/internal/services/stripe_config"
 )
 
 var ApplyEnterpriseTemplateError = errors.New("Failed to apply enterprise template")
 
 type ApplyEnterpriseTemplateRequest struct {
-	TenantID           string `json:"tenant_id" binding:"required"`
-	EnterpriseTemplate string `json:"enterprise_template" binding:"required"`
+	TenantID           string `json:"tenant_id" required:"true"`
+	EnterpriseTemplate string `json:"enterprise_template" required:"true"`
 }
 
 type EnterpriseApplyResponse struct {
@@ -28,60 +28,57 @@ type EnterpriseApplyResponse struct {
 	SwappedDetails []string `json:"swapped_details,omitempty"`
 }
 
-func (h *Handler) ApplyEnterpriseTemplate(ctx *gin.Context) {
-	var req ApplyEnterpriseTemplateRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
-		return
-	}
+type ApplyEnterpriseTemplateInput struct {
+	handlers.AuthCtx
+	Body ApplyEnterpriseTemplateRequest
+}
 
-	tenant, err := h.repo.GetTenantByID(ctx.Request.Context(), req.TenantID)
+type ApplyEnterpriseTemplateOutput struct {
+	Body EnterpriseApplyResponse
+}
+
+func (h *Handler) ApplyEnterpriseTemplate(ctx context.Context, in *ApplyEnterpriseTemplateInput) (*ApplyEnterpriseTemplateOutput, error) {
+	tenant, err := h.repo.GetTenantByID(ctx, in.Body.TenantID)
 	if err != nil {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Tenant not found: %s", req.TenantID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("Tenant not found: %s", in.Body.TenantID))
 	}
 	if tenant.StripeCustomerID == nil || *tenant.StripeCustomerID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant does not have a Stripe customer ID")
-		return
+		return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
 	}
 
-	candidates, err := h.enterpriseCandidatesByTemplate(ctx.Request.Context(), req.EnterpriseTemplate)
+	candidates, err := h.enterpriseCandidatesByTemplate(ctx, in.Body.EnterpriseTemplate)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err).Error())
 	}
 	if len(candidates) == 0 {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No prices found for enterprise template: %s", req.EnterpriseTemplate))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("No prices found for enterprise template: %s", in.Body.EnterpriseTemplate))
 	}
 
-	result, err := h.billing.ApplyEnterprisePricing(ctx.Request.Context(), billing.ApplyEnterprisePricingArgs{
+	result, err := h.billing.ApplyEnterprisePricing(ctx, billing.ApplyEnterprisePricingArgs{
 		StripeCustomerID: *tenant.StripeCustomerID,
 		Candidates:       candidates,
 	})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err).Error())
 	}
 
-	if err := h.repo.UpdateTenantEnterpriseTemplate(ctx.Request.Context(), repository.UpdateTenantEnterpriseTemplateParams{
+	if err := h.repo.UpdateTenantEnterpriseTemplate(ctx, repository.UpdateTenantEnterpriseTemplateParams{
 		ID:                 tenant.ID,
-		EnterpriseTemplate: &req.EnterpriseTemplate,
+		EnterpriseTemplate: &in.Body.EnterpriseTemplate,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseTemplateError, err).Error())
 	}
 
 	details := make([]string, 0, len(result.Swaps))
 	for _, sw := range result.Swaps {
 		details = append(details, fmt.Sprintf("%s -> %s (subscription: %s)", sw.OldStripePrice, sw.NewStripePrice, sw.SubscriptionID))
 	}
-	handlers.NewSuccessResponse(ctx, EnterpriseApplyResponse{
+	return &ApplyEnterpriseTemplateOutput{Body: EnterpriseApplyResponse{
 		Message:        "Enterprise pricing applied successfully",
-		TenantID:       req.TenantID,
+		TenantID:       in.Body.TenantID,
 		PricesSwapped:  result.SwappedCount,
 		SwappedDetails: details,
-	})
+	}}, nil
 }
 
 func (h *Handler) enterpriseCandidatesByTemplate(ctx context.Context, template string) ([]billing.EnterprisePriceCandidate, error) {

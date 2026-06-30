@@ -1,21 +1,26 @@
 package stripe
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
 )
 
-func (h *Handler) ValidateConfig(ctx *gin.Context) {
-	var configData stripe_config.ConfigData
-	if err := ctx.ShouldBindJSON(&configData); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid JSON format")
-		return
+type ValidateConfigInput struct {
+	handlers.AuthCtx
+	Body stripe_config.ConfigData
+}
+
+type ValidateConfigOutput struct {
+	Body string
+}
+
+func (h *Handler) ValidateConfig(_ context.Context, in *ValidateConfigInput) (*ValidateConfigOutput, error) {
+	if _, err := h.stripeConfig.ParseAndValidate(in.Body); err != nil {
+		return nil, huma.Error400BadRequest(err.Error())
 	}
-	if _, err := h.stripeConfig.ParseAndValidate(configData); err != nil {
-		handlers.NewBadRequestResponse(ctx, err.Error())
-		return
-	}
-	handlers.NewSuccessResponse(ctx, "")
+	return &ValidateConfigOutput{Body: ""}, nil
 }

@@ -1,11 +1,12 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -13,25 +14,26 @@ import (
 
 var UpdateConfigError = errors.New("Failed to update stripe configuration")
 
-func (h *Handler) UpdateConfig(ctx *gin.Context) {
-	var configData stripe_config.ConfigData
-	if err := ctx.ShouldBindJSON(&configData); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid JSON format")
-		return
-	}
-	if len(configData) == 0 {
-		handlers.NewBadRequestResponse(ctx, "Configuration data is required")
-		return
+type UpdateConfigInput struct {
+	handlers.AuthCtx
+	Body stripe_config.ConfigData
+}
+
+type UpdateConfigOutput struct {
+	Body *stripe_config.ConfigResponse
+}
+
+func (h *Handler) UpdateConfig(ctx context.Context, in *UpdateConfigInput) (*UpdateConfigOutput, error) {
+	if len(in.Body) == 0 {
+		return nil, huma.Error400BadRequest("Configuration data is required")
 	}
 
-	response, err := h.stripeConfig.Sync(ctx.Request.Context(), stripe_config.SyncArgs{Config: configData})
+	response, err := h.stripeConfig.Sync(ctx, stripe_config.SyncArgs{Config: in.Body})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", UpdateConfigError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateConfigError, err).Error())
 	}
 	if len(response.Errors) > 0 {
-		handlers.NewBadRequestResponse(ctx, strings.Join(response.Errors, "\n\n"))
-		return
+		return nil, huma.Error400BadRequest(strings.Join(response.Errors, "\n\n"))
 	}
-	handlers.NewSuccessResponse(ctx, response)
+	return &UpdateConfigOutput{Body: response}, nil
 }

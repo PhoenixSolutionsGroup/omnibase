@@ -1,11 +1,12 @@
 package stripe
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -14,39 +15,42 @@ import (
 var GetPriceError = errors.New("Failed to get price by id")
 
 type GetPriceResponse struct {
-	Price   stripe_config.PriceWithStripeID    `json:"price" binding:"required"`
-	Product stripe_config.ProductWithStripeIDs `json:"product" binding:"required"`
+	Price   stripe_config.PriceWithStripeID    `json:"price" required:"true"`
+	Product stripe_config.ProductWithStripeIDs `json:"product" required:"true"`
 }
 
-func (h *Handler) GetPriceByID(ctx *gin.Context) {
-	priceID := ctx.Param("price_id")
-	if priceID == "" {
-		handlers.NewBadRequestResponse(ctx, "price_id is required")
-		return
+type GetPriceInput struct {
+	handlers.AuthCtx
+	PriceID string `path:"price_id"`
+}
+
+type GetPriceOutput struct {
+	Body GetPriceResponse
+}
+
+func (h *Handler) GetPriceByID(ctx context.Context, in *GetPriceInput) (*GetPriceOutput, error) {
+	if in.PriceID == "" {
+		return nil, huma.Error400BadRequest("price_id is required")
 	}
-	row, err := h.repo.GetLatestStripeConfig(ctx.Request.Context())
+	row, err := h.repo.GetLatestStripeConfig(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPriceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPriceError, err).Error())
 	}
 	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPriceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPriceError, err).Error())
 	}
 	parsed, err := h.stripeConfig.ParseAndValidate(raw)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPriceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPriceError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx.Request.Context(), *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
 	for _, p := range configWithIDs.Products {
 		for _, price := range p.Prices {
-			if price.ID == priceID {
-				handlers.NewSuccessResponse(ctx, GetPriceResponse{Price: price, Product: p})
-				return
+			if price.ID == in.PriceID {
+				return &GetPriceOutput{Body: GetPriceResponse{Price: price, Product: p}}, nil
 			}
 		}
 	}
-	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Price not found: %s", priceID))
+	return nil, huma.Error404NotFound(fmt.Sprintf("Price not found: %s", in.PriceID))
 }

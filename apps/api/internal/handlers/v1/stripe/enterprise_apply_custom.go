@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
@@ -15,64 +15,61 @@ import (
 var ApplyEnterpriseCustomError = errors.New("Failed to apply enterprise custom pricing")
 
 type ApplyEnterpriseCustomRequest struct {
-	TenantID     string `json:"tenant_id" binding:"required"`
-	EnterpriseID string `json:"enterprise_id" binding:"required"`
+	TenantID     string `json:"tenant_id" required:"true"`
+	EnterpriseID string `json:"enterprise_id" required:"true"`
 }
 
-func (h *Handler) ApplyEnterpriseCustom(ctx *gin.Context) {
-	var req ApplyEnterpriseCustomRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
-		return
-	}
+type ApplyEnterpriseCustomInput struct {
+	handlers.AuthCtx
+	Body ApplyEnterpriseCustomRequest
+}
 
-	tenant, err := h.repo.GetTenantByID(ctx.Request.Context(), req.TenantID)
+type ApplyEnterpriseCustomOutput struct {
+	Body EnterpriseApplyResponse
+}
+
+func (h *Handler) ApplyEnterpriseCustom(ctx context.Context, in *ApplyEnterpriseCustomInput) (*ApplyEnterpriseCustomOutput, error) {
+	tenant, err := h.repo.GetTenantByID(ctx, in.Body.TenantID)
 	if err != nil {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Tenant not found: %s", req.TenantID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("Tenant not found: %s", in.Body.TenantID))
 	}
 	if tenant.StripeCustomerID == nil || *tenant.StripeCustomerID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant does not have a Stripe customer ID")
-		return
+		return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
 	}
 
-	candidates, err := h.enterpriseCandidatesByID(ctx.Request.Context(), req.EnterpriseID)
+	candidates, err := h.enterpriseCandidatesByID(ctx, in.Body.EnterpriseID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err).Error())
 	}
 	if len(candidates) == 0 {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No prices found for enterprise_id: %s", req.EnterpriseID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("No prices found for enterprise_id: %s", in.Body.EnterpriseID))
 	}
 
-	result, err := h.billing.ApplyEnterprisePricing(ctx.Request.Context(), billing.ApplyEnterprisePricingArgs{
+	result, err := h.billing.ApplyEnterprisePricing(ctx, billing.ApplyEnterprisePricingArgs{
 		StripeCustomerID: *tenant.StripeCustomerID,
 		Candidates:       candidates,
 	})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err).Error())
 	}
 
-	if err := h.repo.UpdateTenantEnterpriseID(ctx.Request.Context(), repository.UpdateTenantEnterpriseIDParams{
+	if err := h.repo.UpdateTenantEnterpriseID(ctx, repository.UpdateTenantEnterpriseIDParams{
 		ID:           tenant.ID,
-		EnterpriseID: &req.EnterpriseID,
+		EnterpriseID: &in.Body.EnterpriseID,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyEnterpriseCustomError, err).Error())
 	}
 
 	details := make([]string, 0, len(result.Swaps))
 	for _, sw := range result.Swaps {
 		details = append(details, fmt.Sprintf("%s -> %s (subscription: %s)", sw.OldStripePrice, sw.NewStripePrice, sw.SubscriptionID))
 	}
-	handlers.NewSuccessResponse(ctx, EnterpriseApplyResponse{
+	return &ApplyEnterpriseCustomOutput{Body: EnterpriseApplyResponse{
 		Message:        "Enterprise pricing applied successfully",
-		TenantID:       req.TenantID,
+		TenantID:       in.Body.TenantID,
 		PricesSwapped:  result.SwappedCount,
 		SwappedDetails: details,
-	})
+	}}, nil
 }
 
 func (h *Handler) enterpriseCandidatesByID(ctx context.Context, enterpriseID string) ([]billing.EnterprisePriceCandidate, error) {

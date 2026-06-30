@@ -1,44 +1,47 @@
 package invoices
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/handlers/v1/payments"
 )
 
 var FinalizeInvoiceError = errors.New("Failed to finalize invoice")
 
 type FinalizeRequest struct {
-	AutoAdvance bool `json:"auto_advance"`
+	AutoAdvance bool `json:"auto_advance,omitempty"`
 }
 
-func (h *Handler) Finalize(ctx *gin.Context) {
-	invoiceID := ctx.Param("invoice_id")
-	if invoiceID == "" {
-		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
-		return
+type FinalizeInvoiceInput struct {
+	payments.PaymentsCtx
+	InvoiceID string `path:"invoice_id"`
+	Body      FinalizeRequest
+}
+
+type FinalizeInvoiceOutput struct {
+	Body InvoiceResponse
+}
+
+func (h *Handler) Finalize(ctx context.Context, in *FinalizeInvoiceInput) (*FinalizeInvoiceOutput, error) {
+	if in.InvoiceID == "" {
+		return nil, huma.Error400BadRequest("invoice_id is required")
 	}
-	if !isValidInvoiceID(invoiceID) {
-		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
-		return
+	if !isValidInvoiceID(in.InvoiceID) {
+		return nil, huma.Error400BadRequest("Invalid invoice ID format: must start with 'in_'")
 	}
-	var req FinalizeRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
-	}
-	inv, err := h.billing.FinalizeInvoice(ctx.Request.Context(), invoiceID, req.AutoAdvance)
+	inv, err := h.billing.FinalizeInvoice(ctx, in.InvoiceID, in.Body.AutoAdvance)
 	if err != nil {
-		if handlers.HandleStripeError(ctx, err) {
-			return
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", FinalizeInvoiceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", FinalizeInvoiceError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+	return &FinalizeInvoiceOutput{Body: InvoiceResponse{
 		ID:               inv.ID,
 		Status:           string(inv.Status),
 		AmountDue:        inv.AmountDue,
@@ -46,5 +49,5 @@ func (h *Handler) Finalize(ctx *gin.Context) {
 		CustomerID:       inv.Customer.ID,
 		InvoicePDF:       inv.InvoicePDF,
 		HostedInvoiceURL: inv.HostedInvoiceURL,
-	})
+	}}, nil
 }

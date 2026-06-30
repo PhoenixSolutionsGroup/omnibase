@@ -1,10 +1,11 @@
 package payments
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/billing"
@@ -13,30 +14,33 @@ import (
 var RecordUsageError = errors.New("Failed to record usage")
 
 type RecordUsageRequest struct {
-	MeterEventName string `json:"meter_event_name" binding:"required,min=1"`
-	Value          string `json:"value" binding:"required,min=1"`
+	MeterEventName string `json:"meter_event_name" required:"true" minLength:"1"`
+	Value          string `json:"value" required:"true" minLength:"1"`
 }
 
-func (h *Handler) RecordUsage(ctx *gin.Context) {
-	var req RecordUsageRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
+type RecordUsageInput struct {
+	PaymentsCtx
+	Body RecordUsageRequest
+}
+
+type RecordUsageOutput struct {
+	Body any
+}
+
+func (h *Handler) RecordUsage(ctx context.Context, in *RecordUsageInput) (*RecordUsageOutput, error) {
+	if in.StripeCustomerID == "" {
+		return nil, huma.Error400BadRequest("stripe_customer_id not found in context")
 	}
-	customerID, exists := ctx.Get("stripe_customer_id")
-	if !exists || customerID == nil {
-		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
-		return
-	}
-	if err := h.billing.RecordUsage(ctx.Request.Context(), billing.RecordUsageArgs{
-		MeterEventName:   req.MeterEventName,
-		StripeCustomerID: customerID.(string),
-		Value:            req.Value,
+
+	if err := h.billing.RecordUsage(ctx, billing.RecordUsageArgs{
+		MeterEventName:   in.Body.MeterEventName,
+		StripeCustomerID: in.StripeCustomerID,
+		Value:            in.Body.Value,
 	}); err != nil {
-		if !handlers.HandleStripeError(ctx, err) {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", RecordUsageError, err))
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", RecordUsageError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, nil)
+	return &RecordUsageOutput{}, nil
 }

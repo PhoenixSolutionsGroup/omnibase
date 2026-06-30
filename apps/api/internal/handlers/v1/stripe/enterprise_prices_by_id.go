@@ -1,10 +1,11 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -12,15 +13,22 @@ import (
 
 var GetPricesByEnterpriseIDError = errors.New("Failed to list enterprise prices by id")
 
-func (h *Handler) GetPricesByEnterpriseID(ctx *gin.Context) {
-	parsed, err := h.latestParsedConfig(ctx.Request.Context())
+type GetPricesByEnterpriseIDInput struct {
+	handlers.AuthCtx
+	EnterpriseID string `path:"enterprise_id"`
+}
+
+type GetPricesByEnterpriseIDOutput struct {
+	Body EnterprisePricesResponse
+}
+
+func (h *Handler) GetPricesByEnterpriseID(ctx context.Context, in *GetPricesByEnterpriseIDInput) (*GetPricesByEnterpriseIDOutput, error) {
+	parsed, err := h.latestParsedConfig(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPricesByEnterpriseIDError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPricesByEnterpriseIDError, err).Error())
 	}
-	enterpriseID := ctx.Param("enterprise_id")
-	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p stripe_config.Price) bool {
-		return p.EnterpriseID == enterpriseID
+	prices := h.collectEnterprisePrices(ctx, parsed, func(p stripe_config.Price) bool {
+		return p.EnterpriseID == in.EnterpriseID
 	})
-	handlers.NewSuccessResponse(ctx, EnterprisePricesResponse{Prices: prices, Count: len(prices)})
+	return &GetPricesByEnterpriseIDOutput{Body: EnterprisePricesResponse{Prices: prices, Count: len(prices)}}, nil
 }

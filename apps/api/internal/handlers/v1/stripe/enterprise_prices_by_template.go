@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -15,20 +15,27 @@ var GetPricesByTemplateError = errors.New("Failed to list enterprise prices by t
 
 type EnterprisePricesResponse struct {
 	Prices []stripe_config.PriceWithStripeID `json:"prices"`
-	Count  int                        `json:"count"`
+	Count  int                               `json:"count"`
 }
 
-func (h *Handler) GetPricesByTemplate(ctx *gin.Context) {
-	parsed, err := h.latestParsedConfig(ctx.Request.Context())
+type GetPricesByTemplateInput struct {
+	handlers.AuthCtx
+	Template string `path:"template"`
+}
+
+type GetPricesByTemplateOutput struct {
+	Body EnterprisePricesResponse
+}
+
+func (h *Handler) GetPricesByTemplate(ctx context.Context, in *GetPricesByTemplateInput) (*GetPricesByTemplateOutput, error) {
+	parsed, err := h.latestParsedConfig(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetPricesByTemplateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPricesByTemplateError, err).Error())
 	}
-	template := ctx.Param("template")
-	prices := h.collectEnterprisePrices(ctx.Request.Context(), parsed, func(p stripe_config.Price) bool {
-		return p.EnterpriseTemplate == template
+	prices := h.collectEnterprisePrices(ctx, parsed, func(p stripe_config.Price) bool {
+		return p.EnterpriseTemplate == in.Template
 	})
-	handlers.NewSuccessResponse(ctx, EnterprisePricesResponse{Prices: prices, Count: len(prices)})
+	return &GetPricesByTemplateOutput{Body: EnterprisePricesResponse{Prices: prices, Count: len(prices)}}, nil
 }
 
 func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *stripe_config.Configuration, match func(p stripe_config.Price) bool) []stripe_config.PriceWithStripeID {

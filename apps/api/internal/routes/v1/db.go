@@ -1,6 +1,9 @@
 package v1
 
 import (
+	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
 	"api/internal/config"
@@ -10,7 +13,7 @@ import (
 	"api/internal/middleware"
 )
 
-func SetUpDBRoutes(router *gin.RouterGroup) {
+func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API) {
 	logger.Logger.Info("Initializing database routes")
 	cfg := config.New()
 
@@ -28,11 +31,50 @@ func SetUpDBRoutes(router *gin.RouterGroup) {
 	})
 
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
-	router.Use(authMiddleware.RequireAuthHeaders())
-	router.Use(authMiddleware.RequireServiceKey())
+	serviceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
+	}
+	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
 
-	router.POST("/migrations", handler.ApplyMigrations)
-	router.GET("/migrations/status", handler.MigrationsStatus)
-	router.POST("/migrations/down", handler.MigrationsDown)
-	router.GET("/typegen", handler.Typegen)
+	huma.Register(api, huma.Operation{
+		OperationID: "uploadDatabaseMigrations",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/database/migrations",
+		Summary:     "Apply database migrations",
+		Tags:        []string{"V1Database"},
+		Security:    serviceSec,
+		Middlewares: serviceMW,
+	}, handler.ApplyMigrations)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "getDatabaseMigrationStatus",
+		Method:      http.MethodGet,
+		Path:        "/api/v1/database/migrations/status",
+		Summary:     "Get the status of applied migrations",
+		Tags:        []string{"V1Database"},
+		Security:    serviceSec,
+		Middlewares: serviceMW,
+	}, handler.MigrationsStatus)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "rollbackDatabaseMigrations",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/database/migrations/down",
+		Summary:     "Roll back database migrations",
+		Tags:        []string{"V1Database"},
+		Security:    serviceSec,
+		Middlewares: serviceMW,
+	}, handler.MigrationsDown)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "generateDatabaseTypes",
+		Method:      http.MethodGet,
+		Path:        "/api/v1/database/typegen",
+		Summary:     "Generate type definitions for the database schema",
+		Tags:        []string{"V1Database"},
+		Security:    serviceSec,
+		Middlewares: serviceMW,
+	}, handler.Typegen)
+
+	logger.Logger.Info("Database routes registration completed")
 }

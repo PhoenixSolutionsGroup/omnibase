@@ -23,8 +23,8 @@ func isValidInvoiceID(invoiceID string) bool {
 }
 
 type InvoiceResponse struct {
-	ID               string `json:"id" binding:"required"`
-	Status           string `json:"status" binding:"required"`
+	ID               string `json:"id" required:"true"`
+	Status           string `json:"status" required:"true"`
 	AmountDue        int64  `json:"amount_due"`
 	Currency         string `json:"currency"`
 	CustomerID       string `json:"customer_id"`
@@ -33,7 +33,7 @@ type InvoiceResponse struct {
 }
 
 type InvoiceLineItemResponse struct {
-	ID          string `json:"id" binding:"required"`
+	ID          string `json:"id" required:"true"`
 	Amount      int64  `json:"amount"`
 	Description string `json:"description"`
 }
