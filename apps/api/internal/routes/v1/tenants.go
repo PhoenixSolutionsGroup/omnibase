@@ -4,7 +4,7 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/database/repository"
-	v1 "api/internal/handlers/v1"
+	tenantsh "api/internal/handlers/v1/tenants"
 	"api/internal/handlers/v1/tenants/invites"
 	"api/internal/handlers/v1/tenants/lifecycle"
 	"api/internal/handlers/v1/tenants/roles"
@@ -47,7 +47,7 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 		panic(err)
 	}
 
-	tenantHandler := v1.NewTenantHandler(cfg)
+	tenantHandler := tenantsh.New(cfg)
 	rolesHandler := roles.New(roles.Deps{Repo: repo, Perms: perms})
 	usersHandler := users.New(users.Deps{
 		Repo:    repo,
