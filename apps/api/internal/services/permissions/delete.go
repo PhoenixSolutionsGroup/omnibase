@@ -10,7 +10,10 @@ import (
 	"api/internal/logger"
 )
 
-var DeleteError = errors.New("Failed to delete relation tuple")
+var (
+	DeleteError    = errors.New("Failed to delete relation tuple")
+	DeleteNotFound = errors.New("Relationship not found")
+)
 
 func (s *Service) Delete(ctx context.Context, namespace, object, relation string, subject SubjectSet) error {
 	logger.Logger.Debug("Deleting relation tuple",
@@ -40,6 +43,9 @@ func (s *Service) Delete(ctx context.Context, namespace, object, relation string
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusBadRequest {
+		return fmt.Errorf("%w: HTTP %d", DeleteNotFound, resp.StatusCode)
+	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return fmt.Errorf("%w: HTTP %d", DeleteError, resp.StatusCode)
 	}

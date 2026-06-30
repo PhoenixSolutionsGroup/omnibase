@@ -11,7 +11,10 @@ import (
 	"api/internal/logger"
 )
 
-var CreateError = errors.New("Failed to create relation tuple")
+var (
+	CreateError    = errors.New("Failed to create relation tuple")
+	CreateNotFound = errors.New("Namespace or object not found")
+)
 
 type createPayload struct {
 	Namespace  string         `json:"namespace"`
@@ -61,6 +64,9 @@ func (s *Service) Create(ctx context.Context, namespace, object, relation string
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("%w: HTTP %d", CreateNotFound, resp.StatusCode)
+	}
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%w: HTTP %d", CreateError, resp.StatusCode)
 	}

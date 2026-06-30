@@ -13,10 +13,10 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/database/repository"
-	v1 "api/internal/handlers/v1"
 	"api/internal/handlers/v1/permissions"
 	"api/internal/logger"
 	"api/internal/middleware"
+	permsvc "api/internal/services/permissions"
 )
 
 func SetUpPermissionRoutes(router *gin.RouterGroup) {
@@ -45,9 +45,11 @@ func SetUpPermissionRoutes(router *gin.RouterGroup) {
 		o.UsePathStyle = cfg.S3Config.ForcePathStyle
 	})
 
-	permissionsHandler := v1.NewPermissionsHandler(cfg)
-	namespacesHandler := permissions.New(permissions.Deps{
+	perms := permsvc.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
+
+	handler := permissions.New(permissions.Deps{
 		Repo:       repo,
+		Perms:      perms,
 		S3:         s3Client,
 		BucketName: cfg.S3Config.BucketName,
 		TenantID:   cfg.ManagedHostingConfig.TenantID,
@@ -60,9 +62,9 @@ func SetUpPermissionRoutes(router *gin.RouterGroup) {
 	sessionOrServiceGroup.Use(authMiddleware.RequireAuthHeaders())
 	sessionOrServiceGroup.Use(authMiddleware.RequireSessionOrServiceKey())
 
-	sessionOrServiceGroup.POST("/check", permissionsHandler.CheckPermission)
-	sessionOrServiceGroup.POST("/relationships", permissionsHandler.CreateRelationship)
-	sessionOrServiceGroup.DELETE("/relationships", permissionsHandler.DeleteRelationship)
+	sessionOrServiceGroup.POST("/check", handler.Check)
+	sessionOrServiceGroup.POST("/relationships", handler.CreateRelationship)
+	sessionOrServiceGroup.DELETE("/relationships", handler.DeleteRelationship)
 
-	router.POST("/namespaces", authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey(), namespacesHandler.DeployNamespaces)
+	router.POST("/namespaces", authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey(), handler.DeployNamespaces)
 }
