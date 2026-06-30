@@ -6,8 +6,6 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	stripeHandlers "api/internal/handlers/v1/stripe"
 	"api/internal/logger"
@@ -18,24 +16,19 @@ import (
 	"api/internal/services/stripe_config"
 )
 
-func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API) {
+func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing stripe routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 
 	var encryptionSvc *services.EncryptionService
 	if cfg.EncryptionMasterKey != "" {
-		encryptionSvc, err = services.NewEncryptionService(cfg.EncryptionMasterKey)
+		svc, err := services.NewEncryptionService(cfg.EncryptionMasterKey)
 		if err != nil {
 			logger.Logger.Error("Failed to initialize encryption service", "error", err)
 			panic(err)
 		}
+		encryptionSvc = svc
 	}
 	var managedClient *stripe_config.ManagedHostingClient
 	if cfg.ManagedHostingConfig.IsManaged {
@@ -62,7 +55,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API) {
 		Stripe:       stripeClient,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 	serviceMW := huma.Middlewares{
 		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
 	}

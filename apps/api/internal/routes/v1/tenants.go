@@ -3,8 +3,6 @@ package v1
 import (
 	"net/http"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	tenantsh "api/internal/handlers/v1/tenants"
 	"api/internal/handlers/v1/tenants/invites"
@@ -26,16 +24,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API) {
+func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing tenant routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 	perms := permissions.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 	authSvc := auth.New(auth.Deps{AdminURL: cfg.AuthConfig.AuthAdminURL})
 	tenantsSvc := tenants.New(tenants.Deps{Repo: repo, Auth: authSvc, SigningKey: cfg.Database.SigningKey})
@@ -50,7 +42,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API) {
 		panic(err)
 	}
 
-	tenantHandler := tenantsh.New(cfg)
+	tenantHandler := tenantsh.New(repo)
 	rolesHandler := roles.New(roles.Deps{Repo: repo, Perms: perms})
 	usersHandler := users.New(users.Deps{
 		Repo:    repo,
@@ -85,7 +77,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API) {
 		Repo:    repo,
 		Billing: billingSvc,
 	})
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 
 	serviceMW := huma.Middlewares{
 		middleware.GinToHuma(authMiddleware.RequireServiceKey()),

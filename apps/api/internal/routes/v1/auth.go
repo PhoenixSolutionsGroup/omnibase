@@ -6,8 +6,6 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/auth"
 	"api/internal/handlers/v1/auth/proxy"
@@ -15,16 +13,10 @@ import (
 	"api/internal/middleware"
 )
 
-func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API) {
+func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing auth routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 
 	kratosPub := auth.NewKratosClient(cfg.AuthConfig.AuthURL, "public")
 	kratosAdmin := auth.NewKratosClient(cfg.AuthConfig.AuthAdminURL, "admin")
@@ -38,7 +30,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API) {
 		PublicURL: cfg.AuthConfig.AuthURL,
 		AdminURL:  cfg.AuthConfig.AuthAdminURL,
 	})
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 
 	router.Any("/proxy/*path", proxyHandler.ProxyPublic)
 

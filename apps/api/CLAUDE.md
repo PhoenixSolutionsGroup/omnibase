@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Start API server
-go run main.go
+go run ./cmd/server
 
 # Build binary
 go build -o api

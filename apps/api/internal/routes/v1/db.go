@@ -6,31 +6,23 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/handlers/v1/db"
 	"api/internal/logger"
 	"api/internal/middleware"
 )
 
-func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API) {
+func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing database routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
+	cfg := d.Cfg
 
 	handler := db.New(db.Deps{
-		Pool:         pool,
+		Pool:         d.Pool,
 		DBConfig:     cfg.Database,
 		PostgRESTURL: cfg.PostgRESTURL,
 		TypegenURL:   cfg.TypegenURL,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 	serviceMW := huma.Middlewares{
 		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
 	}

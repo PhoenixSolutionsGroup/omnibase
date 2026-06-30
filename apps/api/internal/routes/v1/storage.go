@@ -12,8 +12,6 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/storage"
 	"api/internal/logger"
@@ -21,16 +19,10 @@ import (
 	"api/internal/services/permissions"
 )
 
-func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API) {
+func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing storage routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 
 	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
 		awsconfig.WithRegion(cfg.S3Config.Region),
@@ -64,7 +56,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API) {
 		BucketName: cfg.S3Config.BucketName,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 	sessionOrServiceMW := huma.Middlewares{
 		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
 	}

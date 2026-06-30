@@ -73,10 +73,29 @@ func New(cfg *config.Config) *gin.Engine {
 		panic(err)
 	}
 
+	pool, err := database.GetPool(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get pgx pool", "error", err)
+		panic(err)
+	}
+
 	healthHandler := handlers.NewHealthHandler(cfg, db)
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
+	BuildAPI(r, v1_routes.Deps{Cfg: cfg, Pool: pool, DB: db})
+
+	logger.Logger.Debug("Setting up auth proxy fallback routes")
+	authProxyHandler := proxy.New(proxy.Deps{
+		PublicURL: cfg.AuthConfig.AuthURL,
+		AdminURL:  cfg.AuthConfig.AuthAdminURL,
+	})
+	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
+
+	return r
+}
+
+func BuildAPI(r *gin.Engine, d v1_routes.Deps) huma.API {
 	logger.Logger.Debug("Initializing huma API")
 	apiVersion := os.Getenv("API_VERSION")
 	if apiVersion == "" {
@@ -108,19 +127,11 @@ func New(cfg *config.Config) *gin.Engine {
 	api := humagin.New(r, humaCfg)
 
 	logger.Logger.Debug("Initializing v1 API routes")
-	v1_group := r.Group("/api/v1")
-	v1_routes.InitRoutes(v1_group, api)
+	v1_routes.InitRoutes(r.Group("/api/v1"), api, d)
 
 	relaxAdditionalPropertiesRequired(api)
 
-	logger.Logger.Debug("Setting up auth proxy fallback routes")
-	authProxyHandler := proxy.New(proxy.Deps{
-		PublicURL: cfg.AuthConfig.AuthURL,
-		AdminURL:  cfg.AuthConfig.AuthAdminURL,
-	})
-	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
-
-	return r
+	return api
 }
 
 func relaxAdditionalPropertiesRequired(api huma.API) {

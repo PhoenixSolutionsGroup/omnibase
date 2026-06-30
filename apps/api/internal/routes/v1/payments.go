@@ -6,8 +6,6 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/payments"
 	"api/internal/handlers/v1/payments/invoices"
@@ -17,16 +15,10 @@ import (
 	"api/internal/services/stripe_client"
 )
 
-func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API) {
+func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing payment routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 	stripeClient := stripe_client.New(cfg.StripeConfig)
 	billingSvc := billing.New(billing.Deps{
 		Repo:   repo,
@@ -36,8 +28,8 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API) {
 
 	paymentHandler := payments.New(payments.Deps{Billing: billingSvc})
 	invoiceHandler := invoices.New(invoices.Deps{Billing: billingSvc})
-	paymentsMiddleware := middleware.NewPaymentsMiddleware(cfg)
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	paymentsMiddleware := middleware.NewPaymentsMiddleware(cfg, d.DB)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
 
 	sessionOrServiceMW := huma.Middlewares{
 		middleware.GinToHuma(

@@ -4,6 +4,9 @@ codegen:
 build:
 	go build ./...
 
+openapi:
+	@GIN_MODE=release LOG_LEVEL=ERROR API_VERSION=$${API_VERSION:-local} go run ./cmd/openapi docs/openapi.json
+
 sdk:
 	@OUT=$$(cd ../../ && bun run generate:sdk 2>&1) || { echo "$$OUT"; exit 1; }
 	@echo "$(SPEC_HASH)" > $(SDK_HASH_FILE)
