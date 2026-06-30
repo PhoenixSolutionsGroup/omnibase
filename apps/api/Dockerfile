@@ -1,3 +1,5 @@
+ARG VERSION=local
+
 # Build stage
 FROM golang:1.24-alpine@sha256:8f8959f38530d159bf71d0b3eb0c547dc61e7959d8225d1599cf762477384923 AS builder
 
@@ -37,6 +39,9 @@ COPY --from=builder /build/api /api
 
 # Copy static files (schemas)
 COPY --from=builder /build/internal/static /internal/static
+
+ARG VERSION=local
+ENV API_VERSION=$VERSION
 
 # Expose port
 EXPOSE 8080
