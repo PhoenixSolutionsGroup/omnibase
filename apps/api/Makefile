@@ -52,7 +52,7 @@ test-unit:
 	$(TEST_ENV) go test ./internal/... $(GO_TEST_FLAGS)
 
 test-integration: sdk-if-changed
-	$(TEST_ENV) KEEP_STACK=1 go test ./tests/integration/... $(GO_TEST_FLAGS)
+	$(TEST_ENV) KEEP_STACK=1 go test ./tests/integration/... $(GO_TEST_FLAGS) -p 1
 
 test-e2e: sdk-if-changed
 	$(TEST_ENV) KEEP_STACK=1 go test ./tests/e2e/... $(GO_TEST_FLAGS) -p 1

@@ -7,6 +7,7 @@ package repository
 
 import (
 	"context"
+	"time"
 )
 
 const activateUserTenant = `-- name: ActivateUserTenant :exec
@@ -97,6 +98,45 @@ func (q *Queries) DeleteTenantUser(ctx context.Context, arg DeleteTenantUserPara
 	return err
 }
 
+const getActiveTenantForUser = `-- name: GetActiveTenantForUser :one
+SELECT
+    t.id, t.name, t.stripe_customer_id, t.enterprise_template, t.enterprise_id, t.type, t.created_at, t.updated_at,
+    tu.is_active
+FROM auth.tenant_users tu
+JOIN auth.tenants t ON t.id = tu.tenant_id
+WHERE tu.user_id = $1 AND tu.is_active = true
+LIMIT 1
+`
+
+type GetActiveTenantForUserRow struct {
+	ID                 string    `json:"id"`
+	Name               string    `json:"name"`
+	StripeCustomerID   *string   `json:"stripe_customer_id"`
+	EnterpriseTemplate *string   `json:"enterprise_template"`
+	EnterpriseID       *string   `json:"enterprise_id"`
+	Type               string    `json:"type"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+	IsActive           bool      `json:"is_active"`
+}
+
+func (q *Queries) GetActiveTenantForUser(ctx context.Context, userID string) (GetActiveTenantForUserRow, error) {
+	row := q.db.QueryRow(ctx, getActiveTenantForUser, userID)
+	var i GetActiveTenantForUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StripeCustomerID,
+		&i.EnterpriseTemplate,
+		&i.EnterpriseID,
+		&i.Type,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsActive,
+	)
+	return i, err
+}
+
 const getTenantUser = `-- name: GetTenantUser :one
 SELECT id, tenant_id, user_id, role, is_active, joined_at
 FROM auth.tenant_users
@@ -179,6 +219,58 @@ func (q *Queries) ListTenantUsersByUser(ctx context.Context, userID string) ([]A
 			&i.Role,
 			&i.IsActive,
 			&i.JoinedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTenantsForUser = `-- name: ListTenantsForUser :many
+SELECT
+    t.id, t.name, t.stripe_customer_id, t.enterprise_template, t.enterprise_id, t.type, t.created_at, t.updated_at,
+    tu.is_active
+FROM auth.tenant_users tu
+JOIN auth.tenants t ON t.id = tu.tenant_id
+WHERE tu.user_id = $1
+ORDER BY tu.joined_at ASC
+`
+
+type ListTenantsForUserRow struct {
+	ID                 string    `json:"id"`
+	Name               string    `json:"name"`
+	StripeCustomerID   *string   `json:"stripe_customer_id"`
+	EnterpriseTemplate *string   `json:"enterprise_template"`
+	EnterpriseID       *string   `json:"enterprise_id"`
+	Type               string    `json:"type"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
+	IsActive           bool      `json:"is_active"`
+}
+
+func (q *Queries) ListTenantsForUser(ctx context.Context, userID string) ([]ListTenantsForUserRow, error) {
+	rows, err := q.db.Query(ctx, listTenantsForUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTenantsForUserRow
+	for rows.Next() {
+		var i ListTenantsForUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StripeCustomerID,
+			&i.EnterpriseTemplate,
+			&i.EnterpriseID,
+			&i.Type,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.IsActive,
 		); err != nil {
 			return nil, err
 		}

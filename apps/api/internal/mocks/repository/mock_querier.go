@@ -1149,6 +1149,72 @@ func (_c *MockQuerier_GetActiveInviteByToken_Call) RunAndReturn(run func(ctx con
 	return _c
 }
 
+// GetActiveTenantForUser provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetActiveTenantForUser(ctx context.Context, userID string) (repository.GetActiveTenantForUserRow, error) {
+	ret := _mock.Called(ctx, userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetActiveTenantForUser")
+	}
+
+	var r0 repository.GetActiveTenantForUserRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.GetActiveTenantForUserRow, error)); ok {
+		return returnFunc(ctx, userID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.GetActiveTenantForUserRow); ok {
+		r0 = returnFunc(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(repository.GetActiveTenantForUserRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetActiveTenantForUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetActiveTenantForUser'
+type MockQuerier_GetActiveTenantForUser_Call struct {
+	*mock.Call
+}
+
+// GetActiveTenantForUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID string
+func (_e *MockQuerier_Expecter) GetActiveTenantForUser(ctx any, userID any) *MockQuerier_GetActiveTenantForUser_Call {
+	return &MockQuerier_GetActiveTenantForUser_Call{Call: _e.mock.On("GetActiveTenantForUser", ctx, userID)}
+}
+
+func (_c *MockQuerier_GetActiveTenantForUser_Call) Run(run func(ctx context.Context, userID string)) *MockQuerier_GetActiveTenantForUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetActiveTenantForUser_Call) Return(getActiveTenantForUserRow repository.GetActiveTenantForUserRow, err error) *MockQuerier_GetActiveTenantForUser_Call {
+	_c.Call.Return(getActiveTenantForUserRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetActiveTenantForUser_Call) RunAndReturn(run func(ctx context.Context, userID string) (repository.GetActiveTenantForUserRow, error)) *MockQuerier_GetActiveTenantForUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetEmailTemplateByType provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) GetEmailTemplateByType(ctx context.Context, type_ string) (repository.EmailTemplate, error) {
 	ret := _mock.Called(ctx, type_)
@@ -2387,6 +2453,74 @@ func (_c *MockQuerier_ListTenantUsersByUser_Call) Return(authTenantUsers []repos
 }
 
 func (_c *MockQuerier_ListTenantUsersByUser_Call) RunAndReturn(run func(ctx context.Context, userID string) ([]repository.AuthTenantUser, error)) *MockQuerier_ListTenantUsersByUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListTenantsForUser provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListTenantsForUser(ctx context.Context, userID string) ([]repository.ListTenantsForUserRow, error) {
+	ret := _mock.Called(ctx, userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListTenantsForUser")
+	}
+
+	var r0 []repository.ListTenantsForUserRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]repository.ListTenantsForUserRow, error)); ok {
+		return returnFunc(ctx, userID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []repository.ListTenantsForUserRow); ok {
+		r0 = returnFunc(ctx, userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.ListTenantsForUserRow)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListTenantsForUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListTenantsForUser'
+type MockQuerier_ListTenantsForUser_Call struct {
+	*mock.Call
+}
+
+// ListTenantsForUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID string
+func (_e *MockQuerier_Expecter) ListTenantsForUser(ctx any, userID any) *MockQuerier_ListTenantsForUser_Call {
+	return &MockQuerier_ListTenantsForUser_Call{Call: _e.mock.On("ListTenantsForUser", ctx, userID)}
+}
+
+func (_c *MockQuerier_ListTenantsForUser_Call) Run(run func(ctx context.Context, userID string)) *MockQuerier_ListTenantsForUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListTenantsForUser_Call) Return(listTenantsForUserRows []repository.ListTenantsForUserRow, err error) *MockQuerier_ListTenantsForUser_Call {
+	_c.Call.Return(listTenantsForUserRows, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListTenantsForUser_Call) RunAndReturn(run func(ctx context.Context, userID string) ([]repository.ListTenantsForUserRow, error)) *MockQuerier_ListTenantsForUser_Call {
 	_c.Call.Return(run)
 	return _c
 }

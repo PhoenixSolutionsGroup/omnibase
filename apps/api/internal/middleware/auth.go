@@ -13,13 +13,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	kratos "github.com/ory/kratos-client-go"
-	"google.golang.org/api/idtoken"
 	"gorm.io/gorm"
 )
 
@@ -61,17 +59,6 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 		{
 			URL: cfg.AuthConfig.AuthURL,
 		},
-	}
-
-	// On Cloud Run, use identity token for service-to-service auth
-	if os.Getenv("K_SERVICE") != "" {
-		idTokenClient, err := idtoken.NewClient(context.Background(), cfg.AuthConfig.AuthURL)
-		if err != nil {
-			logger.Logger.Error("Failed to create identity token client for auth middleware", "error", err)
-			panic(err)
-		}
-		publicConfig.HTTPClient = idTokenClient
-		logger.Logger.Info("Using identity token client for auth middleware")
 	}
 
 	db, err := database.GetConnection(cfg.Database)

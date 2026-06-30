@@ -7,7 +7,7 @@ import (
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/handlers"
-	v1 "api/internal/handlers/v1"
+	"api/internal/handlers/v1/auth/proxy"
 	"api/internal/logger"
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
@@ -79,7 +79,10 @@ func New(cfg *config.Config) *gin.Engine {
 	v1_routes.InitRoutes(v1_group)
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
-	authProxyHandler := v1.NewAuthProxyHandler(cfg)
+	authProxyHandler := proxy.New(proxy.Deps{
+		PublicURL: cfg.AuthConfig.AuthURL,
+		AdminURL:  cfg.AuthConfig.AuthAdminURL,
+	})
 	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
 
 	return r

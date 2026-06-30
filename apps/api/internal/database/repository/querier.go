@@ -29,6 +29,7 @@ type Querier interface {
 	DeleteTenant(ctx context.Context, id string) error
 	DeleteTenantUser(ctx context.Context, arg DeleteTenantUserParams) error
 	GetActiveInviteByToken(ctx context.Context, token string) (AuthTenantInvite, error)
+	GetActiveTenantForUser(ctx context.Context, userID string) (GetActiveTenantForUserRow, error)
 	GetEmailTemplateByType(ctx context.Context, type_ string) (EmailTemplate, error)
 	GetLatestStripeConfig(ctx context.Context) (StripeStripeConfig, error)
 	GetMappingByConfigItemID(ctx context.Context, arg GetMappingByConfigItemIDParams) (GetMappingByConfigItemIDRow, error)
@@ -48,6 +49,7 @@ type Querier interface {
 	ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error)
 	ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]AuthTenantUser, error)
 	ListTenantUsersByUser(ctx context.Context, userID string) ([]AuthTenantUser, error)
+	ListTenantsForUser(ctx context.Context, userID string) ([]ListTenantsForUserRow, error)
 	MarkInviteUsed(ctx context.Context, id string) error
 	RemoveUserFromRole(ctx context.Context, arg RemoveUserFromRoleParams) error
 	UpdateMappingStripeID(ctx context.Context, arg UpdateMappingStripeIDParams) error
