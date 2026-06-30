@@ -411,6 +411,72 @@ func (_c *MockQuerier_CreateRole_Call) RunAndReturn(run func(ctx context.Context
 	return _c
 }
 
+// CreateStorageObject provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) CreateStorageObject(ctx context.Context, arg repository.CreateStorageObjectParams) (repository.CreateStorageObjectRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateStorageObject")
+	}
+
+	var r0 repository.CreateStorageObjectRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStorageObjectParams) (repository.CreateStorageObjectRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.CreateStorageObjectParams) repository.CreateStorageObjectRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.CreateStorageObjectRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.CreateStorageObjectParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_CreateStorageObject_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateStorageObject'
+type MockQuerier_CreateStorageObject_Call struct {
+	*mock.Call
+}
+
+// CreateStorageObject is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.CreateStorageObjectParams
+func (_e *MockQuerier_Expecter) CreateStorageObject(ctx any, arg any) *MockQuerier_CreateStorageObject_Call {
+	return &MockQuerier_CreateStorageObject_Call{Call: _e.mock.On("CreateStorageObject", ctx, arg)}
+}
+
+func (_c *MockQuerier_CreateStorageObject_Call) Run(run func(ctx context.Context, arg repository.CreateStorageObjectParams)) *MockQuerier_CreateStorageObject_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.CreateStorageObjectParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.CreateStorageObjectParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_CreateStorageObject_Call) Return(createStorageObjectRow repository.CreateStorageObjectRow, err error) *MockQuerier_CreateStorageObject_Call {
+	_c.Call.Return(createStorageObjectRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_CreateStorageObject_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateStorageObjectParams) (repository.CreateStorageObjectRow, error)) *MockQuerier_CreateStorageObject_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateStripeConfig provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) CreateStripeConfig(ctx context.Context, arg repository.CreateStripeConfigParams) (repository.StripeStripeConfig, error) {
 	ret := _mock.Called(ctx, arg)
@@ -978,6 +1044,63 @@ func (_c *MockQuerier_DeleteRoleByIDAndTenant_Call) RunAndReturn(run func(ctx co
 	return _c
 }
 
+// DeleteStorageObjectByID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteStorageObjectByID(ctx context.Context, id uuid.UUID) error {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteStorageObjectByID")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_DeleteStorageObjectByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteStorageObjectByID'
+type MockQuerier_DeleteStorageObjectByID_Call struct {
+	*mock.Call
+}
+
+// DeleteStorageObjectByID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id uuid.UUID
+func (_e *MockQuerier_Expecter) DeleteStorageObjectByID(ctx any, id any) *MockQuerier_DeleteStorageObjectByID_Call {
+	return &MockQuerier_DeleteStorageObjectByID_Call{Call: _e.mock.On("DeleteStorageObjectByID", ctx, id)}
+}
+
+func (_c *MockQuerier_DeleteStorageObjectByID_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_DeleteStorageObjectByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStorageObjectByID_Call) Return(err error) *MockQuerier_DeleteStorageObjectByID_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStorageObjectByID_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockQuerier_DeleteStorageObjectByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteStripeWebhookByStripeID provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error {
 	ret := _mock.Called(ctx, stripeID)
@@ -1539,6 +1662,72 @@ func (_c *MockQuerier_GetMappingByStripeID_Call) RunAndReturn(run func(ctx conte
 	return _c
 }
 
+// GetPublicStorageObjectByPath provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetPublicStorageObjectByPath(ctx context.Context, arg repository.GetPublicStorageObjectByPathParams) (repository.GetPublicStorageObjectByPathRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPublicStorageObjectByPath")
+	}
+
+	var r0 repository.GetPublicStorageObjectByPathRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetPublicStorageObjectByPathParams) (repository.GetPublicStorageObjectByPathRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetPublicStorageObjectByPathParams) repository.GetPublicStorageObjectByPathRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.GetPublicStorageObjectByPathRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.GetPublicStorageObjectByPathParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetPublicStorageObjectByPath_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPublicStorageObjectByPath'
+type MockQuerier_GetPublicStorageObjectByPath_Call struct {
+	*mock.Call
+}
+
+// GetPublicStorageObjectByPath is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.GetPublicStorageObjectByPathParams
+func (_e *MockQuerier_Expecter) GetPublicStorageObjectByPath(ctx any, arg any) *MockQuerier_GetPublicStorageObjectByPath_Call {
+	return &MockQuerier_GetPublicStorageObjectByPath_Call{Call: _e.mock.On("GetPublicStorageObjectByPath", ctx, arg)}
+}
+
+func (_c *MockQuerier_GetPublicStorageObjectByPath_Call) Run(run func(ctx context.Context, arg repository.GetPublicStorageObjectByPathParams)) *MockQuerier_GetPublicStorageObjectByPath_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.GetPublicStorageObjectByPathParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.GetPublicStorageObjectByPathParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetPublicStorageObjectByPath_Call) Return(getPublicStorageObjectByPathRow repository.GetPublicStorageObjectByPathRow, err error) *MockQuerier_GetPublicStorageObjectByPath_Call {
+	_c.Call.Return(getPublicStorageObjectByPathRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetPublicStorageObjectByPath_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetPublicStorageObjectByPathParams) (repository.GetPublicStorageObjectByPathRow, error)) *MockQuerier_GetPublicStorageObjectByPath_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetRoleByIDAndTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) GetRoleByIDAndTenant(ctx context.Context, arg repository.GetRoleByIDAndTenantParams) (repository.GetRoleByIDAndTenantRow, error) {
 	ret := _mock.Called(ctx, arg)
@@ -1667,6 +1856,72 @@ func (_c *MockQuerier_GetRoleByNameAndTenant_Call) Return(getRoleByNameAndTenant
 }
 
 func (_c *MockQuerier_GetRoleByNameAndTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetRoleByNameAndTenantParams) (repository.GetRoleByNameAndTenantRow, error)) *MockQuerier_GetRoleByNameAndTenant_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetStorageObjectByPath provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetStorageObjectByPath(ctx context.Context, arg repository.GetStorageObjectByPathParams) (repository.GetStorageObjectByPathRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetStorageObjectByPath")
+	}
+
+	var r0 repository.GetStorageObjectByPathRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetStorageObjectByPathParams) (repository.GetStorageObjectByPathRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.GetStorageObjectByPathParams) repository.GetStorageObjectByPathRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.GetStorageObjectByPathRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.GetStorageObjectByPathParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetStorageObjectByPath_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetStorageObjectByPath'
+type MockQuerier_GetStorageObjectByPath_Call struct {
+	*mock.Call
+}
+
+// GetStorageObjectByPath is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.GetStorageObjectByPathParams
+func (_e *MockQuerier_Expecter) GetStorageObjectByPath(ctx any, arg any) *MockQuerier_GetStorageObjectByPath_Call {
+	return &MockQuerier_GetStorageObjectByPath_Call{Call: _e.mock.On("GetStorageObjectByPath", ctx, arg)}
+}
+
+func (_c *MockQuerier_GetStorageObjectByPath_Call) Run(run func(ctx context.Context, arg repository.GetStorageObjectByPathParams)) *MockQuerier_GetStorageObjectByPath_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.GetStorageObjectByPathParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.GetStorageObjectByPathParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetStorageObjectByPath_Call) Return(getStorageObjectByPathRow repository.GetStorageObjectByPathRow, err error) *MockQuerier_GetStorageObjectByPath_Call {
+	_c.Call.Return(getStorageObjectByPathRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetStorageObjectByPath_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetStorageObjectByPathParams) (repository.GetStorageObjectByPathRow, error)) *MockQuerier_GetStorageObjectByPath_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -2706,6 +2961,63 @@ func (_c *MockQuerier_MarkInviteUsed_Call) Return(err error) *MockQuerier_MarkIn
 }
 
 func (_c *MockQuerier_MarkInviteUsed_Call) RunAndReturn(run func(ctx context.Context, id string) error) *MockQuerier_MarkInviteUsed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// MarkStorageObjectPublic provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) MarkStorageObjectPublic(ctx context.Context, id uuid.UUID) error {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for MarkStorageObjectPublic")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_MarkStorageObjectPublic_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MarkStorageObjectPublic'
+type MockQuerier_MarkStorageObjectPublic_Call struct {
+	*mock.Call
+}
+
+// MarkStorageObjectPublic is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id uuid.UUID
+func (_e *MockQuerier_Expecter) MarkStorageObjectPublic(ctx any, id any) *MockQuerier_MarkStorageObjectPublic_Call {
+	return &MockQuerier_MarkStorageObjectPublic_Call{Call: _e.mock.On("MarkStorageObjectPublic", ctx, id)}
+}
+
+func (_c *MockQuerier_MarkStorageObjectPublic_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockQuerier_MarkStorageObjectPublic_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_MarkStorageObjectPublic_Call) Return(err error) *MockQuerier_MarkStorageObjectPublic_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_MarkStorageObjectPublic_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockQuerier_MarkStorageObjectPublic_Call {
 	_c.Call.Return(run)
 	return _c
 }

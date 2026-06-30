@@ -48,3 +48,27 @@ export class Tenant implements Namespace {
       this.related.can_update_user_role_to_owner.includes(ctx.subject),
   };
 }
+
+export class StorageObject implements Namespace {
+  related: {
+    owner: User[];
+    can_read: User[];
+    can_delete: User[];
+    can_make_public: User[];
+    tenant: Tenant[];
+  };
+
+  permits = {
+    read: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_read.includes(ctx.subject),
+
+    delete: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_delete.includes(ctx.subject),
+
+    make_public: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.can_make_public.includes(ctx.subject),
+  };
+}

@@ -17,6 +17,7 @@ type Querier interface {
 	CountStripeConfigs(ctx context.Context) (int64, error)
 	CreateMapping(ctx context.Context, arg CreateMappingParams) (CreateMappingRow, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (CreateRoleRow, error)
+	CreateStorageObject(ctx context.Context, arg CreateStorageObjectParams) (CreateStorageObjectRow, error)
 	CreateStripeConfig(ctx context.Context, arg CreateStripeConfigParams) (StripeStripeConfig, error)
 	CreateStripeWebhook(ctx context.Context, arg CreateStripeWebhookParams) (CreateStripeWebhookRow, error)
 	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
@@ -26,6 +27,7 @@ type Querier interface {
 	DeactivateAllUserTenants(ctx context.Context, userID string) error
 	DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error)
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
+	DeleteStorageObjectByID(ctx context.Context, id uuid.UUID) error
 	DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error
 	DeleteTenant(ctx context.Context, id string) error
 	DeleteTenantUser(ctx context.Context, arg DeleteTenantUserParams) error
@@ -35,8 +37,10 @@ type Querier interface {
 	GetLatestStripeConfig(ctx context.Context) (StripeStripeConfig, error)
 	GetMappingByConfigItemID(ctx context.Context, arg GetMappingByConfigItemIDParams) (GetMappingByConfigItemIDRow, error)
 	GetMappingByStripeID(ctx context.Context, stripeID string) (GetMappingByStripeIDRow, error)
+	GetPublicStorageObjectByPath(ctx context.Context, arg GetPublicStorageObjectByPathParams) (GetPublicStorageObjectByPathRow, error)
 	GetRoleByIDAndTenant(ctx context.Context, arg GetRoleByIDAndTenantParams) (GetRoleByIDAndTenantRow, error)
 	GetRoleByNameAndTenant(ctx context.Context, arg GetRoleByNameAndTenantParams) (GetRoleByNameAndTenantRow, error)
+	GetStorageObjectByPath(ctx context.Context, arg GetStorageObjectByPathParams) (GetStorageObjectByPathRow, error)
 	GetStripeWebhookByStripeID(ctx context.Context, stripeID string) (GetStripeWebhookByStripeIDRow, error)
 	GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error)
 	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error)
@@ -53,6 +57,7 @@ type Querier interface {
 	ListTenantUsersByUser(ctx context.Context, userID string) ([]AuthTenantUser, error)
 	ListTenantsForUser(ctx context.Context, userID string) ([]ListTenantsForUserRow, error)
 	MarkInviteUsed(ctx context.Context, id string) error
+	MarkStorageObjectPublic(ctx context.Context, id uuid.UUID) error
 	RemoveUserFromRole(ctx context.Context, arg RemoveUserFromRoleParams) error
 	UpdateMappingStripeID(ctx context.Context, arg UpdateMappingStripeIDParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
