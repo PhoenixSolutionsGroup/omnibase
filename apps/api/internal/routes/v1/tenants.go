@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"net/http"
+
 	"api/internal/config"
 	"api/internal/database"
 	"api/internal/database/repository"
@@ -20,10 +22,11 @@ import (
 	"api/internal/services/stripe_client"
 	"api/internal/services/tenants"
 
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 )
 
-func SetUpTenantRoutes(router *gin.RouterGroup) {
+func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API) {
 	logger.Logger.Info("Initializing tenant routes")
 	cfg := config.New()
 
@@ -84,52 +87,119 @@ func SetUpTenantRoutes(router *gin.RouterGroup) {
 	})
 	authMiddleware := middleware.NewAuthMiddleware(cfg)
 
-	// Service-key only routes (lookup endpoints for service-to-service calls)
-	serviceKeyOnly := router.Group("")
-	serviceKeyOnly.Use(authMiddleware.RequireServiceKey())
-	serviceKeyOnly.GET("/by-id/:tenant_id", tenantHandler.GetTenantByID)
-	serviceKeyOnly.GET("/by-stripe-customer/:stripe_customer_id", tenantHandler.GetTenantByStripeCustomerID)
+	serviceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireServiceKey()),
+	}
+	sessionOrServiceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
+	}
+	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
+	sessionOrServiceSec := []map[string][]string{{"SessionTokenAuth": {}}, {"CookieAuth": {}}, {"ServiceKeyAuth": {}}}
 
-	// Routes that accept session OR service key auth
-	authenticated := router.Group("")
-	authenticated.Use(authMiddleware.RequireAuthHeaders())
-	authenticated.Use(authMiddleware.RequireSessionOrServiceKey())
+	tag := []string{"V1Tenants"}
 
-	authenticated.GET("/jwt", lifecycleHandler.GetJWT)
+	huma.Register(api, huma.Operation{
+		OperationID: "getTenantByID", Method: http.MethodGet, Path: "/api/v1/tenants/by-id/{tenant_id}",
+		Summary: "Get tenant by ID", Tags: tag, Security: serviceSec, Middlewares: serviceMW,
+	}, tenantHandler.GetTenantByID)
 
-	authenticated.GET("/users", usersHandler.List)
+	huma.Register(api, huma.Operation{
+		OperationID: "getTenantByStripeCustomerID", Method: http.MethodGet, Path: "/api/v1/tenants/by-stripe-customer/{stripe_customer_id}",
+		Summary: "Get tenant by Stripe customer ID", Tags: tag, Security: serviceSec, Middlewares: serviceMW,
+	}, tenantHandler.GetTenantByStripeCustomerID)
 
-	authenticated.GET("/subscriptions", subscriptionsHandler.List)
+	huma.Register(api, huma.Operation{
+		OperationID: "createTenant", Method: http.MethodPost, Path: "/api/v1/tenants",
+		Summary: "Create a tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, lifecycleHandler.CreateTenant)
 
-	authenticated.GET("/subscriptions/:config_price_id", subscriptionsHandler.Get)
+	huma.Register(api, huma.Operation{
+		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
+		Summary: "Delete the current tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, lifecycleHandler.DeleteTenant)
 
-	authenticated.DELETE("/subscriptions", subscriptionsHandler.Remove)
+	huma.Register(api, huma.Operation{
+		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
+		Summary: "Get JWT for the current tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, lifecycleHandler.GetJWT)
 
-	authenticated.POST("/subscriptions", subscriptionsHandler.Add)
+	huma.Register(api, huma.Operation{
+		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",
+		Summary: "Switch the active tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, lifecycleHandler.SwitchActive)
 
-	authenticated.GET("/billing-status", subscriptionsHandler.BillingStatus)
+	huma.Register(api, huma.Operation{
+		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
+		Summary: "Create a tenant invite", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, invitesHandler.Create)
 
-	authenticated.POST("", lifecycleHandler.CreateTenant)
+	huma.Register(api, huma.Operation{
+		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
+		Summary: "Accept a tenant invite", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, invitesHandler.Accept)
 
-	authenticated.POST("/invites", invitesHandler.Create)
+	huma.Register(api, huma.Operation{
+		OperationID: "listRoles", Method: http.MethodGet, Path: "/api/v1/tenants/roles",
+		Summary: "List roles for the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, rolesHandler.ListRoles)
 
-	authenticated.PUT("/users", usersHandler.UpdateRole)
+	huma.Register(api, huma.Operation{
+		OperationID: "listRoleDefinitions", Method: http.MethodGet, Path: "/api/v1/tenants/roles/definitions",
+		Summary: "List role definitions", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, rolesHandler.ListDefinitions)
 
-	authenticated.PUT("/invites/accept", invitesHandler.Accept)
+	huma.Register(api, huma.Operation{
+		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
+		Summary: "Create a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, rolesHandler.CreateRole)
 
-	authenticated.PUT("/switch-active", lifecycleHandler.SwitchActive)
+	huma.Register(api, huma.Operation{
+		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
+		Summary: "Update a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, rolesHandler.UpdateRole)
 
-	authenticated.DELETE("", lifecycleHandler.DeleteTenant)
+	huma.Register(api, huma.Operation{
+		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
+		Summary: "Delete a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, rolesHandler.DeleteRole)
 
-	authenticated.DELETE("/users", usersHandler.Delete)
+	huma.Register(api, huma.Operation{
+		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
+		Summary: "List users in the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, usersHandler.List)
 
-	authenticated.GET("/roles", rolesHandler.ListRoles)
+	huma.Register(api, huma.Operation{
+		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
+		Summary: "Update a tenant user's role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, usersHandler.UpdateRole)
 
-	authenticated.GET("/roles/definitions", rolesHandler.ListDefinitions)
+	huma.Register(api, huma.Operation{
+		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
+		Summary: "Remove a user from the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, usersHandler.Delete)
 
-	authenticated.POST("/roles", rolesHandler.CreateRole)
+	huma.Register(api, huma.Operation{
+		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
+		Summary: "List subscriptions for the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, subscriptionsHandler.List)
 
-	authenticated.PUT("/roles/:role_id", rolesHandler.UpdateRole)
+	huma.Register(api, huma.Operation{
+		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
+		Summary: "Get a single tenant subscription", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, subscriptionsHandler.Get)
 
-	authenticated.DELETE("/roles/:role_id", rolesHandler.DeleteRole)
+	huma.Register(api, huma.Operation{
+		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
+		Summary: "Add a subscription to the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, subscriptionsHandler.Add)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
+		Summary: "Remove a subscription from the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, subscriptionsHandler.Remove)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
+		Summary: "Get tenant billing status", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+	}, subscriptionsHandler.BillingStatus)
 }

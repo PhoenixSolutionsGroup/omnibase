@@ -1,10 +1,12 @@
 package subscriptions
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -14,8 +16,8 @@ import (
 var AddSubscriptionError = errors.New("Failed to add tenant subscription")
 
 type AddRequest struct {
-	PlanID           string `json:"plan_id" binding:"required,min=1" example:"price_test_basic"`
-	StripeCustomerID string `json:"stripe_customer_id,omitempty" binding:"omitempty,min=1" example:"cus_test_123"`
+	PlanID           string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
+	StripeCustomerID string `json:"stripe_customer_id,omitempty" minLength:"1" example:"cus_test_123"`
 	Quantity         int64  `json:"quantity,omitempty" example:"5"`
 }
 
@@ -25,34 +27,35 @@ type AddResponse struct {
 	Message        string `json:"message"`
 }
 
-func (h *Handler) Add(ctx *gin.Context) {
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
+type AddInput struct {
+	handlers.AuthCtx
+	Body AddRequest
+}
+
+type AddOutput struct {
+	Body AddResponse
+}
+
+func (h *Handler) Add(ctx context.Context, in *AddInput) (*AddOutput, error) {
+	if in.TenantID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 
-	var req AddRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid JSON format")
-		return
-	}
+	req := in.Body
 
 	customerID := req.StripeCustomerID
 	if customerID == "" {
-		row, err := h.repo.GetTenantByID(ctx.Request.Context(), tenantID)
+		row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("Tenant not found: %w", err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("Tenant not found: %w", err).Error())
 		}
 		if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-			handlers.NewBadRequestResponse(ctx, "Tenant does not have a Stripe customer ID")
-			return
+			return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
 		}
 		customerID = *row.StripeCustomerID
 	}
 
-	result, err := h.billing.AddTenantSubscription(ctx.Request.Context(), billing.AddTenantSubscriptionArgs{
+	result, err := h.billing.AddTenantSubscription(ctx, billing.AddTenantSubscriptionArgs{
 		StripeCustomerID: customerID,
 		ConfigPriceID:    req.PlanID,
 		Quantity:         req.Quantity,
@@ -60,19 +63,20 @@ func (h *Handler) Add(ctx *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, billing.AddTenantSubscriptionPlanNotFound):
-			handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Plan not found: %s", req.PlanID))
+			return nil, huma.Error404NotFound(fmt.Sprintf("Plan not found: %s", req.PlanID))
 		case errors.Is(err, billing.AddTenantSubscriptionDuplicate):
-			handlers.NewBadRequestResponse(ctx, fmt.Sprintf("Subscription already exists for plan: %s", req.PlanID))
-		default:
-			logger.Logger.Error("add subscription failed", "tenant_id", tenantID, "error", err)
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", AddSubscriptionError, err))
+			return nil, huma.Error400BadRequest(fmt.Sprintf("Subscription already exists for plan: %s", req.PlanID))
 		}
-		return
+		if e := handlers.StripeError(err); e != nil {
+			return nil, e
+		}
+		logger.Logger.Error("add subscription failed", "tenant_id", in.TenantID, "error", err)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AddSubscriptionError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(ctx, &AddResponse{
+	return &AddOutput{Body: AddResponse{
 		SubscriptionID: result.SubscriptionID,
 		Status:         result.Status,
 		Message:        "Subscription added successfully",
-	})
+	}}, nil
 }

@@ -1,10 +1,12 @@
 package subscriptions
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -12,38 +14,39 @@ import (
 
 var GetSubscriptionError = errors.New("Failed to get tenant subscription")
 
-func (h *Handler) Get(ctx *gin.Context) {
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
+type GetInput struct {
+	handlers.AuthCtx
+	ConfigPriceID string `path:"config_price_id"`
+}
+
+type GetOutput struct {
+	Body SubscriptionResponse
+}
+
+func (h *Handler) Get(ctx context.Context, in *GetInput) (*GetOutput, error) {
+	if in.TenantID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 
-	configPriceID := ctx.Param("config_price_id")
-	if configPriceID == "" {
-		handlers.NewBadRequestResponse(ctx, "config_price_id is required")
-		return
+	if in.ConfigPriceID == "" {
+		return nil, huma.Error400BadRequest("config_price_id is required")
 	}
 
-	row, err := h.repo.GetTenantByID(ctx.Request.Context(), tenantID)
+	row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 	if err != nil {
-		handlers.NewNotFoundResponse(ctx, "Tenant not found")
-		return
+		return nil, huma.Error404NotFound("Tenant not found")
 	}
 	if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No subscription found for plan: %s", configPriceID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("No subscription found for plan: %s", in.ConfigPriceID))
 	}
 
-	sub, err := h.billing.GetTenantSubscription(ctx.Request.Context(), *row.StripeCustomerID, configPriceID)
+	sub, err := h.billing.GetTenantSubscription(ctx, *row.StripeCustomerID, in.ConfigPriceID)
 	if err != nil {
-		logger.Logger.Error("get subscription failed", "tenant_id", tenantID, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetSubscriptionError, err))
-		return
+		logger.Logger.Error("get subscription failed", "tenant_id", in.TenantID, "error", err)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetSubscriptionError, err).Error())
 	}
 	if sub == nil {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No subscription found for plan: %s", configPriceID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("No subscription found for plan: %s", in.ConfigPriceID))
 	}
-	handlers.NewSuccessResponse(ctx, SubscriptionResponse(*sub))
+	return &GetOutput{Body: SubscriptionResponse(*sub)}, nil
 }

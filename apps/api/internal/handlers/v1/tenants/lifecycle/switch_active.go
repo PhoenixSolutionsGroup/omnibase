@@ -1,20 +1,21 @@
 package lifecycle
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+
 	"api/internal/handlers"
 	"api/internal/services/tenants"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 var SwitchActiveError = errors.New("Failed to switch active tenant")
 
 type SwitchActiveRequest struct {
-	TenantID string `json:"tenant_id" binding:"required,uuid" example:"550e8400-e29b-41d4-a716-446655440000"`
+	TenantID string `json:"tenant_id" required:"true" format:"uuid" example:"550e8400-e29b-41d4-a716-446655440000"`
 }
 
 type SwitchActiveResponse struct {
@@ -22,33 +23,35 @@ type SwitchActiveResponse struct {
 	Message string `json:"message" example:"Successfully switched tenants"`
 }
 
-func (h *Handler) SwitchActive(c *gin.Context) {
-	userUuid := handlers.User(c)
+type SwitchActiveInput struct {
+	handlers.AuthCtx
+	Body SwitchActiveRequest
+}
 
-	var req SwitchActiveRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid request format")
-		return
+type SwitchActiveOutput struct {
+	Body SwitchActiveResponse
+}
+
+func (h *Handler) SwitchActive(ctx context.Context, in *SwitchActiveInput) (*SwitchActiveOutput, error) {
+	if in.UserID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 
-	tenantUuid, err := uuid.Parse(req.TenantID)
+	tenantUuid, err := uuid.Parse(in.Body.TenantID)
 	if err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid tenant_id")
-		return
+		return nil, huma.Error400BadRequest("Invalid tenant_id")
 	}
 
-	token, err := h.tenants.SetActive(c.Request.Context(), userUuid, tenantUuid)
+	token, err := h.tenants.SetActive(ctx, in.UserID, tenantUuid)
 	if err != nil {
 		if errors.Is(err, tenants.NotTenantMemberError) {
-			handlers.NewNotFoundResponse(c, "Tenant not found or you don't have access to it")
-			return
+			return nil, huma.Error404NotFound("Tenant not found or you don't have access to it")
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", SwitchActiveError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", SwitchActiveError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(c, SwitchActiveResponse{
+	return &SwitchActiveOutput{Body: SwitchActiveResponse{
 		Token:   token,
 		Message: "Successfully switched tenants",
-	})
+	}}, nil
 }

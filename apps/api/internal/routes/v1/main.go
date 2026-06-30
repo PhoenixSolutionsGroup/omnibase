@@ -23,7 +23,7 @@ func InitRoutes(group *gin.RouterGroup, api huma.API) {
 	SetUpDBRoutes(group.Group("/database"), api)
 
 	logger.Logger.Debug("Setting up tenant routes at /tenants")
-	SetUpTenantRoutes(group.Group("/tenants"))
+	SetUpTenantRoutes(group.Group("/tenants"), api)
 
 	logger.Logger.Debug("Setting up permission routes at /permissions")
 	SetUpPermissionRoutes(group.Group("/permissions"), api)

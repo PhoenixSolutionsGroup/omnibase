@@ -1,10 +1,12 @@
 package lifecycle
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
@@ -22,60 +24,58 @@ type DeleteTenantResponse struct {
 	Message string `json:"message"`
 }
 
-func (h *Handler) DeleteTenant(ctx *gin.Context) {
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewBadRequestResponse(ctx, "Tenant ID is required")
-		return
-	}
-	userID := ctx.GetString("user_id")
-	if userID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
-	}
+type DeleteTenantInput struct {
+	handlers.AuthCtx
+}
 
-	if _, err := h.repo.GetTenantByID(ctx.Request.Context(), tenantID); err != nil {
+type DeleteTenantOutput struct {
+	Body DeleteTenantResponse
+}
+
+func (h *Handler) DeleteTenant(ctx context.Context, in *DeleteTenantInput) (*DeleteTenantOutput, error) {
+	if in.TenantID == uuid.Nil {
+		return nil, huma.Error400BadRequest("Tenant ID is required")
+	}
+	if in.UserID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
+	}
+	tenantID := in.TenantID.String()
+	userID := in.UserID.String()
+
+	if _, err := h.repo.GetTenantByID(ctx, tenantID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(ctx, "Tenant not found")
-			return
+			return nil, huma.Error404NotFound("Tenant not found")
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 	}
 
 	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
-	canDelete, err := h.perms.Check(ctx.Request.Context(), "Tenant", tenantID, "delete_tenant", subject)
+	canDelete, err := h.perms.Check(ctx, "Tenant", tenantID, "delete_tenant", subject)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 	}
 	if !canDelete {
-		handlers.NewForbiddenResponse(ctx, DeleteTenantForbidden.Error())
-		return
+		return nil, huma.Error403Forbidden(DeleteTenantForbidden.Error())
 	}
 
-	tenantUsers, err := h.repo.ListTenantUsersByTenant(ctx.Request.Context(), tenantID)
+	tenantUsers, err := h.repo.ListTenantUsersByTenant(ctx, tenantID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 	}
 
-	tenantRow, _ := h.repo.GetTenantByID(ctx.Request.Context(), tenantID)
+	tenantRow, _ := h.repo.GetTenantByID(ctx, tenantID)
 	if tenantRow.StripeCustomerID != nil && *tenantRow.StripeCustomerID != "" {
-		if err := h.billing.ArchiveCustomer(ctx.Request.Context(), *tenantRow.StripeCustomerID); err != nil {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTenantError, err))
-			return
+		if err := h.billing.ArchiveCustomer(ctx, *tenantRow.StripeCustomerID); err != nil {
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 		}
 	}
 
-	if err := h.repo.DeleteTenant(ctx.Request.Context(), tenantID); err != nil {
+	if err := h.repo.DeleteTenant(ctx, tenantID); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
-			handlers.NewConflictResponse(ctx, "tenant has associated resources that must be deleted first")
-			return
+			return nil, huma.Error409Conflict("tenant has associated resources that must be deleted first")
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 	}
 
 	logger.Logger.Info("tenant deleted; cleaning up tenant users", "tenant_id", tenantID, "user_count", len(tenantUsers))
@@ -85,10 +85,10 @@ func (h *Handler) DeleteTenant(ctx *gin.Context) {
 			logger.Logger.Warn("invalid user_id in tenant_user row", "user_id", tu.UserID, "error", err)
 			continue
 		}
-		if err := h.tenants.HandleUserCleanup(ctx.Request.Context(), uid); err != nil {
+		if err := h.tenants.HandleUserCleanup(ctx, uid); err != nil {
 			logger.Logger.Warn("user cleanup failed", "user_id", tu.UserID, "error", err)
 		}
 	}
 
-	handlers.NewSuccessResponse(ctx, DeleteTenantResponse{Message: "Tenant deleted successfully"})
+	return &DeleteTenantOutput{Body: DeleteTenantResponse{Message: "Tenant deleted successfully"}}, nil
 }

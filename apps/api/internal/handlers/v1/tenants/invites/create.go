@@ -1,19 +1,20 @@
 package invites
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/services/email"
 	"api/internal/services/permissions"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 )
 
 var CreateError = errors.New("Failed to create invite")
@@ -22,9 +23,9 @@ const inviteTemplateType = "tenant-user-invite"
 const inviteTTL = 7 * 24 * time.Hour
 
 type CreateRequest struct {
-	Email     string `json:"email"      binding:"required,email" example:"test@example.com"`
-	Role      string `json:"role"       binding:"required"       example:"member"`
-	InviteURL string `json:"invite_url" binding:"required,url"   example:"https://app.example.com/accept-invite"`
+	Email     string `json:"email" required:"true" format:"email" example:"test@example.com"`
+	Role      string `json:"role" required:"true" example:"member"`
+	InviteURL string `json:"invite_url" required:"true" format:"uri" example:"https://app.example.com/accept-invite"`
 }
 
 type CreateResponse struct {
@@ -38,52 +39,50 @@ type inviteEmailData struct {
 	InviteURL  string
 }
 
-func (h *Handler) Create(c *gin.Context) {
-	userUuid, tenantUuid := handlers.UserAndTenant(c)
+type CreateInput struct {
+	handlers.AuthCtx
+	Body CreateRequest
+}
 
-	var req CreateRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
+type CreateOutput struct {
+	Body CreateResponse
+}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canInvite, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "invite_user", subject)
+func (h *Handler) Create(ctx context.Context, in *CreateInput) (*CreateOutput, error) {
+	req := in.Body
+
+	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
+	canInvite, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "invite_user", subject)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", CreateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateError, err).Error())
 	}
 	if !canInvite {
-		handlers.NewForbiddenResponse(c, "Insufficient permissions to invite users")
-		return
+		return nil, huma.Error403Forbidden("Insufficient permissions to invite users")
 	}
 
-	tenant, err := h.repo.GetTenantByID(c.Request.Context(), tenantUuid.String())
+	tenant, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(c, "Tenant not found")
-			return
+			return nil, huma.Error404NotFound("Tenant not found")
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", CreateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateError, err).Error())
 	}
 
-	invite, err := h.repo.CreateTenantInvite(c.Request.Context(), repository.CreateTenantInviteParams{
+	invite, err := h.repo.CreateTenantInvite(ctx, repository.CreateTenantInviteParams{
 		ID:        uuid.NewString(),
-		TenantID:  tenantUuid.String(),
+		TenantID:  in.TenantID.String(),
 		Email:     req.Email,
 		Role:      req.Role,
 		Token:     uuid.NewString(),
-		InviterID: userUuid.String(),
+		InviterID: in.UserID.String(),
 		ExpiresAt: time.Now().Add(inviteTTL),
 	})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", CreateError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateError, err).Error())
 	}
 
 	inviteURL := fmt.Sprintf("%s?token=%s", req.InviteURL, invite.Token)
-	if err := h.email.SendWithTemplate(c.Request.Context(), email.SendWithTemplateRequest{
+	if err := h.email.SendWithTemplate(ctx, email.SendWithTemplateRequest{
 		To:           invite.Email,
 		TemplateType: inviteTemplateType,
 		Data: inviteEmailData{
@@ -95,6 +94,6 @@ func (h *Handler) Create(c *gin.Context) {
 		logger.Logger.Warn("Failed to send invite email", "to", invite.Email, "error", err)
 	}
 
-	logger.Logger.Debug("Created tenant invite", "tenant_id", tenantUuid, "email", invite.Email, "role", invite.Role)
-	handlers.NewSuccessResponse(c, CreateResponse{Invite: invite, Message: "Invite sent successfully"})
+	logger.Logger.Debug("Created tenant invite", "tenant_id", in.TenantID, "email", invite.Email, "role", invite.Role)
+	return &CreateOutput{Body: CreateResponse{Invite: invite, Message: "Invite sent successfully"}}, nil
 }

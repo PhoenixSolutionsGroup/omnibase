@@ -1,109 +1,103 @@
 package invites
 
 import (
+	"context"
 	"errors"
 	"fmt"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 )
 
 var (
-	AcceptError       = errors.New("Failed to accept invite")
+	AcceptError        = errors.New("Failed to accept invite")
 	InviteInvalidError = errors.New("Invalid or expired invite token")
 	EmailMismatchError = errors.New("This invite was sent to a different email address")
 )
 
 type AcceptRequest struct {
-	Token string `json:"token" binding:"required" example:"tok_test_abc123xyz"`
+	Token string `json:"token" required:"true" example:"tok_test_abc123xyz"`
 }
 
 type AcceptResponse struct {
 	TenantID string `json:"tenant_id" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Token    string `json:"token"     example:"eyJhbGciOiJIUzI1NiIs..."`
-	Message  string `json:"message"   example:"Successfully joined organization"`
+	Token    string `json:"token" example:"eyJhbGciOiJIUzI1NiIs..."`
+	Message  string `json:"message" example:"Successfully joined organization"`
 }
 
-func (h *Handler) Accept(c *gin.Context) {
-	userUuid := handlers.User(c)
+type AcceptInput struct {
+	handlers.AuthCtx
+	Body AcceptRequest
+}
 
-	var req AcceptRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid request format")
-		return
-	}
+type AcceptOutput struct {
+	Body AcceptResponse
+}
 
-	invite, err := h.repo.GetActiveInviteByToken(c.Request.Context(), req.Token)
+func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, error) {
+	req := in.Body
+
+	invite, err := h.repo.GetActiveInviteByToken(ctx, req.Token)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewBadRequestResponse(c, InviteInvalidError.Error())
-			return
+			return nil, huma.Error400BadRequest(InviteInvalidError.Error())
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	identities, err := h.auth.GetIdentities(c.Request.Context(), []string{userUuid.String()})
+	identities, err := h.auth.GetIdentities(ctx, []string{in.UserID.String()})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
-	caller, ok := identities[userUuid.String()]
+	caller, ok := identities[in.UserID.String()]
 	if !ok || caller.Email == "" {
-		handlers.NewBadRequestResponse(c, "Email not found for caller identity")
-		return
+		return nil, huma.Error400BadRequest("Email not found for caller identity")
 	}
 	if caller.Email != invite.Email {
-		handlers.NewForbiddenResponse(c, EmailMismatchError.Error())
-		return
+		return nil, huma.Error403Forbidden(EmailMismatchError.Error())
 	}
 
 	tenantUuid, err := uuid.Parse(invite.TenantID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: invalid tenant_id on invite", AcceptError))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: invalid tenant_id on invite", AcceptError).Error())
 	}
 
-	if err := h.repo.MarkInviteUsed(c.Request.Context(), invite.ID); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+	if err := h.repo.MarkInviteUsed(ctx, invite.ID); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	if _, err := h.repo.CreateTenantUser(c.Request.Context(), repository.CreateTenantUserParams{
+	if _, err := h.repo.CreateTenantUser(ctx, repository.CreateTenantUserParams{
 		ID:       uuid.NewString(),
 		TenantID: invite.TenantID,
-		UserID:   userUuid.String(),
+		UserID:   in.UserID.String(),
 		Role:     invite.Role,
 		IsActive: true,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	if err := h.rbac.Assign(c.Request.Context(), userUuid, tenantUuid, invite.Role); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+	if err := h.rbac.Assign(ctx, in.UserID, tenantUuid, invite.Role); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	token, err := h.tenants.SetActive(c.Request.Context(), userUuid, tenantUuid)
+	token, err := h.tenants.SetActive(ctx, in.UserID, tenantUuid)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", AcceptError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	if err := h.auth.SetInTenant(c.Request.Context(), userUuid.String(), true); err != nil {
-		logger.Logger.Warn("Failed to set is_in_tenant metadata", "user_id", userUuid, "error", err)
+	if err := h.auth.SetInTenant(ctx, in.UserID.String(), true); err != nil {
+		logger.Logger.Warn("Failed to set is_in_tenant metadata", "user_id", in.UserID, "error", err)
 	}
 
-	logger.Logger.Info("Accepted invite", "user_id", userUuid, "tenant_id", tenantUuid, "role", invite.Role)
-	handlers.NewSuccessResponse(c, AcceptResponse{
+	logger.Logger.Info("Accepted invite", "user_id", in.UserID, "tenant_id", tenantUuid, "role", invite.Role)
+	return &AcceptOutput{Body: AcceptResponse{
 		TenantID: invite.TenantID,
 		Token:    token,
 		Message:  "Successfully joined organization",
-	})
+	}}, nil
 }

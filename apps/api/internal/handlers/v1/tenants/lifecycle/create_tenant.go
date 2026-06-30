@@ -1,11 +1,12 @@
 package lifecycle
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/google/uuid"
 
 	"api/internal/database/repository"
@@ -17,7 +18,7 @@ import (
 var CreateTenantError = errors.New("Failed to create tenant")
 
 type CreateTenantRequest struct {
-	Name         string `json:"name" binding:"required,min=1" example:"Test Organization"`
+	Name         string `json:"name" required:"true" minLength:"1" example:"Test Organization"`
 	BillingEmail string `json:"billing_email" example:"billing@test.example.com"`
 	Type         string `json:"type" example:"organization"`
 }
@@ -39,103 +40,95 @@ type TenantPayload struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 }
 
-func (h *Handler) CreateTenant(ctx *gin.Context) {
-	var req CreateTenantRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request format")
-		return
-	}
+type CreateTenantInput struct {
+	handlers.AuthCtx
+	Body CreateTenantRequest
+}
 
-	userIDStr := ctx.GetString("user_id")
-	if userIDStr == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
+type CreateTenantOutput struct {
+	Body CreateTenantResponse
+}
+
+func (h *Handler) CreateTenant(ctx context.Context, in *CreateTenantInput) (*CreateTenantOutput, error) {
+	req := in.Body
+
+	if in.UserID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
-	userID, err := uuid.Parse(userIDStr)
-	if err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid user_id in context")
-		return
-	}
+	userID := in.UserID
+	userIDStr := userID.String()
 
 	tenantType := req.Type
 	if tenantType == "" {
 		tenantType = "organization"
 	}
 	if tenantType != "organization" && tenantType != "individual" {
-		handlers.NewBadRequestResponse(ctx, "Invalid tenant type. Must be 'organization' or 'individual'")
-		return
+		return nil, huma.Error400BadRequest("Invalid tenant type. Must be 'organization' or 'individual'")
 	}
 
 	var stripeCustomerID *string
 	if req.BillingEmail != "" {
-		id, err := h.billing.CreateCustomer(ctx.Request.Context(), billing.CreateCustomerArgs{
+		id, err := h.billing.CreateCustomer(ctx, billing.CreateCustomerArgs{
 			Email: req.BillingEmail,
 			Name:  req.Name,
 		})
 		if err != nil {
-			if !handlers.HandleStripeError(ctx, err) {
-				handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
+			if e := handlers.StripeError(err); e != nil {
+				return nil, e
 			}
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 		}
 		stripeCustomerID = &id
 	}
 
 	tenantID := uuid.New()
-	row, err := h.repo.CreateTenant(ctx.Request.Context(), repository.CreateTenantParams{
+	row, err := h.repo.CreateTenant(ctx, repository.CreateTenantParams{
 		ID:               tenantID.String(),
 		Name:             req.Name,
 		StripeCustomerID: stripeCustomerID,
 		Type:             tenantType,
 	})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	if err := h.repo.CreateTenantSettings(ctx.Request.Context(), repository.CreateTenantSettingsParams{
+	if err := h.repo.CreateTenantSettings(ctx, repository.CreateTenantSettingsParams{
 		TenantID:         tenantID.String(),
 		AllowUserInvites: true,
 		MaxMembers:       10,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	if _, err := h.repo.CreateTenantUser(ctx.Request.Context(), repository.CreateTenantUserParams{
+	if _, err := h.repo.CreateTenantUser(ctx, repository.CreateTenantUserParams{
 		ID:       uuid.NewString(),
 		TenantID: tenantID.String(),
 		UserID:   userIDStr,
 		Role:     "owner",
 		IsActive: true,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	if err := h.rbac.CloneTemplatesIntoTenant(ctx.Request.Context(), tenantID); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+	if err := h.rbac.CloneTemplatesIntoTenant(ctx, tenantID); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	if err := h.rbac.Assign(ctx.Request.Context(), userID, tenantID, "owner"); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+	if err := h.rbac.Assign(ctx, userID, tenantID, "owner"); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	token, err := h.tenants.SetActive(ctx.Request.Context(), userID, tenantID)
+	token, err := h.tenants.SetActive(ctx, userID, tenantID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	if err := h.auth.SetInTenant(ctx.Request.Context(), userIDStr, true); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateTenantError, err))
-		return
+	if err := h.auth.SetInTenant(ctx, userIDStr, true); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
 	logger.Logger.Info("tenant created", "tenant_id", tenantID, "user_id", userID)
-	handlers.NewSuccessResponse(ctx, CreateTenantResponse{
+	return &CreateTenantOutput{Body: CreateTenantResponse{
 		Tenant: TenantPayload{
 			ID:                 row.ID,
 			Name:               row.Name,
@@ -148,5 +141,5 @@ func (h *Handler) CreateTenant(ctx *gin.Context) {
 		},
 		Token:   token,
 		Message: "Tenant created successfully",
-	})
+	}}, nil
 }
