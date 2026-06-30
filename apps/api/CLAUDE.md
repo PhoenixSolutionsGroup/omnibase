@@ -23,11 +23,8 @@ cd apps/api && npm run openapi:bundle
 # Generate SDK from OpenAPI (from public/ root)
 bun run generate:sdk
 
-# Run k6 integration tests locally (from public/ root)
-bun run test:api:integration:local
-
-# Run contract tests
-bun run test:api:contract
+# Run unit + integration + e2e tests (from apps/api/)
+make test
 ```
 
 ## Critical Rules

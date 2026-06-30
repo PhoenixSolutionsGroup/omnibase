@@ -126,8 +126,10 @@ bun run openapi:preview   # Preview documentation
 ### Testing
 
 ```bash
-bun run test:api:integration:local  # K6 integration tests
-bun run test:api:contract           # Schemathesis contract tests
+make test               # Unit + integration + e2e (testcontainers stack)
+make test-unit          # Unit only
+make test-integration   # Integration only
+make test-e2e           # End-to-end only
 ```
 
 ### SDK Generation
