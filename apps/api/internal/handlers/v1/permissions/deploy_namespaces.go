@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -31,7 +30,9 @@ type DeployNamespacesResponse struct {
 
 type DeployNamespacesInput struct {
 	handlers.AuthCtx
-	RawBody multipart.Form
+	RawBody huma.MultipartFormFiles[struct {
+		Namespaces huma.FormFile `form:"namespaces" required:"true"`
+	}]
 }
 
 type DeployNamespacesOutput struct {
@@ -43,23 +44,13 @@ func (h *Handler) DeployNamespaces(ctx context.Context, in *DeployNamespacesInpu
 		return nil, huma.Error400BadRequest("Missing tenant ID")
 	}
 
-	headers, ok := in.RawBody.File["namespaces"]
-	if !ok || len(headers) == 0 {
-		return nil, huma.Error400BadRequest("No file uploaded or form field 'namespaces' not found")
-	}
-	header := headers[0]
+	form := in.RawBody.Data()
+	file := form.Namespaces
+	defer file.Close()
 
-	contentType := header.Header.Get("Content-Type")
-	if contentType != "application/zip" && !strings.HasSuffix(header.Filename, ".zip") {
+	if file.ContentType != "application/zip" && !strings.HasSuffix(file.Filename, ".zip") {
 		return nil, huma.Error400BadRequest("File must be a zip archive")
 	}
-
-	file, err := header.Open()
-	if err != nil {
-		logger.Logger.Error("Failed to open uploaded file", "error", err)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeployNamespacesError, err).Error())
-	}
-	defer file.Close()
 
 	objectKey := "internal/permissions.zip"
 
@@ -80,14 +71,12 @@ func (h *Handler) DeployNamespaces(ctx context.Context, in *DeployNamespacesInpu
 		ManagedMode: h.isManaged,
 	}
 
-	file2, err := header.Open()
-	if err != nil {
-		logger.Logger.Warn("Failed to reopen uploaded file for parsing", "error", err)
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		logger.Logger.Warn("Failed to rewind uploaded file for parsing", "error", err)
 		return &DeployNamespacesOutput{Body: resp}, nil
 	}
-	defer file2.Close()
 
-	zipBytes, err := io.ReadAll(file2)
+	zipBytes, err := io.ReadAll(file)
 	if err != nil {
 		logger.Logger.Warn("Failed to read file for parsing", "error", err)
 		return &DeployNamespacesOutput{Body: resp}, nil
