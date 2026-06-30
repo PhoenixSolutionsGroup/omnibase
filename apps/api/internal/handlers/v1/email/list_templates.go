@@ -1,10 +1,11 @@
 package email
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
@@ -18,16 +19,23 @@ type ListTemplatesResponse struct {
 	Count     int                        `json:"count"`
 }
 
-func (h *Handler) ListTemplates(ctx *gin.Context) {
-	rows, err := h.repo.ListEmailTemplates(ctx.Request.Context())
+type ListTemplatesInput struct {
+	handlers.AuthCtx
+}
+
+type ListTemplatesOutput struct {
+	Body ListTemplatesResponse
+}
+
+func (h *Handler) ListTemplates(ctx context.Context, _ *ListTemplatesInput) (*ListTemplatesOutput, error) {
+	rows, err := h.repo.ListEmailTemplates(ctx)
 	if err != nil {
 		logger.Logger.Error("Failed to fetch email templates", "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ListTemplatesError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListTemplatesError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(ctx, ListTemplatesResponse{
+	return &ListTemplatesOutput{Body: ListTemplatesResponse{
 		Templates: rows,
 		Count:     len(rows),
-	})
+	}}, nil
 }

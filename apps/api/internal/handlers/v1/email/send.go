@@ -1,10 +1,11 @@
 package email
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -14,34 +15,37 @@ import (
 var SendError = errors.New("Failed to send email")
 
 type SendRequest struct {
-	To      string `json:"to" binding:"required" example:"user@example.com"`
-	Subject string `json:"subject" binding:"required" example:"Welcome"`
-	Body    string `json:"body" binding:"required" example:"<h1>Hello</h1>"`
-	Plain   string `json:"plain" example:"Hello"`
+	To      string `json:"to" required:"true" example:"user@example.com"`
+	Subject string `json:"subject" required:"true" example:"Welcome"`
+	Body    string `json:"body" required:"true" example:"<h1>Hello</h1>"`
+	Plain   string `json:"plain,omitempty" example:"Hello"`
 }
 
 type SendResponse struct {
 	Message string `json:"message"`
 }
 
-func (h *Handler) Send(ctx *gin.Context) {
-	var req SendRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Invalid request body")
-		return
-	}
+type SendInput struct {
+	handlers.AuthCtx
+	Body SendRequest
+}
 
-	err := h.email.Send(ctx.Request.Context(), email.SendArgs{
+type SendOutput struct {
+	Body SendResponse
+}
+
+func (h *Handler) Send(ctx context.Context, in *SendInput) (*SendOutput, error) {
+	req := in.Body
+
+	if err := h.email.Send(ctx, email.SendArgs{
 		To:      req.To,
 		Subject: req.Subject,
 		HTML:    req.Body,
 		Plain:   req.Plain,
-	})
-	if err != nil {
+	}); err != nil {
 		logger.Logger.Error("Failed to send email", "error", err, "to", req.To)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", SendError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", SendError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(ctx, SendResponse{Message: "Email sent successfully"})
+	return &SendOutput{Body: SendResponse{Message: "Email sent successfully"}}, nil
 }

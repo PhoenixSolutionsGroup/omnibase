@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -22,34 +21,44 @@ var templateFileNames = map[string]string{
 	"subject":   "email.subject.gotmpl",
 }
 
-func (h *Handler) ServeTemplate(ctx *gin.Context) {
-	templateName := ctx.Param("template_name")
-	templateType := ctx.Param("type")
+type ServeTemplateInput struct {
+	handlers.AuthCtx
+	TemplateName string `path:"template_name"`
+	Type         string `path:"type"`
+}
 
-	fileName, ok := templateFileNames[templateType]
+type ServeTemplateOutput struct {
+	ContentType  string `header:"Content-Type"`
+	CacheControl string `header:"Cache-Control"`
+	Body         []byte
+}
+
+func (h *Handler) ServeTemplate(ctx context.Context, in *ServeTemplateInput) (*ServeTemplateOutput, error) {
+	fileName, ok := templateFileNames[in.Type]
 	if !ok {
-		handlers.NewBadRequestResponse(ctx, "Invalid type. Must be: body, plaintext, or subject")
-		return
+		return nil, huma.Error400BadRequest("Invalid type. Must be: body, plaintext, or subject")
 	}
 
-	if body, ok := h.fetchTemplateFromS3(ctx.Request.Context(), templateName, fileName); ok {
-		ctx.Header("Content-Type", "text/plain; charset=utf-8")
-		ctx.Header("Cache-Control", "public, max-age=3600")
-		ctx.String(http.StatusOK, body)
-		return
+	if body, ok := h.fetchTemplateFromS3(ctx, in.TemplateName, fileName); ok {
+		return &ServeTemplateOutput{
+			ContentType:  "text/plain; charset=utf-8",
+			CacheControl: "public, max-age=3600",
+			Body:         []byte(body),
+		}, nil
 	}
 
-	staticPath := filepath.Join("./internal/static/templates", templateName, fileName)
+	staticPath := filepath.Join("./internal/static/templates", in.TemplateName, fileName)
 	defaultTemplate, err := os.ReadFile(staticPath)
 	if err != nil {
 		logger.Logger.Error("Default template not found", "path", staticPath, "error", err)
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Template not found: %s/%s", templateName, templateType))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("Template not found: %s/%s", in.TemplateName, in.Type))
 	}
 
-	ctx.Header("Content-Type", "text/plain; charset=utf-8")
-	ctx.Header("Cache-Control", "public, max-age=86400")
-	ctx.String(http.StatusOK, string(defaultTemplate))
+	return &ServeTemplateOutput{
+		ContentType:  "text/plain; charset=utf-8",
+		CacheControl: "public, max-age=86400",
+		Body:         defaultTemplate,
+	}, nil
 }
 
 func (h *Handler) fetchTemplateFromS3(ctx context.Context, templateName, fileName string) (string, bool) {

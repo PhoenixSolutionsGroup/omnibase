@@ -14,7 +14,7 @@ func InitRoutes(group *gin.RouterGroup, api huma.API) {
 	SetUpAuthRoutes(group.Group("/auth"), api)
 
 	logger.Logger.Debug("Setting up storage routes at /storage")
-	SetUpStorageRoutes(group.Group("/storage"))
+	SetUpStorageRoutes(group.Group("/storage"), api)
 
 	logger.Logger.Debug("Setting up stripe routes at /stripe")
 	SetUpStripeRoutes(group.Group("/stripe"))
@@ -32,7 +32,7 @@ func InitRoutes(group *gin.RouterGroup, api huma.API) {
 	SetUpPaymentRoutes(group.Group("/payments"))
 
 	logger.Logger.Debug("Setting up email routes at /email")
-	SetUpEmailRoutes(group.Group("/email"))
+	SetUpEmailRoutes(group.Group("/email"), api)
 
 	logger.Logger.Info("All v1 API routes initialized successfully")
 }
