@@ -3495,3 +3495,117 @@ func (_c *MockQuerier_UpsertEmailTemplate_Call) RunAndReturn(run func(ctx contex
 	_c.Call.Return(run)
 	return _c
 }
+
+// UpsertNamespaceDefinition provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpsertNamespaceDefinition(ctx context.Context, arg repository.UpsertNamespaceDefinitionParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpsertNamespaceDefinition")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertNamespaceDefinitionParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpsertNamespaceDefinition_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpsertNamespaceDefinition'
+type MockQuerier_UpsertNamespaceDefinition_Call struct {
+	*mock.Call
+}
+
+// UpsertNamespaceDefinition is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpsertNamespaceDefinitionParams
+func (_e *MockQuerier_Expecter) UpsertNamespaceDefinition(ctx any, arg any) *MockQuerier_UpsertNamespaceDefinition_Call {
+	return &MockQuerier_UpsertNamespaceDefinition_Call{Call: _e.mock.On("UpsertNamespaceDefinition", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpsertNamespaceDefinition_Call) Run(run func(ctx context.Context, arg repository.UpsertNamespaceDefinitionParams)) *MockQuerier_UpsertNamespaceDefinition_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpsertNamespaceDefinitionParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpsertNamespaceDefinitionParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpsertNamespaceDefinition_Call) Return(err error) *MockQuerier_UpsertNamespaceDefinition_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpsertNamespaceDefinition_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpsertNamespaceDefinitionParams) error) *MockQuerier_UpsertNamespaceDefinition_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpsertRoleTemplate provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpsertRoleTemplate(ctx context.Context, arg repository.UpsertRoleTemplateParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpsertRoleTemplate")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertRoleTemplateParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_UpsertRoleTemplate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpsertRoleTemplate'
+type MockQuerier_UpsertRoleTemplate_Call struct {
+	*mock.Call
+}
+
+// UpsertRoleTemplate is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpsertRoleTemplateParams
+func (_e *MockQuerier_Expecter) UpsertRoleTemplate(ctx any, arg any) *MockQuerier_UpsertRoleTemplate_Call {
+	return &MockQuerier_UpsertRoleTemplate_Call{Call: _e.mock.On("UpsertRoleTemplate", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpsertRoleTemplate_Call) Run(run func(ctx context.Context, arg repository.UpsertRoleTemplateParams)) *MockQuerier_UpsertRoleTemplate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpsertRoleTemplateParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpsertRoleTemplateParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpsertRoleTemplate_Call) Return(err error) *MockQuerier_UpsertRoleTemplate_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_UpsertRoleTemplate_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpsertRoleTemplateParams) error) *MockQuerier_UpsertRoleTemplate_Call {
+	_c.Call.Return(run)
+	return _c
+}

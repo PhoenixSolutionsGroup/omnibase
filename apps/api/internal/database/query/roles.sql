@@ -50,3 +50,20 @@ ORDER BY namespace;
 SELECT id, role_name, permissions, description, created_at, updated_at
 FROM permissions.role_templates
 ORDER BY role_name;
+
+-- name: UpsertNamespaceDefinition :exec
+INSERT INTO permissions.definitions (namespace, relations, relations_metadata, subject_relations)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (namespace) DO UPDATE
+SET relations = EXCLUDED.relations,
+    relations_metadata = EXCLUDED.relations_metadata,
+    subject_relations = EXCLUDED.subject_relations,
+    updated_at = NOW();
+
+-- name: UpsertRoleTemplate :exec
+INSERT INTO permissions.role_templates (role_name, permissions, description)
+VALUES ($1, $2, $3)
+ON CONFLICT (role_name) DO UPDATE
+SET permissions = EXCLUDED.permissions,
+    description = EXCLUDED.description,
+    updated_at = NOW();

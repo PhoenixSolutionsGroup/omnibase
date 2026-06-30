@@ -66,6 +66,8 @@ type Querier interface {
 	UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
 	UpsertEmailTemplate(ctx context.Context, arg UpsertEmailTemplateParams) (EmailTemplate, error)
+	UpsertNamespaceDefinition(ctx context.Context, arg UpsertNamespaceDefinitionParams) error
+	UpsertRoleTemplate(ctx context.Context, arg UpsertRoleTemplateParams) error
 }
 
 var _ Querier = (*Queries)(nil)

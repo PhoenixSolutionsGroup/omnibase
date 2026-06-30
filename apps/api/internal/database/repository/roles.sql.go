@@ -347,3 +347,50 @@ func (q *Queries) UpdateRolePermissions(ctx context.Context, arg UpdateRolePermi
 	)
 	return i, err
 }
+
+const upsertNamespaceDefinition = `-- name: UpsertNamespaceDefinition :exec
+INSERT INTO permissions.definitions (namespace, relations, relations_metadata, subject_relations)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (namespace) DO UPDATE
+SET relations = EXCLUDED.relations,
+    relations_metadata = EXCLUDED.relations_metadata,
+    subject_relations = EXCLUDED.subject_relations,
+    updated_at = NOW()
+`
+
+type UpsertNamespaceDefinitionParams struct {
+	Namespace         string   `json:"namespace"`
+	Relations         []string `json:"relations"`
+	RelationsMetadata []byte   `json:"relations_metadata"`
+	SubjectRelations  []byte   `json:"subject_relations"`
+}
+
+func (q *Queries) UpsertNamespaceDefinition(ctx context.Context, arg UpsertNamespaceDefinitionParams) error {
+	_, err := q.db.Exec(ctx, upsertNamespaceDefinition,
+		arg.Namespace,
+		arg.Relations,
+		arg.RelationsMetadata,
+		arg.SubjectRelations,
+	)
+	return err
+}
+
+const upsertRoleTemplate = `-- name: UpsertRoleTemplate :exec
+INSERT INTO permissions.role_templates (role_name, permissions, description)
+VALUES ($1, $2, $3)
+ON CONFLICT (role_name) DO UPDATE
+SET permissions = EXCLUDED.permissions,
+    description = EXCLUDED.description,
+    updated_at = NOW()
+`
+
+type UpsertRoleTemplateParams struct {
+	RoleName    string   `json:"role_name"`
+	Permissions []string `json:"permissions"`
+	Description *string  `json:"description"`
+}
+
+func (q *Queries) UpsertRoleTemplate(ctx context.Context, arg UpsertRoleTemplateParams) error {
+	_, err := q.db.Exec(ctx, upsertRoleTemplate, arg.RoleName, arg.Permissions, arg.Description)
+	return err
+}
