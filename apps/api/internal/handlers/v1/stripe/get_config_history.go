@@ -18,7 +18,7 @@ var GetConfigHistoryError = errors.New("Failed to get stripe configuration histo
 
 type ConfigHistoryItem struct {
 	ID         uuid.UUID                          `json:"id" required:"true"`
-	Config     stripe_config.ConfigurationWithIDs `json:"config" required:"true"`
+	Config     stripe_config.StripeConfigurationWithIDs `json:"config" required:"true"`
 	Version    string                             `json:"version" required:"true"`
 	CreatedAt  string                             `json:"created_at" required:"true"`
 	UpdatedAt  string                             `json:"updated_at" required:"true"`
@@ -82,7 +82,7 @@ func (h *Handler) GetConfigHistory(ctx context.Context, in *GetConfigHistoryInpu
 			items = append(items, ConfigHistoryItem{
 				ID:      row.ID,
 				Version: row.Version,
-				Config: stripe_config.ConfigurationWithIDs{
+				Config: stripe_config.StripeConfigurationWithIDs{
 					Version:  row.Version,
 					Meters:   []stripe_config.MeterWithStripeID{},
 					Products: []stripe_config.ProductWithStripeIDs{},
@@ -99,7 +99,7 @@ func (h *Handler) GetConfigHistory(ctx context.Context, in *GetConfigHistoryInpu
 			items = append(items, ConfigHistoryItem{
 				ID:      row.ID,
 				Version: row.Version,
-				Config: stripe_config.ConfigurationWithIDs{
+				Config: stripe_config.StripeConfigurationWithIDs{
 					Version:  row.Version,
 					Meters:   []stripe_config.MeterWithStripeID{},
 					Products: []stripe_config.ProductWithStripeIDs{},

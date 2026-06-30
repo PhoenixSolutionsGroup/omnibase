@@ -6,12 +6,12 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`stripeId` | string
+`customerMapping` | [MeterCustomerMapping](MeterCustomerMapping.md)
+`defaultAggregation` | [MeterDefaultAggregation](MeterDefaultAggregation.md)
 `displayName` | string
 `eventName` | string
-`defaultAggregation` | [MeterDefaultAggregation](MeterDefaultAggregation.md)
-`customerMapping` | [MeterCustomerMapping](MeterCustomerMapping.md)
+`id` | string
+`stripeId` | string
 `valueSettings` | [MeterValueSettings](MeterValueSettings.md)
 
 ## Example
@@ -21,12 +21,12 @@ import type { Meter } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": api_requests,
-  "stripeId": mtr_1SRiyyCJIZaBlhY1,
-  "displayName": API Requests,
-  "eventName": api_request,
-  "defaultAggregation": null,
   "customerMapping": null,
+  "defaultAggregation": null,
+  "displayName": null,
+  "eventName": null,
+  "id": null,
+  "stripeId": null,
   "valueSettings": null,
 } satisfies Meter
 

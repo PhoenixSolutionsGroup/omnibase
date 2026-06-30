@@ -94,7 +94,7 @@ export async function pushEmailTemplates(envOverride?: string): Promise<void> {
 
     try {
       await configApi.createOrUpdateEmailTemplate({
-        createEmailTemplateRequest: {
+        upsertTemplateRequest: {
           type,
           subject: template.subject,
           htmlBody: template.htmlBody,
@@ -147,7 +147,7 @@ export function addEmailCommands(program: Command): void {
 
           try {
             await configApi.createOrUpdateEmailTemplate({
-              createEmailTemplateRequest: {
+              upsertTemplateRequest: {
                 type,
                 subject: template.subject,
                 htmlBody: template.htmlBody,

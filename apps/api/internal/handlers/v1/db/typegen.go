@@ -23,7 +23,7 @@ var supportedTypegenLanguages = map[string]bool{
 
 type TypegenInput struct {
 	handlers.AuthCtx
-	Language string `query:"language"`
+	Language string `query:"language" enum:"typescript,go,swift" default:"typescript"`
 	Schemas  string `query:"schemas"`
 }
 

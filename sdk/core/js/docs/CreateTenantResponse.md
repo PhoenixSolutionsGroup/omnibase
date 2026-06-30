@@ -1,14 +1,13 @@
 
 # CreateTenantResponse
 
-Response after creating a tenant
 
 ## Properties
 
 Name | Type
 ------------ | -------------
 `message` | string
-`tenant` | [Tenant](Tenant.md)
+`tenant` | [TenantPayload](TenantPayload.md)
 `token` | string
 
 ## Example
@@ -18,9 +17,9 @@ import type { CreateTenantResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Tenant created successfully,
+  "message": null,
   "tenant": null,
-  "token": eyJhbGciOiJIUzI1NiIs...,
+  "token": null,
 } satisfies CreateTenantResponse
 
 console.log(example)

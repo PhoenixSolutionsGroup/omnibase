@@ -1,7 +1,6 @@
 
 # DeleteRelationshipRequest
 
-Delete relationship request using a subject set
 
 ## Properties
 
@@ -19,9 +18,9 @@ import type { DeleteRelationshipRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "namespace": Project,
-  "object": project_123,
-  "relation": tenant,
+  "namespace": null,
+  "object": null,
+  "relation": null,
   "subjectSet": null,
 } satisfies DeleteRelationshipRequest
 

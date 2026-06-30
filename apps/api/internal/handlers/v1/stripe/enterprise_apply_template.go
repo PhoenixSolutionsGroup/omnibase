@@ -107,7 +107,7 @@ func (h *Handler) enterpriseCandidatesByTemplate(ctx context.Context, template s
 	return out, nil
 }
 
-func (h *Handler) latestParsedConfig(ctx context.Context) (*stripe_config.Configuration, error) {
+func (h *Handler) latestParsedConfig(ctx context.Context) (*stripe_config.StripeConfiguration, error) {
 	row, err := h.repo.GetLatestStripeConfig(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get latest config: %w", err)

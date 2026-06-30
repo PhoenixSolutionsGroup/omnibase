@@ -6,11 +6,11 @@
 
 Name | Type
 ------------ | -------------
-`displayName` | string
-`priceDisplay` | [PriceDisplay](PriceDisplay.md)
 `billingPeriod` | string
+`displayName` | string
 `features` | Array&lt;string&gt;
 `limits` | [Array&lt;PriceLimit&gt;](PriceLimit.md)
+`priceDisplay` | [PriceDisplay](PriceDisplay.md)
 
 ## Example
 
@@ -19,11 +19,11 @@ import type { PriceUI } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "displayName": Monthly,
-  "priceDisplay": null,
-  "billingPeriod": per month,
-  "features": [Billed monthly],
+  "billingPeriod": null,
+  "displayName": null,
+  "features": null,
   "limits": null,
+  "priceDisplay": null,
 } satisfies PriceUI
 
 console.log(example)

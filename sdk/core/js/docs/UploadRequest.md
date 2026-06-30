@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`path` | string
 `metadata` | object
+`path` | string
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { UploadRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "path": avatars/user-123.png,
-  "metadata": {content_type=image/png, size=1024},
+  "metadata": null,
+  "path": null,
 } satisfies UploadRequest
 
 console.log(example)

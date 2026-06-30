@@ -7,9 +7,9 @@
 Name | Type
 ------------ | -------------
 `message` | string
-`tenantId` | string
 `pricesSwapped` | number
 `swappedDetails` | Array&lt;string&gt;
+`tenantId` | string
 
 ## Example
 
@@ -18,10 +18,10 @@ import type { EnterpriseApplyResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Enterprise pricing applied successfully,
-  "tenantId": 7d5da463-8351-4abe-870c-8ccdefc4d78c,
-  "pricesSwapped": 3,
-  "swappedDetails": [basic_monthly -> basic_monthly_tier1 (subscription: sub_123)],
+  "message": null,
+  "pricesSwapped": null,
+  "swappedDetails": null,
+  "tenantId": null,
 } satisfies EnterpriseApplyResponse
 
 console.log(example)

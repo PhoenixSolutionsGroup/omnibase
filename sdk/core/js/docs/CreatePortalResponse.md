@@ -15,7 +15,7 @@ import type { CreatePortalResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "url": https://billing.stripe.com/session/live_...,
+  "url": null,
 } satisfies CreatePortalResponse
 
 console.log(example)

@@ -18,7 +18,7 @@ type PullConfigInput struct {
 }
 
 type PullConfigOutput struct {
-	Body *stripe_config.Configuration
+	Body *stripe_config.StripeConfiguration
 }
 
 func (h *Handler) PullConfig(ctx context.Context, _ *PullConfigInput) (*PullConfigOutput, error) {

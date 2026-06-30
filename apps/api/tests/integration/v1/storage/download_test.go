@@ -31,14 +31,12 @@ func TestStorageDownload(t *testing.T) {
 	tenant := h.CreateTenant(t, client, userID, "Storage DL "+id, email).Tenant
 
 	path := fmt.Sprintf("test/dl-%s.txt", helpers.UniqueID())
-	_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-		XUserId(userID).XTenantId(tenant.Id).
+	_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 		UploadRequest(sdk.UploadRequest{Path: path}).Execute()
 	helpers.EnsureOK(t, uploadResp, err, "uploadFile")
 
 	t.Run("owner downloads", func(t *testing.T) {
-		out, resp, err := client.V1StorageAPI.DownloadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		out, resp, err := client.V1StorageAPI.DownloadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			DownloadRequest(sdk.DownloadRequest{Path: path}).Execute()
 		helpers.EnsureOK(t, resp, err, "downloadFile")
 		require.NotNil(t, out)
@@ -46,8 +44,7 @@ func TestStorageDownload(t *testing.T) {
 	})
 
 	t.Run("missing path returns 404", func(t *testing.T) {
-		_, resp, _ := client.V1StorageAPI.DownloadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		_, resp, _ := client.V1StorageAPI.DownloadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			DownloadRequest(sdk.DownloadRequest{Path: "test/never-existed-" + helpers.UniqueID()}).Execute()
 		require.NotNil(t, resp)
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
@@ -59,8 +56,7 @@ func TestStorageDownload(t *testing.T) {
 		otherUserID := h.CreateUser(t, client, otherEmail, pw)
 		otherTenant := h.CreateTenant(t, client, otherUserID, "Storage Other "+otherID, otherEmail).Tenant
 
-		_, resp, _ := client.V1StorageAPI.DownloadFile(helpers.Ctx()).
-			XUserId(otherUserID).XTenantId(otherTenant.Id).
+		_, resp, _ := client.V1StorageAPI.DownloadFile(helpers.CtxWithUserTenant(otherUserID, otherTenant.Id)).
 			DownloadRequest(sdk.DownloadRequest{Path: path}).Execute()
 		require.NotNil(t, resp)
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)

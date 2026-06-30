@@ -96,110 +96,114 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API) {
 	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
 	sessionOrServiceSec := []map[string][]string{{"SessionTokenAuth": {}}, {"CookieAuth": {}}, {"ServiceKeyAuth": {}}}
 
-	tag := []string{"V1Tenants"}
+	lifecycleTag := []string{"V1TenantsLifecycle"}
+	invitesTag := []string{"V1TenantsInvites"}
+	rolesTag := []string{"V1TenantsRoles"}
+	usersTag := []string{"V1TenantsUsers"}
+	subsTag := []string{"V1TenantsSubscriptions"}
 
 	huma.Register(api, huma.Operation{
 		OperationID: "getTenantByID", Method: http.MethodGet, Path: "/api/v1/tenants/by-id/{tenant_id}",
-		Summary: "Get tenant by ID", Tags: tag, Security: serviceSec, Middlewares: serviceMW,
+		Summary: "Get tenant by ID", Tags: lifecycleTag, Security: serviceSec, Middlewares: serviceMW,
 	}, tenantHandler.GetTenantByID)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "getTenantByStripeCustomerID", Method: http.MethodGet, Path: "/api/v1/tenants/by-stripe-customer/{stripe_customer_id}",
-		Summary: "Get tenant by Stripe customer ID", Tags: tag, Security: serviceSec, Middlewares: serviceMW,
+		Summary: "Get tenant by Stripe customer ID", Tags: lifecycleTag, Security: serviceSec, Middlewares: serviceMW,
 	}, tenantHandler.GetTenantByStripeCustomerID)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "createTenant", Method: http.MethodPost, Path: "/api/v1/tenants",
-		Summary: "Create a tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Create a tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, lifecycleHandler.CreateTenant)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
-		Summary: "Delete the current tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Delete the current tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, lifecycleHandler.DeleteTenant)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
-		Summary: "Get JWT for the current tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Get JWT for the current tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, lifecycleHandler.GetJWT)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",
-		Summary: "Switch the active tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Switch the active tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, lifecycleHandler.SwitchActive)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
-		Summary: "Create a tenant invite", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Create a tenant invite", Tags: invitesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, invitesHandler.Create)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
-		Summary: "Accept a tenant invite", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Accept a tenant invite", Tags: invitesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, invitesHandler.Accept)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "listRoles", Method: http.MethodGet, Path: "/api/v1/tenants/roles",
-		Summary: "List roles for the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "List roles for the tenant", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, rolesHandler.ListRoles)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "listRoleDefinitions", Method: http.MethodGet, Path: "/api/v1/tenants/roles/definitions",
-		Summary: "List role definitions", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "List role definitions", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, rolesHandler.ListDefinitions)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
-		Summary: "Create a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Create a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, rolesHandler.CreateRole)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
-		Summary: "Update a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Update a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, rolesHandler.UpdateRole)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
-		Summary: "Delete a role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Delete a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, rolesHandler.DeleteRole)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
-		Summary: "List users in the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "List users in the tenant", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, usersHandler.List)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
-		Summary: "Update a tenant user's role", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Update a tenant user's role", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, usersHandler.UpdateRole)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
-		Summary: "Remove a user from the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Remove a user from the tenant", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, usersHandler.Delete)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
-		Summary: "List subscriptions for the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "List subscriptions for the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, subscriptionsHandler.List)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
-		Summary: "Get a single tenant subscription", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Get a single tenant subscription", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, subscriptionsHandler.Get)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
-		Summary: "Add a subscription to the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Add a subscription to the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, subscriptionsHandler.Add)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
-		Summary: "Remove a subscription from the tenant", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Remove a subscription from the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, subscriptionsHandler.Remove)
 
 	huma.Register(api, huma.Operation{
 		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
-		Summary: "Get tenant billing status", Tags: tag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
+		Summary: "Get tenant billing status", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
 	}, subscriptionsHandler.BillingStatus)
 }

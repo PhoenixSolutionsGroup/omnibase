@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`session` | object
-`identity` | object
-`tenant` | [Tenant](Tenant.md)
+`identity` | [Identity](Identity.md)
+`session` | [Session](Session.md)
+`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
 
 ## Example
 
@@ -17,8 +17,8 @@ import type { SessionResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "session": null,
   "identity": null,
+  "session": null,
   "tenant": null,
 } satisfies SessionResponse
 

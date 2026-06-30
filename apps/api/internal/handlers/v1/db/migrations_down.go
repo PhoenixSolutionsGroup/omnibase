@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -23,9 +22,14 @@ type MigrationsDownResponse struct {
 	Message string `json:"message" required:"true"`
 }
 
+type MigrationsDownFormData struct {
+	Migrations huma.FormFile `form:"migrations" required:"true"`
+	Steps      string        `form:"steps" required:"true"`
+}
+
 type MigrationsDownInput struct {
 	handlers.AuthCtx
-	RawBody multipart.Form
+	RawBody huma.MultipartFormFiles[MigrationsDownFormData]
 }
 
 type MigrationsDownOutput struct {
@@ -33,25 +37,16 @@ type MigrationsDownOutput struct {
 }
 
 func (h *Handler) MigrationsDown(ctx context.Context, in *MigrationsDownInput) (*MigrationsDownOutput, error) {
-	stepsValues := in.RawBody.Value["steps"]
-	stepsStr := ""
-	if len(stepsValues) > 0 {
-		stepsStr = stepsValues[0]
-	}
-	if stepsStr == "" {
-		return nil, huma.Error400BadRequest("steps is required and must be >= 1")
-	}
-	steps, err := strconv.Atoi(stepsStr)
+	form := in.RawBody.Data()
+	file := form.Migrations
+	defer file.Close()
+
+	steps, err := strconv.Atoi(form.Steps)
 	if err != nil || steps < 1 {
 		return nil, huma.Error400BadRequest("steps must be a positive integer")
 	}
 
-	files := in.RawBody.File["migrations"]
-	if len(files) == 0 {
-		return nil, huma.Error400BadRequest("No migrations zip file provided")
-	}
-	fileHeader := files[0]
-	if fileHeader.Size == 0 {
+	if file.Size == 0 {
 		return nil, huma.Error400BadRequest("Empty file provided")
 	}
 
@@ -61,13 +56,7 @@ func (h *Handler) MigrationsDown(ctx context.Context, in *MigrationsDownInput) (
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsDownError, err).Error())
 	}
 
-	zipFile, err := fileHeader.Open()
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsDownError, err).Error())
-	}
-	defer zipFile.Close()
-
-	if err := extractMigrationZip(zipFile, dir); err != nil {
+	if err := extractMigrationZip(file, dir); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsDownError, err).Error())
 	}
 

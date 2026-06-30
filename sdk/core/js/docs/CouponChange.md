@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
+`action` | string
 `couponId` | string
 `name` | string
-`action` | string
 `stripeId` | string
 
 ## Example
@@ -18,10 +18,10 @@ import type { CouponChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "couponId": launch_discount,
-  "name": Launch Discount,
-  "action": created,
-  "stripeId": coupon_123abc,
+  "action": null,
+  "couponId": null,
+  "name": null,
+  "stripeId": null,
 } satisfies CouponChange
 
 console.log(example)

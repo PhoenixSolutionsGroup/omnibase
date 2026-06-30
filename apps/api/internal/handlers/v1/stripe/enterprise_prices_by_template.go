@@ -38,7 +38,7 @@ func (h *Handler) GetPricesByTemplate(ctx context.Context, in *GetPricesByTempla
 	return &GetPricesByTemplateOutput{Body: EnterprisePricesResponse{Prices: prices, Count: len(prices)}}, nil
 }
 
-func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *stripe_config.Configuration, match func(p stripe_config.Price) bool) []stripe_config.PriceWithStripeID {
+func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *stripe_config.StripeConfiguration, match func(p stripe_config.Price) bool) []stripe_config.PriceWithStripeID {
 	out := []stripe_config.PriceWithStripeID{}
 	for _, product := range parsed.Products {
 		for _, price := range product.Prices {

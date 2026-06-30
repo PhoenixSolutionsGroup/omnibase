@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,13 +22,9 @@ var _ MappedNullable = &PromotionCodeChange{}
 
 // PromotionCodeChange struct for PromotionCodeChange
 type PromotionCodeChange struct {
-	// Promotion code config ID
-	PromoId string `json:"promo_id"`
-	// Customer-facing promotion code
-	Code string `json:"code"`
-	// Action performed on the promotion code
 	Action string `json:"action"`
-	// Stripe promotion code ID
+	Code string `json:"code"`
+	PromoId string `json:"promo_id"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -38,11 +34,11 @@ type _PromotionCodeChange PromotionCodeChange
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPromotionCodeChange(promoId string, code string, action string) *PromotionCodeChange {
+func NewPromotionCodeChange(action string, code string, promoId string) *PromotionCodeChange {
 	this := PromotionCodeChange{}
-	this.PromoId = promoId
-	this.Code = code
 	this.Action = action
+	this.Code = code
+	this.PromoId = promoId
 	return &this
 }
 
@@ -54,28 +50,28 @@ func NewPromotionCodeChangeWithDefaults() *PromotionCodeChange {
 	return &this
 }
 
-// GetPromoId returns the PromoId field value
-func (o *PromotionCodeChange) GetPromoId() string {
+// GetAction returns the Action field value
+func (o *PromotionCodeChange) GetAction() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.PromoId
+	return o.Action
 }
 
-// GetPromoIdOk returns a tuple with the PromoId field value
+// GetActionOk returns a tuple with the Action field value
 // and a boolean to check if the value has been set.
-func (o *PromotionCodeChange) GetPromoIdOk() (*string, bool) {
+func (o *PromotionCodeChange) GetActionOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.PromoId, true
+	return &o.Action, true
 }
 
-// SetPromoId sets field value
-func (o *PromotionCodeChange) SetPromoId(v string) {
-	o.PromoId = v
+// SetAction sets field value
+func (o *PromotionCodeChange) SetAction(v string) {
+	o.Action = v
 }
 
 // GetCode returns the Code field value
@@ -102,28 +98,28 @@ func (o *PromotionCodeChange) SetCode(v string) {
 	o.Code = v
 }
 
-// GetAction returns the Action field value
-func (o *PromotionCodeChange) GetAction() string {
+// GetPromoId returns the PromoId field value
+func (o *PromotionCodeChange) GetPromoId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.Action
+	return o.PromoId
 }
 
-// GetActionOk returns a tuple with the Action field value
+// GetPromoIdOk returns a tuple with the PromoId field value
 // and a boolean to check if the value has been set.
-func (o *PromotionCodeChange) GetActionOk() (*string, bool) {
+func (o *PromotionCodeChange) GetPromoIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Action, true
+	return &o.PromoId, true
 }
 
-// SetAction sets field value
-func (o *PromotionCodeChange) SetAction(v string) {
-	o.Action = v
+// SetPromoId sets field value
+func (o *PromotionCodeChange) SetPromoId(v string) {
+	o.PromoId = v
 }
 
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
@@ -168,9 +164,9 @@ func (o PromotionCodeChange) MarshalJSON() ([]byte, error) {
 
 func (o PromotionCodeChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["promo_id"] = o.PromoId
-	toSerialize["code"] = o.Code
 	toSerialize["action"] = o.Action
+	toSerialize["code"] = o.Code
+	toSerialize["promo_id"] = o.PromoId
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
 	}
@@ -182,9 +178,9 @@ func (o *PromotionCodeChange) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"promo_id",
-		"code",
 		"action",
+		"code",
+		"promo_id",
 	}
 
 	allProperties := make(map[string]interface{})

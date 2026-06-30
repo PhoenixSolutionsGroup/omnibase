@@ -1,15 +1,14 @@
 
 # ProductChanges
 
-Summary of product changes made during configuration update
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`archived` | [Array&lt;ProductChange&gt;](ProductChange.md)
 `created` | [Array&lt;ProductChange&gt;](ProductChange.md)
 `updated` | [Array&lt;ProductChange&gt;](ProductChange.md)
-`archived` | [Array&lt;ProductChange&gt;](ProductChange.md)
 
 ## Example
 
@@ -18,9 +17,9 @@ import type { ProductChanges } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "archived": null,
   "created": null,
   "updated": null,
-  "archived": null,
 } satisfies ProductChanges
 
 console.log(example)

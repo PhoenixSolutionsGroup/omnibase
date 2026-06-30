@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** | User&#39;s email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars) | 
-**Password** | **string** | User&#39;s password (8-72 printable ASCII characters, bcrypt compatible) | 
-**Name** | [**CreateUserRequestName**](CreateUserRequestName.md) |  | 
+**Email** | **string** |  | 
+**Name** | [**IdentityName**](IdentityName.md) |  | 
+**Password** | **string** |  | 
 
 ## Methods
 
 ### NewCreateUserRequest
 
-`func NewCreateUserRequest(email string, password string, name CreateUserRequestName, ) *CreateUserRequest`
+`func NewCreateUserRequest(email string, name IdentityName, password string, ) *CreateUserRequest`
 
 NewCreateUserRequest instantiates a new CreateUserRequest object
 This constructor will assign default values to properties that have it defined,
@@ -47,6 +47,26 @@ and a boolean to check if the value has been set.
 SetEmail sets Email field to given value.
 
 
+### GetName
+
+`func (o *CreateUserRequest) GetName() IdentityName`
+
+GetName returns the Name field if non-nil, zero value otherwise.
+
+### GetNameOk
+
+`func (o *CreateUserRequest) GetNameOk() (*IdentityName, bool)`
+
+GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetName
+
+`func (o *CreateUserRequest) SetName(v IdentityName)`
+
+SetName sets Name field to given value.
+
+
 ### GetPassword
 
 `func (o *CreateUserRequest) GetPassword() string`
@@ -65,26 +85,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateUserRequest) SetPassword(v string)`
 
 SetPassword sets Password field to given value.
-
-
-### GetName
-
-`func (o *CreateUserRequest) GetName() CreateUserRequestName`
-
-GetName returns the Name field if non-nil, zero value otherwise.
-
-### GetNameOk
-
-`func (o *CreateUserRequest) GetNameOk() (*CreateUserRequestName, bool)`
-
-GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetName
-
-`func (o *CreateUserRequest) SetName(v CreateUserRequestName)`
-
-SetName sets Name field to given value.
 
 
 

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,7 +22,6 @@ var _ MappedNullable = &ConfigHistoryResponse{}
 
 // ConfigHistoryResponse struct for ConfigHistoryResponse
 type ConfigHistoryResponse struct {
-	// List of configuration entries
 	Configs []ConfigHistoryItem `json:"configs"`
 	Pagination ConfigHistoryPagination `json:"pagination"`
 }
@@ -49,6 +48,7 @@ func NewConfigHistoryResponseWithDefaults() *ConfigHistoryResponse {
 }
 
 // GetConfigs returns the Configs field value
+// If the value is explicit nil, the zero value for []ConfigHistoryItem will be returned
 func (o *ConfigHistoryResponse) GetConfigs() []ConfigHistoryItem {
 	if o == nil {
 		var ret []ConfigHistoryItem
@@ -60,8 +60,9 @@ func (o *ConfigHistoryResponse) GetConfigs() []ConfigHistoryItem {
 
 // GetConfigsOk returns a tuple with the Configs field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ConfigHistoryResponse) GetConfigsOk() ([]ConfigHistoryItem, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Configs) {
 		return nil, false
 	}
 	return o.Configs, true
@@ -106,7 +107,9 @@ func (o ConfigHistoryResponse) MarshalJSON() ([]byte, error) {
 
 func (o ConfigHistoryResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["configs"] = o.Configs
+	if o.Configs != nil {
+		toSerialize["configs"] = o.Configs
+	}
 	toSerialize["pagination"] = o.Pagination
 	return toSerialize, nil
 }

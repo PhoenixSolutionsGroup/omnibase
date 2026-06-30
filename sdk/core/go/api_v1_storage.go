@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -27,10 +27,6 @@ type ApiDeleteObjectRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	deleteObjectRequest *DeleteObjectRequest
-	xUserId *string
-	xTenantId *string
-	xPostgrestToken *string
-	omnibasePostgrestJwt *string
 }
 
 func (r ApiDeleteObjectRequest) DeleteObjectRequest(deleteObjectRequest DeleteObjectRequest) ApiDeleteObjectRequest {
@@ -38,52 +34,12 @@ func (r ApiDeleteObjectRequest) DeleteObjectRequest(deleteObjectRequest DeleteOb
 	return r
 }
 
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiDeleteObjectRequest) XUserId(xUserId string) ApiDeleteObjectRequest {
-	r.xUserId = &xUserId
-	return r
-}
-
-// Tenant ID (UUID) - Required when using X-Service-Key header
-func (r ApiDeleteObjectRequest) XTenantId(xTenantId string) ApiDeleteObjectRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// PostgREST JWT token - Alternative to cookie authentication
-func (r ApiDeleteObjectRequest) XPostgrestToken(xPostgrestToken string) ApiDeleteObjectRequest {
-	r.xPostgrestToken = &xPostgrestToken
-	return r
-}
-
-// PostgREST JWT token in cookie form
-func (r ApiDeleteObjectRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiDeleteObjectRequest {
-	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
-	return r
-}
-
-func (r ApiDeleteObjectRequest) Execute() (*MessageResponse, *http.Response, error) {
+func (r ApiDeleteObjectRequest) Execute() (*DeleteObjectResponse, *http.Response, error) {
 	return r.ApiService.DeleteObjectExecute(r)
 }
 
 /*
 DeleteObject Delete file from storage
-
-Deletes a file from S3 storage with Row-Level Security (RLS) enforcement.
-
-## Authentication
-- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
-- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
-
-## RLS Policy
-Delete permission is checked via PostgREST against the `storage.objects` table.
-Users must have DELETE permission based on their custom RLS policies.
-
-## Deletion Process
-1. Metadata is deleted from database (with RLS check)
-2. File is deleted from S3 storage
-3. If S3 deletion fails, metadata is already removed (eventual consistency)
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeleteObjectRequest
@@ -96,13 +52,13 @@ func (a *V1StorageAPIService) DeleteObject(ctx context.Context) ApiDeleteObjectR
 }
 
 // Execute executes the request
-//  @return MessageResponse
-func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*MessageResponse, *http.Response, error) {
+//  @return DeleteObjectResponse
+func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*DeleteObjectResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *MessageResponse
+		localVarReturnValue  *DeleteObjectResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.DeleteObject")
@@ -129,21 +85,12 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*Me
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
-	}
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xPostgrestToken != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.deleteObjectRequest
@@ -197,8 +144,7 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*Me
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -206,40 +152,6 @@ func (a *V1StorageAPIService) DeleteObjectExecute(r ApiDeleteObjectRequest) (*Me
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v ForbiddenResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -259,38 +171,10 @@ type ApiDownloadFileRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	downloadRequest *DownloadRequest
-	xUserId *string
-	xTenantId *string
-	xPostgrestToken *string
-	omnibasePostgrestJwt *string
 }
 
 func (r ApiDownloadFileRequest) DownloadRequest(downloadRequest DownloadRequest) ApiDownloadFileRequest {
 	r.downloadRequest = &downloadRequest
-	return r
-}
-
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiDownloadFileRequest) XUserId(xUserId string) ApiDownloadFileRequest {
-	r.xUserId = &xUserId
-	return r
-}
-
-// Tenant ID (UUID) - Required when using X-Service-Key header
-func (r ApiDownloadFileRequest) XTenantId(xTenantId string) ApiDownloadFileRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// PostgREST JWT token - Alternative to cookie authentication
-func (r ApiDownloadFileRequest) XPostgrestToken(xPostgrestToken string) ApiDownloadFileRequest {
-	r.xPostgrestToken = &xPostgrestToken
-	return r
-}
-
-// PostgREST JWT token in cookie form
-func (r ApiDownloadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiDownloadFileRequest {
-	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
 	return r
 }
 
@@ -300,24 +184,6 @@ func (r ApiDownloadFileRequest) Execute() (*DownloadResponse, *http.Response, er
 
 /*
 DownloadFile Download file from storage
-
-Generates a presigned S3 download URL with Row-Level Security (RLS) enforcement.
-
-## Authentication
-- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
-- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
-
-## RLS Policy
-Download permission is checked via PostgREST against the `storage.objects` table.
-Users must have SELECT permission based on their custom RLS policies.
-
-## Download Process
-1. Request presigned URL from this endpoint
-2. Download file directly from S3 using returned URL (GET request)
-
-## URL Expiration
-Presigned URLs are valid for 15 minutes after generation.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDownloadFileRequest
@@ -363,21 +229,12 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
-	}
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xPostgrestToken != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.downloadRequest
@@ -431,8 +288,7 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -440,51 +296,6 @@ func (a *V1StorageAPIService) DownloadFileExecute(r ApiDownloadFileRequest) (*Do
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v ForbiddenResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -504,10 +315,6 @@ type ApiMakeFilePublicRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	makePublicRequest *MakePublicRequest
-	xUserId *string
-	xTenantId *string
-	xPostgrestToken *string
-	omnibasePostgrestJwt *string
 }
 
 func (r ApiMakeFilePublicRequest) MakePublicRequest(makePublicRequest MakePublicRequest) ApiMakeFilePublicRequest {
@@ -515,51 +322,12 @@ func (r ApiMakeFilePublicRequest) MakePublicRequest(makePublicRequest MakePublic
 	return r
 }
 
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiMakeFilePublicRequest) XUserId(xUserId string) ApiMakeFilePublicRequest {
-	r.xUserId = &xUserId
-	return r
-}
-
-// Tenant ID (UUID) - Required when using X-Service-Key header
-func (r ApiMakeFilePublicRequest) XTenantId(xTenantId string) ApiMakeFilePublicRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// PostgREST JWT token - Alternative to cookie authentication
-func (r ApiMakeFilePublicRequest) XPostgrestToken(xPostgrestToken string) ApiMakeFilePublicRequest {
-	r.xPostgrestToken = &xPostgrestToken
-	return r
-}
-
-// PostgREST JWT token in cookie form
-func (r ApiMakeFilePublicRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiMakeFilePublicRequest {
-	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
-	return r
-}
-
-func (r ApiMakeFilePublicRequest) Execute() (*MessageResponse, *http.Response, error) {
+func (r ApiMakeFilePublicRequest) Execute() (*MakePublicResponse, *http.Response, error) {
 	return r.ApiService.MakeFilePublicExecute(r)
 }
 
 /*
 MakeFilePublic Make a file publicly accessible
-
-Makes a storage object publicly accessible to any authenticated user, regardless of tenant.
-
-## Authentication
-- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
-- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
-
-## Permission Check
-Requires `make_public` permission via Keto OPL. By default, only the file owner
-or users with the `can_make_public` relation can make a file public.
-
-## Effect
-Once public, any authenticated user can download the file without needing
-a Keto relation or tenant membership.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiMakeFilePublicRequest
@@ -572,13 +340,13 @@ func (a *V1StorageAPIService) MakeFilePublic(ctx context.Context) ApiMakeFilePub
 }
 
 // Execute executes the request
-//  @return MessageResponse
-func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) (*MessageResponse, *http.Response, error) {
+//  @return MakePublicResponse
+func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) (*MakePublicResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *MessageResponse
+		localVarReturnValue  *MakePublicResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StorageAPIService.MakeFilePublic")
@@ -605,21 +373,12 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
-	}
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xPostgrestToken != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.makePublicRequest
@@ -673,8 +432,7 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -682,51 +440,6 @@ func (a *V1StorageAPIService) MakeFilePublicExecute(r ApiMakeFilePublicRequest) 
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v ForbiddenResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -746,38 +459,10 @@ type ApiUploadFileRequest struct {
 	ctx context.Context
 	ApiService *V1StorageAPIService
 	uploadRequest *UploadRequest
-	xUserId *string
-	xTenantId *string
-	xPostgrestToken *string
-	omnibasePostgrestJwt *string
 }
 
 func (r ApiUploadFileRequest) UploadRequest(uploadRequest UploadRequest) ApiUploadFileRequest {
 	r.uploadRequest = &uploadRequest
-	return r
-}
-
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiUploadFileRequest) XUserId(xUserId string) ApiUploadFileRequest {
-	r.xUserId = &xUserId
-	return r
-}
-
-// Tenant ID (UUID) - Required when using X-Service-Key header
-func (r ApiUploadFileRequest) XTenantId(xTenantId string) ApiUploadFileRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// PostgREST JWT token - Alternative to cookie authentication
-func (r ApiUploadFileRequest) XPostgrestToken(xPostgrestToken string) ApiUploadFileRequest {
-	r.xPostgrestToken = &xPostgrestToken
-	return r
-}
-
-// PostgREST JWT token in cookie form
-func (r ApiUploadFileRequest) OmnibasePostgrestJwt(omnibasePostgrestJwt string) ApiUploadFileRequest {
-	r.omnibasePostgrestJwt = &omnibasePostgrestJwt
 	return r
 }
 
@@ -787,25 +472,6 @@ func (r ApiUploadFileRequest) Execute() (*UploadResponse, *http.Response, error)
 
 /*
 UploadFile Upload file to storage
-
-Generates a presigned S3 upload URL with Row-Level Security (RLS) enforcement.
-
-## Authentication
-- **Session Auth**: Requires JWT token via Cookie (`omnibase_postgrest_jwt`) or Header (`X-Postgrest-Token`)
-- **Service Key Auth**: Requires X-Service-Key + X-User-Id + X-Tenant-Id + X-Postgrest-Token headers
-
-## RLS Policy
-Upload permission is checked via PostgREST against the `storage.objects` table.
-Users must have INSERT permission based on their custom RLS policies.
-
-## Upload Process
-1. Request presigned URL from this endpoint
-2. Upload file directly to S3 using returned URL (PUT request)
-3. File metadata is automatically stored in database
-
-## URL Expiration
-Presigned URLs are valid for 15 minutes after generation.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUploadFileRequest
@@ -851,21 +517,12 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
-	}
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xPostgrestToken != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Postgrest-Token", r.xPostgrestToken, "simple", "")
 	}
 	// body params
 	localVarPostBody = r.uploadRequest
@@ -919,8 +576,7 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -928,62 +584,6 @@ func (a *V1StorageAPIService) UploadFileExecute(r ApiUploadFileRequest) (*Upload
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v ForbiddenResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

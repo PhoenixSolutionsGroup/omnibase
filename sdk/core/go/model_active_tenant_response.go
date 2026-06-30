@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -18,9 +18,9 @@ import (
 // checks if the ActiveTenantResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &ActiveTenantResponse{}
 
-// ActiveTenantResponse Response containing the user's active tenant information
+// ActiveTenantResponse struct for ActiveTenantResponse
 type ActiveTenantResponse struct {
-	Tenant *Tenant `json:"tenant,omitempty"`
+	Tenant *GetTenantByIDRow `json:"tenant,omitempty"`
 }
 
 // NewActiveTenantResponse instantiates a new ActiveTenantResponse object
@@ -41,9 +41,9 @@ func NewActiveTenantResponseWithDefaults() *ActiveTenantResponse {
 }
 
 // GetTenant returns the Tenant field value if set, zero value otherwise.
-func (o *ActiveTenantResponse) GetTenant() Tenant {
+func (o *ActiveTenantResponse) GetTenant() GetTenantByIDRow {
 	if o == nil || IsNil(o.Tenant) {
-		var ret Tenant
+		var ret GetTenantByIDRow
 		return ret
 	}
 	return *o.Tenant
@@ -51,7 +51,7 @@ func (o *ActiveTenantResponse) GetTenant() Tenant {
 
 // GetTenantOk returns a tuple with the Tenant field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ActiveTenantResponse) GetTenantOk() (*Tenant, bool) {
+func (o *ActiveTenantResponse) GetTenantOk() (*GetTenantByIDRow, bool) {
 	if o == nil || IsNil(o.Tenant) {
 		return nil, false
 	}
@@ -67,8 +67,8 @@ func (o *ActiveTenantResponse) HasTenant() bool {
 	return false
 }
 
-// SetTenant gets a reference to the given Tenant and assigns it to the Tenant field.
-func (o *ActiveTenantResponse) SetTenant(v Tenant) {
+// SetTenant gets a reference to the given GetTenantByIDRow and assigns it to the Tenant field.
+func (o *ActiveTenantResponse) SetTenant(v GetTenantByIDRow) {
 	o.Tenant = &v
 }
 

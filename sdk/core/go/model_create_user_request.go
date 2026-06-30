@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,7 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
 	"fmt"
 )
 
@@ -21,12 +22,9 @@ var _ MappedNullable = &CreateUserRequest{}
 
 // CreateUserRequest struct for CreateUserRequest
 type CreateUserRequest struct {
-	// User's email address (RFC 5321 compliant, local part max 64 chars, each domain label max 63 chars)
-	Email string `json:"email" validate:"regexp=^[a-zA-Z0-9._%+-]{1,64}@[a-zA-Z0-9-]{1,63}(\\\\.[a-zA-Z0-9-]{1,63})*\\\\.[a-zA-Z]{2,63}$"`
-	// User's password (8-72 printable ASCII characters, bcrypt compatible)
-	Password string `json:"password" validate:"regexp=^[ -~]+$"`
-	Name CreateUserRequestName `json:"name"`
-	AdditionalProperties map[string]interface{}
+	Email string `json:"email"`
+	Name IdentityName `json:"name"`
+	Password string `json:"password"`
 }
 
 type _CreateUserRequest CreateUserRequest
@@ -35,11 +33,11 @@ type _CreateUserRequest CreateUserRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateUserRequest(email string, password string, name CreateUserRequestName) *CreateUserRequest {
+func NewCreateUserRequest(email string, name IdentityName, password string) *CreateUserRequest {
 	this := CreateUserRequest{}
 	this.Email = email
-	this.Password = password
 	this.Name = name
+	this.Password = password
 	return &this
 }
 
@@ -75,6 +73,30 @@ func (o *CreateUserRequest) SetEmail(v string) {
 	o.Email = v
 }
 
+// GetName returns the Name field value
+func (o *CreateUserRequest) GetName() IdentityName {
+	if o == nil {
+		var ret IdentityName
+		return ret
+	}
+
+	return o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value
+// and a boolean to check if the value has been set.
+func (o *CreateUserRequest) GetNameOk() (*IdentityName, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Name, true
+}
+
+// SetName sets field value
+func (o *CreateUserRequest) SetName(v IdentityName) {
+	o.Name = v
+}
+
 // GetPassword returns the Password field value
 func (o *CreateUserRequest) GetPassword() string {
 	if o == nil {
@@ -99,30 +121,6 @@ func (o *CreateUserRequest) SetPassword(v string) {
 	o.Password = v
 }
 
-// GetName returns the Name field value
-func (o *CreateUserRequest) GetName() CreateUserRequestName {
-	if o == nil {
-		var ret CreateUserRequestName
-		return ret
-	}
-
-	return o.Name
-}
-
-// GetNameOk returns a tuple with the Name field value
-// and a boolean to check if the value has been set.
-func (o *CreateUserRequest) GetNameOk() (*CreateUserRequestName, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Name, true
-}
-
-// SetName sets field value
-func (o *CreateUserRequest) SetName(v CreateUserRequestName) {
-	o.Name = v
-}
-
 func (o CreateUserRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -134,13 +132,8 @@ func (o CreateUserRequest) MarshalJSON() ([]byte, error) {
 func (o CreateUserRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["email"] = o.Email
-	toSerialize["password"] = o.Password
 	toSerialize["name"] = o.Name
-
-	for key, value := range o.AdditionalProperties {
-		toSerialize[key] = value
-	}
-
+	toSerialize["password"] = o.Password
 	return toSerialize, nil
 }
 
@@ -150,8 +143,8 @@ func (o *CreateUserRequest) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"email",
-		"password",
 		"name",
+		"password",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -170,22 +163,15 @@ func (o *CreateUserRequest) UnmarshalJSON(data []byte) (err error) {
 
 	varCreateUserRequest := _CreateUserRequest{}
 
-	err = json.Unmarshal(data, &varCreateUserRequest)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varCreateUserRequest)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CreateUserRequest(varCreateUserRequest)
-
-	additionalProperties := make(map[string]interface{})
-
-	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "email")
-		delete(additionalProperties, "password")
-		delete(additionalProperties, "name")
-		o.AdditionalProperties = additionalProperties
-	}
 
 	return err
 }

@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`tenantId` | string
 `enterpriseTemplate` | string
+`tenantId` | string
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { ApplyEnterpriseTemplateRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "tenantId": 7d5da463-8351-4abe-870c-8ccdefc4d78c,
-  "enterpriseTemplate": tier1_10pct_off,
+  "enterpriseTemplate": null,
+  "tenantId": null,
 } satisfies ApplyEnterpriseTemplateRequest
 
 console.log(example)

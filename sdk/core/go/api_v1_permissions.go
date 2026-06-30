@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -26,36 +26,20 @@ type V1PermissionsAPIService service
 type ApiCheckPermissionRequest struct {
 	ctx context.Context
 	ApiService *V1PermissionsAPIService
-	checkPermissionRequest *CheckPermissionRequest
+	checkRequest *CheckRequest
 }
 
-// Permission check request with subject_set
-func (r ApiCheckPermissionRequest) CheckPermissionRequest(checkPermissionRequest CheckPermissionRequest) ApiCheckPermissionRequest {
-	r.checkPermissionRequest = &checkPermissionRequest
+func (r ApiCheckPermissionRequest) CheckRequest(checkRequest CheckRequest) ApiCheckPermissionRequest {
+	r.checkRequest = &checkRequest
 	return r
 }
 
-func (r ApiCheckPermissionRequest) Execute() (*CheckPermissionResponse, *http.Response, error) {
+func (r ApiCheckPermissionRequest) Execute() (*CheckResponse, *http.Response, error) {
 	return r.ApiService.CheckPermissionExecute(r)
 }
 
 /*
 CheckPermission Check permission
-
-Checks if a subject has a specific permission on an object using Ory Keto.
-
-## Authentication
-Requires session authentication.
-
-## Request Format
-Provide a `subject_set` to identify the subject. For user permissions, use
-`namespace: "User"` and `object: "<user_id>"`.
-
-## Use Cases
-- Verify user permissions before performing actions
-- Implement fine-grained access control
-- Check role-based permissions
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCheckPermissionRequest
@@ -68,13 +52,13 @@ func (a *V1PermissionsAPIService) CheckPermission(ctx context.Context) ApiCheckP
 }
 
 // Execute executes the request
-//  @return CheckPermissionResponse
-func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckPermissionResponse, *http.Response, error) {
+//  @return CheckResponse
+func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionRequest) (*CheckResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CheckPermissionResponse
+		localVarReturnValue  *CheckResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PermissionsAPIService.CheckPermission")
@@ -87,8 +71,8 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.checkPermissionRequest == nil {
-		return localVarReturnValue, nil, reportError("checkPermissionRequest is required and must be specified")
+	if r.checkRequest == nil {
+		return localVarReturnValue, nil, reportError("checkRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -101,7 +85,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -109,7 +93,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.checkPermissionRequest
+	localVarPostBody = r.checkRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -160,8 +144,7 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -169,29 +152,6 @@ func (a *V1PermissionsAPIService) CheckPermissionExecute(r ApiCheckPermissionReq
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -213,7 +173,6 @@ type ApiCreateRelationshipRequest struct {
 	createRelationshipRequest *CreateRelationshipRequest
 }
 
-// Relationship creation request with subject_set
 func (r ApiCreateRelationshipRequest) CreateRelationshipRequest(createRelationshipRequest CreateRelationshipRequest) ApiCreateRelationshipRequest {
 	r.createRelationshipRequest = &createRelationshipRequest
 	return r
@@ -225,21 +184,6 @@ func (r ApiCreateRelationshipRequest) Execute() (*CreateRelationshipResponse, *h
 
 /*
 CreateRelationship Create relationship
-
-Creates a new relationship tuple in Ory Keto.
-
-## Authentication
-Requires session authentication.
-
-## Request Format
-Provide a `subject_set` to identify the subject. For user relationships, use
-`namespace: "User"` and `object: "<user_id>"`.
-
-## Use Cases
-- Link resources to tenants
-- Assign users to projects
-- Create permission relationships
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRelationshipRequest
@@ -285,7 +229,7 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -344,8 +288,7 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -353,40 +296,6 @@ func (a *V1PermissionsAPIService) CreateRelationshipExecute(r ApiCreateRelations
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -408,7 +317,6 @@ type ApiDeleteRelationshipRequest struct {
 	deleteRelationshipRequest *DeleteRelationshipRequest
 }
 
-// Relationship deletion request with subject_set
 func (r ApiDeleteRelationshipRequest) DeleteRelationshipRequest(deleteRelationshipRequest DeleteRelationshipRequest) ApiDeleteRelationshipRequest {
 	r.deleteRelationshipRequest = &deleteRelationshipRequest
 	return r
@@ -420,21 +328,6 @@ func (r ApiDeleteRelationshipRequest) Execute() (*DeleteRelationshipResponse, *h
 
 /*
 DeleteRelationship Delete relationship
-
-Deletes a relationship tuple from Ory Keto.
-
-## Authentication
-Requires session authentication.
-
-## Request Format
-Provide a `subject_set` to identify the subject. For user relationships, use
-`namespace: "User"` and `object: "<user_id>"`.
-
-## Use Cases
-- Remove resource links from tenants
-- Revoke user assignments from projects
-- Delete permission relationships
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeleteRelationshipRequest
@@ -480,7 +373,7 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -539,8 +432,7 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -548,40 +440,6 @@ func (a *V1PermissionsAPIService) DeleteRelationshipExecute(r ApiDeleteRelations
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

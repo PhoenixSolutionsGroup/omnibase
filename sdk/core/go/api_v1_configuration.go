@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -36,20 +36,6 @@ func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllResponse, *http.
 
 /*
 ArchiveAllStripeConfig Archive all Stripe config
-
-Archives all active products, prices, and meters in Stripe and clears the local configuration.
-
-## Authentication
-Requires admin JWT token.
-
-## Warning
-This is a destructive operation that will archive ALL active Stripe resources.
-
-## Use Cases
-- Clean slate for new configuration
-- Remove all test data
-- Reset Stripe account
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiArchiveAllStripeConfigRequest
@@ -92,7 +78,7 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -135,8 +121,7 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -144,18 +129,6 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -174,35 +147,20 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 type ApiCreateOrUpdateEmailTemplateRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
-	createEmailTemplateRequest *CreateEmailTemplateRequest
+	upsertTemplateRequest *UpsertTemplateRequest
 }
 
-func (r ApiCreateOrUpdateEmailTemplateRequest) CreateEmailTemplateRequest(createEmailTemplateRequest CreateEmailTemplateRequest) ApiCreateOrUpdateEmailTemplateRequest {
-	r.createEmailTemplateRequest = &createEmailTemplateRequest
+func (r ApiCreateOrUpdateEmailTemplateRequest) UpsertTemplateRequest(upsertTemplateRequest UpsertTemplateRequest) ApiCreateOrUpdateEmailTemplateRequest {
+	r.upsertTemplateRequest = &upsertTemplateRequest
 	return r
 }
 
-func (r ApiCreateOrUpdateEmailTemplateRequest) Execute() (*CreateOrUpdateEmailTemplate200Response, *http.Response, error) {
+func (r ApiCreateOrUpdateEmailTemplateRequest) Execute() (*UpsertTemplateResponse, *http.Response, error) {
 	return r.ApiService.CreateOrUpdateEmailTemplateExecute(r)
 }
 
 /*
 CreateOrUpdateEmailTemplate Create or update email template
-
-Creates a new email template or updates an existing one based on template type.
-
-## Template Management
-- If template type exists: updates subject and HTML body
-- If template type is new: creates new template entry
-
-## Template Types
-Template types are user-defined identifiers (e.g., "welcome", "password-reset", "invoice").
-
-## Use Cases
-- Store custom email templates for transactional emails
-- Update email content without code deployments
-- Maintain versioned email templates
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateOrUpdateEmailTemplateRequest
@@ -215,13 +173,13 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplate(ctx context.Cont
 }
 
 // Execute executes the request
-//  @return CreateOrUpdateEmailTemplate200Response
-func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCreateOrUpdateEmailTemplateRequest) (*CreateOrUpdateEmailTemplate200Response, *http.Response, error) {
+//  @return UpsertTemplateResponse
+func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCreateOrUpdateEmailTemplateRequest) (*UpsertTemplateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateOrUpdateEmailTemplate200Response
+		localVarReturnValue  *UpsertTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.CreateOrUpdateEmailTemplate")
@@ -234,8 +192,8 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.createEmailTemplateRequest == nil {
-		return localVarReturnValue, nil, reportError("createEmailTemplateRequest is required and must be specified")
+	if r.upsertTemplateRequest == nil {
+		return localVarReturnValue, nil, reportError("upsertTemplateRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -248,7 +206,7 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -256,7 +214,7 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.createEmailTemplateRequest
+	localVarPostBody = r.upsertTemplateRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -307,8 +265,7 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ErrorResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -316,29 +273,6 @@ func (a *V1ConfigurationAPIService) CreateOrUpdateEmailTemplateExecute(r ApiCrea
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -360,28 +294,15 @@ type ApiDeleteEmailTemplateRequest struct {
 	type_ string
 }
 
-func (r ApiDeleteEmailTemplateRequest) Execute() (*DeleteEmailTemplate200Response, *http.Response, error) {
+func (r ApiDeleteEmailTemplateRequest) Execute() (*DeleteTemplateResponse, *http.Response, error) {
 	return r.ApiService.DeleteEmailTemplateExecute(r)
 }
 
 /*
 DeleteEmailTemplate Delete email template
 
-Deletes an email template by its type identifier.
-
-## Deletion Process
-- Searches for template by type
-- Removes template from database if found
-- Returns 404 if template doesn't exist
-
-## Use Cases
-- Remove deprecated email templates
-- Clean up test templates
-- Template lifecycle management
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param type_ Template type identifier
+ @param type_
  @return ApiDeleteEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) DeleteEmailTemplate(ctx context.Context, type_ string) ApiDeleteEmailTemplateRequest {
@@ -393,13 +314,13 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplate(ctx context.Context, typ
 }
 
 // Execute executes the request
-//  @return DeleteEmailTemplate200Response
-func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailTemplateRequest) (*DeleteEmailTemplate200Response, *http.Response, error) {
+//  @return DeleteTemplateResponse
+func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailTemplateRequest) (*DeleteTemplateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *DeleteEmailTemplate200Response
+		localVarReturnValue  *DeleteTemplateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeleteEmailTemplate")
@@ -424,7 +345,7 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -481,8 +402,7 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -490,40 +410,6 @@ func (a *V1ConfigurationAPIService) DeleteEmailTemplateExecute(r ApiDeleteEmailT
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -545,52 +431,17 @@ type ApiDeployPermissionNamespacesRequest struct {
 	namespaces *os.File
 }
 
-// Zip file containing namespace configuration files
 func (r ApiDeployPermissionNamespacesRequest) Namespaces(namespaces *os.File) ApiDeployPermissionNamespacesRequest {
 	r.namespaces = namespaces
 	return r
 }
 
-func (r ApiDeployPermissionNamespacesRequest) Execute() (*NamespaceDeploymentResponse, *http.Response, error) {
+func (r ApiDeployPermissionNamespacesRequest) Execute() (*DeployNamespacesResponse, *http.Response, error) {
 	return r.ApiService.DeployPermissionNamespacesExecute(r)
 }
 
 /*
 DeployPermissionNamespaces Deploy Keto namespace configurations
-
-Uploads and deploys permission namespace configurations as a zip file.
-
-## Authentication
-Requires JWT token with appropriate permissions.
-
-## File Format
-Upload a zip file containing namespace definition files and optionally a `roles.config.json` file.
-The namespace files are stored in S3 and parsed to extract permission definitions.
-
-**roles.config.json format:**
-```json
-{
-  "roles": [
-    {
-      "role": "admin",
-      "permissions": ["projects:read", "projects:write", "projects:delete"]
-    },
-    {
-      "role": "viewer",
-      "permissions": ["projects:read"]
-    }
-  ]
-}
-```
-
-## Managed Mode
-If managed hosting is enabled, this endpoint will also trigger a restart of the Keto service.
-
-## Use Cases
-- CLI namespace deployment via `omnibase permissions push`
-- CI/CD pipeline integrations
-- Programmatic permission management
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeployPermissionNamespacesRequest
@@ -603,13 +454,13 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespaces(ctx context.Conte
 }
 
 // Execute executes the request
-//  @return NamespaceDeploymentResponse
-func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*NamespaceDeploymentResponse, *http.Response, error) {
+//  @return DeployNamespacesResponse
+func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeployPermissionNamespacesRequest) (*DeployNamespacesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *NamespaceDeploymentResponse
+		localVarReturnValue  *DeployNamespacesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.DeployPermissionNamespaces")
@@ -636,7 +487,7 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -694,8 +545,7 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -703,371 +553,6 @@ func (a *V1ConfigurationAPIService) DeployPermissionNamespacesExecute(r ApiDeplo
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiGenerateDatabaseTypesRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
-	schemas *string
-	language *string
-}
-
-// Comma-separated list of database schemas to include (valid PostgreSQL identifiers)
-func (r ApiGenerateDatabaseTypesRequest) Schemas(schemas string) ApiGenerateDatabaseTypesRequest {
-	r.schemas = &schemas
-	return r
-}
-
-// Target language for type generation
-func (r ApiGenerateDatabaseTypesRequest) Language(language string) ApiGenerateDatabaseTypesRequest {
-	r.language = &language
-	return r
-}
-
-func (r ApiGenerateDatabaseTypesRequest) Execute() (string, *http.Response, error) {
-	return r.ApiService.GenerateDatabaseTypesExecute(r)
-}
-
-/*
-GenerateDatabaseTypes Generate types from database schema
-
-Generates type definitions from the database schema using postgres-meta.
-
-## Supported Languages
-- `typescript` (default) - TypeScript type definitions
-- `go` - Go struct definitions
-- `swift` (beta) - Swift type definitions
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- CLI type generation via `omnibase db typegen`
-- CI/CD pipeline type generation
-- Programmatic type generation for SDKs
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGenerateDatabaseTypesRequest
-*/
-func (a *V1ConfigurationAPIService) GenerateDatabaseTypes(ctx context.Context) ApiGenerateDatabaseTypesRequest {
-	return ApiGenerateDatabaseTypesRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return string
-func (a *V1ConfigurationAPIService) GenerateDatabaseTypesExecute(r ApiGenerateDatabaseTypesRequest) (string, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  string
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GenerateDatabaseTypes")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/database/typegen"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	if r.schemas != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "schemas", r.schemas, "form", "")
-	} else {
-        var defaultValue string = "public"
-        parameterAddToHeaderOrQuery(localVarQueryParams, "schemas", defaultValue, "form", "")
-        r.schemas = &defaultValue
-	}
-	if r.language != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "language", r.language, "form", "")
-	} else {
-        var defaultValue string = "typescript"
-        parameterAddToHeaderOrQuery(localVarQueryParams, "language", defaultValue, "form", "")
-        r.language = &defaultValue
-	}
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"text/plain", "application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v MigrationErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 502 {
-			var v MigrationErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiGetDatabaseMigrationStatusRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
-}
-
-func (r ApiGetDatabaseMigrationStatusRequest) Execute() ([]AppliedMigration, *http.Response, error) {
-	return r.ApiService.GetDatabaseMigrationStatusExecute(r)
-}
-
-/*
-GetDatabaseMigrationStatus Get applied migration status
-
-Returns the migrations recorded in the `migrations.schema_migrations`
-tracking table, ordered by version descending. A `dirty` migration
-indicates a previous run failed partway and needs manual intervention.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- Inspect applied migrations via `omnibase db migrate status`
-- Detect dirty/failed migration state in CI
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetDatabaseMigrationStatusRequest
-*/
-func (a *V1ConfigurationAPIService) GetDatabaseMigrationStatus(ctx context.Context) ApiGetDatabaseMigrationStatusRequest {
-	return ApiGetDatabaseMigrationStatusRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return []AppliedMigration
-func (a *V1ConfigurationAPIService) GetDatabaseMigrationStatusExecute(r ApiGetDatabaseMigrationStatusRequest) ([]AppliedMigration, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  []AppliedMigration
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetDatabaseMigrationStatus")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/database/migrations/status"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1088,23 +573,12 @@ type ApiGetEmailTemplatesRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiGetEmailTemplatesRequest) Execute() (*GetEmailTemplates200Response, *http.Response, error) {
+func (r ApiGetEmailTemplatesRequest) Execute() (*ListTemplatesResponse, *http.Response, error) {
 	return r.ApiService.GetEmailTemplatesExecute(r)
 }
 
 /*
 GetEmailTemplates Get all email templates
-
-Retrieves all email templates stored in the database.
-
-## Response
-Returns array of all templates with their type, subject, and HTML body.
-
-## Use Cases
-- List available email templates
-- Display template management interface
-- Audit email template inventory
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetEmailTemplatesRequest
@@ -1117,13 +591,13 @@ func (a *V1ConfigurationAPIService) GetEmailTemplates(ctx context.Context) ApiGe
 }
 
 // Execute executes the request
-//  @return GetEmailTemplates200Response
-func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTemplatesRequest) (*GetEmailTemplates200Response, *http.Response, error) {
+//  @return ListTemplatesResponse
+func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTemplatesRequest) (*ListTemplatesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetEmailTemplates200Response
+		localVarReturnValue  *ListTemplatesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetEmailTemplates")
@@ -1147,7 +621,7 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1204,8 +678,7 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1213,29 +686,6 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1254,18 +704,16 @@ func (a *V1ConfigurationAPIService) GetEmailTemplatesExecute(r ApiGetEmailTempla
 type ApiGetStripeConfigHistoryRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
-	limit *int32
-	offset *int32
+	limit *int64
+	offset *int64
 }
 
-// Items per page
-func (r ApiGetStripeConfigHistoryRequest) Limit(limit int32) ApiGetStripeConfigHistoryRequest {
+func (r ApiGetStripeConfigHistoryRequest) Limit(limit int64) ApiGetStripeConfigHistoryRequest {
 	r.limit = &limit
 	return r
 }
 
-// Items to skip
-func (r ApiGetStripeConfigHistoryRequest) Offset(offset int32) ApiGetStripeConfigHistoryRequest {
+func (r ApiGetStripeConfigHistoryRequest) Offset(offset int64) ApiGetStripeConfigHistoryRequest {
 	r.offset = &offset
 	return r
 }
@@ -1276,16 +724,6 @@ func (r ApiGetStripeConfigHistoryRequest) Execute() (*ConfigHistoryResponse, *ht
 
 /*
 GetStripeConfigHistory Get config history
-
-Returns paginated history of all Stripe configurations.
-
-## Authentication
-Requires admin JWT token.
-
-## Query Parameters
-- limit: Items per page (default: 10, max: 100, min: 1)
-- offset: Number of items to skip (default: 0, min: 0)
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigHistoryRequest
@@ -1321,14 +759,14 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 	if r.limit != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
 	} else {
-        var defaultValue int32 = 10
+        var defaultValue int64 = 10
         parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "form", "")
         r.limit = &defaultValue
 	}
 	if r.offset != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "form", "")
 	} else {
-        var defaultValue int32 = 0
+        var defaultValue int64 = 0
         parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "form", "")
         r.offset = &defaultValue
 	}
@@ -1342,7 +780,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1385,8 +823,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1394,29 +831,6 @@ func (a *V1ConfigurationAPIService) GetStripeConfigHistoryExecute(r ApiGetStripe
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1437,20 +851,12 @@ type ApiGetStripeConfigSchemaRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiGetStripeConfigSchemaRequest) Execute() (map[string]interface{}, *http.Response, error) {
+func (r ApiGetStripeConfigSchemaRequest) Execute() (string, *http.Response, error) {
 	return r.ApiService.GetStripeConfigSchemaExecute(r)
 }
 
 /*
 GetStripeConfigSchema Get Stripe config schema
-
-Returns the JSON schema definition for validating Stripe configuration files.
-
-## Use Cases
-- Validate configuration before upload
-- IDE autocomplete support
-- Generate configuration templates
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigSchemaRequest
@@ -1463,13 +869,13 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchema(ctx context.Context) A
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
-func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (map[string]interface{}, *http.Response, error) {
+//  @return string
+func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeConfigSchemaRequest) (string, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.GetStripeConfigSchema")
@@ -1493,7 +899,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeC
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/schema+json", "application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1522,8 +928,7 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeC
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1531,7 +936,6 @@ func (a *V1ConfigurationAPIService) GetStripeConfigSchemaExecute(r ApiGetStripeC
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1552,23 +956,12 @@ type ApiPullStripeConfigRequest struct {
 	ApiService *V1ConfigurationAPIService
 }
 
-func (r ApiPullStripeConfigRequest) Execute() (*StripeConfigurationWithIDs, *http.Response, error) {
+func (r ApiPullStripeConfigRequest) Execute() (*StripeConfiguration, *http.Response, error) {
 	return r.ApiService.PullStripeConfigExecute(r)
 }
 
 /*
 PullStripeConfig Pull config from Stripe
-
-Fetches all active products, prices, and meters from Stripe API and converts them to the local configuration format.
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Sync remote Stripe config to local
-- Import existing Stripe setup
-- Configuration backup
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiPullStripeConfigRequest
@@ -1581,13 +974,13 @@ func (a *V1ConfigurationAPIService) PullStripeConfig(ctx context.Context) ApiPul
 }
 
 // Execute executes the request
-//  @return StripeConfigurationWithIDs
-func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*StripeConfigurationWithIDs, *http.Response, error) {
+//  @return StripeConfiguration
+func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfigRequest) (*StripeConfiguration, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeConfigurationWithIDs
+		localVarReturnValue  *StripeConfiguration
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.PullStripeConfig")
@@ -1611,7 +1004,7 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1654,8 +1047,7 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1663,218 +1055,6 @@ func (a *V1ConfigurationAPIService) PullStripeConfigExecute(r ApiPullStripeConfi
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiRollbackDatabaseMigrationsRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
-	steps *int32
-	migrations *os.File
-}
-
-// Number of migrations to roll back
-func (r ApiRollbackDatabaseMigrationsRequest) Steps(steps int32) ApiRollbackDatabaseMigrationsRequest {
-	r.steps = &steps
-	return r
-}
-
-// Zip file containing SQL migration files
-func (r ApiRollbackDatabaseMigrationsRequest) Migrations(migrations *os.File) ApiRollbackDatabaseMigrationsRequest {
-	r.migrations = migrations
-	return r
-}
-
-func (r ApiRollbackDatabaseMigrationsRequest) Execute() (*RollbackDatabaseMigrations200Response, *http.Response, error) {
-	return r.ApiService.RollbackDatabaseMigrationsExecute(r)
-}
-
-/*
-RollbackDatabaseMigrations Roll back database migrations
-
-Rolls back the last N migrations using the supplied migration files.
-
-**WARNING: Rolling back migrations can be destructive.** Down migrations
-may drop tables or columns and permanently delete data.
-
-## Authentication
-Requires service key authentication (typically used by CLI tools).
-
-## Migration Format
-Upload a zip file containing the SQL migration files (the same set used
-to apply the migrations). Files are renamed to golang-migrate format so
-the matching `*.down.sql` files can be executed.
-
-## Use Cases
-- Roll back migrations via `omnibase db migrate down`
-- Undo a faulty migration during development
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiRollbackDatabaseMigrationsRequest
-*/
-func (a *V1ConfigurationAPIService) RollbackDatabaseMigrations(ctx context.Context) ApiRollbackDatabaseMigrationsRequest {
-	return ApiRollbackDatabaseMigrationsRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return RollbackDatabaseMigrations200Response
-func (a *V1ConfigurationAPIService) RollbackDatabaseMigrationsExecute(r ApiRollbackDatabaseMigrationsRequest) (*RollbackDatabaseMigrations200Response, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *RollbackDatabaseMigrations200Response
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.RollbackDatabaseMigrations")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/database/migrations/down"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.steps == nil {
-		return localVarReturnValue, nil, reportError("steps is required and must be specified")
-	}
-	if *r.steps < 1 {
-		return localVarReturnValue, nil, reportError("steps must be greater than 1")
-	}
-	if r.migrations == nil {
-		return localVarReturnValue, nil, reportError("migrations is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"multipart/form-data"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	parameterAddToHeaderOrQuery(localVarFormParams, "steps", r.steps, "", "")
-	var migrationsLocalVarFormFileName string
-	var migrationsLocalVarFileName     string
-	var migrationsLocalVarFileBytes    []byte
-
-	migrationsLocalVarFormFileName = "migrations"
-	migrationsLocalVarFile := r.migrations
-
-	if migrationsLocalVarFile != nil {
-		fbs, _ := io.ReadAll(migrationsLocalVarFile)
-
-		migrationsLocalVarFileBytes = fbs
-		migrationsLocalVarFileName = migrationsLocalVarFile.Name()
-		migrationsLocalVarFile.Close()
-		formFiles = append(formFiles, formFile{fileBytes: migrationsLocalVarFileBytes, fileName: migrationsLocalVarFileName, formFileName: migrationsLocalVarFormFileName})
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1893,33 +1073,20 @@ func (a *V1ConfigurationAPIService) RollbackDatabaseMigrationsExecute(r ApiRollb
 type ApiSendEmailRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
-	sendEmailRequest *SendEmailRequest
+	sendRequest *SendRequest
 }
 
-func (r ApiSendEmailRequest) SendEmailRequest(sendEmailRequest SendEmailRequest) ApiSendEmailRequest {
-	r.sendEmailRequest = &sendEmailRequest
+func (r ApiSendEmailRequest) SendRequest(sendRequest SendRequest) ApiSendEmailRequest {
+	r.sendRequest = &sendRequest
 	return r
 }
 
-func (r ApiSendEmailRequest) Execute() (*SendEmail200Response, *http.Response, error) {
+func (r ApiSendEmailRequest) Execute() (*SendResponse, *http.Response, error) {
 	return r.ApiService.SendEmailExecute(r)
 }
 
 /*
 SendEmail Send an email
-
-Sends an email to the specified recipient using the configured SMTP server.
-
-## Email Content
-- Supports HTML body content
-- Optional plain text version for email clients that don't support HTML
-- If both HTML and plain text are provided, sends as multipart/alternative
-
-## Use Cases
-- Send transactional emails
-- Send notifications to users
-- Custom email communications
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiSendEmailRequest
@@ -1932,13 +1099,13 @@ func (a *V1ConfigurationAPIService) SendEmail(ctx context.Context) ApiSendEmailR
 }
 
 // Execute executes the request
-//  @return SendEmail200Response
-func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*SendEmail200Response, *http.Response, error) {
+//  @return SendResponse
+func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*SendResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *SendEmail200Response
+		localVarReturnValue  *SendResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.SendEmail")
@@ -1951,8 +1118,8 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.sendEmailRequest == nil {
-		return localVarReturnValue, nil, reportError("sendEmailRequest is required and must be specified")
+	if r.sendRequest == nil {
+		return localVarReturnValue, nil, reportError("sendRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1965,7 +1132,7 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1973,7 +1140,7 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.sendEmailRequest
+	localVarPostBody = r.sendRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2024,8 +1191,7 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2033,29 +1199,6 @@ func (a *V1ConfigurationAPIService) SendEmailExecute(r ApiSendEmailRequest) (*Se
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -2085,25 +1228,9 @@ func (r ApiServeEmailTemplateRequest) Execute() (string, *http.Response, error) 
 /*
 ServeEmailTemplate Serve an email template file
 
-Serves the raw contents of an email template used by Ory Kratos for
-transactional emails (verification, recovery, etc.).
-
-A custom template is looked up in object storage first, falling back to
-the built-in default template shipped with the API.
-
-## Template Types
-- `body` — HTML body template (`email.body.gotmpl`)
-- `plaintext` — plain-text body template (`email.body.plaintext.gotmpl`)
-- `subject` — subject line template (`email.subject.gotmpl`)
-
-## Use Cases
-- Kratos courier template rendering
-- Previewing the active template for a given flow
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param templateName Kratos flow/template name
- @param type_ Which part of the template to serve
+ @param templateName
+ @param type_
  @return ApiServeEmailTemplateRequest
 */
 func (a *V1ConfigurationAPIService) ServeEmailTemplate(ctx context.Context, templateName string, type_ string) ApiServeEmailTemplateRequest {
@@ -2148,7 +1275,7 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"text/plain", "application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2205,8 +1332,7 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2214,40 +1340,6 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -2266,36 +1358,20 @@ func (a *V1ConfigurationAPIService) ServeEmailTemplateExecute(r ApiServeEmailTem
 type ApiUpdateStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
-	stripeConfigUpdateRequest *StripeConfigUpdateRequest
+	body *map[string]interface{}
 }
 
-func (r ApiUpdateStripeConfigRequest) StripeConfigUpdateRequest(stripeConfigUpdateRequest StripeConfigUpdateRequest) ApiUpdateStripeConfigRequest {
-	r.stripeConfigUpdateRequest = &stripeConfigUpdateRequest
+func (r ApiUpdateStripeConfigRequest) Body(body map[string]interface{}) ApiUpdateStripeConfigRequest {
+	r.body = &body
 	return r
 }
 
-func (r ApiUpdateStripeConfigRequest) Execute() (*StripeConfigUpdateResponse, *http.Response, error) {
+func (r ApiUpdateStripeConfigRequest) Execute() (*ConfigResponse, *http.Response, error) {
 	return r.ApiService.UpdateStripeConfigExecute(r)
 }
 
 /*
 UpdateStripeConfig Update Stripe config
-
-Updates the Stripe configuration and syncs with Stripe API to create/update products, prices, meters, and webhooks.
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Deploy new pricing
-- Update product definitions
-- Modify metered billing settings
-- Configure webhook endpoints
-
-## Webhooks
-Include a `webhooks` array to configure webhook endpoints. Webhooks not in the array will be deleted.
-Each webhook can have `connect: true` to listen to events from connected accounts.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUpdateStripeConfigRequest
@@ -2308,13 +1384,13 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfig(ctx context.Context) ApiU
 }
 
 // Execute executes the request
-//  @return StripeConfigUpdateResponse
-func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*StripeConfigUpdateResponse, *http.Response, error) {
+//  @return ConfigResponse
+func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeConfigRequest) (*ConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeConfigUpdateResponse
+		localVarReturnValue  *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.UpdateStripeConfig")
@@ -2327,8 +1403,8 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.stripeConfigUpdateRequest == nil {
-		return localVarReturnValue, nil, reportError("stripeConfigUpdateRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -2341,7 +1417,7 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2349,7 +1425,7 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.stripeConfigUpdateRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2386,8 +1462,7 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2395,201 +1470,6 @@ func (a *V1ConfigurationAPIService) UpdateStripeConfigExecute(r ApiUpdateStripeC
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiUploadDatabaseMigrationsRequest struct {
-	ctx context.Context
-	ApiService *V1ConfigurationAPIService
-	migrations *os.File
-}
-
-// Zip file containing SQL migration files
-func (r ApiUploadDatabaseMigrationsRequest) Migrations(migrations *os.File) ApiUploadDatabaseMigrationsRequest {
-	r.migrations = migrations
-	return r
-}
-
-func (r ApiUploadDatabaseMigrationsRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.UploadDatabaseMigrationsExecute(r)
-}
-
-/*
-UploadDatabaseMigrations Upload database migrations
-
-Uploads SQL migration files and applies them to the user's PostgreSQL database.
-
-## Authentication
-Requires JWT token (typically used by CLI tools, not browser sessions).
-
-## Migration Format
-Upload a zip file containing SQL files named like: `001-seed.sql`, `002-rls.sql`, etc.
-Files are automatically renamed to golang-migrate format: `001_seed.up.sql`, `002_rls.up.sql`.
-
-## Use Cases
-- CLI migration uploads via `omnibase db migration push`
-- CI/CD pipeline integrations
-- Programmatic schema management
-
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiUploadDatabaseMigrationsRequest
-*/
-func (a *V1ConfigurationAPIService) UploadDatabaseMigrations(ctx context.Context) ApiUploadDatabaseMigrationsRequest {
-	return ApiUploadDatabaseMigrationsRequest{
-		ApiService: a,
-		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return map[string]interface{}
-func (a *V1ConfigurationAPIService) UploadDatabaseMigrationsExecute(r ApiUploadDatabaseMigrationsRequest) (map[string]interface{}, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.UploadDatabaseMigrations")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/v1/database/migrations"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.migrations == nil {
-		return localVarReturnValue, nil, reportError("migrations is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"multipart/form-data"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	var migrationsLocalVarFormFileName string
-	var migrationsLocalVarFileName     string
-	var migrationsLocalVarFileBytes    []byte
-
-	migrationsLocalVarFormFileName = "migrations"
-	migrationsLocalVarFile := r.migrations
-
-	if migrationsLocalVarFile != nil {
-		fbs, _ := io.ReadAll(migrationsLocalVarFile)
-
-		migrationsLocalVarFileBytes = fbs
-		migrationsLocalVarFileName = migrationsLocalVarFile.Name()
-		migrationsLocalVarFile.Close()
-		formFiles = append(formFiles, formFile{fileBytes: migrationsLocalVarFileBytes, fileName: migrationsLocalVarFileName, formFileName: migrationsLocalVarFormFileName})
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["X-Service-Key"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v MigrationErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -2608,32 +1488,20 @@ func (a *V1ConfigurationAPIService) UploadDatabaseMigrationsExecute(r ApiUploadD
 type ApiValidateStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
-	stripeConfigValidateRequest *StripeConfigValidateRequest
+	body *map[string]interface{}
 }
 
-// Stripe configuration to validate
-func (r ApiValidateStripeConfigRequest) StripeConfigValidateRequest(stripeConfigValidateRequest StripeConfigValidateRequest) ApiValidateStripeConfigRequest {
-	r.stripeConfigValidateRequest = &stripeConfigValidateRequest
+func (r ApiValidateStripeConfigRequest) Body(body map[string]interface{}) ApiValidateStripeConfigRequest {
+	r.body = &body
 	return r
 }
 
-func (r ApiValidateStripeConfigRequest) Execute() (map[string]interface{}, *http.Response, error) {
+func (r ApiValidateStripeConfigRequest) Execute() (string, *http.Response, error) {
 	return r.ApiService.ValidateStripeConfigExecute(r)
 }
 
 /*
 ValidateStripeConfig Validate Stripe config
-
-Validates a Stripe configuration against the schema without saving or deploying it.
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Pre-deployment validation
-- Configuration testing
-- Schema compliance checking
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiValidateStripeConfigRequest
@@ -2646,13 +1514,13 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfig(ctx context.Context) Ap
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
-func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (map[string]interface{}, *http.Response, error) {
+//  @return string
+func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStripeConfigRequest) (string, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  string
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1ConfigurationAPIService.ValidateStripeConfig")
@@ -2665,8 +1533,8 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.stripeConfigValidateRequest == nil {
-		return localVarReturnValue, nil, reportError("stripeConfigValidateRequest is required and must be specified")
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -2679,7 +1547,7 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -2687,7 +1555,7 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.stripeConfigValidateRequest
+	localVarPostBody = r.body
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -2724,8 +1592,7 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2733,18 +1600,6 @@ func (a *V1ConfigurationAPIService) ValidateStripeConfigExecute(r ApiValidateStr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

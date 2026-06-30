@@ -146,6 +146,7 @@ func NewSandboxClient(t *testing.T) *sdk.APIClient {
 	cfg := sdk.NewConfiguration()
 	cfg.Servers = sdk.ServerConfigurations{sdk.ServerConfiguration{URL: sandboxApiURL}}
 	cfg.DefaultHeader["X-Service-Key"] = ServiceKey
+	cfg.HTTPClient = &http.Client{Transport: ctxHeaderTransport{rt: http.DefaultTransport}}
 	return sdk.NewAPIClient(cfg)
 }
 
@@ -161,11 +162,11 @@ func EnsureStripeConfig(t *testing.T, client *sdk.APIClient, fixtureName string)
 	data, err := os.ReadFile(StripeConfigFixturePath(t, fixtureName))
 	require.NoError(t, err, "read fixture")
 
-	var req sdk.StripeConfigUpdateRequest
+	var req map[string]interface{}
 	require.NoError(t, json.Unmarshal(data, &req), "parse fixture")
 
 	out, httpResp, err := client.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).
-		StripeConfigUpdateRequest(req).
+		Body(req).
 		Execute()
 	require.NoError(t, err, "update stripe config")
 	require.NotNil(t, httpResp)

@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`message` | string
-`archivedItems` | Array&lt;string&gt;
 `archiveErrors` | Array&lt;string&gt;
+`archivedItems` | Array&lt;string&gt;
+`message` | string
 `totalArchived` | number
 `totalErrors` | number
 `warning` | string
@@ -20,12 +20,12 @@ import type { ArchiveAllResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Successfully archived all Stripe resources and cleared local config,
-  "archivedItems": [product: prod_123 (Basic Plan), price: price_456],
-  "archiveErrors": [],
-  "totalArchived": 15,
-  "totalErrors": 0,
-  "warning": Some items failed to archive - see archive_errors for details,
+  "archiveErrors": null,
+  "archivedItems": null,
+  "message": null,
+  "totalArchived": null,
+  "totalErrors": null,
+  "warning": null,
 } satisfies ArchiveAllResponse
 
 console.log(example)

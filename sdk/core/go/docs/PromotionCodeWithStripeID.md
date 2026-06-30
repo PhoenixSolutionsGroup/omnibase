@@ -4,23 +4,23 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Promotion code identifier (config ID) | 
-**Code** | **string** | Customer-facing promotion code | 
-**Coupon** | **string** | Reference to coupon ID | 
-**Active** | Pointer to **bool** | Whether the promotion code is active | [optional] 
-**MaxRedemptions** | Pointer to **int64** | Maximum redemptions | [optional] 
-**FirstTimeTransaction** | Pointer to **bool** | First-time customers only | [optional] 
-**MinimumAmount** | Pointer to **int64** | Minimum order amount | [optional] 
-**MinimumAmountCurrency** | Pointer to **string** | Currency for minimum_amount | [optional] 
-**ExpiresAt** | Pointer to **int64** | Expiration timestamp | [optional] 
+**Active** | Pointer to **bool** |  | [optional] 
+**Code** | **string** |  | 
+**Coupon** | **string** |  | 
+**ExpiresAt** | Pointer to **int64** |  | [optional] 
+**FirstTimeTransaction** | Pointer to **bool** |  | [optional] 
+**Id** | **string** |  | 
+**MaxRedemptions** | Pointer to **int64** |  | [optional] 
 **Metadata** | Pointer to **map[string]string** |  | [optional] 
-**StripeId** | Pointer to **string** | Actual Stripe promotion code ID | [optional] 
+**MinimumAmount** | Pointer to **int64** |  | [optional] 
+**MinimumAmountCurrency** | Pointer to **string** |  | [optional] 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewPromotionCodeWithStripeID
 
-`func NewPromotionCodeWithStripeID(id string, code string, coupon string, ) *PromotionCodeWithStripeID`
+`func NewPromotionCodeWithStripeID(code string, coupon string, id string, ) *PromotionCodeWithStripeID`
 
 NewPromotionCodeWithStripeID instantiates a new PromotionCodeWithStripeID object
 This constructor will assign default values to properties that have it defined,
@@ -35,25 +35,30 @@ NewPromotionCodeWithStripeIDWithDefaults instantiates a new PromotionCodeWithStr
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
+### GetActive
 
-`func (o *PromotionCodeWithStripeID) GetId() string`
+`func (o *PromotionCodeWithStripeID) GetActive() bool`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetActive returns the Active field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetActiveOk
 
-`func (o *PromotionCodeWithStripeID) GetIdOk() (*string, bool)`
+`func (o *PromotionCodeWithStripeID) GetActiveOk() (*bool, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetActiveOk returns a tuple with the Active field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetActive
 
-`func (o *PromotionCodeWithStripeID) SetId(v string)`
+`func (o *PromotionCodeWithStripeID) SetActive(v bool)`
 
-SetId sets Id field to given value.
+SetActive sets Active field to given value.
 
+### HasActive
+
+`func (o *PromotionCodeWithStripeID) HasActive() bool`
+
+HasActive returns a boolean if a field has been set.
 
 ### GetCode
 
@@ -95,30 +100,75 @@ and a boolean to check if the value has been set.
 SetCoupon sets Coupon field to given value.
 
 
-### GetActive
+### GetExpiresAt
 
-`func (o *PromotionCodeWithStripeID) GetActive() bool`
+`func (o *PromotionCodeWithStripeID) GetExpiresAt() int64`
 
-GetActive returns the Active field if non-nil, zero value otherwise.
+GetExpiresAt returns the ExpiresAt field if non-nil, zero value otherwise.
 
-### GetActiveOk
+### GetExpiresAtOk
 
-`func (o *PromotionCodeWithStripeID) GetActiveOk() (*bool, bool)`
+`func (o *PromotionCodeWithStripeID) GetExpiresAtOk() (*int64, bool)`
 
-GetActiveOk returns a tuple with the Active field if it's non-nil, zero value otherwise
+GetExpiresAtOk returns a tuple with the ExpiresAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetActive
+### SetExpiresAt
 
-`func (o *PromotionCodeWithStripeID) SetActive(v bool)`
+`func (o *PromotionCodeWithStripeID) SetExpiresAt(v int64)`
 
-SetActive sets Active field to given value.
+SetExpiresAt sets ExpiresAt field to given value.
 
-### HasActive
+### HasExpiresAt
 
-`func (o *PromotionCodeWithStripeID) HasActive() bool`
+`func (o *PromotionCodeWithStripeID) HasExpiresAt() bool`
 
-HasActive returns a boolean if a field has been set.
+HasExpiresAt returns a boolean if a field has been set.
+
+### GetFirstTimeTransaction
+
+`func (o *PromotionCodeWithStripeID) GetFirstTimeTransaction() bool`
+
+GetFirstTimeTransaction returns the FirstTimeTransaction field if non-nil, zero value otherwise.
+
+### GetFirstTimeTransactionOk
+
+`func (o *PromotionCodeWithStripeID) GetFirstTimeTransactionOk() (*bool, bool)`
+
+GetFirstTimeTransactionOk returns a tuple with the FirstTimeTransaction field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetFirstTimeTransaction
+
+`func (o *PromotionCodeWithStripeID) SetFirstTimeTransaction(v bool)`
+
+SetFirstTimeTransaction sets FirstTimeTransaction field to given value.
+
+### HasFirstTimeTransaction
+
+`func (o *PromotionCodeWithStripeID) HasFirstTimeTransaction() bool`
+
+HasFirstTimeTransaction returns a boolean if a field has been set.
+
+### GetId
+
+`func (o *PromotionCodeWithStripeID) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *PromotionCodeWithStripeID) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *PromotionCodeWithStripeID) SetId(v string)`
+
+SetId sets Id field to given value.
+
 
 ### GetMaxRedemptions
 
@@ -145,30 +195,30 @@ SetMaxRedemptions sets MaxRedemptions field to given value.
 
 HasMaxRedemptions returns a boolean if a field has been set.
 
-### GetFirstTimeTransaction
+### GetMetadata
 
-`func (o *PromotionCodeWithStripeID) GetFirstTimeTransaction() bool`
+`func (o *PromotionCodeWithStripeID) GetMetadata() map[string]string`
 
-GetFirstTimeTransaction returns the FirstTimeTransaction field if non-nil, zero value otherwise.
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
-### GetFirstTimeTransactionOk
+### GetMetadataOk
 
-`func (o *PromotionCodeWithStripeID) GetFirstTimeTransactionOk() (*bool, bool)`
+`func (o *PromotionCodeWithStripeID) GetMetadataOk() (*map[string]string, bool)`
 
-GetFirstTimeTransactionOk returns a tuple with the FirstTimeTransaction field if it's non-nil, zero value otherwise
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetFirstTimeTransaction
+### SetMetadata
 
-`func (o *PromotionCodeWithStripeID) SetFirstTimeTransaction(v bool)`
+`func (o *PromotionCodeWithStripeID) SetMetadata(v map[string]string)`
 
-SetFirstTimeTransaction sets FirstTimeTransaction field to given value.
+SetMetadata sets Metadata field to given value.
 
-### HasFirstTimeTransaction
+### HasMetadata
 
-`func (o *PromotionCodeWithStripeID) HasFirstTimeTransaction() bool`
+`func (o *PromotionCodeWithStripeID) HasMetadata() bool`
 
-HasFirstTimeTransaction returns a boolean if a field has been set.
+HasMetadata returns a boolean if a field has been set.
 
 ### GetMinimumAmount
 
@@ -219,56 +269,6 @@ SetMinimumAmountCurrency sets MinimumAmountCurrency field to given value.
 `func (o *PromotionCodeWithStripeID) HasMinimumAmountCurrency() bool`
 
 HasMinimumAmountCurrency returns a boolean if a field has been set.
-
-### GetExpiresAt
-
-`func (o *PromotionCodeWithStripeID) GetExpiresAt() int64`
-
-GetExpiresAt returns the ExpiresAt field if non-nil, zero value otherwise.
-
-### GetExpiresAtOk
-
-`func (o *PromotionCodeWithStripeID) GetExpiresAtOk() (*int64, bool)`
-
-GetExpiresAtOk returns a tuple with the ExpiresAt field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetExpiresAt
-
-`func (o *PromotionCodeWithStripeID) SetExpiresAt(v int64)`
-
-SetExpiresAt sets ExpiresAt field to given value.
-
-### HasExpiresAt
-
-`func (o *PromotionCodeWithStripeID) HasExpiresAt() bool`
-
-HasExpiresAt returns a boolean if a field has been set.
-
-### GetMetadata
-
-`func (o *PromotionCodeWithStripeID) GetMetadata() map[string]string`
-
-GetMetadata returns the Metadata field if non-nil, zero value otherwise.
-
-### GetMetadataOk
-
-`func (o *PromotionCodeWithStripeID) GetMetadataOk() (*map[string]string, bool)`
-
-GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetMetadata
-
-`func (o *PromotionCodeWithStripeID) SetMetadata(v map[string]string)`
-
-SetMetadata sets Metadata field to given value.
-
-### HasMetadata
-
-`func (o *PromotionCodeWithStripeID) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetStripeId
 

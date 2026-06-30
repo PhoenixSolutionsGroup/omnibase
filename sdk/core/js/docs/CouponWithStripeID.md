@@ -6,17 +6,17 @@
 
 Name | Type
 ------------ | -------------
+`amountOff` | number
+`appliesTo` | Array&lt;string&gt;
+`currency` | string
+`duration` | string
+`durationInMonths` | number
 `id` | string
+`maxRedemptions` | number
+`metadata` | { [key: string]: string; }
 `name` | string
 `percentOff` | number
-`amountOff` | number
-`currency` | string
-`duration` | [CouponDuration](CouponDuration.md)
-`durationInMonths` | number
-`maxRedemptions` | number
 `redeemBy` | number
-`appliesTo` | Array&lt;string&gt;
-`metadata` | { [key: string]: string; }
 `stripeId` | string
 
 ## Example
@@ -26,18 +26,18 @@ import type { CouponWithStripeID } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": launch_discount,
-  "name": Launch Discount,
-  "percentOff": 20,
-  "amountOff": 500,
-  "currency": usd,
-  "duration": null,
-  "durationInMonths": 3,
-  "maxRedemptions": 100,
-  "redeemBy": 1735689600,
+  "amountOff": null,
   "appliesTo": null,
+  "currency": null,
+  "duration": null,
+  "durationInMonths": null,
+  "id": null,
+  "maxRedemptions": null,
   "metadata": null,
-  "stripeId": coupon_1SRiyyCJIZaBlhY1,
+  "name": null,
+  "percentOff": null,
+  "redeemBy": null,
+  "stripeId": null,
 } satisfies CouponWithStripeID
 
 console.log(example)

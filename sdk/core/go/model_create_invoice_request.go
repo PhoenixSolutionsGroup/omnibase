@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,16 +22,11 @@ var _ MappedNullable = &CreateInvoiceRequest{}
 
 // CreateInvoiceRequest struct for CreateInvoiceRequest
 type CreateInvoiceRequest struct {
-	Currency CurrencyCode `json:"currency"`
-	// Whether to auto-advance the invoice (send immediately after finalization)
 	AutoAdvance *bool `json:"auto_advance,omitempty"`
-	// How to collect payment. `charge_automatically` (default) attempts to charge the customer's default payment method. `send_invoice` emails the customer (requires `days_until_due`).
 	CollectionMethod *string `json:"collection_method,omitempty"`
-	// Days until invoice is due. Required when `collection_method` is `send_invoice`.
-	DaysUntilDue *int32 `json:"days_until_due,omitempty"`
-	// Optional description for the invoice
+	Currency string `json:"currency"`
+	DaysUntilDue *int64 `json:"days_until_due,omitempty"`
 	Description *string `json:"description,omitempty"`
-	// Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars)
 	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
@@ -41,7 +36,7 @@ type _CreateInvoiceRequest CreateInvoiceRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateInvoiceRequest(currency CurrencyCode) *CreateInvoiceRequest {
+func NewCreateInvoiceRequest(currency string) *CreateInvoiceRequest {
 	this := CreateInvoiceRequest{}
 	this.Currency = currency
 	return &this
@@ -53,30 +48,6 @@ func NewCreateInvoiceRequest(currency CurrencyCode) *CreateInvoiceRequest {
 func NewCreateInvoiceRequestWithDefaults() *CreateInvoiceRequest {
 	this := CreateInvoiceRequest{}
 	return &this
-}
-
-// GetCurrency returns the Currency field value
-func (o *CreateInvoiceRequest) GetCurrency() CurrencyCode {
-	if o == nil {
-		var ret CurrencyCode
-		return ret
-	}
-
-	return o.Currency
-}
-
-// GetCurrencyOk returns a tuple with the Currency field value
-// and a boolean to check if the value has been set.
-func (o *CreateInvoiceRequest) GetCurrencyOk() (*CurrencyCode, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Currency, true
-}
-
-// SetCurrency sets field value
-func (o *CreateInvoiceRequest) SetCurrency(v CurrencyCode) {
-	o.Currency = v
 }
 
 // GetAutoAdvance returns the AutoAdvance field value if set, zero value otherwise.
@@ -143,10 +114,34 @@ func (o *CreateInvoiceRequest) SetCollectionMethod(v string) {
 	o.CollectionMethod = &v
 }
 
+// GetCurrency returns the Currency field value
+func (o *CreateInvoiceRequest) GetCurrency() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Currency
+}
+
+// GetCurrencyOk returns a tuple with the Currency field value
+// and a boolean to check if the value has been set.
+func (o *CreateInvoiceRequest) GetCurrencyOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Currency, true
+}
+
+// SetCurrency sets field value
+func (o *CreateInvoiceRequest) SetCurrency(v string) {
+	o.Currency = v
+}
+
 // GetDaysUntilDue returns the DaysUntilDue field value if set, zero value otherwise.
-func (o *CreateInvoiceRequest) GetDaysUntilDue() int32 {
+func (o *CreateInvoiceRequest) GetDaysUntilDue() int64 {
 	if o == nil || IsNil(o.DaysUntilDue) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.DaysUntilDue
@@ -154,7 +149,7 @@ func (o *CreateInvoiceRequest) GetDaysUntilDue() int32 {
 
 // GetDaysUntilDueOk returns a tuple with the DaysUntilDue field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int32, bool) {
+func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int64, bool) {
 	if o == nil || IsNil(o.DaysUntilDue) {
 		return nil, false
 	}
@@ -170,8 +165,8 @@ func (o *CreateInvoiceRequest) HasDaysUntilDue() bool {
 	return false
 }
 
-// SetDaysUntilDue gets a reference to the given int32 and assigns it to the DaysUntilDue field.
-func (o *CreateInvoiceRequest) SetDaysUntilDue(v int32) {
+// SetDaysUntilDue gets a reference to the given int64 and assigns it to the DaysUntilDue field.
+func (o *CreateInvoiceRequest) SetDaysUntilDue(v int64) {
 	o.DaysUntilDue = &v
 }
 
@@ -249,13 +244,13 @@ func (o CreateInvoiceRequest) MarshalJSON() ([]byte, error) {
 
 func (o CreateInvoiceRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["currency"] = o.Currency
 	if !IsNil(o.AutoAdvance) {
 		toSerialize["auto_advance"] = o.AutoAdvance
 	}
 	if !IsNil(o.CollectionMethod) {
 		toSerialize["collection_method"] = o.CollectionMethod
 	}
+	toSerialize["currency"] = o.Currency
 	if !IsNil(o.DaysUntilDue) {
 		toSerialize["days_until_due"] = o.DaysUntilDue
 	}

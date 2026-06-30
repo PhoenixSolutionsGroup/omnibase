@@ -6,12 +6,12 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`stripeId` | string
-`name` | string
 `description` | string
-`type` | string
+`id` | string
+`name` | string
 `prices` | [Array&lt;Price&gt;](Price.md)
+`stripeId` | string
+`type` | string
 `ui` | [ProductUI](ProductUI.md)
 
 ## Example
@@ -21,12 +21,12 @@ import type { Product } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": basic_plan,
-  "stripeId": prod_1SRiyyCJIZaBlhY1,
-  "name": Basic Plan,
-  "description": Our basic subscription tier,
-  "type": service,
+  "description": null,
+  "id": null,
+  "name": null,
   "prices": null,
+  "stripeId": null,
+  "type": null,
   "ui": null,
 } satisfies Product
 

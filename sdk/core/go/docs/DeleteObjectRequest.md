@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Path** | **string** | Path of the file to delete. Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens. | 
+**Path** | **string** |  | 
 
 ## Methods
 

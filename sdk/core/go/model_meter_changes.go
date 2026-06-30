@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -18,14 +18,11 @@ import (
 // checks if the MeterChanges type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &MeterChanges{}
 
-// MeterChanges Summary of meter changes made during configuration update
+// MeterChanges struct for MeterChanges
 type MeterChanges struct {
-	// Meters that were created in Stripe
-	Created []MeterChange `json:"created,omitempty"`
-	// Meters that were updated
-	Updated []MeterChange `json:"updated,omitempty"`
-	// Meters that were archived
 	Archived []MeterChange `json:"archived,omitempty"`
+	Created []MeterChange `json:"created,omitempty"`
+	Updated []MeterChange `json:"updated,omitempty"`
 }
 
 // NewMeterChanges instantiates a new MeterChanges object
@@ -45,73 +42,9 @@ func NewMeterChangesWithDefaults() *MeterChanges {
 	return &this
 }
 
-// GetCreated returns the Created field value if set, zero value otherwise.
-func (o *MeterChanges) GetCreated() []MeterChange {
-	if o == nil || IsNil(o.Created) {
-		var ret []MeterChange
-		return ret
-	}
-	return o.Created
-}
-
-// GetCreatedOk returns a tuple with the Created field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MeterChanges) GetCreatedOk() ([]MeterChange, bool) {
-	if o == nil || IsNil(o.Created) {
-		return nil, false
-	}
-	return o.Created, true
-}
-
-// HasCreated returns a boolean if a field has been set.
-func (o *MeterChanges) HasCreated() bool {
-	if o != nil && !IsNil(o.Created) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreated gets a reference to the given []MeterChange and assigns it to the Created field.
-func (o *MeterChanges) SetCreated(v []MeterChange) {
-	o.Created = v
-}
-
-// GetUpdated returns the Updated field value if set, zero value otherwise.
-func (o *MeterChanges) GetUpdated() []MeterChange {
-	if o == nil || IsNil(o.Updated) {
-		var ret []MeterChange
-		return ret
-	}
-	return o.Updated
-}
-
-// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MeterChanges) GetUpdatedOk() ([]MeterChange, bool) {
-	if o == nil || IsNil(o.Updated) {
-		return nil, false
-	}
-	return o.Updated, true
-}
-
-// HasUpdated returns a boolean if a field has been set.
-func (o *MeterChanges) HasUpdated() bool {
-	if o != nil && !IsNil(o.Updated) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdated gets a reference to the given []MeterChange and assigns it to the Updated field.
-func (o *MeterChanges) SetUpdated(v []MeterChange) {
-	o.Updated = v
-}
-
-// GetArchived returns the Archived field value if set, zero value otherwise.
+// GetArchived returns the Archived field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MeterChanges) GetArchived() []MeterChange {
-	if o == nil || IsNil(o.Archived) {
+	if o == nil {
 		var ret []MeterChange
 		return ret
 	}
@@ -120,6 +53,7 @@ func (o *MeterChanges) GetArchived() []MeterChange {
 
 // GetArchivedOk returns a tuple with the Archived field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MeterChanges) GetArchivedOk() ([]MeterChange, bool) {
 	if o == nil || IsNil(o.Archived) {
 		return nil, false
@@ -141,6 +75,72 @@ func (o *MeterChanges) SetArchived(v []MeterChange) {
 	o.Archived = v
 }
 
+// GetCreated returns the Created field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MeterChanges) GetCreated() []MeterChange {
+	if o == nil {
+		var ret []MeterChange
+		return ret
+	}
+	return o.Created
+}
+
+// GetCreatedOk returns a tuple with the Created field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MeterChanges) GetCreatedOk() ([]MeterChange, bool) {
+	if o == nil || IsNil(o.Created) {
+		return nil, false
+	}
+	return o.Created, true
+}
+
+// HasCreated returns a boolean if a field has been set.
+func (o *MeterChanges) HasCreated() bool {
+	if o != nil && !IsNil(o.Created) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreated gets a reference to the given []MeterChange and assigns it to the Created field.
+func (o *MeterChanges) SetCreated(v []MeterChange) {
+	o.Created = v
+}
+
+// GetUpdated returns the Updated field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *MeterChanges) GetUpdated() []MeterChange {
+	if o == nil {
+		var ret []MeterChange
+		return ret
+	}
+	return o.Updated
+}
+
+// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *MeterChanges) GetUpdatedOk() ([]MeterChange, bool) {
+	if o == nil || IsNil(o.Updated) {
+		return nil, false
+	}
+	return o.Updated, true
+}
+
+// HasUpdated returns a boolean if a field has been set.
+func (o *MeterChanges) HasUpdated() bool {
+	if o != nil && !IsNil(o.Updated) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdated gets a reference to the given []MeterChange and assigns it to the Updated field.
+func (o *MeterChanges) SetUpdated(v []MeterChange) {
+	o.Updated = v
+}
+
 func (o MeterChanges) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -151,14 +151,14 @@ func (o MeterChanges) MarshalJSON() ([]byte, error) {
 
 func (o MeterChanges) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Created) {
+	if o.Archived != nil {
+		toSerialize["archived"] = o.Archived
+	}
+	if o.Created != nil {
 		toSerialize["created"] = o.Created
 	}
-	if !IsNil(o.Updated) {
+	if o.Updated != nil {
 		toSerialize["updated"] = o.Updated
-	}
-	if !IsNil(o.Archived) {
-		toSerialize["archived"] = o.Archived
 	}
 	return toSerialize, nil
 }

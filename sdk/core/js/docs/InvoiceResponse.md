@@ -6,13 +6,13 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`status` | string
 `amountDue` | number
 `currency` | string
 `customerId` | string
-`invoicePdf` | string
 `hostedInvoiceUrl` | string
+`id` | string
+`invoicePdf` | string
+`status` | string
 
 ## Example
 
@@ -21,13 +21,13 @@ import type { InvoiceResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": in_1234567890,
-  "status": draft,
-  "amountDue": 2000,
-  "currency": usd,
-  "customerId": cus_1234567890,
-  "invoicePdf": https://pay.stripe.com/invoice/...,
-  "hostedInvoiceUrl": https://invoice.stripe.com/i/...,
+  "amountDue": null,
+  "currency": null,
+  "customerId": null,
+  "hostedInvoiceUrl": null,
+  "id": null,
+  "invoicePdf": null,
+  "status": null,
 } satisfies InvoiceResponse
 
 console.log(example)

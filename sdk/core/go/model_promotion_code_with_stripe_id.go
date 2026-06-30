@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,26 +22,16 @@ var _ MappedNullable = &PromotionCodeWithStripeID{}
 
 // PromotionCodeWithStripeID struct for PromotionCodeWithStripeID
 type PromotionCodeWithStripeID struct {
-	// Promotion code identifier (config ID)
-	Id string `json:"id"`
-	// Customer-facing promotion code
-	Code string `json:"code"`
-	// Reference to coupon ID
-	Coupon string `json:"coupon"`
-	// Whether the promotion code is active
 	Active *bool `json:"active,omitempty"`
-	// Maximum redemptions
-	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
-	// First-time customers only
-	FirstTimeTransaction *bool `json:"first_time_transaction,omitempty"`
-	// Minimum order amount
-	MinimumAmount *int64 `json:"minimum_amount,omitempty"`
-	// Currency for minimum_amount
-	MinimumAmountCurrency *string `json:"minimum_amount_currency,omitempty"`
-	// Expiration timestamp
+	Code string `json:"code"`
+	Coupon string `json:"coupon"`
 	ExpiresAt *int64 `json:"expires_at,omitempty"`
+	FirstTimeTransaction *bool `json:"first_time_transaction,omitempty"`
+	Id string `json:"id"`
+	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
 	Metadata map[string]string `json:"metadata,omitempty"`
-	// Actual Stripe promotion code ID
+	MinimumAmount *int64 `json:"minimum_amount,omitempty"`
+	MinimumAmountCurrency *string `json:"minimum_amount_currency,omitempty"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -51,11 +41,11 @@ type _PromotionCodeWithStripeID PromotionCodeWithStripeID
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPromotionCodeWithStripeID(id string, code string, coupon string) *PromotionCodeWithStripeID {
+func NewPromotionCodeWithStripeID(code string, coupon string, id string) *PromotionCodeWithStripeID {
 	this := PromotionCodeWithStripeID{}
-	this.Id = id
 	this.Code = code
 	this.Coupon = coupon
+	this.Id = id
 	return &this
 }
 
@@ -67,28 +57,36 @@ func NewPromotionCodeWithStripeIDWithDefaults() *PromotionCodeWithStripeID {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *PromotionCodeWithStripeID) GetId() string {
-	if o == nil {
-		var ret string
+// GetActive returns the Active field value if set, zero value otherwise.
+func (o *PromotionCodeWithStripeID) GetActive() bool {
+	if o == nil || IsNil(o.Active) {
+		var ret bool
 		return ret
 	}
-
-	return o.Id
+	return *o.Active
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetActiveOk returns a tuple with the Active field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PromotionCodeWithStripeID) GetIdOk() (*string, bool) {
-	if o == nil {
+func (o *PromotionCodeWithStripeID) GetActiveOk() (*bool, bool) {
+	if o == nil || IsNil(o.Active) {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Active, true
 }
 
-// SetId sets field value
-func (o *PromotionCodeWithStripeID) SetId(v string) {
-	o.Id = v
+// HasActive returns a boolean if a field has been set.
+func (o *PromotionCodeWithStripeID) HasActive() bool {
+	if o != nil && !IsNil(o.Active) {
+		return true
+	}
+
+	return false
+}
+
+// SetActive gets a reference to the given bool and assigns it to the Active field.
+func (o *PromotionCodeWithStripeID) SetActive(v bool) {
+	o.Active = &v
 }
 
 // GetCode returns the Code field value
@@ -139,36 +137,92 @@ func (o *PromotionCodeWithStripeID) SetCoupon(v string) {
 	o.Coupon = v
 }
 
-// GetActive returns the Active field value if set, zero value otherwise.
-func (o *PromotionCodeWithStripeID) GetActive() bool {
-	if o == nil || IsNil(o.Active) {
-		var ret bool
+// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
+func (o *PromotionCodeWithStripeID) GetExpiresAt() int64 {
+	if o == nil || IsNil(o.ExpiresAt) {
+		var ret int64
 		return ret
 	}
-	return *o.Active
+	return *o.ExpiresAt
 }
 
-// GetActiveOk returns a tuple with the Active field value if set, nil otherwise
+// GetExpiresAtOk returns a tuple with the ExpiresAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PromotionCodeWithStripeID) GetActiveOk() (*bool, bool) {
-	if o == nil || IsNil(o.Active) {
+func (o *PromotionCodeWithStripeID) GetExpiresAtOk() (*int64, bool) {
+	if o == nil || IsNil(o.ExpiresAt) {
 		return nil, false
 	}
-	return o.Active, true
+	return o.ExpiresAt, true
 }
 
-// HasActive returns a boolean if a field has been set.
-func (o *PromotionCodeWithStripeID) HasActive() bool {
-	if o != nil && !IsNil(o.Active) {
+// HasExpiresAt returns a boolean if a field has been set.
+func (o *PromotionCodeWithStripeID) HasExpiresAt() bool {
+	if o != nil && !IsNil(o.ExpiresAt) {
 		return true
 	}
 
 	return false
 }
 
-// SetActive gets a reference to the given bool and assigns it to the Active field.
-func (o *PromotionCodeWithStripeID) SetActive(v bool) {
-	o.Active = &v
+// SetExpiresAt gets a reference to the given int64 and assigns it to the ExpiresAt field.
+func (o *PromotionCodeWithStripeID) SetExpiresAt(v int64) {
+	o.ExpiresAt = &v
+}
+
+// GetFirstTimeTransaction returns the FirstTimeTransaction field value if set, zero value otherwise.
+func (o *PromotionCodeWithStripeID) GetFirstTimeTransaction() bool {
+	if o == nil || IsNil(o.FirstTimeTransaction) {
+		var ret bool
+		return ret
+	}
+	return *o.FirstTimeTransaction
+}
+
+// GetFirstTimeTransactionOk returns a tuple with the FirstTimeTransaction field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PromotionCodeWithStripeID) GetFirstTimeTransactionOk() (*bool, bool) {
+	if o == nil || IsNil(o.FirstTimeTransaction) {
+		return nil, false
+	}
+	return o.FirstTimeTransaction, true
+}
+
+// HasFirstTimeTransaction returns a boolean if a field has been set.
+func (o *PromotionCodeWithStripeID) HasFirstTimeTransaction() bool {
+	if o != nil && !IsNil(o.FirstTimeTransaction) {
+		return true
+	}
+
+	return false
+}
+
+// SetFirstTimeTransaction gets a reference to the given bool and assigns it to the FirstTimeTransaction field.
+func (o *PromotionCodeWithStripeID) SetFirstTimeTransaction(v bool) {
+	o.FirstTimeTransaction = &v
+}
+
+// GetId returns the Id field value
+func (o *PromotionCodeWithStripeID) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *PromotionCodeWithStripeID) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *PromotionCodeWithStripeID) SetId(v string) {
+	o.Id = v
 }
 
 // GetMaxRedemptions returns the MaxRedemptions field value if set, zero value otherwise.
@@ -203,36 +257,36 @@ func (o *PromotionCodeWithStripeID) SetMaxRedemptions(v int64) {
 	o.MaxRedemptions = &v
 }
 
-// GetFirstTimeTransaction returns the FirstTimeTransaction field value if set, zero value otherwise.
-func (o *PromotionCodeWithStripeID) GetFirstTimeTransaction() bool {
-	if o == nil || IsNil(o.FirstTimeTransaction) {
-		var ret bool
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *PromotionCodeWithStripeID) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
 		return ret
 	}
-	return *o.FirstTimeTransaction
+	return o.Metadata
 }
 
-// GetFirstTimeTransactionOk returns a tuple with the FirstTimeTransaction field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PromotionCodeWithStripeID) GetFirstTimeTransactionOk() (*bool, bool) {
-	if o == nil || IsNil(o.FirstTimeTransaction) {
-		return nil, false
+func (o *PromotionCodeWithStripeID) GetMetadataOk() (map[string]string, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]string{}, false
 	}
-	return o.FirstTimeTransaction, true
+	return o.Metadata, true
 }
 
-// HasFirstTimeTransaction returns a boolean if a field has been set.
-func (o *PromotionCodeWithStripeID) HasFirstTimeTransaction() bool {
-	if o != nil && !IsNil(o.FirstTimeTransaction) {
+// HasMetadata returns a boolean if a field has been set.
+func (o *PromotionCodeWithStripeID) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetFirstTimeTransaction gets a reference to the given bool and assigns it to the FirstTimeTransaction field.
-func (o *PromotionCodeWithStripeID) SetFirstTimeTransaction(v bool) {
-	o.FirstTimeTransaction = &v
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *PromotionCodeWithStripeID) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetMinimumAmount returns the MinimumAmount field value if set, zero value otherwise.
@@ -299,70 +353,6 @@ func (o *PromotionCodeWithStripeID) SetMinimumAmountCurrency(v string) {
 	o.MinimumAmountCurrency = &v
 }
 
-// GetExpiresAt returns the ExpiresAt field value if set, zero value otherwise.
-func (o *PromotionCodeWithStripeID) GetExpiresAt() int64 {
-	if o == nil || IsNil(o.ExpiresAt) {
-		var ret int64
-		return ret
-	}
-	return *o.ExpiresAt
-}
-
-// GetExpiresAtOk returns a tuple with the ExpiresAt field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PromotionCodeWithStripeID) GetExpiresAtOk() (*int64, bool) {
-	if o == nil || IsNil(o.ExpiresAt) {
-		return nil, false
-	}
-	return o.ExpiresAt, true
-}
-
-// HasExpiresAt returns a boolean if a field has been set.
-func (o *PromotionCodeWithStripeID) HasExpiresAt() bool {
-	if o != nil && !IsNil(o.ExpiresAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetExpiresAt gets a reference to the given int64 and assigns it to the ExpiresAt field.
-func (o *PromotionCodeWithStripeID) SetExpiresAt(v int64) {
-	o.ExpiresAt = &v
-}
-
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *PromotionCodeWithStripeID) GetMetadata() map[string]string {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]string
-		return ret
-	}
-	return o.Metadata
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PromotionCodeWithStripeID) GetMetadataOk() (map[string]string, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]string{}, false
-	}
-	return o.Metadata, true
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *PromotionCodeWithStripeID) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *PromotionCodeWithStripeID) SetMetadata(v map[string]string) {
-	o.Metadata = v
-}
-
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
 func (o *PromotionCodeWithStripeID) GetStripeId() string {
 	if o == nil || IsNil(o.StripeId) {
@@ -405,29 +395,29 @@ func (o PromotionCodeWithStripeID) MarshalJSON() ([]byte, error) {
 
 func (o PromotionCodeWithStripeID) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	toSerialize["code"] = o.Code
-	toSerialize["coupon"] = o.Coupon
 	if !IsNil(o.Active) {
 		toSerialize["active"] = o.Active
 	}
-	if !IsNil(o.MaxRedemptions) {
-		toSerialize["max_redemptions"] = o.MaxRedemptions
+	toSerialize["code"] = o.Code
+	toSerialize["coupon"] = o.Coupon
+	if !IsNil(o.ExpiresAt) {
+		toSerialize["expires_at"] = o.ExpiresAt
 	}
 	if !IsNil(o.FirstTimeTransaction) {
 		toSerialize["first_time_transaction"] = o.FirstTimeTransaction
+	}
+	toSerialize["id"] = o.Id
+	if !IsNil(o.MaxRedemptions) {
+		toSerialize["max_redemptions"] = o.MaxRedemptions
+	}
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if !IsNil(o.MinimumAmount) {
 		toSerialize["minimum_amount"] = o.MinimumAmount
 	}
 	if !IsNil(o.MinimumAmountCurrency) {
 		toSerialize["minimum_amount_currency"] = o.MinimumAmountCurrency
-	}
-	if !IsNil(o.ExpiresAt) {
-		toSerialize["expires_at"] = o.ExpiresAt
-	}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
 	}
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
@@ -440,9 +430,9 @@ func (o *PromotionCodeWithStripeID) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
 		"code",
 		"coupon",
+		"id",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
+`action` | string
 `priceId` | string
 `productId` | string
-`action` | string
 `stripeId` | string
 
 ## Example
@@ -18,10 +18,10 @@ import type { PriceChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "priceId": basic_monthly,
-  "productId": basic_plan,
-  "action": created,
-  "stripeId": price_123abc,
+  "action": null,
+  "priceId": null,
+  "productId": null,
+  "stripeId": null,
 } satisfies PriceChange
 
 console.log(example)

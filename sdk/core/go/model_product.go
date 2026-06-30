@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,18 +22,12 @@ var _ MappedNullable = &Product{}
 
 // Product struct for Product
 type Product struct {
-	// Product identifier (config ID)
-	Id string `json:"id"`
-	// Original Stripe ID for migration support (optional, used to link existing Stripe products)
-	StripeId *string `json:"stripe_id,omitempty"`
-	// Product name
-	Name string `json:"name"`
-	// Product description
 	Description *string `json:"description,omitempty"`
-	// Product type
-	Type *string `json:"type,omitempty"`
-	// List of prices for this product
+	Id string `json:"id"`
+	Name string `json:"name"`
 	Prices []Price `json:"prices"`
+	StripeId *string `json:"stripe_id,omitempty"`
+	Type *string `json:"type,omitempty"`
 	Ui *ProductUI `json:"ui,omitempty"`
 }
 
@@ -57,86 +51,6 @@ func NewProduct(id string, name string, prices []Price) *Product {
 func NewProductWithDefaults() *Product {
 	this := Product{}
 	return &this
-}
-
-// GetId returns the Id field value
-func (o *Product) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *Product) GetIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *Product) SetId(v string) {
-	o.Id = v
-}
-
-// GetStripeId returns the StripeId field value if set, zero value otherwise.
-func (o *Product) GetStripeId() string {
-	if o == nil || IsNil(o.StripeId) {
-		var ret string
-		return ret
-	}
-	return *o.StripeId
-}
-
-// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Product) GetStripeIdOk() (*string, bool) {
-	if o == nil || IsNil(o.StripeId) {
-		return nil, false
-	}
-	return o.StripeId, true
-}
-
-// HasStripeId returns a boolean if a field has been set.
-func (o *Product) HasStripeId() bool {
-	if o != nil && !IsNil(o.StripeId) {
-		return true
-	}
-
-	return false
-}
-
-// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
-func (o *Product) SetStripeId(v string) {
-	o.StripeId = &v
-}
-
-// GetName returns the Name field value
-func (o *Product) GetName() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Name
-}
-
-// GetNameOk returns a tuple with the Name field value
-// and a boolean to check if the value has been set.
-func (o *Product) GetNameOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Name, true
-}
-
-// SetName sets field value
-func (o *Product) SetName(v string) {
-	o.Name = v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
@@ -171,6 +85,112 @@ func (o *Product) SetDescription(v string) {
 	o.Description = &v
 }
 
+// GetId returns the Id field value
+func (o *Product) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *Product) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *Product) SetId(v string) {
+	o.Id = v
+}
+
+// GetName returns the Name field value
+func (o *Product) GetName() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value
+// and a boolean to check if the value has been set.
+func (o *Product) GetNameOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Name, true
+}
+
+// SetName sets field value
+func (o *Product) SetName(v string) {
+	o.Name = v
+}
+
+// GetPrices returns the Prices field value
+// If the value is explicit nil, the zero value for []Price will be returned
+func (o *Product) GetPrices() []Price {
+	if o == nil {
+		var ret []Price
+		return ret
+	}
+
+	return o.Prices
+}
+
+// GetPricesOk returns a tuple with the Prices field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Product) GetPricesOk() ([]Price, bool) {
+	if o == nil || IsNil(o.Prices) {
+		return nil, false
+	}
+	return o.Prices, true
+}
+
+// SetPrices sets field value
+func (o *Product) SetPrices(v []Price) {
+	o.Prices = v
+}
+
+// GetStripeId returns the StripeId field value if set, zero value otherwise.
+func (o *Product) GetStripeId() string {
+	if o == nil || IsNil(o.StripeId) {
+		var ret string
+		return ret
+	}
+	return *o.StripeId
+}
+
+// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Product) GetStripeIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeId) {
+		return nil, false
+	}
+	return o.StripeId, true
+}
+
+// HasStripeId returns a boolean if a field has been set.
+func (o *Product) HasStripeId() bool {
+	if o != nil && !IsNil(o.StripeId) {
+		return true
+	}
+
+	return false
+}
+
+// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
+func (o *Product) SetStripeId(v string) {
+	o.StripeId = &v
+}
+
 // GetType returns the Type field value if set, zero value otherwise.
 func (o *Product) GetType() string {
 	if o == nil || IsNil(o.Type) {
@@ -201,30 +221,6 @@ func (o *Product) HasType() bool {
 // SetType gets a reference to the given string and assigns it to the Type field.
 func (o *Product) SetType(v string) {
 	o.Type = &v
-}
-
-// GetPrices returns the Prices field value
-func (o *Product) GetPrices() []Price {
-	if o == nil {
-		var ret []Price
-		return ret
-	}
-
-	return o.Prices
-}
-
-// GetPricesOk returns a tuple with the Prices field value
-// and a boolean to check if the value has been set.
-func (o *Product) GetPricesOk() ([]Price, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.Prices, true
-}
-
-// SetPrices sets field value
-func (o *Product) SetPrices(v []Price) {
-	o.Prices = v
 }
 
 // GetUi returns the Ui field value if set, zero value otherwise.
@@ -269,18 +265,20 @@ func (o Product) MarshalJSON() ([]byte, error) {
 
 func (o Product) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	if !IsNil(o.StripeId) {
-		toSerialize["stripe_id"] = o.StripeId
-	}
-	toSerialize["name"] = o.Name
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
+	}
+	toSerialize["id"] = o.Id
+	toSerialize["name"] = o.Name
+	if o.Prices != nil {
+		toSerialize["prices"] = o.Prices
+	}
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
 	}
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
-	toSerialize["prices"] = o.Prices
 	if !IsNil(o.Ui) {
 		toSerialize["ui"] = o.Ui
 	}

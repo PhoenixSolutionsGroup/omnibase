@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -23,17 +23,11 @@ var _ MappedNullable = &EmailTemplate{}
 
 // EmailTemplate struct for EmailTemplate
 type EmailTemplate struct {
-	// Template ID (UUID)
-	Id string `json:"id"`
-	// Template type identifier
-	Type string `json:"type"`
-	// Email subject line
-	Subject string `json:"subject"`
-	// HTML email body content
-	HtmlBody string `json:"html_body"`
-	// Creation timestamp
 	CreatedAt time.Time `json:"created_at"`
-	// Last update timestamp
+	HtmlBody string `json:"html_body"`
+	Id string `json:"id"`
+	Subject string `json:"subject"`
+	Type string `json:"type"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
@@ -43,13 +37,13 @@ type _EmailTemplate EmailTemplate
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEmailTemplate(id string, type_ string, subject string, htmlBody string, createdAt time.Time, updatedAt time.Time) *EmailTemplate {
+func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, type_ string, updatedAt time.Time) *EmailTemplate {
 	this := EmailTemplate{}
-	this.Id = id
-	this.Type = type_
-	this.Subject = subject
-	this.HtmlBody = htmlBody
 	this.CreatedAt = createdAt
+	this.HtmlBody = htmlBody
+	this.Id = id
+	this.Subject = subject
+	this.Type = type_
 	this.UpdatedAt = updatedAt
 	return &this
 }
@@ -62,76 +56,28 @@ func NewEmailTemplateWithDefaults() *EmailTemplate {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *EmailTemplate) GetId() string {
+// GetCreatedAt returns the CreatedAt field value
+func (o *EmailTemplate) GetCreatedAt() time.Time {
 	if o == nil {
-		var ret string
+		var ret time.Time
 		return ret
 	}
 
-	return o.Id
+	return o.CreatedAt
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *EmailTemplate) GetIdOk() (*string, bool) {
+func (o *EmailTemplate) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Id, true
+	return &o.CreatedAt, true
 }
 
-// SetId sets field value
-func (o *EmailTemplate) SetId(v string) {
-	o.Id = v
-}
-
-// GetType returns the Type field value
-func (o *EmailTemplate) GetType() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Type
-}
-
-// GetTypeOk returns a tuple with the Type field value
-// and a boolean to check if the value has been set.
-func (o *EmailTemplate) GetTypeOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Type, true
-}
-
-// SetType sets field value
-func (o *EmailTemplate) SetType(v string) {
-	o.Type = v
-}
-
-// GetSubject returns the Subject field value
-func (o *EmailTemplate) GetSubject() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Subject
-}
-
-// GetSubjectOk returns a tuple with the Subject field value
-// and a boolean to check if the value has been set.
-func (o *EmailTemplate) GetSubjectOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Subject, true
-}
-
-// SetSubject sets field value
-func (o *EmailTemplate) SetSubject(v string) {
-	o.Subject = v
+// SetCreatedAt sets field value
+func (o *EmailTemplate) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
 // GetHtmlBody returns the HtmlBody field value
@@ -158,28 +104,76 @@ func (o *EmailTemplate) SetHtmlBody(v string) {
 	o.HtmlBody = v
 }
 
-// GetCreatedAt returns the CreatedAt field value
-func (o *EmailTemplate) GetCreatedAt() time.Time {
+// GetId returns the Id field value
+func (o *EmailTemplate) GetId() string {
 	if o == nil {
-		var ret time.Time
+		var ret string
 		return ret
 	}
 
-	return o.CreatedAt
+	return o.Id
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *EmailTemplate) GetCreatedAtOk() (*time.Time, bool) {
+func (o *EmailTemplate) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.CreatedAt, true
+	return &o.Id, true
 }
 
-// SetCreatedAt sets field value
-func (o *EmailTemplate) SetCreatedAt(v time.Time) {
-	o.CreatedAt = v
+// SetId sets field value
+func (o *EmailTemplate) SetId(v string) {
+	o.Id = v
+}
+
+// GetSubject returns the Subject field value
+func (o *EmailTemplate) GetSubject() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Subject
+}
+
+// GetSubjectOk returns a tuple with the Subject field value
+// and a boolean to check if the value has been set.
+func (o *EmailTemplate) GetSubjectOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Subject, true
+}
+
+// SetSubject sets field value
+func (o *EmailTemplate) SetSubject(v string) {
+	o.Subject = v
+}
+
+// GetType returns the Type field value
+func (o *EmailTemplate) GetType() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Type
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+func (o *EmailTemplate) GetTypeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Type, true
+}
+
+// SetType sets field value
+func (o *EmailTemplate) SetType(v string) {
+	o.Type = v
 }
 
 // GetUpdatedAt returns the UpdatedAt field value
@@ -216,11 +210,11 @@ func (o EmailTemplate) MarshalJSON() ([]byte, error) {
 
 func (o EmailTemplate) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	toSerialize["type"] = o.Type
-	toSerialize["subject"] = o.Subject
-	toSerialize["html_body"] = o.HtmlBody
 	toSerialize["created_at"] = o.CreatedAt
+	toSerialize["html_body"] = o.HtmlBody
+	toSerialize["id"] = o.Id
+	toSerialize["subject"] = o.Subject
+	toSerialize["type"] = o.Type
 	toSerialize["updated_at"] = o.UpdatedAt
 	return toSerialize, nil
 }
@@ -230,11 +224,11 @@ func (o *EmailTemplate) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
-		"type",
-		"subject",
-		"html_body",
 		"created_at",
+		"html_body",
+		"id",
+		"subject",
+		"type",
 		"updated_at",
 	}
 

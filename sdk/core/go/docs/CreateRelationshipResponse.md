@@ -4,14 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | **string** | Success message | 
-**Relationship** | [**Relationship**](Relationship.md) |  | 
+**Message** | **string** |  | 
 
 ## Methods
 
 ### NewCreateRelationshipResponse
 
-`func NewCreateRelationshipResponse(message string, relationship Relationship, ) *CreateRelationshipResponse`
+`func NewCreateRelationshipResponse(message string, ) *CreateRelationshipResponse`
 
 NewCreateRelationshipResponse instantiates a new CreateRelationshipResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,26 +43,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateRelationshipResponse) SetMessage(v string)`
 
 SetMessage sets Message field to given value.
-
-
-### GetRelationship
-
-`func (o *CreateRelationshipResponse) GetRelationship() Relationship`
-
-GetRelationship returns the Relationship field if non-nil, zero value otherwise.
-
-### GetRelationshipOk
-
-`func (o *CreateRelationshipResponse) GetRelationshipOk() (*Relationship, bool)`
-
-GetRelationshipOk returns a tuple with the Relationship field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetRelationship
-
-`func (o *CreateRelationshipResponse) SetRelationship(v Relationship)`
-
-SetRelationship sets Relationship field to given value.
 
 
 

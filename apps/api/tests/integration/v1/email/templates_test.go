@@ -26,13 +26,13 @@ func TestEmailTemplatesCRUD(t *testing.T) {
 	ttype := fmt.Sprintf("test-template-%s", helpers.UniqueID())
 
 	t.Run("create new template", func(t *testing.T) {
-		req := sdk.CreateEmailTemplateRequest{
+		req := sdk.UpsertTemplateRequest{
 			Type:     ttype,
 			Subject:  "Subject A",
 			HtmlBody: "<h1>Body A</h1>",
 		}
 		out, resp, err := client.V1ConfigurationAPI.CreateOrUpdateEmailTemplate(helpers.Ctx()).
-			CreateEmailTemplateRequest(req).Execute()
+			UpsertTemplateRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "createEmailTemplate")
 		require.NotNil(t, out)
 		require.NotNil(t, out.Template)
@@ -42,13 +42,13 @@ func TestEmailTemplatesCRUD(t *testing.T) {
 	})
 
 	t.Run("update existing template by type", func(t *testing.T) {
-		req := sdk.CreateEmailTemplateRequest{
+		req := sdk.UpsertTemplateRequest{
 			Type:     ttype,
 			Subject:  "Subject B",
 			HtmlBody: "<h1>Body B</h1>",
 		}
 		out, resp, err := client.V1ConfigurationAPI.CreateOrUpdateEmailTemplate(helpers.Ctx()).
-			CreateEmailTemplateRequest(req).Execute()
+			UpsertTemplateRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "updateEmailTemplate")
 		require.NotNil(t, out)
 		require.NotNil(t, out.Template)
@@ -61,7 +61,7 @@ func TestEmailTemplatesCRUD(t *testing.T) {
 		helpers.EnsureOK(t, resp, err, "getEmailTemplates")
 		require.NotNil(t, out)
 		require.NotNil(t, out.Count)
-		assert.GreaterOrEqual(t, *out.Count, int32(1))
+		assert.GreaterOrEqual(t, out.Count, int64(1))
 
 		found := false
 		for _, tmpl := range out.Templates {

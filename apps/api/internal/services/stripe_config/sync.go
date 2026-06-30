@@ -22,7 +22,7 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*ConfigResponse, err
 	config, err := s.validator.ParseAndValidateConfig(args.Config)
 	if err != nil {
 		return &ConfigResponse{
-			Message: "Configuration validation failed",
+			Message: "StripeConfiguration validation failed",
 			Errors:  []string{err.Error()},
 		}, nil
 	}
@@ -72,13 +72,13 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*ConfigResponse, err
 	}
 
 	return &ConfigResponse{
-		Message: "Configuration updated successfully",
+		Message: "StripeConfiguration updated successfully",
 		Changes: changes,
 		Config:  config,
 	}, nil
 }
 
-func (s *Service) handleFirstTimeSetup(ctx context.Context, config *Configuration, raw ConfigData) (*ConfigResponse, error) {
+func (s *Service) handleFirstTimeSetup(ctx context.Context, config *StripeConfiguration, raw ConfigData) (*ConfigResponse, error) {
 	newConfig, err := s.saveConfig(ctx, raw, config.Version)
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func (s *Service) handleFirstTimeSetup(ctx context.Context, config *Configuratio
 	}, nil
 }
 
-func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Configuration, configID uuid.UUID) (*ConfigChanges, error) {
+func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *StripeConfiguration, configID uuid.UUID) (*ConfigChanges, error) {
 	changes := &ConfigChanges{
 		Products: &ProductChanges{
 			Created:  []ProductChange{},

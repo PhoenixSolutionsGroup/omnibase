@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Currency** | [**CurrencyCode**](CurrencyCode.md) |  | 
-**AutoAdvance** | Pointer to **bool** | Whether to auto-advance the invoice (send immediately after finalization) | [optional] 
-**CollectionMethod** | Pointer to **string** | How to collect payment. &#x60;charge_automatically&#x60; (default) attempts to charge the customer&#39;s default payment method. &#x60;send_invoice&#x60; emails the customer (requires &#x60;days_until_due&#x60;). | [optional] 
-**DaysUntilDue** | Pointer to **int32** | Days until invoice is due. Required when &#x60;collection_method&#x60; is &#x60;send_invoice&#x60;. | [optional] 
-**Description** | Pointer to **string** | Optional description for the invoice | [optional] 
-**Metadata** | Pointer to **map[string]string** | Optional metadata key-value pairs (keys must be alphanumeric/underscore, max 40 chars; values max 500 chars) | [optional] 
+**AutoAdvance** | Pointer to **bool** |  | [optional] 
+**CollectionMethod** | Pointer to **string** |  | [optional] 
+**Currency** | **string** |  | 
+**DaysUntilDue** | Pointer to **int64** |  | [optional] 
+**Description** | Pointer to **string** |  | [optional] 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 
 ## Methods
 
 ### NewCreateInvoiceRequest
 
-`func NewCreateInvoiceRequest(currency CurrencyCode, ) *CreateInvoiceRequest`
+`func NewCreateInvoiceRequest(currency string, ) *CreateInvoiceRequest`
 
 NewCreateInvoiceRequest instantiates a new CreateInvoiceRequest object
 This constructor will assign default values to properties that have it defined,
@@ -29,26 +29,6 @@ will change when the set of required properties is changed
 NewCreateInvoiceRequestWithDefaults instantiates a new CreateInvoiceRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetCurrency
-
-`func (o *CreateInvoiceRequest) GetCurrency() CurrencyCode`
-
-GetCurrency returns the Currency field if non-nil, zero value otherwise.
-
-### GetCurrencyOk
-
-`func (o *CreateInvoiceRequest) GetCurrencyOk() (*CurrencyCode, bool)`
-
-GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetCurrency
-
-`func (o *CreateInvoiceRequest) SetCurrency(v CurrencyCode)`
-
-SetCurrency sets Currency field to given value.
-
 
 ### GetAutoAdvance
 
@@ -100,22 +80,42 @@ SetCollectionMethod sets CollectionMethod field to given value.
 
 HasCollectionMethod returns a boolean if a field has been set.
 
+### GetCurrency
+
+`func (o *CreateInvoiceRequest) GetCurrency() string`
+
+GetCurrency returns the Currency field if non-nil, zero value otherwise.
+
+### GetCurrencyOk
+
+`func (o *CreateInvoiceRequest) GetCurrencyOk() (*string, bool)`
+
+GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCurrency
+
+`func (o *CreateInvoiceRequest) SetCurrency(v string)`
+
+SetCurrency sets Currency field to given value.
+
+
 ### GetDaysUntilDue
 
-`func (o *CreateInvoiceRequest) GetDaysUntilDue() int32`
+`func (o *CreateInvoiceRequest) GetDaysUntilDue() int64`
 
 GetDaysUntilDue returns the DaysUntilDue field if non-nil, zero value otherwise.
 
 ### GetDaysUntilDueOk
 
-`func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int32, bool)`
+`func (o *CreateInvoiceRequest) GetDaysUntilDueOk() (*int64, bool)`
 
 GetDaysUntilDueOk returns a tuple with the DaysUntilDue field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDaysUntilDue
 
-`func (o *CreateInvoiceRequest) SetDaysUntilDue(v int32)`
+`func (o *CreateInvoiceRequest) SetDaysUntilDue(v int64)`
 
 SetDaysUntilDue sets DaysUntilDue field to given value.
 

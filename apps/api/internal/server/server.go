@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"api/internal/config"
 	"api/internal/database"
@@ -77,12 +78,21 @@ func New(cfg *config.Config) *gin.Engine {
 	r.GET("/health/ready", healthHandler.HealthReady)
 
 	logger.Logger.Debug("Initializing huma API")
-	humaCfg := huma.DefaultConfig("OmniBase API", "0.20.0")
+	apiVersion := os.Getenv("API_VERSION")
+	if apiVersion == "" {
+		apiVersion = "local"
+	}
+	humaCfg := huma.DefaultConfig("Omnibase REST API", apiVersion)
 	humaCfg.CreateHooks = nil
+	humaCfg.Info.Description = "Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services."
+	humaCfg.Info.Contact = &huma.Contact{Name: "Omnibase Support", URL: "https://omnibase.dev/support", Email: "support@omnibase.dev"}
+	humaCfg.Info.License = &huma.License{Name: "MIT", URL: "https://opensource.org/licenses/MIT"}
+	humaCfg.Info.TermsOfService = "https://omnibase.dev/terms"
+	humaCfg.Servers = []*huma.Server{{URL: "https://api.omnibase.tech", Description: "Production server"}}
 	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
-		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token"},
-		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key"},
-		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session"},
+		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token", Description: "Kratos session JWT token. Alternative to cookie authentication for non-browser clients."},
+		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key", Description: "Service-to-service authentication key for backend operations."},
+		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session", Description: "Session cookie set by Kratos after login."},
 	}
 	huma.NewErrorWithContext = func(ctx huma.Context, status int, msg string, errs ...error) huma.StatusError {
 		if status >= http.StatusInternalServerError {

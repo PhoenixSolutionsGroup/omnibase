@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -34,26 +34,12 @@ func (r ApiCreateUserRequest) CreateUserRequest(createUserRequest CreateUserRequ
 	return r
 }
 
-func (r ApiCreateUserRequest) Execute() (*KratosIdentity, *http.Response, error) {
+func (r ApiCreateUserRequest) Execute() (*Identity, *http.Response, error) {
 	return r.ApiService.CreateUserExecute(r)
 }
 
 /*
-CreateUser Create new user
-
-Creates a new user identity via Kratos admin API with email/password credentials.
-
-## User Creation
-- Creates Kratos identity with provided traits (email, name)
-- Sets up password authentication credentials
-- Returns the created identity information
-
-## Use Case
-Administrative user creation endpoint for onboarding flows or user management.
-
-## Authentication
-This is an admin endpoint that requires service key authentication.
-
+CreateUser Create a new user identity
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateUserRequest
@@ -66,13 +52,13 @@ func (a *V1AuthAPIService) CreateUser(ctx context.Context) ApiCreateUserRequest 
 }
 
 // Execute executes the request
-//  @return KratosIdentity
-func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIdentity, *http.Response, error) {
+//  @return Identity
+func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*Identity, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *KratosIdentity
+		localVarReturnValue  *Identity
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.CreateUser")
@@ -99,7 +85,7 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIde
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -144,8 +130,7 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIde
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -153,40 +138,6 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIde
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -205,13 +156,6 @@ func (a *V1AuthAPIService) CreateUserExecute(r ApiCreateUserRequest) (*KratosIde
 type ApiGetActiveTenantRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
-	xUserId *string
-}
-
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiGetActiveTenantRequest) XUserId(xUserId string) ApiGetActiveTenantRequest {
-	r.xUserId = &xUserId
-	return r
 }
 
 func (r ApiGetActiveTenantRequest) Execute() (*ActiveTenantResponse, *http.Response, error) {
@@ -219,21 +163,7 @@ func (r ApiGetActiveTenantRequest) Execute() (*ActiveTenantResponse, *http.Respo
 }
 
 /*
-GetActiveTenant Get active tenant
-
-Returns the full tenant object for the user's currently active tenant.
-
-## Tenant Context
-Users can be members of multiple tenants but only one is active at a time.
-The active tenant determines which resources and data the user can access.
-
-## Authentication
-- **Session Auth**: Requires JWT token / Cookie Session
-- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
-
-## Use Case
-Determine which tenant context to use for API calls and data filtering.
-
+GetActiveTenant Get the active tenant for the authenticated user
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetActiveTenantRequest
@@ -276,15 +206,12 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -336,8 +263,7 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -345,18 +271,6 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -377,24 +291,12 @@ type ApiGetIdentityRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiGetIdentityRequest) Execute() (map[string]interface{}, *http.Response, error) {
+func (r ApiGetIdentityRequest) Execute() (*Identity, *http.Response, error) {
 	return r.ApiService.GetIdentityExecute(r)
 }
 
 /*
 GetIdentity Get current identity
-
-Returns the current authenticated user's identity information (traits like email, name).
-
-## Identity Data
-- User ID (unique identifier)
-- Traits (email, first name, last name based on identity schema)
-- Schema ID
-- Created/updated timestamps
-
-## Use Case
-Lighter alternative to full session when you only need user profile data.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetIdentityRequest
@@ -407,13 +309,13 @@ func (a *V1AuthAPIService) GetIdentity(ctx context.Context) ApiGetIdentityReques
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
-func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (map[string]interface{}, *http.Response, error) {
+//  @return Identity
+func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (*Identity, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  *Identity
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.GetIdentity")
@@ -437,7 +339,7 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (map[stri
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -480,8 +382,7 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (map[stri
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -489,18 +390,6 @@ func (a *V1AuthAPIService) GetIdentityExecute(r ApiGetIdentityRequest) (map[stri
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -527,17 +416,6 @@ func (r ApiGetSessionRequest) Execute() (*SessionResponse, *http.Response, error
 
 /*
 GetSession Get current session
-
-Returns the current authenticated user's session including identity and tenant information.
-
-## Session Data
-- Session metadata (ID, expiry, authentication methods)
-- Identity information (user ID, traits like email, name)
-- Active tenant context (if user has tenant membership)
-
-## Authentication
-Requires valid session via Cookie or X-Session-Token header.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetSessionRequest
@@ -580,7 +458,7 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -623,8 +501,7 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -632,18 +509,6 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -662,13 +527,6 @@ func (a *V1AuthAPIService) GetSessionExecute(r ApiGetSessionRequest) (*SessionRe
 type ApiListTenantsRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
-	xUserId *string
-}
-
-// User ID (UUID) - Required when using X-Service-Key header
-func (r ApiListTenantsRequest) XUserId(xUserId string) ApiListTenantsRequest {
-	r.xUserId = &xUserId
-	return r
 }
 
 func (r ApiListTenantsRequest) Execute() (*ListTenantsResponse, *http.Response, error) {
@@ -676,22 +534,7 @@ func (r ApiListTenantsRequest) Execute() (*ListTenantsResponse, *http.Response, 
 }
 
 /*
-ListTenants List user's tenants
-
-Returns all tenants the user is a member of with their active status.
-
-## Authentication
-- **Session Auth**: Requires JWT token / Cookie Session
-- **Service Key Auth**: Requires X-Service-Key + X-User-ID header
-
-## Tenant Memberships
-Users can be members of multiple tenants. Each membership has:
-- Active status (only one tenant can be active at a time)
-- Full tenant information (ID, name, type, etc.)
-
-## Use Case
-Display tenant switcher UI or list all organizations the user belongs to.
-
+ListTenants List tenants the authenticated user belongs to
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListTenantsRequest
@@ -734,15 +577,12 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.xUserId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-User-Id", r.xUserId, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -794,8 +634,7 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -803,29 +642,6 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -844,6 +660,12 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 type ApiLogoutRequest struct {
 	ctx context.Context
 	ApiService *V1AuthAPIService
+	cookie *string
+}
+
+func (r ApiLogoutRequest) Cookie(cookie string) ApiLogoutRequest {
+	r.cookie = &cookie
+	return r
 }
 
 func (r ApiLogoutRequest) Execute() (*LogoutResponse, *http.Response, error) {
@@ -852,17 +674,6 @@ func (r ApiLogoutRequest) Execute() (*LogoutResponse, *http.Response, error) {
 
 /*
 Logout Logout user
-
-Creates a Kratos logout flow and returns the logout URL for browser redirect.
-
-## Logout Process
-1. Request this endpoint to get logout URL
-2. Redirect browser to the returned logout_url
-3. Session will be invalidated and user logged out
-
-## Cookie Cleanup
-The logout URL handles clearing session cookies automatically.
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiLogoutRequest
@@ -905,12 +716,15 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.cookie != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "Cookie", r.cookie, "simple", "")
 	}
 	if r.ctx != nil {
 		// API Key Authentication
@@ -948,8 +762,7 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -957,29 +770,6 @@ func (a *V1AuthAPIService) LogoutExecute(r ApiLogoutRequest) (*LogoutResponse, *
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1000,21 +790,12 @@ type ApiWhoAmIRequest struct {
 	ApiService *V1AuthAPIService
 }
 
-func (r ApiWhoAmIRequest) Execute() (*WhoAmIResponse, *http.Response, error) {
+func (r ApiWhoAmIRequest) Execute() (*WhoAmIBody, *http.Response, error) {
 	return r.ApiService.WhoAmIExecute(r)
 }
 
 /*
-WhoAmI Check authentication status
-
-Lightweight endpoint to check if the user is authenticated.
-
-## Response
-Returns boolean authentication status and user ID if authenticated.
-
-## Use Case
-Quick auth checks for route guards without fetching full session data.
-
+WhoAmI Get authenticated user identity
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiWhoAmIRequest
@@ -1027,13 +808,13 @@ func (a *V1AuthAPIService) WhoAmI(ctx context.Context) ApiWhoAmIRequest {
 }
 
 // Execute executes the request
-//  @return WhoAmIResponse
-func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIResponse, *http.Response, error) {
+//  @return WhoAmIBody
+func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIBody, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *WhoAmIResponse
+		localVarReturnValue  *WhoAmIBody
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1AuthAPIService.WhoAmI")
@@ -1057,7 +838,7 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIResponse, *
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1100,8 +881,7 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIResponse, *
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1109,18 +889,6 @@ func (a *V1AuthAPIService) WhoAmIExecute(r ApiWhoAmIRequest) (*WhoAmIResponse, *
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

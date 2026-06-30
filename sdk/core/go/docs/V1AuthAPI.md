@@ -4,23 +4,21 @@ All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateUser**](V1AuthAPI.md#CreateUser) | **Post** /api/v1/auth/users | Create new user
-[**GetActiveTenant**](V1AuthAPI.md#GetActiveTenant) | **Get** /api/v1/auth/active-tenant | Get active tenant
+[**CreateUser**](V1AuthAPI.md#CreateUser) | **Post** /api/v1/auth/users | Create a new user identity
+[**GetActiveTenant**](V1AuthAPI.md#GetActiveTenant) | **Get** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user
 [**GetIdentity**](V1AuthAPI.md#GetIdentity) | **Get** /api/v1/auth/identity | Get current identity
 [**GetSession**](V1AuthAPI.md#GetSession) | **Get** /api/v1/auth/session | Get current session
-[**ListTenants**](V1AuthAPI.md#ListTenants) | **Get** /api/v1/auth/tenants | List user&#39;s tenants
+[**ListTenants**](V1AuthAPI.md#ListTenants) | **Get** /api/v1/auth/tenants | List tenants the authenticated user belongs to
 [**Logout**](V1AuthAPI.md#Logout) | **Post** /api/v1/auth/logout | Logout user
-[**WhoAmI**](V1AuthAPI.md#WhoAmI) | **Get** /api/v1/auth/whoami | Check authentication status
+[**WhoAmI**](V1AuthAPI.md#WhoAmI) | **Get** /api/v1/auth/whoami | Get authenticated user identity
 
 
 
 ## CreateUser
 
-> KratosIdentity CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
+> Identity CreateUser(ctx).CreateUserRequest(createUserRequest).Execute()
 
-Create new user
-
-
+Create a new user identity
 
 ### Example
 
@@ -35,7 +33,7 @@ import (
 )
 
 func main() {
-	createUserRequest := *openapiclient.NewCreateUserRequest("user@example.com", "securepassword123", *openapiclient.NewCreateUserRequestName("John", "Doe")) // CreateUserRequest | 
+	createUserRequest := *openapiclient.NewCreateUserRequest("Email_example", *openapiclient.NewIdentityName("First_example", "Last_example"), "Password_example") // CreateUserRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -44,7 +42,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.CreateUser``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CreateUser`: KratosIdentity
+	// response from `CreateUser`: Identity
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.CreateUser`: %v\n", resp)
 }
 ```
@@ -64,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**KratosIdentity**](KratosIdentity.md)
+[**Identity**](Identity.md)
 
 ### Authorization
 
@@ -73,7 +71,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -82,11 +80,9 @@ Name | Type | Description  | Notes
 
 ## GetActiveTenant
 
-> ActiveTenantResponse GetActiveTenant(ctx).XUserId(xUserId).Execute()
+> ActiveTenantResponse GetActiveTenant(ctx).Execute()
 
-Get active tenant
-
-
+Get the active tenant for the authenticated user
 
 ### Example
 
@@ -101,11 +97,10 @@ import (
 )
 
 func main() {
-	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).XUserId(xUserId).Execute()
+	resp, r, err := apiClient.V1AuthAPI.GetActiveTenant(context.Background()).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetActiveTenant``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -117,16 +112,12 @@ func main() {
 
 ### Path Parameters
 
-
+This endpoint does not need any parameter.
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiGetActiveTenantRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -139,7 +130,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -148,11 +139,9 @@ Name | Type | Description  | Notes
 
 ## GetIdentity
 
-> map[string]interface{} GetIdentity(ctx).Execute()
+> Identity GetIdentity(ctx).Execute()
 
 Get current identity
-
-
 
 ### Example
 
@@ -175,7 +164,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.GetIdentity``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetIdentity`: map[string]interface{}
+	// response from `GetIdentity`: Identity
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.GetIdentity`: %v\n", resp)
 }
 ```
@@ -191,7 +180,7 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 
 ### Return type
 
-**map[string]interface{}**
+[**Identity**](Identity.md)
 
 ### Authorization
 
@@ -200,7 +189,7 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -212,8 +201,6 @@ Other parameters are passed through a pointer to a apiGetIdentityRequest struct 
 > SessionResponse GetSession(ctx).Execute()
 
 Get current session
-
-
 
 ### Example
 
@@ -261,7 +248,7 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -270,11 +257,9 @@ Other parameters are passed through a pointer to a apiGetSessionRequest struct v
 
 ## ListTenants
 
-> ListTenantsResponse ListTenants(ctx).XUserId(xUserId).Execute()
+> ListTenantsResponse ListTenants(ctx).Execute()
 
-List user's tenants
-
-
+List tenants the authenticated user belongs to
 
 ### Example
 
@@ -289,11 +274,10 @@ import (
 )
 
 func main() {
-	xUserId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | User ID (UUID) - Required when using X-Service-Key header (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.ListTenants(context.Background()).XUserId(xUserId).Execute()
+	resp, r, err := apiClient.V1AuthAPI.ListTenants(context.Background()).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.ListTenants``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -305,16 +289,12 @@ func main() {
 
 ### Path Parameters
 
-
+This endpoint does not need any parameter.
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiListTenantsRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **xUserId** | **string** | User ID (UUID) - Required when using X-Service-Key header | 
 
 ### Return type
 
@@ -327,7 +307,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -336,11 +316,9 @@ Name | Type | Description  | Notes
 
 ## Logout
 
-> LogoutResponse Logout(ctx).Execute()
+> LogoutResponse Logout(ctx).Cookie(cookie).Execute()
 
 Logout user
-
-
 
 ### Example
 
@@ -355,10 +333,11 @@ import (
 )
 
 func main() {
+	cookie := "cookie_example" // string |  (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1AuthAPI.Logout(context.Background()).Execute()
+	resp, r, err := apiClient.V1AuthAPI.Logout(context.Background()).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.Logout``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -370,12 +349,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiLogoutRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **cookie** | **string** |  | 
 
 ### Return type
 
@@ -388,7 +371,7 @@ Other parameters are passed through a pointer to a apiLogoutRequest struct via t
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -397,11 +380,9 @@ Other parameters are passed through a pointer to a apiLogoutRequest struct via t
 
 ## WhoAmI
 
-> WhoAmIResponse WhoAmI(ctx).Execute()
+> WhoAmIBody WhoAmI(ctx).Execute()
 
-Check authentication status
-
-
+Get authenticated user identity
 
 ### Example
 
@@ -424,7 +405,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1AuthAPI.WhoAmI``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `WhoAmI`: WhoAmIResponse
+	// response from `WhoAmI`: WhoAmIBody
 	fmt.Fprintf(os.Stdout, "Response from `V1AuthAPI.WhoAmI`: %v\n", resp)
 }
 ```
@@ -440,7 +421,7 @@ Other parameters are passed through a pointer to a apiWhoAmIRequest struct via t
 
 ### Return type
 
-[**WhoAmIResponse**](WhoAmIResponse.md)
+[**WhoAmIBody**](WhoAmIBody.md)
 
 ### Authorization
 
@@ -449,7 +430,7 @@ Other parameters are passed through a pointer to a apiWhoAmIRequest struct via t
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

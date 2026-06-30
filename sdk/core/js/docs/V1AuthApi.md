@@ -4,23 +4,21 @@ All URIs are relative to *https://api.omnibase.tech*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**createUser**](V1AuthApi.md#createuseroperation) | **POST** /api/v1/auth/users | Create new user |
-| [**getActiveTenant**](V1AuthApi.md#getactivetenant) | **GET** /api/v1/auth/active-tenant | Get active tenant |
+| [**createUser**](V1AuthApi.md#createuseroperation) | **POST** /api/v1/auth/users | Create a new user identity |
+| [**getActiveTenant**](V1AuthApi.md#getactivetenant) | **GET** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user |
 | [**getIdentity**](V1AuthApi.md#getidentity) | **GET** /api/v1/auth/identity | Get current identity |
 | [**getSession**](V1AuthApi.md#getsession) | **GET** /api/v1/auth/session | Get current session |
-| [**listTenants**](V1AuthApi.md#listtenants) | **GET** /api/v1/auth/tenants | List user\&#39;s tenants |
+| [**listTenants**](V1AuthApi.md#listtenants) | **GET** /api/v1/auth/tenants | List tenants the authenticated user belongs to |
 | [**logout**](V1AuthApi.md#logout) | **POST** /api/v1/auth/logout | Logout user |
-| [**whoAmI**](V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Check authentication status |
+| [**whoAmI**](V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Get authenticated user identity |
 
 
 
 ## createUser
 
-> KratosIdentity createUser(createUserRequest)
+> Identity createUser(createUserRequest)
 
-Create new user
-
-Creates a new user identity via Kratos admin API with email/password credentials.  ## User Creation - Creates Kratos identity with provided traits (email, name) - Sets up password authentication credentials - Returns the created identity information  ## Use Case Administrative user creation endpoint for onboarding flows or user management.  ## Authentication This is an admin endpoint that requires service key authentication. 
+Create a new user identity
 
 ### Example
 
@@ -65,7 +63,7 @@ example().catch(console.error);
 
 ### Return type
 
-[**KratosIdentity**](KratosIdentity.md)
+[**Identity**](Identity.md)
 
 ### Authorization
 
@@ -74,28 +72,23 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | User created successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getActiveTenant
 
-> ActiveTenantResponse getActiveTenant(xUserId)
+> ActiveTenantResponse getActiveTenant()
 
-Get active tenant
-
-Returns the full tenant object for the user\&#39;s currently active tenant.  ## Tenant Context Users can be members of multiple tenants but only one is active at a time. The active tenant determines which resources and data the user can access.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Use Case Determine which tenant context to use for API calls and data filtering. 
+Get the active tenant for the authenticated user
 
 ### Example
 
@@ -118,13 +111,8 @@ async function example() {
   });
   const api = new V1AuthApi(config);
 
-  const body = {
-    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
-    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-  } satisfies GetActiveTenantRequest;
-
   try {
-    const data = await api.getActiveTenant(body);
+    const data = await api.getActiveTenant();
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -137,10 +125,7 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -153,26 +138,23 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Active tenant retrieved |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getIdentity
 
-> object getIdentity()
+> Identity getIdentity()
 
 Get current identity
-
-Returns the current authenticated user\&#39;s identity information (traits like email, name).  ## Identity Data - User ID (unique identifier) - Traits (email, first name, last name based on identity schema) - Schema ID - Created/updated timestamps  ## Use Case Lighter alternative to full session when you only need user profile data. 
 
 ### Example
 
@@ -211,7 +193,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-**object**
+[**Identity**](Identity.md)
 
 ### Authorization
 
@@ -220,15 +202,14 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Identity retrieved successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -238,8 +219,6 @@ This endpoint does not need any parameter.
 > SessionResponse getSession()
 
 Get current session
-
-Returns the current authenticated user\&#39;s session including identity and tenant information.  ## Session Data - Session metadata (ID, expiry, authentication methods) - Identity information (user ID, traits like email, name) - Active tenant context (if user has tenant membership)  ## Authentication Requires valid session via Cookie or X-Session-Token header. 
 
 ### Example
 
@@ -287,26 +266,23 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Session retrieved successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## listTenants
 
-> ListTenantsResponse listTenants(xUserId)
+> ListTenantsResponse listTenants()
 
-List user\&#39;s tenants
-
-Returns all tenants the user is a member of with their active status.  ## Authentication - **Session Auth**: Requires JWT token / Cookie Session - **Service Key Auth**: Requires X-Service-Key + X-User-ID header  ## Tenant Memberships Users can be members of multiple tenants. Each membership has: - Active status (only one tenant can be active at a time) - Full tenant information (ID, name, type, etc.)  ## Use Case Display tenant switcher UI or list all organizations the user belongs to. 
+List tenants the authenticated user belongs to
 
 ### Example
 
@@ -329,13 +305,8 @@ async function example() {
   });
   const api = new V1AuthApi(config);
 
-  const body = {
-    // string | User ID (UUID) - Required when using X-Service-Key header (optional)
-    xUserId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-  } satisfies ListTenantsRequest;
-
   try {
-    const data = await api.listTenants(body);
+    const data = await api.listTenants();
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -348,10 +319,7 @@ example().catch(console.error);
 
 ### Parameters
 
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **xUserId** | `string` | User ID (UUID) - Required when using X-Service-Key header | [Optional] [Defaults to `undefined`] |
+This endpoint does not need any parameter.
 
 ### Return type
 
@@ -364,27 +332,23 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Tenants retrieved successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## logout
 
-> LogoutResponse logout()
+> LogoutResponse logout(cookie)
 
 Logout user
-
-Creates a Kratos logout flow and returns the logout URL for browser redirect.  ## Logout Process 1. Request this endpoint to get logout URL 2. Redirect browser to the returned logout_url 3. Session will be invalidated and user logged out  ## Cookie Cleanup The logout URL handles clearing session cookies automatically. 
 
 ### Example
 
@@ -405,8 +369,13 @@ async function example() {
   });
   const api = new V1AuthApi(config);
 
+  const body = {
+    // string (optional)
+    cookie: cookie_example,
+  } satisfies LogoutRequest;
+
   try {
-    const data = await api.logout();
+    const data = await api.logout(body);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -419,7 +388,10 @@ example().catch(console.error);
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **cookie** | `string` |  | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -432,27 +404,23 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Logout flow created successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## whoAmI
 
-> WhoAmIResponse whoAmI()
+> WhoAmIBody whoAmI()
 
-Check authentication status
-
-Lightweight endpoint to check if the user is authenticated.  ## Response Returns boolean authentication status and user ID if authenticated.  ## Use Case Quick auth checks for route guards without fetching full session data. 
+Get authenticated user identity
 
 ### Example
 
@@ -491,7 +459,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**WhoAmIResponse**](WhoAmIResponse.md)
+[**WhoAmIBody**](WhoAmIBody.md)
 
 ### Authorization
 
@@ -500,15 +468,14 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Authentication status checked |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

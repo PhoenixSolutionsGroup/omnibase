@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PromoId** | **string** | Promotion code config ID | 
-**Code** | **string** | Customer-facing promotion code | 
-**Action** | **string** | Action performed on the promotion code | 
-**StripeId** | Pointer to **string** | Stripe promotion code ID | [optional] 
+**Action** | **string** |  | 
+**Code** | **string** |  | 
+**PromoId** | **string** |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewPromotionCodeChange
 
-`func NewPromotionCodeChange(promoId string, code string, action string, ) *PromotionCodeChange`
+`func NewPromotionCodeChange(action string, code string, promoId string, ) *PromotionCodeChange`
 
 NewPromotionCodeChange instantiates a new PromotionCodeChange object
 This constructor will assign default values to properties that have it defined,
@@ -28,24 +28,24 @@ NewPromotionCodeChangeWithDefaults instantiates a new PromotionCodeChange object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetPromoId
+### GetAction
 
-`func (o *PromotionCodeChange) GetPromoId() string`
+`func (o *PromotionCodeChange) GetAction() string`
 
-GetPromoId returns the PromoId field if non-nil, zero value otherwise.
+GetAction returns the Action field if non-nil, zero value otherwise.
 
-### GetPromoIdOk
+### GetActionOk
 
-`func (o *PromotionCodeChange) GetPromoIdOk() (*string, bool)`
+`func (o *PromotionCodeChange) GetActionOk() (*string, bool)`
 
-GetPromoIdOk returns a tuple with the PromoId field if it's non-nil, zero value otherwise
+GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetPromoId
+### SetAction
 
-`func (o *PromotionCodeChange) SetPromoId(v string)`
+`func (o *PromotionCodeChange) SetAction(v string)`
 
-SetPromoId sets PromoId field to given value.
+SetAction sets Action field to given value.
 
 
 ### GetCode
@@ -68,24 +68,24 @@ and a boolean to check if the value has been set.
 SetCode sets Code field to given value.
 
 
-### GetAction
+### GetPromoId
 
-`func (o *PromotionCodeChange) GetAction() string`
+`func (o *PromotionCodeChange) GetPromoId() string`
 
-GetAction returns the Action field if non-nil, zero value otherwise.
+GetPromoId returns the PromoId field if non-nil, zero value otherwise.
 
-### GetActionOk
+### GetPromoIdOk
 
-`func (o *PromotionCodeChange) GetActionOk() (*string, bool)`
+`func (o *PromotionCodeChange) GetPromoIdOk() (*string, bool)`
 
-GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
+GetPromoIdOk returns a tuple with the PromoId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAction
+### SetPromoId
 
-`func (o *PromotionCodeChange) SetAction(v string)`
+`func (o *PromotionCodeChange) SetPromoId(v string)`
 
-SetAction sets Action field to given value.
+SetPromoId sets PromoId field to given value.
 
 
 ### GetStripeId

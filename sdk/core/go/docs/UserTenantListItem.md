@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Tenant** | [**Tenant**](Tenant.md) |  | 
-**IsActive** | **bool** | Whether this is the user&#39;s currently active tenant | 
+**IsActive** | **bool** |  | 
+**Tenant** | [**GetTenantByIDRow**](GetTenantByIDRow.md) |  | 
 
 ## Methods
 
 ### NewUserTenantListItem
 
-`func NewUserTenantListItem(tenant Tenant, isActive bool, ) *UserTenantListItem`
+`func NewUserTenantListItem(isActive bool, tenant GetTenantByIDRow, ) *UserTenantListItem`
 
 NewUserTenantListItem instantiates a new UserTenantListItem object
 This constructor will assign default values to properties that have it defined,
@@ -25,26 +25,6 @@ will change when the set of required properties is changed
 NewUserTenantListItemWithDefaults instantiates a new UserTenantListItem object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetTenant
-
-`func (o *UserTenantListItem) GetTenant() Tenant`
-
-GetTenant returns the Tenant field if non-nil, zero value otherwise.
-
-### GetTenantOk
-
-`func (o *UserTenantListItem) GetTenantOk() (*Tenant, bool)`
-
-GetTenantOk returns a tuple with the Tenant field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetTenant
-
-`func (o *UserTenantListItem) SetTenant(v Tenant)`
-
-SetTenant sets Tenant field to given value.
-
 
 ### GetIsActive
 
@@ -64,6 +44,26 @@ and a boolean to check if the value has been set.
 `func (o *UserTenantListItem) SetIsActive(v bool)`
 
 SetIsActive sets IsActive field to given value.
+
+
+### GetTenant
+
+`func (o *UserTenantListItem) GetTenant() GetTenantByIDRow`
+
+GetTenant returns the Tenant field if non-nil, zero value otherwise.
+
+### GetTenantOk
+
+`func (o *UserTenantListItem) GetTenantOk() (*GetTenantByIDRow, bool)`
+
+GetTenantOk returns a tuple with the Tenant field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTenant
+
+`func (o *UserTenantListItem) SetTenant(v GetTenantByIDRow)`
+
+SetTenant sets Tenant field to given value.
 
 
 

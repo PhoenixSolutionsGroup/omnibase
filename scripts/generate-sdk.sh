@@ -85,7 +85,7 @@ if [ "$GENERATE_JS" = true ]; then
   echo -e "${BLUE}Generating JavaScript SDK...${NC}"
   cd apps/api
   npx @openapitools/openapi-generator-cli generate \
-    -i docs/openapi.yaml \
+    -i docs/openapi.json \
     -g typescript-fetch \
     -o ../../sdk/core/js \
     --additional-properties=supportsES6=true,npmName=@omnibase/core-js \
@@ -115,7 +115,7 @@ if [ "$GENERATE_GO" = true ]; then
   echo -e "${BLUE}Generating Go SDK...${NC}"
   cd apps/api
   npx @openapitools/openapi-generator-cli generate \
-    -i docs/openapi.yaml \
+    -i docs/openapi.json \
     -g go \
     -o ../../sdk/core/go \
     --additional-properties=packageName=omnibase \

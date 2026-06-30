@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Url** | **string** | Stripe Checkout Session URL | 
-**SessionId** | **string** | Stripe Checkout Session ID | 
+**SessionId** | **string** |  | 
+**Url** | **string** |  | 
 
 ## Methods
 
 ### NewCreateCheckoutResponse
 
-`func NewCreateCheckoutResponse(url string, sessionId string, ) *CreateCheckoutResponse`
+`func NewCreateCheckoutResponse(sessionId string, url string, ) *CreateCheckoutResponse`
 
 NewCreateCheckoutResponse instantiates a new CreateCheckoutResponse object
 This constructor will assign default values to properties that have it defined,
@@ -25,26 +25,6 @@ will change when the set of required properties is changed
 NewCreateCheckoutResponseWithDefaults instantiates a new CreateCheckoutResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetUrl
-
-`func (o *CreateCheckoutResponse) GetUrl() string`
-
-GetUrl returns the Url field if non-nil, zero value otherwise.
-
-### GetUrlOk
-
-`func (o *CreateCheckoutResponse) GetUrlOk() (*string, bool)`
-
-GetUrlOk returns a tuple with the Url field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetUrl
-
-`func (o *CreateCheckoutResponse) SetUrl(v string)`
-
-SetUrl sets Url field to given value.
-
 
 ### GetSessionId
 
@@ -64,6 +44,26 @@ and a boolean to check if the value has been set.
 `func (o *CreateCheckoutResponse) SetSessionId(v string)`
 
 SetSessionId sets SessionId field to given value.
+
+
+### GetUrl
+
+`func (o *CreateCheckoutResponse) GetUrl() string`
+
+GetUrl returns the Url field if non-nil, zero value otherwise.
+
+### GetUrlOk
+
+`func (o *CreateCheckoutResponse) GetUrlOk() (*string, bool)`
+
+GetUrlOk returns a tuple with the Url field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUrl
+
+`func (o *CreateCheckoutResponse) SetUrl(v string)`
+
+SetUrl sets Url field to given value.
 
 
 

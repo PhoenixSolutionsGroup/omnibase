@@ -15,7 +15,7 @@ import type { CreatePortalRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "returnUrl": https://test.example.com/dashboard,
+  "returnUrl": null,
 } satisfies CreatePortalRequest
 
 console.log(example)

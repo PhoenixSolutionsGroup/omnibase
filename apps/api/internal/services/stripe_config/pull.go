@@ -13,7 +13,7 @@ import (
 
 var PullConfigError = errors.New("Failed to pull stripe configuration")
 
-func (s *Service) Pull(ctx context.Context) (*Configuration, error) {
+func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 	meterParams := &stripe.BillingMeterListParams{Status: stripe.String("active")}
 	s.stripe.ApplyAccount(meterParams)
 	var stripeMeters []*stripe.BillingMeter
@@ -155,7 +155,7 @@ func (s *Service) Pull(ctx context.Context) (*Configuration, error) {
 	if configPromos == nil {
 		configPromos = []PromotionCode{}
 	}
-	return &Configuration{
+	return &StripeConfiguration{
 		Version:        version,
 		Webhooks:       configWebhooks,
 		Meters:         configMeters,

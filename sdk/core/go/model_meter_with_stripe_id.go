@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,17 +22,13 @@ var _ MappedNullable = &MeterWithStripeID{}
 
 // MeterWithStripeID struct for MeterWithStripeID
 type MeterWithStripeID struct {
-	// Meter identifier (config ID)
-	Id string `json:"id"`
-	// Human-readable meter name
-	DisplayName string `json:"display_name"`
-	// Event name to track
-	EventName string `json:"event_name"`
-	DefaultAggregation MeterDefaultAggregation `json:"default_aggregation"`
 	CustomerMapping *MeterCustomerMapping `json:"customer_mapping,omitempty"`
-	ValueSettings *MeterValueSettings `json:"value_settings,omitempty"`
-	// Actual Stripe meter ID
+	DefaultAggregation MeterDefaultAggregation `json:"default_aggregation"`
+	DisplayName string `json:"display_name"`
+	EventName string `json:"event_name"`
+	Id string `json:"id"`
 	StripeId *string `json:"stripe_id,omitempty"`
+	ValueSettings *MeterValueSettings `json:"value_settings,omitempty"`
 }
 
 type _MeterWithStripeID MeterWithStripeID
@@ -41,12 +37,12 @@ type _MeterWithStripeID MeterWithStripeID
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMeterWithStripeID(id string, displayName string, eventName string, defaultAggregation MeterDefaultAggregation) *MeterWithStripeID {
+func NewMeterWithStripeID(defaultAggregation MeterDefaultAggregation, displayName string, eventName string, id string) *MeterWithStripeID {
 	this := MeterWithStripeID{}
-	this.Id = id
+	this.DefaultAggregation = defaultAggregation
 	this.DisplayName = displayName
 	this.EventName = eventName
-	this.DefaultAggregation = defaultAggregation
+	this.Id = id
 	return &this
 }
 
@@ -58,28 +54,60 @@ func NewMeterWithStripeIDWithDefaults() *MeterWithStripeID {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *MeterWithStripeID) GetId() string {
+// GetCustomerMapping returns the CustomerMapping field value if set, zero value otherwise.
+func (o *MeterWithStripeID) GetCustomerMapping() MeterCustomerMapping {
+	if o == nil || IsNil(o.CustomerMapping) {
+		var ret MeterCustomerMapping
+		return ret
+	}
+	return *o.CustomerMapping
+}
+
+// GetCustomerMappingOk returns a tuple with the CustomerMapping field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MeterWithStripeID) GetCustomerMappingOk() (*MeterCustomerMapping, bool) {
+	if o == nil || IsNil(o.CustomerMapping) {
+		return nil, false
+	}
+	return o.CustomerMapping, true
+}
+
+// HasCustomerMapping returns a boolean if a field has been set.
+func (o *MeterWithStripeID) HasCustomerMapping() bool {
+	if o != nil && !IsNil(o.CustomerMapping) {
+		return true
+	}
+
+	return false
+}
+
+// SetCustomerMapping gets a reference to the given MeterCustomerMapping and assigns it to the CustomerMapping field.
+func (o *MeterWithStripeID) SetCustomerMapping(v MeterCustomerMapping) {
+	o.CustomerMapping = &v
+}
+
+// GetDefaultAggregation returns the DefaultAggregation field value
+func (o *MeterWithStripeID) GetDefaultAggregation() MeterDefaultAggregation {
 	if o == nil {
-		var ret string
+		var ret MeterDefaultAggregation
 		return ret
 	}
 
-	return o.Id
+	return o.DefaultAggregation
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetDefaultAggregationOk returns a tuple with the DefaultAggregation field value
 // and a boolean to check if the value has been set.
-func (o *MeterWithStripeID) GetIdOk() (*string, bool) {
+func (o *MeterWithStripeID) GetDefaultAggregationOk() (*MeterDefaultAggregation, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Id, true
+	return &o.DefaultAggregation, true
 }
 
-// SetId sets field value
-func (o *MeterWithStripeID) SetId(v string) {
-	o.Id = v
+// SetDefaultAggregation sets field value
+func (o *MeterWithStripeID) SetDefaultAggregation(v MeterDefaultAggregation) {
+	o.DefaultAggregation = v
 }
 
 // GetDisplayName returns the DisplayName field value
@@ -130,92 +158,28 @@ func (o *MeterWithStripeID) SetEventName(v string) {
 	o.EventName = v
 }
 
-// GetDefaultAggregation returns the DefaultAggregation field value
-func (o *MeterWithStripeID) GetDefaultAggregation() MeterDefaultAggregation {
+// GetId returns the Id field value
+func (o *MeterWithStripeID) GetId() string {
 	if o == nil {
-		var ret MeterDefaultAggregation
+		var ret string
 		return ret
 	}
 
-	return o.DefaultAggregation
+	return o.Id
 }
 
-// GetDefaultAggregationOk returns a tuple with the DefaultAggregation field value
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *MeterWithStripeID) GetDefaultAggregationOk() (*MeterDefaultAggregation, bool) {
+func (o *MeterWithStripeID) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.DefaultAggregation, true
+	return &o.Id, true
 }
 
-// SetDefaultAggregation sets field value
-func (o *MeterWithStripeID) SetDefaultAggregation(v MeterDefaultAggregation) {
-	o.DefaultAggregation = v
-}
-
-// GetCustomerMapping returns the CustomerMapping field value if set, zero value otherwise.
-func (o *MeterWithStripeID) GetCustomerMapping() MeterCustomerMapping {
-	if o == nil || IsNil(o.CustomerMapping) {
-		var ret MeterCustomerMapping
-		return ret
-	}
-	return *o.CustomerMapping
-}
-
-// GetCustomerMappingOk returns a tuple with the CustomerMapping field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MeterWithStripeID) GetCustomerMappingOk() (*MeterCustomerMapping, bool) {
-	if o == nil || IsNil(o.CustomerMapping) {
-		return nil, false
-	}
-	return o.CustomerMapping, true
-}
-
-// HasCustomerMapping returns a boolean if a field has been set.
-func (o *MeterWithStripeID) HasCustomerMapping() bool {
-	if o != nil && !IsNil(o.CustomerMapping) {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomerMapping gets a reference to the given MeterCustomerMapping and assigns it to the CustomerMapping field.
-func (o *MeterWithStripeID) SetCustomerMapping(v MeterCustomerMapping) {
-	o.CustomerMapping = &v
-}
-
-// GetValueSettings returns the ValueSettings field value if set, zero value otherwise.
-func (o *MeterWithStripeID) GetValueSettings() MeterValueSettings {
-	if o == nil || IsNil(o.ValueSettings) {
-		var ret MeterValueSettings
-		return ret
-	}
-	return *o.ValueSettings
-}
-
-// GetValueSettingsOk returns a tuple with the ValueSettings field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *MeterWithStripeID) GetValueSettingsOk() (*MeterValueSettings, bool) {
-	if o == nil || IsNil(o.ValueSettings) {
-		return nil, false
-	}
-	return o.ValueSettings, true
-}
-
-// HasValueSettings returns a boolean if a field has been set.
-func (o *MeterWithStripeID) HasValueSettings() bool {
-	if o != nil && !IsNil(o.ValueSettings) {
-		return true
-	}
-
-	return false
-}
-
-// SetValueSettings gets a reference to the given MeterValueSettings and assigns it to the ValueSettings field.
-func (o *MeterWithStripeID) SetValueSettings(v MeterValueSettings) {
-	o.ValueSettings = &v
+// SetId sets field value
+func (o *MeterWithStripeID) SetId(v string) {
+	o.Id = v
 }
 
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
@@ -250,6 +214,38 @@ func (o *MeterWithStripeID) SetStripeId(v string) {
 	o.StripeId = &v
 }
 
+// GetValueSettings returns the ValueSettings field value if set, zero value otherwise.
+func (o *MeterWithStripeID) GetValueSettings() MeterValueSettings {
+	if o == nil || IsNil(o.ValueSettings) {
+		var ret MeterValueSettings
+		return ret
+	}
+	return *o.ValueSettings
+}
+
+// GetValueSettingsOk returns a tuple with the ValueSettings field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MeterWithStripeID) GetValueSettingsOk() (*MeterValueSettings, bool) {
+	if o == nil || IsNil(o.ValueSettings) {
+		return nil, false
+	}
+	return o.ValueSettings, true
+}
+
+// HasValueSettings returns a boolean if a field has been set.
+func (o *MeterWithStripeID) HasValueSettings() bool {
+	if o != nil && !IsNil(o.ValueSettings) {
+		return true
+	}
+
+	return false
+}
+
+// SetValueSettings gets a reference to the given MeterValueSettings and assigns it to the ValueSettings field.
+func (o *MeterWithStripeID) SetValueSettings(v MeterValueSettings) {
+	o.ValueSettings = &v
+}
+
 func (o MeterWithStripeID) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -260,18 +256,18 @@ func (o MeterWithStripeID) MarshalJSON() ([]byte, error) {
 
 func (o MeterWithStripeID) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	toSerialize["display_name"] = o.DisplayName
-	toSerialize["event_name"] = o.EventName
-	toSerialize["default_aggregation"] = o.DefaultAggregation
 	if !IsNil(o.CustomerMapping) {
 		toSerialize["customer_mapping"] = o.CustomerMapping
 	}
-	if !IsNil(o.ValueSettings) {
-		toSerialize["value_settings"] = o.ValueSettings
-	}
+	toSerialize["default_aggregation"] = o.DefaultAggregation
+	toSerialize["display_name"] = o.DisplayName
+	toSerialize["event_name"] = o.EventName
+	toSerialize["id"] = o.Id
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
+	}
+	if !IsNil(o.ValueSettings) {
+		toSerialize["value_settings"] = o.ValueSettings
 	}
 	return toSerialize, nil
 }
@@ -281,10 +277,10 @@ func (o *MeterWithStripeID) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
+		"default_aggregation",
 		"display_name",
 		"event_name",
-		"default_aggregation",
+		"id",
 	}
 
 	allProperties := make(map[string]interface{})

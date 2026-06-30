@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**MeterEventName** | **string** | The meter event name as defined in your Stripe configuration (required, cannot be empty) | 
-**Value** | **string** | The usage value to record (required, cannot be empty) | 
+**MeterEventName** | **string** |  | 
+**Value** | **string** |  | 
 
 ## Methods
 

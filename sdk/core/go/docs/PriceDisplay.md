@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**CustomText** | Pointer to **string** | Custom text to display instead of price | [optional] 
-**ShowCurrency** | Pointer to **bool** | Whether to show currency symbol | [optional] 
-**Suffix** | Pointer to **string** | Text to append after price | [optional] 
+**CustomText** | Pointer to **string** |  | [optional] 
+**ShowCurrency** | Pointer to **bool** |  | [optional] 
+**Suffix** | Pointer to **string** |  | [optional] 
 
 ## Methods
 

@@ -38,7 +38,7 @@ func TestInvitesCreate(t *testing.T) {
 		assert.Equal(t, ownerID, invite.InviterId)
 		assert.NotEmpty(t, invite.Token)
 		assert.False(t, invite.ExpiresAt.IsZero(), "expires_at should be set")
-		assert.Nil(t, invite.UsedAt, "invite not yet used")
+		assert.Nil(t, invite.UsedAt.Get(), "invite not yet used")
 	})
 
 	t.Run("owner creates admin invite", func(t *testing.T) {

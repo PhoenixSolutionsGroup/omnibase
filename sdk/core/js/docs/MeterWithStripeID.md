@@ -6,13 +6,13 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
+`customerMapping` | [MeterCustomerMapping](MeterCustomerMapping.md)
+`defaultAggregation` | [MeterDefaultAggregation](MeterDefaultAggregation.md)
 `displayName` | string
 `eventName` | string
-`defaultAggregation` | [MeterDefaultAggregation](MeterDefaultAggregation.md)
-`customerMapping` | [MeterCustomerMapping](MeterCustomerMapping.md)
-`valueSettings` | [MeterValueSettings](MeterValueSettings.md)
+`id` | string
 `stripeId` | string
+`valueSettings` | [MeterValueSettings](MeterValueSettings.md)
 
 ## Example
 
@@ -21,13 +21,13 @@ import type { MeterWithStripeID } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": api_requests,
-  "displayName": API Requests,
-  "eventName": api_request,
-  "defaultAggregation": null,
   "customerMapping": null,
+  "defaultAggregation": null,
+  "displayName": null,
+  "eventName": null,
+  "id": null,
+  "stripeId": null,
   "valueSettings": null,
-  "stripeId": mtr_1SRiyyCJIZaBlhY1,
 } satisfies MeterWithStripeID
 
 console.log(example)

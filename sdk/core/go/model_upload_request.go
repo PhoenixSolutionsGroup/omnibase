@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -21,10 +21,8 @@ var _ MappedNullable = &UploadRequest{}
 
 // UploadRequest struct for UploadRequest
 type UploadRequest struct {
-	// Storage path for the file (user-controlled directory structure). Must start with alphanumeric character, can contain forward slashes, underscores, dots, spaces, and hyphens.
-	Path string `json:"path" validate:"regexp=^[a-zA-Z0-9][a-zA-Z0-9\\/_. -]*$"`
-	// Optional custom metadata for the file
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Path string `json:"path"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -46,30 +44,6 @@ func NewUploadRequest(path string) *UploadRequest {
 func NewUploadRequestWithDefaults() *UploadRequest {
 	this := UploadRequest{}
 	return &this
-}
-
-// GetPath returns the Path field value
-func (o *UploadRequest) GetPath() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Path
-}
-
-// GetPathOk returns a tuple with the Path field value
-// and a boolean to check if the value has been set.
-func (o *UploadRequest) GetPathOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Path, true
-}
-
-// SetPath sets field value
-func (o *UploadRequest) SetPath(v string) {
-	o.Path = v
 }
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
@@ -104,6 +78,30 @@ func (o *UploadRequest) SetMetadata(v map[string]interface{}) {
 	o.Metadata = v
 }
 
+// GetPath returns the Path field value
+func (o *UploadRequest) GetPath() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Path
+}
+
+// GetPathOk returns a tuple with the Path field value
+// and a boolean to check if the value has been set.
+func (o *UploadRequest) GetPathOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Path, true
+}
+
+// SetPath sets field value
+func (o *UploadRequest) SetPath(v string) {
+	o.Path = v
+}
+
 func (o UploadRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -114,10 +112,10 @@ func (o UploadRequest) MarshalJSON() ([]byte, error) {
 
 func (o UploadRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["path"] = o.Path
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
+	toSerialize["path"] = o.Path
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -161,8 +159,8 @@ func (o *UploadRequest) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "path")
 		delete(additionalProperties, "metadata")
+		delete(additionalProperties, "path")
 		o.AdditionalProperties = additionalProperties
 	}
 

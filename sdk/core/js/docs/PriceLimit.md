@@ -7,8 +7,8 @@
 Name | Type
 ------------ | -------------
 `text` | string
-`value` | number
 `unit` | string
+`value` | number
 
 ## Example
 
@@ -17,9 +17,9 @@ import type { PriceLimit } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "text": Up to 1000 API calls,
-  "value": 1000,
-  "unit": requests,
+  "text": null,
+  "unit": null,
+  "value": null,
 } satisfies PriceLimit
 
 console.log(example)

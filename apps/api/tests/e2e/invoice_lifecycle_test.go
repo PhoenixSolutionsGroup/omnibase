@@ -44,7 +44,7 @@ func TestInvoiceLifecycle(t *testing.T) {
 		autoAdvance := false
 		desc := "Test invoice " + id
 		req := sdk.CreateInvoiceRequest{
-			Currency:    sdk.USD,
+			Currency:    "usd",
 			AutoAdvance: &autoAdvance,
 			Description: &desc,
 			Metadata:    map[string]string{"test_run": id},
@@ -67,8 +67,7 @@ func TestInvoiceLifecycle(t *testing.T) {
 		require.NotNil(t, out)
 		assert.Equal(t, invoiceID, out.Id)
 		assert.Equal(t, "draft", out.Status)
-		require.NotNil(t, out.CustomerId)
-		assert.Equal(t, customerID, *out.CustomerId)
+		assert.Equal(t, customerID, out.CustomerId)
 	})
 
 	t.Run("update draft invoice description + metadata", func(t *testing.T) {
@@ -88,34 +87,31 @@ func TestInvoiceLifecycle(t *testing.T) {
 	})
 
 	t.Run("add first line item", func(t *testing.T) {
-		req := sdk.AddInvoiceLineItemRequest{
+		req := sdk.AddLineItemRequest{
 			Amount:      1500,
 			Description: "Platform fee",
-			Currency:    sdk.USD,
+			Currency:    "usd",
 		}
 		out, resp, err := h.AddInvoiceLineItemRaw(t, sb.Client, invoiceID, tenant.Id, req)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
 		assert.True(t, strings.HasPrefix(out.Id, "ii_"), "line item id should start with ii_: %s", out.Id)
-		require.NotNil(t, out.Amount)
-		assert.Equal(t, int64(1500), *out.Amount)
-		require.NotNil(t, out.Description)
-		assert.Equal(t, "Platform fee", *out.Description)
+		assert.Equal(t, int64(1500), out.Amount)
+		assert.Equal(t, "Platform fee", out.Description)
 	})
 
 	t.Run("add second line item", func(t *testing.T) {
-		req := sdk.AddInvoiceLineItemRequest{
+		req := sdk.AddLineItemRequest{
 			Amount:      500,
 			Description: "Service charge",
-			Currency:    sdk.USD,
+			Currency:    "usd",
 		}
 		out, resp, err := h.AddInvoiceLineItemRaw(t, sb.Client, invoiceID, tenant.Id, req)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
-		require.NotNil(t, out.Amount)
-		assert.Equal(t, int64(500), *out.Amount)
+		assert.Equal(t, int64(500), out.Amount)
 	})
 
 	t.Run("finalize invoice transitions to open with summed total", func(t *testing.T) {
@@ -124,8 +120,7 @@ func TestInvoiceLifecycle(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
 		assert.Equal(t, "open", out.Status)
-		require.NotNil(t, out.AmountDue)
-		assert.Equal(t, int64(2000), *out.AmountDue, "expected 1500 + 500 = 2000")
+		assert.Equal(t, int64(2000), out.AmountDue, "expected 1500 + 500 = 2000")
 	})
 
 	t.Run("verify finalized invoice has hosted url", func(t *testing.T) {

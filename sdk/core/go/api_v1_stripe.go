@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -41,24 +41,6 @@ func (r ApiApplyEnterpriseCustomRequest) Execute() (*EnterpriseApplyResponse, *h
 
 /*
 ApplyEnterpriseCustom Apply custom enterprise pricing
-
-Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant's
-active subscription prices to custom enterprise prices identified by enterprise_id.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- Apply custom negotiated pricing for specific enterprise customers
-- Tenant-specific pricing overrides
-- Custom enterprise onboarding
-
-## Flow
-1. Validates tenant exists and has Stripe customer ID
-2. Fetches all prices with matching `enterprise_id`
-3. Swaps subscription item prices to enterprise equivalents
-4. Updates tenant's `enterprise_id` field for future provisioning
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiApplyEnterpriseCustomRequest
@@ -104,7 +86,7 @@ func (a *V1StripeAPIService) ApplyEnterpriseCustomExecute(r ApiApplyEnterpriseCu
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -149,8 +131,7 @@ func (a *V1StripeAPIService) ApplyEnterpriseCustomExecute(r ApiApplyEnterpriseCu
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -158,40 +139,6 @@ func (a *V1StripeAPIService) ApplyEnterpriseCustomExecute(r ApiApplyEnterpriseCu
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -224,24 +171,6 @@ func (r ApiApplyEnterpriseTemplateRequest) Execute() (*EnterpriseApplyResponse, 
 
 /*
 ApplyEnterpriseTemplate Apply enterprise template pricing
-
-Applies template-based enterprise pricing to a tenant. This swaps the tenant's
-active subscription prices to the corresponding enterprise template prices.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- Apply pre-defined discount tiers to enterprise customers
-- Bulk pricing changes for enterprise accounts
-- Template-based enterprise onboarding
-
-## Flow
-1. Validates tenant exists and has Stripe customer ID
-2. Fetches all prices with matching `enterprise_template`
-3. Swaps subscription item prices to enterprise equivalents
-4. Updates tenant's `enterprise_template` field for future provisioning
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiApplyEnterpriseTemplateRequest
@@ -287,7 +216,7 @@ func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterprise
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -332,8 +261,7 @@ func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterprise
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -341,40 +269,6 @@ func (a *V1StripeAPIService) ApplyEnterpriseTemplateExecute(r ApiApplyEnterprise
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -409,24 +303,8 @@ func (r ApiCalculatePriceCostRequest) Execute() (*CalculatePriceCostResponse, *h
 /*
 CalculatePriceCost Calculate cost for a price
 
-Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.
-
-## Authentication
-No authentication required for public endpoint.
-
-## Pricing Modes
-- **per_unit**: Simple flat pricing where cost = unit_amount × quantity
-- **tiered (graduated)**: Each tier's price applies only to units in that tier (like tax brackets)
-- **tiered (volume)**: The applicable tier's price applies to ALL units
-
-## Use Cases
-- Calculate estimated costs for usage preview
-- Display cost estimates in dashboard
-- Usage billing calculations
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param priceId Price config ID
+ @param priceId
  @return ApiCalculatePriceCostRequest
 */
 func (a *V1StripeAPIService) CalculatePriceCost(ctx context.Context, priceId string) ApiCalculatePriceCostRequest {
@@ -472,7 +350,7 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -503,8 +381,7 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -512,29 +389,6 @@ func (a *V1StripeAPIService) CalculatePriceCostExecute(r ApiCalculatePriceCostRe
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -556,26 +410,15 @@ type ApiConvertStripeIDToConfigIDRequest struct {
 	stripeId string
 }
 
-func (r ApiConvertStripeIDToConfigIDRequest) Execute() (*StripeIDConversionResponse, *http.Response, error) {
+func (r ApiConvertStripeIDToConfigIDRequest) Execute() (*ConvertStripeIDResponse, *http.Response, error) {
 	return r.ApiService.ConvertStripeIDToConfigIDExecute(r)
 }
 
 /*
 ConvertStripeIDToConfigID Convert Stripe ID to config ID
 
-Converts a Stripe ID (product, price, or meter) to the corresponding config ID.
-
-## Authentication
-No authentication required for public endpoint.
-
-## Use Cases
-- Webhook processing
-- Subscription mapping
-- Price lookups
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param stripeId Stripe ID to convert
+ @param stripeId
  @return ApiConvertStripeIDToConfigIDRequest
 */
 func (a *V1StripeAPIService) ConvertStripeIDToConfigID(ctx context.Context, stripeId string) ApiConvertStripeIDToConfigIDRequest {
@@ -587,13 +430,13 @@ func (a *V1StripeAPIService) ConvertStripeIDToConfigID(ctx context.Context, stri
 }
 
 // Execute executes the request
-//  @return StripeIDConversionResponse
-func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripeIDToConfigIDRequest) (*StripeIDConversionResponse, *http.Response, error) {
+//  @return ConvertStripeIDResponse
+func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripeIDToConfigIDRequest) (*ConvertStripeIDResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *StripeIDConversionResponse
+		localVarReturnValue  *ConvertStripeIDResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.ConvertStripeIDToConfigID")
@@ -618,7 +461,7 @@ func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripe
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -647,8 +490,7 @@ func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -656,29 +498,6 @@ func (a *V1StripeAPIService) ConvertStripeIDToConfigIDExecute(r ApiConvertStripe
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -707,18 +526,8 @@ func (r ApiGetEnterprisePricesByIDRequest) Execute() (*EnterprisePricesResponse,
 /*
 GetEnterprisePricesByID Get enterprise prices by ID
 
-Retrieves prices filtered by enterprise ID.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- View custom pricing for a specific enterprise
-- Provisioning services for enterprise tenants
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param enterpriseId Enterprise ID to filter by
+ @param enterpriseId
  @return ApiGetEnterprisePricesByIDRequest
 */
 func (a *V1StripeAPIService) GetEnterprisePricesByID(ctx context.Context, enterpriseId string) ApiGetEnterprisePricesByIDRequest {
@@ -761,7 +570,7 @@ func (a *V1StripeAPIService) GetEnterprisePricesByIDExecute(r ApiGetEnterprisePr
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -804,8 +613,7 @@ func (a *V1StripeAPIService) GetEnterprisePricesByIDExecute(r ApiGetEnterprisePr
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -813,18 +621,6 @@ func (a *V1StripeAPIService) GetEnterprisePricesByIDExecute(r ApiGetEnterprisePr
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -853,18 +649,8 @@ func (r ApiGetEnterprisePricesByTemplateRequest) Execute() (*EnterprisePricesRes
 /*
 GetEnterprisePricesByTemplate Get enterprise prices by template
 
-Retrieves prices filtered by enterprise template.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- List available enterprise prices for a template
-- Provisioning services for enterprise tenants
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param template Enterprise template to filter by
+ @param template
  @return ApiGetEnterprisePricesByTemplateRequest
 */
 func (a *V1StripeAPIService) GetEnterprisePricesByTemplate(ctx context.Context, template string) ApiGetEnterprisePricesByTemplateRequest {
@@ -907,7 +693,7 @@ func (a *V1StripeAPIService) GetEnterprisePricesByTemplateExecute(r ApiGetEnterp
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -950,8 +736,7 @@ func (a *V1StripeAPIService) GetEnterprisePricesByTemplateExecute(r ApiGetEnterp
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -959,18 +744,6 @@ func (a *V1StripeAPIService) GetEnterprisePricesByTemplateExecute(r ApiGetEnterp
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -992,26 +765,15 @@ type ApiGetMeterByIDRequest struct {
 	meterId string
 }
 
-func (r ApiGetMeterByIDRequest) Execute() (*MeterResponse, *http.Response, error) {
+func (r ApiGetMeterByIDRequest) Execute() (*GetMeterResponse, *http.Response, error) {
 	return r.ApiService.GetMeterByIDExecute(r)
 }
 
 /*
 GetMeterByID Get meter by ID
 
-Returns a specific billing meter from the Stripe configuration by its config ID.
-
-## Authentication
-No authentication required for public endpoint.
-
-## Use Cases
-- Fetch meter details for usage tracking
-- Display metered billing information
-- Usage reporting configuration
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param meterId Meter config ID
+ @param meterId
  @return ApiGetMeterByIDRequest
 */
 func (a *V1StripeAPIService) GetMeterByID(ctx context.Context, meterId string) ApiGetMeterByIDRequest {
@@ -1023,13 +785,13 @@ func (a *V1StripeAPIService) GetMeterByID(ctx context.Context, meterId string) A
 }
 
 // Execute executes the request
-//  @return MeterResponse
-func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*MeterResponse, *http.Response, error) {
+//  @return GetMeterResponse
+func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*GetMeterResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *MeterResponse
+		localVarReturnValue  *GetMeterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetMeterByID")
@@ -1054,7 +816,7 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Met
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1083,8 +845,7 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Met
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1092,29 +853,6 @@ func (a *V1StripeAPIService) GetMeterByIDExecute(r ApiGetMeterByIDRequest) (*Met
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1136,26 +874,15 @@ type ApiGetPriceByIDRequest struct {
 	priceId string
 }
 
-func (r ApiGetPriceByIDRequest) Execute() (*PriceResponse, *http.Response, error) {
+func (r ApiGetPriceByIDRequest) Execute() (*GetPriceResponse, *http.Response, error) {
 	return r.ApiService.GetPriceByIDExecute(r)
 }
 
 /*
 GetPriceByID Get price by ID
 
-Returns a specific price from the Stripe configuration by its config ID, along with its parent product.
-
-## Authentication
-No authentication required for public endpoint.
-
-## Use Cases
-- Fetch price details for checkout
-- Display specific pricing information
-- Subscription management
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param priceId Price config ID
+ @param priceId
  @return ApiGetPriceByIDRequest
 */
 func (a *V1StripeAPIService) GetPriceByID(ctx context.Context, priceId string) ApiGetPriceByIDRequest {
@@ -1167,13 +894,13 @@ func (a *V1StripeAPIService) GetPriceByID(ctx context.Context, priceId string) A
 }
 
 // Execute executes the request
-//  @return PriceResponse
-func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*PriceResponse, *http.Response, error) {
+//  @return GetPriceResponse
+func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*GetPriceResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *PriceResponse
+		localVarReturnValue  *GetPriceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetPriceByID")
@@ -1198,7 +925,7 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Pri
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1227,8 +954,7 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Pri
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1236,29 +962,6 @@ func (a *V1StripeAPIService) GetPriceByIDExecute(r ApiGetPriceByIDRequest) (*Pri
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1280,26 +983,15 @@ type ApiGetProductByIDRequest struct {
 	productId string
 }
 
-func (r ApiGetProductByIDRequest) Execute() (*ProductResponse, *http.Response, error) {
+func (r ApiGetProductByIDRequest) Execute() (*GetProductResponse, *http.Response, error) {
 	return r.ApiService.GetProductByIDExecute(r)
 }
 
 /*
 GetProductByID Get product by ID
 
-Returns a specific product from the Stripe configuration by its config ID, including all its prices.
-
-## Authentication
-No authentication required for public endpoint.
-
-## Use Cases
-- Fetch product details
-- Display product information with all price options
-- Product catalog pages
-
-
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param productId Product config ID
+ @param productId
  @return ApiGetProductByIDRequest
 */
 func (a *V1StripeAPIService) GetProductByID(ctx context.Context, productId string) ApiGetProductByIDRequest {
@@ -1311,13 +1003,13 @@ func (a *V1StripeAPIService) GetProductByID(ctx context.Context, productId strin
 }
 
 // Execute executes the request
-//  @return ProductResponse
-func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (*ProductResponse, *http.Response, error) {
+//  @return GetProductResponse
+func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (*GetProductResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ProductResponse
+		localVarReturnValue  *GetProductResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1StripeAPIService.GetProductByID")
@@ -1342,7 +1034,7 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1371,8 +1063,7 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequest
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1380,29 +1071,6 @@ func (a *V1StripeAPIService) GetProductByIDExecute(r ApiGetProductByIDRequest) (
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFound
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1429,17 +1097,6 @@ func (r ApiGetStripeConfigRequest) Execute() (*StripeConfigResponse, *http.Respo
 
 /*
 GetStripeConfig Get public Stripe config
-
-Returns the current Stripe configuration with public prices only (filters out enterprise prices).
-
-## Authentication
-No authentication required for public endpoint.
-
-## Use Cases
-- Display pricing to users
-- Build subscription selection UI
-- Public pricing pages
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigRequest
@@ -1482,7 +1139,7 @@ func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest)
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1511,8 +1168,7 @@ func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest)
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1520,7 +1176,6 @@ func (a *V1StripeAPIService) GetStripeConfigExecute(r ApiGetStripeConfigRequest)
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1547,17 +1202,6 @@ func (r ApiGetStripeConfigAdminRequest) Execute() (*StripeConfigResponse, *http.
 
 /*
 GetStripeConfigAdmin Get full Stripe config (admin)
-
-Returns the complete Stripe configuration including all prices (both public and enterprise).
-
-## Authentication
-Requires admin JWT token.
-
-## Use Cases
-- Admin configuration management
-- Enterprise pricing display
-- Configuration auditing
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetStripeConfigAdminRequest
@@ -1600,7 +1244,7 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1643,8 +1287,7 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1652,18 +1295,6 @@ func (a *V1StripeAPIService) GetStripeConfigAdminExecute(r ApiGetStripeConfigAdm
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1690,17 +1321,6 @@ func (r ApiListWebhooksRequest) Execute() (*ListWebhooksResponse, *http.Response
 
 /*
 ListWebhooks List all webhooks
-
-Retrieves all configured webhook endpoints with their signing secrets.
-
-## Authentication
-Requires service key authentication.
-
-## Use Cases
-- List all webhook configurations
-- Retrieve signing secrets for webhook signature verification
-- Debug webhook configuration
-
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListWebhooksRequest
@@ -1743,7 +1363,7 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -1786,8 +1406,7 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v Unauthorized
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1795,18 +1414,6 @@ func (a *V1StripeAPIService) ListWebhooksExecute(r ApiListWebhooksRequest) (*Lis
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

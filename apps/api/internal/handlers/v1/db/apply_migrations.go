@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"mime/multipart"
 	"os"
 	"path/filepath"
 	"time"
@@ -25,7 +24,9 @@ type ApplyMigrationsResponse struct {
 
 type ApplyMigrationsInput struct {
 	handlers.AuthCtx
-	RawBody multipart.Form
+	RawBody huma.MultipartFormFiles[struct {
+		Migrations huma.FormFile `form:"migrations" required:"true"`
+	}]
 }
 
 type ApplyMigrationsOutput struct {
@@ -33,12 +34,11 @@ type ApplyMigrationsOutput struct {
 }
 
 func (h *Handler) ApplyMigrations(ctx context.Context, in *ApplyMigrationsInput) (*ApplyMigrationsOutput, error) {
-	files := in.RawBody.File["migrations"]
-	if len(files) == 0 {
-		return nil, huma.Error400BadRequest("No migrations zip file provided")
-	}
-	fileHeader := files[0]
-	if fileHeader.Size == 0 {
+	form := in.RawBody.Data()
+	file := form.Migrations
+	defer file.Close()
+
+	if file.Size == 0 {
 		return nil, huma.Error400BadRequest("Empty file provided")
 	}
 
@@ -49,13 +49,7 @@ func (h *Handler) ApplyMigrations(ctx context.Context, in *ApplyMigrationsInput)
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 
-	zipFile, err := fileHeader.Open()
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
-	}
-	defer zipFile.Close()
-
-	if err := extractMigrationZip(zipFile, dir); err != nil {
+	if err := extractMigrationZip(file, dir); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ApplyMigrationsError, err).Error())
 	}
 

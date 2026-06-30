@@ -4,25 +4,23 @@ All URIs are relative to *https://api.omnibase.tech*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**AddInvoiceLineItem**](V1PaymentsAPI.md#AddInvoiceLineItem) | **Post** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item
-[**AddInvoiceLineItemWithPriceId**](V1PaymentsAPI.md#AddInvoiceLineItemWithPriceId) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID
-[**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create checkout session
-[**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create customer portal session
-[**CreateInvoice**](V1PaymentsAPI.md#CreateInvoice) | **Post** /api/v1/payments/invoices | Create invoice
-[**FinalizeInvoice**](V1PaymentsAPI.md#FinalizeInvoice) | **Post** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize invoice
-[**GetInvoice**](V1PaymentsAPI.md#GetInvoice) | **Get** /api/v1/payments/invoices/{invoice_id} | Get invoice
-[**RecordUsage**](V1PaymentsAPI.md#RecordUsage) | **Post** /api/v1/payments/usage | Record metered usage
-[**UpdateInvoice**](V1PaymentsAPI.md#UpdateInvoice) | **Patch** /api/v1/payments/invoices/{invoice_id} | Update invoice
+[**AddInvoiceLineItem**](V1PaymentsAPI.md#AddInvoiceLineItem) | **Post** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
+[**AddInvoiceLineItemWithPriceId**](V1PaymentsAPI.md#AddInvoiceLineItemWithPriceId) | **Post** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
+[**CreateCheckout**](V1PaymentsAPI.md#CreateCheckout) | **Post** /api/v1/payments/checkout | Create a Stripe checkout session
+[**CreateCustomerPortal**](V1PaymentsAPI.md#CreateCustomerPortal) | **Post** /api/v1/payments/portal | Create a Stripe customer portal session
+[**CreateInvoice**](V1PaymentsAPI.md#CreateInvoice) | **Post** /api/v1/payments/invoices | Create a Stripe invoice
+[**FinalizeInvoice**](V1PaymentsAPI.md#FinalizeInvoice) | **Post** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
+[**GetInvoice**](V1PaymentsAPI.md#GetInvoice) | **Get** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
+[**RecordUsage**](V1PaymentsAPI.md#RecordUsage) | **Post** /api/v1/payments/usage | Record a Stripe meter usage event
+[**UpdateInvoice**](V1PaymentsAPI.md#UpdateInvoice) | **Patch** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
 
 
 
 ## AddInvoiceLineItem
 
-> InvoiceLineItemResponse AddInvoiceLineItem(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemRequest(addInvoiceLineItemRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceLineItemResponse AddInvoiceLineItem(ctx, invoiceId).AddLineItemRequest(addLineItemRequest).Execute()
 
-Add invoice line item
-
-
+Add a line item to a Stripe invoice
 
 ### Example
 
@@ -37,15 +35,12 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
-	addInvoiceLineItemRequest := *openapiclient.NewAddInvoiceLineItemRequest(int64(1000), "Platform fee", openapiclient.CurrencyCode("usd")) // AddInvoiceLineItemRequest | 
-	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
+	invoiceId := "invoiceId_example" // string | 
+	addLineItemRequest := *openapiclient.NewAddLineItemRequest(int64(123), "Currency_example", "Description_example") // AddLineItemRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.AddInvoiceLineItem(context.Background(), invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemRequest(addInvoiceLineItemRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.AddInvoiceLineItem(context.Background(), invoiceId).AddLineItemRequest(addLineItemRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.AddInvoiceLineItem``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -61,7 +56,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** | Stripe Invoice ID | 
+**invoiceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -70,11 +65,8 @@ Other parameters are passed through a pointer to a apiAddInvoiceLineItemRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
 
- **addInvoiceLineItemRequest** | [**AddInvoiceLineItemRequest**](AddInvoiceLineItemRequest.md) |  | 
- **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | 
- **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | 
+ **addLineItemRequest** | [**AddLineItemRequest**](AddLineItemRequest.md) |  | 
 
 ### Return type
 
@@ -82,12 +74,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -96,11 +88,9 @@ No authorization required
 
 ## AddInvoiceLineItemWithPriceId
 
-> InvoiceLineItemResponse AddInvoiceLineItemWithPriceId(ctx, invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceLineItemResponse AddInvoiceLineItemWithPriceId(ctx, invoiceId).AddLineItemByPriceRequest(addLineItemByPriceRequest).Execute()
 
-Add invoice line item with price ID
-
-
+Add a line item to a Stripe invoice using a price ID
 
 ### Example
 
@@ -115,15 +105,12 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
-	addInvoiceLineItemWithPriceIDRequest := openapiclient.AddInvoiceLineItemWithPriceIDRequest{AddInvoiceLineItemWithConfigPriceRequest: openapiclient.NewAddInvoiceLineItemWithConfigPriceRequest("hetzner_cx23_nbg1_hourly", int64(720), "VPS Compute - 720 hours", openapiclient.CurrencyCode("usd"))} // AddInvoiceLineItemWithPriceIDRequest | 
-	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
+	invoiceId := "invoiceId_example" // string | 
+	addLineItemByPriceRequest := *openapiclient.NewAddLineItemByPriceRequest("Currency_example", "Description_example", int64(123)) // AddLineItemByPriceRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.AddInvoiceLineItemWithPriceId(context.Background(), invoiceId).XServiceKey(xServiceKey).AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.AddInvoiceLineItemWithPriceId(context.Background(), invoiceId).AddLineItemByPriceRequest(addLineItemByPriceRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.AddInvoiceLineItemWithPriceId``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -139,7 +126,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** | Stripe Invoice ID | 
+**invoiceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -148,11 +135,8 @@ Other parameters are passed through a pointer to a apiAddInvoiceLineItemWithPric
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
 
- **addInvoiceLineItemWithPriceIDRequest** | [**AddInvoiceLineItemWithPriceIDRequest**](AddInvoiceLineItemWithPriceIDRequest.md) |  | 
- **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | 
- **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | 
+ **addLineItemByPriceRequest** | [**AddLineItemByPriceRequest**](AddLineItemByPriceRequest.md) |  | 
 
 ### Return type
 
@@ -160,12 +144,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -176,9 +160,7 @@ No authorization required
 
 > CreateCheckoutResponse CreateCheckout(ctx).CreateCheckoutRequest(createCheckoutRequest).Execute()
 
-Create checkout session
-
-
+Create a Stripe checkout session
 
 ### Example
 
@@ -193,7 +175,7 @@ import (
 )
 
 func main() {
-	createCheckoutRequest := *openapiclient.NewCreateCheckoutRequest("price_test_basic", "https://test.example.com/success", "https://test.example.com/cancel") // CreateCheckoutRequest | 
+	createCheckoutRequest := *openapiclient.NewCreateCheckoutRequest("CancelUrl_example", "PriceId_example", "SuccessUrl_example") // CreateCheckoutRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -226,12 +208,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -242,9 +224,7 @@ No authorization required
 
 > CreatePortalResponse CreateCustomerPortal(ctx).CreatePortalRequest(createPortalRequest).Execute()
 
-Create customer portal session
-
-
+Create a Stripe customer portal session
 
 ### Example
 
@@ -259,7 +239,7 @@ import (
 )
 
 func main() {
-	createPortalRequest := *openapiclient.NewCreatePortalRequest("https://test.example.com/dashboard") // CreatePortalRequest | 
+	createPortalRequest := *openapiclient.NewCreatePortalRequest("ReturnUrl_example") // CreatePortalRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -292,12 +272,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -306,11 +286,9 @@ No authorization required
 
 ## CreateInvoice
 
-> InvoiceResponse CreateInvoice(ctx).XServiceKey(xServiceKey).CreateInvoiceRequest(createInvoiceRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> InvoiceResponse CreateInvoice(ctx).CreateInvoiceRequest(createInvoiceRequest).Execute()
 
-Create invoice
-
-
+Create a Stripe invoice
 
 ### Example
 
@@ -325,14 +303,11 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	createInvoiceRequest := *openapiclient.NewCreateInvoiceRequest(openapiclient.CurrencyCode("usd")) // CreateInvoiceRequest | 
-	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
+	createInvoiceRequest := *openapiclient.NewCreateInvoiceRequest("Currency_example") // CreateInvoiceRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.CreateInvoice(context.Background()).XServiceKey(xServiceKey).CreateInvoiceRequest(createInvoiceRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.CreateInvoice(context.Background()).CreateInvoiceRequest(createInvoiceRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.CreateInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -353,10 +328,7 @@ Other parameters are passed through a pointer to a apiCreateInvoiceRequest struc
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
  **createInvoiceRequest** | [**CreateInvoiceRequest**](CreateInvoiceRequest.md) |  | 
- **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | 
- **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | 
 
 ### Return type
 
@@ -364,12 +336,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -378,11 +350,9 @@ No authorization required
 
 ## FinalizeInvoice
 
-> InvoiceResponse FinalizeInvoice(ctx, invoiceId).XServiceKey(xServiceKey).FinalizeInvoiceRequest(finalizeInvoiceRequest).Execute()
+> InvoiceResponse FinalizeInvoice(ctx, invoiceId).FinalizeRequest(finalizeRequest).Execute()
 
-Finalize invoice
-
-
+Finalize a Stripe invoice
 
 ### Example
 
@@ -397,13 +367,12 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
-	finalizeInvoiceRequest := *openapiclient.NewFinalizeInvoiceRequest() // FinalizeInvoiceRequest | 
+	invoiceId := "invoiceId_example" // string | 
+	finalizeRequest := *openapiclient.NewFinalizeRequest() // FinalizeRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.FinalizeInvoice(context.Background(), invoiceId).XServiceKey(xServiceKey).FinalizeInvoiceRequest(finalizeInvoiceRequest).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.FinalizeInvoice(context.Background(), invoiceId).FinalizeRequest(finalizeRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.FinalizeInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -419,7 +388,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** | Stripe Invoice ID | 
+**invoiceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -428,9 +397,8 @@ Other parameters are passed through a pointer to a apiFinalizeInvoiceRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
 
- **finalizeInvoiceRequest** | [**FinalizeInvoiceRequest**](FinalizeInvoiceRequest.md) |  | 
+ **finalizeRequest** | [**FinalizeRequest**](FinalizeRequest.md) |  | 
 
 ### Return type
 
@@ -438,12 +406,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -452,11 +420,9 @@ No authorization required
 
 ## GetInvoice
 
-> InvoiceResponse GetInvoice(ctx, invoiceId).XServiceKey(xServiceKey).Execute()
+> InvoiceResponse GetInvoice(ctx, invoiceId).Execute()
 
-Get invoice
-
-
+Get a Stripe invoice
 
 ### Example
 
@@ -471,12 +437,11 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
+	invoiceId := "invoiceId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.GetInvoice(context.Background(), invoiceId).XServiceKey(xServiceKey).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.GetInvoice(context.Background(), invoiceId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.GetInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -492,7 +457,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** | Stripe Invoice ID | 
+**invoiceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -501,7 +466,6 @@ Other parameters are passed through a pointer to a apiGetInvoiceRequest struct v
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
 
 
 ### Return type
@@ -510,12 +474,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -524,11 +488,9 @@ No authorization required
 
 ## RecordUsage
 
-> map[string]interface{} RecordUsage(ctx).RecordUsageRequest(recordUsageRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+> interface{} RecordUsage(ctx).RecordUsageRequest(recordUsageRequest).Execute()
 
-Record metered usage
-
-
+Record a Stripe meter usage event
 
 ### Example
 
@@ -543,18 +505,16 @@ import (
 )
 
 func main() {
-	recordUsageRequest := *openapiclient.NewRecordUsageRequest("api_requests", "100") // RecordUsageRequest | 
-	xTenantId := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. (optional)
-	xStripeCustomerId := "xStripeCustomerId_example" // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. (optional)
+	recordUsageRequest := *openapiclient.NewRecordUsageRequest("MeterEventName_example", "Value_example") // RecordUsageRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).RecordUsageRequest(recordUsageRequest).XTenantId(xTenantId).XStripeCustomerId(xStripeCustomerId).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.RecordUsage(context.Background()).RecordUsageRequest(recordUsageRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.RecordUsage``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `RecordUsage`: map[string]interface{}
+	// response from `RecordUsage`: interface{}
 	fmt.Fprintf(os.Stdout, "Response from `V1PaymentsAPI.RecordUsage`: %v\n", resp)
 }
 ```
@@ -571,21 +531,19 @@ Other parameters are passed through a pointer to a apiRecordUsageRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **recordUsageRequest** | [**RecordUsageRequest**](RecordUsageRequest.md) |  | 
- **xTenantId** | **string** | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. | 
- **xStripeCustomerId** | **string** | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. | 
 
 ### Return type
 
-**map[string]interface{}**
+**interface{}**
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -594,11 +552,9 @@ No authorization required
 
 ## UpdateInvoice
 
-> InvoiceResponse UpdateInvoice(ctx, invoiceId).XServiceKey(xServiceKey).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
+> InvoiceResponse UpdateInvoice(ctx, invoiceId).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
 
-Update invoice
-
-
+Update a Stripe invoice
 
 ### Example
 
@@ -613,13 +569,12 @@ import (
 )
 
 func main() {
-	xServiceKey := "xServiceKey_example" // string | Service key for authentication
-	invoiceId := "invoiceId_example" // string | Stripe Invoice ID
+	invoiceId := "invoiceId_example" // string | 
 	updateInvoiceRequest := *openapiclient.NewUpdateInvoiceRequest() // UpdateInvoiceRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PaymentsAPI.UpdateInvoice(context.Background(), invoiceId).XServiceKey(xServiceKey).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
+	resp, r, err := apiClient.V1PaymentsAPI.UpdateInvoice(context.Background(), invoiceId).UpdateInvoiceRequest(updateInvoiceRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PaymentsAPI.UpdateInvoice``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -635,7 +590,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invoiceId** | **string** | Stripe Invoice ID | 
+**invoiceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -644,7 +599,6 @@ Other parameters are passed through a pointer to a apiUpdateInvoiceRequest struc
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **xServiceKey** | **string** | Service key for authentication | 
 
  **updateInvoiceRequest** | [**UpdateInvoiceRequest**](UpdateInvoiceRequest.md) |  | 
 
@@ -654,12 +608,12 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

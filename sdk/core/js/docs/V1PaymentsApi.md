@@ -4,25 +4,23 @@ All URIs are relative to *https://api.omnibase.tech*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**addInvoiceLineItem**](V1PaymentsApi.md#addinvoicelineitemoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item |
-| [**addInvoiceLineItemWithPriceId**](V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID |
-| [**createCheckout**](V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create checkout session |
-| [**createCustomerPortal**](V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create customer portal session |
-| [**createInvoice**](V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create invoice |
-| [**finalizeInvoice**](V1PaymentsApi.md#finalizeinvoiceoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize invoice |
-| [**getInvoice**](V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get invoice |
-| [**recordUsage**](V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record metered usage |
-| [**updateInvoice**](V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update invoice |
+| [**addInvoiceLineItem**](V1PaymentsApi.md#addinvoicelineitem) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice |
+| [**addInvoiceLineItemWithPriceId**](V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID |
+| [**createCheckout**](V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create a Stripe checkout session |
+| [**createCustomerPortal**](V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create a Stripe customer portal session |
+| [**createInvoice**](V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create a Stripe invoice |
+| [**finalizeInvoice**](V1PaymentsApi.md#finalizeinvoice) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice |
+| [**getInvoice**](V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice |
+| [**recordUsage**](V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record a Stripe meter usage event |
+| [**updateInvoice**](V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice |
 
 
 
 ## addInvoiceLineItem
 
-> InvoiceLineItemResponse addInvoiceLineItem(xServiceKey, invoiceId, addInvoiceLineItemRequest, xTenantId, xStripeCustomerId)
+> InvoiceLineItemResponse addInvoiceLineItem(invoiceId, addLineItemRequest)
 
-Add invoice line item
-
-Adds a new line item to a draft invoice.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - &#x60;X-Stripe-Customer-Id&#x60; header: Directly specify the Stripe customer ID - &#x60;X-Tenant-Id&#x60; header: Look up the Stripe customer ID from the tenant\&#39;s configuration  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding platform fees - Adding additional charges - Custom billing line items 
+Add a line item to a Stripe invoice
 
 ### Example
 
@@ -31,24 +29,22 @@ import {
   Configuration,
   V1PaymentsApi,
 } from '@omnibase/core-js';
-import type { AddInvoiceLineItemOperationRequest } from '@omnibase/core-js';
+import type { AddInvoiceLineItemRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
-    // string | Stripe Invoice ID
+    // string
     invoiceId: invoiceId_example,
-    // AddInvoiceLineItemRequest
-    addInvoiceLineItemRequest: ...,
-    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
-    xStripeCustomerId: xStripeCustomerId_example,
-  } satisfies AddInvoiceLineItemOperationRequest;
+    // AddLineItemRequest
+    addLineItemRequest: ...,
+  } satisfies AddInvoiceLineItemRequest;
 
   try {
     const data = await api.addInvoiceLineItem(body);
@@ -67,11 +63,8 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
-| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
-| **addInvoiceLineItemRequest** | [AddInvoiceLineItemRequest](AddInvoiceLineItemRequest.md) |  | |
-| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | [Optional] [Defaults to `undefined`] |
-| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | [Optional] [Defaults to `undefined`] |
+| **invoiceId** | `string` |  | [Defaults to `undefined`] |
+| **addLineItemRequest** | [AddLineItemRequest](AddLineItemRequest.md) |  | |
 
 ### Return type
 
@@ -79,35 +72,28 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Line item added successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## addInvoiceLineItemWithPriceId
 
-> InvoiceLineItemResponse addInvoiceLineItemWithPriceId(xServiceKey, invoiceId, addInvoiceLineItemWithPriceIDRequest, xTenantId, xStripeCustomerId)
+> InvoiceLineItemResponse addInvoiceLineItemWithPriceId(invoiceId, addLineItemByPriceRequest)
 
-Add invoice line item with price ID
-
-Adds a new line item to a draft invoice using a price ID and quantity.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - &#x60;X-Stripe-Customer-Id&#x60; header: Directly specify the Stripe customer ID - &#x60;X-Tenant-Id&#x60; header: Look up the Stripe customer ID from the tenant\&#39;s configuration  ## Price ID Resolution You must provide ONE of: - &#x60;price_id&#x60;: A config price ID (e.g., \&quot;hetzner_cx23_nbg1_hourly\&quot;) that will be looked up via the Stripe ID mapping table - &#x60;stripe_price_id&#x60;: A raw Stripe price ID (e.g., \&quot;price_1ABC...\&quot;) that will be used directly  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding metered usage line items - Adding subscription-based charges - Billing for compute hours, storage, etc. 
+Add a line item to a Stripe invoice using a price ID
 
 ### Example
 
@@ -120,19 +106,17 @@ import type { AddInvoiceLineItemWithPriceIdRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
-    // string | Stripe Invoice ID
+    // string
     invoiceId: invoiceId_example,
-    // AddInvoiceLineItemWithPriceIDRequest
-    addInvoiceLineItemWithPriceIDRequest: ...,
-    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
-    xStripeCustomerId: xStripeCustomerId_example,
+    // AddLineItemByPriceRequest
+    addLineItemByPriceRequest: ...,
   } satisfies AddInvoiceLineItemWithPriceIdRequest;
 
   try {
@@ -152,11 +136,8 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
-| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
-| **addInvoiceLineItemWithPriceIDRequest** | [AddInvoiceLineItemWithPriceIDRequest](AddInvoiceLineItemWithPriceIDRequest.md) |  | |
-| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | [Optional] [Defaults to `undefined`] |
-| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | [Optional] [Defaults to `undefined`] |
+| **invoiceId** | `string` |  | [Defaults to `undefined`] |
+| **addLineItemByPriceRequest** | [AddLineItemByPriceRequest](AddLineItemByPriceRequest.md) |  | |
 
 ### Return type
 
@@ -164,24 +145,19 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Line item added successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -190,9 +166,7 @@ No authorization required
 
 > CreateCheckoutResponse createCheckout(createCheckoutRequest)
 
-Create checkout session
-
-Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.  ## Authentication Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.  ## Use Cases - Subscription sign-ups - One-time purchases - Trial period checkouts - Promotional code redemption 
+Create a Stripe checkout session
 
 ### Example
 
@@ -205,7 +179,15 @@ import type { CreateCheckoutOperationRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
     // CreateCheckoutRequest
@@ -237,24 +219,19 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Checkout session created successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -263,9 +240,7 @@ No authorization required
 
 > CreatePortalResponse createCustomerPortal(createPortalRequest)
 
-Create customer portal session
-
-Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.  ## Authentication Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).  ## Prerequisites - User must be authenticated - Tenant must have a Stripe customer ID configured - If stripe_customer_id not found in context, returns 400: \&quot;stripe_customer_id not found in context\&quot;  ## Use Cases - Subscription management - Payment method updates - Invoice history viewing - Subscription cancellation 
+Create a Stripe customer portal session
 
 ### Example
 
@@ -278,7 +253,15 @@ import type { CreateCustomerPortalRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
     // CreatePortalRequest
@@ -310,33 +293,28 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Portal session created successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## createInvoice
 
-> InvoiceResponse createInvoice(xServiceKey, createInvoiceRequest, xTenantId, xStripeCustomerId)
+> InvoiceResponse createInvoice(createInvoiceRequest)
 
-Create invoice
-
-Creates a new draft invoice for the specified customer.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Customer Identification You must provide the Stripe customer ID using ONE of: - &#x60;X-Stripe-Customer-Id&#x60; header: Directly specify the Stripe customer ID - &#x60;X-Tenant-Id&#x60; header: Look up the Stripe customer ID from the tenant\&#39;s configuration  ## Use Cases - Creating invoices for platform fees - Manual billing scenarios - Custom invoice generation 
+Create a Stripe invoice
 
 ### Example
 
@@ -349,17 +327,15 @@ import type { CreateInvoiceOperationRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
     // CreateInvoiceRequest
     createInvoiceRequest: ...,
-    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. (optional)
-    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. (optional)
-    xStripeCustomerId: xStripeCustomerId_example,
   } satisfies CreateInvoiceOperationRequest;
 
   try {
@@ -379,10 +355,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
 | **createInvoiceRequest** | [CreateInvoiceRequest](CreateInvoiceRequest.md) |  | |
-| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided. | [Optional] [Defaults to `undefined`] |
-| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided. | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
@@ -390,34 +363,28 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Invoice created successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## finalizeInvoice
 
-> InvoiceResponse finalizeInvoice(xServiceKey, invoiceId, finalizeInvoiceRequest)
+> InvoiceResponse finalizeInvoice(invoiceId, finalizeRequest)
 
-Finalize invoice
-
-Finalizes a draft invoice, optionally auto-advancing to send it immediately.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Approving invoices for sending - Completing invoice preparation - Triggering invoice emails 
+Finalize a Stripe invoice
 
 ### Example
 
@@ -426,20 +393,22 @@ import {
   Configuration,
   V1PaymentsApi,
 } from '@omnibase/core-js';
-import type { FinalizeInvoiceOperationRequest } from '@omnibase/core-js';
+import type { FinalizeInvoiceRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
-    // string | Stripe Invoice ID
+    // string
     invoiceId: invoiceId_example,
-    // FinalizeInvoiceRequest
-    finalizeInvoiceRequest: ...,
-  } satisfies FinalizeInvoiceOperationRequest;
+    // FinalizeRequest
+    finalizeRequest: ...,
+  } satisfies FinalizeInvoiceRequest;
 
   try {
     const data = await api.finalizeInvoice(body);
@@ -458,9 +427,8 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
-| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
-| **finalizeInvoiceRequest** | [FinalizeInvoiceRequest](FinalizeInvoiceRequest.md) |  | |
+| **invoiceId** | `string` |  | [Defaults to `undefined`] |
+| **finalizeRequest** | [FinalizeRequest](FinalizeRequest.md) |  | |
 
 ### Return type
 
@@ -468,35 +436,28 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Invoice finalized successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getInvoice
 
-> InvoiceResponse getInvoice(xServiceKey, invoiceId)
+> InvoiceResponse getInvoice(invoiceId)
 
-Get invoice
-
-Retrieves a Stripe invoice by its ID.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Use Cases - Webhook processing - Invoice status checking - Invoice data retrieval 
+Get a Stripe invoice
 
 ### Example
 
@@ -509,12 +470,14 @@ import type { GetInvoiceRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
-    // string | Stripe Invoice ID
+    // string
     invoiceId: invoiceId_example,
   } satisfies GetInvoiceRequest;
 
@@ -535,8 +498,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
-| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
+| **invoiceId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -544,34 +506,28 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Invoice retrieved successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## recordUsage
 
-> object recordUsage(recordUsageRequest, xTenantId, xStripeCustomerId)
+> any recordUsage(recordUsageRequest)
 
-Record metered usage
-
-Records a usage event for metered billing. The customer must have an active subscription with metered pricing.  ## Authentication Either: - Session cookie (Kratos) — customer resolved from the user\&#39;s active tenant - &#x60;X-Service-Key&#x60; + &#x60;X-Tenant-Id&#x60; — customer resolved from the tenant record - &#x60;X-Service-Key&#x60; + &#x60;X-Stripe-Customer-Id&#x60; — customer specified directly  ## Use Cases - API request metering - Compute time tracking - Storage usage recording - Any metered billing scenario 
+Record a Stripe meter usage event
 
 ### Example
 
@@ -584,15 +540,19 @@ import type { RecordUsageOperationRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: CookieAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: SessionTokenAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
     // RecordUsageRequest
     recordUsageRequest: ...,
-    // string | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. (optional)
-    xTenantId: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-    // string | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. (optional)
-    xStripeCustomerId: xStripeCustomerId_example,
   } satisfies RecordUsageOperationRequest;
 
   try {
@@ -613,42 +573,35 @@ example().catch(console.error);
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **recordUsageRequest** | [RecordUsageRequest](RecordUsageRequest.md) |  | |
-| **xTenantId** | `string` | Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent. | [Optional] [Defaults to `undefined`] |
-| **xStripeCustomerId** | `string` | Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent. | [Optional] [Defaults to `undefined`] |
 
 ### Return type
 
-**object**
+**any**
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Usage recorded successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## updateInvoice
 
-> InvoiceResponse updateInvoice(xServiceKey, invoiceId, updateInvoiceRequest)
+> InvoiceResponse updateInvoice(invoiceId, updateInvoiceRequest)
 
-Update invoice
-
-Updates a draft invoice\&#39;s description and metadata.  ## Authentication Requires service key authentication via &#x60;X-Service-Key&#x60; header.  ## Prerequisites - Invoice must be in draft status  ## Use Cases - Adding custom descriptions - Adding metadata for tracking - Customizing invoice before sending 
+Update a Stripe invoice
 
 ### Example
 
@@ -661,12 +614,14 @@ import type { UpdateInvoiceOperationRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1PaymentsApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1PaymentsApi(config);
 
   const body = {
-    // string | Service key for authentication
-    xServiceKey: xServiceKey_example,
-    // string | Stripe Invoice ID
+    // string
     invoiceId: invoiceId_example,
     // UpdateInvoiceRequest
     updateInvoiceRequest: ...,
@@ -689,8 +644,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **xServiceKey** | `string` | Service key for authentication | [Defaults to `undefined`] |
-| **invoiceId** | `string` | Stripe Invoice ID | [Defaults to `undefined`] |
+| **invoiceId** | `string` |  | [Defaults to `undefined`] |
 | **updateInvoiceRequest** | [UpdateInvoiceRequest](UpdateInvoiceRequest.md) |  | |
 
 ### Return type
@@ -699,24 +653,19 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`, `text/plain`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Invoice updated successfully |  -  |
-| **400** | Bad Request - Invalid request parameters |  -  |
-| **401** | Unauthorized - Authentication required |  -  |
-| **404** | Not Found - Resource not found |  -  |
-| **409** | Conflict - Resource already exists or conflicts with current state |  -  |
-| **429** | Too Many Requests - Rate limit exceeded |  -  |
-| **500** | Internal Server Error - Server encountered an error |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

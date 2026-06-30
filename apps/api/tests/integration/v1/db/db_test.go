@@ -59,10 +59,10 @@ func TestDBMigrationsApplyValidation(t *testing.T) {
 	env := testenv.Start(t)
 	testenv.StartAPI(t, env)
 
-	t.Run("missing file returns 400", func(t *testing.T) {
+	t.Run("missing file returns 422", func(t *testing.T) {
 		resp := postMultipart(t, "/api/v1/database/migrations", "migrations", "", nil)
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 	})
 
 	t.Run("empty file returns 400", func(t *testing.T) {
@@ -80,15 +80,19 @@ func TestDBMigrationsDownValidation(t *testing.T) {
 	env := testenv.Start(t)
 	testenv.StartAPI(t, env)
 
-	t.Run("missing steps returns 400", func(t *testing.T) {
+	t.Run("missing steps returns 422", func(t *testing.T) {
 		resp := postMultipart(t, "/api/v1/database/migrations/down", "migrations", "noop.zip", []byte{1, 2})
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 	})
 
 	t.Run("non-numeric steps returns 400", func(t *testing.T) {
 		var body bytes.Buffer
 		w := multipart.NewWriter(&body)
+		fw, err := w.CreateFormFile("migrations", "noop.zip")
+		require.NoError(t, err)
+		_, err = fw.Write([]byte{1, 2})
+		require.NoError(t, err)
 		require.NoError(t, w.WriteField("steps", "abc"))
 		require.NoError(t, w.Close())
 		resp := testenv.APIRequest(t, http.MethodPost, "/api/v1/database/migrations/down", body.Bytes(), map[string]string{
@@ -107,9 +111,9 @@ func TestDBTypegenValidation(t *testing.T) {
 	env := testenv.Start(t)
 	testenv.StartAPI(t, env)
 
-	t.Run("unsupported language returns 400", func(t *testing.T) {
+	t.Run("unsupported language returns 422", func(t *testing.T) {
 		resp := testenv.APIRequest(t, http.MethodGet, "/api/v1/database/typegen?language=cobol", nil, nil)
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 	})
 }

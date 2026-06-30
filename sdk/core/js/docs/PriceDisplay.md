@@ -17,9 +17,9 @@ import type { PriceDisplay } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "customText": Contact us,
-  "showCurrency": true,
-  "suffix": /mo,
+  "customText": null,
+  "showCurrency": null,
+  "suffix": null,
 } satisfies PriceDisplay
 
 console.log(example)

@@ -1,4 +1,4 @@
-# @omnibase/core-js@0.19.1
+# @omnibase/core-js@local
 
 A TypeScript SDK client for the api.omnibase.tech API.
 
@@ -54,39 +54,39 @@ All URIs are relative to *https://api.omnibase.tech*
 
 | Class | Method | HTTP request | Description
 | ----- | ------ | ------------ | -------------
-*V1AuthApi* | [**createUser**](docs/V1AuthApi.md#createuseroperation) | **POST** /api/v1/auth/users | Create new user
-*V1AuthApi* | [**getActiveTenant**](docs/V1AuthApi.md#getactivetenant) | **GET** /api/v1/auth/active-tenant | Get active tenant
+*V1AuthApi* | [**createUser**](docs/V1AuthApi.md#createuseroperation) | **POST** /api/v1/auth/users | Create a new user identity
+*V1AuthApi* | [**getActiveTenant**](docs/V1AuthApi.md#getactivetenant) | **GET** /api/v1/auth/active-tenant | Get the active tenant for the authenticated user
 *V1AuthApi* | [**getIdentity**](docs/V1AuthApi.md#getidentity) | **GET** /api/v1/auth/identity | Get current identity
 *V1AuthApi* | [**getSession**](docs/V1AuthApi.md#getsession) | **GET** /api/v1/auth/session | Get current session
-*V1AuthApi* | [**listTenants**](docs/V1AuthApi.md#listtenants) | **GET** /api/v1/auth/tenants | List user\&#39;s tenants
+*V1AuthApi* | [**listTenants**](docs/V1AuthApi.md#listtenants) | **GET** /api/v1/auth/tenants | List tenants the authenticated user belongs to
 *V1AuthApi* | [**logout**](docs/V1AuthApi.md#logout) | **POST** /api/v1/auth/logout | Logout user
-*V1AuthApi* | [**whoAmI**](docs/V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Check authentication status
+*V1AuthApi* | [**whoAmI**](docs/V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Get authenticated user identity
 *V1ConfigurationApi* | [**archiveAllStripeConfig**](docs/V1ConfigurationApi.md#archiveallstripeconfig) | **POST** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
 *V1ConfigurationApi* | [**createOrUpdateEmailTemplate**](docs/V1ConfigurationApi.md#createorupdateemailtemplate) | **POST** /api/v1/email/templates | Create or update email template
 *V1ConfigurationApi* | [**deleteEmailTemplate**](docs/V1ConfigurationApi.md#deleteemailtemplate) | **DELETE** /api/v1/email/templates/{type} | Delete email template
 *V1ConfigurationApi* | [**deployPermissionNamespaces**](docs/V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
-*V1ConfigurationApi* | [**generateDatabaseTypes**](docs/V1ConfigurationApi.md#generatedatabasetypes) | **GET** /api/v1/database/typegen | Generate types from database schema
-*V1ConfigurationApi* | [**getDatabaseMigrationStatus**](docs/V1ConfigurationApi.md#getdatabasemigrationstatus) | **GET** /api/v1/database/migrations/status | Get applied migration status
 *V1ConfigurationApi* | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates
 *V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
 *V1ConfigurationApi* | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-*V1ConfigurationApi* | [**rollbackDatabaseMigrations**](docs/V1ConfigurationApi.md#rollbackdatabasemigrations) | **POST** /api/v1/database/migrations/down | Roll back database migrations
-*V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemailoperation) | **POST** /api/v1/email/send | Send an email
+*V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email
 *V1ConfigurationApi* | [**serveEmailTemplate**](docs/V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
 *V1ConfigurationApi* | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config
-*V1ConfigurationApi* | [**uploadDatabaseMigrations**](docs/V1ConfigurationApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Upload database migrations
 *V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config
-*V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitemoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add invoice line item
-*V1PaymentsApi* | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add invoice line item with price ID
-*V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create checkout session
-*V1PaymentsApi* | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create customer portal session
-*V1PaymentsApi* | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create invoice
-*V1PaymentsApi* | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoiceoperation) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize invoice
-*V1PaymentsApi* | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get invoice
-*V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record metered usage
-*V1PaymentsApi* | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update invoice
-*V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermissionoperation) | **POST** /api/v1/permissions/check | Check permission
+*V1DatabaseApi* | [**generateDatabaseTypes**](docs/V1DatabaseApi.md#generatedatabasetypes) | **GET** /api/v1/database/typegen | Generate type definitions for the database schema
+*V1DatabaseApi* | [**getDatabaseMigrationStatus**](docs/V1DatabaseApi.md#getdatabasemigrationstatus) | **GET** /api/v1/database/migrations/status | Get the status of applied migrations
+*V1DatabaseApi* | [**rollbackDatabaseMigrations**](docs/V1DatabaseApi.md#rollbackdatabasemigrations) | **POST** /api/v1/database/migrations/down | Roll back database migrations
+*V1DatabaseApi* | [**uploadDatabaseMigrations**](docs/V1DatabaseApi.md#uploaddatabasemigrations) | **POST** /api/v1/database/migrations | Apply database migrations
+*V1PaymentsApi* | [**addInvoiceLineItem**](docs/V1PaymentsApi.md#addinvoicelineitem) | **POST** /api/v1/payments/invoices/{invoice_id}/items | Add a line item to a Stripe invoice
+*V1PaymentsApi* | [**addInvoiceLineItemWithPriceId**](docs/V1PaymentsApi.md#addinvoicelineitemwithpriceid) | **POST** /api/v1/payments/invoices/{invoice_id}/items/price | Add a line item to a Stripe invoice using a price ID
+*V1PaymentsApi* | [**createCheckout**](docs/V1PaymentsApi.md#createcheckoutoperation) | **POST** /api/v1/payments/checkout | Create a Stripe checkout session
+*V1PaymentsApi* | [**createCustomerPortal**](docs/V1PaymentsApi.md#createcustomerportal) | **POST** /api/v1/payments/portal | Create a Stripe customer portal session
+*V1PaymentsApi* | [**createInvoice**](docs/V1PaymentsApi.md#createinvoiceoperation) | **POST** /api/v1/payments/invoices | Create a Stripe invoice
+*V1PaymentsApi* | [**finalizeInvoice**](docs/V1PaymentsApi.md#finalizeinvoice) | **POST** /api/v1/payments/invoices/{invoice_id}/finalize | Finalize a Stripe invoice
+*V1PaymentsApi* | [**getInvoice**](docs/V1PaymentsApi.md#getinvoice) | **GET** /api/v1/payments/invoices/{invoice_id} | Get a Stripe invoice
+*V1PaymentsApi* | [**recordUsage**](docs/V1PaymentsApi.md#recordusageoperation) | **POST** /api/v1/payments/usage | Record a Stripe meter usage event
+*V1PaymentsApi* | [**updateInvoice**](docs/V1PaymentsApi.md#updateinvoiceoperation) | **PATCH** /api/v1/payments/invoices/{invoice_id} | Update a Stripe invoice
+*V1PermissionsApi* | [**checkPermission**](docs/V1PermissionsApi.md#checkpermission) | **POST** /api/v1/permissions/check | Check permission
 *V1PermissionsApi* | [**createRelationship**](docs/V1PermissionsApi.md#createrelationshipoperation) | **POST** /api/v1/permissions/relationships | Create relationship
 *V1PermissionsApi* | [**deleteRelationship**](docs/V1PermissionsApi.md#deleterelationshipoperation) | **DELETE** /api/v1/permissions/relationships | Delete relationship
 *V1StorageApi* | [**deleteObject**](docs/V1StorageApi.md#deleteobjectoperation) | **DELETE** /api/v1/storage/object | Delete file from storage
@@ -105,136 +105,128 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1StripeApi* | [**getStripeConfig**](docs/V1StripeApi.md#getstripeconfig) | **GET** /api/v1/stripe/config | Get public Stripe config
 *V1StripeApi* | [**getStripeConfigAdmin**](docs/V1StripeApi.md#getstripeconfigadmin) | **GET** /api/v1/stripe/admin/config | Get full Stripe config (admin)
 *V1StripeApi* | [**listWebhooks**](docs/V1StripeApi.md#listwebhooks) | **GET** /api/v1/stripe/admin/webhooks | List all webhooks
-*V1TenantsApi* | [**acceptInvite**](docs/V1TenantsApi.md#acceptinviteoperation) | **PUT** /api/v1/tenants/invites/accept | Accept tenant invite
-*V1TenantsApi* | [**addSubscription**](docs/V1TenantsApi.md#addsubscriptionoperation) | **POST** /api/v1/tenants/subscriptions | Add subscription
-*V1TenantsApi* | [**createInvite**](docs/V1TenantsApi.md#createinvite) | **POST** /api/v1/tenants/invites | Create tenant invite
-*V1TenantsApi* | [**createRole**](docs/V1TenantsApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create role
-*V1TenantsApi* | [**createTenant**](docs/V1TenantsApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create tenant
-*V1TenantsApi* | [**deleteRole**](docs/V1TenantsApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete role
-*V1TenantsApi* | [**deleteTenant**](docs/V1TenantsApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete tenant
-*V1TenantsApi* | [**getTenantBillingStatus**](docs/V1TenantsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get billing status
-*V1TenantsApi* | [**getTenantByID**](docs/V1TenantsApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
-*V1TenantsApi* | [**getTenantByStripeCustomerID**](docs/V1TenantsApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-*V1TenantsApi* | [**getTenantJWT**](docs/V1TenantsApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get PostgREST JWT token
-*V1TenantsApi* | [**getTenantSubscription**](docs/V1TenantsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get tenant subscription by plan
-*V1TenantsApi* | [**listRoleDefinitions**](docs/V1TenantsApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List namespace definitions
-*V1TenantsApi* | [**listRoles**](docs/V1TenantsApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles
-*V1TenantsApi* | [**listTenantSubscriptions**](docs/V1TenantsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | Get tenant subscriptions
-*V1TenantsApi* | [**listTenantUsers**](docs/V1TenantsApi.md#listtenantusers) | **GET** /api/v1/tenants/users | Get tenant users
-*V1TenantsApi* | [**removeSubscription**](docs/V1TenantsApi.md#removesubscriptionoperation) | **DELETE** /api/v1/tenants/subscriptions | Remove subscription
-*V1TenantsApi* | [**removeTenantUser**](docs/V1TenantsApi.md#removetenantuser) | **DELETE** /api/v1/tenants/users | Remove tenant user
-*V1TenantsApi* | [**switchActiveTenant**](docs/V1TenantsApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch active tenant
-*V1TenantsApi* | [**updateRole**](docs/V1TenantsApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update role
-*V1TenantsApi* | [**updateTenantUserRole**](docs/V1TenantsApi.md#updatetenantuserroleoperation) | **PUT** /api/v1/tenants/users | Update user role
+*V1TenantsInvitesApi* | [**acceptInvite**](docs/V1TenantsInvitesApi.md#acceptinvite) | **PUT** /api/v1/tenants/invites/accept | Accept a tenant invite
+*V1TenantsInvitesApi* | [**createInvite**](docs/V1TenantsInvitesApi.md#createinvite) | **POST** /api/v1/tenants/invites | Create a tenant invite
+*V1TenantsLifecycleApi* | [**createTenant**](docs/V1TenantsLifecycleApi.md#createtenantoperation) | **POST** /api/v1/tenants | Create a tenant
+*V1TenantsLifecycleApi* | [**deleteTenant**](docs/V1TenantsLifecycleApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete the current tenant
+*V1TenantsLifecycleApi* | [**getTenantByID**](docs/V1TenantsLifecycleApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
+*V1TenantsLifecycleApi* | [**getTenantByStripeCustomerID**](docs/V1TenantsLifecycleApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
+*V1TenantsLifecycleApi* | [**getTenantJWT**](docs/V1TenantsLifecycleApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get JWT for the current tenant
+*V1TenantsLifecycleApi* | [**switchActiveTenant**](docs/V1TenantsLifecycleApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch the active tenant
+*V1TenantsRolesApi* | [**createRole**](docs/V1TenantsRolesApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create a role
+*V1TenantsRolesApi* | [**deleteRole**](docs/V1TenantsRolesApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete a role
+*V1TenantsRolesApi* | [**listRoleDefinitions**](docs/V1TenantsRolesApi.md#listroledefinitions) | **GET** /api/v1/tenants/roles/definitions | List role definitions
+*V1TenantsRolesApi* | [**listRoles**](docs/V1TenantsRolesApi.md#listroles) | **GET** /api/v1/tenants/roles | List roles for the tenant
+*V1TenantsRolesApi* | [**updateRole**](docs/V1TenantsRolesApi.md#updateroleoperation) | **PUT** /api/v1/tenants/roles/{role_id} | Update a role
+*V1TenantsSubscriptionsApi* | [**addSubscription**](docs/V1TenantsSubscriptionsApi.md#addsubscription) | **POST** /api/v1/tenants/subscriptions | Add a subscription to the tenant
+*V1TenantsSubscriptionsApi* | [**getTenantBillingStatus**](docs/V1TenantsSubscriptionsApi.md#gettenantbillingstatus) | **GET** /api/v1/tenants/billing-status | Get tenant billing status
+*V1TenantsSubscriptionsApi* | [**getTenantSubscription**](docs/V1TenantsSubscriptionsApi.md#gettenantsubscription) | **GET** /api/v1/tenants/subscriptions/{config_price_id} | Get a single tenant subscription
+*V1TenantsSubscriptionsApi* | [**listTenantSubscriptions**](docs/V1TenantsSubscriptionsApi.md#listtenantsubscriptions) | **GET** /api/v1/tenants/subscriptions | List subscriptions for the tenant
+*V1TenantsSubscriptionsApi* | [**removeSubscription**](docs/V1TenantsSubscriptionsApi.md#removesubscription) | **DELETE** /api/v1/tenants/subscriptions | Remove a subscription from the tenant
+*V1TenantsUsersApi* | [**listTenantUsers**](docs/V1TenantsUsersApi.md#listtenantusers) | **GET** /api/v1/tenants/users | List users in the tenant
+*V1TenantsUsersApi* | [**removeTenantUser**](docs/V1TenantsUsersApi.md#removetenantuser) | **DELETE** /api/v1/tenants/users | Remove a user from the tenant
+*V1TenantsUsersApi* | [**updateTenantUserRole**](docs/V1TenantsUsersApi.md#updatetenantuserrole) | **PUT** /api/v1/tenants/users | Update a tenant user\&#39;s role
 
 
 ### Models
 
-- [AcceptInviteRequest](docs/AcceptInviteRequest.md)
-- [AcceptInviteResponse](docs/AcceptInviteResponse.md)
+- [AcceptRequest](docs/AcceptRequest.md)
+- [AcceptResponse](docs/AcceptResponse.md)
 - [ActiveTenantResponse](docs/ActiveTenantResponse.md)
-- [AddInvoiceLineItemRequest](docs/AddInvoiceLineItemRequest.md)
-- [AddInvoiceLineItemWithConfigPriceRequest](docs/AddInvoiceLineItemWithConfigPriceRequest.md)
-- [AddInvoiceLineItemWithPriceIDRequest](docs/AddInvoiceLineItemWithPriceIDRequest.md)
-- [AddInvoiceLineItemWithStripePriceRequest](docs/AddInvoiceLineItemWithStripePriceRequest.md)
-- [AddSubscriptionRequest](docs/AddSubscriptionRequest.md)
-- [AddSubscriptionResponse](docs/AddSubscriptionResponse.md)
+- [AddLineItemByPriceRequest](docs/AddLineItemByPriceRequest.md)
+- [AddLineItemRequest](docs/AddLineItemRequest.md)
+- [AddRequest](docs/AddRequest.md)
+- [AddResponse](docs/AddResponse.md)
 - [AppliedMigration](docs/AppliedMigration.md)
 - [ApplyEnterpriseCustomRequest](docs/ApplyEnterpriseCustomRequest.md)
 - [ApplyEnterpriseTemplateRequest](docs/ApplyEnterpriseTemplateRequest.md)
+- [ApplyMigrationsResponse](docs/ApplyMigrationsResponse.md)
 - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
-- [BadRequest](docs/BadRequest.md)
-- [BadRequestResponse](docs/BadRequestResponse.md)
-- [BillingInterval](docs/BillingInterval.md)
+- [AuthTenantInvite](docs/AuthTenantInvite.md)
+- [BillingStatusResponse](docs/BillingStatusResponse.md)
 - [CalculatePriceCostRequest](docs/CalculatePriceCostRequest.md)
 - [CalculatePriceCostResponse](docs/CalculatePriceCostResponse.md)
-- [CheckPermissionRequest](docs/CheckPermissionRequest.md)
-- [CheckPermissionResponse](docs/CheckPermissionResponse.md)
+- [CheckRequest](docs/CheckRequest.md)
+- [CheckResponse](docs/CheckResponse.md)
+- [ConfigChanges](docs/ConfigChanges.md)
 - [ConfigHistoryItem](docs/ConfigHistoryItem.md)
 - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
 - [ConfigHistoryResponse](docs/ConfigHistoryResponse.md)
-- [ConflictResponse](docs/ConflictResponse.md)
+- [ConfigResponse](docs/ConfigResponse.md)
+- [ConvertStripeIDResponse](docs/ConvertStripeIDResponse.md)
 - [Coupon](docs/Coupon.md)
 - [CouponChange](docs/CouponChange.md)
 - [CouponChanges](docs/CouponChanges.md)
-- [CouponDuration](docs/CouponDuration.md)
 - [CouponWithStripeID](docs/CouponWithStripeID.md)
 - [CreateCheckoutRequest](docs/CreateCheckoutRequest.md)
 - [CreateCheckoutResponse](docs/CreateCheckoutResponse.md)
-- [CreateEmailTemplateRequest](docs/CreateEmailTemplateRequest.md)
 - [CreateInvoiceRequest](docs/CreateInvoiceRequest.md)
-- [CreateOrUpdateEmailTemplate200Response](docs/CreateOrUpdateEmailTemplate200Response.md)
 - [CreatePortalRequest](docs/CreatePortalRequest.md)
 - [CreatePortalResponse](docs/CreatePortalResponse.md)
 - [CreateRelationshipRequest](docs/CreateRelationshipRequest.md)
 - [CreateRelationshipResponse](docs/CreateRelationshipResponse.md)
+- [CreateRequest](docs/CreateRequest.md)
+- [CreateResponse](docs/CreateResponse.md)
 - [CreateRoleRequest](docs/CreateRoleRequest.md)
+- [CreateRoleRow](docs/CreateRoleRow.md)
 - [CreateTenantRequest](docs/CreateTenantRequest.md)
 - [CreateTenantResponse](docs/CreateTenantResponse.md)
-- [CreateTenantUserInviteRequest](docs/CreateTenantUserInviteRequest.md)
-- [CreateTenantUserInviteResponse](docs/CreateTenantUserInviteResponse.md)
 - [CreateUserRequest](docs/CreateUserRequest.md)
-- [CreateUserRequestName](docs/CreateUserRequestName.md)
-- [CurrencyCode](docs/CurrencyCode.md)
-- [DeleteEmailTemplate200Response](docs/DeleteEmailTemplate200Response.md)
 - [DeleteObjectRequest](docs/DeleteObjectRequest.md)
+- [DeleteObjectResponse](docs/DeleteObjectResponse.md)
 - [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
 - [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
-- [DeleteTenantUserRequest](docs/DeleteTenantUserRequest.md)
+- [DeleteRequest](docs/DeleteRequest.md)
+- [DeleteTemplateResponse](docs/DeleteTemplateResponse.md)
+- [DeleteTenantResponse](docs/DeleteTenantResponse.md)
+- [DeployNamespacesResponse](docs/DeployNamespacesResponse.md)
 - [DownloadRequest](docs/DownloadRequest.md)
 - [DownloadResponse](docs/DownloadResponse.md)
 - [EmailTemplate](docs/EmailTemplate.md)
 - [EnterpriseApplyResponse](docs/EnterpriseApplyResponse.md)
 - [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
-- [ErrorResponse](docs/ErrorResponse.md)
-- [FinalizeInvoiceRequest](docs/FinalizeInvoiceRequest.md)
-- [ForbiddenResponse](docs/ForbiddenResponse.md)
-- [GetEmailTemplates200Response](docs/GetEmailTemplates200Response.md)
-- [GetTenantBillingStatus200Response](docs/GetTenantBillingStatus200Response.md)
-- [GetTenantJWT200Response](docs/GetTenantJWT200Response.md)
-- [InternalServerError](docs/InternalServerError.md)
-- [InternalServerErrorResponse](docs/InternalServerErrorResponse.md)
+- [ErrorDetail](docs/ErrorDetail.md)
+- [ErrorModel](docs/ErrorModel.md)
+- [FinalizeRequest](docs/FinalizeRequest.md)
+- [FormFile](docs/FormFile.md)
+- [GetMeterResponse](docs/GetMeterResponse.md)
+- [GetPriceResponse](docs/GetPriceResponse.md)
+- [GetProductResponse](docs/GetProductResponse.md)
+- [GetTenantByIDRow](docs/GetTenantByIDRow.md)
+- [GetTenantByStripeCustomerIDRow](docs/GetTenantByStripeCustomerIDRow.md)
+- [Identity](docs/Identity.md)
+- [IdentityCredentials](docs/IdentityCredentials.md)
+- [IdentityName](docs/IdentityName.md)
 - [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
 - [InvoiceResponse](docs/InvoiceResponse.md)
-- [KratosIdentity](docs/KratosIdentity.md)
-- [KratosIdentityCredentials](docs/KratosIdentityCredentials.md)
-- [KratosIdentityCredentialsPassword](docs/KratosIdentityCredentialsPassword.md)
-- [KratosIdentityRecoveryAddressesInner](docs/KratosIdentityRecoveryAddressesInner.md)
-- [KratosIdentityTraits](docs/KratosIdentityTraits.md)
-- [KratosIdentityTraitsName](docs/KratosIdentityTraitsName.md)
-- [KratosIdentityVerifiableAddressesInner](docs/KratosIdentityVerifiableAddressesInner.md)
+- [JWTResponse](docs/JWTResponse.md)
+- [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
+- [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
+- [ListTemplatesResponse](docs/ListTemplatesResponse.md)
 - [ListTenantsResponse](docs/ListTenantsResponse.md)
 - [ListWebhooksResponse](docs/ListWebhooksResponse.md)
 - [LogoutResponse](docs/LogoutResponse.md)
 - [MakePublicRequest](docs/MakePublicRequest.md)
-- [MessageResponse](docs/MessageResponse.md)
+- [MakePublicResponse](docs/MakePublicResponse.md)
 - [Meter](docs/Meter.md)
 - [MeterChange](docs/MeterChange.md)
 - [MeterChanges](docs/MeterChanges.md)
 - [MeterCustomerMapping](docs/MeterCustomerMapping.md)
 - [MeterDefaultAggregation](docs/MeterDefaultAggregation.md)
-- [MeterResponse](docs/MeterResponse.md)
 - [MeterValueSettings](docs/MeterValueSettings.md)
 - [MeterWithStripeID](docs/MeterWithStripeID.md)
-- [MigrationErrorResponse](docs/MigrationErrorResponse.md)
-- [NamespaceDefinition](docs/NamespaceDefinition.md)
-- [NamespaceDeploymentResponse](docs/NamespaceDeploymentResponse.md)
-- [NotFound](docs/NotFound.md)
-- [NotFoundResponse](docs/NotFoundResponse.md)
-- [PerUnitBillingScheme](docs/PerUnitBillingScheme.md)
-- [PerUnitPrice](docs/PerUnitPrice.md)
+- [MigrationsDownResponse](docs/MigrationsDownResponse.md)
+- [NamespaceDefinitionResponse](docs/NamespaceDefinitionResponse.md)
 - [Price](docs/Price.md)
 - [PriceChange](docs/PriceChange.md)
 - [PriceChanges](docs/PriceChanges.md)
 - [PriceDisplay](docs/PriceDisplay.md)
 - [PriceLimit](docs/PriceLimit.md)
-- [PriceResponse](docs/PriceResponse.md)
 - [PriceUI](docs/PriceUI.md)
 - [PriceWithStripeID](docs/PriceWithStripeID.md)
 - [Product](docs/Product.md)
 - [ProductChange](docs/ProductChange.md)
 - [ProductChanges](docs/ProductChanges.md)
-- [ProductResponse](docs/ProductResponse.md)
 - [ProductUI](docs/ProductUI.md)
 - [ProductWithStripeIDs](docs/ProductWithStripeIDs.md)
 - [PromotionCode](docs/PromotionCode.md)
@@ -242,52 +234,40 @@ All URIs are relative to *https://api.omnibase.tech*
 - [PromotionCodeChanges](docs/PromotionCodeChanges.md)
 - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
 - [RecordUsageRequest](docs/RecordUsageRequest.md)
-- [RelationMetadata](docs/RelationMetadata.md)
-- [Relationship](docs/Relationship.md)
-- [RemoveSubscriptionRequest](docs/RemoveSubscriptionRequest.md)
-- [RemoveSubscriptionResponse](docs/RemoveSubscriptionResponse.md)
-- [Role](docs/Role.md)
-- [RollbackDatabaseMigrations200Response](docs/RollbackDatabaseMigrations200Response.md)
-- [SendEmail200Response](docs/SendEmail200Response.md)
-- [SendEmailRequest](docs/SendEmailRequest.md)
+- [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
+- [RemoveRequest](docs/RemoveRequest.md)
+- [RemoveResponse](docs/RemoveResponse.md)
+- [SendRequest](docs/SendRequest.md)
+- [SendResponse](docs/SendResponse.md)
+- [Session](docs/Session.md)
+- [SessionAuthenticationMethod](docs/SessionAuthenticationMethod.md)
+- [SessionDevice](docs/SessionDevice.md)
 - [SessionResponse](docs/SessionResponse.md)
-- [StripeConfigChanges](docs/StripeConfigChanges.md)
 - [StripeConfigResponse](docs/StripeConfigResponse.md)
-- [StripeConfigUpdateRequest](docs/StripeConfigUpdateRequest.md)
-- [StripeConfigUpdateResponse](docs/StripeConfigUpdateResponse.md)
-- [StripeConfigValidateRequest](docs/StripeConfigValidateRequest.md)
 - [StripeConfiguration](docs/StripeConfiguration.md)
 - [StripeConfigurationWithIDs](docs/StripeConfigurationWithIDs.md)
-- [StripeIDConversionResponse](docs/StripeIDConversionResponse.md)
-- [SubjectSet](docs/SubjectSet.md)
 - [SubjectSetRequest](docs/SubjectSetRequest.md)
 - [SubscriptionResponse](docs/SubscriptionResponse.md)
-- [SwitchTenantRequest](docs/SwitchTenantRequest.md)
-- [SwitchTenantResponse](docs/SwitchTenantResponse.md)
-- [Tenant](docs/Tenant.md)
-- [TenantInvite](docs/TenantInvite.md)
-- [TenantSettings](docs/TenantSettings.md)
-- [TenantUserResponse](docs/TenantUserResponse.md)
+- [SwitchActiveRequest](docs/SwitchActiveRequest.md)
+- [SwitchActiveResponse](docs/SwitchActiveResponse.md)
+- [TenantPayload](docs/TenantPayload.md)
 - [Tier](docs/Tier.md)
-- [TierUpTo](docs/TierUpTo.md)
-- [TieredBillingScheme](docs/TieredBillingScheme.md)
-- [TieredPrice](docs/TieredPrice.md)
-- [TiersMode](docs/TiersMode.md)
-- [TooManyRequestsResponse](docs/TooManyRequestsResponse.md)
-- [Unauthorized](docs/Unauthorized.md)
-- [UnauthorizedResponse](docs/UnauthorizedResponse.md)
 - [UpdateInvoiceRequest](docs/UpdateInvoiceRequest.md)
+- [UpdateRolePermissionsRow](docs/UpdateRolePermissionsRow.md)
 - [UpdateRoleRequest](docs/UpdateRoleRequest.md)
-- [UpdateTenantUserRoleRequest](docs/UpdateTenantUserRoleRequest.md)
+- [UpdateUserRoleRequest](docs/UpdateUserRoleRequest.md)
+- [UpdateUserRoleResponse](docs/UpdateUserRoleResponse.md)
 - [UploadRequest](docs/UploadRequest.md)
 - [UploadResponse](docs/UploadResponse.md)
-- [UsageType](docs/UsageType.md)
+- [UpsertTemplateRequest](docs/UpsertTemplateRequest.md)
+- [UpsertTemplateResponse](docs/UpsertTemplateResponse.md)
+- [UserResponse](docs/UserResponse.md)
 - [UserTenantListItem](docs/UserTenantListItem.md)
+- [VerifiableIdentityAddress](docs/VerifiableIdentityAddress.md)
 - [WebhookChange](docs/WebhookChange.md)
 - [WebhookChanges](docs/WebhookChanges.md)
 - [WebhookEndpointConfig](docs/WebhookEndpointConfig.md)
-- [WebhookSecretResponse](docs/WebhookSecretResponse.md)
-- [WhoAmIResponse](docs/WhoAmIResponse.md)
+- [WhoAmIBody](docs/WhoAmIBody.md)
 
 ### Authorization
 
@@ -300,19 +280,19 @@ Authentication schemes defined for the API:
 - **Type**: API key
 - **API key parameter name**: `ory_kratos_session`
 - **Location**: 
-<a id="SessionTokenAuth"></a>
-#### SessionTokenAuth
-
-
-- **Type**: API key
-- **API key parameter name**: `X-Session-Token`
-- **Location**: HTTP header
 <a id="ServiceKeyAuth"></a>
 #### ServiceKeyAuth
 
 
 - **Type**: API key
 - **API key parameter name**: `X-Service-Key`
+- **Location**: HTTP header
+<a id="SessionTokenAuth"></a>
+#### SessionTokenAuth
+
+
+- **Type**: API key
+- **API key parameter name**: `X-Session-Token`
 - **Location**: HTTP header
 
 ## About
@@ -321,8 +301,8 @@ This TypeScript SDK client supports the [Fetch API](https://fetch.spec.whatwg.or
 and is automatically generated by the
 [OpenAPI Generator](https://openapi-generator.tech) project:
 
-- API version: `0.19.1`
-- Package version: `0.19.1`
+- API version: `local`
+- Package version: `local`
 - Generator version: `7.17.0`
 - Build package: `org.openapitools.codegen.languages.TypeScriptFetchClientCodegen`
 

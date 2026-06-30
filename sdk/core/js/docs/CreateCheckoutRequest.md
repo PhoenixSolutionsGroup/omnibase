@@ -6,12 +6,12 @@
 
 Name | Type
 ------------ | -------------
-`priceId` | string
-`successUrl` | string
-`cancelUrl` | string
-`trialPeriodDays` | number
-`promotionCode` | string
 `allowPromotionCodes` | boolean
+`cancelUrl` | string
+`priceId` | string
+`promotionCode` | string
+`successUrl` | string
+`trialPeriodDays` | number
 
 ## Example
 
@@ -20,12 +20,12 @@ import type { CreateCheckoutRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "priceId": price_test_basic,
-  "successUrl": https://test.example.com/success,
-  "cancelUrl": https://test.example.com/cancel,
-  "trialPeriodDays": 14,
-  "promotionCode": SUMMER2024,
-  "allowPromotionCodes": true,
+  "allowPromotionCodes": null,
+  "cancelUrl": null,
+  "priceId": null,
+  "promotionCode": null,
+  "successUrl": null,
+  "trialPeriodDays": null,
 } satisfies CreateCheckoutRequest
 
 console.log(example)

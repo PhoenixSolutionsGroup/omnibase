@@ -33,6 +33,6 @@ func New(deps Deps) *Service {
 	}
 }
 
-func (s *Service) ParseAndValidate(configData ConfigData) (*Configuration, error) {
+func (s *Service) ParseAndValidate(configData ConfigData) (*StripeConfiguration, error) {
 	return s.validator.ParseAndValidateConfig(configData)
 }

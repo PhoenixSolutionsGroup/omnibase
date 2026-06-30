@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,17 +22,11 @@ var _ MappedNullable = &ArchiveAllResponse{}
 
 // ArchiveAllResponse struct for ArchiveAllResponse
 type ArchiveAllResponse struct {
-	// Success message
-	Message string `json:"message"`
-	// List of successfully archived items
-	ArchivedItems []string `json:"archived_items"`
-	// List of items that failed to archive
 	ArchiveErrors []string `json:"archive_errors"`
-	// Total number of archived items
-	TotalArchived int32 `json:"total_archived"`
-	// Total number of errors
-	TotalErrors int32 `json:"total_errors"`
-	// Warning message if there were errors
+	ArchivedItems []string `json:"archived_items"`
+	Message string `json:"message"`
+	TotalArchived int64 `json:"total_archived"`
+	TotalErrors int64 `json:"total_errors"`
 	Warning *string `json:"warning,omitempty"`
 }
 
@@ -42,11 +36,11 @@ type _ArchiveAllResponse ArchiveAllResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewArchiveAllResponse(message string, archivedItems []string, archiveErrors []string, totalArchived int32, totalErrors int32) *ArchiveAllResponse {
+func NewArchiveAllResponse(archiveErrors []string, archivedItems []string, message string, totalArchived int64, totalErrors int64) *ArchiveAllResponse {
 	this := ArchiveAllResponse{}
-	this.Message = message
-	this.ArchivedItems = archivedItems
 	this.ArchiveErrors = archiveErrors
+	this.ArchivedItems = archivedItems
+	this.Message = message
 	this.TotalArchived = totalArchived
 	this.TotalErrors = totalErrors
 	return &this
@@ -58,6 +52,58 @@ func NewArchiveAllResponse(message string, archivedItems []string, archiveErrors
 func NewArchiveAllResponseWithDefaults() *ArchiveAllResponse {
 	this := ArchiveAllResponse{}
 	return &this
+}
+
+// GetArchiveErrors returns the ArchiveErrors field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *ArchiveAllResponse) GetArchiveErrors() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+
+	return o.ArchiveErrors
+}
+
+// GetArchiveErrorsOk returns a tuple with the ArchiveErrors field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ArchiveAllResponse) GetArchiveErrorsOk() ([]string, bool) {
+	if o == nil || IsNil(o.ArchiveErrors) {
+		return nil, false
+	}
+	return o.ArchiveErrors, true
+}
+
+// SetArchiveErrors sets field value
+func (o *ArchiveAllResponse) SetArchiveErrors(v []string) {
+	o.ArchiveErrors = v
+}
+
+// GetArchivedItems returns the ArchivedItems field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *ArchiveAllResponse) GetArchivedItems() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+
+	return o.ArchivedItems
+}
+
+// GetArchivedItemsOk returns a tuple with the ArchivedItems field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ArchiveAllResponse) GetArchivedItemsOk() ([]string, bool) {
+	if o == nil || IsNil(o.ArchivedItems) {
+		return nil, false
+	}
+	return o.ArchivedItems, true
+}
+
+// SetArchivedItems sets field value
+func (o *ArchiveAllResponse) SetArchivedItems(v []string) {
+	o.ArchivedItems = v
 }
 
 // GetMessage returns the Message field value
@@ -84,58 +130,10 @@ func (o *ArchiveAllResponse) SetMessage(v string) {
 	o.Message = v
 }
 
-// GetArchivedItems returns the ArchivedItems field value
-func (o *ArchiveAllResponse) GetArchivedItems() []string {
-	if o == nil {
-		var ret []string
-		return ret
-	}
-
-	return o.ArchivedItems
-}
-
-// GetArchivedItemsOk returns a tuple with the ArchivedItems field value
-// and a boolean to check if the value has been set.
-func (o *ArchiveAllResponse) GetArchivedItemsOk() ([]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.ArchivedItems, true
-}
-
-// SetArchivedItems sets field value
-func (o *ArchiveAllResponse) SetArchivedItems(v []string) {
-	o.ArchivedItems = v
-}
-
-// GetArchiveErrors returns the ArchiveErrors field value
-func (o *ArchiveAllResponse) GetArchiveErrors() []string {
-	if o == nil {
-		var ret []string
-		return ret
-	}
-
-	return o.ArchiveErrors
-}
-
-// GetArchiveErrorsOk returns a tuple with the ArchiveErrors field value
-// and a boolean to check if the value has been set.
-func (o *ArchiveAllResponse) GetArchiveErrorsOk() ([]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.ArchiveErrors, true
-}
-
-// SetArchiveErrors sets field value
-func (o *ArchiveAllResponse) SetArchiveErrors(v []string) {
-	o.ArchiveErrors = v
-}
-
 // GetTotalArchived returns the TotalArchived field value
-func (o *ArchiveAllResponse) GetTotalArchived() int32 {
+func (o *ArchiveAllResponse) GetTotalArchived() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -144,7 +142,7 @@ func (o *ArchiveAllResponse) GetTotalArchived() int32 {
 
 // GetTotalArchivedOk returns a tuple with the TotalArchived field value
 // and a boolean to check if the value has been set.
-func (o *ArchiveAllResponse) GetTotalArchivedOk() (*int32, bool) {
+func (o *ArchiveAllResponse) GetTotalArchivedOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -152,14 +150,14 @@ func (o *ArchiveAllResponse) GetTotalArchivedOk() (*int32, bool) {
 }
 
 // SetTotalArchived sets field value
-func (o *ArchiveAllResponse) SetTotalArchived(v int32) {
+func (o *ArchiveAllResponse) SetTotalArchived(v int64) {
 	o.TotalArchived = v
 }
 
 // GetTotalErrors returns the TotalErrors field value
-func (o *ArchiveAllResponse) GetTotalErrors() int32 {
+func (o *ArchiveAllResponse) GetTotalErrors() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -168,7 +166,7 @@ func (o *ArchiveAllResponse) GetTotalErrors() int32 {
 
 // GetTotalErrorsOk returns a tuple with the TotalErrors field value
 // and a boolean to check if the value has been set.
-func (o *ArchiveAllResponse) GetTotalErrorsOk() (*int32, bool) {
+func (o *ArchiveAllResponse) GetTotalErrorsOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -176,7 +174,7 @@ func (o *ArchiveAllResponse) GetTotalErrorsOk() (*int32, bool) {
 }
 
 // SetTotalErrors sets field value
-func (o *ArchiveAllResponse) SetTotalErrors(v int32) {
+func (o *ArchiveAllResponse) SetTotalErrors(v int64) {
 	o.TotalErrors = v
 }
 
@@ -222,9 +220,13 @@ func (o ArchiveAllResponse) MarshalJSON() ([]byte, error) {
 
 func (o ArchiveAllResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if o.ArchiveErrors != nil {
+		toSerialize["archive_errors"] = o.ArchiveErrors
+	}
+	if o.ArchivedItems != nil {
+		toSerialize["archived_items"] = o.ArchivedItems
+	}
 	toSerialize["message"] = o.Message
-	toSerialize["archived_items"] = o.ArchivedItems
-	toSerialize["archive_errors"] = o.ArchiveErrors
 	toSerialize["total_archived"] = o.TotalArchived
 	toSerialize["total_errors"] = o.TotalErrors
 	if !IsNil(o.Warning) {
@@ -238,9 +240,9 @@ func (o *ArchiveAllResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"message",
-		"archived_items",
 		"archive_errors",
+		"archived_items",
+		"message",
 		"total_archived",
 		"total_errors",
 	}

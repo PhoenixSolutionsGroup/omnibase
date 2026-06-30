@@ -16,8 +16,8 @@ import type { RecordUsageRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "meterEventName": api_requests,
-  "value": 100,
+  "meterEventName": null,
+  "value": null,
 } satisfies RecordUsageRequest
 
 console.log(example)

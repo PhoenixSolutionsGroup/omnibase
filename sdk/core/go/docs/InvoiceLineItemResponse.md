@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Stripe Invoice Item ID | 
-**Amount** | Pointer to **int64** | Amount in cents | [optional] 
-**Description** | Pointer to **string** | Description | [optional] 
+**Amount** | **int64** |  | 
+**Description** | **string** |  | 
+**Id** | **string** |  | 
 
 ## Methods
 
 ### NewInvoiceLineItemResponse
 
-`func NewInvoiceLineItemResponse(id string, ) *InvoiceLineItemResponse`
+`func NewInvoiceLineItemResponse(amount int64, description string, id string, ) *InvoiceLineItemResponse`
 
 NewInvoiceLineItemResponse instantiates a new InvoiceLineItemResponse object
 This constructor will assign default values to properties that have it defined,
@@ -26,26 +26,6 @@ will change when the set of required properties is changed
 NewInvoiceLineItemResponseWithDefaults instantiates a new InvoiceLineItemResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetId
-
-`func (o *InvoiceLineItemResponse) GetId() string`
-
-GetId returns the Id field if non-nil, zero value otherwise.
-
-### GetIdOk
-
-`func (o *InvoiceLineItemResponse) GetIdOk() (*string, bool)`
-
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetId
-
-`func (o *InvoiceLineItemResponse) SetId(v string)`
-
-SetId sets Id field to given value.
-
 
 ### GetAmount
 
@@ -66,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetAmount sets Amount field to given value.
 
-### HasAmount
-
-`func (o *InvoiceLineItemResponse) HasAmount() bool`
-
-HasAmount returns a boolean if a field has been set.
 
 ### GetDescription
 
@@ -91,11 +66,26 @@ and a boolean to check if the value has been set.
 
 SetDescription sets Description field to given value.
 
-### HasDescription
 
-`func (o *InvoiceLineItemResponse) HasDescription() bool`
+### GetId
 
-HasDescription returns a boolean if a field has been set.
+`func (o *InvoiceLineItemResponse) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *InvoiceLineItemResponse) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *InvoiceLineItemResponse) SetId(v string)`
+
+SetId sets Id field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

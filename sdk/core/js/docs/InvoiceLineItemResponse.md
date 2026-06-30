@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
 `amount` | number
 `description` | string
+`id` | string
 
 ## Example
 
@@ -17,9 +17,9 @@ import type { InvoiceLineItemResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": ii_1234567890,
-  "amount": 1000,
-  "description": Platform fee,
+  "amount": null,
+  "description": null,
+  "id": null,
 } satisfies InvoiceLineItemResponse
 
 console.log(example)

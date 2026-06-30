@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Namespace** | **string** | The namespace for the relationship | 
-**Object** | **string** | The object in the relationship | 
-**Relation** | **string** | The relation type | 
+**Namespace** | **string** |  | 
+**Object** | **string** |  | 
+**Relation** | **string** |  | 
 **SubjectSet** | [**SubjectSetRequest**](SubjectSetRequest.md) |  | 
 
 ## Methods

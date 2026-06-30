@@ -46,7 +46,7 @@ func TestRolesList(t *testing.T) {
 	})
 }
 
-func roleNames(roles []sdk.Role) []string {
+func roleNames(roles []sdk.ListRolesByTenantRow) []string {
 	out := make([]string, 0, len(roles))
 	for _, r := range roles {
 		out = append(out, r.RoleName)

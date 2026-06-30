@@ -15,7 +15,7 @@ import type { BillingStatusResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "isActive": true,
+  "isActive": null,
 } satisfies BillingStatusResponse
 
 console.log(example)

@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`prices` | [Array&lt;PriceWithStripeID&gt;](PriceWithStripeID.md)
 `count` | number
+`prices` | [Array&lt;PriceWithStripeID&gt;](PriceWithStripeID.md)
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { EnterprisePricesResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "count": null,
   "prices": null,
-  "count": 3,
 } satisfies EnterprisePricesResponse
 
 console.log(example)

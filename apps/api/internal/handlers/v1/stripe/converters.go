@@ -8,7 +8,7 @@ import (
 	"api/internal/services/stripe_config"
 )
 
-func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config.Configuration, configID uuid.UUID) stripe_config.ConfigurationWithIDs {
+func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config.StripeConfiguration, configID uuid.UUID) stripe_config.StripeConfigurationWithIDs {
 	_ = configID
 
 	meters := make([]stripe_config.MeterWithStripeID, 0, len(config.Meters))
@@ -64,7 +64,7 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 		promos = append(promos, pWith)
 	}
 
-	return stripe_config.ConfigurationWithIDs{
+	return stripe_config.StripeConfigurationWithIDs{
 		Version:        config.Version,
 		Meters:         meters,
 		Products:       products,
@@ -73,7 +73,7 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 	}
 }
 
-func filterPublicPrices(config stripe_config.Configuration) stripe_config.Configuration {
+func filterPublicPrices(config stripe_config.StripeConfiguration) stripe_config.StripeConfiguration {
 	filtered := config
 	filtered.Products = []stripe_config.Product{}
 	for _, product := range config.Products {

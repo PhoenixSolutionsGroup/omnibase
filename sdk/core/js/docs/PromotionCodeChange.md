@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`promoId` | string
-`code` | string
 `action` | string
+`code` | string
+`promoId` | string
 `stripeId` | string
 
 ## Example
@@ -18,10 +18,10 @@ import type { PromotionCodeChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "promoId": promo_launch25,
-  "code": LAUNCH25,
-  "action": created,
-  "stripeId": promo_123abc,
+  "action": null,
+  "code": null,
+  "promoId": null,
+  "stripeId": null,
 } satisfies PromotionCodeChange
 
 console.log(example)

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,20 +20,13 @@ var _ MappedNullable = &ProductUI{}
 
 // ProductUI struct for ProductUI
 type ProductUI struct {
-	// Display name for UI
-	DisplayName *string `json:"display_name,omitempty"`
-	// Short tagline
-	Tagline *string `json:"tagline,omitempty"`
-	// List of product features
-	Features []string `json:"features,omitempty"`
-	// Badge text (e.g., \"Popular\", \"Best Value\")
 	Badge *string `json:"badge,omitempty"`
-	// Call-to-action button text
 	CtaText *string `json:"cta_text,omitempty"`
-	// Whether to highlight this product
+	DisplayName *string `json:"display_name,omitempty"`
+	Features []string `json:"features,omitempty"`
 	Highlighted *bool `json:"highlighted,omitempty"`
-	// Display order for sorting
-	SortOrder *int32 `json:"sort_order,omitempty"`
+	SortOrder *int64 `json:"sort_order,omitempty"`
+	Tagline *string `json:"tagline,omitempty"`
 }
 
 // NewProductUI instantiates a new ProductUI object
@@ -51,102 +44,6 @@ func NewProductUI() *ProductUI {
 func NewProductUIWithDefaults() *ProductUI {
 	this := ProductUI{}
 	return &this
-}
-
-// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
-func (o *ProductUI) GetDisplayName() string {
-	if o == nil || IsNil(o.DisplayName) {
-		var ret string
-		return ret
-	}
-	return *o.DisplayName
-}
-
-// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ProductUI) GetDisplayNameOk() (*string, bool) {
-	if o == nil || IsNil(o.DisplayName) {
-		return nil, false
-	}
-	return o.DisplayName, true
-}
-
-// HasDisplayName returns a boolean if a field has been set.
-func (o *ProductUI) HasDisplayName() bool {
-	if o != nil && !IsNil(o.DisplayName) {
-		return true
-	}
-
-	return false
-}
-
-// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
-func (o *ProductUI) SetDisplayName(v string) {
-	o.DisplayName = &v
-}
-
-// GetTagline returns the Tagline field value if set, zero value otherwise.
-func (o *ProductUI) GetTagline() string {
-	if o == nil || IsNil(o.Tagline) {
-		var ret string
-		return ret
-	}
-	return *o.Tagline
-}
-
-// GetTaglineOk returns a tuple with the Tagline field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ProductUI) GetTaglineOk() (*string, bool) {
-	if o == nil || IsNil(o.Tagline) {
-		return nil, false
-	}
-	return o.Tagline, true
-}
-
-// HasTagline returns a boolean if a field has been set.
-func (o *ProductUI) HasTagline() bool {
-	if o != nil && !IsNil(o.Tagline) {
-		return true
-	}
-
-	return false
-}
-
-// SetTagline gets a reference to the given string and assigns it to the Tagline field.
-func (o *ProductUI) SetTagline(v string) {
-	o.Tagline = &v
-}
-
-// GetFeatures returns the Features field value if set, zero value otherwise.
-func (o *ProductUI) GetFeatures() []string {
-	if o == nil || IsNil(o.Features) {
-		var ret []string
-		return ret
-	}
-	return o.Features
-}
-
-// GetFeaturesOk returns a tuple with the Features field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ProductUI) GetFeaturesOk() ([]string, bool) {
-	if o == nil || IsNil(o.Features) {
-		return nil, false
-	}
-	return o.Features, true
-}
-
-// HasFeatures returns a boolean if a field has been set.
-func (o *ProductUI) HasFeatures() bool {
-	if o != nil && !IsNil(o.Features) {
-		return true
-	}
-
-	return false
-}
-
-// SetFeatures gets a reference to the given []string and assigns it to the Features field.
-func (o *ProductUI) SetFeatures(v []string) {
-	o.Features = v
 }
 
 // GetBadge returns the Badge field value if set, zero value otherwise.
@@ -213,6 +110,71 @@ func (o *ProductUI) SetCtaText(v string) {
 	o.CtaText = &v
 }
 
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
+func (o *ProductUI) GetDisplayName() string {
+	if o == nil || IsNil(o.DisplayName) {
+		var ret string
+		return ret
+	}
+	return *o.DisplayName
+}
+
+// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ProductUI) GetDisplayNameOk() (*string, bool) {
+	if o == nil || IsNil(o.DisplayName) {
+		return nil, false
+	}
+	return o.DisplayName, true
+}
+
+// HasDisplayName returns a boolean if a field has been set.
+func (o *ProductUI) HasDisplayName() bool {
+	if o != nil && !IsNil(o.DisplayName) {
+		return true
+	}
+
+	return false
+}
+
+// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
+func (o *ProductUI) SetDisplayName(v string) {
+	o.DisplayName = &v
+}
+
+// GetFeatures returns the Features field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ProductUI) GetFeatures() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+	return o.Features
+}
+
+// GetFeaturesOk returns a tuple with the Features field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ProductUI) GetFeaturesOk() ([]string, bool) {
+	if o == nil || IsNil(o.Features) {
+		return nil, false
+	}
+	return o.Features, true
+}
+
+// HasFeatures returns a boolean if a field has been set.
+func (o *ProductUI) HasFeatures() bool {
+	if o != nil && !IsNil(o.Features) {
+		return true
+	}
+
+	return false
+}
+
+// SetFeatures gets a reference to the given []string and assigns it to the Features field.
+func (o *ProductUI) SetFeatures(v []string) {
+	o.Features = v
+}
+
 // GetHighlighted returns the Highlighted field value if set, zero value otherwise.
 func (o *ProductUI) GetHighlighted() bool {
 	if o == nil || IsNil(o.Highlighted) {
@@ -246,9 +208,9 @@ func (o *ProductUI) SetHighlighted(v bool) {
 }
 
 // GetSortOrder returns the SortOrder field value if set, zero value otherwise.
-func (o *ProductUI) GetSortOrder() int32 {
+func (o *ProductUI) GetSortOrder() int64 {
 	if o == nil || IsNil(o.SortOrder) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.SortOrder
@@ -256,7 +218,7 @@ func (o *ProductUI) GetSortOrder() int32 {
 
 // GetSortOrderOk returns a tuple with the SortOrder field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ProductUI) GetSortOrderOk() (*int32, bool) {
+func (o *ProductUI) GetSortOrderOk() (*int64, bool) {
 	if o == nil || IsNil(o.SortOrder) {
 		return nil, false
 	}
@@ -272,9 +234,41 @@ func (o *ProductUI) HasSortOrder() bool {
 	return false
 }
 
-// SetSortOrder gets a reference to the given int32 and assigns it to the SortOrder field.
-func (o *ProductUI) SetSortOrder(v int32) {
+// SetSortOrder gets a reference to the given int64 and assigns it to the SortOrder field.
+func (o *ProductUI) SetSortOrder(v int64) {
 	o.SortOrder = &v
+}
+
+// GetTagline returns the Tagline field value if set, zero value otherwise.
+func (o *ProductUI) GetTagline() string {
+	if o == nil || IsNil(o.Tagline) {
+		var ret string
+		return ret
+	}
+	return *o.Tagline
+}
+
+// GetTaglineOk returns a tuple with the Tagline field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ProductUI) GetTaglineOk() (*string, bool) {
+	if o == nil || IsNil(o.Tagline) {
+		return nil, false
+	}
+	return o.Tagline, true
+}
+
+// HasTagline returns a boolean if a field has been set.
+func (o *ProductUI) HasTagline() bool {
+	if o != nil && !IsNil(o.Tagline) {
+		return true
+	}
+
+	return false
+}
+
+// SetTagline gets a reference to the given string and assigns it to the Tagline field.
+func (o *ProductUI) SetTagline(v string) {
+	o.Tagline = &v
 }
 
 func (o ProductUI) MarshalJSON() ([]byte, error) {
@@ -287,26 +281,26 @@ func (o ProductUI) MarshalJSON() ([]byte, error) {
 
 func (o ProductUI) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.DisplayName) {
-		toSerialize["display_name"] = o.DisplayName
-	}
-	if !IsNil(o.Tagline) {
-		toSerialize["tagline"] = o.Tagline
-	}
-	if !IsNil(o.Features) {
-		toSerialize["features"] = o.Features
-	}
 	if !IsNil(o.Badge) {
 		toSerialize["badge"] = o.Badge
 	}
 	if !IsNil(o.CtaText) {
 		toSerialize["cta_text"] = o.CtaText
 	}
+	if !IsNil(o.DisplayName) {
+		toSerialize["display_name"] = o.DisplayName
+	}
+	if o.Features != nil {
+		toSerialize["features"] = o.Features
+	}
 	if !IsNil(o.Highlighted) {
 		toSerialize["highlighted"] = o.Highlighted
 	}
 	if !IsNil(o.SortOrder) {
 		toSerialize["sort_order"] = o.SortOrder
+	}
+	if !IsNil(o.Tagline) {
+		toSerialize["tagline"] = o.Tagline
 	}
 	return toSerialize, nil
 }

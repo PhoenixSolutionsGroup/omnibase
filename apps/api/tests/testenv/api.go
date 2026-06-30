@@ -12,6 +12,7 @@ import (
 
 	"api/internal/config"
 	"api/internal/server"
+	"api/tests/helpers"
 
 	sdk "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
 	"github.com/stretchr/testify/require"
@@ -25,6 +26,24 @@ var (
 	apiSrv  *httptest.Server
 )
 
+type ctxHeaderTransport struct {
+	rt http.RoundTripper
+}
+
+func (t ctxHeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	ctx := req.Context()
+	if v := helpers.UserIDFromCtx(ctx); v != "" {
+		req.Header.Set("X-User-Id", v)
+	}
+	if v := helpers.TenantIDFromCtx(ctx); v != "" {
+		req.Header.Set("X-Tenant-Id", v)
+	}
+	if v := helpers.ServiceKeyFromCtx(ctx); v != "" {
+		req.Header.Set("X-Service-Key", v)
+	}
+	return t.rt.RoundTrip(req)
+}
+
 func NewSDKClient(t *testing.T) *sdk.APIClient {
 	t.Helper()
 	require.NotEmpty(t, apiURL, "StartAPI must be called before NewSDKClient")
@@ -32,6 +51,7 @@ func NewSDKClient(t *testing.T) *sdk.APIClient {
 	cfg := sdk.NewConfiguration()
 	cfg.Servers = sdk.ServerConfigurations{sdk.ServerConfiguration{URL: apiURL}}
 	cfg.DefaultHeader["X-Service-Key"] = ServiceKey
+	cfg.HTTPClient = &http.Client{Transport: ctxHeaderTransport{rt: http.DefaultTransport}}
 	return sdk.NewAPIClient(cfg)
 }
 

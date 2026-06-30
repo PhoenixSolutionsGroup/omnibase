@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Formula** | **string** | Aggregation formula for meter events | 
+**Formula** | **string** |  | 
 
 ## Methods
 

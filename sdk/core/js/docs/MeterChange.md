@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`meterId` | string
-`displayName` | string
 `action` | string
+`displayName` | string
+`meterId` | string
 `stripeId` | string
 
 ## Example
@@ -18,10 +18,10 @@ import type { MeterChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "meterId": api_calls,
-  "displayName": API Calls,
-  "action": created,
-  "stripeId": mtr_123abc,
+  "action": null,
+  "displayName": null,
+  "meterId": null,
+  "stripeId": null,
 } satisfies MeterChange
 
 console.log(example)

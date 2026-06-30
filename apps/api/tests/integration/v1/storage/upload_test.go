@@ -33,8 +33,8 @@ func TestStorageUpload(t *testing.T) {
 	t.Run("upload returns presigned url + id", func(t *testing.T) {
 		path := fmt.Sprintf("test/upload-%s.txt", helpers.UniqueID())
 		req := sdk.UploadRequest{Path: path}
-		out, resp, err := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).UploadRequest(req).Execute()
+		out, resp, err := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
+			UploadRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "uploadFile")
 		require.NotNil(t, out)
 		assert.NotEmpty(t, out.UploadUrl)
@@ -45,12 +45,12 @@ func TestStorageUpload(t *testing.T) {
 	t.Run("duplicate path on same tenant returns 409", func(t *testing.T) {
 		path := fmt.Sprintf("test/dup-%s.txt", helpers.UniqueID())
 		req := sdk.UploadRequest{Path: path}
-		_, resp, err := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).UploadRequest(req).Execute()
+		_, resp, err := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
+			UploadRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "first uploadFile")
 
-		_, resp2, _ := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).UploadRequest(req).Execute()
+		_, resp2, _ := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
+			UploadRequest(req).Execute()
 		require.NotNil(t, resp2)
 		assert.Equal(t, http.StatusConflict, resp2.StatusCode)
 	})

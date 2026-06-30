@@ -27,8 +27,8 @@ func (s *ConfigData) Scan(value any) error {
 	return json.Unmarshal(bytes, s)
 }
 
-// Configuration is the parsed config matching the JSON schema.
-type Configuration struct {
+// StripeConfiguration is the parsed config matching the JSON schema.
+type StripeConfiguration struct {
 	Version        string                  `json:"version" validate:"required"`
 	Webhooks       []WebhookEndpointConfig `json:"webhooks,omitempty" validate:"dive"`
 	Meters         []Meter                 `json:"meters,omitempty" validate:"dive"`
@@ -89,7 +89,7 @@ type ProductWithStripeIDs struct {
 	StripeID    *string             `json:"stripe_id,omitempty"`
 }
 
-type ConfigurationWithIDs struct {
+type StripeConfigurationWithIDs struct {
 	Version        string                      `json:"version" validate:"required"`
 	Meters         []MeterWithStripeID         `json:"meters,omitempty" validate:"dive"`
 	Products       []ProductWithStripeIDs      `json:"products" validate:"required,dive"`
@@ -205,7 +205,7 @@ type PromotionCodeWithStripeID struct {
 type ConfigResponse struct {
 	Message string         `json:"message"`
 	Changes *ConfigChanges `json:"changes,omitempty"`
-	Config  *Configuration `json:"config,omitempty"`
+	Config  *StripeConfiguration `json:"config,omitempty"`
 	Errors  []string       `json:"errors,omitempty"`
 }
 

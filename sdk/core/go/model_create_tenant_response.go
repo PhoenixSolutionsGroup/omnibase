@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,12 +20,10 @@ import (
 // checks if the CreateTenantResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &CreateTenantResponse{}
 
-// CreateTenantResponse Response after creating a tenant
+// CreateTenantResponse struct for CreateTenantResponse
 type CreateTenantResponse struct {
-	// Success message
 	Message string `json:"message"`
-	Tenant Tenant `json:"tenant"`
-	// JWT token with tenant context
+	Tenant TenantPayload `json:"tenant"`
 	Token string `json:"token"`
 }
 
@@ -35,7 +33,7 @@ type _CreateTenantResponse CreateTenantResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateTenantResponse(message string, tenant Tenant, token string) *CreateTenantResponse {
+func NewCreateTenantResponse(message string, tenant TenantPayload, token string) *CreateTenantResponse {
 	this := CreateTenantResponse{}
 	this.Message = message
 	this.Tenant = tenant
@@ -76,9 +74,9 @@ func (o *CreateTenantResponse) SetMessage(v string) {
 }
 
 // GetTenant returns the Tenant field value
-func (o *CreateTenantResponse) GetTenant() Tenant {
+func (o *CreateTenantResponse) GetTenant() TenantPayload {
 	if o == nil {
-		var ret Tenant
+		var ret TenantPayload
 		return ret
 	}
 
@@ -87,7 +85,7 @@ func (o *CreateTenantResponse) GetTenant() Tenant {
 
 // GetTenantOk returns a tuple with the Tenant field value
 // and a boolean to check if the value has been set.
-func (o *CreateTenantResponse) GetTenantOk() (*Tenant, bool) {
+func (o *CreateTenantResponse) GetTenantOk() (*TenantPayload, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -95,7 +93,7 @@ func (o *CreateTenantResponse) GetTenantOk() (*Tenant, bool) {
 }
 
 // SetTenant sets field value
-func (o *CreateTenantResponse) SetTenant(v Tenant) {
+func (o *CreateTenantResponse) SetTenant(v TenantPayload) {
 	o.Tenant = v
 }
 

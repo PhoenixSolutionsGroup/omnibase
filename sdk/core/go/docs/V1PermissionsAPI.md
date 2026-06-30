@@ -12,11 +12,9 @@ Method | HTTP request | Description
 
 ## CheckPermission
 
-> CheckPermissionResponse CheckPermission(ctx).CheckPermissionRequest(checkPermissionRequest).Execute()
+> CheckResponse CheckPermission(ctx).CheckRequest(checkRequest).Execute()
 
 Check permission
-
-
 
 ### Example
 
@@ -31,16 +29,16 @@ import (
 )
 
 func main() {
-	checkPermissionRequest := *openapiclient.NewCheckPermissionRequest("Tenant", "tenant_test_123", "can_invite_user", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // CheckPermissionRequest | Permission check request with subject_set
+	checkRequest := *openapiclient.NewCheckRequest("Namespace_example", "Object_example", "Relation_example", *openapiclient.NewSubjectSetRequest("Namespace_example", "Object_example")) // CheckRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).CheckPermissionRequest(checkPermissionRequest).Execute()
+	resp, r, err := apiClient.V1PermissionsAPI.CheckPermission(context.Background()).CheckRequest(checkRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1PermissionsAPI.CheckPermission``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `CheckPermission`: CheckPermissionResponse
+	// response from `CheckPermission`: CheckResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1PermissionsAPI.CheckPermission`: %v\n", resp)
 }
 ```
@@ -56,11 +54,11 @@ Other parameters are passed through a pointer to a apiCheckPermissionRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **checkPermissionRequest** | [**CheckPermissionRequest**](CheckPermissionRequest.md) | Permission check request with subject_set | 
+ **checkRequest** | [**CheckRequest**](CheckRequest.md) |  | 
 
 ### Return type
 
-[**CheckPermissionResponse**](CheckPermissionResponse.md)
+[**CheckResponse**](CheckResponse.md)
 
 ### Authorization
 
@@ -69,7 +67,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -81,8 +79,6 @@ Name | Type | Description  | Notes
 > CreateRelationshipResponse CreateRelationship(ctx).CreateRelationshipRequest(createRelationshipRequest).Execute()
 
 Create relationship
-
-
 
 ### Example
 
@@ -97,7 +93,7 @@ import (
 )
 
 func main() {
-	createRelationshipRequest := *openapiclient.NewCreateRelationshipRequest("Tenant", "tenant_test_123", "owners", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // CreateRelationshipRequest | Relationship creation request with subject_set
+	createRelationshipRequest := *openapiclient.NewCreateRelationshipRequest("Namespace_example", "Object_example", "Relation_example", *openapiclient.NewSubjectSetRequest("Namespace_example", "Object_example")) // CreateRelationshipRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -122,7 +118,7 @@ Other parameters are passed through a pointer to a apiCreateRelationshipRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) | Relationship creation request with subject_set | 
+ **createRelationshipRequest** | [**CreateRelationshipRequest**](CreateRelationshipRequest.md) |  | 
 
 ### Return type
 
@@ -135,7 +131,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -147,8 +143,6 @@ Name | Type | Description  | Notes
 > DeleteRelationshipResponse DeleteRelationship(ctx).DeleteRelationshipRequest(deleteRelationshipRequest).Execute()
 
 Delete relationship
-
-
 
 ### Example
 
@@ -163,7 +157,7 @@ import (
 )
 
 func main() {
-	deleteRelationshipRequest := *openapiclient.NewDeleteRelationshipRequest("Project", "project_123", "tenant", *openapiclient.NewSubjectSetRequest("User", "550e8400-e29b-41d4-a716-446655440000")) // DeleteRelationshipRequest | Relationship deletion request with subject_set
+	deleteRelationshipRequest := *openapiclient.NewDeleteRelationshipRequest("Namespace_example", "Object_example", "Relation_example", *openapiclient.NewSubjectSetRequest("Namespace_example", "Object_example")) // DeleteRelationshipRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -188,7 +182,7 @@ Other parameters are passed through a pointer to a apiDeleteRelationshipRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) | Relationship deletion request with subject_set | 
+ **deleteRelationshipRequest** | [**DeleteRelationshipRequest**](DeleteRelationshipRequest.md) |  | 
 
 ### Return type
 
@@ -201,7 +195,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

@@ -6,11 +6,11 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`type` | string
-`subject` | string
-`htmlBody` | string
 `createdAt` | Date
+`htmlBody` | string
+`id` | string
+`subject` | string
+`type` | string
 `updatedAt` | Date
 
 ## Example
@@ -20,12 +20,12 @@ import type { EmailTemplate } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": 550e8400-e29b-41d4-a716-446655440000,
-  "type": welcome,
-  "subject": Welcome to Test Platform,
-  "htmlBody": <h1>Welcome!</h1><p>Thanks for joining our test platform.</p>,
-  "createdAt": 2025-11-10T00:18:19.653645Z,
-  "updatedAt": 2025-11-10T00:33:08.726632Z,
+  "createdAt": null,
+  "htmlBody": null,
+  "id": null,
+  "subject": null,
+  "type": null,
+  "updatedAt": null,
 } satisfies EmailTemplate
 
 console.log(example)

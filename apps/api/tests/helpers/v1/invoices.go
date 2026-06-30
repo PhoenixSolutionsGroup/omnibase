@@ -12,9 +12,7 @@ import (
 
 func CreateInvoiceRaw(t *testing.T, client *sdk.APIClient, tenantID string, req sdk.CreateInvoiceRequest) (*sdk.InvoiceResponse, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1PaymentsAPI.CreateInvoice(helpers.Ctx()).
-		XServiceKey(testenv.ServiceKey).
-		XTenantId(tenantID).
+	out, resp, err := client.V1PaymentsAPI.CreateInvoice(helpers.CtxWithServiceKeyTenant(testenv.ServiceKey, tenantID)).
 		CreateInvoiceRequest(req).
 		Execute()
 	return out, resp, err
@@ -22,37 +20,32 @@ func CreateInvoiceRaw(t *testing.T, client *sdk.APIClient, tenantID string, req 
 
 func GetInvoiceRaw(t *testing.T, client *sdk.APIClient, invoiceID string) (*sdk.InvoiceResponse, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1PaymentsAPI.GetInvoice(helpers.Ctx(), invoiceID).
-		XServiceKey(testenv.ServiceKey).
+	out, resp, err := client.V1PaymentsAPI.GetInvoice(helpers.CtxWithServiceKey(testenv.ServiceKey), invoiceID).
 		Execute()
 	return out, resp, err
 }
 
 func UpdateInvoiceRaw(t *testing.T, client *sdk.APIClient, invoiceID string, req sdk.UpdateInvoiceRequest) (*sdk.InvoiceResponse, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1PaymentsAPI.UpdateInvoice(helpers.Ctx(), invoiceID).
-		XServiceKey(testenv.ServiceKey).
+	out, resp, err := client.V1PaymentsAPI.UpdateInvoice(helpers.CtxWithServiceKey(testenv.ServiceKey), invoiceID).
 		UpdateInvoiceRequest(req).
 		Execute()
 	return out, resp, err
 }
 
-func AddInvoiceLineItemRaw(t *testing.T, client *sdk.APIClient, invoiceID, tenantID string, req sdk.AddInvoiceLineItemRequest) (*sdk.InvoiceLineItemResponse, *http.Response, error) {
+func AddInvoiceLineItemRaw(t *testing.T, client *sdk.APIClient, invoiceID, tenantID string, req sdk.AddLineItemRequest) (*sdk.InvoiceLineItemResponse, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1PaymentsAPI.AddInvoiceLineItem(helpers.Ctx(), invoiceID).
-		XServiceKey(testenv.ServiceKey).
-		XTenantId(tenantID).
-		AddInvoiceLineItemRequest(req).
+	out, resp, err := client.V1PaymentsAPI.AddInvoiceLineItem(helpers.CtxWithServiceKeyTenant(testenv.ServiceKey, tenantID), invoiceID).
+		AddLineItemRequest(req).
 		Execute()
 	return out, resp, err
 }
 
 func FinalizeInvoiceRaw(t *testing.T, client *sdk.APIClient, invoiceID string, autoAdvance bool) (*sdk.InvoiceResponse, *http.Response, error) {
 	t.Helper()
-	req := sdk.FinalizeInvoiceRequest{AutoAdvance: &autoAdvance}
-	out, resp, err := client.V1PaymentsAPI.FinalizeInvoice(helpers.Ctx(), invoiceID).
-		XServiceKey(testenv.ServiceKey).
-		FinalizeInvoiceRequest(req).
+	req := sdk.FinalizeRequest{AutoAdvance: &autoAdvance}
+	out, resp, err := client.V1PaymentsAPI.FinalizeInvoice(helpers.CtxWithServiceKey(testenv.ServiceKey), invoiceID).
+		FinalizeRequest(req).
 		Execute()
 	return out, resp, err
 }

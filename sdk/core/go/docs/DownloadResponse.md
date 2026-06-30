@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**DownloadUrl** | **string** | Presigned URL for downloading the file (valid for 15 minutes) | 
+**DownloadUrl** | **string** |  | 
 
 ## Methods
 

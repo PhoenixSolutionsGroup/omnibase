@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,12 +22,9 @@ var _ MappedNullable = &SessionResponse{}
 
 // SessionResponse struct for SessionResponse
 type SessionResponse struct {
-	// Kratos session metadata
-	Session map[string]interface{} `json:"session"`
-	// User identity information
-	Identity map[string]interface{} `json:"identity"`
-	// Active tenant context (if user has tenant membership)
-	Tenant *Tenant `json:"tenant,omitempty"`
+	Identity Identity `json:"identity"`
+	Session Session `json:"session"`
+	Tenant *GetTenantByIDRow `json:"tenant,omitempty"`
 }
 
 type _SessionResponse SessionResponse
@@ -36,10 +33,10 @@ type _SessionResponse SessionResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSessionResponse(session map[string]interface{}, identity map[string]interface{}) *SessionResponse {
+func NewSessionResponse(identity Identity, session Session) *SessionResponse {
 	this := SessionResponse{}
-	this.Session = session
 	this.Identity = identity
+	this.Session = session
 	return &this
 }
 
@@ -51,34 +48,10 @@ func NewSessionResponseWithDefaults() *SessionResponse {
 	return &this
 }
 
-// GetSession returns the Session field value
-func (o *SessionResponse) GetSession() map[string]interface{} {
-	if o == nil {
-		var ret map[string]interface{}
-		return ret
-	}
-
-	return o.Session
-}
-
-// GetSessionOk returns a tuple with the Session field value
-// and a boolean to check if the value has been set.
-func (o *SessionResponse) GetSessionOk() (map[string]interface{}, bool) {
-	if o == nil {
-		return map[string]interface{}{}, false
-	}
-	return o.Session, true
-}
-
-// SetSession sets field value
-func (o *SessionResponse) SetSession(v map[string]interface{}) {
-	o.Session = v
-}
-
 // GetIdentity returns the Identity field value
-func (o *SessionResponse) GetIdentity() map[string]interface{} {
+func (o *SessionResponse) GetIdentity() Identity {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret Identity
 		return ret
 	}
 
@@ -87,22 +60,46 @@ func (o *SessionResponse) GetIdentity() map[string]interface{} {
 
 // GetIdentityOk returns a tuple with the Identity field value
 // and a boolean to check if the value has been set.
-func (o *SessionResponse) GetIdentityOk() (map[string]interface{}, bool) {
+func (o *SessionResponse) GetIdentityOk() (*Identity, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
-	return o.Identity, true
+	return &o.Identity, true
 }
 
 // SetIdentity sets field value
-func (o *SessionResponse) SetIdentity(v map[string]interface{}) {
+func (o *SessionResponse) SetIdentity(v Identity) {
 	o.Identity = v
 }
 
+// GetSession returns the Session field value
+func (o *SessionResponse) GetSession() Session {
+	if o == nil {
+		var ret Session
+		return ret
+	}
+
+	return o.Session
+}
+
+// GetSessionOk returns a tuple with the Session field value
+// and a boolean to check if the value has been set.
+func (o *SessionResponse) GetSessionOk() (*Session, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Session, true
+}
+
+// SetSession sets field value
+func (o *SessionResponse) SetSession(v Session) {
+	o.Session = v
+}
+
 // GetTenant returns the Tenant field value if set, zero value otherwise.
-func (o *SessionResponse) GetTenant() Tenant {
+func (o *SessionResponse) GetTenant() GetTenantByIDRow {
 	if o == nil || IsNil(o.Tenant) {
-		var ret Tenant
+		var ret GetTenantByIDRow
 		return ret
 	}
 	return *o.Tenant
@@ -110,7 +107,7 @@ func (o *SessionResponse) GetTenant() Tenant {
 
 // GetTenantOk returns a tuple with the Tenant field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SessionResponse) GetTenantOk() (*Tenant, bool) {
+func (o *SessionResponse) GetTenantOk() (*GetTenantByIDRow, bool) {
 	if o == nil || IsNil(o.Tenant) {
 		return nil, false
 	}
@@ -126,8 +123,8 @@ func (o *SessionResponse) HasTenant() bool {
 	return false
 }
 
-// SetTenant gets a reference to the given Tenant and assigns it to the Tenant field.
-func (o *SessionResponse) SetTenant(v Tenant) {
+// SetTenant gets a reference to the given GetTenantByIDRow and assigns it to the Tenant field.
+func (o *SessionResponse) SetTenant(v GetTenantByIDRow) {
 	o.Tenant = &v
 }
 
@@ -141,8 +138,8 @@ func (o SessionResponse) MarshalJSON() ([]byte, error) {
 
 func (o SessionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["session"] = o.Session
 	toSerialize["identity"] = o.Identity
+	toSerialize["session"] = o.Session
 	if !IsNil(o.Tenant) {
 		toSerialize["tenant"] = o.Tenant
 	}
@@ -154,8 +151,8 @@ func (o *SessionResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"session",
 		"identity",
+		"session",
 	}
 
 	allProperties := make(map[string]interface{})

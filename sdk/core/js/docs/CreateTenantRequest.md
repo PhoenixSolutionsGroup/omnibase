@@ -1,14 +1,13 @@
 
 # CreateTenantRequest
 
-Request to create a new tenant
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`name` | string
 `billingEmail` | string
+`name` | string
 `type` | string
 
 ## Example
@@ -18,9 +17,9 @@ import type { CreateTenantRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "name": Test Organization,
-  "billingEmail": billing@test.example.com,
-  "type": organization,
+  "billingEmail": null,
+  "name": null,
+  "type": null,
 } satisfies CreateTenantRequest
 
 console.log(example)

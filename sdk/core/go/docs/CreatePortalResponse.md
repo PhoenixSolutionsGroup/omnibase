@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Url** | **string** | Stripe Customer Portal URL | 
+**Url** | **string** |  | 
 
 ## Methods
 

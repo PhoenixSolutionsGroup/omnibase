@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**EventPayloadKey** | **string** | Key in event payload to identify customer (must be different from value_settings.event_payload_key) | 
-**Type** | **string** | Mapping type | 
+**EventPayloadKey** | **string** |  | 
+**Type** | **string** |  | 
 
 ## Methods
 

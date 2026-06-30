@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,13 +22,9 @@ var _ MappedNullable = &MeterChange{}
 
 // MeterChange struct for MeterChange
 type MeterChange struct {
-	// Meter config ID
-	MeterId string `json:"meter_id"`
-	// Meter display name
-	DisplayName string `json:"display_name"`
-	// Action performed on the meter
 	Action string `json:"action"`
-	// Stripe meter ID
+	DisplayName string `json:"display_name"`
+	MeterId string `json:"meter_id"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -38,11 +34,11 @@ type _MeterChange MeterChange
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMeterChange(meterId string, displayName string, action string) *MeterChange {
+func NewMeterChange(action string, displayName string, meterId string) *MeterChange {
 	this := MeterChange{}
-	this.MeterId = meterId
-	this.DisplayName = displayName
 	this.Action = action
+	this.DisplayName = displayName
+	this.MeterId = meterId
 	return &this
 }
 
@@ -54,28 +50,28 @@ func NewMeterChangeWithDefaults() *MeterChange {
 	return &this
 }
 
-// GetMeterId returns the MeterId field value
-func (o *MeterChange) GetMeterId() string {
+// GetAction returns the Action field value
+func (o *MeterChange) GetAction() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.MeterId
+	return o.Action
 }
 
-// GetMeterIdOk returns a tuple with the MeterId field value
+// GetActionOk returns a tuple with the Action field value
 // and a boolean to check if the value has been set.
-func (o *MeterChange) GetMeterIdOk() (*string, bool) {
+func (o *MeterChange) GetActionOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.MeterId, true
+	return &o.Action, true
 }
 
-// SetMeterId sets field value
-func (o *MeterChange) SetMeterId(v string) {
-	o.MeterId = v
+// SetAction sets field value
+func (o *MeterChange) SetAction(v string) {
+	o.Action = v
 }
 
 // GetDisplayName returns the DisplayName field value
@@ -102,28 +98,28 @@ func (o *MeterChange) SetDisplayName(v string) {
 	o.DisplayName = v
 }
 
-// GetAction returns the Action field value
-func (o *MeterChange) GetAction() string {
+// GetMeterId returns the MeterId field value
+func (o *MeterChange) GetMeterId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.Action
+	return o.MeterId
 }
 
-// GetActionOk returns a tuple with the Action field value
+// GetMeterIdOk returns a tuple with the MeterId field value
 // and a boolean to check if the value has been set.
-func (o *MeterChange) GetActionOk() (*string, bool) {
+func (o *MeterChange) GetMeterIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Action, true
+	return &o.MeterId, true
 }
 
-// SetAction sets field value
-func (o *MeterChange) SetAction(v string) {
-	o.Action = v
+// SetMeterId sets field value
+func (o *MeterChange) SetMeterId(v string) {
+	o.MeterId = v
 }
 
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
@@ -168,9 +164,9 @@ func (o MeterChange) MarshalJSON() ([]byte, error) {
 
 func (o MeterChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["meter_id"] = o.MeterId
-	toSerialize["display_name"] = o.DisplayName
 	toSerialize["action"] = o.Action
+	toSerialize["display_name"] = o.DisplayName
+	toSerialize["meter_id"] = o.MeterId
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
 	}
@@ -182,9 +178,9 @@ func (o *MeterChange) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"meter_id",
-		"display_name",
 		"action",
+		"display_name",
+		"meter_id",
 	}
 
 	allProperties := make(map[string]interface{})

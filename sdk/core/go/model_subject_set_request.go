@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,13 +20,10 @@ import (
 // checks if the SubjectSetRequest type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &SubjectSetRequest{}
 
-// SubjectSetRequest Subject set representation for permission checks and relationship creation
+// SubjectSetRequest struct for SubjectSetRequest
 type SubjectSetRequest struct {
-	// Namespace of the subject set
 	Namespace string `json:"namespace"`
-	// Object of the subject set (e.g., user ID)
 	Object string `json:"object"`
-	// Relation of the subject set (optional)
 	Relation *string `json:"relation,omitempty"`
 }
 

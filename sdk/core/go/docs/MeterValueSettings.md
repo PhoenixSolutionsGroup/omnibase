@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**EventPayloadKey** | **string** | Key in event payload containing the usage value (must be different from customer_mapping.event_payload_key) | 
+**EventPayloadKey** | **string** |  | 
 
 ## Methods
 

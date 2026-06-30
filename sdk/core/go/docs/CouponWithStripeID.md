@@ -4,24 +4,24 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Coupon identifier (config ID) | 
-**Name** | Pointer to **string** | Coupon name | [optional] 
-**PercentOff** | Pointer to **float64** | Percentage discount | [optional] 
-**AmountOff** | Pointer to **int64** | Fixed amount discount | [optional] 
-**Currency** | Pointer to **string** | Currency for amount_off | [optional] 
-**Duration** | [**CouponDuration**](CouponDuration.md) |  | 
-**DurationInMonths** | Pointer to **int64** | Number of months for repeating duration | [optional] 
-**MaxRedemptions** | Pointer to **int64** | Maximum redemptions | [optional] 
-**RedeemBy** | Pointer to **int64** | Redemption deadline | [optional] 
-**AppliesTo** | Pointer to **[]string** | Product IDs this coupon applies to | [optional] 
+**AmountOff** | Pointer to **int64** |  | [optional] 
+**AppliesTo** | Pointer to **[]string** |  | [optional] 
+**Currency** | Pointer to **string** |  | [optional] 
+**Duration** | **string** |  | 
+**DurationInMonths** | Pointer to **int64** |  | [optional] 
+**Id** | **string** |  | 
+**MaxRedemptions** | Pointer to **int64** |  | [optional] 
 **Metadata** | Pointer to **map[string]string** |  | [optional] 
-**StripeId** | Pointer to **string** | Actual Stripe coupon ID | [optional] 
+**Name** | Pointer to **string** |  | [optional] 
+**PercentOff** | Pointer to **float64** |  | [optional] 
+**RedeemBy** | Pointer to **int64** |  | [optional] 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewCouponWithStripeID
 
-`func NewCouponWithStripeID(id string, duration CouponDuration, ) *CouponWithStripeID`
+`func NewCouponWithStripeID(duration string, id string, ) *CouponWithStripeID`
 
 NewCouponWithStripeID instantiates a new CouponWithStripeID object
 This constructor will assign default values to properties that have it defined,
@@ -35,6 +35,136 @@ will change when the set of required properties is changed
 NewCouponWithStripeIDWithDefaults instantiates a new CouponWithStripeID object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetAmountOff
+
+`func (o *CouponWithStripeID) GetAmountOff() int64`
+
+GetAmountOff returns the AmountOff field if non-nil, zero value otherwise.
+
+### GetAmountOffOk
+
+`func (o *CouponWithStripeID) GetAmountOffOk() (*int64, bool)`
+
+GetAmountOffOk returns a tuple with the AmountOff field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAmountOff
+
+`func (o *CouponWithStripeID) SetAmountOff(v int64)`
+
+SetAmountOff sets AmountOff field to given value.
+
+### HasAmountOff
+
+`func (o *CouponWithStripeID) HasAmountOff() bool`
+
+HasAmountOff returns a boolean if a field has been set.
+
+### GetAppliesTo
+
+`func (o *CouponWithStripeID) GetAppliesTo() []string`
+
+GetAppliesTo returns the AppliesTo field if non-nil, zero value otherwise.
+
+### GetAppliesToOk
+
+`func (o *CouponWithStripeID) GetAppliesToOk() (*[]string, bool)`
+
+GetAppliesToOk returns a tuple with the AppliesTo field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAppliesTo
+
+`func (o *CouponWithStripeID) SetAppliesTo(v []string)`
+
+SetAppliesTo sets AppliesTo field to given value.
+
+### HasAppliesTo
+
+`func (o *CouponWithStripeID) HasAppliesTo() bool`
+
+HasAppliesTo returns a boolean if a field has been set.
+
+### SetAppliesToNil
+
+`func (o *CouponWithStripeID) SetAppliesToNil(b bool)`
+
+ SetAppliesToNil sets the value for AppliesTo to be an explicit nil
+
+### UnsetAppliesTo
+`func (o *CouponWithStripeID) UnsetAppliesTo()`
+
+UnsetAppliesTo ensures that no value is present for AppliesTo, not even an explicit nil
+### GetCurrency
+
+`func (o *CouponWithStripeID) GetCurrency() string`
+
+GetCurrency returns the Currency field if non-nil, zero value otherwise.
+
+### GetCurrencyOk
+
+`func (o *CouponWithStripeID) GetCurrencyOk() (*string, bool)`
+
+GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCurrency
+
+`func (o *CouponWithStripeID) SetCurrency(v string)`
+
+SetCurrency sets Currency field to given value.
+
+### HasCurrency
+
+`func (o *CouponWithStripeID) HasCurrency() bool`
+
+HasCurrency returns a boolean if a field has been set.
+
+### GetDuration
+
+`func (o *CouponWithStripeID) GetDuration() string`
+
+GetDuration returns the Duration field if non-nil, zero value otherwise.
+
+### GetDurationOk
+
+`func (o *CouponWithStripeID) GetDurationOk() (*string, bool)`
+
+GetDurationOk returns a tuple with the Duration field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDuration
+
+`func (o *CouponWithStripeID) SetDuration(v string)`
+
+SetDuration sets Duration field to given value.
+
+
+### GetDurationInMonths
+
+`func (o *CouponWithStripeID) GetDurationInMonths() int64`
+
+GetDurationInMonths returns the DurationInMonths field if non-nil, zero value otherwise.
+
+### GetDurationInMonthsOk
+
+`func (o *CouponWithStripeID) GetDurationInMonthsOk() (*int64, bool)`
+
+GetDurationInMonthsOk returns a tuple with the DurationInMonths field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDurationInMonths
+
+`func (o *CouponWithStripeID) SetDurationInMonths(v int64)`
+
+SetDurationInMonths sets DurationInMonths field to given value.
+
+### HasDurationInMonths
+
+`func (o *CouponWithStripeID) HasDurationInMonths() bool`
+
+HasDurationInMonths returns a boolean if a field has been set.
 
 ### GetId
 
@@ -55,6 +185,56 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
+
+### GetMaxRedemptions
+
+`func (o *CouponWithStripeID) GetMaxRedemptions() int64`
+
+GetMaxRedemptions returns the MaxRedemptions field if non-nil, zero value otherwise.
+
+### GetMaxRedemptionsOk
+
+`func (o *CouponWithStripeID) GetMaxRedemptionsOk() (*int64, bool)`
+
+GetMaxRedemptionsOk returns a tuple with the MaxRedemptions field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMaxRedemptions
+
+`func (o *CouponWithStripeID) SetMaxRedemptions(v int64)`
+
+SetMaxRedemptions sets MaxRedemptions field to given value.
+
+### HasMaxRedemptions
+
+`func (o *CouponWithStripeID) HasMaxRedemptions() bool`
+
+HasMaxRedemptions returns a boolean if a field has been set.
+
+### GetMetadata
+
+`func (o *CouponWithStripeID) GetMetadata() map[string]string`
+
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+
+### GetMetadataOk
+
+`func (o *CouponWithStripeID) GetMetadataOk() (*map[string]string, bool)`
+
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMetadata
+
+`func (o *CouponWithStripeID) SetMetadata(v map[string]string)`
+
+SetMetadata sets Metadata field to given value.
+
+### HasMetadata
+
+`func (o *CouponWithStripeID) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetName
 
@@ -106,126 +286,6 @@ SetPercentOff sets PercentOff field to given value.
 
 HasPercentOff returns a boolean if a field has been set.
 
-### GetAmountOff
-
-`func (o *CouponWithStripeID) GetAmountOff() int64`
-
-GetAmountOff returns the AmountOff field if non-nil, zero value otherwise.
-
-### GetAmountOffOk
-
-`func (o *CouponWithStripeID) GetAmountOffOk() (*int64, bool)`
-
-GetAmountOffOk returns a tuple with the AmountOff field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetAmountOff
-
-`func (o *CouponWithStripeID) SetAmountOff(v int64)`
-
-SetAmountOff sets AmountOff field to given value.
-
-### HasAmountOff
-
-`func (o *CouponWithStripeID) HasAmountOff() bool`
-
-HasAmountOff returns a boolean if a field has been set.
-
-### GetCurrency
-
-`func (o *CouponWithStripeID) GetCurrency() string`
-
-GetCurrency returns the Currency field if non-nil, zero value otherwise.
-
-### GetCurrencyOk
-
-`func (o *CouponWithStripeID) GetCurrencyOk() (*string, bool)`
-
-GetCurrencyOk returns a tuple with the Currency field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetCurrency
-
-`func (o *CouponWithStripeID) SetCurrency(v string)`
-
-SetCurrency sets Currency field to given value.
-
-### HasCurrency
-
-`func (o *CouponWithStripeID) HasCurrency() bool`
-
-HasCurrency returns a boolean if a field has been set.
-
-### GetDuration
-
-`func (o *CouponWithStripeID) GetDuration() CouponDuration`
-
-GetDuration returns the Duration field if non-nil, zero value otherwise.
-
-### GetDurationOk
-
-`func (o *CouponWithStripeID) GetDurationOk() (*CouponDuration, bool)`
-
-GetDurationOk returns a tuple with the Duration field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetDuration
-
-`func (o *CouponWithStripeID) SetDuration(v CouponDuration)`
-
-SetDuration sets Duration field to given value.
-
-
-### GetDurationInMonths
-
-`func (o *CouponWithStripeID) GetDurationInMonths() int64`
-
-GetDurationInMonths returns the DurationInMonths field if non-nil, zero value otherwise.
-
-### GetDurationInMonthsOk
-
-`func (o *CouponWithStripeID) GetDurationInMonthsOk() (*int64, bool)`
-
-GetDurationInMonthsOk returns a tuple with the DurationInMonths field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetDurationInMonths
-
-`func (o *CouponWithStripeID) SetDurationInMonths(v int64)`
-
-SetDurationInMonths sets DurationInMonths field to given value.
-
-### HasDurationInMonths
-
-`func (o *CouponWithStripeID) HasDurationInMonths() bool`
-
-HasDurationInMonths returns a boolean if a field has been set.
-
-### GetMaxRedemptions
-
-`func (o *CouponWithStripeID) GetMaxRedemptions() int64`
-
-GetMaxRedemptions returns the MaxRedemptions field if non-nil, zero value otherwise.
-
-### GetMaxRedemptionsOk
-
-`func (o *CouponWithStripeID) GetMaxRedemptionsOk() (*int64, bool)`
-
-GetMaxRedemptionsOk returns a tuple with the MaxRedemptions field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetMaxRedemptions
-
-`func (o *CouponWithStripeID) SetMaxRedemptions(v int64)`
-
-SetMaxRedemptions sets MaxRedemptions field to given value.
-
-### HasMaxRedemptions
-
-`func (o *CouponWithStripeID) HasMaxRedemptions() bool`
-
-HasMaxRedemptions returns a boolean if a field has been set.
-
 ### GetRedeemBy
 
 `func (o *CouponWithStripeID) GetRedeemBy() int64`
@@ -250,56 +310,6 @@ SetRedeemBy sets RedeemBy field to given value.
 `func (o *CouponWithStripeID) HasRedeemBy() bool`
 
 HasRedeemBy returns a boolean if a field has been set.
-
-### GetAppliesTo
-
-`func (o *CouponWithStripeID) GetAppliesTo() []string`
-
-GetAppliesTo returns the AppliesTo field if non-nil, zero value otherwise.
-
-### GetAppliesToOk
-
-`func (o *CouponWithStripeID) GetAppliesToOk() (*[]string, bool)`
-
-GetAppliesToOk returns a tuple with the AppliesTo field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetAppliesTo
-
-`func (o *CouponWithStripeID) SetAppliesTo(v []string)`
-
-SetAppliesTo sets AppliesTo field to given value.
-
-### HasAppliesTo
-
-`func (o *CouponWithStripeID) HasAppliesTo() bool`
-
-HasAppliesTo returns a boolean if a field has been set.
-
-### GetMetadata
-
-`func (o *CouponWithStripeID) GetMetadata() map[string]string`
-
-GetMetadata returns the Metadata field if non-nil, zero value otherwise.
-
-### GetMetadataOk
-
-`func (o *CouponWithStripeID) GetMetadataOk() (*map[string]string, bool)`
-
-GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetMetadata
-
-`func (o *CouponWithStripeID) SetMetadata(v map[string]string)`
-
-SetMetadata sets Metadata field to given value.
-
-### HasMetadata
-
-`func (o *CouponWithStripeID) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetStripeId
 

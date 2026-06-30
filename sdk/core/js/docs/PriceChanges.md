@@ -1,15 +1,14 @@
 
 # PriceChanges
 
-Summary of price changes made during configuration update
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`archived` | [Array&lt;PriceChange&gt;](PriceChange.md)
 `created` | [Array&lt;PriceChange&gt;](PriceChange.md)
 `updated` | [Array&lt;PriceChange&gt;](PriceChange.md)
-`archived` | [Array&lt;PriceChange&gt;](PriceChange.md)
 
 ## Example
 
@@ -18,9 +17,9 @@ import type { PriceChanges } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "archived": null,
   "created": null,
   "updated": null,
-  "archived": null,
 } satisfies PriceChanges
 
 console.log(example)

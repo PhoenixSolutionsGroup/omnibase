@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,14 +22,10 @@ var _ MappedNullable = &EnterpriseApplyResponse{}
 
 // EnterpriseApplyResponse struct for EnterpriseApplyResponse
 type EnterpriseApplyResponse struct {
-	// Success message
 	Message string `json:"message"`
-	// Tenant ID that pricing was applied to
-	TenantId string `json:"tenant_id"`
-	// Number of subscription prices that were swapped
-	PricesSwapped int32 `json:"prices_swapped"`
-	// Details of each price swap performed
+	PricesSwapped int64 `json:"prices_swapped"`
 	SwappedDetails []string `json:"swapped_details,omitempty"`
+	TenantId string `json:"tenant_id"`
 }
 
 type _EnterpriseApplyResponse EnterpriseApplyResponse
@@ -38,11 +34,11 @@ type _EnterpriseApplyResponse EnterpriseApplyResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnterpriseApplyResponse(message string, tenantId string, pricesSwapped int32) *EnterpriseApplyResponse {
+func NewEnterpriseApplyResponse(message string, pricesSwapped int64, tenantId string) *EnterpriseApplyResponse {
 	this := EnterpriseApplyResponse{}
 	this.Message = message
-	this.TenantId = tenantId
 	this.PricesSwapped = pricesSwapped
+	this.TenantId = tenantId
 	return &this
 }
 
@@ -78,6 +74,63 @@ func (o *EnterpriseApplyResponse) SetMessage(v string) {
 	o.Message = v
 }
 
+// GetPricesSwapped returns the PricesSwapped field value
+func (o *EnterpriseApplyResponse) GetPricesSwapped() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.PricesSwapped
+}
+
+// GetPricesSwappedOk returns a tuple with the PricesSwapped field value
+// and a boolean to check if the value has been set.
+func (o *EnterpriseApplyResponse) GetPricesSwappedOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.PricesSwapped, true
+}
+
+// SetPricesSwapped sets field value
+func (o *EnterpriseApplyResponse) SetPricesSwapped(v int64) {
+	o.PricesSwapped = v
+}
+
+// GetSwappedDetails returns the SwappedDetails field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *EnterpriseApplyResponse) GetSwappedDetails() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+	return o.SwappedDetails
+}
+
+// GetSwappedDetailsOk returns a tuple with the SwappedDetails field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EnterpriseApplyResponse) GetSwappedDetailsOk() ([]string, bool) {
+	if o == nil || IsNil(o.SwappedDetails) {
+		return nil, false
+	}
+	return o.SwappedDetails, true
+}
+
+// HasSwappedDetails returns a boolean if a field has been set.
+func (o *EnterpriseApplyResponse) HasSwappedDetails() bool {
+	if o != nil && !IsNil(o.SwappedDetails) {
+		return true
+	}
+
+	return false
+}
+
+// SetSwappedDetails gets a reference to the given []string and assigns it to the SwappedDetails field.
+func (o *EnterpriseApplyResponse) SetSwappedDetails(v []string) {
+	o.SwappedDetails = v
+}
+
 // GetTenantId returns the TenantId field value
 func (o *EnterpriseApplyResponse) GetTenantId() string {
 	if o == nil {
@@ -102,62 +155,6 @@ func (o *EnterpriseApplyResponse) SetTenantId(v string) {
 	o.TenantId = v
 }
 
-// GetPricesSwapped returns the PricesSwapped field value
-func (o *EnterpriseApplyResponse) GetPricesSwapped() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.PricesSwapped
-}
-
-// GetPricesSwappedOk returns a tuple with the PricesSwapped field value
-// and a boolean to check if the value has been set.
-func (o *EnterpriseApplyResponse) GetPricesSwappedOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.PricesSwapped, true
-}
-
-// SetPricesSwapped sets field value
-func (o *EnterpriseApplyResponse) SetPricesSwapped(v int32) {
-	o.PricesSwapped = v
-}
-
-// GetSwappedDetails returns the SwappedDetails field value if set, zero value otherwise.
-func (o *EnterpriseApplyResponse) GetSwappedDetails() []string {
-	if o == nil || IsNil(o.SwappedDetails) {
-		var ret []string
-		return ret
-	}
-	return o.SwappedDetails
-}
-
-// GetSwappedDetailsOk returns a tuple with the SwappedDetails field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *EnterpriseApplyResponse) GetSwappedDetailsOk() ([]string, bool) {
-	if o == nil || IsNil(o.SwappedDetails) {
-		return nil, false
-	}
-	return o.SwappedDetails, true
-}
-
-// HasSwappedDetails returns a boolean if a field has been set.
-func (o *EnterpriseApplyResponse) HasSwappedDetails() bool {
-	if o != nil && !IsNil(o.SwappedDetails) {
-		return true
-	}
-
-	return false
-}
-
-// SetSwappedDetails gets a reference to the given []string and assigns it to the SwappedDetails field.
-func (o *EnterpriseApplyResponse) SetSwappedDetails(v []string) {
-	o.SwappedDetails = v
-}
-
 func (o EnterpriseApplyResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -169,11 +166,11 @@ func (o EnterpriseApplyResponse) MarshalJSON() ([]byte, error) {
 func (o EnterpriseApplyResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
-	toSerialize["tenant_id"] = o.TenantId
 	toSerialize["prices_swapped"] = o.PricesSwapped
-	if !IsNil(o.SwappedDetails) {
+	if o.SwappedDetails != nil {
 		toSerialize["swapped_details"] = o.SwappedDetails
 	}
+	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
 }
 
@@ -183,8 +180,8 @@ func (o *EnterpriseApplyResponse) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"message",
-		"tenant_id",
 		"prices_swapped",
+		"tenant_id",
 	}
 
 	allProperties := make(map[string]interface{})

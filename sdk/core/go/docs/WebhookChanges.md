@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Created** | Pointer to [**[]WebhookChange**](WebhookChange.md) | Webhooks that were created in Stripe | [optional] 
-**Updated** | Pointer to [**[]WebhookChange**](WebhookChange.md) | Webhooks that were updated | [optional] 
-**Unchanged** | Pointer to [**[]WebhookChange**](WebhookChange.md) | Webhooks that were unchanged | [optional] 
+**Created** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
+**Unchanged** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
+**Updated** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
 
 ## Methods
 
@@ -52,31 +52,16 @@ SetCreated sets Created field to given value.
 
 HasCreated returns a boolean if a field has been set.
 
-### GetUpdated
+### SetCreatedNil
 
-`func (o *WebhookChanges) GetUpdated() []WebhookChange`
+`func (o *WebhookChanges) SetCreatedNil(b bool)`
 
-GetUpdated returns the Updated field if non-nil, zero value otherwise.
+ SetCreatedNil sets the value for Created to be an explicit nil
 
-### GetUpdatedOk
+### UnsetCreated
+`func (o *WebhookChanges) UnsetCreated()`
 
-`func (o *WebhookChanges) GetUpdatedOk() (*[]WebhookChange, bool)`
-
-GetUpdatedOk returns a tuple with the Updated field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetUpdated
-
-`func (o *WebhookChanges) SetUpdated(v []WebhookChange)`
-
-SetUpdated sets Updated field to given value.
-
-### HasUpdated
-
-`func (o *WebhookChanges) HasUpdated() bool`
-
-HasUpdated returns a boolean if a field has been set.
-
+UnsetCreated ensures that no value is present for Created, not even an explicit nil
 ### GetUnchanged
 
 `func (o *WebhookChanges) GetUnchanged() []WebhookChange`
@@ -102,6 +87,51 @@ SetUnchanged sets Unchanged field to given value.
 
 HasUnchanged returns a boolean if a field has been set.
 
+### SetUnchangedNil
+
+`func (o *WebhookChanges) SetUnchangedNil(b bool)`
+
+ SetUnchangedNil sets the value for Unchanged to be an explicit nil
+
+### UnsetUnchanged
+`func (o *WebhookChanges) UnsetUnchanged()`
+
+UnsetUnchanged ensures that no value is present for Unchanged, not even an explicit nil
+### GetUpdated
+
+`func (o *WebhookChanges) GetUpdated() []WebhookChange`
+
+GetUpdated returns the Updated field if non-nil, zero value otherwise.
+
+### GetUpdatedOk
+
+`func (o *WebhookChanges) GetUpdatedOk() (*[]WebhookChange, bool)`
+
+GetUpdatedOk returns a tuple with the Updated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdated
+
+`func (o *WebhookChanges) SetUpdated(v []WebhookChange)`
+
+SetUpdated sets Updated field to given value.
+
+### HasUpdated
+
+`func (o *WebhookChanges) HasUpdated() bool`
+
+HasUpdated returns a boolean if a field has been set.
+
+### SetUpdatedNil
+
+`func (o *WebhookChanges) SetUpdatedNil(b bool)`
+
+ SetUpdatedNil sets the value for Updated to be an explicit nil
+
+### UnsetUpdated
+`func (o *WebhookChanges) UnsetUpdated()`
+
+UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

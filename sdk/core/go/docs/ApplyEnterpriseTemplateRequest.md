@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**TenantId** | **string** | Tenant ID to apply enterprise pricing to | 
-**EnterpriseTemplate** | **string** | Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off) | 
+**EnterpriseTemplate** | **string** |  | 
+**TenantId** | **string** |  | 
 
 ## Methods
 
 ### NewApplyEnterpriseTemplateRequest
 
-`func NewApplyEnterpriseTemplateRequest(tenantId string, enterpriseTemplate string, ) *ApplyEnterpriseTemplateRequest`
+`func NewApplyEnterpriseTemplateRequest(enterpriseTemplate string, tenantId string, ) *ApplyEnterpriseTemplateRequest`
 
 NewApplyEnterpriseTemplateRequest instantiates a new ApplyEnterpriseTemplateRequest object
 This constructor will assign default values to properties that have it defined,
@@ -25,26 +25,6 @@ will change when the set of required properties is changed
 NewApplyEnterpriseTemplateRequestWithDefaults instantiates a new ApplyEnterpriseTemplateRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetTenantId
-
-`func (o *ApplyEnterpriseTemplateRequest) GetTenantId() string`
-
-GetTenantId returns the TenantId field if non-nil, zero value otherwise.
-
-### GetTenantIdOk
-
-`func (o *ApplyEnterpriseTemplateRequest) GetTenantIdOk() (*string, bool)`
-
-GetTenantIdOk returns a tuple with the TenantId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetTenantId
-
-`func (o *ApplyEnterpriseTemplateRequest) SetTenantId(v string)`
-
-SetTenantId sets TenantId field to given value.
-
 
 ### GetEnterpriseTemplate
 
@@ -64,6 +44,26 @@ and a boolean to check if the value has been set.
 `func (o *ApplyEnterpriseTemplateRequest) SetEnterpriseTemplate(v string)`
 
 SetEnterpriseTemplate sets EnterpriseTemplate field to given value.
+
+
+### GetTenantId
+
+`func (o *ApplyEnterpriseTemplateRequest) GetTenantId() string`
+
+GetTenantId returns the TenantId field if non-nil, zero value otherwise.
+
+### GetTenantIdOk
+
+`func (o *ApplyEnterpriseTemplateRequest) GetTenantIdOk() (*string, bool)`
+
+GetTenantIdOk returns a tuple with the TenantId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTenantId
+
+`func (o *ApplyEnterpriseTemplateRequest) SetTenantId(v string)`
+
+SetTenantId sets TenantId field to given value.
 
 
 

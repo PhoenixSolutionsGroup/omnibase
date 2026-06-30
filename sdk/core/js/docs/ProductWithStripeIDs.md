@@ -6,13 +6,13 @@
 
 Name | Type
 ------------ | -------------
+`description` | string
 `id` | string
 `name` | string
-`description` | string
-`type` | string
 `prices` | [Array&lt;PriceWithStripeID&gt;](PriceWithStripeID.md)
-`ui` | [ProductUI](ProductUI.md)
 `stripeId` | string
+`type` | string
+`ui` | [ProductUI](ProductUI.md)
 
 ## Example
 
@@ -21,13 +21,13 @@ import type { ProductWithStripeIDs } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": basic_plan,
-  "name": Basic Plan,
-  "description": Our basic subscription tier,
-  "type": service,
+  "description": null,
+  "id": null,
+  "name": null,
   "prices": null,
+  "stripeId": null,
+  "type": null,
   "ui": null,
-  "stripeId": prod_1SRiyyCJIZaBlhY1,
 } satisfies ProductWithStripeIDs
 
 console.log(example)

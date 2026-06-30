@@ -1,14 +1,12 @@
 
 # CreateRelationshipResponse
 
-Relationship creation result
 
 ## Properties
 
 Name | Type
 ------------ | -------------
 `message` | string
-`relationship` | [Relationship](Relationship.md)
 
 ## Example
 
@@ -17,8 +15,7 @@ import type { CreateRelationshipResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Relationship created successfully,
-  "relationship": null,
+  "message": null,
 } satisfies CreateRelationshipResponse
 
 console.log(example)

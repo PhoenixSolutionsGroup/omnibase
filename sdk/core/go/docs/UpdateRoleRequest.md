@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Permissions** | **[]string** | Updated list of permissions | 
+**Permissions** | **[]string** |  | 
 
 ## Methods
 
@@ -45,6 +45,16 @@ and a boolean to check if the value has been set.
 SetPermissions sets Permissions field to given value.
 
 
+### SetPermissionsNil
+
+`func (o *UpdateRoleRequest) SetPermissionsNil(b bool)`
+
+ SetPermissionsNil sets the value for Permissions to be an explicit nil
+
+### UnsetPermissions
+`func (o *UpdateRoleRequest) UnsetPermissions()`
+
+UnsetPermissions ensures that no value is present for Permissions, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

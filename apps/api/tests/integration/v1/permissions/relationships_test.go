@@ -31,7 +31,7 @@ func TestPermissionsRelationships(t *testing.T) {
 	tenant := h.CreateTenant(t, client, userID, "Perms Rel "+id, email).Tenant
 
 	t.Run("check returns allowed for owner relation", func(t *testing.T) {
-		req := sdk.CheckPermissionRequest{
+		req := sdk.CheckRequest{
 			Namespace: "Tenant",
 			Object:    tenant.Id,
 			Relation:  "delete_tenant",
@@ -41,7 +41,7 @@ func TestPermissionsRelationships(t *testing.T) {
 			},
 		}
 		out, resp, err := client.V1PermissionsAPI.CheckPermission(helpers.Ctx()).
-			CheckPermissionRequest(req).Execute()
+			CheckRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "checkPermission")
 		require.NotNil(t, out)
 		assert.True(t, out.Allowed)
@@ -52,7 +52,7 @@ func TestPermissionsRelationships(t *testing.T) {
 		otherEmail := fmt.Sprintf("perms-other-%s@example.com", otherID)
 		otherUserID := h.CreateUser(t, client, otherEmail, pw)
 
-		req := sdk.CheckPermissionRequest{
+		req := sdk.CheckRequest{
 			Namespace: "Tenant",
 			Object:    tenant.Id,
 			Relation:  "delete_tenant",
@@ -62,7 +62,7 @@ func TestPermissionsRelationships(t *testing.T) {
 			},
 		}
 		out, resp, err := client.V1PermissionsAPI.CheckPermission(helpers.Ctx()).
-			CheckPermissionRequest(req).Execute()
+			CheckRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "checkPermission non-owner")
 		require.NotNil(t, out)
 		assert.False(t, out.Allowed)

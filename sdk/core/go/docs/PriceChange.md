@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PriceId** | **string** | Price config ID | 
-**ProductId** | **string** | Parent product config ID | 
-**Action** | **string** | Action performed on the price | 
-**StripeId** | Pointer to **string** | Stripe price ID (if applicable) | [optional] 
+**Action** | **string** |  | 
+**PriceId** | **string** |  | 
+**ProductId** | **string** |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewPriceChange
 
-`func NewPriceChange(priceId string, productId string, action string, ) *PriceChange`
+`func NewPriceChange(action string, priceId string, productId string, ) *PriceChange`
 
 NewPriceChange instantiates a new PriceChange object
 This constructor will assign default values to properties that have it defined,
@@ -27,6 +27,26 @@ will change when the set of required properties is changed
 NewPriceChangeWithDefaults instantiates a new PriceChange object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetAction
+
+`func (o *PriceChange) GetAction() string`
+
+GetAction returns the Action field if non-nil, zero value otherwise.
+
+### GetActionOk
+
+`func (o *PriceChange) GetActionOk() (*string, bool)`
+
+GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAction
+
+`func (o *PriceChange) SetAction(v string)`
+
+SetAction sets Action field to given value.
+
 
 ### GetPriceId
 
@@ -66,26 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *PriceChange) SetProductId(v string)`
 
 SetProductId sets ProductId field to given value.
-
-
-### GetAction
-
-`func (o *PriceChange) GetAction() string`
-
-GetAction returns the Action field if non-nil, zero value otherwise.
-
-### GetActionOk
-
-`func (o *PriceChange) GetActionOk() (*string, bool)`
-
-GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetAction
-
-`func (o *PriceChange) SetAction(v string)`
-
-SetAction sets Action field to given value.
 
 
 ### GetStripeId

@@ -16,7 +16,7 @@ import type { UpdateInvoiceRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "description": Monthly subscription - January 2025,
+  "description": null,
   "metadata": null,
 } satisfies UpdateInvoiceRequest
 
