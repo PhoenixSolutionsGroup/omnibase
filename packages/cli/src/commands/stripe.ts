@@ -225,7 +225,7 @@ async function logConfigChanges(
     try {
       const stripeApi = new V1StripeApi(sdkConfig);
       const secretResponse = await stripeApi.listWebhooks();
-      const webhooks = secretResponse.data?.webhooks || [];
+      const webhooks = secretResponse.webhooks || [];
       logger.succeed("Webhook secrets retrieved");
       logger.newline();
       logger.warn("IMPORTANT: Save these webhook secrets!");
@@ -362,7 +362,7 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
 
     logger.succeed("Stripe configuration uploaded successfully");
     logger.newline();
-    await logConfigChanges(response.data?.changes, sdkConfig);
+    await logConfigChanges(response.changes, sdkConfig);
   } catch (error) {
     throw new Error(
       `Stripe upload failed: ${await extractErrorMessage(error)}`
@@ -439,7 +439,7 @@ export function addStripeCommands(program: Command): void {
 
           logger.succeed("Configuration uploaded successfully!");
           logger.newline();
-          await logConfigChanges(response.data?.changes, sdkConfig);
+          await logConfigChanges(response.changes, sdkConfig);
         } catch (error) {
           const errorMsg = await extractErrorMessage(error);
           logger.fail(`Upload failed: ${errorMsg}`);
@@ -469,11 +469,11 @@ export function addStripeCommands(program: Command): void {
         logger.succeed("Configuration retrieved successfully!");
 
         const configData = {
-          id: response.data?.id,
-          version: response.data?.version,
-          created_at: response.data?.createdAt,
-          updated_at: response.data?.updatedAt,
-          config: response.data?.config,
+          id: response.id,
+          version: response.version,
+          created_at: response.createdAt,
+          updated_at: response.updatedAt,
+          config: response.config,
         };
 
         if (options.output) {
@@ -517,7 +517,7 @@ export function addStripeCommands(program: Command): void {
         });
 
         logger.succeed("Configuration history retrieved successfully!");
-        const historyData = response.data;
+        const historyData = response;
 
         if (options.output) {
           fs.writeFileSync(
@@ -588,7 +588,7 @@ export function addStripeCommands(program: Command): void {
           (fs.existsSync(path.join(projectRoot, "omnibase", "stripe"))
             ? path.join(projectRoot, "omnibase", "stripe", "pulled.config.json")
             : "stripe.config.json");
-        const configData = response.data;
+        const configData = response;
 
         fs.writeFileSync(outputPath, JSON.stringify(configData, null, 2));
         logger.log(`Configuration saved to: ${outputPath}`);
@@ -630,7 +630,7 @@ export function addStripeCommands(program: Command): void {
         const stripeApi = new V1StripeApi(sdkConfig);
 
         const response = await stripeApi.listWebhooks();
-        const webhooks = response.data?.webhooks || [];
+        const webhooks = response.webhooks || [];
 
         logger.succeed("Webhooks retrieved successfully!");
 
@@ -734,7 +734,7 @@ export function addStripeCommands(program: Command): void {
         const configApi = new V1ConfigurationApi(sdkConfig);
 
         const response = await configApi.archiveAllStripeConfig();
-        const data = response.data;
+        const data = response;
 
         logger.succeed("Successfully completed Stripe reset!");
         logger.newline();

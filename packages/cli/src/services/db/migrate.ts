@@ -103,10 +103,10 @@ export class DatabaseMigrationService {
 
     const client = new V1ConfigurationApi(config);
     try {
-      const response = await client.uploadDatabaseMigrations({
+      const response = (await client.uploadDatabaseMigrations({
         migrations: blob,
-      });
-      logger.succeed(response.message);
+      })) as { message?: string };
+      logger.succeed(response.message || "Migrations applied successfully");
     } catch (error) {
       logger.fail("Failed to apply migrations");
       if (error instanceof Error) {
@@ -190,8 +190,8 @@ export class DatabaseMigrationService {
     let currentVersion = -1;
     try {
       const res = await client.getDatabaseMigrationStatus()
-      if (!res.data || res.data.length < 1) throw new Error()
-      currentVersion = res.data[0].version
+      if (!res || res.length < 1) throw new Error()
+      currentVersion = res[0].version
     } catch {
       logger.warn("Could not fetch migration status from API");
     }
@@ -241,8 +241,8 @@ export class DatabaseMigrationService {
     try {
       logger.start(`Rolling back ${steps} migration(s)...`);
       const res = await client.rollbackDatabaseMigrations({ migrations: blob, steps: steps })
-      if (!res.data) throw new Error()
-      logger.succeed(res.data?.message || `Rolled back ${steps} migration(s)`);
+      if (!res) throw new Error()
+      logger.succeed(res.message || `Rolled back ${steps} migration(s)`);
     } catch (error) {
       logger.fail("Failed to rollback migrations");
     }
