@@ -36,7 +36,6 @@
   },
   "workspaces": [
     "sdk/*/*",
-    "tests/test-apps/*",
     "packages/*"
   ],
   "peerDependencies": {

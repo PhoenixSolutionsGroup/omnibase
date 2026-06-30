@@ -74,39 +74,37 @@ npm run openapi:bundle
 
 ### 3. Integration Tests
 
-When adding/modifying endpoints, update tests in `public/tests/api/k6/`:
+When adding/modifying endpoints, update integration tests in
+`apps/api/tests/integration/v1/<domain>/`. Each route gets a test file
+hitting the live API via the generated Go SDK against the testcontainers
+stack (`tests/testenv`).
 
 ```
-tests/api/k6/
-├── client.ts           # SDK client setup
-├── sdk.ts              # Auto-generated from OpenAPI
-├── tenants/            # Tenant lifecycle tests
-├── payments/           # Payment flow tests
-├── permissions/        # Permission tests
-├── security/           # Security tests
-└── storage/            # Storage tests
+tests/integration/v1/
+├── auth/
+├── db/
+├── email/
+├── permissions/
+├── storage/
+└── tenants/{invites,roles,subscriptions,users,...}
 ```
 
 Test pattern:
-```typescript
-import { check } from "k6";
-import { createClient, logError } from "../client";
+```go
+func TestYourEndpoint(t *testing.T) {
+    env := testenv.Start(t)
+    testenv.StartAPI(t, env)
+    client := testenv.NewSDKClient(t)
 
-export async function yourTest() {
-  const client = createClient();
-
-  const response = client.yourEndpoint({ data }, { "X-User-Id": userId });
-
-  check(response.response, {
-    "your check: status is 200": (r) => r.status === 200,
-  });
-
-  if (!response.data?.data) {
-    logError("yourEndpoint", response.response);
-    return;
-  }
+    out, resp, err := client.V1YourAPI.YourEndpoint(helpers.Ctx()).
+        XUserId(userID).Execute()
+    helpers.EnsureOK(t, resp, err, "yourEndpoint")
+    require.NotNil(t, out)
 }
 ```
+
+Legacy k6 perf scenarios live in `apps/api/tests/k6/` for reference; they
+will be ported to Go + vegeta (see `REFACTOR.md` Refactor 2).
 
 ## Architecture
 
