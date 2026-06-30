@@ -1,11 +1,12 @@
 package stripe
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/stripe_config"
@@ -14,36 +15,39 @@ import (
 var GetMeterError = errors.New("Failed to get meter by id")
 
 type GetMeterResponse struct {
-	Meter stripe_config.MeterWithStripeID `json:"meter" binding:"required"`
+	Meter stripe_config.MeterWithStripeID `json:"meter" required:"true"`
 }
 
-func (h *Handler) GetMeterByID(ctx *gin.Context) {
-	meterID := ctx.Param("meter_id")
-	if meterID == "" {
-		handlers.NewBadRequestResponse(ctx, "meter_id is required")
-		return
+type GetMeterInput struct {
+	handlers.AuthCtx
+	MeterID string `path:"meter_id"`
+}
+
+type GetMeterOutput struct {
+	Body GetMeterResponse
+}
+
+func (h *Handler) GetMeterByID(ctx context.Context, in *GetMeterInput) (*GetMeterOutput, error) {
+	if in.MeterID == "" {
+		return nil, huma.Error400BadRequest("meter_id is required")
 	}
-	row, err := h.repo.GetLatestStripeConfig(ctx.Request.Context())
+	row, err := h.repo.GetLatestStripeConfig(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetMeterError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetMeterError, err).Error())
 	}
 	var raw stripe_config.ConfigData
 	if err := json.Unmarshal(row.Config, &raw); err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetMeterError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetMeterError, err).Error())
 	}
 	parsed, err := h.stripeConfig.ParseAndValidate(raw)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetMeterError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetMeterError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx.Request.Context(), *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
 	for _, m := range configWithIDs.Meters {
-		if m.ID == meterID {
-			handlers.NewSuccessResponse(ctx, GetMeterResponse{Meter: m})
-			return
+		if m.ID == in.MeterID {
+			return &GetMeterOutput{Body: GetMeterResponse{Meter: m}}, nil
 		}
 	}
-	handlers.NewNotFoundResponse(ctx, fmt.Sprintf("Meter not found: %s", meterID))
+	return nil, huma.Error404NotFound(fmt.Sprintf("Meter not found: %s", in.MeterID))
 }

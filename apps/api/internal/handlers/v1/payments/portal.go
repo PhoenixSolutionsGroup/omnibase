@@ -1,43 +1,45 @@
 package payments
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
-	"api/internal/handlers"
 	"api/internal/services/billing"
 )
 
 var CreatePortalError = errors.New("Failed to create customer portal session")
 
 type CreatePortalRequest struct {
-	ReturnURL string `json:"return_url" binding:"required,min=1"`
+	ReturnURL string `json:"return_url" required:"true" minLength:"1"`
 }
 
 type CreatePortalResponse struct {
-	URL string `json:"url" binding:"required"`
+	URL string `json:"url" required:"true"`
 }
 
-func (h *Handler) CreateCustomerPortal(ctx *gin.Context) {
-	var req CreatePortalRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
+type CreatePortalInput struct {
+	PaymentsCtx
+	Body CreatePortalRequest
+}
+
+type CreatePortalOutput struct {
+	Body CreatePortalResponse
+}
+
+func (h *Handler) CreateCustomerPortal(ctx context.Context, in *CreatePortalInput) (*CreatePortalOutput, error) {
+	if in.StripeCustomerID == "" {
+		return nil, huma.Error400BadRequest("stripe_customer_id not found in context")
 	}
-	customerID, exists := ctx.Get("stripe_customer_id")
-	if !exists || customerID == nil {
-		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
-		return
-	}
-	session, err := h.billing.CreatePortalSession(ctx.Request.Context(), billing.CreatePortalSessionArgs{
-		StripeCustomerID: customerID.(string),
-		ReturnURL:        req.ReturnURL,
+
+	session, err := h.billing.CreatePortalSession(ctx, billing.CreatePortalSessionArgs{
+		StripeCustomerID: in.StripeCustomerID,
+		ReturnURL:        in.Body.ReturnURL,
 	})
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreatePortalError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreatePortalError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &CreatePortalResponse{URL: session.URL})
+	return &CreatePortalOutput{Body: CreatePortalResponse{URL: session.URL}}, nil
 }

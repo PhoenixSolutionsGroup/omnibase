@@ -12,7 +12,7 @@ func NewDiffer() *Differ {
 	return &Differ{}
 }
 
-func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *Configuration) *ConfigDiff {
+func (d *Differ) CalculateConfigDiff(oldConfig, newConfig *StripeConfiguration) *ConfigDiff {
 	logger.Logger.Info("Calculating configuration diff",
 		"oldProductCount", len(oldConfig.Products),
 		"newProductCount", len(newConfig.Products),

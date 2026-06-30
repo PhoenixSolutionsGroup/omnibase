@@ -4,19 +4,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Stripe Invoice ID | 
-**Status** | **string** | Invoice status | 
-**AmountDue** | Pointer to **int64** | Total amount in cents | [optional] 
-**Currency** | Pointer to **string** | Currency | [optional] 
-**CustomerId** | Pointer to **string** | Customer ID | [optional] 
-**InvoicePdf** | Pointer to **string** | Invoice PDF URL (if available) | [optional] 
-**HostedInvoiceUrl** | Pointer to **string** | Hosted invoice URL | [optional] 
+**AmountDue** | **int64** |  | 
+**Currency** | **string** |  | 
+**CustomerId** | **string** |  | 
+**HostedInvoiceUrl** | Pointer to **string** |  | [optional] 
+**Id** | **string** |  | 
+**InvoicePdf** | Pointer to **string** |  | [optional] 
+**Status** | **string** |  | 
 
 ## Methods
 
 ### NewInvoiceResponse
 
-`func NewInvoiceResponse(id string, status string, ) *InvoiceResponse`
+`func NewInvoiceResponse(amountDue int64, currency string, customerId string, id string, status string, ) *InvoiceResponse`
 
 NewInvoiceResponse instantiates a new InvoiceResponse object
 This constructor will assign default values to properties that have it defined,
@@ -30,46 +30,6 @@ will change when the set of required properties is changed
 NewInvoiceResponseWithDefaults instantiates a new InvoiceResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetId
-
-`func (o *InvoiceResponse) GetId() string`
-
-GetId returns the Id field if non-nil, zero value otherwise.
-
-### GetIdOk
-
-`func (o *InvoiceResponse) GetIdOk() (*string, bool)`
-
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetId
-
-`func (o *InvoiceResponse) SetId(v string)`
-
-SetId sets Id field to given value.
-
-
-### GetStatus
-
-`func (o *InvoiceResponse) GetStatus() string`
-
-GetStatus returns the Status field if non-nil, zero value otherwise.
-
-### GetStatusOk
-
-`func (o *InvoiceResponse) GetStatusOk() (*string, bool)`
-
-GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetStatus
-
-`func (o *InvoiceResponse) SetStatus(v string)`
-
-SetStatus sets Status field to given value.
-
 
 ### GetAmountDue
 
@@ -90,11 +50,6 @@ and a boolean to check if the value has been set.
 
 SetAmountDue sets AmountDue field to given value.
 
-### HasAmountDue
-
-`func (o *InvoiceResponse) HasAmountDue() bool`
-
-HasAmountDue returns a boolean if a field has been set.
 
 ### GetCurrency
 
@@ -115,11 +70,6 @@ and a boolean to check if the value has been set.
 
 SetCurrency sets Currency field to given value.
 
-### HasCurrency
-
-`func (o *InvoiceResponse) HasCurrency() bool`
-
-HasCurrency returns a boolean if a field has been set.
 
 ### GetCustomerId
 
@@ -140,11 +90,51 @@ and a boolean to check if the value has been set.
 
 SetCustomerId sets CustomerId field to given value.
 
-### HasCustomerId
 
-`func (o *InvoiceResponse) HasCustomerId() bool`
+### GetHostedInvoiceUrl
 
-HasCustomerId returns a boolean if a field has been set.
+`func (o *InvoiceResponse) GetHostedInvoiceUrl() string`
+
+GetHostedInvoiceUrl returns the HostedInvoiceUrl field if non-nil, zero value otherwise.
+
+### GetHostedInvoiceUrlOk
+
+`func (o *InvoiceResponse) GetHostedInvoiceUrlOk() (*string, bool)`
+
+GetHostedInvoiceUrlOk returns a tuple with the HostedInvoiceUrl field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetHostedInvoiceUrl
+
+`func (o *InvoiceResponse) SetHostedInvoiceUrl(v string)`
+
+SetHostedInvoiceUrl sets HostedInvoiceUrl field to given value.
+
+### HasHostedInvoiceUrl
+
+`func (o *InvoiceResponse) HasHostedInvoiceUrl() bool`
+
+HasHostedInvoiceUrl returns a boolean if a field has been set.
+
+### GetId
+
+`func (o *InvoiceResponse) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *InvoiceResponse) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *InvoiceResponse) SetId(v string)`
+
+SetId sets Id field to given value.
+
 
 ### GetInvoicePdf
 
@@ -171,30 +161,25 @@ SetInvoicePdf sets InvoicePdf field to given value.
 
 HasInvoicePdf returns a boolean if a field has been set.
 
-### GetHostedInvoiceUrl
+### GetStatus
 
-`func (o *InvoiceResponse) GetHostedInvoiceUrl() string`
+`func (o *InvoiceResponse) GetStatus() string`
 
-GetHostedInvoiceUrl returns the HostedInvoiceUrl field if non-nil, zero value otherwise.
+GetStatus returns the Status field if non-nil, zero value otherwise.
 
-### GetHostedInvoiceUrlOk
+### GetStatusOk
 
-`func (o *InvoiceResponse) GetHostedInvoiceUrlOk() (*string, bool)`
+`func (o *InvoiceResponse) GetStatusOk() (*string, bool)`
 
-GetHostedInvoiceUrlOk returns a tuple with the HostedInvoiceUrl field if it's non-nil, zero value otherwise
+GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetHostedInvoiceUrl
+### SetStatus
 
-`func (o *InvoiceResponse) SetHostedInvoiceUrl(v string)`
+`func (o *InvoiceResponse) SetStatus(v string)`
 
-SetHostedInvoiceUrl sets HostedInvoiceUrl field to given value.
+SetStatus sets Status field to given value.
 
-### HasHostedInvoiceUrl
-
-`func (o *InvoiceResponse) HasHostedInvoiceUrl() bool`
-
-HasHostedInvoiceUrl returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

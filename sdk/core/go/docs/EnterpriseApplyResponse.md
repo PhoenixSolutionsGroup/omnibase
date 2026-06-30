@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | **string** | Success message | 
-**TenantId** | **string** | Tenant ID that pricing was applied to | 
-**PricesSwapped** | **int32** | Number of subscription prices that were swapped | 
-**SwappedDetails** | Pointer to **[]string** | Details of each price swap performed | [optional] 
+**Message** | **string** |  | 
+**PricesSwapped** | **int64** |  | 
+**SwappedDetails** | Pointer to **[]string** |  | [optional] 
+**TenantId** | **string** |  | 
 
 ## Methods
 
 ### NewEnterpriseApplyResponse
 
-`func NewEnterpriseApplyResponse(message string, tenantId string, pricesSwapped int32, ) *EnterpriseApplyResponse`
+`func NewEnterpriseApplyResponse(message string, pricesSwapped int64, tenantId string, ) *EnterpriseApplyResponse`
 
 NewEnterpriseApplyResponse instantiates a new EnterpriseApplyResponse object
 This constructor will assign default values to properties that have it defined,
@@ -48,42 +48,22 @@ and a boolean to check if the value has been set.
 SetMessage sets Message field to given value.
 
 
-### GetTenantId
-
-`func (o *EnterpriseApplyResponse) GetTenantId() string`
-
-GetTenantId returns the TenantId field if non-nil, zero value otherwise.
-
-### GetTenantIdOk
-
-`func (o *EnterpriseApplyResponse) GetTenantIdOk() (*string, bool)`
-
-GetTenantIdOk returns a tuple with the TenantId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetTenantId
-
-`func (o *EnterpriseApplyResponse) SetTenantId(v string)`
-
-SetTenantId sets TenantId field to given value.
-
-
 ### GetPricesSwapped
 
-`func (o *EnterpriseApplyResponse) GetPricesSwapped() int32`
+`func (o *EnterpriseApplyResponse) GetPricesSwapped() int64`
 
 GetPricesSwapped returns the PricesSwapped field if non-nil, zero value otherwise.
 
 ### GetPricesSwappedOk
 
-`func (o *EnterpriseApplyResponse) GetPricesSwappedOk() (*int32, bool)`
+`func (o *EnterpriseApplyResponse) GetPricesSwappedOk() (*int64, bool)`
 
 GetPricesSwappedOk returns a tuple with the PricesSwapped field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPricesSwapped
 
-`func (o *EnterpriseApplyResponse) SetPricesSwapped(v int32)`
+`func (o *EnterpriseApplyResponse) SetPricesSwapped(v int64)`
 
 SetPricesSwapped sets PricesSwapped field to given value.
 
@@ -112,6 +92,36 @@ SetSwappedDetails sets SwappedDetails field to given value.
 `func (o *EnterpriseApplyResponse) HasSwappedDetails() bool`
 
 HasSwappedDetails returns a boolean if a field has been set.
+
+### SetSwappedDetailsNil
+
+`func (o *EnterpriseApplyResponse) SetSwappedDetailsNil(b bool)`
+
+ SetSwappedDetailsNil sets the value for SwappedDetails to be an explicit nil
+
+### UnsetSwappedDetails
+`func (o *EnterpriseApplyResponse) UnsetSwappedDetails()`
+
+UnsetSwappedDetails ensures that no value is present for SwappedDetails, not even an explicit nil
+### GetTenantId
+
+`func (o *EnterpriseApplyResponse) GetTenantId() string`
+
+GetTenantId returns the TenantId field if non-nil, zero value otherwise.
+
+### GetTenantIdOk
+
+`func (o *EnterpriseApplyResponse) GetTenantIdOk() (*string, bool)`
+
+GetTenantIdOk returns a tuple with the TenantId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTenantId
+
+`func (o *EnterpriseApplyResponse) SetTenantId(v string)`
+
+SetTenantId sets TenantId field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

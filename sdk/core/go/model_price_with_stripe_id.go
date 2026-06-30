@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,36 +22,23 @@ var _ MappedNullable = &PriceWithStripeID{}
 
 // PriceWithStripeID struct for PriceWithStripeID
 type PriceWithStripeID struct {
-	// Price identifier (config ID)
-	Id string `json:"id"`
-	// Whether price is visible in public API
-	Public *bool `json:"public,omitempty"`
-	// Whether tax is included in the price
-	TaxIncludedInPrice *bool `json:"tax_included_in_price,omitempty"`
-	// Price amount (supports decimals for sub-cent hourly pricing)
 	Amount *float64 `json:"amount,omitempty"`
-	Currency CurrencyCode `json:"currency"`
-	Interval *BillingInterval `json:"interval,omitempty"`
-	// Number of intervals between billings
-	IntervalCount *int32 `json:"interval_count,omitempty"`
-	UsageType *UsageType `json:"usage_type,omitempty"`
-	// Meter ID for metered pricing
-	Meter *string `json:"meter,omitempty"`
-	// Billing scheme type
 	BillingScheme *string `json:"billing_scheme,omitempty"`
-	// Tiers mode
-	TiersMode *string `json:"tiers_mode,omitempty"`
-	// Pricing tiers
-	Tiers []Tier `json:"tiers,omitempty"`
-	// Mark as default price
+	Currency string `json:"currency"`
 	Default *bool `json:"default,omitempty"`
-	// Enterprise template group for shared pricing tiers
-	EnterpriseTemplate *string `json:"enterprise_template,omitempty"`
-	// Enterprise pricing group ID for tenant-specific pricing
 	EnterpriseId *string `json:"enterprise_id,omitempty"`
-	Ui *PriceUI `json:"ui,omitempty"`
-	// Actual Stripe price ID (null for free prices)
+	EnterpriseTemplate *string `json:"enterprise_template,omitempty"`
+	Id string `json:"id"`
+	Interval *string `json:"interval,omitempty"`
+	IntervalCount *int64 `json:"interval_count,omitempty"`
+	Meter *string `json:"meter,omitempty"`
+	Public *bool `json:"public,omitempty"`
 	StripeId *string `json:"stripe_id,omitempty"`
+	TaxIncludedInPrice *bool `json:"tax_included_in_price,omitempty"`
+	Tiers []Tier `json:"tiers,omitempty"`
+	TiersMode *string `json:"tiers_mode,omitempty"`
+	Ui *PriceUI `json:"ui,omitempty"`
+	UsageType *string `json:"usage_type,omitempty"`
 }
 
 type _PriceWithStripeID PriceWithStripeID
@@ -60,10 +47,10 @@ type _PriceWithStripeID PriceWithStripeID
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPriceWithStripeID(id string, currency CurrencyCode) *PriceWithStripeID {
+func NewPriceWithStripeID(currency string, id string) *PriceWithStripeID {
 	this := PriceWithStripeID{}
-	this.Id = id
 	this.Currency = currency
+	this.Id = id
 	return &this
 }
 
@@ -73,94 +60,6 @@ func NewPriceWithStripeID(id string, currency CurrencyCode) *PriceWithStripeID {
 func NewPriceWithStripeIDWithDefaults() *PriceWithStripeID {
 	this := PriceWithStripeID{}
 	return &this
-}
-
-// GetId returns the Id field value
-func (o *PriceWithStripeID) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *PriceWithStripeID) SetId(v string) {
-	o.Id = v
-}
-
-// GetPublic returns the Public field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetPublic() bool {
-	if o == nil || IsNil(o.Public) {
-		var ret bool
-		return ret
-	}
-	return *o.Public
-}
-
-// GetPublicOk returns a tuple with the Public field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetPublicOk() (*bool, bool) {
-	if o == nil || IsNil(o.Public) {
-		return nil, false
-	}
-	return o.Public, true
-}
-
-// HasPublic returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasPublic() bool {
-	if o != nil && !IsNil(o.Public) {
-		return true
-	}
-
-	return false
-}
-
-// SetPublic gets a reference to the given bool and assigns it to the Public field.
-func (o *PriceWithStripeID) SetPublic(v bool) {
-	o.Public = &v
-}
-
-// GetTaxIncludedInPrice returns the TaxIncludedInPrice field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetTaxIncludedInPrice() bool {
-	if o == nil || IsNil(o.TaxIncludedInPrice) {
-		var ret bool
-		return ret
-	}
-	return *o.TaxIncludedInPrice
-}
-
-// GetTaxIncludedInPriceOk returns a tuple with the TaxIncludedInPrice field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetTaxIncludedInPriceOk() (*bool, bool) {
-	if o == nil || IsNil(o.TaxIncludedInPrice) {
-		return nil, false
-	}
-	return o.TaxIncludedInPrice, true
-}
-
-// HasTaxIncludedInPrice returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasTaxIncludedInPrice() bool {
-	if o != nil && !IsNil(o.TaxIncludedInPrice) {
-		return true
-	}
-
-	return false
-}
-
-// SetTaxIncludedInPrice gets a reference to the given bool and assigns it to the TaxIncludedInPrice field.
-func (o *PriceWithStripeID) SetTaxIncludedInPrice(v bool) {
-	o.TaxIncludedInPrice = &v
 }
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
@@ -195,158 +94,6 @@ func (o *PriceWithStripeID) SetAmount(v float64) {
 	o.Amount = &v
 }
 
-// GetCurrency returns the Currency field value
-func (o *PriceWithStripeID) GetCurrency() CurrencyCode {
-	if o == nil {
-		var ret CurrencyCode
-		return ret
-	}
-
-	return o.Currency
-}
-
-// GetCurrencyOk returns a tuple with the Currency field value
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetCurrencyOk() (*CurrencyCode, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Currency, true
-}
-
-// SetCurrency sets field value
-func (o *PriceWithStripeID) SetCurrency(v CurrencyCode) {
-	o.Currency = v
-}
-
-// GetInterval returns the Interval field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetInterval() BillingInterval {
-	if o == nil || IsNil(o.Interval) {
-		var ret BillingInterval
-		return ret
-	}
-	return *o.Interval
-}
-
-// GetIntervalOk returns a tuple with the Interval field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetIntervalOk() (*BillingInterval, bool) {
-	if o == nil || IsNil(o.Interval) {
-		return nil, false
-	}
-	return o.Interval, true
-}
-
-// HasInterval returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasInterval() bool {
-	if o != nil && !IsNil(o.Interval) {
-		return true
-	}
-
-	return false
-}
-
-// SetInterval gets a reference to the given BillingInterval and assigns it to the Interval field.
-func (o *PriceWithStripeID) SetInterval(v BillingInterval) {
-	o.Interval = &v
-}
-
-// GetIntervalCount returns the IntervalCount field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetIntervalCount() int32 {
-	if o == nil || IsNil(o.IntervalCount) {
-		var ret int32
-		return ret
-	}
-	return *o.IntervalCount
-}
-
-// GetIntervalCountOk returns a tuple with the IntervalCount field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetIntervalCountOk() (*int32, bool) {
-	if o == nil || IsNil(o.IntervalCount) {
-		return nil, false
-	}
-	return o.IntervalCount, true
-}
-
-// HasIntervalCount returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasIntervalCount() bool {
-	if o != nil && !IsNil(o.IntervalCount) {
-		return true
-	}
-
-	return false
-}
-
-// SetIntervalCount gets a reference to the given int32 and assigns it to the IntervalCount field.
-func (o *PriceWithStripeID) SetIntervalCount(v int32) {
-	o.IntervalCount = &v
-}
-
-// GetUsageType returns the UsageType field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetUsageType() UsageType {
-	if o == nil || IsNil(o.UsageType) {
-		var ret UsageType
-		return ret
-	}
-	return *o.UsageType
-}
-
-// GetUsageTypeOk returns a tuple with the UsageType field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetUsageTypeOk() (*UsageType, bool) {
-	if o == nil || IsNil(o.UsageType) {
-		return nil, false
-	}
-	return o.UsageType, true
-}
-
-// HasUsageType returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasUsageType() bool {
-	if o != nil && !IsNil(o.UsageType) {
-		return true
-	}
-
-	return false
-}
-
-// SetUsageType gets a reference to the given UsageType and assigns it to the UsageType field.
-func (o *PriceWithStripeID) SetUsageType(v UsageType) {
-	o.UsageType = &v
-}
-
-// GetMeter returns the Meter field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetMeter() string {
-	if o == nil || IsNil(o.Meter) {
-		var ret string
-		return ret
-	}
-	return *o.Meter
-}
-
-// GetMeterOk returns a tuple with the Meter field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetMeterOk() (*string, bool) {
-	if o == nil || IsNil(o.Meter) {
-		return nil, false
-	}
-	return o.Meter, true
-}
-
-// HasMeter returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasMeter() bool {
-	if o != nil && !IsNil(o.Meter) {
-		return true
-	}
-
-	return false
-}
-
-// SetMeter gets a reference to the given string and assigns it to the Meter field.
-func (o *PriceWithStripeID) SetMeter(v string) {
-	o.Meter = &v
-}
-
 // GetBillingScheme returns the BillingScheme field value if set, zero value otherwise.
 func (o *PriceWithStripeID) GetBillingScheme() string {
 	if o == nil || IsNil(o.BillingScheme) {
@@ -379,68 +126,28 @@ func (o *PriceWithStripeID) SetBillingScheme(v string) {
 	o.BillingScheme = &v
 }
 
-// GetTiersMode returns the TiersMode field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetTiersMode() string {
-	if o == nil || IsNil(o.TiersMode) {
+// GetCurrency returns the Currency field value
+func (o *PriceWithStripeID) GetCurrency() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.TiersMode
+
+	return o.Currency
 }
 
-// GetTiersModeOk returns a tuple with the TiersMode field value if set, nil otherwise
+// GetCurrencyOk returns a tuple with the Currency field value
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetTiersModeOk() (*string, bool) {
-	if o == nil || IsNil(o.TiersMode) {
+func (o *PriceWithStripeID) GetCurrencyOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TiersMode, true
+	return &o.Currency, true
 }
 
-// HasTiersMode returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasTiersMode() bool {
-	if o != nil && !IsNil(o.TiersMode) {
-		return true
-	}
-
-	return false
-}
-
-// SetTiersMode gets a reference to the given string and assigns it to the TiersMode field.
-func (o *PriceWithStripeID) SetTiersMode(v string) {
-	o.TiersMode = &v
-}
-
-// GetTiers returns the Tiers field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetTiers() []Tier {
-	if o == nil || IsNil(o.Tiers) {
-		var ret []Tier
-		return ret
-	}
-	return o.Tiers
-}
-
-// GetTiersOk returns a tuple with the Tiers field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetTiersOk() ([]Tier, bool) {
-	if o == nil || IsNil(o.Tiers) {
-		return nil, false
-	}
-	return o.Tiers, true
-}
-
-// HasTiers returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasTiers() bool {
-	if o != nil && !IsNil(o.Tiers) {
-		return true
-	}
-
-	return false
-}
-
-// SetTiers gets a reference to the given []Tier and assigns it to the Tiers field.
-func (o *PriceWithStripeID) SetTiers(v []Tier) {
-	o.Tiers = v
+// SetCurrency sets field value
+func (o *PriceWithStripeID) SetCurrency(v string) {
+	o.Currency = v
 }
 
 // GetDefault returns the Default field value if set, zero value otherwise.
@@ -475,38 +182,6 @@ func (o *PriceWithStripeID) SetDefault(v bool) {
 	o.Default = &v
 }
 
-// GetEnterpriseTemplate returns the EnterpriseTemplate field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetEnterpriseTemplate() string {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		var ret string
-		return ret
-	}
-	return *o.EnterpriseTemplate
-}
-
-// GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetEnterpriseTemplateOk() (*string, bool) {
-	if o == nil || IsNil(o.EnterpriseTemplate) {
-		return nil, false
-	}
-	return o.EnterpriseTemplate, true
-}
-
-// HasEnterpriseTemplate returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasEnterpriseTemplate() bool {
-	if o != nil && !IsNil(o.EnterpriseTemplate) {
-		return true
-	}
-
-	return false
-}
-
-// SetEnterpriseTemplate gets a reference to the given string and assigns it to the EnterpriseTemplate field.
-func (o *PriceWithStripeID) SetEnterpriseTemplate(v string) {
-	o.EnterpriseTemplate = &v
-}
-
 // GetEnterpriseId returns the EnterpriseId field value if set, zero value otherwise.
 func (o *PriceWithStripeID) GetEnterpriseId() string {
 	if o == nil || IsNil(o.EnterpriseId) {
@@ -539,36 +214,188 @@ func (o *PriceWithStripeID) SetEnterpriseId(v string) {
 	o.EnterpriseId = &v
 }
 
-// GetUi returns the Ui field value if set, zero value otherwise.
-func (o *PriceWithStripeID) GetUi() PriceUI {
-	if o == nil || IsNil(o.Ui) {
-		var ret PriceUI
+// GetEnterpriseTemplate returns the EnterpriseTemplate field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetEnterpriseTemplate() string {
+	if o == nil || IsNil(o.EnterpriseTemplate) {
+		var ret string
 		return ret
 	}
-	return *o.Ui
+	return *o.EnterpriseTemplate
 }
 
-// GetUiOk returns a tuple with the Ui field value if set, nil otherwise
+// GetEnterpriseTemplateOk returns a tuple with the EnterpriseTemplate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PriceWithStripeID) GetUiOk() (*PriceUI, bool) {
-	if o == nil || IsNil(o.Ui) {
+func (o *PriceWithStripeID) GetEnterpriseTemplateOk() (*string, bool) {
+	if o == nil || IsNil(o.EnterpriseTemplate) {
 		return nil, false
 	}
-	return o.Ui, true
+	return o.EnterpriseTemplate, true
 }
 
-// HasUi returns a boolean if a field has been set.
-func (o *PriceWithStripeID) HasUi() bool {
-	if o != nil && !IsNil(o.Ui) {
+// HasEnterpriseTemplate returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasEnterpriseTemplate() bool {
+	if o != nil && !IsNil(o.EnterpriseTemplate) {
 		return true
 	}
 
 	return false
 }
 
-// SetUi gets a reference to the given PriceUI and assigns it to the Ui field.
-func (o *PriceWithStripeID) SetUi(v PriceUI) {
-	o.Ui = &v
+// SetEnterpriseTemplate gets a reference to the given string and assigns it to the EnterpriseTemplate field.
+func (o *PriceWithStripeID) SetEnterpriseTemplate(v string) {
+	o.EnterpriseTemplate = &v
+}
+
+// GetId returns the Id field value
+func (o *PriceWithStripeID) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *PriceWithStripeID) SetId(v string) {
+	o.Id = v
+}
+
+// GetInterval returns the Interval field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetInterval() string {
+	if o == nil || IsNil(o.Interval) {
+		var ret string
+		return ret
+	}
+	return *o.Interval
+}
+
+// GetIntervalOk returns a tuple with the Interval field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetIntervalOk() (*string, bool) {
+	if o == nil || IsNil(o.Interval) {
+		return nil, false
+	}
+	return o.Interval, true
+}
+
+// HasInterval returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasInterval() bool {
+	if o != nil && !IsNil(o.Interval) {
+		return true
+	}
+
+	return false
+}
+
+// SetInterval gets a reference to the given string and assigns it to the Interval field.
+func (o *PriceWithStripeID) SetInterval(v string) {
+	o.Interval = &v
+}
+
+// GetIntervalCount returns the IntervalCount field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetIntervalCount() int64 {
+	if o == nil || IsNil(o.IntervalCount) {
+		var ret int64
+		return ret
+	}
+	return *o.IntervalCount
+}
+
+// GetIntervalCountOk returns a tuple with the IntervalCount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetIntervalCountOk() (*int64, bool) {
+	if o == nil || IsNil(o.IntervalCount) {
+		return nil, false
+	}
+	return o.IntervalCount, true
+}
+
+// HasIntervalCount returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasIntervalCount() bool {
+	if o != nil && !IsNil(o.IntervalCount) {
+		return true
+	}
+
+	return false
+}
+
+// SetIntervalCount gets a reference to the given int64 and assigns it to the IntervalCount field.
+func (o *PriceWithStripeID) SetIntervalCount(v int64) {
+	o.IntervalCount = &v
+}
+
+// GetMeter returns the Meter field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetMeter() string {
+	if o == nil || IsNil(o.Meter) {
+		var ret string
+		return ret
+	}
+	return *o.Meter
+}
+
+// GetMeterOk returns a tuple with the Meter field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetMeterOk() (*string, bool) {
+	if o == nil || IsNil(o.Meter) {
+		return nil, false
+	}
+	return o.Meter, true
+}
+
+// HasMeter returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasMeter() bool {
+	if o != nil && !IsNil(o.Meter) {
+		return true
+	}
+
+	return false
+}
+
+// SetMeter gets a reference to the given string and assigns it to the Meter field.
+func (o *PriceWithStripeID) SetMeter(v string) {
+	o.Meter = &v
+}
+
+// GetPublic returns the Public field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetPublic() bool {
+	if o == nil || IsNil(o.Public) {
+		var ret bool
+		return ret
+	}
+	return *o.Public
+}
+
+// GetPublicOk returns a tuple with the Public field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetPublicOk() (*bool, bool) {
+	if o == nil || IsNil(o.Public) {
+		return nil, false
+	}
+	return o.Public, true
+}
+
+// HasPublic returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasPublic() bool {
+	if o != nil && !IsNil(o.Public) {
+		return true
+	}
+
+	return false
+}
+
+// SetPublic gets a reference to the given bool and assigns it to the Public field.
+func (o *PriceWithStripeID) SetPublic(v bool) {
+	o.Public = &v
 }
 
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
@@ -603,6 +430,167 @@ func (o *PriceWithStripeID) SetStripeId(v string) {
 	o.StripeId = &v
 }
 
+// GetTaxIncludedInPrice returns the TaxIncludedInPrice field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetTaxIncludedInPrice() bool {
+	if o == nil || IsNil(o.TaxIncludedInPrice) {
+		var ret bool
+		return ret
+	}
+	return *o.TaxIncludedInPrice
+}
+
+// GetTaxIncludedInPriceOk returns a tuple with the TaxIncludedInPrice field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetTaxIncludedInPriceOk() (*bool, bool) {
+	if o == nil || IsNil(o.TaxIncludedInPrice) {
+		return nil, false
+	}
+	return o.TaxIncludedInPrice, true
+}
+
+// HasTaxIncludedInPrice returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasTaxIncludedInPrice() bool {
+	if o != nil && !IsNil(o.TaxIncludedInPrice) {
+		return true
+	}
+
+	return false
+}
+
+// SetTaxIncludedInPrice gets a reference to the given bool and assigns it to the TaxIncludedInPrice field.
+func (o *PriceWithStripeID) SetTaxIncludedInPrice(v bool) {
+	o.TaxIncludedInPrice = &v
+}
+
+// GetTiers returns the Tiers field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *PriceWithStripeID) GetTiers() []Tier {
+	if o == nil {
+		var ret []Tier
+		return ret
+	}
+	return o.Tiers
+}
+
+// GetTiersOk returns a tuple with the Tiers field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *PriceWithStripeID) GetTiersOk() ([]Tier, bool) {
+	if o == nil || IsNil(o.Tiers) {
+		return nil, false
+	}
+	return o.Tiers, true
+}
+
+// HasTiers returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasTiers() bool {
+	if o != nil && !IsNil(o.Tiers) {
+		return true
+	}
+
+	return false
+}
+
+// SetTiers gets a reference to the given []Tier and assigns it to the Tiers field.
+func (o *PriceWithStripeID) SetTiers(v []Tier) {
+	o.Tiers = v
+}
+
+// GetTiersMode returns the TiersMode field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetTiersMode() string {
+	if o == nil || IsNil(o.TiersMode) {
+		var ret string
+		return ret
+	}
+	return *o.TiersMode
+}
+
+// GetTiersModeOk returns a tuple with the TiersMode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetTiersModeOk() (*string, bool) {
+	if o == nil || IsNil(o.TiersMode) {
+		return nil, false
+	}
+	return o.TiersMode, true
+}
+
+// HasTiersMode returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasTiersMode() bool {
+	if o != nil && !IsNil(o.TiersMode) {
+		return true
+	}
+
+	return false
+}
+
+// SetTiersMode gets a reference to the given string and assigns it to the TiersMode field.
+func (o *PriceWithStripeID) SetTiersMode(v string) {
+	o.TiersMode = &v
+}
+
+// GetUi returns the Ui field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetUi() PriceUI {
+	if o == nil || IsNil(o.Ui) {
+		var ret PriceUI
+		return ret
+	}
+	return *o.Ui
+}
+
+// GetUiOk returns a tuple with the Ui field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetUiOk() (*PriceUI, bool) {
+	if o == nil || IsNil(o.Ui) {
+		return nil, false
+	}
+	return o.Ui, true
+}
+
+// HasUi returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasUi() bool {
+	if o != nil && !IsNil(o.Ui) {
+		return true
+	}
+
+	return false
+}
+
+// SetUi gets a reference to the given PriceUI and assigns it to the Ui field.
+func (o *PriceWithStripeID) SetUi(v PriceUI) {
+	o.Ui = &v
+}
+
+// GetUsageType returns the UsageType field value if set, zero value otherwise.
+func (o *PriceWithStripeID) GetUsageType() string {
+	if o == nil || IsNil(o.UsageType) {
+		var ret string
+		return ret
+	}
+	return *o.UsageType
+}
+
+// GetUsageTypeOk returns a tuple with the UsageType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceWithStripeID) GetUsageTypeOk() (*string, bool) {
+	if o == nil || IsNil(o.UsageType) {
+		return nil, false
+	}
+	return o.UsageType, true
+}
+
+// HasUsageType returns a boolean if a field has been set.
+func (o *PriceWithStripeID) HasUsageType() bool {
+	if o != nil && !IsNil(o.UsageType) {
+		return true
+	}
+
+	return false
+}
+
+// SetUsageType gets a reference to the given string and assigns it to the UsageType field.
+func (o *PriceWithStripeID) SetUsageType(v string) {
+	o.UsageType = &v
+}
+
 func (o PriceWithStripeID) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -613,52 +601,52 @@ func (o PriceWithStripeID) MarshalJSON() ([]byte, error) {
 
 func (o PriceWithStripeID) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	if !IsNil(o.Public) {
-		toSerialize["public"] = o.Public
-	}
-	if !IsNil(o.TaxIncludedInPrice) {
-		toSerialize["tax_included_in_price"] = o.TaxIncludedInPrice
-	}
 	if !IsNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
 	}
+	if !IsNil(o.BillingScheme) {
+		toSerialize["billing_scheme"] = o.BillingScheme
+	}
 	toSerialize["currency"] = o.Currency
+	if !IsNil(o.Default) {
+		toSerialize["default"] = o.Default
+	}
+	if !IsNil(o.EnterpriseId) {
+		toSerialize["enterprise_id"] = o.EnterpriseId
+	}
+	if !IsNil(o.EnterpriseTemplate) {
+		toSerialize["enterprise_template"] = o.EnterpriseTemplate
+	}
+	toSerialize["id"] = o.Id
 	if !IsNil(o.Interval) {
 		toSerialize["interval"] = o.Interval
 	}
 	if !IsNil(o.IntervalCount) {
 		toSerialize["interval_count"] = o.IntervalCount
 	}
-	if !IsNil(o.UsageType) {
-		toSerialize["usage_type"] = o.UsageType
-	}
 	if !IsNil(o.Meter) {
 		toSerialize["meter"] = o.Meter
 	}
-	if !IsNil(o.BillingScheme) {
-		toSerialize["billing_scheme"] = o.BillingScheme
+	if !IsNil(o.Public) {
+		toSerialize["public"] = o.Public
+	}
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
+	}
+	if !IsNil(o.TaxIncludedInPrice) {
+		toSerialize["tax_included_in_price"] = o.TaxIncludedInPrice
+	}
+	if o.Tiers != nil {
+		toSerialize["tiers"] = o.Tiers
 	}
 	if !IsNil(o.TiersMode) {
 		toSerialize["tiers_mode"] = o.TiersMode
 	}
-	if !IsNil(o.Tiers) {
-		toSerialize["tiers"] = o.Tiers
-	}
-	if !IsNil(o.Default) {
-		toSerialize["default"] = o.Default
-	}
-	if !IsNil(o.EnterpriseTemplate) {
-		toSerialize["enterprise_template"] = o.EnterpriseTemplate
-	}
-	if !IsNil(o.EnterpriseId) {
-		toSerialize["enterprise_id"] = o.EnterpriseId
-	}
 	if !IsNil(o.Ui) {
 		toSerialize["ui"] = o.Ui
 	}
-	if !IsNil(o.StripeId) {
-		toSerialize["stripe_id"] = o.StripeId
+	if !IsNil(o.UsageType) {
+		toSerialize["usage_type"] = o.UsageType
 	}
 	return toSerialize, nil
 }
@@ -668,8 +656,8 @@ func (o *PriceWithStripeID) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
 		"currency",
+		"id",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -6,13 +6,13 @@
 
 Name | Type
 ------------ | -------------
-`displayName` | string
-`tagline` | string
-`features` | Array&lt;string&gt;
 `badge` | string
 `ctaText` | string
+`displayName` | string
+`features` | Array&lt;string&gt;
 `highlighted` | boolean
 `sortOrder` | number
+`tagline` | string
 
 ## Example
 
@@ -21,13 +21,13 @@ import type { ProductUI } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "displayName": Professional,
-  "tagline": For growing teams,
-  "features": [Unlimited projects, Priority support],
-  "badge": Popular,
-  "ctaText": Get Started,
-  "highlighted": true,
-  "sortOrder": 1,
+  "badge": null,
+  "ctaText": null,
+  "displayName": null,
+  "features": null,
+  "highlighted": null,
+  "sortOrder": null,
+  "tagline": null,
 } satisfies ProductUI
 
 console.log(example)

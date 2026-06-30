@@ -1,10 +1,11 @@
 package email
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -16,19 +17,24 @@ type DeleteTemplateResponse struct {
 	Message string `json:"message"`
 }
 
-func (h *Handler) DeleteTemplate(ctx *gin.Context) {
-	templateType := ctx.Param("type")
+type DeleteTemplateInput struct {
+	handlers.AuthCtx
+	Type string `path:"type"`
+}
 
-	rows, err := h.repo.DeleteEmailTemplateByType(ctx.Request.Context(), templateType)
+type DeleteTemplateOutput struct {
+	Body DeleteTemplateResponse
+}
+
+func (h *Handler) DeleteTemplate(ctx context.Context, in *DeleteTemplateInput) (*DeleteTemplateOutput, error) {
+	rows, err := h.repo.DeleteEmailTemplateByType(ctx, in.Type)
 	if err != nil {
-		logger.Logger.Error("Failed to delete email template", "type", templateType, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", DeleteTemplateError, err))
-		return
+		logger.Logger.Error("Failed to delete email template", "type", in.Type, "error", err)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTemplateError, err).Error())
 	}
 	if rows == 0 {
-		handlers.NewNotFoundResponse(ctx, "Template not found")
-		return
+		return nil, huma.Error404NotFound("Template not found")
 	}
 
-	handlers.NewSuccessResponse(ctx, DeleteTemplateResponse{Message: "Template deleted successfully"})
+	return &DeleteTemplateOutput{Body: DeleteTemplateResponse{Message: "Template deleted successfully"}}, nil
 }

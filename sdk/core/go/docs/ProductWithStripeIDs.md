@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Product identifier (config ID) | 
-**Name** | **string** | Product name | 
-**Description** | Pointer to **string** | Product description | [optional] 
-**Type** | Pointer to **string** | Product type | [optional] 
-**Prices** | [**[]PriceWithStripeID**](PriceWithStripeID.md) | List of prices with Stripe IDs | 
+**Description** | Pointer to **string** |  | [optional] 
+**Id** | **string** |  | 
+**Name** | **string** |  | 
+**Prices** | [**[]PriceWithStripeID**](PriceWithStripeID.md) |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
+**Type** | Pointer to **string** |  | [optional] 
 **Ui** | Pointer to [**ProductUI**](ProductUI.md) |  | [optional] 
-**StripeId** | Pointer to **string** | Actual Stripe product ID (null for free products) | [optional] 
 
 ## Methods
 
@@ -30,6 +30,31 @@ will change when the set of required properties is changed
 NewProductWithStripeIDsWithDefaults instantiates a new ProductWithStripeIDs object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetDescription
+
+`func (o *ProductWithStripeIDs) GetDescription() string`
+
+GetDescription returns the Description field if non-nil, zero value otherwise.
+
+### GetDescriptionOk
+
+`func (o *ProductWithStripeIDs) GetDescriptionOk() (*string, bool)`
+
+GetDescriptionOk returns a tuple with the Description field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDescription
+
+`func (o *ProductWithStripeIDs) SetDescription(v string)`
+
+SetDescription sets Description field to given value.
+
+### HasDescription
+
+`func (o *ProductWithStripeIDs) HasDescription() bool`
+
+HasDescription returns a boolean if a field has been set.
 
 ### GetId
 
@@ -71,30 +96,60 @@ and a boolean to check if the value has been set.
 SetName sets Name field to given value.
 
 
-### GetDescription
+### GetPrices
 
-`func (o *ProductWithStripeIDs) GetDescription() string`
+`func (o *ProductWithStripeIDs) GetPrices() []PriceWithStripeID`
 
-GetDescription returns the Description field if non-nil, zero value otherwise.
+GetPrices returns the Prices field if non-nil, zero value otherwise.
 
-### GetDescriptionOk
+### GetPricesOk
 
-`func (o *ProductWithStripeIDs) GetDescriptionOk() (*string, bool)`
+`func (o *ProductWithStripeIDs) GetPricesOk() (*[]PriceWithStripeID, bool)`
 
-GetDescriptionOk returns a tuple with the Description field if it's non-nil, zero value otherwise
+GetPricesOk returns a tuple with the Prices field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetDescription
+### SetPrices
 
-`func (o *ProductWithStripeIDs) SetDescription(v string)`
+`func (o *ProductWithStripeIDs) SetPrices(v []PriceWithStripeID)`
 
-SetDescription sets Description field to given value.
+SetPrices sets Prices field to given value.
 
-### HasDescription
 
-`func (o *ProductWithStripeIDs) HasDescription() bool`
+### SetPricesNil
 
-HasDescription returns a boolean if a field has been set.
+`func (o *ProductWithStripeIDs) SetPricesNil(b bool)`
+
+ SetPricesNil sets the value for Prices to be an explicit nil
+
+### UnsetPrices
+`func (o *ProductWithStripeIDs) UnsetPrices()`
+
+UnsetPrices ensures that no value is present for Prices, not even an explicit nil
+### GetStripeId
+
+`func (o *ProductWithStripeIDs) GetStripeId() string`
+
+GetStripeId returns the StripeId field if non-nil, zero value otherwise.
+
+### GetStripeIdOk
+
+`func (o *ProductWithStripeIDs) GetStripeIdOk() (*string, bool)`
+
+GetStripeIdOk returns a tuple with the StripeId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStripeId
+
+`func (o *ProductWithStripeIDs) SetStripeId(v string)`
+
+SetStripeId sets StripeId field to given value.
+
+### HasStripeId
+
+`func (o *ProductWithStripeIDs) HasStripeId() bool`
+
+HasStripeId returns a boolean if a field has been set.
 
 ### GetType
 
@@ -121,26 +176,6 @@ SetType sets Type field to given value.
 
 HasType returns a boolean if a field has been set.
 
-### GetPrices
-
-`func (o *ProductWithStripeIDs) GetPrices() []PriceWithStripeID`
-
-GetPrices returns the Prices field if non-nil, zero value otherwise.
-
-### GetPricesOk
-
-`func (o *ProductWithStripeIDs) GetPricesOk() (*[]PriceWithStripeID, bool)`
-
-GetPricesOk returns a tuple with the Prices field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetPrices
-
-`func (o *ProductWithStripeIDs) SetPrices(v []PriceWithStripeID)`
-
-SetPrices sets Prices field to given value.
-
-
 ### GetUi
 
 `func (o *ProductWithStripeIDs) GetUi() ProductUI`
@@ -165,31 +200,6 @@ SetUi sets Ui field to given value.
 `func (o *ProductWithStripeIDs) HasUi() bool`
 
 HasUi returns a boolean if a field has been set.
-
-### GetStripeId
-
-`func (o *ProductWithStripeIDs) GetStripeId() string`
-
-GetStripeId returns the StripeId field if non-nil, zero value otherwise.
-
-### GetStripeIdOk
-
-`func (o *ProductWithStripeIDs) GetStripeIdOk() (*string, bool)`
-
-GetStripeIdOk returns a tuple with the StripeId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetStripeId
-
-`func (o *ProductWithStripeIDs) SetStripeId(v string)`
-
-SetStripeId sets StripeId field to given value.
-
-### HasStripeId
-
-`func (o *ProductWithStripeIDs) HasStripeId() bool`
-
-HasStripeId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -1,15 +1,14 @@
 
 # CouponChanges
 
-Summary of coupon changes made during configuration update
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`archived` | [Array&lt;CouponChange&gt;](CouponChange.md)
 `created` | [Array&lt;CouponChange&gt;](CouponChange.md)
 `updated` | [Array&lt;CouponChange&gt;](CouponChange.md)
-`archived` | [Array&lt;CouponChange&gt;](CouponChange.md)
 
 ## Example
 
@@ -18,9 +17,9 @@ import type { CouponChanges } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "archived": null,
   "created": null,
   "updated": null,
-  "archived": null,
 } satisfies CouponChanges
 
 console.log(example)

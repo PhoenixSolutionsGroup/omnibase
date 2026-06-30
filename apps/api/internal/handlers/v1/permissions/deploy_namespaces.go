@@ -10,7 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
@@ -21,33 +21,38 @@ import (
 var DeployNamespacesError = errors.New("Failed to deploy namespaces")
 
 type DeployNamespacesResponse struct {
-	Message     string `json:"message" binding:"required"`
-	TenantID    string `json:"tenant_id" binding:"required"`
-	Path        string `json:"path" binding:"required"`
-	ManagedMode bool   `json:"managed_mode" binding:"required"`
+	Message     string `json:"message"`
+	TenantID    string `json:"tenant_id"`
+	Path        string `json:"path"`
+	ManagedMode bool   `json:"managed_mode"`
 	RolesSynced *int   `json:"roles_synced,omitempty"`
 }
 
-func (h *Handler) DeployNamespaces(c *gin.Context) {
+type DeployNamespacesInput struct {
+	handlers.AuthCtx
+	RawBody huma.MultipartFormFiles[struct {
+		Namespaces huma.FormFile `form:"namespaces" required:"true"`
+	}]
+}
+
+type DeployNamespacesOutput struct {
+	Body DeployNamespacesResponse
+}
+
+func (h *Handler) DeployNamespaces(ctx context.Context, in *DeployNamespacesInput) (*DeployNamespacesOutput, error) {
 	if h.tenantID == "" {
-		handlers.NewBadRequestResponse(c, "Missing tenant ID")
-		return
+		return nil, huma.Error400BadRequest("Missing tenant ID")
 	}
 
-	file, header, err := c.Request.FormFile("namespaces")
-	if err != nil {
-		handlers.NewBadRequestResponse(c, fmt.Sprintf("No file uploaded or form field 'namespaces' not found: %v", err))
-		return
-	}
+	form := in.RawBody.Data()
+	file := form.Namespaces
 	defer file.Close()
 
-	if header.Header.Get("Content-Type") != "application/zip" && !strings.HasSuffix(header.Filename, ".zip") {
-		handlers.NewBadRequestResponse(c, "File must be a zip archive")
-		return
+	if file.ContentType != "application/zip" && !strings.HasSuffix(file.Filename, ".zip") {
+		return nil, huma.Error400BadRequest("File must be a zip archive")
 	}
 
 	objectKey := "internal/permissions.zip"
-	ctx := c.Request.Context()
 
 	if _, err := h.s3.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(h.bucketName),
@@ -56,8 +61,7 @@ func (h *Handler) DeployNamespaces(c *gin.Context) {
 		ContentType: aws.String("application/zip"),
 	}); err != nil {
 		logger.Logger.Error("S3 upload failed", "bucket", h.bucketName, "key", objectKey, "error", err)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DeployNamespacesError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeployNamespacesError, err).Error())
 	}
 
 	resp := DeployNamespacesResponse{
@@ -69,22 +73,19 @@ func (h *Handler) DeployNamespaces(c *gin.Context) {
 
 	if _, err := file.Seek(0, io.SeekStart); err != nil {
 		logger.Logger.Warn("Failed to rewind uploaded file for parsing", "error", err)
-		handlers.NewSuccessResponse(c, resp)
-		return
+		return &DeployNamespacesOutput{Body: resp}, nil
 	}
 
 	zipBytes, err := io.ReadAll(file)
 	if err != nil {
 		logger.Logger.Warn("Failed to read file for parsing", "error", err)
-		handlers.NewSuccessResponse(c, resp)
-		return
+		return &DeployNamespacesOutput{Body: resp}, nil
 	}
 
 	defs, err := permsvc.ParseNamespaceZip(zipBytes)
 	if err != nil {
 		logger.Logger.Warn("Failed to parse namespace definitions", "error", err)
-		handlers.NewSuccessResponse(c, resp)
-		return
+		return &DeployNamespacesOutput{Body: resp}, nil
 	}
 
 	if err := h.storeDefinitions(ctx, defs); err != nil {
@@ -103,7 +104,7 @@ func (h *Handler) DeployNamespaces(c *gin.Context) {
 		}
 	}
 
-	handlers.NewSuccessResponse(c, resp)
+	return &DeployNamespacesOutput{Body: resp}, nil
 }
 
 func (h *Handler) storeDefinitions(ctx context.Context, defs []permsvc.ParsedNamespaceDefinition) error {

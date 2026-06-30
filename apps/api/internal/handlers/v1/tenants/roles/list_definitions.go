@@ -1,15 +1,20 @@
 package roles
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"time"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 
 	"api/internal/handlers"
 	"api/internal/logger"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
+
+var ListDefinitionsError = errors.New("Failed to fetch definitions")
 
 type NamespaceDefinitionResponse struct {
 	ID               uuid.UUID           `json:"id"`
@@ -19,15 +24,23 @@ type NamespaceDefinitionResponse struct {
 	UpdatedAt        time.Time           `json:"updated_at"`
 }
 
-func (h *Handler) ListDefinitions(c *gin.Context) {
-	subjectFilter := c.Query("subject")
+type ListDefinitionsInput struct {
+	handlers.AuthCtx
+	Subject string `query:"subject"`
+}
+
+type ListDefinitionsOutput struct {
+	Body []NamespaceDefinitionResponse
+}
+
+func (h *Handler) ListDefinitions(ctx context.Context, in *ListDefinitionsInput) (*ListDefinitionsOutput, error) {
+	subjectFilter := in.Subject
 	logger.Logger.Debug("Fetching namespace definitions", "subject_filter", subjectFilter)
 
-	rows, err := h.repo.ListNamespaceDefinitions(c.Request.Context())
+	rows, err := h.repo.ListNamespaceDefinitions(ctx)
 	if err != nil {
 		logger.Logger.Error("Failed to fetch namespace definitions", "error", err)
-		handlers.NewInternalServerErrorResponse(c, err)
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListDefinitionsError, err).Error())
 	}
 
 	defs := make([]NamespaceDefinitionResponse, 0, len(rows))
@@ -61,5 +74,5 @@ func (h *Handler) ListDefinitions(c *gin.Context) {
 	}
 
 	logger.Logger.Debug("Successfully fetched namespace definitions", "count", len(defs), "subject_filter", subjectFilter)
-	handlers.NewSuccessResponse(c, defs)
+	return &ListDefinitionsOutput{Body: defs}, nil
 }

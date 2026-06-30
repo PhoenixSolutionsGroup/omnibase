@@ -1,10 +1,12 @@
 package subscriptions
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -16,28 +18,31 @@ type BillingStatusResponse struct {
 	IsActive bool `json:"is_active"`
 }
 
-func (h *Handler) BillingStatus(ctx *gin.Context) {
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
+type BillingStatusInput struct {
+	handlers.AuthCtx
+}
+
+type BillingStatusOutput struct {
+	Body BillingStatusResponse
+}
+
+func (h *Handler) BillingStatus(ctx context.Context, in *BillingStatusInput) (*BillingStatusOutput, error) {
+	if in.TenantID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 
-	row, err := h.repo.GetTenantByID(ctx.Request.Context(), tenantID)
+	row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 	if err != nil {
-		handlers.NewNotFoundResponse(ctx, "Tenant not found")
-		return
+		return nil, huma.Error404NotFound("Tenant not found")
 	}
 	if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-		handlers.NewSuccessResponse(ctx, BillingStatusResponse{IsActive: false})
-		return
+		return &BillingStatusOutput{Body: BillingStatusResponse{IsActive: false}}, nil
 	}
 
-	active, err := h.billing.CheckBillingStatus(ctx.Request.Context(), *row.StripeCustomerID)
+	active, err := h.billing.CheckBillingStatus(ctx, *row.StripeCustomerID)
 	if err != nil {
-		logger.Logger.Error("check billing status failed", "tenant_id", tenantID, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", BillingStatusError, err))
-		return
+		logger.Logger.Error("check billing status failed", "tenant_id", in.TenantID, "error", err)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", BillingStatusError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, BillingStatusResponse{IsActive: active})
+	return &BillingStatusOutput{Body: BillingStatusResponse{IsActive: active}}, nil
 }

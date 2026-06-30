@@ -13,14 +13,12 @@ import (
 
 func CreateTenant(t *testing.T, client *sdk.APIClient, userID, name, billingEmail string) *sdk.CreateTenantResponse {
 	t.Helper()
-	tenantType := "organization"
 	req := sdk.CreateTenantRequest{
 		Name:         name,
-		BillingEmail: &billingEmail,
-		Type:         &tenantType,
+		BillingEmail: billingEmail,
+		Type:         "organization",
 	}
-	out, resp, err := client.V1TenantsAPI.CreateTenant(helpers.Ctx()).
-		XUserId(userID).
+	out, resp, err := client.V1TenantsLifecycleAPI.CreateTenant(helpers.CtxWithUser(userID)).
 		CreateTenantRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "createTenant")
@@ -29,17 +27,15 @@ func CreateTenant(t *testing.T, client *sdk.APIClient, userID, name, billingEmai
 	return out
 }
 
-func CreateInvite(t *testing.T, client *sdk.APIClient, ownerID, tenantID, email, role string) *sdk.TenantInvite {
+func CreateInvite(t *testing.T, client *sdk.APIClient, ownerID, tenantID, email, role string) *sdk.AuthTenantInvite {
 	t.Helper()
-	req := sdk.CreateTenantUserInviteRequest{
+	req := sdk.CreateRequest{
 		Email:     email,
 		Role:      role,
 		InviteUrl: "http://localhost:3000/accept-invite",
 	}
-	out, resp, err := client.V1TenantsAPI.CreateInvite(helpers.Ctx()).
-		XUserId(ownerID).
-		XTenantId(tenantID).
-		CreateTenantUserInviteRequest(req).
+	out, resp, err := client.V1TenantsInvitesAPI.CreateInvite(helpers.CtxWithUserTenant(ownerID, tenantID)).
+		CreateRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "createInvite")
 	require.NotNil(t, out)
@@ -49,25 +45,22 @@ func CreateInvite(t *testing.T, client *sdk.APIClient, ownerID, tenantID, email,
 
 func CreateInviteRaw(t *testing.T, client *sdk.APIClient, callerUserID, tenantID, email, role string) (*http.Response, error) {
 	t.Helper()
-	req := sdk.CreateTenantUserInviteRequest{
+	req := sdk.CreateRequest{
 		Email:     email,
 		Role:      role,
 		InviteUrl: "http://localhost:3000/accept-invite",
 	}
-	_, resp, err := client.V1TenantsAPI.CreateInvite(helpers.Ctx()).
-		XUserId(callerUserID).
-		XTenantId(tenantID).
-		CreateTenantUserInviteRequest(req).
+	_, resp, err := client.V1TenantsInvitesAPI.CreateInvite(helpers.CtxWithUserTenant(callerUserID, tenantID)).
+		CreateRequest(req).
 		Execute()
 	return resp, err
 }
 
-func AcceptInvite(t *testing.T, client *sdk.APIClient, userID, token string) *sdk.AcceptInviteResponse {
+func AcceptInvite(t *testing.T, client *sdk.APIClient, userID, token string) *sdk.AcceptResponse {
 	t.Helper()
-	req := sdk.AcceptInviteRequest{Token: token}
-	out, resp, err := client.V1TenantsAPI.AcceptInvite(helpers.Ctx()).
-		XUserId(userID).
-		AcceptInviteRequest(req).
+	req := sdk.AcceptRequest{Token: token}
+	out, resp, err := client.V1TenantsInvitesAPI.AcceptInvite(helpers.CtxWithUser(userID)).
+		AcceptRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "acceptInvite")
 	require.NotNil(t, out)
@@ -76,19 +69,16 @@ func AcceptInvite(t *testing.T, client *sdk.APIClient, userID, token string) *sd
 
 func AcceptInviteRaw(t *testing.T, client *sdk.APIClient, userID, token string) (*http.Response, error) {
 	t.Helper()
-	req := sdk.AcceptInviteRequest{Token: token}
-	_, resp, err := client.V1TenantsAPI.AcceptInvite(helpers.Ctx()).
-		XUserId(userID).
-		AcceptInviteRequest(req).
+	req := sdk.AcceptRequest{Token: token}
+	_, resp, err := client.V1TenantsInvitesAPI.AcceptInvite(helpers.CtxWithUser(userID)).
+		AcceptRequest(req).
 		Execute()
 	return resp, err
 }
 
-func ListTenantUsers(t *testing.T, client *sdk.APIClient, userID, tenantID string) []sdk.TenantUserResponse {
+func ListTenantUsers(t *testing.T, client *sdk.APIClient, userID, tenantID string) []sdk.UserResponse {
 	t.Helper()
-	out, resp, err := client.V1TenantsAPI.ListTenantUsers(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	out, resp, err := client.V1TenantsUsersAPI.ListTenantUsers(helpers.CtxWithUserTenant(userID, tenantID)).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "listTenantUsers")
 	return out
@@ -96,17 +86,14 @@ func ListTenantUsers(t *testing.T, client *sdk.APIClient, userID, tenantID strin
 
 func ListTenantUsersRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
 	t.Helper()
-	_, resp, err := client.V1TenantsAPI.ListTenantUsers(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	_, resp, err := client.V1TenantsUsersAPI.ListTenantUsers(helpers.CtxWithUserTenant(userID, tenantID)).
 		Execute()
 	return resp, err
 }
 
 func ListUserTenants(t *testing.T, client *sdk.APIClient, userID string) []sdk.UserTenantListItem {
 	t.Helper()
-	out, resp, err := client.V1AuthAPI.ListTenants(helpers.Ctx()).
-		XUserId(userID).
+	out, resp, err := client.V1AuthAPI.ListTenants(helpers.CtxWithUser(userID)).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "listTenants")
 	require.NotNil(t, out)
@@ -115,9 +102,7 @@ func ListUserTenants(t *testing.T, client *sdk.APIClient, userID string) []sdk.U
 
 func GetTenantJWT(t *testing.T, client *sdk.APIClient, userID, tenantID string) string {
 	t.Helper()
-	out, resp, err := client.V1TenantsAPI.GetTenantJWT(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantJWT(helpers.CtxWithUserTenant(userID, tenantID)).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "getTenantJWT")
 	require.NotNil(t, out)
@@ -126,19 +111,16 @@ func GetTenantJWT(t *testing.T, client *sdk.APIClient, userID, tenantID string) 
 
 func GetTenantJWTRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
 	t.Helper()
-	_, resp, err := client.V1TenantsAPI.GetTenantJWT(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	_, resp, err := client.V1TenantsLifecycleAPI.GetTenantJWT(helpers.CtxWithUserTenant(userID, tenantID)).
 		Execute()
 	return resp, err
 }
 
 func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) string {
 	t.Helper()
-	req := sdk.SwitchTenantRequest{TenantId: tenantID}
-	out, resp, err := client.V1TenantsAPI.SwitchActiveTenant(helpers.Ctx()).
-		XUserId(userID).
-		SwitchTenantRequest(req).
+	req := sdk.SwitchActiveRequest{TenantId: tenantID}
+	out, resp, err := client.V1TenantsLifecycleAPI.SwitchActiveTenant(helpers.CtxWithUser(userID)).
+		SwitchActiveRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "switchActiveTenant")
 	require.NotNil(t, out)
@@ -147,38 +129,32 @@ func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID st
 
 func SwitchActiveTenantRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
 	t.Helper()
-	req := sdk.SwitchTenantRequest{TenantId: tenantID}
-	_, resp, err := client.V1TenantsAPI.SwitchActiveTenant(helpers.Ctx()).
-		XUserId(userID).
-		SwitchTenantRequest(req).
+	req := sdk.SwitchActiveRequest{TenantId: tenantID}
+	_, resp, err := client.V1TenantsLifecycleAPI.SwitchActiveTenant(helpers.CtxWithUser(userID)).
+		SwitchActiveRequest(req).
 		Execute()
 	return resp, err
 }
 
 func DeleteTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
 	t.Helper()
-	resp, err := client.V1TenantsAPI.DeleteTenant(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	_, resp, err := client.V1TenantsLifecycleAPI.DeleteTenant(helpers.CtxWithUserTenant(userID, tenantID)).
 		Execute()
 	return resp, err
 }
 
-func ListRoles(t *testing.T, client *sdk.APIClient, tenantID string) []sdk.Role {
+func ListRoles(t *testing.T, client *sdk.APIClient, tenantID string) []sdk.ListRolesByTenantRow {
 	t.Helper()
-	out, resp, err := client.V1TenantsAPI.ListRoles(helpers.Ctx()).
-		XTenantId(tenantID).
+	out, resp, err := client.V1TenantsRolesAPI.ListRoles(helpers.CtxWithTenant(tenantID)).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "listRoles")
 	return out
 }
 
-func CreateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, name string, permissions []string) *sdk.Role {
+func CreateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, name string, permissions []string) *sdk.CreateRoleRow {
 	t.Helper()
 	req := sdk.CreateRoleRequest{RoleName: name, Permissions: permissions}
-	out, resp, err := client.V1TenantsAPI.CreateRole(helpers.Ctx()).
-		XUserId(userID).
-		XTenantId(tenantID).
+	out, resp, err := client.V1TenantsRolesAPI.CreateRole(helpers.CtxWithUserTenant(userID, tenantID)).
 		CreateRoleRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "createRole")
@@ -187,12 +163,10 @@ func CreateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, name stri
 	return out
 }
 
-func UpdateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, roleID string, permissions []string) *sdk.Role {
+func UpdateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, roleID string, permissions []string) *sdk.UpdateRolePermissionsRow {
 	t.Helper()
 	req := sdk.UpdateRoleRequest{Permissions: permissions}
-	out, resp, err := client.V1TenantsAPI.UpdateRole(helpers.Ctx(), roleID).
-		XUserId(userID).
-		XTenantId(tenantID).
+	out, resp, err := client.V1TenantsRolesAPI.UpdateRole(helpers.CtxWithUserTenant(userID, tenantID), roleID).
 		UpdateRoleRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "updateRole")
@@ -202,47 +176,41 @@ func UpdateRole(t *testing.T, client *sdk.APIClient, userID, tenantID, roleID st
 
 func DeleteRole(t *testing.T, client *sdk.APIClient, userID, tenantID, roleID string) {
 	t.Helper()
-	resp, err := client.V1TenantsAPI.DeleteRole(helpers.Ctx(), roleID).
-		XUserId(userID).
-		XTenantId(tenantID).
+	_, resp, err := client.V1TenantsRolesAPI.DeleteRole(helpers.CtxWithUserTenant(userID, tenantID), roleID).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "deleteRole")
 }
 
 func UpdateTenantUserRole(t *testing.T, client *sdk.APIClient, ownerID, tenantID, targetUserID, role string) (*http.Response, error) {
 	t.Helper()
-	req := sdk.UpdateTenantUserRoleRequest{UserId: targetUserID, Role: role}
-	resp, err := client.V1TenantsAPI.UpdateTenantUserRole(helpers.Ctx()).
-		XUserId(ownerID).
-		XTenantId(tenantID).
-		UpdateTenantUserRoleRequest(req).
+	req := sdk.UpdateUserRoleRequest{UserId: targetUserID, Role: role}
+	_, resp, err := client.V1TenantsUsersAPI.UpdateTenantUserRole(helpers.CtxWithUserTenant(ownerID, tenantID)).
+		UpdateUserRoleRequest(req).
 		Execute()
 	return resp, err
 }
 
 func RemoveTenantUser(t *testing.T, client *sdk.APIClient, callerUserID, tenantID, targetUserID string) (*http.Response, error) {
 	t.Helper()
-	req := sdk.DeleteTenantUserRequest{UserId: targetUserID}
-	resp, err := client.V1TenantsAPI.RemoveTenantUser(helpers.Ctx()).
-		XUserId(callerUserID).
-		XTenantId(tenantID).
-		DeleteTenantUserRequest(req).
+	req := sdk.DeleteRequest{UserId: targetUserID}
+	_, resp, err := client.V1TenantsUsersAPI.RemoveTenantUser(helpers.CtxWithUserTenant(callerUserID, tenantID)).
+		DeleteRequest(req).
 		Execute()
 	return resp, err
 }
 
-func GetTenantByID(t *testing.T, client *sdk.APIClient, tenantID string) (*sdk.Tenant, *http.Response, error) {
+func GetTenantByID(t *testing.T, client *sdk.APIClient, tenantID string) (*sdk.GetTenantByIDRow, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1TenantsAPI.GetTenantByID(helpers.Ctx(), tenantID).Execute()
+	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantByID(helpers.Ctx(), tenantID).Execute()
 	if err != nil || out == nil {
 		return nil, resp, err
 	}
 	return out, resp, nil
 }
 
-func GetTenantByStripeCustomerID(t *testing.T, client *sdk.APIClient, stripeCustomerID string) (*sdk.Tenant, *http.Response, error) {
+func GetTenantByStripeCustomerID(t *testing.T, client *sdk.APIClient, stripeCustomerID string) (*sdk.GetTenantByStripeCustomerIDRow, *http.Response, error) {
 	t.Helper()
-	out, resp, err := client.V1TenantsAPI.GetTenantByStripeCustomerID(helpers.Ctx(), stripeCustomerID).Execute()
+	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantByStripeCustomerID(helpers.Ctx(), stripeCustomerID).Execute()
 	if err != nil || out == nil {
 		return nil, resp, err
 	}
@@ -251,7 +219,7 @@ func GetTenantByStripeCustomerID(t *testing.T, client *sdk.APIClient, stripeCust
 
 func CheckTenantPermission(t *testing.T, client *sdk.APIClient, tenantID, relation, subjUserID string) bool {
 	t.Helper()
-	req := sdk.CheckPermissionRequest{
+	req := sdk.CheckRequest{
 		Namespace: "Tenant",
 		Object:    tenantID,
 		Relation:  relation,
@@ -261,7 +229,7 @@ func CheckTenantPermission(t *testing.T, client *sdk.APIClient, tenantID, relati
 		},
 	}
 	out, resp, err := client.V1PermissionsAPI.CheckPermission(helpers.Ctx()).
-		CheckPermissionRequest(req).
+		CheckRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "checkPermission")
 	require.NotNil(t, out)

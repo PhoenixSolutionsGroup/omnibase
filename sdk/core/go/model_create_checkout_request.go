@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,18 +22,12 @@ var _ MappedNullable = &CreateCheckoutRequest{}
 
 // CreateCheckoutRequest struct for CreateCheckoutRequest
 type CreateCheckoutRequest struct {
-	// The price ID from your Stripe configuration (required, cannot be empty)
-	PriceId string `json:"price_id"`
-	// URL to redirect to after successful checkout (required, cannot be empty)
-	SuccessUrl string `json:"success_url"`
-	// URL to redirect to if checkout is cancelled (required, cannot be empty)
-	CancelUrl string `json:"cancel_url"`
-	// Optional trial period in days
-	TrialPeriodDays *int32 `json:"trial_period_days,omitempty"`
-	// Optional promotion code to apply
-	PromotionCode *string `json:"promotion_code,omitempty"`
-	// Whether to allow promotion codes to be entered
 	AllowPromotionCodes *bool `json:"allow_promotion_codes,omitempty"`
+	CancelUrl string `json:"cancel_url"`
+	PriceId string `json:"price_id"`
+	PromotionCode *string `json:"promotion_code,omitempty"`
+	SuccessUrl string `json:"success_url"`
+	TrialPeriodDays *int64 `json:"trial_period_days,omitempty"`
 }
 
 type _CreateCheckoutRequest CreateCheckoutRequest
@@ -42,11 +36,11 @@ type _CreateCheckoutRequest CreateCheckoutRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateCheckoutRequest(priceId string, successUrl string, cancelUrl string) *CreateCheckoutRequest {
+func NewCreateCheckoutRequest(cancelUrl string, priceId string, successUrl string) *CreateCheckoutRequest {
 	this := CreateCheckoutRequest{}
+	this.CancelUrl = cancelUrl
 	this.PriceId = priceId
 	this.SuccessUrl = successUrl
-	this.CancelUrl = cancelUrl
 	return &this
 }
 
@@ -56,142 +50,6 @@ func NewCreateCheckoutRequest(priceId string, successUrl string, cancelUrl strin
 func NewCreateCheckoutRequestWithDefaults() *CreateCheckoutRequest {
 	this := CreateCheckoutRequest{}
 	return &this
-}
-
-// GetPriceId returns the PriceId field value
-func (o *CreateCheckoutRequest) GetPriceId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.PriceId
-}
-
-// GetPriceIdOk returns a tuple with the PriceId field value
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.PriceId, true
-}
-
-// SetPriceId sets field value
-func (o *CreateCheckoutRequest) SetPriceId(v string) {
-	o.PriceId = v
-}
-
-// GetSuccessUrl returns the SuccessUrl field value
-func (o *CreateCheckoutRequest) GetSuccessUrl() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.SuccessUrl
-}
-
-// GetSuccessUrlOk returns a tuple with the SuccessUrl field value
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetSuccessUrlOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.SuccessUrl, true
-}
-
-// SetSuccessUrl sets field value
-func (o *CreateCheckoutRequest) SetSuccessUrl(v string) {
-	o.SuccessUrl = v
-}
-
-// GetCancelUrl returns the CancelUrl field value
-func (o *CreateCheckoutRequest) GetCancelUrl() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.CancelUrl
-}
-
-// GetCancelUrlOk returns a tuple with the CancelUrl field value
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetCancelUrlOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.CancelUrl, true
-}
-
-// SetCancelUrl sets field value
-func (o *CreateCheckoutRequest) SetCancelUrl(v string) {
-	o.CancelUrl = v
-}
-
-// GetTrialPeriodDays returns the TrialPeriodDays field value if set, zero value otherwise.
-func (o *CreateCheckoutRequest) GetTrialPeriodDays() int32 {
-	if o == nil || IsNil(o.TrialPeriodDays) {
-		var ret int32
-		return ret
-	}
-	return *o.TrialPeriodDays
-}
-
-// GetTrialPeriodDaysOk returns a tuple with the TrialPeriodDays field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetTrialPeriodDaysOk() (*int32, bool) {
-	if o == nil || IsNil(o.TrialPeriodDays) {
-		return nil, false
-	}
-	return o.TrialPeriodDays, true
-}
-
-// HasTrialPeriodDays returns a boolean if a field has been set.
-func (o *CreateCheckoutRequest) HasTrialPeriodDays() bool {
-	if o != nil && !IsNil(o.TrialPeriodDays) {
-		return true
-	}
-
-	return false
-}
-
-// SetTrialPeriodDays gets a reference to the given int32 and assigns it to the TrialPeriodDays field.
-func (o *CreateCheckoutRequest) SetTrialPeriodDays(v int32) {
-	o.TrialPeriodDays = &v
-}
-
-// GetPromotionCode returns the PromotionCode field value if set, zero value otherwise.
-func (o *CreateCheckoutRequest) GetPromotionCode() string {
-	if o == nil || IsNil(o.PromotionCode) {
-		var ret string
-		return ret
-	}
-	return *o.PromotionCode
-}
-
-// GetPromotionCodeOk returns a tuple with the PromotionCode field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutRequest) GetPromotionCodeOk() (*string, bool) {
-	if o == nil || IsNil(o.PromotionCode) {
-		return nil, false
-	}
-	return o.PromotionCode, true
-}
-
-// HasPromotionCode returns a boolean if a field has been set.
-func (o *CreateCheckoutRequest) HasPromotionCode() bool {
-	if o != nil && !IsNil(o.PromotionCode) {
-		return true
-	}
-
-	return false
-}
-
-// SetPromotionCode gets a reference to the given string and assigns it to the PromotionCode field.
-func (o *CreateCheckoutRequest) SetPromotionCode(v string) {
-	o.PromotionCode = &v
 }
 
 // GetAllowPromotionCodes returns the AllowPromotionCodes field value if set, zero value otherwise.
@@ -226,6 +84,142 @@ func (o *CreateCheckoutRequest) SetAllowPromotionCodes(v bool) {
 	o.AllowPromotionCodes = &v
 }
 
+// GetCancelUrl returns the CancelUrl field value
+func (o *CreateCheckoutRequest) GetCancelUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.CancelUrl
+}
+
+// GetCancelUrlOk returns a tuple with the CancelUrl field value
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetCancelUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CancelUrl, true
+}
+
+// SetCancelUrl sets field value
+func (o *CreateCheckoutRequest) SetCancelUrl(v string) {
+	o.CancelUrl = v
+}
+
+// GetPriceId returns the PriceId field value
+func (o *CreateCheckoutRequest) GetPriceId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.PriceId
+}
+
+// GetPriceIdOk returns a tuple with the PriceId field value
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.PriceId, true
+}
+
+// SetPriceId sets field value
+func (o *CreateCheckoutRequest) SetPriceId(v string) {
+	o.PriceId = v
+}
+
+// GetPromotionCode returns the PromotionCode field value if set, zero value otherwise.
+func (o *CreateCheckoutRequest) GetPromotionCode() string {
+	if o == nil || IsNil(o.PromotionCode) {
+		var ret string
+		return ret
+	}
+	return *o.PromotionCode
+}
+
+// GetPromotionCodeOk returns a tuple with the PromotionCode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetPromotionCodeOk() (*string, bool) {
+	if o == nil || IsNil(o.PromotionCode) {
+		return nil, false
+	}
+	return o.PromotionCode, true
+}
+
+// HasPromotionCode returns a boolean if a field has been set.
+func (o *CreateCheckoutRequest) HasPromotionCode() bool {
+	if o != nil && !IsNil(o.PromotionCode) {
+		return true
+	}
+
+	return false
+}
+
+// SetPromotionCode gets a reference to the given string and assigns it to the PromotionCode field.
+func (o *CreateCheckoutRequest) SetPromotionCode(v string) {
+	o.PromotionCode = &v
+}
+
+// GetSuccessUrl returns the SuccessUrl field value
+func (o *CreateCheckoutRequest) GetSuccessUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.SuccessUrl
+}
+
+// GetSuccessUrlOk returns a tuple with the SuccessUrl field value
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetSuccessUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.SuccessUrl, true
+}
+
+// SetSuccessUrl sets field value
+func (o *CreateCheckoutRequest) SetSuccessUrl(v string) {
+	o.SuccessUrl = v
+}
+
+// GetTrialPeriodDays returns the TrialPeriodDays field value if set, zero value otherwise.
+func (o *CreateCheckoutRequest) GetTrialPeriodDays() int64 {
+	if o == nil || IsNil(o.TrialPeriodDays) {
+		var ret int64
+		return ret
+	}
+	return *o.TrialPeriodDays
+}
+
+// GetTrialPeriodDaysOk returns a tuple with the TrialPeriodDays field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutRequest) GetTrialPeriodDaysOk() (*int64, bool) {
+	if o == nil || IsNil(o.TrialPeriodDays) {
+		return nil, false
+	}
+	return o.TrialPeriodDays, true
+}
+
+// HasTrialPeriodDays returns a boolean if a field has been set.
+func (o *CreateCheckoutRequest) HasTrialPeriodDays() bool {
+	if o != nil && !IsNil(o.TrialPeriodDays) {
+		return true
+	}
+
+	return false
+}
+
+// SetTrialPeriodDays gets a reference to the given int64 and assigns it to the TrialPeriodDays field.
+func (o *CreateCheckoutRequest) SetTrialPeriodDays(v int64) {
+	o.TrialPeriodDays = &v
+}
+
 func (o CreateCheckoutRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -236,17 +230,17 @@ func (o CreateCheckoutRequest) MarshalJSON() ([]byte, error) {
 
 func (o CreateCheckoutRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["price_id"] = o.PriceId
-	toSerialize["success_url"] = o.SuccessUrl
-	toSerialize["cancel_url"] = o.CancelUrl
-	if !IsNil(o.TrialPeriodDays) {
-		toSerialize["trial_period_days"] = o.TrialPeriodDays
+	if !IsNil(o.AllowPromotionCodes) {
+		toSerialize["allow_promotion_codes"] = o.AllowPromotionCodes
 	}
+	toSerialize["cancel_url"] = o.CancelUrl
+	toSerialize["price_id"] = o.PriceId
 	if !IsNil(o.PromotionCode) {
 		toSerialize["promotion_code"] = o.PromotionCode
 	}
-	if !IsNil(o.AllowPromotionCodes) {
-		toSerialize["allow_promotion_codes"] = o.AllowPromotionCodes
+	toSerialize["success_url"] = o.SuccessUrl
+	if !IsNil(o.TrialPeriodDays) {
+		toSerialize["trial_period_days"] = o.TrialPeriodDays
 	}
 	return toSerialize, nil
 }
@@ -256,9 +250,9 @@ func (o *CreateCheckoutRequest) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"cancel_url",
 		"price_id",
 		"success_url",
-		"cancel_url",
 	}
 
 	allProperties := make(map[string]interface{})

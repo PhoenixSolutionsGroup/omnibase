@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** | Optional unique identifier for the webhook endpoint | [optional] 
-**Url** | **string** | Webhook endpoint URL (supports ${VAR} env var interpolation via CLI) | 
-**Events** | **[]string** | List of Stripe event types to subscribe to | 
-**Connect** | Pointer to **bool** | If true, listen to events from connected accounts (Stripe Connect) | [optional] [default to false]
+**Connect** | Pointer to **bool** |  | [optional] 
+**Events** | **[]string** |  | 
+**Id** | Pointer to **string** |  | [optional] 
+**Url** | **string** |  | 
 
 ## Methods
 
 ### NewWebhookEndpointConfig
 
-`func NewWebhookEndpointConfig(url string, events []string, ) *WebhookEndpointConfig`
+`func NewWebhookEndpointConfig(events []string, url string, ) *WebhookEndpointConfig`
 
 NewWebhookEndpointConfig instantiates a new WebhookEndpointConfig object
 This constructor will assign default values to properties that have it defined,
@@ -28,6 +28,61 @@ NewWebhookEndpointConfigWithDefaults instantiates a new WebhookEndpointConfig ob
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
+### GetConnect
+
+`func (o *WebhookEndpointConfig) GetConnect() bool`
+
+GetConnect returns the Connect field if non-nil, zero value otherwise.
+
+### GetConnectOk
+
+`func (o *WebhookEndpointConfig) GetConnectOk() (*bool, bool)`
+
+GetConnectOk returns a tuple with the Connect field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetConnect
+
+`func (o *WebhookEndpointConfig) SetConnect(v bool)`
+
+SetConnect sets Connect field to given value.
+
+### HasConnect
+
+`func (o *WebhookEndpointConfig) HasConnect() bool`
+
+HasConnect returns a boolean if a field has been set.
+
+### GetEvents
+
+`func (o *WebhookEndpointConfig) GetEvents() []string`
+
+GetEvents returns the Events field if non-nil, zero value otherwise.
+
+### GetEventsOk
+
+`func (o *WebhookEndpointConfig) GetEventsOk() (*[]string, bool)`
+
+GetEventsOk returns a tuple with the Events field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEvents
+
+`func (o *WebhookEndpointConfig) SetEvents(v []string)`
+
+SetEvents sets Events field to given value.
+
+
+### SetEventsNil
+
+`func (o *WebhookEndpointConfig) SetEventsNil(b bool)`
+
+ SetEventsNil sets the value for Events to be an explicit nil
+
+### UnsetEvents
+`func (o *WebhookEndpointConfig) UnsetEvents()`
+
+UnsetEvents ensures that no value is present for Events, not even an explicit nil
 ### GetId
 
 `func (o *WebhookEndpointConfig) GetId() string`
@@ -72,51 +127,6 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-
-### GetEvents
-
-`func (o *WebhookEndpointConfig) GetEvents() []string`
-
-GetEvents returns the Events field if non-nil, zero value otherwise.
-
-### GetEventsOk
-
-`func (o *WebhookEndpointConfig) GetEventsOk() (*[]string, bool)`
-
-GetEventsOk returns a tuple with the Events field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEvents
-
-`func (o *WebhookEndpointConfig) SetEvents(v []string)`
-
-SetEvents sets Events field to given value.
-
-
-### GetConnect
-
-`func (o *WebhookEndpointConfig) GetConnect() bool`
-
-GetConnect returns the Connect field if non-nil, zero value otherwise.
-
-### GetConnectOk
-
-`func (o *WebhookEndpointConfig) GetConnectOk() (*bool, bool)`
-
-GetConnectOk returns a tuple with the Connect field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetConnect
-
-`func (o *WebhookEndpointConfig) SetConnect(v bool)`
-
-SetConnect sets Connect field to given value.
-
-### HasConnect
-
-`func (o *WebhookEndpointConfig) HasConnect() bool`
-
-HasConnect returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

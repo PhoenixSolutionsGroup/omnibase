@@ -15,7 +15,7 @@ import type { MeterDefaultAggregation } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "formula": sum,
+  "formula": null,
 } satisfies MeterDefaultAggregation
 
 console.log(example)

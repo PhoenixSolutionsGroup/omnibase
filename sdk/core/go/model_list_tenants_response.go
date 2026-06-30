@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -46,6 +46,7 @@ func NewListTenantsResponseWithDefaults() *ListTenantsResponse {
 }
 
 // GetTenants returns the Tenants field value
+// If the value is explicit nil, the zero value for []UserTenantListItem will be returned
 func (o *ListTenantsResponse) GetTenants() []UserTenantListItem {
 	if o == nil {
 		var ret []UserTenantListItem
@@ -57,8 +58,9 @@ func (o *ListTenantsResponse) GetTenants() []UserTenantListItem {
 
 // GetTenantsOk returns a tuple with the Tenants field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ListTenantsResponse) GetTenantsOk() ([]UserTenantListItem, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Tenants) {
 		return nil, false
 	}
 	return o.Tenants, true
@@ -79,7 +81,9 @@ func (o ListTenantsResponse) MarshalJSON() ([]byte, error) {
 
 func (o ListTenantsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["tenants"] = o.Tenants
+	if o.Tenants != nil {
+		toSerialize["tenants"] = o.Tenants
+	}
 	return toSerialize, nil
 }
 

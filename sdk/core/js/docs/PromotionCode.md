@@ -6,17 +6,17 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`stripeId` | string
+`active` | boolean
 `code` | string
 `coupon` | string
-`active` | boolean
-`maxRedemptions` | number
+`expiresAt` | number
 `firstTimeTransaction` | boolean
+`id` | string
+`maxRedemptions` | number
+`metadata` | { [key: string]: string; }
 `minimumAmount` | number
 `minimumAmountCurrency` | string
-`expiresAt` | number
-`metadata` | { [key: string]: string; }
+`stripeId` | string
 
 ## Example
 
@@ -25,17 +25,17 @@ import type { PromotionCode } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": promo_launch25,
-  "stripeId": promo_1SRiyyCJIZaBlhY1,
-  "code": LAUNCH25,
-  "coupon": launch_discount,
-  "active": true,
-  "maxRedemptions": 100,
-  "firstTimeTransaction": true,
-  "minimumAmount": 5000,
-  "minimumAmountCurrency": usd,
-  "expiresAt": 1735689600,
+  "active": null,
+  "code": null,
+  "coupon": null,
+  "expiresAt": null,
+  "firstTimeTransaction": null,
+  "id": null,
+  "maxRedemptions": null,
   "metadata": null,
+  "minimumAmount": null,
+  "minimumAmountCurrency": null,
+  "stripeId": null,
 } satisfies PromotionCode
 
 console.log(example)

@@ -15,7 +15,7 @@ import type { CalculatePriceCostRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "quantity": 1500,
+  "quantity": null,
 } satisfies CalculatePriceCostRequest
 
 console.log(example)

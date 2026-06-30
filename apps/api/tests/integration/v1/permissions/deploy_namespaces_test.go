@@ -98,10 +98,10 @@ func TestDeployNamespaces(t *testing.T) {
 		assert.GreaterOrEqual(t, *out.RolesSynced, 2, "owner + admin synced")
 	})
 
-	t.Run("missing file returns 400", func(t *testing.T) {
+	t.Run("missing file returns 422", func(t *testing.T) {
 		resp := postMultipart(t, "/api/v1/permissions/namespaces", "namespaces", "", nil)
 		defer resp.Body.Close()
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 	})
 
 	t.Run("non-zip file returns 400", func(t *testing.T) {

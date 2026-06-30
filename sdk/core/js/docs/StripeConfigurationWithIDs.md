@@ -6,12 +6,11 @@
 
 Name | Type
 ------------ | -------------
-`version` | string
-`webhooks` | [Array&lt;WebhookEndpointConfig&gt;](WebhookEndpointConfig.md)
+`coupons` | [Array&lt;CouponWithStripeID&gt;](CouponWithStripeID.md)
 `meters` | [Array&lt;MeterWithStripeID&gt;](MeterWithStripeID.md)
 `products` | [Array&lt;ProductWithStripeIDs&gt;](ProductWithStripeIDs.md)
-`coupons` | [Array&lt;CouponWithStripeID&gt;](CouponWithStripeID.md)
 `promotionCodes` | [Array&lt;PromotionCodeWithStripeID&gt;](PromotionCodeWithStripeID.md)
+`version` | string
 
 ## Example
 
@@ -20,12 +19,11 @@ import type { StripeConfigurationWithIDs } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "version": 1.0.0,
-  "webhooks": null,
+  "coupons": null,
   "meters": null,
   "products": null,
-  "coupons": null,
   "promotionCodes": null,
+  "version": null,
 } satisfies StripeConfigurationWithIDs
 
 console.log(example)

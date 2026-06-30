@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Organization name | 
-**BillingEmail** | Pointer to **string** | Billing email for Stripe customer | [optional] 
-**Type** | Pointer to **string** | Tenant type: &#39;organization&#39; for multi-user tenants with invitations and team management, &#39;individual&#39; for single-user tenants. Defaults to &#39;organization&#39; if not specified. | [optional] [default to "organization"]
+**BillingEmail** | **string** |  | 
+**Name** | **string** |  | 
+**Type** | **string** |  | 
 
 ## Methods
 
 ### NewCreateTenantRequest
 
-`func NewCreateTenantRequest(name string, ) *CreateTenantRequest`
+`func NewCreateTenantRequest(billingEmail string, name string, type_ string, ) *CreateTenantRequest`
 
 NewCreateTenantRequest instantiates a new CreateTenantRequest object
 This constructor will assign default values to properties that have it defined,
@@ -26,6 +26,26 @@ will change when the set of required properties is changed
 NewCreateTenantRequestWithDefaults instantiates a new CreateTenantRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetBillingEmail
+
+`func (o *CreateTenantRequest) GetBillingEmail() string`
+
+GetBillingEmail returns the BillingEmail field if non-nil, zero value otherwise.
+
+### GetBillingEmailOk
+
+`func (o *CreateTenantRequest) GetBillingEmailOk() (*string, bool)`
+
+GetBillingEmailOk returns a tuple with the BillingEmail field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetBillingEmail
+
+`func (o *CreateTenantRequest) SetBillingEmail(v string)`
+
+SetBillingEmail sets BillingEmail field to given value.
+
 
 ### GetName
 
@@ -47,31 +67,6 @@ and a boolean to check if the value has been set.
 SetName sets Name field to given value.
 
 
-### GetBillingEmail
-
-`func (o *CreateTenantRequest) GetBillingEmail() string`
-
-GetBillingEmail returns the BillingEmail field if non-nil, zero value otherwise.
-
-### GetBillingEmailOk
-
-`func (o *CreateTenantRequest) GetBillingEmailOk() (*string, bool)`
-
-GetBillingEmailOk returns a tuple with the BillingEmail field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetBillingEmail
-
-`func (o *CreateTenantRequest) SetBillingEmail(v string)`
-
-SetBillingEmail sets BillingEmail field to given value.
-
-### HasBillingEmail
-
-`func (o *CreateTenantRequest) HasBillingEmail() bool`
-
-HasBillingEmail returns a boolean if a field has been set.
-
 ### GetType
 
 `func (o *CreateTenantRequest) GetType() string`
@@ -91,11 +86,6 @@ and a boolean to check if the value has been set.
 
 SetType sets Type field to given value.
 
-### HasType
-
-`func (o *CreateTenantRequest) HasType() bool`
-
-HasType returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

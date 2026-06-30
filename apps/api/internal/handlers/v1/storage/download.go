@@ -8,7 +8,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
@@ -20,44 +21,50 @@ import (
 var DownloadError = errors.New("Failed to create download")
 
 type DownloadRequest struct {
-	Path string `json:"path" binding:"required" example:"test/avatars/user-123.png"`
+	Path string `json:"path" required:"true" example:"test/avatars/user-123.png"`
 }
 
 type DownloadResponse struct {
 	DownloadURL string `json:"download_url"`
 }
 
-func (h *Handler) Download(c *gin.Context) {
-	var req DownloadRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
+type DownloadInput struct {
+	handlers.AuthCtx
+	Body DownloadRequest
+}
 
-	userID := c.GetString("user_id")
-	tenantID := c.GetString("tenant_id")
-	ctx := c.Request.Context()
+type DownloadOutput struct {
+	Body DownloadResponse
+}
+
+func (h *Handler) Download(ctx context.Context, in *DownloadInput) (*DownloadOutput, error) {
+	req := in.Body
+
+	userID := ""
+	if in.UserID != uuid.Nil {
+		userID = in.UserID.String()
+	}
+	tenantID := ""
+	if in.TenantID != uuid.Nil {
+		tenantID = in.TenantID.String()
+	}
 
 	objectID, isPublic, err := h.lookupForDownload(ctx, req.Path, tenantID)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DownloadError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DownloadError, err).Error())
 	}
 	if objectID == "" {
-		handlers.NewNotFoundResponse(c, "File not found")
-		return
+		return nil, huma.Error404NotFound("File not found")
 	}
 
 	if !isPublic {
 		subject := permissions.SubjectSet{Namespace: "User", Object: userID}
 		allowed, err := h.perms.Check(ctx, "StorageObject", objectID, "read", subject)
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DownloadError, err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DownloadError, err).Error())
 		}
 		if !allowed {
-			handlers.NewForbiddenResponse(c, "Access denied")
-			return
+			return nil, huma.Error403Forbidden("Access denied")
 		}
 	}
 
@@ -67,11 +74,10 @@ func (h *Handler) Download(c *gin.Context) {
 		Key:    aws.String(req.Path),
 	}, s3.WithPresignExpires(15*time.Minute))
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DownloadError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DownloadError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(c, DownloadResponse{DownloadURL: presigned.URL})
+	return &DownloadOutput{Body: DownloadResponse{DownloadURL: presigned.URL}}, nil
 }
 
 func (h *Handler) lookupForDownload(ctx context.Context, path, tenantID string) (string, bool, error) {

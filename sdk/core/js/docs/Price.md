@@ -6,23 +6,23 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
-`stripeId` | string
-`_public` | boolean
-`taxIncludedInPrice` | boolean
 `amount` | number
-`currency` | [CurrencyCode](CurrencyCode.md)
-`interval` | [BillingInterval](BillingInterval.md)
-`intervalCount` | number
-`usageType` | [UsageType](UsageType.md)
-`meter` | string
-`billingScheme` | [TieredBillingScheme](TieredBillingScheme.md)
+`billingScheme` | string
+`currency` | string
 `_default` | boolean
-`enterpriseTemplate` | string
 `enterpriseId` | string
-`ui` | [PriceUI](PriceUI.md)
-`tiersMode` | [TiersMode](TiersMode.md)
+`enterpriseTemplate` | string
+`id` | string
+`interval` | string
+`intervalCount` | number
+`meter` | string
+`_public` | boolean
+`stripeId` | string
+`taxIncludedInPrice` | boolean
 `tiers` | [Array&lt;Tier&gt;](Tier.md)
+`tiersMode` | string
+`ui` | [PriceUI](PriceUI.md)
+`usageType` | string
 
 ## Example
 
@@ -31,23 +31,23 @@ import type { Price } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": basic_monthly_tiered,
-  "stripeId": price_1SRiyyCJIZaBlhY1NpAJFhNU,
-  "_public": true,
-  "taxIncludedInPrice": false,
-  "amount": 0.273,
-  "currency": null,
-  "interval": null,
-  "intervalCount": 1,
-  "usageType": null,
-  "meter": api_requests,
+  "amount": null,
   "billingScheme": null,
-  "_default": false,
-  "enterpriseTemplate": tier1_10pct_off,
-  "enterpriseId": acme_corp,
-  "ui": null,
-  "tiersMode": null,
+  "currency": null,
+  "_default": null,
+  "enterpriseId": null,
+  "enterpriseTemplate": null,
+  "id": null,
+  "interval": null,
+  "intervalCount": null,
+  "meter": null,
+  "_public": null,
+  "stripeId": null,
+  "taxIncludedInPrice": null,
   "tiers": null,
+  "tiersMode": null,
+  "ui": null,
+  "usageType": null,
 } satisfies Price
 
 console.log(example)

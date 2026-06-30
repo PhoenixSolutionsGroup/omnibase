@@ -7,7 +7,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
@@ -19,23 +20,33 @@ import (
 var DeleteObjectError = errors.New("Failed to delete file")
 
 type DeleteObjectRequest struct {
-	Path string `json:"path" binding:"required" example:"test/avatars/user-123.png"`
+	Path string `json:"path" required:"true" example:"test/avatars/user-123.png"`
 }
 
 type DeleteObjectResponse struct {
 	Message string `json:"message"`
 }
 
-func (h *Handler) DeleteObject(c *gin.Context) {
-	var req DeleteObjectRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
+type DeleteObjectInput struct {
+	handlers.AuthCtx
+	Body DeleteObjectRequest
+}
 
-	userID := c.GetString("user_id")
-	tenantID := c.GetString("tenant_id")
-	ctx := c.Request.Context()
+type DeleteObjectOutput struct {
+	Body DeleteObjectResponse
+}
+
+func (h *Handler) DeleteObject(ctx context.Context, in *DeleteObjectInput) (*DeleteObjectOutput, error) {
+	req := in.Body
+
+	userID := ""
+	if in.UserID != uuid.Nil {
+		userID = in.UserID.String()
+	}
+	tenantID := ""
+	if in.TenantID != uuid.Nil {
+		tenantID = in.TenantID.String()
+	}
 
 	row, err := h.repo.GetStorageObjectByPath(ctx, repository.GetStorageObjectByPathParams{
 		BucketName: h.bucketName,
@@ -44,29 +55,24 @@ func (h *Handler) DeleteObject(c *gin.Context) {
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(c, "File not found")
-			return
+			return nil, huma.Error404NotFound("File not found")
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DeleteObjectError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteObjectError, err).Error())
 	}
 
 	objectID := row.ID.String()
 	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
 	allowed, err := h.perms.Check(ctx, "StorageObject", objectID, "delete", subject)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DeleteObjectError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteObjectError, err).Error())
 	}
 	if !allowed {
-		handlers.NewForbiddenResponse(c, "You do not have permission to delete this file")
-		return
+		return nil, huma.Error403Forbidden("You do not have permission to delete this file")
 	}
 
 	if err := h.repo.DeleteStorageObjectByID(ctx, row.ID); err != nil {
 		logger.Logger.Error("Failed to delete file metadata", "object_id", objectID, "error", err)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", DeleteObjectError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteObjectError, err).Error())
 	}
 
 	if _, err := h.s3.DeleteObject(ctx, &s3.DeleteObjectInput{
@@ -78,7 +84,7 @@ func (h *Handler) DeleteObject(c *gin.Context) {
 
 	h.cleanupTuples(ctx, objectID)
 
-	handlers.NewSuccessResponse(c, DeleteObjectResponse{Message: "file deleted"})
+	return &DeleteObjectOutput{Body: DeleteObjectResponse{Message: "file deleted"}}, nil
 }
 
 func (h *Handler) cleanupTuples(ctx context.Context, objectID string) {
@@ -97,4 +103,3 @@ func (h *Handler) cleanupTuples(ctx context.Context, objectID string) {
 		}
 	}
 }
-

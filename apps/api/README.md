@@ -13,7 +13,9 @@ Go REST API for OmniBase, built with Gin framework and GORM.
 ## Directory Structure
 
 ```
-├── main.go              # Entry point
+├── cmd/
+│   ├── server/          # API server entry point
+│   └── openapi/         # OpenAPI spec dumper
 ├── internal/
 │   ├── config/          # Environment configuration
 │   ├── database/        # Database connection (GORM + PostgreSQL)
@@ -44,10 +46,10 @@ Go REST API for OmniBase, built with Gin framework and GORM.
 
 ```bash
 # Development
-go run main.go
+go run ./cmd/server
 
 # Build and run
-go build -o api && ./api
+go build -o api ./cmd/server && ./api
 
 # Hot-reload (if air is configured)
 air

@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Configuration ID | 
 **Config** | [**StripeConfigurationWithIDs**](StripeConfigurationWithIDs.md) |  | 
-**Version** | **string** | Configuration version | 
-**CreatedAt** | **time.Time** | Creation timestamp | 
-**UpdatedAt** | **time.Time** | Update timestamp | 
-**ParseError** | Pointer to **string** | Parse error if configuration is invalid | [optional] 
+**CreatedAt** | **string** |  | 
+**Id** | **string** |  | 
+**ParseError** | Pointer to **string** |  | [optional] 
+**UpdatedAt** | **string** |  | 
+**Version** | **string** |  | 
 
 ## Methods
 
 ### NewConfigHistoryItem
 
-`func NewConfigHistoryItem(id string, config StripeConfigurationWithIDs, version string, createdAt time.Time, updatedAt time.Time, ) *ConfigHistoryItem`
+`func NewConfigHistoryItem(config StripeConfigurationWithIDs, createdAt string, id string, updatedAt string, version string, ) *ConfigHistoryItem`
 
 NewConfigHistoryItem instantiates a new ConfigHistoryItem object
 This constructor will assign default values to properties that have it defined,
@@ -29,26 +29,6 @@ will change when the set of required properties is changed
 NewConfigHistoryItemWithDefaults instantiates a new ConfigHistoryItem object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
-
-### GetId
-
-`func (o *ConfigHistoryItem) GetId() string`
-
-GetId returns the Id field if non-nil, zero value otherwise.
-
-### GetIdOk
-
-`func (o *ConfigHistoryItem) GetIdOk() (*string, bool)`
-
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetId
-
-`func (o *ConfigHistoryItem) SetId(v string)`
-
-SetId sets Id field to given value.
-
 
 ### GetConfig
 
@@ -70,64 +50,44 @@ and a boolean to check if the value has been set.
 SetConfig sets Config field to given value.
 
 
-### GetVersion
-
-`func (o *ConfigHistoryItem) GetVersion() string`
-
-GetVersion returns the Version field if non-nil, zero value otherwise.
-
-### GetVersionOk
-
-`func (o *ConfigHistoryItem) GetVersionOk() (*string, bool)`
-
-GetVersionOk returns a tuple with the Version field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetVersion
-
-`func (o *ConfigHistoryItem) SetVersion(v string)`
-
-SetVersion sets Version field to given value.
-
-
 ### GetCreatedAt
 
-`func (o *ConfigHistoryItem) GetCreatedAt() time.Time`
+`func (o *ConfigHistoryItem) GetCreatedAt() string`
 
 GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
 ### GetCreatedAtOk
 
-`func (o *ConfigHistoryItem) GetCreatedAtOk() (*time.Time, bool)`
+`func (o *ConfigHistoryItem) GetCreatedAtOk() (*string, bool)`
 
 GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCreatedAt
 
-`func (o *ConfigHistoryItem) SetCreatedAt(v time.Time)`
+`func (o *ConfigHistoryItem) SetCreatedAt(v string)`
 
 SetCreatedAt sets CreatedAt field to given value.
 
 
-### GetUpdatedAt
+### GetId
 
-`func (o *ConfigHistoryItem) GetUpdatedAt() time.Time`
+`func (o *ConfigHistoryItem) GetId() string`
 
-GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetUpdatedAtOk
+### GetIdOk
 
-`func (o *ConfigHistoryItem) GetUpdatedAtOk() (*time.Time, bool)`
+`func (o *ConfigHistoryItem) GetIdOk() (*string, bool)`
 
-GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetUpdatedAt
+### SetId
 
-`func (o *ConfigHistoryItem) SetUpdatedAt(v time.Time)`
+`func (o *ConfigHistoryItem) SetId(v string)`
 
-SetUpdatedAt sets UpdatedAt field to given value.
+SetId sets Id field to given value.
 
 
 ### GetParseError
@@ -154,6 +114,46 @@ SetParseError sets ParseError field to given value.
 `func (o *ConfigHistoryItem) HasParseError() bool`
 
 HasParseError returns a boolean if a field has been set.
+
+### GetUpdatedAt
+
+`func (o *ConfigHistoryItem) GetUpdatedAt() string`
+
+GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
+
+### GetUpdatedAtOk
+
+`func (o *ConfigHistoryItem) GetUpdatedAtOk() (*string, bool)`
+
+GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdatedAt
+
+`func (o *ConfigHistoryItem) SetUpdatedAt(v string)`
+
+SetUpdatedAt sets UpdatedAt field to given value.
+
+
+### GetVersion
+
+`func (o *ConfigHistoryItem) GetVersion() string`
+
+GetVersion returns the Version field if non-nil, zero value otherwise.
+
+### GetVersionOk
+
+`func (o *ConfigHistoryItem) GetVersionOk() (*string, bool)`
+
+GetVersionOk returns a tuple with the Version field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetVersion
+
+`func (o *ConfigHistoryItem) SetVersion(v string)`
+
+SetVersion sets Version field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

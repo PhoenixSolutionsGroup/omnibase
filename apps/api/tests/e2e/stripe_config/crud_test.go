@@ -2,6 +2,7 @@ package stripe_config_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -21,6 +22,15 @@ func archiveAll(t *testing.T, client *sdk.APIClient) {
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
+func configAsMap(t *testing.T, cfg sdk.StripeConfiguration) map[string]interface{} {
+	t.Helper()
+	data, err := json.Marshal(cfg)
+	require.NoError(t, err)
+	var m map[string]interface{}
+	require.NoError(t, json.Unmarshal(data, &m))
+	return m
+}
+
 func TestStripeConfigCRUD(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping e2e test in -short")
@@ -35,8 +45,10 @@ func TestStripeConfigCRUD(t *testing.T) {
 
 		desc := "Created by CRUD test " + helpers.UniqueID()
 		productType := "service"
-		month := sdk.MONTH
-		req := sdk.StripeConfigUpdateRequest{
+		month := "month"
+		usd := "usd"
+		amount := float64(1000)
+		cfg := sdk.StripeConfiguration{
 			Version: "v1.0.0",
 			Products: []sdk.Product{
 				{
@@ -45,19 +57,19 @@ func TestStripeConfigCRUD(t *testing.T) {
 					Description: &desc,
 					Type:        &productType,
 					Prices: []sdk.Price{
-						sdk.PerUnitPriceAsPrice(&sdk.PerUnitPrice{
+						{
 							Id:            "test_price_crud_monthly",
-							Amount:        1000,
-							Currency:      sdk.USD,
+							Amount:        &amount,
+							Currency:      usd,
 							Interval:      &month,
-							IntervalCount: ptrInt32(1),
-						}),
+							IntervalCount: ptrInt64(1),
+						},
 					},
 				},
 			},
 		}
 		out, resp, err := sb.Client.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).
-			StripeConfigUpdateRequest(req).
+			Body(configAsMap(t, cfg)).
 			Execute()
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -100,34 +112,37 @@ func TestStripeConfigCRUD(t *testing.T) {
 	t.Run("public config filters private prices", func(t *testing.T) {
 		archiveAll(t, sb.Client)
 
-		month := sdk.MONTH
-		req := sdk.StripeConfigUpdateRequest{
+		month := "month"
+		usd := "usd"
+		pubAmount := float64(1000)
+		privAmount := float64(500)
+		cfg := sdk.StripeConfiguration{
 			Version: "v1.0.0",
 			Products: []sdk.Product{
 				{
 					Id:   "test_filter_product",
 					Name: "Filter Test Product",
 					Prices: []sdk.Price{
-						sdk.PerUnitPriceAsPrice(&sdk.PerUnitPrice{
+						{
 							Id:       "public_price",
-							Amount:   1000,
-							Currency: sdk.USD,
+							Amount:   &pubAmount,
+							Currency: usd,
 							Interval: &month,
 							Public:   ptrBool(true),
-						}),
-						sdk.PerUnitPriceAsPrice(&sdk.PerUnitPrice{
+						},
+						{
 							Id:       "private_price",
-							Amount:   500,
-							Currency: sdk.USD,
+							Amount:   &privAmount,
+							Currency: usd,
 							Interval: &month,
 							Public:   ptrBool(false),
-						}),
+						},
 					},
 				},
 			},
 		}
 		_, resp, err := sb.Client.V1ConfigurationAPI.UpdateStripeConfig(context.Background()).
-			StripeConfigUpdateRequest(req).
+			Body(configAsMap(t, cfg)).
 			Execute()
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -184,4 +199,4 @@ func TestStripeConfigCRUD(t *testing.T) {
 }
 
 func ptrBool(b bool) *bool    { return &b }
-func ptrInt32(i int32) *int32 { return &i }
+func ptrInt64(i int64) *int64 { return &i }

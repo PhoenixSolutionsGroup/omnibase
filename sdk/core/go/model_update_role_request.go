@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,9 +20,8 @@ import (
 // checks if the UpdateRoleRequest type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &UpdateRoleRequest{}
 
-// UpdateRoleRequest Request to update an existing role
+// UpdateRoleRequest struct for UpdateRoleRequest
 type UpdateRoleRequest struct {
-	// Updated list of permissions
 	Permissions []string `json:"permissions"`
 }
 
@@ -47,6 +46,7 @@ func NewUpdateRoleRequestWithDefaults() *UpdateRoleRequest {
 }
 
 // GetPermissions returns the Permissions field value
+// If the value is explicit nil, the zero value for []string will be returned
 func (o *UpdateRoleRequest) GetPermissions() []string {
 	if o == nil {
 		var ret []string
@@ -58,8 +58,9 @@ func (o *UpdateRoleRequest) GetPermissions() []string {
 
 // GetPermissionsOk returns a tuple with the Permissions field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *UpdateRoleRequest) GetPermissionsOk() ([]string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Permissions) {
 		return nil, false
 	}
 	return o.Permissions, true
@@ -80,7 +81,9 @@ func (o UpdateRoleRequest) MarshalJSON() ([]byte, error) {
 
 func (o UpdateRoleRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["permissions"] = o.Permissions
+	if o.Permissions != nil {
+		toSerialize["permissions"] = o.Permissions
+	}
 	return toSerialize, nil
 }
 

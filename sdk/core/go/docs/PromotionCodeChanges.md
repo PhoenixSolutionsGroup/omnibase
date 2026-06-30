@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Created** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) | Promotion codes that were created in Stripe | [optional] 
-**Updated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) | Promotion codes that were updated | [optional] 
-**Deactivated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) | Promotion codes that were deactivated | [optional] 
+**Created** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
+**Deactivated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
+**Updated** | Pointer to [**[]PromotionCodeChange**](PromotionCodeChange.md) |  | [optional] 
 
 ## Methods
 
@@ -52,31 +52,16 @@ SetCreated sets Created field to given value.
 
 HasCreated returns a boolean if a field has been set.
 
-### GetUpdated
+### SetCreatedNil
 
-`func (o *PromotionCodeChanges) GetUpdated() []PromotionCodeChange`
+`func (o *PromotionCodeChanges) SetCreatedNil(b bool)`
 
-GetUpdated returns the Updated field if non-nil, zero value otherwise.
+ SetCreatedNil sets the value for Created to be an explicit nil
 
-### GetUpdatedOk
+### UnsetCreated
+`func (o *PromotionCodeChanges) UnsetCreated()`
 
-`func (o *PromotionCodeChanges) GetUpdatedOk() (*[]PromotionCodeChange, bool)`
-
-GetUpdatedOk returns a tuple with the Updated field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetUpdated
-
-`func (o *PromotionCodeChanges) SetUpdated(v []PromotionCodeChange)`
-
-SetUpdated sets Updated field to given value.
-
-### HasUpdated
-
-`func (o *PromotionCodeChanges) HasUpdated() bool`
-
-HasUpdated returns a boolean if a field has been set.
-
+UnsetCreated ensures that no value is present for Created, not even an explicit nil
 ### GetDeactivated
 
 `func (o *PromotionCodeChanges) GetDeactivated() []PromotionCodeChange`
@@ -102,6 +87,51 @@ SetDeactivated sets Deactivated field to given value.
 
 HasDeactivated returns a boolean if a field has been set.
 
+### SetDeactivatedNil
+
+`func (o *PromotionCodeChanges) SetDeactivatedNil(b bool)`
+
+ SetDeactivatedNil sets the value for Deactivated to be an explicit nil
+
+### UnsetDeactivated
+`func (o *PromotionCodeChanges) UnsetDeactivated()`
+
+UnsetDeactivated ensures that no value is present for Deactivated, not even an explicit nil
+### GetUpdated
+
+`func (o *PromotionCodeChanges) GetUpdated() []PromotionCodeChange`
+
+GetUpdated returns the Updated field if non-nil, zero value otherwise.
+
+### GetUpdatedOk
+
+`func (o *PromotionCodeChanges) GetUpdatedOk() (*[]PromotionCodeChange, bool)`
+
+GetUpdatedOk returns a tuple with the Updated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdated
+
+`func (o *PromotionCodeChanges) SetUpdated(v []PromotionCodeChange)`
+
+SetUpdated sets Updated field to given value.
+
+### HasUpdated
+
+`func (o *PromotionCodeChanges) HasUpdated() bool`
+
+HasUpdated returns a boolean if a field has been set.
+
+### SetUpdatedNil
+
+`func (o *PromotionCodeChanges) SetUpdatedNil(b bool)`
+
+ SetUpdatedNil sets the value for Updated to be an explicit nil
+
+### UnsetUpdated
+`func (o *PromotionCodeChanges) UnsetUpdated()`
+
+UnsetUpdated ensures that no value is present for Updated, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

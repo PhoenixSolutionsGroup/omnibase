@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,13 +22,9 @@ var _ MappedNullable = &CouponChange{}
 
 // CouponChange struct for CouponChange
 type CouponChange struct {
-	// Coupon config ID
-	CouponId string `json:"coupon_id"`
-	// Coupon name
-	Name string `json:"name"`
-	// Action performed on the coupon
 	Action string `json:"action"`
-	// Stripe coupon ID
+	CouponId string `json:"coupon_id"`
+	Name string `json:"name"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -38,11 +34,11 @@ type _CouponChange CouponChange
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCouponChange(couponId string, name string, action string) *CouponChange {
+func NewCouponChange(action string, couponId string, name string) *CouponChange {
 	this := CouponChange{}
+	this.Action = action
 	this.CouponId = couponId
 	this.Name = name
-	this.Action = action
 	return &this
 }
 
@@ -52,6 +48,30 @@ func NewCouponChange(couponId string, name string, action string) *CouponChange 
 func NewCouponChangeWithDefaults() *CouponChange {
 	this := CouponChange{}
 	return &this
+}
+
+// GetAction returns the Action field value
+func (o *CouponChange) GetAction() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Action
+}
+
+// GetActionOk returns a tuple with the Action field value
+// and a boolean to check if the value has been set.
+func (o *CouponChange) GetActionOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Action, true
+}
+
+// SetAction sets field value
+func (o *CouponChange) SetAction(v string) {
+	o.Action = v
 }
 
 // GetCouponId returns the CouponId field value
@@ -102,30 +122,6 @@ func (o *CouponChange) SetName(v string) {
 	o.Name = v
 }
 
-// GetAction returns the Action field value
-func (o *CouponChange) GetAction() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Action
-}
-
-// GetActionOk returns a tuple with the Action field value
-// and a boolean to check if the value has been set.
-func (o *CouponChange) GetActionOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Action, true
-}
-
-// SetAction sets field value
-func (o *CouponChange) SetAction(v string) {
-	o.Action = v
-}
-
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
 func (o *CouponChange) GetStripeId() string {
 	if o == nil || IsNil(o.StripeId) {
@@ -168,9 +164,9 @@ func (o CouponChange) MarshalJSON() ([]byte, error) {
 
 func (o CouponChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["action"] = o.Action
 	toSerialize["coupon_id"] = o.CouponId
 	toSerialize["name"] = o.Name
-	toSerialize["action"] = o.Action
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
 	}
@@ -182,9 +178,9 @@ func (o *CouponChange) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"action",
 		"coupon_id",
 		"name",
-		"action",
 	}
 
 	allProperties := make(map[string]interface{})

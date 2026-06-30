@@ -25,8 +25,6 @@ All URIs are relative to *https://api.omnibase.tech*
 
 Apply custom enterprise pricing
 
-Applies tenant-specific enterprise pricing to a tenant. This swaps the tenant\&#39;s active subscription prices to custom enterprise prices identified by enterprise_id.  ## Authentication Requires service key authentication.  ## Use Cases - Apply custom negotiated pricing for specific enterprise customers - Tenant-specific pricing overrides - Custom enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching &#x60;enterprise_id&#x60; 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\&#39;s &#x60;enterprise_id&#x60; field for future provisioning 
-
 ### Example
 
 ```ts
@@ -79,17 +77,14 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Custom enterprise pricing applied successfully |  -  |
-| **400** | Invalid request or tenant has no Stripe customer ID |  -  |
-| **401** | Invalid or missing service key |  -  |
-| **404** | Tenant or enterprise_id not found |  -  |
-| **500** | Failed to apply enterprise pricing |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -99,8 +94,6 @@ example().catch(console.error);
 > EnterpriseApplyResponse applyEnterpriseTemplate(applyEnterpriseTemplateRequest)
 
 Apply enterprise template pricing
-
-Applies template-based enterprise pricing to a tenant. This swaps the tenant\&#39;s active subscription prices to the corresponding enterprise template prices.  ## Authentication Requires service key authentication.  ## Use Cases - Apply pre-defined discount tiers to enterprise customers - Bulk pricing changes for enterprise accounts - Template-based enterprise onboarding  ## Flow 1. Validates tenant exists and has Stripe customer ID 2. Fetches all prices with matching &#x60;enterprise_template&#x60; 3. Swaps subscription item prices to enterprise equivalents 4. Updates tenant\&#39;s &#x60;enterprise_template&#x60; field for future provisioning 
 
 ### Example
 
@@ -154,17 +147,14 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Enterprise template pricing applied successfully |  -  |
-| **400** | Invalid request or tenant has no Stripe customer ID |  -  |
-| **401** | Invalid or missing service key |  -  |
-| **404** | Tenant or enterprise template not found |  -  |
-| **500** | Failed to apply enterprise pricing |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -174,8 +164,6 @@ example().catch(console.error);
 > CalculatePriceCostResponse calculatePriceCost(priceId, calculatePriceCostRequest)
 
 Calculate cost for a price
-
-Calculates the cost in cents for a given quantity of a price, handling both flat and tiered pricing.  ## Authentication No authentication required for public endpoint.  ## Pricing Modes - **per_unit**: Simple flat pricing where cost &#x3D; unit_amount × quantity - **tiered (graduated)**: Each tier\&#39;s price applies only to units in that tier (like tax brackets) - **tiered (volume)**: The applicable tier\&#39;s price applies to ALL units  ## Use Cases - Calculate estimated costs for usage preview - Display cost estimates in dashboard - Usage billing calculations 
 
 ### Example
 
@@ -191,8 +179,8 @@ async function example() {
   const api = new V1StripeApi();
 
   const body = {
-    // string | Price config ID
-    priceId: compute_hourly,
+    // string
+    priceId: priceId_example,
     // CalculatePriceCostRequest
     calculatePriceCostRequest: ...,
   } satisfies CalculatePriceCostOperationRequest;
@@ -214,7 +202,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **priceId** | `string` | Price config ID | [Defaults to `undefined`] |
+| **priceId** | `string` |  | [Defaults to `undefined`] |
 | **calculatePriceCostRequest** | [CalculatePriceCostRequest](CalculatePriceCostRequest.md) |  | |
 
 ### Return type
@@ -228,27 +216,23 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Cost calculated successfully |  -  |
-| **400** | Invalid request or missing quantity |  -  |
-| **404** | Price not found |  -  |
-| **500** | Failed to calculate cost |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## convertStripeIDToConfigID
 
-> StripeIDConversionResponse convertStripeIDToConfigID(stripeId)
+> ConvertStripeIDResponse convertStripeIDToConfigID(stripeId)
 
 Convert Stripe ID to config ID
-
-Converts a Stripe ID (product, price, or meter) to the corresponding config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Webhook processing - Subscription mapping - Price lookups 
 
 ### Example
 
@@ -264,8 +248,8 @@ async function example() {
   const api = new V1StripeApi();
 
   const body = {
-    // string | Stripe ID to convert
-    stripeId: price_1SRiyyCJIZaBlhY1NpAJFhNU,
+    // string
+    stripeId: stripeId_example,
   } satisfies ConvertStripeIDToConfigIDRequest;
 
   try {
@@ -285,11 +269,11 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **stripeId** | `string` | Stripe ID to convert | [Defaults to `undefined`] |
+| **stripeId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
-[**StripeIDConversionResponse**](StripeIDConversionResponse.md)
+[**ConvertStripeIDResponse**](ConvertStripeIDResponse.md)
 
 ### Authorization
 
@@ -298,16 +282,14 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Config ID found |  -  |
-| **400** | Missing Stripe ID |  -  |
-| **404** | Mapping not found |  -  |
-| **500** | Failed to retrieve mapping |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -317,8 +299,6 @@ No authorization required
 > EnterprisePricesResponse getEnterprisePricesByID(enterpriseId)
 
 Get enterprise prices by ID
-
-Retrieves prices filtered by enterprise ID.  ## Authentication Requires service key authentication.  ## Use Cases - View custom pricing for a specific enterprise - Provisioning services for enterprise tenants 
 
 ### Example
 
@@ -338,8 +318,8 @@ async function example() {
   const api = new V1StripeApi(config);
 
   const body = {
-    // string | Enterprise ID to filter by
-    enterpriseId: acme_corp,
+    // string
+    enterpriseId: enterpriseId_example,
   } satisfies GetEnterprisePricesByIDRequest;
 
   try {
@@ -359,7 +339,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **enterpriseId** | `string` | Enterprise ID to filter by | [Defaults to `undefined`] |
+| **enterpriseId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -372,15 +352,14 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Enterprise prices retrieved successfully |  -  |
-| **401** | Invalid or missing service key |  -  |
-| **500** | Failed to retrieve enterprise prices |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -390,8 +369,6 @@ example().catch(console.error);
 > EnterprisePricesResponse getEnterprisePricesByTemplate(template)
 
 Get enterprise prices by template
-
-Retrieves prices filtered by enterprise template.  ## Authentication Requires service key authentication.  ## Use Cases - List available enterprise prices for a template - Provisioning services for enterprise tenants 
 
 ### Example
 
@@ -411,8 +388,8 @@ async function example() {
   const api = new V1StripeApi(config);
 
   const body = {
-    // string | Enterprise template to filter by
-    template: tier1_10pct_off,
+    // string
+    template: template_example,
   } satisfies GetEnterprisePricesByTemplateRequest;
 
   try {
@@ -432,7 +409,7 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **template** | `string` | Enterprise template to filter by | [Defaults to `undefined`] |
+| **template** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
@@ -445,26 +422,23 @@ example().catch(console.error);
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Enterprise prices retrieved successfully |  -  |
-| **401** | Invalid or missing service key |  -  |
-| **500** | Failed to retrieve enterprise prices |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getMeterByID
 
-> MeterResponse getMeterByID(meterId)
+> GetMeterResponse getMeterByID(meterId)
 
 Get meter by ID
-
-Returns a specific billing meter from the Stripe configuration by its config ID.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch meter details for usage tracking - Display metered billing information - Usage reporting configuration 
 
 ### Example
 
@@ -480,8 +454,8 @@ async function example() {
   const api = new V1StripeApi();
 
   const body = {
-    // string | Meter config ID
-    meterId: api_requests,
+    // string
+    meterId: meterId_example,
   } satisfies GetMeterByIDRequest;
 
   try {
@@ -501,11 +475,11 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **meterId** | `string` | Meter config ID | [Defaults to `undefined`] |
+| **meterId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
-[**MeterResponse**](MeterResponse.md)
+[**GetMeterResponse**](GetMeterResponse.md)
 
 ### Authorization
 
@@ -514,27 +488,23 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Meter found |  -  |
-| **400** | Missing meter_id |  -  |
-| **404** | Meter not found |  -  |
-| **500** | Failed to retrieve meter |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getPriceByID
 
-> PriceResponse getPriceByID(priceId)
+> GetPriceResponse getPriceByID(priceId)
 
 Get price by ID
-
-Returns a specific price from the Stripe configuration by its config ID, along with its parent product.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch price details for checkout - Display specific pricing information - Subscription management 
 
 ### Example
 
@@ -550,8 +520,8 @@ async function example() {
   const api = new V1StripeApi();
 
   const body = {
-    // string | Price config ID
-    priceId: basic_monthly,
+    // string
+    priceId: priceId_example,
   } satisfies GetPriceByIDRequest;
 
   try {
@@ -571,11 +541,11 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **priceId** | `string` | Price config ID | [Defaults to `undefined`] |
+| **priceId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
-[**PriceResponse**](PriceResponse.md)
+[**GetPriceResponse**](GetPriceResponse.md)
 
 ### Authorization
 
@@ -584,27 +554,23 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Price found |  -  |
-| **400** | Missing price_id |  -  |
-| **404** | Price not found |  -  |
-| **500** | Failed to retrieve price |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## getProductByID
 
-> ProductResponse getProductByID(productId)
+> GetProductResponse getProductByID(productId)
 
 Get product by ID
-
-Returns a specific product from the Stripe configuration by its config ID, including all its prices.  ## Authentication No authentication required for public endpoint.  ## Use Cases - Fetch product details - Display product information with all price options - Product catalog pages 
 
 ### Example
 
@@ -620,8 +586,8 @@ async function example() {
   const api = new V1StripeApi();
 
   const body = {
-    // string | Product config ID
-    productId: basic_plan,
+    // string
+    productId: productId_example,
   } satisfies GetProductByIDRequest;
 
   try {
@@ -641,11 +607,11 @@ example().catch(console.error);
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **productId** | `string` | Product config ID | [Defaults to `undefined`] |
+| **productId** | `string` |  | [Defaults to `undefined`] |
 
 ### Return type
 
-[**ProductResponse**](ProductResponse.md)
+[**GetProductResponse**](GetProductResponse.md)
 
 ### Authorization
 
@@ -654,16 +620,14 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Product found |  -  |
-| **400** | Missing product_id |  -  |
-| **404** | Product not found |  -  |
-| **500** | Failed to retrieve product |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -673,8 +637,6 @@ No authorization required
 > StripeConfigResponse getStripeConfig()
 
 Get public Stripe config
-
-Returns the current Stripe configuration with public prices only (filters out enterprise prices).  ## Authentication No authentication required for public endpoint.  ## Use Cases - Display pricing to users - Build subscription selection UI - Public pricing pages 
 
 ### Example
 
@@ -716,14 +678,14 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Stripe configuration retrieved successfully |  -  |
-| **500** | Failed to retrieve configuration |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -733,8 +695,6 @@ No authorization required
 > StripeConfigResponse getStripeConfigAdmin()
 
 Get full Stripe config (admin)
-
-Returns the complete Stripe configuration including all prices (both public and enterprise).  ## Authentication Requires admin JWT token.  ## Use Cases - Admin configuration management - Enterprise pricing display - Configuration auditing 
 
 ### Example
 
@@ -780,15 +740,14 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Full Stripe configuration retrieved successfully |  -  |
-| **401** | Invalid or missing admin token |  -  |
-| **500** | Failed to retrieve configuration |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
@@ -798,8 +757,6 @@ This endpoint does not need any parameter.
 > ListWebhooksResponse listWebhooks()
 
 List all webhooks
-
-Retrieves all configured webhook endpoints with their signing secrets.  ## Authentication Requires service key authentication.  ## Use Cases - List all webhook configurations - Retrieve signing secrets for webhook signature verification - Debug webhook configuration 
 
 ### Example
 
@@ -845,15 +802,14 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: `application/json`
+- **Accept**: `application/json`, `application/problem+json`
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Webhooks retrieved successfully |  -  |
-| **401** | Invalid or missing service key |  -  |
-| **500** | Failed to retrieve webhooks |  -  |
+| **200** | OK |  -  |
+| **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

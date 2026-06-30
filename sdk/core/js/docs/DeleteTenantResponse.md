@@ -1,7 +1,6 @@
 
 # DeleteTenantResponse
 
-Response after deleting a tenant
 
 ## Properties
 
@@ -16,7 +15,7 @@ import type { DeleteTenantResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Tenant deleted successfully,
+  "message": null,
 } satisfies DeleteTenantResponse
 
 console.log(example)

@@ -13,7 +13,7 @@ func NewValidator() *Validator {
 	return &Validator{}
 }
 
-func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*Configuration, error) {
+func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*StripeConfiguration, error) {
 	productsValue, hasProducts := configData["products"]
 	if !hasProducts {
 		return nil, fmt.Errorf("products is required")
@@ -39,7 +39,7 @@ func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*Configuratio
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal config data: %w", err)
 	}
-	var config Configuration
+	var config StripeConfiguration
 	if err := json.Unmarshal(configBytes, &config); err != nil {
 		return nil, fmt.Errorf("invalid JSON structure: %w", err)
 	}
@@ -268,7 +268,7 @@ func (v *Validator) validateMeter(meter Meter) error {
 	return nil
 }
 
-func (v *Validator) validateMeterReferences(config Configuration) error {
+func (v *Validator) validateMeterReferences(config StripeConfiguration) error {
 	defined := make(map[string]bool)
 	for _, m := range config.Meters {
 		defined[m.ID] = true
@@ -403,6 +403,6 @@ func (v *Validator) validatePromotionCode(promo PromotionCode, couponIDs map[str
 	return nil
 }
 
-func (v *Validator) ParseAndValidate(configData ConfigData) (*Configuration, error) {
+func (v *Validator) ParseAndValidate(configData ConfigData) (*StripeConfiguration, error) {
 	return v.ParseAndValidateConfig(configData)
 }

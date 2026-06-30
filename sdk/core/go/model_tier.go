@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the Tier type satisfies the MappedNullable interface at compile time
@@ -20,19 +22,20 @@ var _ MappedNullable = &Tier{}
 
 // Tier struct for Tier
 type Tier struct {
-	UpTo *TierUpTo `json:"up_to,omitempty"`
-	// Flat fee for this tier
 	FlatAmount *int64 `json:"flat_amount,omitempty"`
-	// Per-unit price for this tier
 	UnitAmount *int64 `json:"unit_amount,omitempty"`
+	UpTo interface{} `json:"up_to"`
 }
+
+type _Tier Tier
 
 // NewTier instantiates a new Tier object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTier() *Tier {
+func NewTier(upTo interface{}) *Tier {
 	this := Tier{}
+	this.UpTo = upTo
 	return &this
 }
 
@@ -42,38 +45,6 @@ func NewTier() *Tier {
 func NewTierWithDefaults() *Tier {
 	this := Tier{}
 	return &this
-}
-
-// GetUpTo returns the UpTo field value if set, zero value otherwise.
-func (o *Tier) GetUpTo() TierUpTo {
-	if o == nil || IsNil(o.UpTo) {
-		var ret TierUpTo
-		return ret
-	}
-	return *o.UpTo
-}
-
-// GetUpToOk returns a tuple with the UpTo field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Tier) GetUpToOk() (*TierUpTo, bool) {
-	if o == nil || IsNil(o.UpTo) {
-		return nil, false
-	}
-	return o.UpTo, true
-}
-
-// HasUpTo returns a boolean if a field has been set.
-func (o *Tier) HasUpTo() bool {
-	if o != nil && !IsNil(o.UpTo) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpTo gets a reference to the given TierUpTo and assigns it to the UpTo field.
-func (o *Tier) SetUpTo(v TierUpTo) {
-	o.UpTo = &v
 }
 
 // GetFlatAmount returns the FlatAmount field value if set, zero value otherwise.
@@ -140,6 +111,32 @@ func (o *Tier) SetUnitAmount(v int64) {
 	o.UnitAmount = &v
 }
 
+// GetUpTo returns the UpTo field value
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *Tier) GetUpTo() interface{} {
+	if o == nil {
+		var ret interface{}
+		return ret
+	}
+
+	return o.UpTo
+}
+
+// GetUpToOk returns a tuple with the UpTo field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Tier) GetUpToOk() (*interface{}, bool) {
+	if o == nil || IsNil(o.UpTo) {
+		return nil, false
+	}
+	return &o.UpTo, true
+}
+
+// SetUpTo sets field value
+func (o *Tier) SetUpTo(v interface{}) {
+	o.UpTo = v
+}
+
 func (o Tier) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -150,16 +147,53 @@ func (o Tier) MarshalJSON() ([]byte, error) {
 
 func (o Tier) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.UpTo) {
-		toSerialize["up_to"] = o.UpTo
-	}
 	if !IsNil(o.FlatAmount) {
 		toSerialize["flat_amount"] = o.FlatAmount
 	}
 	if !IsNil(o.UnitAmount) {
 		toSerialize["unit_amount"] = o.UnitAmount
 	}
+	if o.UpTo != nil {
+		toSerialize["up_to"] = o.UpTo
+	}
 	return toSerialize, nil
+}
+
+func (o *Tier) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"up_to",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varTier := _Tier{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varTier)
+
+	if err != nil {
+		return err
+	}
+
+	*o = Tier(varTier)
+
+	return err
 }
 
 type NullableTier struct {

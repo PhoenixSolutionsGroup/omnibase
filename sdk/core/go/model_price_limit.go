@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,12 +22,9 @@ var _ MappedNullable = &PriceLimit{}
 
 // PriceLimit struct for PriceLimit
 type PriceLimit struct {
-	// Limit description
 	Text string `json:"text"`
-	// Numeric limit value
-	Value *float64 `json:"value,omitempty"`
-	// Unit of measurement
 	Unit *string `json:"unit,omitempty"`
+	Value *float64 `json:"value,omitempty"`
 }
 
 type _PriceLimit PriceLimit
@@ -74,38 +71,6 @@ func (o *PriceLimit) SetText(v string) {
 	o.Text = v
 }
 
-// GetValue returns the Value field value if set, zero value otherwise.
-func (o *PriceLimit) GetValue() float64 {
-	if o == nil || IsNil(o.Value) {
-		var ret float64
-		return ret
-	}
-	return *o.Value
-}
-
-// GetValueOk returns a tuple with the Value field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceLimit) GetValueOk() (*float64, bool) {
-	if o == nil || IsNil(o.Value) {
-		return nil, false
-	}
-	return o.Value, true
-}
-
-// HasValue returns a boolean if a field has been set.
-func (o *PriceLimit) HasValue() bool {
-	if o != nil && !IsNil(o.Value) {
-		return true
-	}
-
-	return false
-}
-
-// SetValue gets a reference to the given float64 and assigns it to the Value field.
-func (o *PriceLimit) SetValue(v float64) {
-	o.Value = &v
-}
-
 // GetUnit returns the Unit field value if set, zero value otherwise.
 func (o *PriceLimit) GetUnit() string {
 	if o == nil || IsNil(o.Unit) {
@@ -138,6 +103,38 @@ func (o *PriceLimit) SetUnit(v string) {
 	o.Unit = &v
 }
 
+// GetValue returns the Value field value if set, zero value otherwise.
+func (o *PriceLimit) GetValue() float64 {
+	if o == nil || IsNil(o.Value) {
+		var ret float64
+		return ret
+	}
+	return *o.Value
+}
+
+// GetValueOk returns a tuple with the Value field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceLimit) GetValueOk() (*float64, bool) {
+	if o == nil || IsNil(o.Value) {
+		return nil, false
+	}
+	return o.Value, true
+}
+
+// HasValue returns a boolean if a field has been set.
+func (o *PriceLimit) HasValue() bool {
+	if o != nil && !IsNil(o.Value) {
+		return true
+	}
+
+	return false
+}
+
+// SetValue gets a reference to the given float64 and assigns it to the Value field.
+func (o *PriceLimit) SetValue(v float64) {
+	o.Value = &v
+}
+
 func (o PriceLimit) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -149,11 +146,11 @@ func (o PriceLimit) MarshalJSON() ([]byte, error) {
 func (o PriceLimit) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["text"] = o.Text
-	if !IsNil(o.Value) {
-		toSerialize["value"] = o.Value
-	}
 	if !IsNil(o.Unit) {
 		toSerialize["unit"] = o.Unit
+	}
+	if !IsNil(o.Value) {
+		toSerialize["value"] = o.Value
 	}
 	return toSerialize, nil
 }

@@ -1,52 +1,60 @@
 package roles
 
 import (
+	"context"
 	"errors"
 	"fmt"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/services/permissions"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 )
 
-func (h *Handler) DeleteRole(c *gin.Context) {
-	userUuid, tenantUuid := handlers.UserAndTenant(c)
+var DeleteRoleError = errors.New("Failed to delete role")
+
+type DeleteRoleInput struct {
+	handlers.AuthCtx
+	RoleID string `path:"role_id"`
+}
+
+type DeleteRoleOutput struct {
+	Body any
+}
+
+func (h *Handler) DeleteRole(ctx context.Context, in *DeleteRoleInput) (*DeleteRoleOutput, error) {
+	userUuid := in.UserID
+	tenantUuid := in.TenantID
 
 	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canDeleteRoles, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "delete_roles", subject)
+	canDeleteRoles, err := h.perms.Check(ctx, "Tenant", tenantUuid.String(), "delete_roles", subject)
 	if err != nil {
 		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantUuid, "user_id", userUuid)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("Failed to check permissions: %w", err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteRoleError, err).Error())
 	}
 	if !canDeleteRoles {
-		handlers.NewForbiddenResponse(c, "Insufficient permissions - must have `delete_roles` permission")
-		return
+		return nil, huma.Error403Forbidden("Insufficient permissions - must have `delete_roles` permission")
 	}
 
-	roleUuid, err := uuid.Parse(c.Param("role_id"))
+	roleUuid, err := uuid.Parse(in.RoleID)
 	if err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid role_id")
-		return
+		return nil, huma.Error400BadRequest("Invalid role_id")
 	}
 
-	role, err := h.repo.GetRoleByIDAndTenant(c.Request.Context(), repository.GetRoleByIDAndTenantParams{
+	role, err := h.repo.GetRoleByIDAndTenant(ctx, repository.GetRoleByIDAndTenantParams{
 		ID:       roleUuid,
 		TenantID: tenantUuid,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(c, "Role not found")
-			return
+			return nil, huma.Error404NotFound("Role not found")
 		}
 		logger.Logger.Error("Failed to fetch role", "role_id", roleUuid, "error", err)
-		handlers.NewInternalServerErrorResponse(c, err)
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteRoleError, err).Error())
 	}
 
 	logger.Logger.Debug("Revoking keto tuples for role", "role_id", roleUuid, "role_name", role.RoleName, "user_count", len(role.UserIds), "permissions_count", len(role.Permissions))
@@ -56,19 +64,18 @@ func (h *Handler) DeleteRole(c *gin.Context) {
 			if perr != nil {
 				continue
 			}
-			_ = h.perms.Delete(c.Request.Context(), ns, obj, rel, permissions.SubjectSet{Namespace: "User", Object: uid.String()})
+			_ = h.perms.Delete(ctx, ns, obj, rel, permissions.SubjectSet{Namespace: "User", Object: uid.String()})
 		}
 	}
 
-	if err := h.repo.DeleteRoleByIDAndTenant(c.Request.Context(), repository.DeleteRoleByIDAndTenantParams{
+	if err := h.repo.DeleteRoleByIDAndTenant(ctx, repository.DeleteRoleByIDAndTenantParams{
 		ID:       roleUuid,
 		TenantID: tenantUuid,
 	}); err != nil {
 		logger.Logger.Error("Failed to delete role", "role_id", roleUuid, "error", err)
-		handlers.NewInternalServerErrorResponse(c, err)
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteRoleError, err).Error())
 	}
 
 	logger.Logger.Info("Deleted role", "role_id", roleUuid, "role_name", role.RoleName)
-	handlers.NewSuccessResponse(c, nil)
+	return &DeleteRoleOutput{}, nil
 }

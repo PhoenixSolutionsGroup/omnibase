@@ -101,8 +101,8 @@ func TestEnterprisePricingApplyTemplate(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, got)
-		require.NotNil(t, got.EnterpriseTemplate)
-		assert.Equal(t, "tier1_10pct_off", *got.EnterpriseTemplate)
+		require.True(t, got.EnterpriseTemplate.IsSet())
+		assert.Equal(t, "tier1_10pct_off", *got.EnterpriseTemplate.Get())
 	})
 }
 
@@ -152,8 +152,8 @@ func TestEnterprisePricingApplyCustom(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, got)
-		require.NotNil(t, got.EnterpriseId)
-		assert.Equal(t, "acme_corp", *got.EnterpriseId)
+		require.True(t, got.EnterpriseId.IsSet())
+		assert.Equal(t, "acme_corp", *got.EnterpriseId.Get())
 	})
 }
 

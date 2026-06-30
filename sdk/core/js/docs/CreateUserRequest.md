@@ -7,8 +7,8 @@
 Name | Type
 ------------ | -------------
 `email` | string
+`name` | [IdentityName](IdentityName.md)
 `password` | string
-`name` | [CreateUserRequestName](CreateUserRequestName.md)
 
 ## Example
 
@@ -17,9 +17,9 @@ import type { CreateUserRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "email": user@example.com,
-  "password": securepassword123,
+  "email": null,
   "name": null,
+  "password": null,
 } satisfies CreateUserRequest
 
 console.log(example)

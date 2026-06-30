@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Template ID (UUID) | 
-**Type** | **string** | Template type identifier | 
-**Subject** | **string** | Email subject line | 
-**HtmlBody** | **string** | HTML email body content | 
-**CreatedAt** | **time.Time** | Creation timestamp | 
-**UpdatedAt** | **time.Time** | Last update timestamp | 
+**CreatedAt** | **time.Time** |  | 
+**HtmlBody** | **string** |  | 
+**Id** | **string** |  | 
+**Subject** | **string** |  | 
+**Type** | **string** |  | 
+**UpdatedAt** | **time.Time** |  | 
 
 ## Methods
 
 ### NewEmailTemplate
 
-`func NewEmailTemplate(id string, type_ string, subject string, htmlBody string, createdAt time.Time, updatedAt time.Time, ) *EmailTemplate`
+`func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, type_ string, updatedAt time.Time, ) *EmailTemplate`
 
 NewEmailTemplate instantiates a new EmailTemplate object
 This constructor will assign default values to properties that have it defined,
@@ -30,64 +30,24 @@ NewEmailTemplateWithDefaults instantiates a new EmailTemplate object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
+### GetCreatedAt
 
-`func (o *EmailTemplate) GetId() string`
+`func (o *EmailTemplate) GetCreatedAt() time.Time`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetCreatedAtOk
 
-`func (o *EmailTemplate) GetIdOk() (*string, bool)`
+`func (o *EmailTemplate) GetCreatedAtOk() (*time.Time, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetCreatedAt
 
-`func (o *EmailTemplate) SetId(v string)`
+`func (o *EmailTemplate) SetCreatedAt(v time.Time)`
 
-SetId sets Id field to given value.
-
-
-### GetType
-
-`func (o *EmailTemplate) GetType() string`
-
-GetType returns the Type field if non-nil, zero value otherwise.
-
-### GetTypeOk
-
-`func (o *EmailTemplate) GetTypeOk() (*string, bool)`
-
-GetTypeOk returns a tuple with the Type field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetType
-
-`func (o *EmailTemplate) SetType(v string)`
-
-SetType sets Type field to given value.
-
-
-### GetSubject
-
-`func (o *EmailTemplate) GetSubject() string`
-
-GetSubject returns the Subject field if non-nil, zero value otherwise.
-
-### GetSubjectOk
-
-`func (o *EmailTemplate) GetSubjectOk() (*string, bool)`
-
-GetSubjectOk returns a tuple with the Subject field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSubject
-
-`func (o *EmailTemplate) SetSubject(v string)`
-
-SetSubject sets Subject field to given value.
+SetCreatedAt sets CreatedAt field to given value.
 
 
 ### GetHtmlBody
@@ -110,24 +70,64 @@ and a boolean to check if the value has been set.
 SetHtmlBody sets HtmlBody field to given value.
 
 
-### GetCreatedAt
+### GetId
 
-`func (o *EmailTemplate) GetCreatedAt() time.Time`
+`func (o *EmailTemplate) GetId() string`
 
-GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetCreatedAtOk
+### GetIdOk
 
-`func (o *EmailTemplate) GetCreatedAtOk() (*time.Time, bool)`
+`func (o *EmailTemplate) GetIdOk() (*string, bool)`
 
-GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetCreatedAt
+### SetId
 
-`func (o *EmailTemplate) SetCreatedAt(v time.Time)`
+`func (o *EmailTemplate) SetId(v string)`
 
-SetCreatedAt sets CreatedAt field to given value.
+SetId sets Id field to given value.
+
+
+### GetSubject
+
+`func (o *EmailTemplate) GetSubject() string`
+
+GetSubject returns the Subject field if non-nil, zero value otherwise.
+
+### GetSubjectOk
+
+`func (o *EmailTemplate) GetSubjectOk() (*string, bool)`
+
+GetSubjectOk returns a tuple with the Subject field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetSubject
+
+`func (o *EmailTemplate) SetSubject(v string)`
+
+SetSubject sets Subject field to given value.
+
+
+### GetType
+
+`func (o *EmailTemplate) GetType() string`
+
+GetType returns the Type field if non-nil, zero value otherwise.
+
+### GetTypeOk
+
+`func (o *EmailTemplate) GetTypeOk() (*string, bool)`
+
+GetTypeOk returns a tuple with the Type field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetType
+
+`func (o *EmailTemplate) SetType(v string)`
+
+SetType sets Type field to given value.
 
 
 ### GetUpdatedAt

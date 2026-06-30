@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**UploadUrl** | **string** | Presigned URL for uploading the file (valid for 15 minutes) | 
-**Path** | **string** | Confirmed storage path | 
-**Id** | **string** | Unique identifier of the storage object | 
+**Id** | **string** |  | 
+**Path** | **string** |  | 
+**UploadUrl** | **string** |  | 
 
 ## Methods
 
 ### NewUploadResponse
 
-`func NewUploadResponse(uploadUrl string, path string, id string, ) *UploadResponse`
+`func NewUploadResponse(id string, path string, uploadUrl string, ) *UploadResponse`
 
 NewUploadResponse instantiates a new UploadResponse object
 This constructor will assign default values to properties that have it defined,
@@ -27,24 +27,24 @@ NewUploadResponseWithDefaults instantiates a new UploadResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetUploadUrl
+### GetId
 
-`func (o *UploadResponse) GetUploadUrl() string`
+`func (o *UploadResponse) GetId() string`
 
-GetUploadUrl returns the UploadUrl field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetUploadUrlOk
+### GetIdOk
 
-`func (o *UploadResponse) GetUploadUrlOk() (*string, bool)`
+`func (o *UploadResponse) GetIdOk() (*string, bool)`
 
-GetUploadUrlOk returns a tuple with the UploadUrl field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetUploadUrl
+### SetId
 
-`func (o *UploadResponse) SetUploadUrl(v string)`
+`func (o *UploadResponse) SetId(v string)`
 
-SetUploadUrl sets UploadUrl field to given value.
+SetId sets Id field to given value.
 
 
 ### GetPath
@@ -67,24 +67,24 @@ and a boolean to check if the value has been set.
 SetPath sets Path field to given value.
 
 
-### GetId
+### GetUploadUrl
 
-`func (o *UploadResponse) GetId() string`
+`func (o *UploadResponse) GetUploadUrl() string`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetUploadUrl returns the UploadUrl field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetUploadUrlOk
 
-`func (o *UploadResponse) GetIdOk() (*string, bool)`
+`func (o *UploadResponse) GetUploadUrlOk() (*string, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetUploadUrlOk returns a tuple with the UploadUrl field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetUploadUrl
 
-`func (o *UploadResponse) SetId(v string)`
+`func (o *UploadResponse) SetUploadUrl(v string)`
 
-SetId sets Id field to given value.
+SetUploadUrl sets UploadUrl field to given value.
 
 
 

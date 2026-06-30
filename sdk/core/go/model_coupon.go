@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,29 +22,18 @@ var _ MappedNullable = &Coupon{}
 
 // Coupon struct for Coupon
 type Coupon struct {
-	// Coupon identifier (config ID)
-	Id string `json:"id"`
-	// Original Stripe ID for migration support (optional, used to link existing Stripe coupons)
-	StripeId *string `json:"stripe_id,omitempty"`
-	// Coupon name (displayed to customers)
-	Name *string `json:"name,omitempty"`
-	// Percentage discount (0-100). Either percent_off or amount_off must be set, not both.
-	PercentOff *float64 `json:"percent_off,omitempty"`
-	// Fixed amount discount in smallest currency unit. Either percent_off or amount_off must be set, not both. Note that amount_off coupons cannot use 'forever' duration (Stripe restriction).
 	AmountOff *int64 `json:"amount_off,omitempty"`
-	// Currency for amount_off (required when amount_off is set)
-	Currency *string `json:"currency,omitempty"`
-	Duration CouponDuration `json:"duration"`
-	// Number of months the discount applies (required when duration is repeating)
-	DurationInMonths *int64 `json:"duration_in_months,omitempty"`
-	// Maximum number of times this coupon can be redeemed
-	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
-	// Unix timestamp after which the coupon can no longer be redeemed
-	RedeemBy *int64 `json:"redeem_by,omitempty"`
-	// List of product IDs this coupon applies to (empty = all products)
 	AppliesTo []string `json:"applies_to,omitempty"`
-	// Custom metadata for the coupon
+	Currency *string `json:"currency,omitempty"`
+	Duration string `json:"duration"`
+	DurationInMonths *int64 `json:"duration_in_months,omitempty"`
+	Id string `json:"id"`
+	MaxRedemptions *int64 `json:"max_redemptions,omitempty"`
 	Metadata map[string]string `json:"metadata,omitempty"`
+	Name *string `json:"name,omitempty"`
+	PercentOff *float64 `json:"percent_off,omitempty"`
+	RedeemBy *int64 `json:"redeem_by,omitempty"`
+	StripeId *string `json:"stripe_id,omitempty"`
 }
 
 type _Coupon Coupon
@@ -53,10 +42,10 @@ type _Coupon Coupon
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCoupon(id string, duration CouponDuration) *Coupon {
+func NewCoupon(duration string, id string) *Coupon {
 	this := Coupon{}
-	this.Id = id
 	this.Duration = duration
+	this.Id = id
 	return &this
 }
 
@@ -66,6 +55,159 @@ func NewCoupon(id string, duration CouponDuration) *Coupon {
 func NewCouponWithDefaults() *Coupon {
 	this := Coupon{}
 	return &this
+}
+
+// GetAmountOff returns the AmountOff field value if set, zero value otherwise.
+func (o *Coupon) GetAmountOff() int64 {
+	if o == nil || IsNil(o.AmountOff) {
+		var ret int64
+		return ret
+	}
+	return *o.AmountOff
+}
+
+// GetAmountOffOk returns a tuple with the AmountOff field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Coupon) GetAmountOffOk() (*int64, bool) {
+	if o == nil || IsNil(o.AmountOff) {
+		return nil, false
+	}
+	return o.AmountOff, true
+}
+
+// HasAmountOff returns a boolean if a field has been set.
+func (o *Coupon) HasAmountOff() bool {
+	if o != nil && !IsNil(o.AmountOff) {
+		return true
+	}
+
+	return false
+}
+
+// SetAmountOff gets a reference to the given int64 and assigns it to the AmountOff field.
+func (o *Coupon) SetAmountOff(v int64) {
+	o.AmountOff = &v
+}
+
+// GetAppliesTo returns the AppliesTo field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Coupon) GetAppliesTo() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+	return o.AppliesTo
+}
+
+// GetAppliesToOk returns a tuple with the AppliesTo field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Coupon) GetAppliesToOk() ([]string, bool) {
+	if o == nil || IsNil(o.AppliesTo) {
+		return nil, false
+	}
+	return o.AppliesTo, true
+}
+
+// HasAppliesTo returns a boolean if a field has been set.
+func (o *Coupon) HasAppliesTo() bool {
+	if o != nil && !IsNil(o.AppliesTo) {
+		return true
+	}
+
+	return false
+}
+
+// SetAppliesTo gets a reference to the given []string and assigns it to the AppliesTo field.
+func (o *Coupon) SetAppliesTo(v []string) {
+	o.AppliesTo = v
+}
+
+// GetCurrency returns the Currency field value if set, zero value otherwise.
+func (o *Coupon) GetCurrency() string {
+	if o == nil || IsNil(o.Currency) {
+		var ret string
+		return ret
+	}
+	return *o.Currency
+}
+
+// GetCurrencyOk returns a tuple with the Currency field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Coupon) GetCurrencyOk() (*string, bool) {
+	if o == nil || IsNil(o.Currency) {
+		return nil, false
+	}
+	return o.Currency, true
+}
+
+// HasCurrency returns a boolean if a field has been set.
+func (o *Coupon) HasCurrency() bool {
+	if o != nil && !IsNil(o.Currency) {
+		return true
+	}
+
+	return false
+}
+
+// SetCurrency gets a reference to the given string and assigns it to the Currency field.
+func (o *Coupon) SetCurrency(v string) {
+	o.Currency = &v
+}
+
+// GetDuration returns the Duration field value
+func (o *Coupon) GetDuration() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Duration
+}
+
+// GetDurationOk returns a tuple with the Duration field value
+// and a boolean to check if the value has been set.
+func (o *Coupon) GetDurationOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Duration, true
+}
+
+// SetDuration sets field value
+func (o *Coupon) SetDuration(v string) {
+	o.Duration = v
+}
+
+// GetDurationInMonths returns the DurationInMonths field value if set, zero value otherwise.
+func (o *Coupon) GetDurationInMonths() int64 {
+	if o == nil || IsNil(o.DurationInMonths) {
+		var ret int64
+		return ret
+	}
+	return *o.DurationInMonths
+}
+
+// GetDurationInMonthsOk returns a tuple with the DurationInMonths field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Coupon) GetDurationInMonthsOk() (*int64, bool) {
+	if o == nil || IsNil(o.DurationInMonths) {
+		return nil, false
+	}
+	return o.DurationInMonths, true
+}
+
+// HasDurationInMonths returns a boolean if a field has been set.
+func (o *Coupon) HasDurationInMonths() bool {
+	if o != nil && !IsNil(o.DurationInMonths) {
+		return true
+	}
+
+	return false
+}
+
+// SetDurationInMonths gets a reference to the given int64 and assigns it to the DurationInMonths field.
+func (o *Coupon) SetDurationInMonths(v int64) {
+	o.DurationInMonths = &v
 }
 
 // GetId returns the Id field value
@@ -92,36 +234,68 @@ func (o *Coupon) SetId(v string) {
 	o.Id = v
 }
 
-// GetStripeId returns the StripeId field value if set, zero value otherwise.
-func (o *Coupon) GetStripeId() string {
-	if o == nil || IsNil(o.StripeId) {
-		var ret string
+// GetMaxRedemptions returns the MaxRedemptions field value if set, zero value otherwise.
+func (o *Coupon) GetMaxRedemptions() int64 {
+	if o == nil || IsNil(o.MaxRedemptions) {
+		var ret int64
 		return ret
 	}
-	return *o.StripeId
+	return *o.MaxRedemptions
 }
 
-// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
+// GetMaxRedemptionsOk returns a tuple with the MaxRedemptions field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Coupon) GetStripeIdOk() (*string, bool) {
-	if o == nil || IsNil(o.StripeId) {
+func (o *Coupon) GetMaxRedemptionsOk() (*int64, bool) {
+	if o == nil || IsNil(o.MaxRedemptions) {
 		return nil, false
 	}
-	return o.StripeId, true
+	return o.MaxRedemptions, true
 }
 
-// HasStripeId returns a boolean if a field has been set.
-func (o *Coupon) HasStripeId() bool {
-	if o != nil && !IsNil(o.StripeId) {
+// HasMaxRedemptions returns a boolean if a field has been set.
+func (o *Coupon) HasMaxRedemptions() bool {
+	if o != nil && !IsNil(o.MaxRedemptions) {
 		return true
 	}
 
 	return false
 }
 
-// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
-func (o *Coupon) SetStripeId(v string) {
-	o.StripeId = &v
+// SetMaxRedemptions gets a reference to the given int64 and assigns it to the MaxRedemptions field.
+func (o *Coupon) SetMaxRedemptions(v int64) {
+	o.MaxRedemptions = &v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Coupon) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Coupon) GetMetadataOk() (map[string]string, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]string{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *Coupon) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Coupon) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
@@ -188,158 +362,6 @@ func (o *Coupon) SetPercentOff(v float64) {
 	o.PercentOff = &v
 }
 
-// GetAmountOff returns the AmountOff field value if set, zero value otherwise.
-func (o *Coupon) GetAmountOff() int64 {
-	if o == nil || IsNil(o.AmountOff) {
-		var ret int64
-		return ret
-	}
-	return *o.AmountOff
-}
-
-// GetAmountOffOk returns a tuple with the AmountOff field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetAmountOffOk() (*int64, bool) {
-	if o == nil || IsNil(o.AmountOff) {
-		return nil, false
-	}
-	return o.AmountOff, true
-}
-
-// HasAmountOff returns a boolean if a field has been set.
-func (o *Coupon) HasAmountOff() bool {
-	if o != nil && !IsNil(o.AmountOff) {
-		return true
-	}
-
-	return false
-}
-
-// SetAmountOff gets a reference to the given int64 and assigns it to the AmountOff field.
-func (o *Coupon) SetAmountOff(v int64) {
-	o.AmountOff = &v
-}
-
-// GetCurrency returns the Currency field value if set, zero value otherwise.
-func (o *Coupon) GetCurrency() string {
-	if o == nil || IsNil(o.Currency) {
-		var ret string
-		return ret
-	}
-	return *o.Currency
-}
-
-// GetCurrencyOk returns a tuple with the Currency field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetCurrencyOk() (*string, bool) {
-	if o == nil || IsNil(o.Currency) {
-		return nil, false
-	}
-	return o.Currency, true
-}
-
-// HasCurrency returns a boolean if a field has been set.
-func (o *Coupon) HasCurrency() bool {
-	if o != nil && !IsNil(o.Currency) {
-		return true
-	}
-
-	return false
-}
-
-// SetCurrency gets a reference to the given string and assigns it to the Currency field.
-func (o *Coupon) SetCurrency(v string) {
-	o.Currency = &v
-}
-
-// GetDuration returns the Duration field value
-func (o *Coupon) GetDuration() CouponDuration {
-	if o == nil {
-		var ret CouponDuration
-		return ret
-	}
-
-	return o.Duration
-}
-
-// GetDurationOk returns a tuple with the Duration field value
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetDurationOk() (*CouponDuration, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Duration, true
-}
-
-// SetDuration sets field value
-func (o *Coupon) SetDuration(v CouponDuration) {
-	o.Duration = v
-}
-
-// GetDurationInMonths returns the DurationInMonths field value if set, zero value otherwise.
-func (o *Coupon) GetDurationInMonths() int64 {
-	if o == nil || IsNil(o.DurationInMonths) {
-		var ret int64
-		return ret
-	}
-	return *o.DurationInMonths
-}
-
-// GetDurationInMonthsOk returns a tuple with the DurationInMonths field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetDurationInMonthsOk() (*int64, bool) {
-	if o == nil || IsNil(o.DurationInMonths) {
-		return nil, false
-	}
-	return o.DurationInMonths, true
-}
-
-// HasDurationInMonths returns a boolean if a field has been set.
-func (o *Coupon) HasDurationInMonths() bool {
-	if o != nil && !IsNil(o.DurationInMonths) {
-		return true
-	}
-
-	return false
-}
-
-// SetDurationInMonths gets a reference to the given int64 and assigns it to the DurationInMonths field.
-func (o *Coupon) SetDurationInMonths(v int64) {
-	o.DurationInMonths = &v
-}
-
-// GetMaxRedemptions returns the MaxRedemptions field value if set, zero value otherwise.
-func (o *Coupon) GetMaxRedemptions() int64 {
-	if o == nil || IsNil(o.MaxRedemptions) {
-		var ret int64
-		return ret
-	}
-	return *o.MaxRedemptions
-}
-
-// GetMaxRedemptionsOk returns a tuple with the MaxRedemptions field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetMaxRedemptionsOk() (*int64, bool) {
-	if o == nil || IsNil(o.MaxRedemptions) {
-		return nil, false
-	}
-	return o.MaxRedemptions, true
-}
-
-// HasMaxRedemptions returns a boolean if a field has been set.
-func (o *Coupon) HasMaxRedemptions() bool {
-	if o != nil && !IsNil(o.MaxRedemptions) {
-		return true
-	}
-
-	return false
-}
-
-// SetMaxRedemptions gets a reference to the given int64 and assigns it to the MaxRedemptions field.
-func (o *Coupon) SetMaxRedemptions(v int64) {
-	o.MaxRedemptions = &v
-}
-
 // GetRedeemBy returns the RedeemBy field value if set, zero value otherwise.
 func (o *Coupon) GetRedeemBy() int64 {
 	if o == nil || IsNil(o.RedeemBy) {
@@ -372,68 +394,36 @@ func (o *Coupon) SetRedeemBy(v int64) {
 	o.RedeemBy = &v
 }
 
-// GetAppliesTo returns the AppliesTo field value if set, zero value otherwise.
-func (o *Coupon) GetAppliesTo() []string {
-	if o == nil || IsNil(o.AppliesTo) {
-		var ret []string
+// GetStripeId returns the StripeId field value if set, zero value otherwise.
+func (o *Coupon) GetStripeId() string {
+	if o == nil || IsNil(o.StripeId) {
+		var ret string
 		return ret
 	}
-	return o.AppliesTo
+	return *o.StripeId
 }
 
-// GetAppliesToOk returns a tuple with the AppliesTo field value if set, nil otherwise
+// GetStripeIdOk returns a tuple with the StripeId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Coupon) GetAppliesToOk() ([]string, bool) {
-	if o == nil || IsNil(o.AppliesTo) {
+func (o *Coupon) GetStripeIdOk() (*string, bool) {
+	if o == nil || IsNil(o.StripeId) {
 		return nil, false
 	}
-	return o.AppliesTo, true
+	return o.StripeId, true
 }
 
-// HasAppliesTo returns a boolean if a field has been set.
-func (o *Coupon) HasAppliesTo() bool {
-	if o != nil && !IsNil(o.AppliesTo) {
+// HasStripeId returns a boolean if a field has been set.
+func (o *Coupon) HasStripeId() bool {
+	if o != nil && !IsNil(o.StripeId) {
 		return true
 	}
 
 	return false
 }
 
-// SetAppliesTo gets a reference to the given []string and assigns it to the AppliesTo field.
-func (o *Coupon) SetAppliesTo(v []string) {
-	o.AppliesTo = v
-}
-
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *Coupon) GetMetadata() map[string]string {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]string
-		return ret
-	}
-	return o.Metadata
-}
-
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Coupon) GetMetadataOk() (map[string]string, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]string{}, false
-	}
-	return o.Metadata, true
-}
-
-// HasMetadata returns a boolean if a field has been set.
-func (o *Coupon) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *Coupon) SetMetadata(v map[string]string) {
-	o.Metadata = v
+// SetStripeId gets a reference to the given string and assigns it to the StripeId field.
+func (o *Coupon) SetStripeId(v string) {
+	o.StripeId = &v
 }
 
 func (o Coupon) MarshalJSON() ([]byte, error) {
@@ -446,18 +436,11 @@ func (o Coupon) MarshalJSON() ([]byte, error) {
 
 func (o Coupon) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	if !IsNil(o.StripeId) {
-		toSerialize["stripe_id"] = o.StripeId
-	}
-	if !IsNil(o.Name) {
-		toSerialize["name"] = o.Name
-	}
-	if !IsNil(o.PercentOff) {
-		toSerialize["percent_off"] = o.PercentOff
-	}
 	if !IsNil(o.AmountOff) {
 		toSerialize["amount_off"] = o.AmountOff
+	}
+	if o.AppliesTo != nil {
+		toSerialize["applies_to"] = o.AppliesTo
 	}
 	if !IsNil(o.Currency) {
 		toSerialize["currency"] = o.Currency
@@ -466,17 +449,24 @@ func (o Coupon) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DurationInMonths) {
 		toSerialize["duration_in_months"] = o.DurationInMonths
 	}
+	toSerialize["id"] = o.Id
 	if !IsNil(o.MaxRedemptions) {
 		toSerialize["max_redemptions"] = o.MaxRedemptions
+	}
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
+	if !IsNil(o.Name) {
+		toSerialize["name"] = o.Name
+	}
+	if !IsNil(o.PercentOff) {
+		toSerialize["percent_off"] = o.PercentOff
 	}
 	if !IsNil(o.RedeemBy) {
 		toSerialize["redeem_by"] = o.RedeemBy
 	}
-	if !IsNil(o.AppliesTo) {
-		toSerialize["applies_to"] = o.AppliesTo
-	}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
+	if !IsNil(o.StripeId) {
+		toSerialize["stripe_id"] = o.StripeId
 	}
 	return toSerialize, nil
 }
@@ -486,8 +476,8 @@ func (o *Coupon) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
 		"duration",
+		"id",
 	}
 
 	allProperties := make(map[string]interface{})

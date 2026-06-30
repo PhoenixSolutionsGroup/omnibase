@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,10 +22,8 @@ var _ MappedNullable = &LogoutResponse{}
 
 // LogoutResponse struct for LogoutResponse
 type LogoutResponse struct {
-	// Kratos logout URL for browser redirect
-	LogoutUrl string `json:"logout_url"`
-	// Logout token for the flow
 	LogoutToken string `json:"logout_token"`
+	LogoutUrl string `json:"logout_url"`
 }
 
 type _LogoutResponse LogoutResponse
@@ -34,10 +32,10 @@ type _LogoutResponse LogoutResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewLogoutResponse(logoutUrl string, logoutToken string) *LogoutResponse {
+func NewLogoutResponse(logoutToken string, logoutUrl string) *LogoutResponse {
 	this := LogoutResponse{}
-	this.LogoutUrl = logoutUrl
 	this.LogoutToken = logoutToken
+	this.LogoutUrl = logoutUrl
 	return &this
 }
 
@@ -47,30 +45,6 @@ func NewLogoutResponse(logoutUrl string, logoutToken string) *LogoutResponse {
 func NewLogoutResponseWithDefaults() *LogoutResponse {
 	this := LogoutResponse{}
 	return &this
-}
-
-// GetLogoutUrl returns the LogoutUrl field value
-func (o *LogoutResponse) GetLogoutUrl() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.LogoutUrl
-}
-
-// GetLogoutUrlOk returns a tuple with the LogoutUrl field value
-// and a boolean to check if the value has been set.
-func (o *LogoutResponse) GetLogoutUrlOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.LogoutUrl, true
-}
-
-// SetLogoutUrl sets field value
-func (o *LogoutResponse) SetLogoutUrl(v string) {
-	o.LogoutUrl = v
 }
 
 // GetLogoutToken returns the LogoutToken field value
@@ -97,6 +71,30 @@ func (o *LogoutResponse) SetLogoutToken(v string) {
 	o.LogoutToken = v
 }
 
+// GetLogoutUrl returns the LogoutUrl field value
+func (o *LogoutResponse) GetLogoutUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.LogoutUrl
+}
+
+// GetLogoutUrlOk returns a tuple with the LogoutUrl field value
+// and a boolean to check if the value has been set.
+func (o *LogoutResponse) GetLogoutUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.LogoutUrl, true
+}
+
+// SetLogoutUrl sets field value
+func (o *LogoutResponse) SetLogoutUrl(v string) {
+	o.LogoutUrl = v
+}
+
 func (o LogoutResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,8 +105,8 @@ func (o LogoutResponse) MarshalJSON() ([]byte, error) {
 
 func (o LogoutResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["logout_url"] = o.LogoutUrl
 	toSerialize["logout_token"] = o.LogoutToken
+	toSerialize["logout_url"] = o.LogoutUrl
 	return toSerialize, nil
 }
 
@@ -117,8 +115,8 @@ func (o *LogoutResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"logout_url",
 		"logout_token",
+		"logout_url",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -5,7 +5,9 @@ import { logger } from "../../utils/logger";
 import { ensureMigrationDir, zipMigrationsDir } from "./utils";
 import { userInput } from "../../utils/user-input";
 import { createConfig } from "../../lib/omnibase";
-import { GenerateDatabaseTypesLanguageEnum, V1ConfigurationApi } from "@omnibase/core-js";
+import { V1DatabaseApi } from "@omnibase/core-js";
+
+type GenerateDatabaseTypesLanguageEnum = "typescript" | "go" | "swift";
 import { generate } from "./generate/generate";
 import {
   composeExec,
@@ -101,7 +103,7 @@ export class DatabaseMigrationService {
       basePath: vEnv.omnibaseApiUrl,
     });
 
-    const client = new V1ConfigurationApi(config);
+    const client = new V1DatabaseApi(config);
     try {
       const response = (await client.uploadDatabaseMigrations({
         migrations: blob,
@@ -184,7 +186,7 @@ export class DatabaseMigrationService {
     ensureMigrationDir(migrationsDir);
 
     const config = createConfig({ apiKey: vEnv.omnibaseServiceKey, basePath: vEnv.omnibaseApiUrl });
-    const client = new V1ConfigurationApi(config);
+    const client = new V1DatabaseApi(config);
 
     // Fetch current version from API
     let currentVersion = -1;
@@ -240,7 +242,7 @@ export class DatabaseMigrationService {
 
     try {
       logger.start(`Rolling back ${steps} migration(s)...`);
-      const res = await client.rollbackDatabaseMigrations({ migrations: blob, steps: steps })
+      const res = await client.rollbackDatabaseMigrations({ migrations: blob, steps: String(steps) })
       if (!res) throw new Error()
       logger.succeed(res.message || `Rolled back ${steps} migration(s)`);
     } catch (error) {
@@ -259,7 +261,7 @@ export class DatabaseMigrationService {
       apiKey: vEnv.omnibaseServiceKey,
       basePath: vEnv.omnibaseApiUrl,
     });
-    const client = new V1ConfigurationApi(config);
+    const client = new V1DatabaseApi(config);
 
     try {
       const data = await client.generateDatabaseTypes({ language, schemas });

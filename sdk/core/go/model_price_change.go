@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,13 +22,9 @@ var _ MappedNullable = &PriceChange{}
 
 // PriceChange struct for PriceChange
 type PriceChange struct {
-	// Price config ID
-	PriceId string `json:"price_id"`
-	// Parent product config ID
-	ProductId string `json:"product_id"`
-	// Action performed on the price
 	Action string `json:"action"`
-	// Stripe price ID (if applicable)
+	PriceId string `json:"price_id"`
+	ProductId string `json:"product_id"`
 	StripeId *string `json:"stripe_id,omitempty"`
 }
 
@@ -38,11 +34,11 @@ type _PriceChange PriceChange
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPriceChange(priceId string, productId string, action string) *PriceChange {
+func NewPriceChange(action string, priceId string, productId string) *PriceChange {
 	this := PriceChange{}
+	this.Action = action
 	this.PriceId = priceId
 	this.ProductId = productId
-	this.Action = action
 	return &this
 }
 
@@ -52,6 +48,30 @@ func NewPriceChange(priceId string, productId string, action string) *PriceChang
 func NewPriceChangeWithDefaults() *PriceChange {
 	this := PriceChange{}
 	return &this
+}
+
+// GetAction returns the Action field value
+func (o *PriceChange) GetAction() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Action
+}
+
+// GetActionOk returns a tuple with the Action field value
+// and a boolean to check if the value has been set.
+func (o *PriceChange) GetActionOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Action, true
+}
+
+// SetAction sets field value
+func (o *PriceChange) SetAction(v string) {
+	o.Action = v
 }
 
 // GetPriceId returns the PriceId field value
@@ -102,30 +122,6 @@ func (o *PriceChange) SetProductId(v string) {
 	o.ProductId = v
 }
 
-// GetAction returns the Action field value
-func (o *PriceChange) GetAction() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Action
-}
-
-// GetActionOk returns a tuple with the Action field value
-// and a boolean to check if the value has been set.
-func (o *PriceChange) GetActionOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Action, true
-}
-
-// SetAction sets field value
-func (o *PriceChange) SetAction(v string) {
-	o.Action = v
-}
-
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
 func (o *PriceChange) GetStripeId() string {
 	if o == nil || IsNil(o.StripeId) {
@@ -168,9 +164,9 @@ func (o PriceChange) MarshalJSON() ([]byte, error) {
 
 func (o PriceChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["action"] = o.Action
 	toSerialize["price_id"] = o.PriceId
 	toSerialize["product_id"] = o.ProductId
-	toSerialize["action"] = o.Action
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
 	}
@@ -182,9 +178,9 @@ func (o *PriceChange) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"action",
 		"price_id",
 		"product_id",
-		"action",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,20 +22,13 @@ var _ MappedNullable = &InvoiceResponse{}
 
 // InvoiceResponse struct for InvoiceResponse
 type InvoiceResponse struct {
-	// Stripe Invoice ID
-	Id string `json:"id"`
-	// Invoice status
-	Status string `json:"status"`
-	// Total amount in cents
-	AmountDue *int64 `json:"amount_due,omitempty"`
-	// Currency
-	Currency *string `json:"currency,omitempty"`
-	// Customer ID
-	CustomerId *string `json:"customer_id,omitempty"`
-	// Invoice PDF URL (if available)
-	InvoicePdf *string `json:"invoice_pdf,omitempty"`
-	// Hosted invoice URL
+	AmountDue int64 `json:"amount_due"`
+	Currency string `json:"currency"`
+	CustomerId string `json:"customer_id"`
 	HostedInvoiceUrl *string `json:"hosted_invoice_url,omitempty"`
+	Id string `json:"id"`
+	InvoicePdf *string `json:"invoice_pdf,omitempty"`
+	Status string `json:"status"`
 }
 
 type _InvoiceResponse InvoiceResponse
@@ -44,8 +37,11 @@ type _InvoiceResponse InvoiceResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInvoiceResponse(id string, status string) *InvoiceResponse {
+func NewInvoiceResponse(amountDue int64, currency string, customerId string, id string, status string) *InvoiceResponse {
 	this := InvoiceResponse{}
+	this.AmountDue = amountDue
+	this.Currency = currency
+	this.CustomerId = customerId
 	this.Id = id
 	this.Status = status
 	return &this
@@ -59,180 +55,76 @@ func NewInvoiceResponseWithDefaults() *InvoiceResponse {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *InvoiceResponse) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *InvoiceResponse) GetIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *InvoiceResponse) SetId(v string) {
-	o.Id = v
-}
-
-// GetStatus returns the Status field value
-func (o *InvoiceResponse) GetStatus() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *InvoiceResponse) GetStatusOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *InvoiceResponse) SetStatus(v string) {
-	o.Status = v
-}
-
-// GetAmountDue returns the AmountDue field value if set, zero value otherwise.
+// GetAmountDue returns the AmountDue field value
 func (o *InvoiceResponse) GetAmountDue() int64 {
-	if o == nil || IsNil(o.AmountDue) {
+	if o == nil {
 		var ret int64
 		return ret
 	}
-	return *o.AmountDue
+
+	return o.AmountDue
 }
 
-// GetAmountDueOk returns a tuple with the AmountDue field value if set, nil otherwise
+// GetAmountDueOk returns a tuple with the AmountDue field value
 // and a boolean to check if the value has been set.
 func (o *InvoiceResponse) GetAmountDueOk() (*int64, bool) {
-	if o == nil || IsNil(o.AmountDue) {
+	if o == nil {
 		return nil, false
 	}
-	return o.AmountDue, true
+	return &o.AmountDue, true
 }
 
-// HasAmountDue returns a boolean if a field has been set.
-func (o *InvoiceResponse) HasAmountDue() bool {
-	if o != nil && !IsNil(o.AmountDue) {
-		return true
-	}
-
-	return false
-}
-
-// SetAmountDue gets a reference to the given int64 and assigns it to the AmountDue field.
+// SetAmountDue sets field value
 func (o *InvoiceResponse) SetAmountDue(v int64) {
-	o.AmountDue = &v
+	o.AmountDue = v
 }
 
-// GetCurrency returns the Currency field value if set, zero value otherwise.
+// GetCurrency returns the Currency field value
 func (o *InvoiceResponse) GetCurrency() string {
-	if o == nil || IsNil(o.Currency) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Currency
+
+	return o.Currency
 }
 
-// GetCurrencyOk returns a tuple with the Currency field value if set, nil otherwise
+// GetCurrencyOk returns a tuple with the Currency field value
 // and a boolean to check if the value has been set.
 func (o *InvoiceResponse) GetCurrencyOk() (*string, bool) {
-	if o == nil || IsNil(o.Currency) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Currency, true
+	return &o.Currency, true
 }
 
-// HasCurrency returns a boolean if a field has been set.
-func (o *InvoiceResponse) HasCurrency() bool {
-	if o != nil && !IsNil(o.Currency) {
-		return true
-	}
-
-	return false
-}
-
-// SetCurrency gets a reference to the given string and assigns it to the Currency field.
+// SetCurrency sets field value
 func (o *InvoiceResponse) SetCurrency(v string) {
-	o.Currency = &v
+	o.Currency = v
 }
 
-// GetCustomerId returns the CustomerId field value if set, zero value otherwise.
+// GetCustomerId returns the CustomerId field value
 func (o *InvoiceResponse) GetCustomerId() string {
-	if o == nil || IsNil(o.CustomerId) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.CustomerId
+
+	return o.CustomerId
 }
 
-// GetCustomerIdOk returns a tuple with the CustomerId field value if set, nil otherwise
+// GetCustomerIdOk returns a tuple with the CustomerId field value
 // and a boolean to check if the value has been set.
 func (o *InvoiceResponse) GetCustomerIdOk() (*string, bool) {
-	if o == nil || IsNil(o.CustomerId) {
+	if o == nil {
 		return nil, false
 	}
-	return o.CustomerId, true
+	return &o.CustomerId, true
 }
 
-// HasCustomerId returns a boolean if a field has been set.
-func (o *InvoiceResponse) HasCustomerId() bool {
-	if o != nil && !IsNil(o.CustomerId) {
-		return true
-	}
-
-	return false
-}
-
-// SetCustomerId gets a reference to the given string and assigns it to the CustomerId field.
+// SetCustomerId sets field value
 func (o *InvoiceResponse) SetCustomerId(v string) {
-	o.CustomerId = &v
-}
-
-// GetInvoicePdf returns the InvoicePdf field value if set, zero value otherwise.
-func (o *InvoiceResponse) GetInvoicePdf() string {
-	if o == nil || IsNil(o.InvoicePdf) {
-		var ret string
-		return ret
-	}
-	return *o.InvoicePdf
-}
-
-// GetInvoicePdfOk returns a tuple with the InvoicePdf field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *InvoiceResponse) GetInvoicePdfOk() (*string, bool) {
-	if o == nil || IsNil(o.InvoicePdf) {
-		return nil, false
-	}
-	return o.InvoicePdf, true
-}
-
-// HasInvoicePdf returns a boolean if a field has been set.
-func (o *InvoiceResponse) HasInvoicePdf() bool {
-	if o != nil && !IsNil(o.InvoicePdf) {
-		return true
-	}
-
-	return false
-}
-
-// SetInvoicePdf gets a reference to the given string and assigns it to the InvoicePdf field.
-func (o *InvoiceResponse) SetInvoicePdf(v string) {
-	o.InvoicePdf = &v
+	o.CustomerId = v
 }
 
 // GetHostedInvoiceUrl returns the HostedInvoiceUrl field value if set, zero value otherwise.
@@ -267,6 +159,86 @@ func (o *InvoiceResponse) SetHostedInvoiceUrl(v string) {
 	o.HostedInvoiceUrl = &v
 }
 
+// GetId returns the Id field value
+func (o *InvoiceResponse) GetId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value
+// and a boolean to check if the value has been set.
+func (o *InvoiceResponse) GetIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Id, true
+}
+
+// SetId sets field value
+func (o *InvoiceResponse) SetId(v string) {
+	o.Id = v
+}
+
+// GetInvoicePdf returns the InvoicePdf field value if set, zero value otherwise.
+func (o *InvoiceResponse) GetInvoicePdf() string {
+	if o == nil || IsNil(o.InvoicePdf) {
+		var ret string
+		return ret
+	}
+	return *o.InvoicePdf
+}
+
+// GetInvoicePdfOk returns a tuple with the InvoicePdf field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *InvoiceResponse) GetInvoicePdfOk() (*string, bool) {
+	if o == nil || IsNil(o.InvoicePdf) {
+		return nil, false
+	}
+	return o.InvoicePdf, true
+}
+
+// HasInvoicePdf returns a boolean if a field has been set.
+func (o *InvoiceResponse) HasInvoicePdf() bool {
+	if o != nil && !IsNil(o.InvoicePdf) {
+		return true
+	}
+
+	return false
+}
+
+// SetInvoicePdf gets a reference to the given string and assigns it to the InvoicePdf field.
+func (o *InvoiceResponse) SetInvoicePdf(v string) {
+	o.InvoicePdf = &v
+}
+
+// GetStatus returns the Status field value
+func (o *InvoiceResponse) GetStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *InvoiceResponse) GetStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *InvoiceResponse) SetStatus(v string) {
+	o.Status = v
+}
+
 func (o InvoiceResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -277,23 +249,17 @@ func (o InvoiceResponse) MarshalJSON() ([]byte, error) {
 
 func (o InvoiceResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
-	toSerialize["status"] = o.Status
-	if !IsNil(o.AmountDue) {
-		toSerialize["amount_due"] = o.AmountDue
-	}
-	if !IsNil(o.Currency) {
-		toSerialize["currency"] = o.Currency
-	}
-	if !IsNil(o.CustomerId) {
-		toSerialize["customer_id"] = o.CustomerId
-	}
-	if !IsNil(o.InvoicePdf) {
-		toSerialize["invoice_pdf"] = o.InvoicePdf
-	}
+	toSerialize["amount_due"] = o.AmountDue
+	toSerialize["currency"] = o.Currency
+	toSerialize["customer_id"] = o.CustomerId
 	if !IsNil(o.HostedInvoiceUrl) {
 		toSerialize["hosted_invoice_url"] = o.HostedInvoiceUrl
 	}
+	toSerialize["id"] = o.Id
+	if !IsNil(o.InvoicePdf) {
+		toSerialize["invoice_pdf"] = o.InvoicePdf
+	}
+	toSerialize["status"] = o.Status
 	return toSerialize, nil
 }
 
@@ -302,6 +268,9 @@ func (o *InvoiceResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"amount_due",
+		"currency",
+		"customer_id",
 		"id",
 		"status",
 	}

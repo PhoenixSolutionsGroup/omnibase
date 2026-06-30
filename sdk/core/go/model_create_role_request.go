@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,12 +20,10 @@ import (
 // checks if the CreateRoleRequest type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &CreateRoleRequest{}
 
-// CreateRoleRequest Request to create a new role
+// CreateRoleRequest struct for CreateRoleRequest
 type CreateRoleRequest struct {
-	// Name of the role (required, cannot be empty)
-	RoleName string `json:"role_name"`
-	// List of permissions in namespace:resource#relation format (required, must have at least one non-empty permission). Empty strings are not allowed and will be rejected with a 400 error.
 	Permissions []string `json:"permissions"`
+	RoleName string `json:"role_name"`
 }
 
 type _CreateRoleRequest CreateRoleRequest
@@ -34,10 +32,10 @@ type _CreateRoleRequest CreateRoleRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateRoleRequest(roleName string, permissions []string) *CreateRoleRequest {
+func NewCreateRoleRequest(permissions []string, roleName string) *CreateRoleRequest {
 	this := CreateRoleRequest{}
-	this.RoleName = roleName
 	this.Permissions = permissions
+	this.RoleName = roleName
 	return &this
 }
 
@@ -47,6 +45,32 @@ func NewCreateRoleRequest(roleName string, permissions []string) *CreateRoleRequ
 func NewCreateRoleRequestWithDefaults() *CreateRoleRequest {
 	this := CreateRoleRequest{}
 	return &this
+}
+
+// GetPermissions returns the Permissions field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *CreateRoleRequest) GetPermissions() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+
+	return o.Permissions
+}
+
+// GetPermissionsOk returns a tuple with the Permissions field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateRoleRequest) GetPermissionsOk() ([]string, bool) {
+	if o == nil || IsNil(o.Permissions) {
+		return nil, false
+	}
+	return o.Permissions, true
+}
+
+// SetPermissions sets field value
+func (o *CreateRoleRequest) SetPermissions(v []string) {
+	o.Permissions = v
 }
 
 // GetRoleName returns the RoleName field value
@@ -73,30 +97,6 @@ func (o *CreateRoleRequest) SetRoleName(v string) {
 	o.RoleName = v
 }
 
-// GetPermissions returns the Permissions field value
-func (o *CreateRoleRequest) GetPermissions() []string {
-	if o == nil {
-		var ret []string
-		return ret
-	}
-
-	return o.Permissions
-}
-
-// GetPermissionsOk returns a tuple with the Permissions field value
-// and a boolean to check if the value has been set.
-func (o *CreateRoleRequest) GetPermissionsOk() ([]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.Permissions, true
-}
-
-// SetPermissions sets field value
-func (o *CreateRoleRequest) SetPermissions(v []string) {
-	o.Permissions = v
-}
-
 func (o CreateRoleRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,8 +107,10 @@ func (o CreateRoleRequest) MarshalJSON() ([]byte, error) {
 
 func (o CreateRoleRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if o.Permissions != nil {
+		toSerialize["permissions"] = o.Permissions
+	}
 	toSerialize["role_name"] = o.RoleName
-	toSerialize["permissions"] = o.Permissions
 	return toSerialize, nil
 }
 
@@ -117,8 +119,8 @@ func (o *CreateRoleRequest) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"role_name",
 		"permissions",
+		"role_name",
 	}
 
 	allProperties := make(map[string]interface{})

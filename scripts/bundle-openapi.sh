@@ -1,10 +1,16 @@
 #!/bin/bash
 set -e
 
-# Get repo root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$ROOT_DIR"
 
-# Bundle OpenAPI spec
-npx @redocly/cli bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml
+OUT="$ROOT_DIR/apps/api/docs/openapi.json"
+
+cd "$ROOT_DIR/apps/api"
+GIN_MODE=release \
+LOG_LEVEL=ERROR \
+API_VERSION="${API_VERSION:-local}" \
+  go run ./cmd/openapi "$OUT"
+
+echo "✓ OpenAPI spec written to apps/api/docs/openapi.json (API_VERSION=${API_VERSION:-local})"

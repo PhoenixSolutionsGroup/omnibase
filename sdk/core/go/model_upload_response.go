@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,12 +22,9 @@ var _ MappedNullable = &UploadResponse{}
 
 // UploadResponse struct for UploadResponse
 type UploadResponse struct {
-	// Presigned URL for uploading the file (valid for 15 minutes)
-	UploadUrl string `json:"upload_url"`
-	// Confirmed storage path
-	Path string `json:"path"`
-	// Unique identifier of the storage object
 	Id string `json:"id"`
+	Path string `json:"path"`
+	UploadUrl string `json:"upload_url"`
 }
 
 type _UploadResponse UploadResponse
@@ -36,11 +33,11 @@ type _UploadResponse UploadResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUploadResponse(uploadUrl string, path string, id string) *UploadResponse {
+func NewUploadResponse(id string, path string, uploadUrl string) *UploadResponse {
 	this := UploadResponse{}
-	this.UploadUrl = uploadUrl
-	this.Path = path
 	this.Id = id
+	this.Path = path
+	this.UploadUrl = uploadUrl
 	return &this
 }
 
@@ -50,54 +47,6 @@ func NewUploadResponse(uploadUrl string, path string, id string) *UploadResponse
 func NewUploadResponseWithDefaults() *UploadResponse {
 	this := UploadResponse{}
 	return &this
-}
-
-// GetUploadUrl returns the UploadUrl field value
-func (o *UploadResponse) GetUploadUrl() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.UploadUrl
-}
-
-// GetUploadUrlOk returns a tuple with the UploadUrl field value
-// and a boolean to check if the value has been set.
-func (o *UploadResponse) GetUploadUrlOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.UploadUrl, true
-}
-
-// SetUploadUrl sets field value
-func (o *UploadResponse) SetUploadUrl(v string) {
-	o.UploadUrl = v
-}
-
-// GetPath returns the Path field value
-func (o *UploadResponse) GetPath() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Path
-}
-
-// GetPathOk returns a tuple with the Path field value
-// and a boolean to check if the value has been set.
-func (o *UploadResponse) GetPathOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Path, true
-}
-
-// SetPath sets field value
-func (o *UploadResponse) SetPath(v string) {
-	o.Path = v
 }
 
 // GetId returns the Id field value
@@ -124,6 +73,54 @@ func (o *UploadResponse) SetId(v string) {
 	o.Id = v
 }
 
+// GetPath returns the Path field value
+func (o *UploadResponse) GetPath() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Path
+}
+
+// GetPathOk returns a tuple with the Path field value
+// and a boolean to check if the value has been set.
+func (o *UploadResponse) GetPathOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Path, true
+}
+
+// SetPath sets field value
+func (o *UploadResponse) SetPath(v string) {
+	o.Path = v
+}
+
+// GetUploadUrl returns the UploadUrl field value
+func (o *UploadResponse) GetUploadUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.UploadUrl
+}
+
+// GetUploadUrlOk returns a tuple with the UploadUrl field value
+// and a boolean to check if the value has been set.
+func (o *UploadResponse) GetUploadUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.UploadUrl, true
+}
+
+// SetUploadUrl sets field value
+func (o *UploadResponse) SetUploadUrl(v string) {
+	o.UploadUrl = v
+}
+
 func (o UploadResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -134,9 +131,9 @@ func (o UploadResponse) MarshalJSON() ([]byte, error) {
 
 func (o UploadResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["upload_url"] = o.UploadUrl
-	toSerialize["path"] = o.Path
 	toSerialize["id"] = o.Id
+	toSerialize["path"] = o.Path
+	toSerialize["upload_url"] = o.UploadUrl
 	return toSerialize, nil
 }
 
@@ -145,9 +142,9 @@ func (o *UploadResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"upload_url",
-		"path",
 		"id",
+		"path",
+		"upload_url",
 	}
 
 	allProperties := make(map[string]interface{})

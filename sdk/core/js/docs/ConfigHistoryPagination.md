@@ -6,12 +6,12 @@
 
 Name | Type
 ------------ | -------------
-`total` | number
-`page` | number
-`perPage` | number
-`totalPages` | number
 `hasNext` | boolean
 `hasPrev` | boolean
+`page` | number
+`perPage` | number
+`total` | number
+`totalPages` | number
 
 ## Example
 
@@ -20,12 +20,12 @@ import type { ConfigHistoryPagination } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "total": 2,
-  "page": 1,
-  "perPage": 10,
-  "totalPages": 1,
-  "hasNext": false,
-  "hasPrev": false,
+  "hasNext": null,
+  "hasPrev": null,
+  "page": null,
+  "perPage": null,
+  "total": null,
+  "totalPages": null,
 } satisfies ConfigHistoryPagination
 
 console.log(example)

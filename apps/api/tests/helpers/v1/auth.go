@@ -15,7 +15,7 @@ func CreateUser(t *testing.T, client *sdk.APIClient, email, password string) str
 	req := sdk.CreateUserRequest{
 		Email:    email,
 		Password: password,
-		Name:     sdk.CreateUserRequestName{First: "Test", Last: "User"},
+		Name:     sdk.IdentityName{First: "Test", Last: "User"},
 	}
 	out, resp, err := client.V1AuthAPI.CreateUser(helpers.Ctx()).CreateUserRequest(req).Execute()
 	helpers.EnsureOK(t, resp, err, "createUser")

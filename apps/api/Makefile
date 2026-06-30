@@ -4,29 +4,23 @@ codegen:
 build:
 	go build ./...
 
-openapi-lint:
-	@cd ../../ && npx --yes @redocly/cli lint apps/api/docs/info.yaml
-
-openapi-bundle:
-	@cd ../../ && npx --yes @redocly/cli bundle apps/api/docs/info.yaml -o apps/api/docs/openapi.yaml
-	@echo "✓ OpenAPI bundled"
-
-openapi: openapi-lint openapi-bundle
+openapi:
+	@GIN_MODE=release LOG_LEVEL=ERROR API_VERSION=$${API_VERSION:-local} go run ./cmd/openapi docs/openapi.json
 
 sdk:
 	@OUT=$$(cd ../../ && bun run generate:sdk 2>&1) || { echo "$$OUT"; exit 1; }
-	@echo "$(DOCS_HASH)" > $(SDK_HASH_FILE)
+	@echo "$(SPEC_HASH)" > $(SDK_HASH_FILE)
 	@echo "✓ SDK generated"
 
-DOCS_HASH := $(shell find docs -type f \( -name '*.yaml' -o -name '*.yml' \) -print0 2>/dev/null | sort -z | xargs -0 sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
-SDK_HASH_FILE := .sdk-docs.hash
+SPEC_HASH := $(shell find internal/handlers internal/routes internal/server internal/middleware/huma.go -type f -name '*.go' -print0 2>/dev/null | sort -z | xargs -0 sha256sum 2>/dev/null | sha256sum | cut -d' ' -f1)
+SDK_HASH_FILE := .sdk-spec.hash
 
 sdk-if-changed:
-	@if [ -f $(SDK_HASH_FILE) ] && [ "$$(cat $(SDK_HASH_FILE))" = "$(DOCS_HASH)" ]; then \
-		echo "✓ SDK up-to-date (docs unchanged)"; \
+	@if [ -f $(SDK_HASH_FILE) ] && [ "$$(cat $(SDK_HASH_FILE))" = "$(SPEC_HASH)" ]; then \
+		echo "✓ SDK up-to-date (handlers/routes unchanged)"; \
 	else \
 		OUT=$$(cd ../../ && bun run generate:sdk 2>&1) || { echo "$$OUT"; exit 1; }; \
-		echo "$(DOCS_HASH)" > $(SDK_HASH_FILE); \
+		echo "$(SPEC_HASH)" > $(SDK_HASH_FILE); \
 		echo "✓ SDK generated"; \
 	fi
 

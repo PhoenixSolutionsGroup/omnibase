@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`upTo` | [TierUpTo](TierUpTo.md)
 `flatAmount` | number
 `unitAmount` | number
+`upTo` | any
 
 ## Example
 
@@ -17,9 +17,9 @@ import type { Tier } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "flatAmount": null,
+  "unitAmount": null,
   "upTo": null,
-  "flatAmount": 0,
-  "unitAmount": 10,
 } satisfies Tier
 
 console.log(example)

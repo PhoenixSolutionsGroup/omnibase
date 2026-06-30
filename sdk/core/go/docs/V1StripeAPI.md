@@ -25,8 +25,6 @@ Method | HTTP request | Description
 
 Apply custom enterprise pricing
 
-
-
 ### Example
 
 ```go
@@ -40,7 +38,7 @@ import (
 )
 
 func main() {
-	applyEnterpriseCustomRequest := *openapiclient.NewApplyEnterpriseCustomRequest("7d5da463-8351-4abe-870c-8ccdefc4d78c", "acme_corp") // ApplyEnterpriseCustomRequest | 
+	applyEnterpriseCustomRequest := *openapiclient.NewApplyEnterpriseCustomRequest("EnterpriseId_example", "TenantId_example") // ApplyEnterpriseCustomRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -78,7 +76,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -90,8 +88,6 @@ Name | Type | Description  | Notes
 > EnterpriseApplyResponse ApplyEnterpriseTemplate(ctx).ApplyEnterpriseTemplateRequest(applyEnterpriseTemplateRequest).Execute()
 
 Apply enterprise template pricing
-
-
 
 ### Example
 
@@ -106,7 +102,7 @@ import (
 )
 
 func main() {
-	applyEnterpriseTemplateRequest := *openapiclient.NewApplyEnterpriseTemplateRequest("7d5da463-8351-4abe-870c-8ccdefc4d78c", "tier1_10pct_off") // ApplyEnterpriseTemplateRequest | 
+	applyEnterpriseTemplateRequest := *openapiclient.NewApplyEnterpriseTemplateRequest("EnterpriseTemplate_example", "TenantId_example") // ApplyEnterpriseTemplateRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -144,7 +140,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -156,8 +152,6 @@ Name | Type | Description  | Notes
 > CalculatePriceCostResponse CalculatePriceCost(ctx, priceId).CalculatePriceCostRequest(calculatePriceCostRequest).Execute()
 
 Calculate cost for a price
-
-
 
 ### Example
 
@@ -172,8 +166,8 @@ import (
 )
 
 func main() {
-	priceId := "compute_hourly" // string | Price config ID
-	calculatePriceCostRequest := *openapiclient.NewCalculatePriceCostRequest(int64(1500)) // CalculatePriceCostRequest | 
+	priceId := "priceId_example" // string | 
+	calculatePriceCostRequest := *openapiclient.NewCalculatePriceCostRequest(int64(123)) // CalculatePriceCostRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -193,7 +187,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**priceId** | **string** | Price config ID | 
+**priceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -216,7 +210,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -225,11 +219,9 @@ No authorization required
 
 ## ConvertStripeIDToConfigID
 
-> StripeIDConversionResponse ConvertStripeIDToConfigID(ctx, stripeId).Execute()
+> ConvertStripeIDResponse ConvertStripeIDToConfigID(ctx, stripeId).Execute()
 
 Convert Stripe ID to config ID
-
-
 
 ### Example
 
@@ -244,7 +236,7 @@ import (
 )
 
 func main() {
-	stripeId := "price_1SRiyyCJIZaBlhY1NpAJFhNU" // string | Stripe ID to convert
+	stripeId := "stripeId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -253,7 +245,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.ConvertStripeIDToConfigID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `ConvertStripeIDToConfigID`: StripeIDConversionResponse
+	// response from `ConvertStripeIDToConfigID`: ConvertStripeIDResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.ConvertStripeIDToConfigID`: %v\n", resp)
 }
 ```
@@ -264,7 +256,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**stripeId** | **string** | Stripe ID to convert | 
+**stripeId** | **string** |  | 
 
 ### Other Parameters
 
@@ -277,7 +269,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**StripeIDConversionResponse**](StripeIDConversionResponse.md)
+[**ConvertStripeIDResponse**](ConvertStripeIDResponse.md)
 
 ### Authorization
 
@@ -286,7 +278,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -298,8 +290,6 @@ No authorization required
 > EnterprisePricesResponse GetEnterprisePricesByID(ctx, enterpriseId).Execute()
 
 Get enterprise prices by ID
-
-
 
 ### Example
 
@@ -314,7 +304,7 @@ import (
 )
 
 func main() {
-	enterpriseId := "acme_corp" // string | Enterprise ID to filter by
+	enterpriseId := "enterpriseId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -334,7 +324,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**enterpriseId** | **string** | Enterprise ID to filter by | 
+**enterpriseId** | **string** |  | 
 
 ### Other Parameters
 
@@ -356,7 +346,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -368,8 +358,6 @@ Name | Type | Description  | Notes
 > EnterprisePricesResponse GetEnterprisePricesByTemplate(ctx, template).Execute()
 
 Get enterprise prices by template
-
-
 
 ### Example
 
@@ -384,7 +372,7 @@ import (
 )
 
 func main() {
-	template := "tier1_10pct_off" // string | Enterprise template to filter by
+	template := "template_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -404,7 +392,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**template** | **string** | Enterprise template to filter by | 
+**template** | **string** |  | 
 
 ### Other Parameters
 
@@ -426,7 +414,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -435,11 +423,9 @@ Name | Type | Description  | Notes
 
 ## GetMeterByID
 
-> MeterResponse GetMeterByID(ctx, meterId).Execute()
+> GetMeterResponse GetMeterByID(ctx, meterId).Execute()
 
 Get meter by ID
-
-
 
 ### Example
 
@@ -454,7 +440,7 @@ import (
 )
 
 func main() {
-	meterId := "api_requests" // string | Meter config ID
+	meterId := "meterId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -463,7 +449,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetMeterByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetMeterByID`: MeterResponse
+	// response from `GetMeterByID`: GetMeterResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetMeterByID`: %v\n", resp)
 }
 ```
@@ -474,7 +460,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**meterId** | **string** | Meter config ID | 
+**meterId** | **string** |  | 
 
 ### Other Parameters
 
@@ -487,7 +473,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**MeterResponse**](MeterResponse.md)
+[**GetMeterResponse**](GetMeterResponse.md)
 
 ### Authorization
 
@@ -496,7 +482,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -505,11 +491,9 @@ No authorization required
 
 ## GetPriceByID
 
-> PriceResponse GetPriceByID(ctx, priceId).Execute()
+> GetPriceResponse GetPriceByID(ctx, priceId).Execute()
 
 Get price by ID
-
-
 
 ### Example
 
@@ -524,7 +508,7 @@ import (
 )
 
 func main() {
-	priceId := "basic_monthly" // string | Price config ID
+	priceId := "priceId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -533,7 +517,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetPriceByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetPriceByID`: PriceResponse
+	// response from `GetPriceByID`: GetPriceResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetPriceByID`: %v\n", resp)
 }
 ```
@@ -544,7 +528,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**priceId** | **string** | Price config ID | 
+**priceId** | **string** |  | 
 
 ### Other Parameters
 
@@ -557,7 +541,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PriceResponse**](PriceResponse.md)
+[**GetPriceResponse**](GetPriceResponse.md)
 
 ### Authorization
 
@@ -566,7 +550,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -575,11 +559,9 @@ No authorization required
 
 ## GetProductByID
 
-> ProductResponse GetProductByID(ctx, productId).Execute()
+> GetProductResponse GetProductByID(ctx, productId).Execute()
 
 Get product by ID
-
-
 
 ### Example
 
@@ -594,7 +576,7 @@ import (
 )
 
 func main() {
-	productId := "basic_plan" // string | Product config ID
+	productId := "productId_example" // string | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -603,7 +585,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1StripeAPI.GetProductByID``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `GetProductByID`: ProductResponse
+	// response from `GetProductByID`: GetProductResponse
 	fmt.Fprintf(os.Stdout, "Response from `V1StripeAPI.GetProductByID`: %v\n", resp)
 }
 ```
@@ -614,7 +596,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**productId** | **string** | Product config ID | 
+**productId** | **string** |  | 
 
 ### Other Parameters
 
@@ -627,7 +609,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ProductResponse**](ProductResponse.md)
+[**GetProductResponse**](GetProductResponse.md)
 
 ### Authorization
 
@@ -636,7 +618,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -648,8 +630,6 @@ No authorization required
 > StripeConfigResponse GetStripeConfig(ctx).Execute()
 
 Get public Stripe config
-
-
 
 ### Example
 
@@ -697,7 +677,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -709,8 +689,6 @@ No authorization required
 > StripeConfigResponse GetStripeConfigAdmin(ctx).Execute()
 
 Get full Stripe config (admin)
-
-
 
 ### Example
 
@@ -758,7 +736,7 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -770,8 +748,6 @@ Other parameters are passed through a pointer to a apiGetStripeConfigAdminReques
 > ListWebhooksResponse ListWebhooks(ctx).Execute()
 
 List all webhooks
-
-
 
 ### Example
 
@@ -819,7 +795,7 @@ Other parameters are passed through a pointer to a apiListWebhooksRequest struct
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

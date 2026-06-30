@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ReturnUrl** | **string** | URL to redirect to after leaving the portal (required, cannot be empty) | 
+**ReturnUrl** | **string** |  | 
 
 ## Methods
 

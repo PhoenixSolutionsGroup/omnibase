@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`currency` | [CurrencyCode](CurrencyCode.md)
 `autoAdvance` | boolean
 `collectionMethod` | string
+`currency` | string
 `daysUntilDue` | number
 `description` | string
 `metadata` | { [key: string]: string; }
@@ -20,11 +20,11 @@ import type { CreateInvoiceRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "autoAdvance": null,
+  "collectionMethod": null,
   "currency": null,
-  "autoAdvance": false,
-  "collectionMethod": send_invoice,
-  "daysUntilDue": 7,
-  "description": Monthly platform fees,
+  "daysUntilDue": null,
+  "description": null,
   "metadata": null,
 } satisfies CreateInvoiceRequest
 

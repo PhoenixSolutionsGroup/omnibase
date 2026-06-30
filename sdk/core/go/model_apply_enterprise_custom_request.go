@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,10 +22,8 @@ var _ MappedNullable = &ApplyEnterpriseCustomRequest{}
 
 // ApplyEnterpriseCustomRequest struct for ApplyEnterpriseCustomRequest
 type ApplyEnterpriseCustomRequest struct {
-	// Tenant ID to apply enterprise pricing to
-	TenantId string `json:"tenant_id"`
-	// Enterprise pricing group ID (e.g., acme_corp, bigtech_inc)
 	EnterpriseId string `json:"enterprise_id"`
+	TenantId string `json:"tenant_id"`
 }
 
 type _ApplyEnterpriseCustomRequest ApplyEnterpriseCustomRequest
@@ -34,10 +32,10 @@ type _ApplyEnterpriseCustomRequest ApplyEnterpriseCustomRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplyEnterpriseCustomRequest(tenantId string, enterpriseId string) *ApplyEnterpriseCustomRequest {
+func NewApplyEnterpriseCustomRequest(enterpriseId string, tenantId string) *ApplyEnterpriseCustomRequest {
 	this := ApplyEnterpriseCustomRequest{}
-	this.TenantId = tenantId
 	this.EnterpriseId = enterpriseId
+	this.TenantId = tenantId
 	return &this
 }
 
@@ -47,30 +45,6 @@ func NewApplyEnterpriseCustomRequest(tenantId string, enterpriseId string) *Appl
 func NewApplyEnterpriseCustomRequestWithDefaults() *ApplyEnterpriseCustomRequest {
 	this := ApplyEnterpriseCustomRequest{}
 	return &this
-}
-
-// GetTenantId returns the TenantId field value
-func (o *ApplyEnterpriseCustomRequest) GetTenantId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.TenantId
-}
-
-// GetTenantIdOk returns a tuple with the TenantId field value
-// and a boolean to check if the value has been set.
-func (o *ApplyEnterpriseCustomRequest) GetTenantIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.TenantId, true
-}
-
-// SetTenantId sets field value
-func (o *ApplyEnterpriseCustomRequest) SetTenantId(v string) {
-	o.TenantId = v
 }
 
 // GetEnterpriseId returns the EnterpriseId field value
@@ -97,6 +71,30 @@ func (o *ApplyEnterpriseCustomRequest) SetEnterpriseId(v string) {
 	o.EnterpriseId = v
 }
 
+// GetTenantId returns the TenantId field value
+func (o *ApplyEnterpriseCustomRequest) GetTenantId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.TenantId
+}
+
+// GetTenantIdOk returns a tuple with the TenantId field value
+// and a boolean to check if the value has been set.
+func (o *ApplyEnterpriseCustomRequest) GetTenantIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TenantId, true
+}
+
+// SetTenantId sets field value
+func (o *ApplyEnterpriseCustomRequest) SetTenantId(v string) {
+	o.TenantId = v
+}
+
 func (o ApplyEnterpriseCustomRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,8 +105,8 @@ func (o ApplyEnterpriseCustomRequest) MarshalJSON() ([]byte, error) {
 
 func (o ApplyEnterpriseCustomRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["tenant_id"] = o.TenantId
 	toSerialize["enterprise_id"] = o.EnterpriseId
+	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
 }
 
@@ -117,8 +115,8 @@ func (o *ApplyEnterpriseCustomRequest) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"tenant_id",
 		"enterprise_id",
+		"tenant_id",
 	}
 
 	allProperties := make(map[string]interface{})

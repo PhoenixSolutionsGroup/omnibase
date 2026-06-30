@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"api/internal/config"
-	"api/internal/database"
 	"api/internal/handlers"
 	"api/internal/logger"
 	"context"
@@ -52,8 +51,7 @@ type KratosClaims struct {
 	jwt.RegisteredClaims
 }
 
-func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
-	// Public API client for session validation
+func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
@@ -61,18 +59,10 @@ func NewAuthMiddleware(cfg *config.Config) *AuthMiddleware {
 		},
 	}
 
-	db, err := database.GetConnection(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get database connection in auth middleware", "error", err)
-		panic(err)
-	}
-
-	JWTSecret := cfg.JWTSecret
-
 	return &AuthMiddleware{
 		kratosClient: kratos.NewAPIClient(publicConfig),
 		db:           db,
-		JWTSecret:    JWTSecret,
+		JWTSecret:    cfg.JWTSecret,
 		jwksData:     cfg.AuthConfig.AuthJWTJWKS,
 	}
 }

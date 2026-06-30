@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -13,18 +13,17 @@ package omnibase
 
 import (
 	"encoding/json"
-	"bytes"
 	"fmt"
 )
 
 // checks if the UserTenantListItem type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &UserTenantListItem{}
 
-// UserTenantListItem Simplified tenant info for user's tenant list
+// UserTenantListItem struct for UserTenantListItem
 type UserTenantListItem struct {
-	Tenant Tenant `json:"tenant"`
-	// Whether this is the user's currently active tenant
 	IsActive bool `json:"is_active"`
+	Tenant GetTenantByIDRow `json:"tenant"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _UserTenantListItem UserTenantListItem
@@ -33,10 +32,10 @@ type _UserTenantListItem UserTenantListItem
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserTenantListItem(tenant Tenant, isActive bool) *UserTenantListItem {
+func NewUserTenantListItem(isActive bool, tenant GetTenantByIDRow) *UserTenantListItem {
 	this := UserTenantListItem{}
-	this.Tenant = tenant
 	this.IsActive = isActive
+	this.Tenant = tenant
 	return &this
 }
 
@@ -46,30 +45,6 @@ func NewUserTenantListItem(tenant Tenant, isActive bool) *UserTenantListItem {
 func NewUserTenantListItemWithDefaults() *UserTenantListItem {
 	this := UserTenantListItem{}
 	return &this
-}
-
-// GetTenant returns the Tenant field value
-func (o *UserTenantListItem) GetTenant() Tenant {
-	if o == nil {
-		var ret Tenant
-		return ret
-	}
-
-	return o.Tenant
-}
-
-// GetTenantOk returns a tuple with the Tenant field value
-// and a boolean to check if the value has been set.
-func (o *UserTenantListItem) GetTenantOk() (*Tenant, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Tenant, true
-}
-
-// SetTenant sets field value
-func (o *UserTenantListItem) SetTenant(v Tenant) {
-	o.Tenant = v
 }
 
 // GetIsActive returns the IsActive field value
@@ -96,6 +71,30 @@ func (o *UserTenantListItem) SetIsActive(v bool) {
 	o.IsActive = v
 }
 
+// GetTenant returns the Tenant field value
+func (o *UserTenantListItem) GetTenant() GetTenantByIDRow {
+	if o == nil {
+		var ret GetTenantByIDRow
+		return ret
+	}
+
+	return o.Tenant
+}
+
+// GetTenantOk returns a tuple with the Tenant field value
+// and a boolean to check if the value has been set.
+func (o *UserTenantListItem) GetTenantOk() (*GetTenantByIDRow, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Tenant, true
+}
+
+// SetTenant sets field value
+func (o *UserTenantListItem) SetTenant(v GetTenantByIDRow) {
+	o.Tenant = v
+}
+
 func (o UserTenantListItem) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -106,8 +105,13 @@ func (o UserTenantListItem) MarshalJSON() ([]byte, error) {
 
 func (o UserTenantListItem) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["tenant"] = o.Tenant
 	toSerialize["is_active"] = o.IsActive
+	toSerialize["tenant"] = o.Tenant
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -116,8 +120,8 @@ func (o *UserTenantListItem) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"tenant",
 		"is_active",
+		"tenant",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -136,15 +140,21 @@ func (o *UserTenantListItem) UnmarshalJSON(data []byte) (err error) {
 
 	varUserTenantListItem := _UserTenantListItem{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varUserTenantListItem)
+	err = json.Unmarshal(data, &varUserTenantListItem)
 
 	if err != nil {
 		return err
 	}
 
 	*o = UserTenantListItem(varUserTenantListItem)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "is_active")
+		delete(additionalProperties, "tenant")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

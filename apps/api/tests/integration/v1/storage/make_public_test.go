@@ -31,14 +31,12 @@ func TestStorageMakePublic(t *testing.T) {
 	tenant := h.CreateTenant(t, client, userID, "Storage MP "+id, email).Tenant
 
 	path := fmt.Sprintf("test/mp-%s.txt", helpers.UniqueID())
-	_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-		XUserId(userID).XTenantId(tenant.Id).
+	_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 		UploadRequest(sdk.UploadRequest{Path: path}).Execute()
 	helpers.EnsureOK(t, uploadResp, err, "uploadFile")
 
 	t.Run("owner makes file public", func(t *testing.T) {
-		out, resp, err := client.V1StorageAPI.MakeFilePublic(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		out, resp, err := client.V1StorageAPI.MakeFilePublic(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			MakePublicRequest(sdk.MakePublicRequest{Path: path}).Execute()
 		helpers.EnsureOK(t, resp, err, "makeFilePublic")
 		require.NotNil(t, out)
@@ -46,16 +44,14 @@ func TestStorageMakePublic(t *testing.T) {
 	})
 
 	t.Run("idempotent on already public", func(t *testing.T) {
-		out, resp, err := client.V1StorageAPI.MakeFilePublic(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		out, resp, err := client.V1StorageAPI.MakeFilePublic(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			MakePublicRequest(sdk.MakePublicRequest{Path: path}).Execute()
 		helpers.EnsureOK(t, resp, err, "makeFilePublic again")
 		require.NotNil(t, out)
 	})
 
 	t.Run("missing path returns 404", func(t *testing.T) {
-		_, resp, _ := client.V1StorageAPI.MakeFilePublic(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		_, resp, _ := client.V1StorageAPI.MakeFilePublic(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			MakePublicRequest(sdk.MakePublicRequest{Path: "test/never-existed-" + helpers.UniqueID()}).Execute()
 		require.NotNil(t, resp)
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)

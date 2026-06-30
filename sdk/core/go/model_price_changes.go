@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -18,14 +18,11 @@ import (
 // checks if the PriceChanges type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &PriceChanges{}
 
-// PriceChanges Summary of price changes made during configuration update
+// PriceChanges struct for PriceChanges
 type PriceChanges struct {
-	// Prices that were created in Stripe
-	Created []PriceChange `json:"created,omitempty"`
-	// Prices that were updated in Stripe
-	Updated []PriceChange `json:"updated,omitempty"`
-	// Prices that were archived in Stripe
 	Archived []PriceChange `json:"archived,omitempty"`
+	Created []PriceChange `json:"created,omitempty"`
+	Updated []PriceChange `json:"updated,omitempty"`
 }
 
 // NewPriceChanges instantiates a new PriceChanges object
@@ -45,73 +42,9 @@ func NewPriceChangesWithDefaults() *PriceChanges {
 	return &this
 }
 
-// GetCreated returns the Created field value if set, zero value otherwise.
-func (o *PriceChanges) GetCreated() []PriceChange {
-	if o == nil || IsNil(o.Created) {
-		var ret []PriceChange
-		return ret
-	}
-	return o.Created
-}
-
-// GetCreatedOk returns a tuple with the Created field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceChanges) GetCreatedOk() ([]PriceChange, bool) {
-	if o == nil || IsNil(o.Created) {
-		return nil, false
-	}
-	return o.Created, true
-}
-
-// HasCreated returns a boolean if a field has been set.
-func (o *PriceChanges) HasCreated() bool {
-	if o != nil && !IsNil(o.Created) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreated gets a reference to the given []PriceChange and assigns it to the Created field.
-func (o *PriceChanges) SetCreated(v []PriceChange) {
-	o.Created = v
-}
-
-// GetUpdated returns the Updated field value if set, zero value otherwise.
-func (o *PriceChanges) GetUpdated() []PriceChange {
-	if o == nil || IsNil(o.Updated) {
-		var ret []PriceChange
-		return ret
-	}
-	return o.Updated
-}
-
-// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceChanges) GetUpdatedOk() ([]PriceChange, bool) {
-	if o == nil || IsNil(o.Updated) {
-		return nil, false
-	}
-	return o.Updated, true
-}
-
-// HasUpdated returns a boolean if a field has been set.
-func (o *PriceChanges) HasUpdated() bool {
-	if o != nil && !IsNil(o.Updated) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdated gets a reference to the given []PriceChange and assigns it to the Updated field.
-func (o *PriceChanges) SetUpdated(v []PriceChange) {
-	o.Updated = v
-}
-
-// GetArchived returns the Archived field value if set, zero value otherwise.
+// GetArchived returns the Archived field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *PriceChanges) GetArchived() []PriceChange {
-	if o == nil || IsNil(o.Archived) {
+	if o == nil {
 		var ret []PriceChange
 		return ret
 	}
@@ -120,6 +53,7 @@ func (o *PriceChanges) GetArchived() []PriceChange {
 
 // GetArchivedOk returns a tuple with the Archived field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *PriceChanges) GetArchivedOk() ([]PriceChange, bool) {
 	if o == nil || IsNil(o.Archived) {
 		return nil, false
@@ -141,6 +75,72 @@ func (o *PriceChanges) SetArchived(v []PriceChange) {
 	o.Archived = v
 }
 
+// GetCreated returns the Created field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *PriceChanges) GetCreated() []PriceChange {
+	if o == nil {
+		var ret []PriceChange
+		return ret
+	}
+	return o.Created
+}
+
+// GetCreatedOk returns a tuple with the Created field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *PriceChanges) GetCreatedOk() ([]PriceChange, bool) {
+	if o == nil || IsNil(o.Created) {
+		return nil, false
+	}
+	return o.Created, true
+}
+
+// HasCreated returns a boolean if a field has been set.
+func (o *PriceChanges) HasCreated() bool {
+	if o != nil && !IsNil(o.Created) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreated gets a reference to the given []PriceChange and assigns it to the Created field.
+func (o *PriceChanges) SetCreated(v []PriceChange) {
+	o.Created = v
+}
+
+// GetUpdated returns the Updated field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *PriceChanges) GetUpdated() []PriceChange {
+	if o == nil {
+		var ret []PriceChange
+		return ret
+	}
+	return o.Updated
+}
+
+// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *PriceChanges) GetUpdatedOk() ([]PriceChange, bool) {
+	if o == nil || IsNil(o.Updated) {
+		return nil, false
+	}
+	return o.Updated, true
+}
+
+// HasUpdated returns a boolean if a field has been set.
+func (o *PriceChanges) HasUpdated() bool {
+	if o != nil && !IsNil(o.Updated) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdated gets a reference to the given []PriceChange and assigns it to the Updated field.
+func (o *PriceChanges) SetUpdated(v []PriceChange) {
+	o.Updated = v
+}
+
 func (o PriceChanges) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -151,14 +151,14 @@ func (o PriceChanges) MarshalJSON() ([]byte, error) {
 
 func (o PriceChanges) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Created) {
+	if o.Archived != nil {
+		toSerialize["archived"] = o.Archived
+	}
+	if o.Created != nil {
 		toSerialize["created"] = o.Created
 	}
-	if !IsNil(o.Updated) {
+	if o.Updated != nil {
 		toSerialize["updated"] = o.Updated
-	}
-	if !IsNil(o.Archived) {
-		toSerialize["archived"] = o.Archived
 	}
 	return toSerialize, nil
 }

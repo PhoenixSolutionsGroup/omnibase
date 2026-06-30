@@ -15,7 +15,7 @@ import type { MakePublicRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "path": avatars/user-123.png,
+  "path": null,
 } satisfies MakePublicRequest
 
 console.log(example)

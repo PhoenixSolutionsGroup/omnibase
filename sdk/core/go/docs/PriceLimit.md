@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Text** | **string** | Limit description | 
-**Value** | Pointer to **float64** | Numeric limit value | [optional] 
-**Unit** | Pointer to **string** | Unit of measurement | [optional] 
+**Text** | **string** |  | 
+**Unit** | Pointer to **string** |  | [optional] 
+**Value** | Pointer to **float64** |  | [optional] 
 
 ## Methods
 
@@ -47,31 +47,6 @@ and a boolean to check if the value has been set.
 SetText sets Text field to given value.
 
 
-### GetValue
-
-`func (o *PriceLimit) GetValue() float64`
-
-GetValue returns the Value field if non-nil, zero value otherwise.
-
-### GetValueOk
-
-`func (o *PriceLimit) GetValueOk() (*float64, bool)`
-
-GetValueOk returns a tuple with the Value field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetValue
-
-`func (o *PriceLimit) SetValue(v float64)`
-
-SetValue sets Value field to given value.
-
-### HasValue
-
-`func (o *PriceLimit) HasValue() bool`
-
-HasValue returns a boolean if a field has been set.
-
 ### GetUnit
 
 `func (o *PriceLimit) GetUnit() string`
@@ -96,6 +71,31 @@ SetUnit sets Unit field to given value.
 `func (o *PriceLimit) HasUnit() bool`
 
 HasUnit returns a boolean if a field has been set.
+
+### GetValue
+
+`func (o *PriceLimit) GetValue() float64`
+
+GetValue returns the Value field if non-nil, zero value otherwise.
+
+### GetValueOk
+
+`func (o *PriceLimit) GetValueOk() (*float64, bool)`
+
+GetValueOk returns a tuple with the Value field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetValue
+
+`func (o *PriceLimit) SetValue(v float64)`
+
+SetValue sets Value field to given value.
+
+### HasValue
+
+`func (o *PriceLimit) HasValue() bool`
+
+HasValue returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -7,9 +7,9 @@ import (
 )
 
 type StripeConfigResponse struct {
-	ID        uuid.UUID                         `json:"id" binding:"required"`
-	Config    stripe_config.ConfigurationWithIDs `json:"config" binding:"required"`
-	Version   string                            `json:"version" binding:"required"`
-	CreatedAt string                            `json:"created_at" binding:"required"`
-	UpdatedAt string                            `json:"updated_at" binding:"required"`
+	ID        uuid.UUID                          `json:"id" required:"true"`
+	Config    stripe_config.StripeConfigurationWithIDs `json:"config" required:"true"`
+	Version   string                             `json:"version" required:"true"`
+	CreatedAt string                             `json:"created_at" required:"true"`
+	UpdatedAt string                             `json:"updated_at" required:"true"`
 }

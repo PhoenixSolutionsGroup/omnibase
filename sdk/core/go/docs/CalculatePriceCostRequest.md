@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Quantity** | **int64** | Quantity of units to calculate cost for | 
+**Quantity** | **int64** |  | 
 
 ## Methods
 

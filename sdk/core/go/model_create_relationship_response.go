@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,11 +20,9 @@ import (
 // checks if the CreateRelationshipResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &CreateRelationshipResponse{}
 
-// CreateRelationshipResponse Relationship creation result
+// CreateRelationshipResponse struct for CreateRelationshipResponse
 type CreateRelationshipResponse struct {
-	// Success message
 	Message string `json:"message"`
-	Relationship Relationship `json:"relationship"`
 }
 
 type _CreateRelationshipResponse CreateRelationshipResponse
@@ -33,10 +31,9 @@ type _CreateRelationshipResponse CreateRelationshipResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateRelationshipResponse(message string, relationship Relationship) *CreateRelationshipResponse {
+func NewCreateRelationshipResponse(message string) *CreateRelationshipResponse {
 	this := CreateRelationshipResponse{}
 	this.Message = message
-	this.Relationship = relationship
 	return &this
 }
 
@@ -72,30 +69,6 @@ func (o *CreateRelationshipResponse) SetMessage(v string) {
 	o.Message = v
 }
 
-// GetRelationship returns the Relationship field value
-func (o *CreateRelationshipResponse) GetRelationship() Relationship {
-	if o == nil {
-		var ret Relationship
-		return ret
-	}
-
-	return o.Relationship
-}
-
-// GetRelationshipOk returns a tuple with the Relationship field value
-// and a boolean to check if the value has been set.
-func (o *CreateRelationshipResponse) GetRelationshipOk() (*Relationship, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Relationship, true
-}
-
-// SetRelationship sets field value
-func (o *CreateRelationshipResponse) SetRelationship(v Relationship) {
-	o.Relationship = v
-}
-
 func (o CreateRelationshipResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,7 +80,6 @@ func (o CreateRelationshipResponse) MarshalJSON() ([]byte, error) {
 func (o CreateRelationshipResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
-	toSerialize["relationship"] = o.Relationship
 	return toSerialize, nil
 }
 
@@ -117,7 +89,6 @@ func (o *CreateRelationshipResponse) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"message",
-		"relationship",
 	}
 
 	allProperties := make(map[string]interface{})

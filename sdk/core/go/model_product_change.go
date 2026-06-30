@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,16 +22,11 @@ var _ MappedNullable = &ProductChange{}
 
 // ProductChange struct for ProductChange
 type ProductChange struct {
-	// Product config ID
-	ProductId string `json:"product_id"`
-	// Product name
-	ProductName string `json:"product_name"`
-	// Action performed on the product
 	Action string `json:"action"`
-	// Stripe product ID (if applicable)
-	StripeId *string `json:"stripe_id,omitempty"`
-	// Additional details about the changes
 	Details []string `json:"details,omitempty"`
+	ProductId string `json:"product_id"`
+	ProductName string `json:"product_name"`
+	StripeId *string `json:"stripe_id,omitempty"`
 }
 
 type _ProductChange ProductChange
@@ -40,11 +35,11 @@ type _ProductChange ProductChange
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewProductChange(productId string, productName string, action string) *ProductChange {
+func NewProductChange(action string, productId string, productName string) *ProductChange {
 	this := ProductChange{}
+	this.Action = action
 	this.ProductId = productId
 	this.ProductName = productName
-	this.Action = action
 	return &this
 }
 
@@ -54,6 +49,63 @@ func NewProductChange(productId string, productName string, action string) *Prod
 func NewProductChangeWithDefaults() *ProductChange {
 	this := ProductChange{}
 	return &this
+}
+
+// GetAction returns the Action field value
+func (o *ProductChange) GetAction() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Action
+}
+
+// GetActionOk returns a tuple with the Action field value
+// and a boolean to check if the value has been set.
+func (o *ProductChange) GetActionOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Action, true
+}
+
+// SetAction sets field value
+func (o *ProductChange) SetAction(v string) {
+	o.Action = v
+}
+
+// GetDetails returns the Details field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ProductChange) GetDetails() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+	return o.Details
+}
+
+// GetDetailsOk returns a tuple with the Details field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ProductChange) GetDetailsOk() ([]string, bool) {
+	if o == nil || IsNil(o.Details) {
+		return nil, false
+	}
+	return o.Details, true
+}
+
+// HasDetails returns a boolean if a field has been set.
+func (o *ProductChange) HasDetails() bool {
+	if o != nil && !IsNil(o.Details) {
+		return true
+	}
+
+	return false
+}
+
+// SetDetails gets a reference to the given []string and assigns it to the Details field.
+func (o *ProductChange) SetDetails(v []string) {
+	o.Details = v
 }
 
 // GetProductId returns the ProductId field value
@@ -104,30 +156,6 @@ func (o *ProductChange) SetProductName(v string) {
 	o.ProductName = v
 }
 
-// GetAction returns the Action field value
-func (o *ProductChange) GetAction() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Action
-}
-
-// GetActionOk returns a tuple with the Action field value
-// and a boolean to check if the value has been set.
-func (o *ProductChange) GetActionOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Action, true
-}
-
-// SetAction sets field value
-func (o *ProductChange) SetAction(v string) {
-	o.Action = v
-}
-
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
 func (o *ProductChange) GetStripeId() string {
 	if o == nil || IsNil(o.StripeId) {
@@ -160,38 +188,6 @@ func (o *ProductChange) SetStripeId(v string) {
 	o.StripeId = &v
 }
 
-// GetDetails returns the Details field value if set, zero value otherwise.
-func (o *ProductChange) GetDetails() []string {
-	if o == nil || IsNil(o.Details) {
-		var ret []string
-		return ret
-	}
-	return o.Details
-}
-
-// GetDetailsOk returns a tuple with the Details field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ProductChange) GetDetailsOk() ([]string, bool) {
-	if o == nil || IsNil(o.Details) {
-		return nil, false
-	}
-	return o.Details, true
-}
-
-// HasDetails returns a boolean if a field has been set.
-func (o *ProductChange) HasDetails() bool {
-	if o != nil && !IsNil(o.Details) {
-		return true
-	}
-
-	return false
-}
-
-// SetDetails gets a reference to the given []string and assigns it to the Details field.
-func (o *ProductChange) SetDetails(v []string) {
-	o.Details = v
-}
-
 func (o ProductChange) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -202,14 +198,14 @@ func (o ProductChange) MarshalJSON() ([]byte, error) {
 
 func (o ProductChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["action"] = o.Action
+	if o.Details != nil {
+		toSerialize["details"] = o.Details
+	}
 	toSerialize["product_id"] = o.ProductId
 	toSerialize["product_name"] = o.ProductName
-	toSerialize["action"] = o.Action
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
-	}
-	if !IsNil(o.Details) {
-		toSerialize["details"] = o.Details
 	}
 	return toSerialize, nil
 }
@@ -219,9 +215,9 @@ func (o *ProductChange) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"action",
 		"product_id",
 		"product_name",
-		"action",
 	}
 
 	allProperties := make(map[string]interface{})

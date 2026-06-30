@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,10 +22,8 @@ var _ MappedNullable = &ApplyEnterpriseTemplateRequest{}
 
 // ApplyEnterpriseTemplateRequest struct for ApplyEnterpriseTemplateRequest
 type ApplyEnterpriseTemplateRequest struct {
-	// Tenant ID to apply enterprise pricing to
-	TenantId string `json:"tenant_id"`
-	// Enterprise template identifier (e.g., tier1_10pct_off, tier2_25pct_off)
 	EnterpriseTemplate string `json:"enterprise_template"`
+	TenantId string `json:"tenant_id"`
 }
 
 type _ApplyEnterpriseTemplateRequest ApplyEnterpriseTemplateRequest
@@ -34,10 +32,10 @@ type _ApplyEnterpriseTemplateRequest ApplyEnterpriseTemplateRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewApplyEnterpriseTemplateRequest(tenantId string, enterpriseTemplate string) *ApplyEnterpriseTemplateRequest {
+func NewApplyEnterpriseTemplateRequest(enterpriseTemplate string, tenantId string) *ApplyEnterpriseTemplateRequest {
 	this := ApplyEnterpriseTemplateRequest{}
-	this.TenantId = tenantId
 	this.EnterpriseTemplate = enterpriseTemplate
+	this.TenantId = tenantId
 	return &this
 }
 
@@ -47,30 +45,6 @@ func NewApplyEnterpriseTemplateRequest(tenantId string, enterpriseTemplate strin
 func NewApplyEnterpriseTemplateRequestWithDefaults() *ApplyEnterpriseTemplateRequest {
 	this := ApplyEnterpriseTemplateRequest{}
 	return &this
-}
-
-// GetTenantId returns the TenantId field value
-func (o *ApplyEnterpriseTemplateRequest) GetTenantId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.TenantId
-}
-
-// GetTenantIdOk returns a tuple with the TenantId field value
-// and a boolean to check if the value has been set.
-func (o *ApplyEnterpriseTemplateRequest) GetTenantIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.TenantId, true
-}
-
-// SetTenantId sets field value
-func (o *ApplyEnterpriseTemplateRequest) SetTenantId(v string) {
-	o.TenantId = v
 }
 
 // GetEnterpriseTemplate returns the EnterpriseTemplate field value
@@ -97,6 +71,30 @@ func (o *ApplyEnterpriseTemplateRequest) SetEnterpriseTemplate(v string) {
 	o.EnterpriseTemplate = v
 }
 
+// GetTenantId returns the TenantId field value
+func (o *ApplyEnterpriseTemplateRequest) GetTenantId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.TenantId
+}
+
+// GetTenantIdOk returns a tuple with the TenantId field value
+// and a boolean to check if the value has been set.
+func (o *ApplyEnterpriseTemplateRequest) GetTenantIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TenantId, true
+}
+
+// SetTenantId sets field value
+func (o *ApplyEnterpriseTemplateRequest) SetTenantId(v string) {
+	o.TenantId = v
+}
+
 func (o ApplyEnterpriseTemplateRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,8 +105,8 @@ func (o ApplyEnterpriseTemplateRequest) MarshalJSON() ([]byte, error) {
 
 func (o ApplyEnterpriseTemplateRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["tenant_id"] = o.TenantId
 	toSerialize["enterprise_template"] = o.EnterpriseTemplate
+	toSerialize["tenant_id"] = o.TenantId
 	return toSerialize, nil
 }
 
@@ -117,8 +115,8 @@ func (o *ApplyEnterpriseTemplateRequest) UnmarshalJSON(data []byte) (err error) 
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"tenant_id",
 		"enterprise_template",
+		"tenant_id",
 	}
 
 	allProperties := make(map[string]interface{})

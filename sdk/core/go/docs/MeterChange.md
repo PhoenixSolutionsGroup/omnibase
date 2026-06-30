@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**MeterId** | **string** | Meter config ID | 
-**DisplayName** | **string** | Meter display name | 
-**Action** | **string** | Action performed on the meter | 
-**StripeId** | Pointer to **string** | Stripe meter ID | [optional] 
+**Action** | **string** |  | 
+**DisplayName** | **string** |  | 
+**MeterId** | **string** |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewMeterChange
 
-`func NewMeterChange(meterId string, displayName string, action string, ) *MeterChange`
+`func NewMeterChange(action string, displayName string, meterId string, ) *MeterChange`
 
 NewMeterChange instantiates a new MeterChange object
 This constructor will assign default values to properties that have it defined,
@@ -28,24 +28,24 @@ NewMeterChangeWithDefaults instantiates a new MeterChange object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetMeterId
+### GetAction
 
-`func (o *MeterChange) GetMeterId() string`
+`func (o *MeterChange) GetAction() string`
 
-GetMeterId returns the MeterId field if non-nil, zero value otherwise.
+GetAction returns the Action field if non-nil, zero value otherwise.
 
-### GetMeterIdOk
+### GetActionOk
 
-`func (o *MeterChange) GetMeterIdOk() (*string, bool)`
+`func (o *MeterChange) GetActionOk() (*string, bool)`
 
-GetMeterIdOk returns a tuple with the MeterId field if it's non-nil, zero value otherwise
+GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetMeterId
+### SetAction
 
-`func (o *MeterChange) SetMeterId(v string)`
+`func (o *MeterChange) SetAction(v string)`
 
-SetMeterId sets MeterId field to given value.
+SetAction sets Action field to given value.
 
 
 ### GetDisplayName
@@ -68,24 +68,24 @@ and a boolean to check if the value has been set.
 SetDisplayName sets DisplayName field to given value.
 
 
-### GetAction
+### GetMeterId
 
-`func (o *MeterChange) GetAction() string`
+`func (o *MeterChange) GetMeterId() string`
 
-GetAction returns the Action field if non-nil, zero value otherwise.
+GetMeterId returns the MeterId field if non-nil, zero value otherwise.
 
-### GetActionOk
+### GetMeterIdOk
 
-`func (o *MeterChange) GetActionOk() (*string, bool)`
+`func (o *MeterChange) GetMeterIdOk() (*string, bool)`
 
-GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
+GetMeterIdOk returns a tuple with the MeterId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAction
+### SetMeterId
 
-`func (o *MeterChange) SetAction(v string)`
+`func (o *MeterChange) SetMeterId(v string)`
 
-SetAction sets Action field to given value.
+SetMeterId sets MeterId field to given value.
 
 
 ### GetStripeId

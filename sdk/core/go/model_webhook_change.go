@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -13,6 +13,8 @@ package omnibase
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the WebhookChange type satisfies the MappedNullable interface at compile time
@@ -20,22 +22,22 @@ var _ MappedNullable = &WebhookChange{}
 
 // WebhookChange struct for WebhookChange
 type WebhookChange struct {
-	// Webhook ID (internal)
-	WebhookId *string `json:"webhook_id,omitempty"`
-	// Webhook URL
-	Url *string `json:"url,omitempty"`
-	// Action performed on the webhook
-	Action *string `json:"action,omitempty"`
-	// Stripe webhook endpoint ID
+	Action string `json:"action"`
 	StripeId *string `json:"stripe_id,omitempty"`
+	Url string `json:"url"`
+	WebhookId *string `json:"webhook_id,omitempty"`
 }
+
+type _WebhookChange WebhookChange
 
 // NewWebhookChange instantiates a new WebhookChange object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookChange() *WebhookChange {
+func NewWebhookChange(action string, url string) *WebhookChange {
 	this := WebhookChange{}
+	this.Action = action
+	this.Url = url
 	return &this
 }
 
@@ -47,100 +49,28 @@ func NewWebhookChangeWithDefaults() *WebhookChange {
 	return &this
 }
 
-// GetWebhookId returns the WebhookId field value if set, zero value otherwise.
-func (o *WebhookChange) GetWebhookId() string {
-	if o == nil || IsNil(o.WebhookId) {
-		var ret string
-		return ret
-	}
-	return *o.WebhookId
-}
-
-// GetWebhookIdOk returns a tuple with the WebhookId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *WebhookChange) GetWebhookIdOk() (*string, bool) {
-	if o == nil || IsNil(o.WebhookId) {
-		return nil, false
-	}
-	return o.WebhookId, true
-}
-
-// HasWebhookId returns a boolean if a field has been set.
-func (o *WebhookChange) HasWebhookId() bool {
-	if o != nil && !IsNil(o.WebhookId) {
-		return true
-	}
-
-	return false
-}
-
-// SetWebhookId gets a reference to the given string and assigns it to the WebhookId field.
-func (o *WebhookChange) SetWebhookId(v string) {
-	o.WebhookId = &v
-}
-
-// GetUrl returns the Url field value if set, zero value otherwise.
-func (o *WebhookChange) GetUrl() string {
-	if o == nil || IsNil(o.Url) {
-		var ret string
-		return ret
-	}
-	return *o.Url
-}
-
-// GetUrlOk returns a tuple with the Url field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *WebhookChange) GetUrlOk() (*string, bool) {
-	if o == nil || IsNil(o.Url) {
-		return nil, false
-	}
-	return o.Url, true
-}
-
-// HasUrl returns a boolean if a field has been set.
-func (o *WebhookChange) HasUrl() bool {
-	if o != nil && !IsNil(o.Url) {
-		return true
-	}
-
-	return false
-}
-
-// SetUrl gets a reference to the given string and assigns it to the Url field.
-func (o *WebhookChange) SetUrl(v string) {
-	o.Url = &v
-}
-
-// GetAction returns the Action field value if set, zero value otherwise.
+// GetAction returns the Action field value
 func (o *WebhookChange) GetAction() string {
-	if o == nil || IsNil(o.Action) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Action
+
+	return o.Action
 }
 
-// GetActionOk returns a tuple with the Action field value if set, nil otherwise
+// GetActionOk returns a tuple with the Action field value
 // and a boolean to check if the value has been set.
 func (o *WebhookChange) GetActionOk() (*string, bool) {
-	if o == nil || IsNil(o.Action) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Action, true
+	return &o.Action, true
 }
 
-// HasAction returns a boolean if a field has been set.
-func (o *WebhookChange) HasAction() bool {
-	if o != nil && !IsNil(o.Action) {
-		return true
-	}
-
-	return false
-}
-
-// SetAction gets a reference to the given string and assigns it to the Action field.
+// SetAction sets field value
 func (o *WebhookChange) SetAction(v string) {
-	o.Action = &v
+	o.Action = v
 }
 
 // GetStripeId returns the StripeId field value if set, zero value otherwise.
@@ -175,6 +105,62 @@ func (o *WebhookChange) SetStripeId(v string) {
 	o.StripeId = &v
 }
 
+// GetUrl returns the Url field value
+func (o *WebhookChange) GetUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Url
+}
+
+// GetUrlOk returns a tuple with the Url field value
+// and a boolean to check if the value has been set.
+func (o *WebhookChange) GetUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Url, true
+}
+
+// SetUrl sets field value
+func (o *WebhookChange) SetUrl(v string) {
+	o.Url = v
+}
+
+// GetWebhookId returns the WebhookId field value if set, zero value otherwise.
+func (o *WebhookChange) GetWebhookId() string {
+	if o == nil || IsNil(o.WebhookId) {
+		var ret string
+		return ret
+	}
+	return *o.WebhookId
+}
+
+// GetWebhookIdOk returns a tuple with the WebhookId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WebhookChange) GetWebhookIdOk() (*string, bool) {
+	if o == nil || IsNil(o.WebhookId) {
+		return nil, false
+	}
+	return o.WebhookId, true
+}
+
+// HasWebhookId returns a boolean if a field has been set.
+func (o *WebhookChange) HasWebhookId() bool {
+	if o != nil && !IsNil(o.WebhookId) {
+		return true
+	}
+
+	return false
+}
+
+// SetWebhookId gets a reference to the given string and assigns it to the WebhookId field.
+func (o *WebhookChange) SetWebhookId(v string) {
+	o.WebhookId = &v
+}
+
 func (o WebhookChange) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -185,19 +171,53 @@ func (o WebhookChange) MarshalJSON() ([]byte, error) {
 
 func (o WebhookChange) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.WebhookId) {
-		toSerialize["webhook_id"] = o.WebhookId
-	}
-	if !IsNil(o.Url) {
-		toSerialize["url"] = o.Url
-	}
-	if !IsNil(o.Action) {
-		toSerialize["action"] = o.Action
-	}
+	toSerialize["action"] = o.Action
 	if !IsNil(o.StripeId) {
 		toSerialize["stripe_id"] = o.StripeId
 	}
+	toSerialize["url"] = o.Url
+	if !IsNil(o.WebhookId) {
+		toSerialize["webhook_id"] = o.WebhookId
+	}
 	return toSerialize, nil
+}
+
+func (o *WebhookChange) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"action",
+		"url",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varWebhookChange := _WebhookChange{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varWebhookChange)
+
+	if err != nil {
+		return err
+	}
+
+	*o = WebhookChange(varWebhookChange)
+
+	return err
 }
 
 type NullableWebhookChange struct {

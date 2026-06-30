@@ -6,10 +6,10 @@
 
 Name | Type
 ------------ | -------------
+`connect` | boolean
+`events` | Array&lt;string&gt;
 `id` | string
 `url` | string
-`events` | Array&lt;string&gt;
-`connect` | boolean
 
 ## Example
 
@@ -18,10 +18,10 @@ import type { WebhookEndpointConfig } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": account_events,
-  "url": https://example.com/webhooks/stripe,
-  "events": [invoice.paid, customer.subscription.created],
-  "connect": false,
+  "connect": null,
+  "events": null,
+  "id": null,
+  "url": null,
 } satisfies WebhookEndpointConfig
 
 console.log(example)

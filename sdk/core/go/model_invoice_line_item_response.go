@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,12 +22,9 @@ var _ MappedNullable = &InvoiceLineItemResponse{}
 
 // InvoiceLineItemResponse struct for InvoiceLineItemResponse
 type InvoiceLineItemResponse struct {
-	// Stripe Invoice Item ID
+	Amount int64 `json:"amount"`
+	Description string `json:"description"`
 	Id string `json:"id"`
-	// Amount in cents
-	Amount *int64 `json:"amount,omitempty"`
-	// Description
-	Description *string `json:"description,omitempty"`
 }
 
 type _InvoiceLineItemResponse InvoiceLineItemResponse
@@ -36,8 +33,10 @@ type _InvoiceLineItemResponse InvoiceLineItemResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewInvoiceLineItemResponse(id string) *InvoiceLineItemResponse {
+func NewInvoiceLineItemResponse(amount int64, description string, id string) *InvoiceLineItemResponse {
 	this := InvoiceLineItemResponse{}
+	this.Amount = amount
+	this.Description = description
 	this.Id = id
 	return &this
 }
@@ -48,6 +47,54 @@ func NewInvoiceLineItemResponse(id string) *InvoiceLineItemResponse {
 func NewInvoiceLineItemResponseWithDefaults() *InvoiceLineItemResponse {
 	this := InvoiceLineItemResponse{}
 	return &this
+}
+
+// GetAmount returns the Amount field value
+func (o *InvoiceLineItemResponse) GetAmount() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.Amount
+}
+
+// GetAmountOk returns a tuple with the Amount field value
+// and a boolean to check if the value has been set.
+func (o *InvoiceLineItemResponse) GetAmountOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Amount, true
+}
+
+// SetAmount sets field value
+func (o *InvoiceLineItemResponse) SetAmount(v int64) {
+	o.Amount = v
+}
+
+// GetDescription returns the Description field value
+func (o *InvoiceLineItemResponse) GetDescription() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Description
+}
+
+// GetDescriptionOk returns a tuple with the Description field value
+// and a boolean to check if the value has been set.
+func (o *InvoiceLineItemResponse) GetDescriptionOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Description, true
+}
+
+// SetDescription sets field value
+func (o *InvoiceLineItemResponse) SetDescription(v string) {
+	o.Description = v
 }
 
 // GetId returns the Id field value
@@ -74,70 +121,6 @@ func (o *InvoiceLineItemResponse) SetId(v string) {
 	o.Id = v
 }
 
-// GetAmount returns the Amount field value if set, zero value otherwise.
-func (o *InvoiceLineItemResponse) GetAmount() int64 {
-	if o == nil || IsNil(o.Amount) {
-		var ret int64
-		return ret
-	}
-	return *o.Amount
-}
-
-// GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *InvoiceLineItemResponse) GetAmountOk() (*int64, bool) {
-	if o == nil || IsNil(o.Amount) {
-		return nil, false
-	}
-	return o.Amount, true
-}
-
-// HasAmount returns a boolean if a field has been set.
-func (o *InvoiceLineItemResponse) HasAmount() bool {
-	if o != nil && !IsNil(o.Amount) {
-		return true
-	}
-
-	return false
-}
-
-// SetAmount gets a reference to the given int64 and assigns it to the Amount field.
-func (o *InvoiceLineItemResponse) SetAmount(v int64) {
-	o.Amount = &v
-}
-
-// GetDescription returns the Description field value if set, zero value otherwise.
-func (o *InvoiceLineItemResponse) GetDescription() string {
-	if o == nil || IsNil(o.Description) {
-		var ret string
-		return ret
-	}
-	return *o.Description
-}
-
-// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *InvoiceLineItemResponse) GetDescriptionOk() (*string, bool) {
-	if o == nil || IsNil(o.Description) {
-		return nil, false
-	}
-	return o.Description, true
-}
-
-// HasDescription returns a boolean if a field has been set.
-func (o *InvoiceLineItemResponse) HasDescription() bool {
-	if o != nil && !IsNil(o.Description) {
-		return true
-	}
-
-	return false
-}
-
-// SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *InvoiceLineItemResponse) SetDescription(v string) {
-	o.Description = &v
-}
-
 func (o InvoiceLineItemResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -148,13 +131,9 @@ func (o InvoiceLineItemResponse) MarshalJSON() ([]byte, error) {
 
 func (o InvoiceLineItemResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["amount"] = o.Amount
+	toSerialize["description"] = o.Description
 	toSerialize["id"] = o.Id
-	if !IsNil(o.Amount) {
-		toSerialize["amount"] = o.Amount
-	}
-	if !IsNil(o.Description) {
-		toSerialize["description"] = o.Description
-	}
 	return toSerialize, nil
 }
 
@@ -163,6 +142,8 @@ func (o *InvoiceLineItemResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"amount",
+		"description",
 		"id",
 	}
 

@@ -6,7 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`webhooks` | [Array&lt;WebhookSecretResponse&gt;](WebhookSecretResponse.md)
+`count` | number
+`webhooks` | [Array&lt;ListStripeWebhooksRow&gt;](ListStripeWebhooksRow.md)
 
 ## Example
 
@@ -15,6 +16,7 @@ import type { ListWebhooksResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "count": null,
   "webhooks": null,
 } satisfies ListWebhooksResponse
 

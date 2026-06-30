@@ -1,14 +1,13 @@
 
 # CreateRoleRequest
 
-Request to create a new role
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`roleName` | string
 `permissions` | Array&lt;string&gt;
+`roleName` | string
 
 ## Example
 
@@ -17,8 +16,8 @@ import type { CreateRoleRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "roleName": test_project_viewer,
-  "permissions": [tenant#read, tenant#manage_projects],
+  "permissions": null,
+  "roleName": null,
 } satisfies CreateRoleRequest
 
 console.log(example)

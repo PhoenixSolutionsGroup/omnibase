@@ -6,11 +6,11 @@
 
 Name | Type
 ------------ | -------------
-`id` | string
 `config` | [StripeConfigurationWithIDs](StripeConfigurationWithIDs.md)
+`createdAt` | string
+`id` | string
+`updatedAt` | string
 `version` | string
-`createdAt` | Date
-`updatedAt` | Date
 
 ## Example
 
@@ -19,11 +19,11 @@ import type { StripeConfigResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "id": e056fa27-151d-4d25-b237-97e9de8d8dbf,
   "config": null,
-  "version": 1.0.0,
-  "createdAt": 2025-11-10T00:29:19Z,
-  "updatedAt": 2025-11-10T00:29:19Z,
+  "createdAt": null,
+  "id": null,
+  "updatedAt": null,
+  "version": null,
 } satisfies StripeConfigResponse
 
 console.log(example)

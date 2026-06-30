@@ -1,124 +1,115 @@
 package users
 
 import (
+	"context"
 	"errors"
 	"fmt"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/services/permissions"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 )
 
-var UpdateRoleError = errors.New("Failed to update user role")
+var UpdateUserRoleError = errors.New("Failed to update user role")
 
-type UpdateRoleRequest struct {
-	Role         string `json:"role"    binding:"required" example:"member"`
-	TargetUserID string `json:"user_id" binding:"required" example:"550e8400-e29b-41d4-a716-446655440001"`
+type UpdateUserRoleRequest struct {
+	Role         string `json:"role"    required:"true" example:"member"`
+	TargetUserID string `json:"user_id" required:"true" example:"550e8400-e29b-41d4-a716-446655440001"`
 }
 
-type UpdateRoleResponse struct {
+type UpdateUserRoleResponse struct {
 	Message string `json:"message" example:"User role updated successfully"`
 }
 
-func (h *Handler) UpdateRole(c *gin.Context) {
-	userUuid, tenantUuid := handlers.UserAndTenant(c)
+type UpdateUserRoleInput struct {
+	handlers.AuthCtx
+	Body UpdateUserRoleRequest
+}
 
-	var req UpdateRoleRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid request format")
-		return
-	}
+type UpdateUserRoleOutput struct {
+	Body UpdateUserRoleResponse
+}
+
+func (h *Handler) UpdateRole(ctx context.Context, in *UpdateUserRoleInput) (*UpdateUserRoleOutput, error) {
+	req := in.Body
+
 	targetUuid, err := uuid.Parse(req.TargetUserID)
 	if err != nil {
-		handlers.NewBadRequestResponse(c, "Invalid user_id")
-		return
+		return nil, huma.Error400BadRequest("Invalid user_id")
 	}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canManage, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "update_user_role", subject)
+	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
+	canManage, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "update_user_role", subject)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 	}
 	if !canManage {
-		handlers.NewForbiddenResponse(c, "Insufficient permissions - must have `update_user_role` permission")
-		return
+		return nil, huma.Error403Forbidden("Insufficient permissions - must have `update_user_role` permission")
 	}
 
-	target, err := h.repo.GetTenantUser(c.Request.Context(), repository.GetTenantUserParams{
-		TenantID: tenantUuid.String(),
+	target, err := h.repo.GetTenantUser(ctx, repository.GetTenantUserParams{
+		TenantID: in.TenantID.String(),
 		UserID:   targetUuid.String(),
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(c, "User not found in tenant")
-			return
+			return nil, huma.Error404NotFound("User not found in tenant")
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 	}
 	previousRole := target.Role
 
 	if req.Role == "owner" {
-		canPromote, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "update_user_role_to_owner", subject)
+		canPromote, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "update_user_role_to_owner", subject)
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 		}
 		if !canPromote {
-			handlers.NewForbiddenResponse(c, "Insufficient permissions - must have `update_user_role_to_owner` permission to promote to owner")
-			return
+			return nil, huma.Error403Forbidden("Insufficient permissions - must have `update_user_role_to_owner` permission to promote to owner")
 		}
 	}
 
 	if previousRole == "owner" && req.Role != "owner" {
-		canDemote, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "remove_owner_role", subject)
+		canDemote, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "remove_owner_role", subject)
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 		}
 		if !canDemote {
-			handlers.NewForbiddenResponse(c, "Insufficient permissions - must have `remove_owner_role` permission to demote an owner")
-			return
+			return nil, huma.Error403Forbidden("Insufficient permissions - must have `remove_owner_role` permission to demote an owner")
 		}
 
-		owners, err := h.repo.CountOwnersByTenant(c.Request.Context(), tenantUuid.String())
+		owners, err := h.repo.CountOwnersByTenant(ctx, in.TenantID.String())
 		if err != nil {
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 		}
 		if owners <= 1 {
-			handlers.NewBadRequestResponse(c, "Cannot demote the last owner from the tenant")
-			return
+			return nil, huma.Error400BadRequest("Cannot demote the last owner from the tenant")
 		}
 	}
 
-	if err := h.rbac.RevokeUser(c.Request.Context(), targetUuid, tenantUuid, previousRole); err != nil {
-		logger.Logger.Error("Failed to revoke old role", "error", err, "tenant_id", tenantUuid, "target_user_id", targetUuid, "previous_role", previousRole)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-		return
+	if err := h.rbac.RevokeUser(ctx, targetUuid, in.TenantID, previousRole); err != nil {
+		logger.Logger.Error("Failed to revoke old role", "error", err, "tenant_id", in.TenantID, "target_user_id", targetUuid, "previous_role", previousRole)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 	}
 
-	if err := h.repo.UpdateTenantUserRole(c.Request.Context(), repository.UpdateTenantUserRoleParams{
-		TenantID: tenantUuid.String(),
+	if err := h.repo.UpdateTenantUserRole(ctx, repository.UpdateTenantUserRoleParams{
+		TenantID: in.TenantID.String(),
 		UserID:   targetUuid.String(),
 		Role:     req.Role,
 	}); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 	}
 
-	if err := h.rbac.Assign(c.Request.Context(), targetUuid, tenantUuid, req.Role); err != nil {
-		logger.Logger.Error("Failed to assign new role", "error", err, "tenant_id", tenantUuid, "target_user_id", targetUuid, "new_role", req.Role)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", UpdateRoleError, err))
-		return
+	if err := h.rbac.Assign(ctx, targetUuid, in.TenantID, req.Role); err != nil {
+		logger.Logger.Error("Failed to assign new role", "error", err, "tenant_id", in.TenantID, "target_user_id", targetUuid, "new_role", req.Role)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
 	}
 
-	logger.Logger.Info("Updated user role", "tenant_id", tenantUuid, "target_user_id", targetUuid, "previous_role", previousRole, "new_role", req.Role)
-	handlers.NewSuccessResponse(c, UpdateRoleResponse{Message: "User role updated successfully"})
+	logger.Logger.Info("Updated user role", "tenant_id", in.TenantID, "target_user_id", targetUuid, "previous_role", previousRole, "new_role", req.Role)
+	return &UpdateUserRoleOutput{Body: UpdateUserRoleResponse{Message: "User role updated successfully"}}, nil
 }

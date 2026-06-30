@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,8 +22,8 @@ var _ MappedNullable = &ListWebhooksResponse{}
 
 // ListWebhooksResponse struct for ListWebhooksResponse
 type ListWebhooksResponse struct {
-	// List of all configured webhooks
-	Webhooks []WebhookSecretResponse `json:"webhooks"`
+	Count int64 `json:"count"`
+	Webhooks []ListStripeWebhooksRow `json:"webhooks"`
 }
 
 type _ListWebhooksResponse ListWebhooksResponse
@@ -32,8 +32,9 @@ type _ListWebhooksResponse ListWebhooksResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListWebhooksResponse(webhooks []WebhookSecretResponse) *ListWebhooksResponse {
+func NewListWebhooksResponse(count int64, webhooks []ListStripeWebhooksRow) *ListWebhooksResponse {
 	this := ListWebhooksResponse{}
+	this.Count = count
 	this.Webhooks = webhooks
 	return &this
 }
@@ -46,10 +47,35 @@ func NewListWebhooksResponseWithDefaults() *ListWebhooksResponse {
 	return &this
 }
 
-// GetWebhooks returns the Webhooks field value
-func (o *ListWebhooksResponse) GetWebhooks() []WebhookSecretResponse {
+// GetCount returns the Count field value
+func (o *ListWebhooksResponse) GetCount() int64 {
 	if o == nil {
-		var ret []WebhookSecretResponse
+		var ret int64
+		return ret
+	}
+
+	return o.Count
+}
+
+// GetCountOk returns a tuple with the Count field value
+// and a boolean to check if the value has been set.
+func (o *ListWebhooksResponse) GetCountOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Count, true
+}
+
+// SetCount sets field value
+func (o *ListWebhooksResponse) SetCount(v int64) {
+	o.Count = v
+}
+
+// GetWebhooks returns the Webhooks field value
+// If the value is explicit nil, the zero value for []ListStripeWebhooksRow will be returned
+func (o *ListWebhooksResponse) GetWebhooks() []ListStripeWebhooksRow {
+	if o == nil {
+		var ret []ListStripeWebhooksRow
 		return ret
 	}
 
@@ -58,15 +84,16 @@ func (o *ListWebhooksResponse) GetWebhooks() []WebhookSecretResponse {
 
 // GetWebhooksOk returns a tuple with the Webhooks field value
 // and a boolean to check if the value has been set.
-func (o *ListWebhooksResponse) GetWebhooksOk() ([]WebhookSecretResponse, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ListWebhooksResponse) GetWebhooksOk() ([]ListStripeWebhooksRow, bool) {
+	if o == nil || IsNil(o.Webhooks) {
 		return nil, false
 	}
 	return o.Webhooks, true
 }
 
 // SetWebhooks sets field value
-func (o *ListWebhooksResponse) SetWebhooks(v []WebhookSecretResponse) {
+func (o *ListWebhooksResponse) SetWebhooks(v []ListStripeWebhooksRow) {
 	o.Webhooks = v
 }
 
@@ -80,7 +107,10 @@ func (o ListWebhooksResponse) MarshalJSON() ([]byte, error) {
 
 func (o ListWebhooksResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["webhooks"] = o.Webhooks
+	toSerialize["count"] = o.Count
+	if o.Webhooks != nil {
+		toSerialize["webhooks"] = o.Webhooks
+	}
 	return toSerialize, nil
 }
 
@@ -89,6 +119,7 @@ func (o *ListWebhooksResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"count",
 		"webhooks",
 	}
 

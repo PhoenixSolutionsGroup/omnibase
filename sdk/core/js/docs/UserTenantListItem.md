@@ -1,14 +1,13 @@
 
 # UserTenantListItem
 
-Simplified tenant info for user\'s tenant list
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`tenant` | [Tenant](Tenant.md)
 `isActive` | boolean
+`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
 
 ## Example
 
@@ -17,8 +16,8 @@ import type { UserTenantListItem } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "isActive": null,
   "tenant": null,
-  "isActive": true,
 } satisfies UserTenantListItem
 
 console.log(example)

@@ -6,10 +6,10 @@
 
 Name | Type
 ------------ | -------------
-`webhookId` | string
-`url` | string
 `action` | string
 `stripeId` | string
+`url` | string
+`webhookId` | string
 
 ## Example
 
@@ -18,10 +18,10 @@ import type { WebhookChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "webhookId": 550e8400-e29b-41d4-a716-446655440000,
-  "url": https://example.com/webhooks/stripe,
-  "action": created,
-  "stripeId": we_123abc,
+  "action": null,
+  "stripeId": null,
+  "url": null,
+  "webhookId": null,
 } satisfies WebhookChange
 
 console.log(example)

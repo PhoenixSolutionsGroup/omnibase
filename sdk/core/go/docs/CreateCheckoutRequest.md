@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PriceId** | **string** | The price ID from your Stripe configuration (required, cannot be empty) | 
-**SuccessUrl** | **string** | URL to redirect to after successful checkout (required, cannot be empty) | 
-**CancelUrl** | **string** | URL to redirect to if checkout is cancelled (required, cannot be empty) | 
-**TrialPeriodDays** | Pointer to **int32** | Optional trial period in days | [optional] 
-**PromotionCode** | Pointer to **string** | Optional promotion code to apply | [optional] 
-**AllowPromotionCodes** | Pointer to **bool** | Whether to allow promotion codes to be entered | [optional] 
+**AllowPromotionCodes** | Pointer to **bool** |  | [optional] 
+**CancelUrl** | **string** |  | 
+**PriceId** | **string** |  | 
+**PromotionCode** | Pointer to **string** |  | [optional] 
+**SuccessUrl** | **string** |  | 
+**TrialPeriodDays** | Pointer to **int64** |  | [optional] 
 
 ## Methods
 
 ### NewCreateCheckoutRequest
 
-`func NewCreateCheckoutRequest(priceId string, successUrl string, cancelUrl string, ) *CreateCheckoutRequest`
+`func NewCreateCheckoutRequest(cancelUrl string, priceId string, successUrl string, ) *CreateCheckoutRequest`
 
 NewCreateCheckoutRequest instantiates a new CreateCheckoutRequest object
 This constructor will assign default values to properties that have it defined,
@@ -30,45 +30,30 @@ NewCreateCheckoutRequestWithDefaults instantiates a new CreateCheckoutRequest ob
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetPriceId
+### GetAllowPromotionCodes
 
-`func (o *CreateCheckoutRequest) GetPriceId() string`
+`func (o *CreateCheckoutRequest) GetAllowPromotionCodes() bool`
 
-GetPriceId returns the PriceId field if non-nil, zero value otherwise.
+GetAllowPromotionCodes returns the AllowPromotionCodes field if non-nil, zero value otherwise.
 
-### GetPriceIdOk
+### GetAllowPromotionCodesOk
 
-`func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool)`
+`func (o *CreateCheckoutRequest) GetAllowPromotionCodesOk() (*bool, bool)`
 
-GetPriceIdOk returns a tuple with the PriceId field if it's non-nil, zero value otherwise
+GetAllowPromotionCodesOk returns a tuple with the AllowPromotionCodes field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetPriceId
+### SetAllowPromotionCodes
 
-`func (o *CreateCheckoutRequest) SetPriceId(v string)`
+`func (o *CreateCheckoutRequest) SetAllowPromotionCodes(v bool)`
 
-SetPriceId sets PriceId field to given value.
+SetAllowPromotionCodes sets AllowPromotionCodes field to given value.
 
+### HasAllowPromotionCodes
 
-### GetSuccessUrl
+`func (o *CreateCheckoutRequest) HasAllowPromotionCodes() bool`
 
-`func (o *CreateCheckoutRequest) GetSuccessUrl() string`
-
-GetSuccessUrl returns the SuccessUrl field if non-nil, zero value otherwise.
-
-### GetSuccessUrlOk
-
-`func (o *CreateCheckoutRequest) GetSuccessUrlOk() (*string, bool)`
-
-GetSuccessUrlOk returns a tuple with the SuccessUrl field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetSuccessUrl
-
-`func (o *CreateCheckoutRequest) SetSuccessUrl(v string)`
-
-SetSuccessUrl sets SuccessUrl field to given value.
-
+HasAllowPromotionCodes returns a boolean if a field has been set.
 
 ### GetCancelUrl
 
@@ -90,30 +75,25 @@ and a boolean to check if the value has been set.
 SetCancelUrl sets CancelUrl field to given value.
 
 
-### GetTrialPeriodDays
+### GetPriceId
 
-`func (o *CreateCheckoutRequest) GetTrialPeriodDays() int32`
+`func (o *CreateCheckoutRequest) GetPriceId() string`
 
-GetTrialPeriodDays returns the TrialPeriodDays field if non-nil, zero value otherwise.
+GetPriceId returns the PriceId field if non-nil, zero value otherwise.
 
-### GetTrialPeriodDaysOk
+### GetPriceIdOk
 
-`func (o *CreateCheckoutRequest) GetTrialPeriodDaysOk() (*int32, bool)`
+`func (o *CreateCheckoutRequest) GetPriceIdOk() (*string, bool)`
 
-GetTrialPeriodDaysOk returns a tuple with the TrialPeriodDays field if it's non-nil, zero value otherwise
+GetPriceIdOk returns a tuple with the PriceId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetTrialPeriodDays
+### SetPriceId
 
-`func (o *CreateCheckoutRequest) SetTrialPeriodDays(v int32)`
+`func (o *CreateCheckoutRequest) SetPriceId(v string)`
 
-SetTrialPeriodDays sets TrialPeriodDays field to given value.
+SetPriceId sets PriceId field to given value.
 
-### HasTrialPeriodDays
-
-`func (o *CreateCheckoutRequest) HasTrialPeriodDays() bool`
-
-HasTrialPeriodDays returns a boolean if a field has been set.
 
 ### GetPromotionCode
 
@@ -140,30 +120,50 @@ SetPromotionCode sets PromotionCode field to given value.
 
 HasPromotionCode returns a boolean if a field has been set.
 
-### GetAllowPromotionCodes
+### GetSuccessUrl
 
-`func (o *CreateCheckoutRequest) GetAllowPromotionCodes() bool`
+`func (o *CreateCheckoutRequest) GetSuccessUrl() string`
 
-GetAllowPromotionCodes returns the AllowPromotionCodes field if non-nil, zero value otherwise.
+GetSuccessUrl returns the SuccessUrl field if non-nil, zero value otherwise.
 
-### GetAllowPromotionCodesOk
+### GetSuccessUrlOk
 
-`func (o *CreateCheckoutRequest) GetAllowPromotionCodesOk() (*bool, bool)`
+`func (o *CreateCheckoutRequest) GetSuccessUrlOk() (*string, bool)`
 
-GetAllowPromotionCodesOk returns a tuple with the AllowPromotionCodes field if it's non-nil, zero value otherwise
+GetSuccessUrlOk returns a tuple with the SuccessUrl field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAllowPromotionCodes
+### SetSuccessUrl
 
-`func (o *CreateCheckoutRequest) SetAllowPromotionCodes(v bool)`
+`func (o *CreateCheckoutRequest) SetSuccessUrl(v string)`
 
-SetAllowPromotionCodes sets AllowPromotionCodes field to given value.
+SetSuccessUrl sets SuccessUrl field to given value.
 
-### HasAllowPromotionCodes
 
-`func (o *CreateCheckoutRequest) HasAllowPromotionCodes() bool`
+### GetTrialPeriodDays
 
-HasAllowPromotionCodes returns a boolean if a field has been set.
+`func (o *CreateCheckoutRequest) GetTrialPeriodDays() int64`
+
+GetTrialPeriodDays returns the TrialPeriodDays field if non-nil, zero value otherwise.
+
+### GetTrialPeriodDaysOk
+
+`func (o *CreateCheckoutRequest) GetTrialPeriodDaysOk() (*int64, bool)`
+
+GetTrialPeriodDaysOk returns a tuple with the TrialPeriodDays field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTrialPeriodDays
+
+`func (o *CreateCheckoutRequest) SetTrialPeriodDays(v int64)`
+
+SetTrialPeriodDays sets TrialPeriodDays field to given value.
+
+### HasTrialPeriodDays
+
+`func (o *CreateCheckoutRequest) HasTrialPeriodDays() bool`
+
+HasTrialPeriodDays returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

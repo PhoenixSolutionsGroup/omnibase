@@ -1,21 +1,30 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/services/stripe_config"
 )
 
 var PullConfigError = errors.New("Failed to pull stripe configuration")
 
-func (h *Handler) PullConfig(ctx *gin.Context) {
-	config, err := h.stripeConfig.Pull(ctx.Request.Context())
+type PullConfigInput struct {
+	handlers.AuthCtx
+}
+
+type PullConfigOutput struct {
+	Body *stripe_config.StripeConfiguration
+}
+
+func (h *Handler) PullConfig(ctx context.Context, _ *PullConfigInput) (*PullConfigOutput, error) {
+	config, err := h.stripeConfig.Pull(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", PullConfigError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", PullConfigError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, config)
+	return &PullConfigOutput{Body: config}, nil
 }

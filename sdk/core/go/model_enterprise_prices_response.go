@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,10 +22,8 @@ var _ MappedNullable = &EnterprisePricesResponse{}
 
 // EnterprisePricesResponse struct for EnterprisePricesResponse
 type EnterprisePricesResponse struct {
-	// List of enterprise prices matching the query
+	Count int64 `json:"count"`
 	Prices []PriceWithStripeID `json:"prices"`
-	// Total number of prices returned
-	Count int32 `json:"count"`
 }
 
 type _EnterprisePricesResponse EnterprisePricesResponse
@@ -34,10 +32,10 @@ type _EnterprisePricesResponse EnterprisePricesResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEnterprisePricesResponse(prices []PriceWithStripeID, count int32) *EnterprisePricesResponse {
+func NewEnterprisePricesResponse(count int64, prices []PriceWithStripeID) *EnterprisePricesResponse {
 	this := EnterprisePricesResponse{}
-	this.Prices = prices
 	this.Count = count
+	this.Prices = prices
 	return &this
 }
 
@@ -49,7 +47,32 @@ func NewEnterprisePricesResponseWithDefaults() *EnterprisePricesResponse {
 	return &this
 }
 
+// GetCount returns the Count field value
+func (o *EnterprisePricesResponse) GetCount() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.Count
+}
+
+// GetCountOk returns a tuple with the Count field value
+// and a boolean to check if the value has been set.
+func (o *EnterprisePricesResponse) GetCountOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Count, true
+}
+
+// SetCount sets field value
+func (o *EnterprisePricesResponse) SetCount(v int64) {
+	o.Count = v
+}
+
 // GetPrices returns the Prices field value
+// If the value is explicit nil, the zero value for []PriceWithStripeID will be returned
 func (o *EnterprisePricesResponse) GetPrices() []PriceWithStripeID {
 	if o == nil {
 		var ret []PriceWithStripeID
@@ -61,8 +84,9 @@ func (o *EnterprisePricesResponse) GetPrices() []PriceWithStripeID {
 
 // GetPricesOk returns a tuple with the Prices field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *EnterprisePricesResponse) GetPricesOk() ([]PriceWithStripeID, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Prices) {
 		return nil, false
 	}
 	return o.Prices, true
@@ -71,30 +95,6 @@ func (o *EnterprisePricesResponse) GetPricesOk() ([]PriceWithStripeID, bool) {
 // SetPrices sets field value
 func (o *EnterprisePricesResponse) SetPrices(v []PriceWithStripeID) {
 	o.Prices = v
-}
-
-// GetCount returns the Count field value
-func (o *EnterprisePricesResponse) GetCount() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Count
-}
-
-// GetCountOk returns a tuple with the Count field value
-// and a boolean to check if the value has been set.
-func (o *EnterprisePricesResponse) GetCountOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Count, true
-}
-
-// SetCount sets field value
-func (o *EnterprisePricesResponse) SetCount(v int32) {
-	o.Count = v
 }
 
 func (o EnterprisePricesResponse) MarshalJSON() ([]byte, error) {
@@ -107,8 +107,10 @@ func (o EnterprisePricesResponse) MarshalJSON() ([]byte, error) {
 
 func (o EnterprisePricesResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["prices"] = o.Prices
 	toSerialize["count"] = o.Count
+	if o.Prices != nil {
+		toSerialize["prices"] = o.Prices
+	}
 	return toSerialize, nil
 }
 
@@ -117,8 +119,8 @@ func (o *EnterprisePricesResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"prices",
 		"count",
+		"prices",
 	}
 
 	allProperties := make(map[string]interface{})

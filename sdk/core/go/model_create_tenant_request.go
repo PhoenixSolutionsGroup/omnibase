@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,14 +20,11 @@ import (
 // checks if the CreateTenantRequest type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &CreateTenantRequest{}
 
-// CreateTenantRequest Request to create a new tenant
+// CreateTenantRequest struct for CreateTenantRequest
 type CreateTenantRequest struct {
-	// Organization name
+	BillingEmail string `json:"billing_email"`
 	Name string `json:"name"`
-	// Billing email for Stripe customer
-	BillingEmail *string `json:"billing_email,omitempty"`
-	// Tenant type: 'organization' for multi-user tenants with invitations and team management, 'individual' for single-user tenants. Defaults to 'organization' if not specified.
-	Type *string `json:"type,omitempty"`
+	Type string `json:"type"`
 }
 
 type _CreateTenantRequest CreateTenantRequest
@@ -36,11 +33,11 @@ type _CreateTenantRequest CreateTenantRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateTenantRequest(name string) *CreateTenantRequest {
+func NewCreateTenantRequest(billingEmail string, name string, type_ string) *CreateTenantRequest {
 	this := CreateTenantRequest{}
+	this.BillingEmail = billingEmail
 	this.Name = name
-	var type_ string = "organization"
-	this.Type = &type_
+	this.Type = type_
 	return &this
 }
 
@@ -49,9 +46,31 @@ func NewCreateTenantRequest(name string) *CreateTenantRequest {
 // but it doesn't guarantee that properties required by API are set
 func NewCreateTenantRequestWithDefaults() *CreateTenantRequest {
 	this := CreateTenantRequest{}
-	var type_ string = "organization"
-	this.Type = &type_
 	return &this
+}
+
+// GetBillingEmail returns the BillingEmail field value
+func (o *CreateTenantRequest) GetBillingEmail() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.BillingEmail
+}
+
+// GetBillingEmailOk returns a tuple with the BillingEmail field value
+// and a boolean to check if the value has been set.
+func (o *CreateTenantRequest) GetBillingEmailOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.BillingEmail, true
+}
+
+// SetBillingEmail sets field value
+func (o *CreateTenantRequest) SetBillingEmail(v string) {
+	o.BillingEmail = v
 }
 
 // GetName returns the Name field value
@@ -78,68 +97,28 @@ func (o *CreateTenantRequest) SetName(v string) {
 	o.Name = v
 }
 
-// GetBillingEmail returns the BillingEmail field value if set, zero value otherwise.
-func (o *CreateTenantRequest) GetBillingEmail() string {
-	if o == nil || IsNil(o.BillingEmail) {
-		var ret string
-		return ret
-	}
-	return *o.BillingEmail
-}
-
-// GetBillingEmailOk returns a tuple with the BillingEmail field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *CreateTenantRequest) GetBillingEmailOk() (*string, bool) {
-	if o == nil || IsNil(o.BillingEmail) {
-		return nil, false
-	}
-	return o.BillingEmail, true
-}
-
-// HasBillingEmail returns a boolean if a field has been set.
-func (o *CreateTenantRequest) HasBillingEmail() bool {
-	if o != nil && !IsNil(o.BillingEmail) {
-		return true
-	}
-
-	return false
-}
-
-// SetBillingEmail gets a reference to the given string and assigns it to the BillingEmail field.
-func (o *CreateTenantRequest) SetBillingEmail(v string) {
-	o.BillingEmail = &v
-}
-
-// GetType returns the Type field value if set, zero value otherwise.
+// GetType returns the Type field value
 func (o *CreateTenantRequest) GetType() string {
-	if o == nil || IsNil(o.Type) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Type
+
+	return o.Type
 }
 
-// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
+// GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
 func (o *CreateTenantRequest) GetTypeOk() (*string, bool) {
-	if o == nil || IsNil(o.Type) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Type, true
+	return &o.Type, true
 }
 
-// HasType returns a boolean if a field has been set.
-func (o *CreateTenantRequest) HasType() bool {
-	if o != nil && !IsNil(o.Type) {
-		return true
-	}
-
-	return false
-}
-
-// SetType gets a reference to the given string and assigns it to the Type field.
+// SetType sets field value
 func (o *CreateTenantRequest) SetType(v string) {
-	o.Type = &v
+	o.Type = v
 }
 
 func (o CreateTenantRequest) MarshalJSON() ([]byte, error) {
@@ -152,13 +131,9 @@ func (o CreateTenantRequest) MarshalJSON() ([]byte, error) {
 
 func (o CreateTenantRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["billing_email"] = o.BillingEmail
 	toSerialize["name"] = o.Name
-	if !IsNil(o.BillingEmail) {
-		toSerialize["billing_email"] = o.BillingEmail
-	}
-	if !IsNil(o.Type) {
-		toSerialize["type"] = o.Type
-	}
+	toSerialize["type"] = o.Type
 	return toSerialize, nil
 }
 
@@ -167,7 +142,9 @@ func (o *CreateTenantRequest) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"billing_email",
 		"name",
+		"type",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"api/internal/config"
 	"api/internal/database"
@@ -12,6 +13,8 @@ import (
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
 
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
@@ -70,13 +73,17 @@ func New(cfg *config.Config) *gin.Engine {
 		panic(err)
 	}
 
+	pool, err := database.GetPool(cfg.Database)
+	if err != nil {
+		logger.Logger.Error("Failed to get pgx pool", "error", err)
+		panic(err)
+	}
+
 	healthHandler := handlers.NewHealthHandler(cfg, db)
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
-	logger.Logger.Debug("Initializing v1 API routes")
-	v1_group := r.Group("/api/v1")
-	v1_routes.InitRoutes(v1_group)
+	BuildAPI(r, v1_routes.Deps{Cfg: cfg, Pool: pool, DB: db})
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
 	authProxyHandler := proxy.New(proxy.Deps{
@@ -86,4 +93,60 @@ func New(cfg *config.Config) *gin.Engine {
 	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
 
 	return r
+}
+
+func BuildAPI(r *gin.Engine, d v1_routes.Deps) huma.API {
+	logger.Logger.Debug("Initializing huma API")
+	apiVersion := os.Getenv("API_VERSION")
+	if apiVersion == "" {
+		apiVersion = "local"
+	}
+	humaCfg := huma.DefaultConfig("Omnibase REST API", apiVersion)
+	humaCfg.CreateHooks = nil
+	humaCfg.Info.Description = "Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services."
+	humaCfg.Info.Contact = &huma.Contact{Name: "Omnibase Support", URL: "https://omnibase.dev/support", Email: "support@omnibase.dev"}
+	humaCfg.Info.License = &huma.License{Name: "MIT", URL: "https://opensource.org/licenses/MIT"}
+	humaCfg.Info.TermsOfService = "https://omnibase.dev/terms"
+	humaCfg.Servers = []*huma.Server{{URL: "https://api.omnibase.tech", Description: "Production server"}}
+	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
+		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token", Description: "Kratos session JWT token. Alternative to cookie authentication for non-browser clients."},
+		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key", Description: "Service-to-service authentication key for backend operations."},
+		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session", Description: "Session cookie set by Kratos after login."},
+	}
+	huma.NewErrorWithContext = func(ctx huma.Context, status int, msg string, errs ...error) huma.StatusError {
+		if status >= http.StatusInternalServerError {
+			path := ""
+			if ctx != nil {
+				u := ctx.URL()
+				path = u.Path
+			}
+			logger.Logger.Error("Internal server error", "status", status, "path", path, "message", msg, "errs", errs)
+		}
+		return huma.NewError(status, msg, errs...)
+	}
+	api := humagin.New(r, humaCfg)
+
+	logger.Logger.Debug("Initializing v1 API routes")
+	v1_routes.InitRoutes(r.Group("/api/v1"), api, d)
+
+	relaxAdditionalPropertiesRequired(api)
+
+	return api
+}
+
+func relaxAdditionalPropertiesRequired(api huma.API) {
+	schemas := api.OpenAPI().Components.Schemas.Map()
+	for _, s := range schemas {
+		if len(s.Required) == 0 {
+			continue
+		}
+		filtered := s.Required[:0]
+		for _, name := range s.Required {
+			if name == "AdditionalProperties" {
+				continue
+			}
+			filtered = append(filtered, name)
+		}
+		s.Required = filtered
+	}
 }

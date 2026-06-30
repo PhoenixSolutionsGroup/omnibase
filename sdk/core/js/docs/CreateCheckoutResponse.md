@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`url` | string
 `sessionId` | string
+`url` | string
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { CreateCheckoutResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "url": https://checkout.stripe.com/pay/cs_test_...,
-  "sessionId": cs_test_a1b2c3d4e5f6,
+  "sessionId": null,
+  "url": null,
 } satisfies CreateCheckoutResponse
 
 console.log(example)

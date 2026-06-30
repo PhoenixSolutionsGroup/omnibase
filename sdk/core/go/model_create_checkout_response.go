@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,10 +22,8 @@ var _ MappedNullable = &CreateCheckoutResponse{}
 
 // CreateCheckoutResponse struct for CreateCheckoutResponse
 type CreateCheckoutResponse struct {
-	// Stripe Checkout Session URL
-	Url string `json:"url"`
-	// Stripe Checkout Session ID
 	SessionId string `json:"session_id"`
+	Url string `json:"url"`
 }
 
 type _CreateCheckoutResponse CreateCheckoutResponse
@@ -34,10 +32,10 @@ type _CreateCheckoutResponse CreateCheckoutResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateCheckoutResponse(url string, sessionId string) *CreateCheckoutResponse {
+func NewCreateCheckoutResponse(sessionId string, url string) *CreateCheckoutResponse {
 	this := CreateCheckoutResponse{}
-	this.Url = url
 	this.SessionId = sessionId
+	this.Url = url
 	return &this
 }
 
@@ -47,30 +45,6 @@ func NewCreateCheckoutResponse(url string, sessionId string) *CreateCheckoutResp
 func NewCreateCheckoutResponseWithDefaults() *CreateCheckoutResponse {
 	this := CreateCheckoutResponse{}
 	return &this
-}
-
-// GetUrl returns the Url field value
-func (o *CreateCheckoutResponse) GetUrl() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Url
-}
-
-// GetUrlOk returns a tuple with the Url field value
-// and a boolean to check if the value has been set.
-func (o *CreateCheckoutResponse) GetUrlOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Url, true
-}
-
-// SetUrl sets field value
-func (o *CreateCheckoutResponse) SetUrl(v string) {
-	o.Url = v
 }
 
 // GetSessionId returns the SessionId field value
@@ -97,6 +71,30 @@ func (o *CreateCheckoutResponse) SetSessionId(v string) {
 	o.SessionId = v
 }
 
+// GetUrl returns the Url field value
+func (o *CreateCheckoutResponse) GetUrl() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Url
+}
+
+// GetUrlOk returns a tuple with the Url field value
+// and a boolean to check if the value has been set.
+func (o *CreateCheckoutResponse) GetUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Url, true
+}
+
+// SetUrl sets field value
+func (o *CreateCheckoutResponse) SetUrl(v string) {
+	o.Url = v
+}
+
 func (o CreateCheckoutResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -107,8 +105,8 @@ func (o CreateCheckoutResponse) MarshalJSON() ([]byte, error) {
 
 func (o CreateCheckoutResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["url"] = o.Url
 	toSerialize["session_id"] = o.SessionId
+	toSerialize["url"] = o.Url
 	return toSerialize, nil
 }
 
@@ -117,8 +115,8 @@ func (o *CreateCheckoutResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"url",
 		"session_id",
+		"url",
 	}
 
 	allProperties := make(map[string]interface{})

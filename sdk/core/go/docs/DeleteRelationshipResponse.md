@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Message** | **string** | Success message | 
+**Message** | **string** |  | 
 
 ## Methods
 

@@ -32,28 +32,24 @@ func TestStorageDeleteObject(t *testing.T) {
 
 	t.Run("owner deletes uploaded file", func(t *testing.T) {
 		path := fmt.Sprintf("test/del-%s.txt", helpers.UniqueID())
-		_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		_, uploadResp, err := client.V1StorageAPI.UploadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			UploadRequest(sdk.UploadRequest{Path: path}).Execute()
 		helpers.EnsureOK(t, uploadResp, err, "uploadFile")
 
-		out, resp, err := client.V1StorageAPI.DeleteObject(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		out, resp, err := client.V1StorageAPI.DeleteObject(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			DeleteObjectRequest(sdk.DeleteObjectRequest{Path: path}).Execute()
 		helpers.EnsureOK(t, resp, err, "deleteObject")
 		require.NotNil(t, out)
 		assert.NotNil(t, out.Message)
 
-		_, dlResp, _ := client.V1StorageAPI.DownloadFile(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		_, dlResp, _ := client.V1StorageAPI.DownloadFile(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			DownloadRequest(sdk.DownloadRequest{Path: path}).Execute()
 		require.NotNil(t, dlResp)
 		assert.Equal(t, http.StatusNotFound, dlResp.StatusCode, "deleted file not downloadable")
 	})
 
 	t.Run("delete missing returns 404", func(t *testing.T) {
-		_, resp, _ := client.V1StorageAPI.DeleteObject(helpers.Ctx()).
-			XUserId(userID).XTenantId(tenant.Id).
+		_, resp, _ := client.V1StorageAPI.DeleteObject(helpers.CtxWithUserTenant(userID, tenant.Id)).
 			DeleteObjectRequest(sdk.DeleteObjectRequest{Path: "test/never-existed-" + helpers.UniqueID()}).Execute()
 		require.NotNil(t, resp)
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)

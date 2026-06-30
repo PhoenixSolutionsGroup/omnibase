@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,19 +22,12 @@ var _ MappedNullable = &CalculatePriceCostResponse{}
 
 // CalculatePriceCostResponse struct for CalculatePriceCostResponse
 type CalculatePriceCostResponse struct {
-	// The config price ID
-	PriceId string `json:"price_id"`
-	// The quantity used for calculation
-	Quantity int64 `json:"quantity"`
-	// The calculated cost in smallest currency unit (e.g., cents)
-	CostCents int64 `json:"cost_cents"`
-	// The effective unit cost (cost_cents / quantity), 0 if quantity is 0
-	EffectiveUnitCostCents float64 `json:"effective_unit_cost_cents"`
-	// The currency code
-	Currency string `json:"currency"`
-	// The billing scheme used (per_unit or tiered)
 	BillingScheme string `json:"billing_scheme"`
-	// The tiers mode if tiered pricing (graduated or volume), empty for per_unit
+	CostCents int64 `json:"cost_cents"`
+	Currency string `json:"currency"`
+	EffectiveUnitCostCents float64 `json:"effective_unit_cost_cents"`
+	PriceId string `json:"price_id"`
+	Quantity int64 `json:"quantity"`
 	TiersMode *string `json:"tiers_mode,omitempty"`
 }
 
@@ -44,14 +37,14 @@ type _CalculatePriceCostResponse CalculatePriceCostResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCalculatePriceCostResponse(priceId string, quantity int64, costCents int64, effectiveUnitCostCents float64, currency string, billingScheme string) *CalculatePriceCostResponse {
+func NewCalculatePriceCostResponse(billingScheme string, costCents int64, currency string, effectiveUnitCostCents float64, priceId string, quantity int64) *CalculatePriceCostResponse {
 	this := CalculatePriceCostResponse{}
+	this.BillingScheme = billingScheme
+	this.CostCents = costCents
+	this.Currency = currency
+	this.EffectiveUnitCostCents = effectiveUnitCostCents
 	this.PriceId = priceId
 	this.Quantity = quantity
-	this.CostCents = costCents
-	this.EffectiveUnitCostCents = effectiveUnitCostCents
-	this.Currency = currency
-	this.BillingScheme = billingScheme
 	return &this
 }
 
@@ -61,6 +54,102 @@ func NewCalculatePriceCostResponse(priceId string, quantity int64, costCents int
 func NewCalculatePriceCostResponseWithDefaults() *CalculatePriceCostResponse {
 	this := CalculatePriceCostResponse{}
 	return &this
+}
+
+// GetBillingScheme returns the BillingScheme field value
+func (o *CalculatePriceCostResponse) GetBillingScheme() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.BillingScheme
+}
+
+// GetBillingSchemeOk returns a tuple with the BillingScheme field value
+// and a boolean to check if the value has been set.
+func (o *CalculatePriceCostResponse) GetBillingSchemeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.BillingScheme, true
+}
+
+// SetBillingScheme sets field value
+func (o *CalculatePriceCostResponse) SetBillingScheme(v string) {
+	o.BillingScheme = v
+}
+
+// GetCostCents returns the CostCents field value
+func (o *CalculatePriceCostResponse) GetCostCents() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.CostCents
+}
+
+// GetCostCentsOk returns a tuple with the CostCents field value
+// and a boolean to check if the value has been set.
+func (o *CalculatePriceCostResponse) GetCostCentsOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CostCents, true
+}
+
+// SetCostCents sets field value
+func (o *CalculatePriceCostResponse) SetCostCents(v int64) {
+	o.CostCents = v
+}
+
+// GetCurrency returns the Currency field value
+func (o *CalculatePriceCostResponse) GetCurrency() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Currency
+}
+
+// GetCurrencyOk returns a tuple with the Currency field value
+// and a boolean to check if the value has been set.
+func (o *CalculatePriceCostResponse) GetCurrencyOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Currency, true
+}
+
+// SetCurrency sets field value
+func (o *CalculatePriceCostResponse) SetCurrency(v string) {
+	o.Currency = v
+}
+
+// GetEffectiveUnitCostCents returns the EffectiveUnitCostCents field value
+func (o *CalculatePriceCostResponse) GetEffectiveUnitCostCents() float64 {
+	if o == nil {
+		var ret float64
+		return ret
+	}
+
+	return o.EffectiveUnitCostCents
+}
+
+// GetEffectiveUnitCostCentsOk returns a tuple with the EffectiveUnitCostCents field value
+// and a boolean to check if the value has been set.
+func (o *CalculatePriceCostResponse) GetEffectiveUnitCostCentsOk() (*float64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.EffectiveUnitCostCents, true
+}
+
+// SetEffectiveUnitCostCents sets field value
+func (o *CalculatePriceCostResponse) SetEffectiveUnitCostCents(v float64) {
+	o.EffectiveUnitCostCents = v
 }
 
 // GetPriceId returns the PriceId field value
@@ -111,102 +200,6 @@ func (o *CalculatePriceCostResponse) SetQuantity(v int64) {
 	o.Quantity = v
 }
 
-// GetCostCents returns the CostCents field value
-func (o *CalculatePriceCostResponse) GetCostCents() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.CostCents
-}
-
-// GetCostCentsOk returns a tuple with the CostCents field value
-// and a boolean to check if the value has been set.
-func (o *CalculatePriceCostResponse) GetCostCentsOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.CostCents, true
-}
-
-// SetCostCents sets field value
-func (o *CalculatePriceCostResponse) SetCostCents(v int64) {
-	o.CostCents = v
-}
-
-// GetEffectiveUnitCostCents returns the EffectiveUnitCostCents field value
-func (o *CalculatePriceCostResponse) GetEffectiveUnitCostCents() float64 {
-	if o == nil {
-		var ret float64
-		return ret
-	}
-
-	return o.EffectiveUnitCostCents
-}
-
-// GetEffectiveUnitCostCentsOk returns a tuple with the EffectiveUnitCostCents field value
-// and a boolean to check if the value has been set.
-func (o *CalculatePriceCostResponse) GetEffectiveUnitCostCentsOk() (*float64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.EffectiveUnitCostCents, true
-}
-
-// SetEffectiveUnitCostCents sets field value
-func (o *CalculatePriceCostResponse) SetEffectiveUnitCostCents(v float64) {
-	o.EffectiveUnitCostCents = v
-}
-
-// GetCurrency returns the Currency field value
-func (o *CalculatePriceCostResponse) GetCurrency() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Currency
-}
-
-// GetCurrencyOk returns a tuple with the Currency field value
-// and a boolean to check if the value has been set.
-func (o *CalculatePriceCostResponse) GetCurrencyOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Currency, true
-}
-
-// SetCurrency sets field value
-func (o *CalculatePriceCostResponse) SetCurrency(v string) {
-	o.Currency = v
-}
-
-// GetBillingScheme returns the BillingScheme field value
-func (o *CalculatePriceCostResponse) GetBillingScheme() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.BillingScheme
-}
-
-// GetBillingSchemeOk returns a tuple with the BillingScheme field value
-// and a boolean to check if the value has been set.
-func (o *CalculatePriceCostResponse) GetBillingSchemeOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.BillingScheme, true
-}
-
-// SetBillingScheme sets field value
-func (o *CalculatePriceCostResponse) SetBillingScheme(v string) {
-	o.BillingScheme = v
-}
-
 // GetTiersMode returns the TiersMode field value if set, zero value otherwise.
 func (o *CalculatePriceCostResponse) GetTiersMode() string {
 	if o == nil || IsNil(o.TiersMode) {
@@ -249,12 +242,12 @@ func (o CalculatePriceCostResponse) MarshalJSON() ([]byte, error) {
 
 func (o CalculatePriceCostResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["billing_scheme"] = o.BillingScheme
+	toSerialize["cost_cents"] = o.CostCents
+	toSerialize["currency"] = o.Currency
+	toSerialize["effective_unit_cost_cents"] = o.EffectiveUnitCostCents
 	toSerialize["price_id"] = o.PriceId
 	toSerialize["quantity"] = o.Quantity
-	toSerialize["cost_cents"] = o.CostCents
-	toSerialize["effective_unit_cost_cents"] = o.EffectiveUnitCostCents
-	toSerialize["currency"] = o.Currency
-	toSerialize["billing_scheme"] = o.BillingScheme
 	if !IsNil(o.TiersMode) {
 		toSerialize["tiers_mode"] = o.TiersMode
 	}
@@ -266,12 +259,12 @@ func (o *CalculatePriceCostResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"billing_scheme",
+		"cost_cents",
+		"currency",
+		"effective_unit_cost_cents",
 		"price_id",
 		"quantity",
-		"cost_cents",
-		"effective_unit_cost_cents",
-		"currency",
-		"billing_scheme",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -1,60 +1,62 @@
 package invoices
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/handlers/v1/payments"
 	"api/internal/services/billing"
 )
 
 var AddLineItemError = errors.New("Failed to add invoice line item")
 
 type AddLineItemRequest struct {
-	Amount      int64  `json:"amount" binding:"required"`
-	Description string `json:"description" binding:"required,min=1"`
-	Currency    string `json:"currency" binding:"required,len=3"`
+	Amount      int64  `json:"amount" required:"true"`
+	Description string `json:"description" required:"true" minLength:"1"`
+	Currency    string `json:"currency" required:"true" minLength:"3" maxLength:"3"`
 }
 
-func (h *Handler) AddLineItem(ctx *gin.Context) {
-	invoiceID := ctx.Param("invoice_id")
-	if invoiceID == "" {
-		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
-		return
+type AddLineItemInput struct {
+	payments.PaymentsCtx
+	InvoiceID string `path:"invoice_id"`
+	Body      AddLineItemRequest
+}
+
+type AddLineItemOutput struct {
+	Body InvoiceLineItemResponse
+}
+
+func (h *Handler) AddLineItem(ctx context.Context, in *AddLineItemInput) (*AddLineItemOutput, error) {
+	if in.InvoiceID == "" {
+		return nil, huma.Error400BadRequest("invoice_id is required")
 	}
-	if !isValidInvoiceID(invoiceID) {
-		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
-		return
+	if !isValidInvoiceID(in.InvoiceID) {
+		return nil, huma.Error400BadRequest("Invalid invoice ID format: must start with 'in_'")
 	}
-	var req AddLineItemRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
+	if in.StripeCustomerID == "" {
+		return nil, huma.Error400BadRequest("stripe_customer_id not found in context")
 	}
-	customerID, exists := ctx.Get("stripe_customer_id")
-	if !exists || customerID == nil {
-		handlers.NewBadRequestResponse(ctx, "stripe_customer_id not found in context")
-		return
-	}
-	item, err := h.billing.AddInvoiceLineItem(ctx.Request.Context(), billing.AddInvoiceLineItemArgs{
-		InvoiceID:        invoiceID,
-		StripeCustomerID: customerID.(string),
-		Amount:           req.Amount,
-		Currency:         req.Currency,
-		Description:      req.Description,
+
+	item, err := h.billing.AddInvoiceLineItem(ctx, billing.AddInvoiceLineItemArgs{
+		InvoiceID:        in.InvoiceID,
+		StripeCustomerID: in.StripeCustomerID,
+		Amount:           in.Body.Amount,
+		Currency:         in.Body.Currency,
+		Description:      in.Body.Description,
 	})
 	if err != nil {
-		if handlers.HandleStripeError(ctx, err) {
-			return
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", AddLineItemError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AddLineItemError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &InvoiceLineItemResponse{
+	return &AddLineItemOutput{Body: InvoiceLineItemResponse{
 		ID:          item.ID,
 		Amount:      item.Amount,
 		Description: item.Description,
-	})
+	}}, nil
 }

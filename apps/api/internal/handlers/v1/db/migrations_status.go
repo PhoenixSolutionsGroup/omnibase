@@ -1,10 +1,11 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 )
@@ -16,24 +17,27 @@ type AppliedMigration struct {
 	Dirty   bool  `json:"dirty"`
 }
 
-func (h *Handler) MigrationsStatus(c *gin.Context) {
-	ctx := c.Request.Context()
+type MigrationsStatusInput struct {
+	handlers.AuthCtx
+}
 
+type MigrationsStatusOutput struct {
+	Body []AppliedMigration
+}
+
+func (h *Handler) MigrationsStatus(ctx context.Context, _ *MigrationsStatusInput) (*MigrationsStatusOutput, error) {
 	var exists bool
 	if err := h.pool.QueryRow(ctx, `SELECT to_regclass('"migrations"."schema_migrations"') IS NOT NULL`).Scan(&exists); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MigrationsStatusError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsStatusError, err).Error())
 	}
 
 	if !exists {
-		handlers.NewSuccessResponse(c, []AppliedMigration{})
-		return
+		return &MigrationsStatusOutput{Body: []AppliedMigration{}}, nil
 	}
 
 	rows, err := h.pool.Query(ctx, `SELECT version, dirty FROM "migrations"."schema_migrations" ORDER BY version DESC`)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MigrationsStatusError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsStatusError, err).Error())
 	}
 	defer rows.Close()
 
@@ -41,15 +45,13 @@ func (h *Handler) MigrationsStatus(c *gin.Context) {
 	for rows.Next() {
 		var m AppliedMigration
 		if err := rows.Scan(&m.Version, &m.Dirty); err != nil {
-			handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MigrationsStatusError, err))
-			return
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsStatusError, err).Error())
 		}
 		out = append(out, m)
 	}
 	if err := rows.Err(); err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MigrationsStatusError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MigrationsStatusError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(c, out)
+	return &MigrationsStatusOutput{Body: out}, nil
 }

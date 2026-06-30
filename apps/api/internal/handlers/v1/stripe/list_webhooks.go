@@ -1,10 +1,11 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/database/repository"
 	"api/internal/handlers"
@@ -17,14 +18,21 @@ type ListWebhooksResponse struct {
 	Count    int                                `json:"count"`
 }
 
-func (h *Handler) ListWebhooks(ctx *gin.Context) {
-	webhooks, err := h.stripeConfig.ListWebhooks(ctx.Request.Context())
+type ListWebhooksInput struct {
+	handlers.AuthCtx
+}
+
+type ListWebhooksOutput struct {
+	Body ListWebhooksResponse
+}
+
+func (h *Handler) ListWebhooks(ctx context.Context, _ *ListWebhooksInput) (*ListWebhooksOutput, error) {
+	webhooks, err := h.stripeConfig.ListWebhooks(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ListWebhooksError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListWebhooksError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, ListWebhooksResponse{
+	return &ListWebhooksOutput{Body: ListWebhooksResponse{
 		Webhooks: webhooks,
 		Count:    len(webhooks),
-	})
+	}}, nil
 }

@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,28 +20,18 @@ import (
 // checks if the SubscriptionResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &SubscriptionResponse{}
 
-// SubscriptionResponse Stripe subscription information
+// SubscriptionResponse struct for SubscriptionResponse
 type SubscriptionResponse struct {
-	// Stripe subscription ID
-	SubscriptionId string `json:"subscription_id"`
-	// Configuration price ID
-	ConfigPriceId string `json:"config_price_id"`
-	// Subscription status
-	Status string `json:"status"`
-	// Unix timestamp of current period start
-	CurrentPeriodStart int64 `json:"current_period_start"`
-	// Unix timestamp of current period end
-	CurrentPeriodEnd int64 `json:"current_period_end"`
-	// Whether subscription will cancel at period end
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end"`
-	// Unix timestamp when subscription was canceled
 	CanceledAt *int64 `json:"canceled_at,omitempty"`
-	// Unix timestamp when trial started
-	TrialStart *int64 `json:"trial_start,omitempty"`
-	// Unix timestamp when trial ends
-	TrialEnd *int64 `json:"trial_end,omitempty"`
-	// Whether this is a legacy price
+	ConfigPriceId string `json:"config_price_id"`
+	CurrentPeriodEnd int64 `json:"current_period_end"`
+	CurrentPeriodStart int64 `json:"current_period_start"`
 	IsLegacyPrice bool `json:"is_legacy_price"`
+	Status string `json:"status"`
+	SubscriptionId string `json:"subscription_id"`
+	TrialEnd *int64 `json:"trial_end,omitempty"`
+	TrialStart *int64 `json:"trial_start,omitempty"`
 }
 
 type _SubscriptionResponse SubscriptionResponse
@@ -50,15 +40,15 @@ type _SubscriptionResponse SubscriptionResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSubscriptionResponse(subscriptionId string, configPriceId string, status string, currentPeriodStart int64, currentPeriodEnd int64, cancelAtPeriodEnd bool, isLegacyPrice bool) *SubscriptionResponse {
+func NewSubscriptionResponse(cancelAtPeriodEnd bool, configPriceId string, currentPeriodEnd int64, currentPeriodStart int64, isLegacyPrice bool, status string, subscriptionId string) *SubscriptionResponse {
 	this := SubscriptionResponse{}
-	this.SubscriptionId = subscriptionId
-	this.ConfigPriceId = configPriceId
-	this.Status = status
-	this.CurrentPeriodStart = currentPeriodStart
-	this.CurrentPeriodEnd = currentPeriodEnd
 	this.CancelAtPeriodEnd = cancelAtPeriodEnd
+	this.ConfigPriceId = configPriceId
+	this.CurrentPeriodEnd = currentPeriodEnd
+	this.CurrentPeriodStart = currentPeriodStart
 	this.IsLegacyPrice = isLegacyPrice
+	this.Status = status
+	this.SubscriptionId = subscriptionId
 	return &this
 }
 
@@ -68,126 +58,6 @@ func NewSubscriptionResponse(subscriptionId string, configPriceId string, status
 func NewSubscriptionResponseWithDefaults() *SubscriptionResponse {
 	this := SubscriptionResponse{}
 	return &this
-}
-
-// GetSubscriptionId returns the SubscriptionId field value
-func (o *SubscriptionResponse) GetSubscriptionId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.SubscriptionId
-}
-
-// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value
-// and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.SubscriptionId, true
-}
-
-// SetSubscriptionId sets field value
-func (o *SubscriptionResponse) SetSubscriptionId(v string) {
-	o.SubscriptionId = v
-}
-
-// GetConfigPriceId returns the ConfigPriceId field value
-func (o *SubscriptionResponse) GetConfigPriceId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ConfigPriceId
-}
-
-// GetConfigPriceIdOk returns a tuple with the ConfigPriceId field value
-// and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetConfigPriceIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ConfigPriceId, true
-}
-
-// SetConfigPriceId sets field value
-func (o *SubscriptionResponse) SetConfigPriceId(v string) {
-	o.ConfigPriceId = v
-}
-
-// GetStatus returns the Status field value
-func (o *SubscriptionResponse) GetStatus() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetStatusOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *SubscriptionResponse) SetStatus(v string) {
-	o.Status = v
-}
-
-// GetCurrentPeriodStart returns the CurrentPeriodStart field value
-func (o *SubscriptionResponse) GetCurrentPeriodStart() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.CurrentPeriodStart
-}
-
-// GetCurrentPeriodStartOk returns a tuple with the CurrentPeriodStart field value
-// and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetCurrentPeriodStartOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.CurrentPeriodStart, true
-}
-
-// SetCurrentPeriodStart sets field value
-func (o *SubscriptionResponse) SetCurrentPeriodStart(v int64) {
-	o.CurrentPeriodStart = v
-}
-
-// GetCurrentPeriodEnd returns the CurrentPeriodEnd field value
-func (o *SubscriptionResponse) GetCurrentPeriodEnd() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.CurrentPeriodEnd
-}
-
-// GetCurrentPeriodEndOk returns a tuple with the CurrentPeriodEnd field value
-// and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetCurrentPeriodEndOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.CurrentPeriodEnd, true
-}
-
-// SetCurrentPeriodEnd sets field value
-func (o *SubscriptionResponse) SetCurrentPeriodEnd(v int64) {
-	o.CurrentPeriodEnd = v
 }
 
 // GetCancelAtPeriodEnd returns the CancelAtPeriodEnd field value
@@ -246,36 +116,148 @@ func (o *SubscriptionResponse) SetCanceledAt(v int64) {
 	o.CanceledAt = &v
 }
 
-// GetTrialStart returns the TrialStart field value if set, zero value otherwise.
-func (o *SubscriptionResponse) GetTrialStart() int64 {
-	if o == nil || IsNil(o.TrialStart) {
+// GetConfigPriceId returns the ConfigPriceId field value
+func (o *SubscriptionResponse) GetConfigPriceId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.ConfigPriceId
+}
+
+// GetConfigPriceIdOk returns a tuple with the ConfigPriceId field value
+// and a boolean to check if the value has been set.
+func (o *SubscriptionResponse) GetConfigPriceIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.ConfigPriceId, true
+}
+
+// SetConfigPriceId sets field value
+func (o *SubscriptionResponse) SetConfigPriceId(v string) {
+	o.ConfigPriceId = v
+}
+
+// GetCurrentPeriodEnd returns the CurrentPeriodEnd field value
+func (o *SubscriptionResponse) GetCurrentPeriodEnd() int64 {
+	if o == nil {
 		var ret int64
 		return ret
 	}
-	return *o.TrialStart
+
+	return o.CurrentPeriodEnd
 }
 
-// GetTrialStartOk returns a tuple with the TrialStart field value if set, nil otherwise
+// GetCurrentPeriodEndOk returns a tuple with the CurrentPeriodEnd field value
 // and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetTrialStartOk() (*int64, bool) {
-	if o == nil || IsNil(o.TrialStart) {
+func (o *SubscriptionResponse) GetCurrentPeriodEndOk() (*int64, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.TrialStart, true
+	return &o.CurrentPeriodEnd, true
 }
 
-// HasTrialStart returns a boolean if a field has been set.
-func (o *SubscriptionResponse) HasTrialStart() bool {
-	if o != nil && !IsNil(o.TrialStart) {
-		return true
+// SetCurrentPeriodEnd sets field value
+func (o *SubscriptionResponse) SetCurrentPeriodEnd(v int64) {
+	o.CurrentPeriodEnd = v
+}
+
+// GetCurrentPeriodStart returns the CurrentPeriodStart field value
+func (o *SubscriptionResponse) GetCurrentPeriodStart() int64 {
+	if o == nil {
+		var ret int64
+		return ret
 	}
 
-	return false
+	return o.CurrentPeriodStart
 }
 
-// SetTrialStart gets a reference to the given int64 and assigns it to the TrialStart field.
-func (o *SubscriptionResponse) SetTrialStart(v int64) {
-	o.TrialStart = &v
+// GetCurrentPeriodStartOk returns a tuple with the CurrentPeriodStart field value
+// and a boolean to check if the value has been set.
+func (o *SubscriptionResponse) GetCurrentPeriodStartOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CurrentPeriodStart, true
+}
+
+// SetCurrentPeriodStart sets field value
+func (o *SubscriptionResponse) SetCurrentPeriodStart(v int64) {
+	o.CurrentPeriodStart = v
+}
+
+// GetIsLegacyPrice returns the IsLegacyPrice field value
+func (o *SubscriptionResponse) GetIsLegacyPrice() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.IsLegacyPrice
+}
+
+// GetIsLegacyPriceOk returns a tuple with the IsLegacyPrice field value
+// and a boolean to check if the value has been set.
+func (o *SubscriptionResponse) GetIsLegacyPriceOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.IsLegacyPrice, true
+}
+
+// SetIsLegacyPrice sets field value
+func (o *SubscriptionResponse) SetIsLegacyPrice(v bool) {
+	o.IsLegacyPrice = v
+}
+
+// GetStatus returns the Status field value
+func (o *SubscriptionResponse) GetStatus() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *SubscriptionResponse) GetStatusOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *SubscriptionResponse) SetStatus(v string) {
+	o.Status = v
+}
+
+// GetSubscriptionId returns the SubscriptionId field value
+func (o *SubscriptionResponse) GetSubscriptionId() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.SubscriptionId
+}
+
+// GetSubscriptionIdOk returns a tuple with the SubscriptionId field value
+// and a boolean to check if the value has been set.
+func (o *SubscriptionResponse) GetSubscriptionIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.SubscriptionId, true
+}
+
+// SetSubscriptionId sets field value
+func (o *SubscriptionResponse) SetSubscriptionId(v string) {
+	o.SubscriptionId = v
 }
 
 // GetTrialEnd returns the TrialEnd field value if set, zero value otherwise.
@@ -310,28 +292,36 @@ func (o *SubscriptionResponse) SetTrialEnd(v int64) {
 	o.TrialEnd = &v
 }
 
-// GetIsLegacyPrice returns the IsLegacyPrice field value
-func (o *SubscriptionResponse) GetIsLegacyPrice() bool {
-	if o == nil {
-		var ret bool
+// GetTrialStart returns the TrialStart field value if set, zero value otherwise.
+func (o *SubscriptionResponse) GetTrialStart() int64 {
+	if o == nil || IsNil(o.TrialStart) {
+		var ret int64
 		return ret
 	}
-
-	return o.IsLegacyPrice
+	return *o.TrialStart
 }
 
-// GetIsLegacyPriceOk returns a tuple with the IsLegacyPrice field value
+// GetTrialStartOk returns a tuple with the TrialStart field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SubscriptionResponse) GetIsLegacyPriceOk() (*bool, bool) {
-	if o == nil {
+func (o *SubscriptionResponse) GetTrialStartOk() (*int64, bool) {
+	if o == nil || IsNil(o.TrialStart) {
 		return nil, false
 	}
-	return &o.IsLegacyPrice, true
+	return o.TrialStart, true
 }
 
-// SetIsLegacyPrice sets field value
-func (o *SubscriptionResponse) SetIsLegacyPrice(v bool) {
-	o.IsLegacyPrice = v
+// HasTrialStart returns a boolean if a field has been set.
+func (o *SubscriptionResponse) HasTrialStart() bool {
+	if o != nil && !IsNil(o.TrialStart) {
+		return true
+	}
+
+	return false
+}
+
+// SetTrialStart gets a reference to the given int64 and assigns it to the TrialStart field.
+func (o *SubscriptionResponse) SetTrialStart(v int64) {
+	o.TrialStart = &v
 }
 
 func (o SubscriptionResponse) MarshalJSON() ([]byte, error) {
@@ -344,22 +334,22 @@ func (o SubscriptionResponse) MarshalJSON() ([]byte, error) {
 
 func (o SubscriptionResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["subscription_id"] = o.SubscriptionId
-	toSerialize["config_price_id"] = o.ConfigPriceId
-	toSerialize["status"] = o.Status
-	toSerialize["current_period_start"] = o.CurrentPeriodStart
-	toSerialize["current_period_end"] = o.CurrentPeriodEnd
 	toSerialize["cancel_at_period_end"] = o.CancelAtPeriodEnd
 	if !IsNil(o.CanceledAt) {
 		toSerialize["canceled_at"] = o.CanceledAt
 	}
-	if !IsNil(o.TrialStart) {
-		toSerialize["trial_start"] = o.TrialStart
-	}
+	toSerialize["config_price_id"] = o.ConfigPriceId
+	toSerialize["current_period_end"] = o.CurrentPeriodEnd
+	toSerialize["current_period_start"] = o.CurrentPeriodStart
+	toSerialize["is_legacy_price"] = o.IsLegacyPrice
+	toSerialize["status"] = o.Status
+	toSerialize["subscription_id"] = o.SubscriptionId
 	if !IsNil(o.TrialEnd) {
 		toSerialize["trial_end"] = o.TrialEnd
 	}
-	toSerialize["is_legacy_price"] = o.IsLegacyPrice
+	if !IsNil(o.TrialStart) {
+		toSerialize["trial_start"] = o.TrialStart
+	}
 	return toSerialize, nil
 }
 
@@ -368,13 +358,13 @@ func (o *SubscriptionResponse) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"subscription_id",
-		"config_price_id",
-		"status",
-		"current_period_start",
-		"current_period_end",
 		"cancel_at_period_end",
+		"config_price_id",
+		"current_period_end",
+		"current_period_start",
 		"is_legacy_price",
+		"status",
+		"subscription_id",
 	}
 
 	allProperties := make(map[string]interface{})

@@ -1,35 +1,42 @@
 package invoices
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/handlers/v1/payments"
 )
 
 var GetInvoiceError = errors.New("Failed to get invoice")
 
-func (h *Handler) Get(ctx *gin.Context) {
-	invoiceID := ctx.Param("invoice_id")
-	if invoiceID == "" {
-		handlers.NewBadRequestResponse(ctx, "invoice_id is required")
-		return
+type GetInvoiceInput struct {
+	payments.PaymentsCtx
+	InvoiceID string `path:"invoice_id"`
+}
+
+type GetInvoiceOutput struct {
+	Body InvoiceResponse
+}
+
+func (h *Handler) Get(ctx context.Context, in *GetInvoiceInput) (*GetInvoiceOutput, error) {
+	if in.InvoiceID == "" {
+		return nil, huma.Error400BadRequest("invoice_id is required")
 	}
-	if !isValidInvoiceID(invoiceID) {
-		handlers.NewBadRequestResponse(ctx, "Invalid invoice ID format: must start with 'in_'")
-		return
+	if !isValidInvoiceID(in.InvoiceID) {
+		return nil, huma.Error400BadRequest("Invalid invoice ID format: must start with 'in_'")
 	}
-	inv, err := h.billing.GetInvoice(ctx.Request.Context(), invoiceID)
+	inv, err := h.billing.GetInvoice(ctx, in.InvoiceID)
 	if err != nil {
-		if handlers.HandleStripeError(ctx, err) {
-			return
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetInvoiceError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetInvoiceError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &InvoiceResponse{
+	return &GetInvoiceOutput{Body: InvoiceResponse{
 		ID:               inv.ID,
 		Status:           string(inv.Status),
 		AmountDue:        inv.AmountDue,
@@ -37,5 +44,5 @@ func (h *Handler) Get(ctx *gin.Context) {
 		CustomerID:       inv.Customer.ID,
 		InvoicePDF:       inv.InvoicePDF,
 		HostedInvoiceURL: inv.HostedInvoiceURL,
-	})
+	}}, nil
 }

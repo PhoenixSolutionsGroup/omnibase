@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -20,15 +20,11 @@ var _ MappedNullable = &PriceUI{}
 
 // PriceUI struct for PriceUI
 type PriceUI struct {
-	// Display name for this price tier
-	DisplayName *string `json:"display_name,omitempty"`
-	PriceDisplay *PriceDisplay `json:"price_display,omitempty"`
-	// Human-readable billing period
 	BillingPeriod *string `json:"billing_period,omitempty"`
-	// Features specific to this price
+	DisplayName *string `json:"display_name,omitempty"`
 	Features []string `json:"features,omitempty"`
-	// Usage limits for this price
 	Limits []PriceLimit `json:"limits,omitempty"`
+	PriceDisplay *PriceDisplay `json:"price_display,omitempty"`
 }
 
 // NewPriceUI instantiates a new PriceUI object
@@ -46,70 +42,6 @@ func NewPriceUI() *PriceUI {
 func NewPriceUIWithDefaults() *PriceUI {
 	this := PriceUI{}
 	return &this
-}
-
-// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
-func (o *PriceUI) GetDisplayName() string {
-	if o == nil || IsNil(o.DisplayName) {
-		var ret string
-		return ret
-	}
-	return *o.DisplayName
-}
-
-// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceUI) GetDisplayNameOk() (*string, bool) {
-	if o == nil || IsNil(o.DisplayName) {
-		return nil, false
-	}
-	return o.DisplayName, true
-}
-
-// HasDisplayName returns a boolean if a field has been set.
-func (o *PriceUI) HasDisplayName() bool {
-	if o != nil && !IsNil(o.DisplayName) {
-		return true
-	}
-
-	return false
-}
-
-// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
-func (o *PriceUI) SetDisplayName(v string) {
-	o.DisplayName = &v
-}
-
-// GetPriceDisplay returns the PriceDisplay field value if set, zero value otherwise.
-func (o *PriceUI) GetPriceDisplay() PriceDisplay {
-	if o == nil || IsNil(o.PriceDisplay) {
-		var ret PriceDisplay
-		return ret
-	}
-	return *o.PriceDisplay
-}
-
-// GetPriceDisplayOk returns a tuple with the PriceDisplay field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PriceUI) GetPriceDisplayOk() (*PriceDisplay, bool) {
-	if o == nil || IsNil(o.PriceDisplay) {
-		return nil, false
-	}
-	return o.PriceDisplay, true
-}
-
-// HasPriceDisplay returns a boolean if a field has been set.
-func (o *PriceUI) HasPriceDisplay() bool {
-	if o != nil && !IsNil(o.PriceDisplay) {
-		return true
-	}
-
-	return false
-}
-
-// SetPriceDisplay gets a reference to the given PriceDisplay and assigns it to the PriceDisplay field.
-func (o *PriceUI) SetPriceDisplay(v PriceDisplay) {
-	o.PriceDisplay = &v
 }
 
 // GetBillingPeriod returns the BillingPeriod field value if set, zero value otherwise.
@@ -144,9 +76,41 @@ func (o *PriceUI) SetBillingPeriod(v string) {
 	o.BillingPeriod = &v
 }
 
-// GetFeatures returns the Features field value if set, zero value otherwise.
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
+func (o *PriceUI) GetDisplayName() string {
+	if o == nil || IsNil(o.DisplayName) {
+		var ret string
+		return ret
+	}
+	return *o.DisplayName
+}
+
+// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceUI) GetDisplayNameOk() (*string, bool) {
+	if o == nil || IsNil(o.DisplayName) {
+		return nil, false
+	}
+	return o.DisplayName, true
+}
+
+// HasDisplayName returns a boolean if a field has been set.
+func (o *PriceUI) HasDisplayName() bool {
+	if o != nil && !IsNil(o.DisplayName) {
+		return true
+	}
+
+	return false
+}
+
+// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
+func (o *PriceUI) SetDisplayName(v string) {
+	o.DisplayName = &v
+}
+
+// GetFeatures returns the Features field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *PriceUI) GetFeatures() []string {
-	if o == nil || IsNil(o.Features) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
@@ -155,6 +119,7 @@ func (o *PriceUI) GetFeatures() []string {
 
 // GetFeaturesOk returns a tuple with the Features field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *PriceUI) GetFeaturesOk() ([]string, bool) {
 	if o == nil || IsNil(o.Features) {
 		return nil, false
@@ -176,9 +141,9 @@ func (o *PriceUI) SetFeatures(v []string) {
 	o.Features = v
 }
 
-// GetLimits returns the Limits field value if set, zero value otherwise.
+// GetLimits returns the Limits field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *PriceUI) GetLimits() []PriceLimit {
-	if o == nil || IsNil(o.Limits) {
+	if o == nil {
 		var ret []PriceLimit
 		return ret
 	}
@@ -187,6 +152,7 @@ func (o *PriceUI) GetLimits() []PriceLimit {
 
 // GetLimitsOk returns a tuple with the Limits field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *PriceUI) GetLimitsOk() ([]PriceLimit, bool) {
 	if o == nil || IsNil(o.Limits) {
 		return nil, false
@@ -208,6 +174,38 @@ func (o *PriceUI) SetLimits(v []PriceLimit) {
 	o.Limits = v
 }
 
+// GetPriceDisplay returns the PriceDisplay field value if set, zero value otherwise.
+func (o *PriceUI) GetPriceDisplay() PriceDisplay {
+	if o == nil || IsNil(o.PriceDisplay) {
+		var ret PriceDisplay
+		return ret
+	}
+	return *o.PriceDisplay
+}
+
+// GetPriceDisplayOk returns a tuple with the PriceDisplay field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PriceUI) GetPriceDisplayOk() (*PriceDisplay, bool) {
+	if o == nil || IsNil(o.PriceDisplay) {
+		return nil, false
+	}
+	return o.PriceDisplay, true
+}
+
+// HasPriceDisplay returns a boolean if a field has been set.
+func (o *PriceUI) HasPriceDisplay() bool {
+	if o != nil && !IsNil(o.PriceDisplay) {
+		return true
+	}
+
+	return false
+}
+
+// SetPriceDisplay gets a reference to the given PriceDisplay and assigns it to the PriceDisplay field.
+func (o *PriceUI) SetPriceDisplay(v PriceDisplay) {
+	o.PriceDisplay = &v
+}
+
 func (o PriceUI) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -218,20 +216,20 @@ func (o PriceUI) MarshalJSON() ([]byte, error) {
 
 func (o PriceUI) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.DisplayName) {
-		toSerialize["display_name"] = o.DisplayName
-	}
-	if !IsNil(o.PriceDisplay) {
-		toSerialize["price_display"] = o.PriceDisplay
-	}
 	if !IsNil(o.BillingPeriod) {
 		toSerialize["billing_period"] = o.BillingPeriod
 	}
-	if !IsNil(o.Features) {
+	if !IsNil(o.DisplayName) {
+		toSerialize["display_name"] = o.DisplayName
+	}
+	if o.Features != nil {
 		toSerialize["features"] = o.Features
 	}
-	if !IsNil(o.Limits) {
+	if o.Limits != nil {
 		toSerialize["limits"] = o.Limits
+	}
+	if !IsNil(o.PriceDisplay) {
+		toSerialize["price_display"] = o.PriceDisplay
 	}
 	return toSerialize, nil
 }

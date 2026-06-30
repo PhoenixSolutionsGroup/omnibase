@@ -15,7 +15,7 @@ import type { DownloadResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "downloadUrl": https://storage.test.example.com/bucket/path?signature=...,
+  "downloadUrl": null,
 } satisfies DownloadResponse
 
 console.log(example)

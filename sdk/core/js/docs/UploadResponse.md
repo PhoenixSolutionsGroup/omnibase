@@ -6,9 +6,9 @@
 
 Name | Type
 ------------ | -------------
-`uploadUrl` | string
-`path` | string
 `id` | string
+`path` | string
+`uploadUrl` | string
 
 ## Example
 
@@ -17,9 +17,9 @@ import type { UploadResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "uploadUrl": https://storage.test.example.com/bucket/path?signature=...,
-  "path": avatars/user-123.png,
-  "id": 550e8400-e29b-41d4-a716-446655440000,
+  "id": null,
+  "path": null,
+  "uploadUrl": null,
 } satisfies UploadResponse
 
 console.log(example)

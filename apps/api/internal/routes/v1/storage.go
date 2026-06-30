@@ -3,15 +3,15 @@ package v1
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/storage"
 	"api/internal/logger"
@@ -19,16 +19,10 @@ import (
 	"api/internal/services/permissions"
 )
 
-func SetUpStorageRoutes(router *gin.RouterGroup) {
+func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing storage routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 
 	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
 		awsconfig.WithRegion(cfg.S3Config.Region),
@@ -62,12 +56,55 @@ func SetUpStorageRoutes(router *gin.RouterGroup) {
 		BucketName: cfg.S3Config.BucketName,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
-	router.Use(authMiddleware.RequireAuthHeaders())
-	router.Use(authMiddleware.RequireSessionOrServiceKey())
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
+	sessionOrServiceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
+	}
+	sessionOrServiceSec := []map[string][]string{
+		{"SessionTokenAuth": {}},
+		{"CookieAuth": {}},
+		{"ServiceKeyAuth": {}},
+	}
 
-	router.POST("/upload", handler.Upload)
-	router.POST("/download", handler.Download)
-	router.DELETE("/object", handler.DeleteObject)
-	router.POST("/make-public", handler.MakePublic)
+	huma.Register(api, huma.Operation{
+		OperationID: "uploadFile",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/storage/upload",
+		Summary:     "Upload file to storage",
+		Tags:        []string{"V1Storage"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.Upload)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "downloadFile",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/storage/download",
+		Summary:     "Download file from storage",
+		Tags:        []string{"V1Storage"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.Download)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "deleteObject",
+		Method:      http.MethodDelete,
+		Path:        "/api/v1/storage/object",
+		Summary:     "Delete file from storage",
+		Tags:        []string{"V1Storage"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.DeleteObject)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "makeFilePublic",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/storage/make-public",
+		Summary:     "Make a file publicly accessible",
+		Tags:        []string{"V1Storage"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.MakePublic)
+
+	logger.Logger.Info("Storage routes registration completed")
 }

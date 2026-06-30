@@ -3,15 +3,15 @@ package v1
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
-	"api/internal/config"
-	"api/internal/database"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/permissions"
 	"api/internal/logger"
@@ -19,16 +19,10 @@ import (
 	permsvc "api/internal/services/permissions"
 )
 
-func SetUpPermissionRoutes(router *gin.RouterGroup) {
+func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing permission routes")
-	cfg := config.New()
-
-	pool, err := database.GetPool(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get pgx pool", "error", err)
-		panic(err)
-	}
-	repo := repository.New(pool)
+	cfg := d.Cfg
+	repo := repository.New(d.Pool)
 
 	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
 		awsconfig.WithRegion(cfg.S3Config.Region),
@@ -56,15 +50,59 @@ func SetUpPermissionRoutes(router *gin.RouterGroup) {
 		IsManaged:  cfg.ManagedHostingConfig.IsManaged,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg)
+	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
+	sessionOrServiceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
+	}
+	serviceMW := huma.Middlewares{
+		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
+	}
+	sessionOrServiceSec := []map[string][]string{
+		{"SessionTokenAuth": {}},
+		{"CookieAuth": {}},
+		{"ServiceKeyAuth": {}},
+	}
+	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
 
-	sessionOrServiceGroup := router.Group("")
-	sessionOrServiceGroup.Use(authMiddleware.RequireAuthHeaders())
-	sessionOrServiceGroup.Use(authMiddleware.RequireSessionOrServiceKey())
+	huma.Register(api, huma.Operation{
+		OperationID: "checkPermission",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/permissions/check",
+		Summary:     "Check permission",
+		Tags:        []string{"V1Permissions"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.Check)
 
-	sessionOrServiceGroup.POST("/check", handler.Check)
-	sessionOrServiceGroup.POST("/relationships", handler.CreateRelationship)
-	sessionOrServiceGroup.DELETE("/relationships", handler.DeleteRelationship)
+	huma.Register(api, huma.Operation{
+		OperationID: "createRelationship",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/permissions/relationships",
+		Summary:     "Create relationship",
+		Tags:        []string{"V1Permissions"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.CreateRelationship)
 
-	router.POST("/namespaces", authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey(), handler.DeployNamespaces)
+	huma.Register(api, huma.Operation{
+		OperationID: "deleteRelationship",
+		Method:      http.MethodDelete,
+		Path:        "/api/v1/permissions/relationships",
+		Summary:     "Delete relationship",
+		Tags:        []string{"V1Permissions"},
+		Security:    sessionOrServiceSec,
+		Middlewares: sessionOrServiceMW,
+	}, handler.DeleteRelationship)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "deployPermissionNamespaces",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/permissions/namespaces",
+		Summary:     "Deploy Keto namespace configurations",
+		Tags:        []string{"V1Configuration"},
+		Security:    serviceSec,
+		Middlewares: serviceMW,
+	}, handler.DeployNamespaces)
+
+	logger.Logger.Info("Permission routes registration completed")
 }

@@ -1,13 +1,12 @@
 
 # ActiveTenantResponse
 
-Response containing the user\'s active tenant information
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`tenant` | [Tenant](Tenant.md)
+`tenant` | [GetTenantByIDRow](GetTenantByIDRow.md)
 
 ## Example
 

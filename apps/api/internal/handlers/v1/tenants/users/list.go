@@ -1,14 +1,15 @@
 package users
 
 import (
+	"context"
 	"errors"
 	"fmt"
+
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/services/permissions"
-
-	"github.com/gin-gonic/gin"
 )
 
 var ListError = errors.New("Failed to list tenant users")
@@ -21,32 +22,34 @@ type UserResponse struct {
 	Role      string `json:"role"       example:"member"`
 }
 
-func (h *Handler) List(c *gin.Context) {
-	userUuid, tenantUuid := handlers.UserAndTenant(c)
+type ListInput struct {
+	handlers.AuthCtx
+}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canView, err := h.perms.Check(c.Request.Context(), "Tenant", tenantUuid.String(), "view_users", subject)
+type ListOutput struct {
+	Body []UserResponse
+}
+
+func (h *Handler) List(ctx context.Context, in *ListInput) (*ListOutput, error) {
+	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
+	canView, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "view_users", subject)
 	if err != nil {
-		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantUuid, "user_id", userUuid)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ListError, err))
-		return
+		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", in.TenantID, "user_id", in.UserID)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListError, err).Error())
 	}
 	if !canView {
-		handlers.NewForbiddenResponse(c, "Insufficient permissions - must have `view_users` permission")
-		return
+		return nil, huma.Error403Forbidden("Insufficient permissions - must have `view_users` permission")
 	}
 
-	rows, err := h.repo.ListTenantUsersByTenant(c.Request.Context(), tenantUuid.String())
+	rows, err := h.repo.ListTenantUsersByTenant(ctx, in.TenantID.String())
 	if err != nil {
-		logger.Logger.Error("Failed to fetch tenant users", "error", err, "tenant_id", tenantUuid)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ListError, err))
-		return
+		logger.Logger.Error("Failed to fetch tenant users", "error", err, "tenant_id", in.TenantID)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListError, err).Error())
 	}
 
 	out := make([]UserResponse, 0, len(rows))
 	if len(rows) == 0 {
-		handlers.NewSuccessResponse(c, out)
-		return
+		return &ListOutput{Body: out}, nil
 	}
 
 	ids := make([]string, len(rows))
@@ -54,11 +57,10 @@ func (h *Handler) List(c *gin.Context) {
 		ids[i] = r.UserID
 	}
 
-	identities, err := h.auth.GetIdentities(c.Request.Context(), ids)
+	identities, err := h.auth.GetIdentities(ctx, ids)
 	if err != nil {
-		logger.Logger.Error("Failed to fetch identities", "error", err, "tenant_id", tenantUuid)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", ListError, err))
-		return
+		logger.Logger.Error("Failed to fetch identities", "error", err, "tenant_id", in.TenantID)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListError, err).Error())
 	}
 
 	for _, r := range rows {
@@ -72,6 +74,6 @@ func (h *Handler) List(c *gin.Context) {
 		})
 	}
 
-	logger.Logger.Debug("Listed tenant users", "tenant_id", tenantUuid, "count", len(out))
-	handlers.NewSuccessResponse(c, out)
+	logger.Logger.Debug("Listed tenant users", "tenant_id", in.TenantID, "count", len(out))
+	return &ListOutput{Body: out}, nil
 }

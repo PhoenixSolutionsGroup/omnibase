@@ -1,22 +1,21 @@
 
 # SubscriptionResponse
 
-Stripe subscription information
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`subscriptionId` | string
-`configPriceId` | string
-`status` | string
-`currentPeriodStart` | number
-`currentPeriodEnd` | number
 `cancelAtPeriodEnd` | boolean
 `canceledAt` | number
-`trialStart` | number
-`trialEnd` | number
+`configPriceId` | string
+`currentPeriodEnd` | number
+`currentPeriodStart` | number
 `isLegacyPrice` | boolean
+`status` | string
+`subscriptionId` | string
+`trialEnd` | number
+`trialStart` | number
 
 ## Example
 
@@ -25,16 +24,16 @@ import type { SubscriptionResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "subscriptionId": sub_1234567890,
-  "configPriceId": neon_compute_starter,
-  "status": active,
-  "currentPeriodStart": 1705320600,
-  "currentPeriodEnd": 1707999000,
-  "cancelAtPeriodEnd": false,
+  "cancelAtPeriodEnd": null,
   "canceledAt": null,
-  "trialStart": null,
+  "configPriceId": null,
+  "currentPeriodEnd": null,
+  "currentPeriodStart": null,
+  "isLegacyPrice": null,
+  "status": null,
+  "subscriptionId": null,
   "trialEnd": null,
-  "isLegacyPrice": false,
+  "trialStart": null,
 } satisfies SubscriptionResponse
 
 console.log(example)

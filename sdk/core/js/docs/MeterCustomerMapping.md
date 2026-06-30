@@ -16,8 +16,8 @@ import type { MeterCustomerMapping } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "eventPayloadKey": customer_id,
-  "type": by_id,
+  "eventPayloadKey": null,
+  "type": null,
 } satisfies MeterCustomerMapping
 
 console.log(example)

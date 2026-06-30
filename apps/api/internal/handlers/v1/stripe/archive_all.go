@@ -1,10 +1,11 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 )
@@ -12,19 +13,26 @@ import (
 var ArchiveAllConfigError = errors.New("Failed to archive all stripe resources")
 
 type ArchiveAllResponse struct {
-	Message       string   `json:"message" binding:"required"`
-	ArchivedItems []string `json:"archived_items" binding:"required"`
-	ArchiveErrors []string `json:"archive_errors" binding:"required"`
-	TotalArchived int      `json:"total_archived" binding:"required"`
-	TotalErrors   int      `json:"total_errors" binding:"required"`
+	Message       string   `json:"message" required:"true"`
+	ArchivedItems []string `json:"archived_items" required:"true"`
+	ArchiveErrors []string `json:"archive_errors" required:"true"`
+	TotalArchived int      `json:"total_archived" required:"true"`
+	TotalErrors   int      `json:"total_errors" required:"true"`
 	Warning       *string  `json:"warning,omitempty"`
 }
 
-func (h *Handler) ArchiveAllConfig(ctx *gin.Context) {
-	result, err := h.stripeConfig.ArchiveAll(ctx.Request.Context())
+type ArchiveAllInput struct {
+	handlers.AuthCtx
+}
+
+type ArchiveAllOutput struct {
+	Body ArchiveAllResponse
+}
+
+func (h *Handler) ArchiveAllConfig(ctx context.Context, _ *ArchiveAllInput) (*ArchiveAllOutput, error) {
+	result, err := h.stripeConfig.ArchiveAll(ctx)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ArchiveAllConfigError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ArchiveAllConfigError, err).Error())
 	}
 	if result.Archived == nil {
 		result.Archived = []string{}
@@ -43,5 +51,5 @@ func (h *Handler) ArchiveAllConfig(ctx *gin.Context) {
 		w := "Some items failed to archive - see archive_errors for details"
 		resp.Warning = &w
 	}
-	handlers.NewSuccessResponse(ctx, resp)
+	return &ArchiveAllOutput{Body: resp}, nil
 }

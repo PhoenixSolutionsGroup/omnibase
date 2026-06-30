@@ -38,8 +38,8 @@ func TestTenantLookupByStripe(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
 		assert.Equal(t, tenant.Id, out.Id)
-		require.NotNil(t, out.StripeCustomerId)
-		assert.Equal(t, stripeID, *out.StripeCustomerId)
+		require.True(t, out.StripeCustomerId.IsSet())
+		assert.Equal(t, stripeID, *out.StripeCustomerId.Get())
 	})
 
 	t.Run("get by non-existent stripe id returns 404", func(t *testing.T) {

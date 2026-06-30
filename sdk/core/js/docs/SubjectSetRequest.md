@@ -1,7 +1,6 @@
 
 # SubjectSetRequest
 
-Subject set representation for permission checks and relationship creation
 
 ## Properties
 
@@ -18,9 +17,9 @@ import type { SubjectSetRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "namespace": User,
-  "object": 550e8400-e29b-41d4-a716-446655440000,
-  "relation": ,
+  "namespace": null,
+  "object": null,
+  "relation": null,
 } satisfies SubjectSetRequest
 
 console.log(example)

@@ -1,10 +1,12 @@
 package subscriptions
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -25,34 +27,37 @@ type SubscriptionResponse struct {
 	TrialEnd           *int64 `json:"trial_end,omitempty"`
 }
 
-func (h *Handler) List(ctx *gin.Context) {
-	tenantID := ctx.GetString("tenant_id")
-	if tenantID == "" {
-		handlers.NewUnauthorizedResponse(ctx, "User not authenticated")
-		return
+type ListInput struct {
+	handlers.AuthCtx
+}
+
+type ListOutput struct {
+	Body []SubscriptionResponse
+}
+
+func (h *Handler) List(ctx context.Context, in *ListInput) (*ListOutput, error) {
+	if in.TenantID == uuid.Nil {
+		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 
-	row, err := h.repo.GetTenantByID(ctx.Request.Context(), tenantID)
+	row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 	if err != nil {
-		logger.Logger.Error("tenant lookup failed", "tenant_id", tenantID, "error", err)
-		handlers.NewNotFoundResponse(ctx, "Tenant not found")
-		return
+		logger.Logger.Error("tenant lookup failed", "tenant_id", in.TenantID, "error", err)
+		return nil, huma.Error404NotFound("Tenant not found")
 	}
 	if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-		handlers.NewSuccessResponse(ctx, []SubscriptionResponse{})
-		return
+		return &ListOutput{Body: []SubscriptionResponse{}}, nil
 	}
 
-	subs, err := h.billing.ListTenantSubscriptions(ctx.Request.Context(), *row.StripeCustomerID)
+	subs, err := h.billing.ListTenantSubscriptions(ctx, *row.StripeCustomerID)
 	if err != nil {
-		logger.Logger.Error("list subscriptions failed", "tenant_id", tenantID, "error", err)
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", ListSubscriptionsError, err))
-		return
+		logger.Logger.Error("list subscriptions failed", "tenant_id", in.TenantID, "error", err)
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListSubscriptionsError, err).Error())
 	}
 
 	out := make([]SubscriptionResponse, 0, len(subs))
 	for _, s := range subs {
 		out = append(out, SubscriptionResponse(s))
 	}
-	handlers.NewSuccessResponse(ctx, out)
+	return &ListOutput{Body: out}, nil
 }

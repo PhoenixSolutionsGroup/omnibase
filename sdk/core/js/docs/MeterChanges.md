@@ -1,15 +1,14 @@
 
 # MeterChanges
 
-Summary of meter changes made during configuration update
 
 ## Properties
 
 Name | Type
 ------------ | -------------
+`archived` | [Array&lt;MeterChange&gt;](MeterChange.md)
 `created` | [Array&lt;MeterChange&gt;](MeterChange.md)
 `updated` | [Array&lt;MeterChange&gt;](MeterChange.md)
-`archived` | [Array&lt;MeterChange&gt;](MeterChange.md)
 
 ## Example
 
@@ -18,9 +17,9 @@ import type { MeterChanges } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "archived": null,
   "created": null,
   "updated": null,
-  "archived": null,
 } satisfies MeterChanges
 
 console.log(example)

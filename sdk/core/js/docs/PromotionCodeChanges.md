@@ -1,15 +1,14 @@
 
 # PromotionCodeChanges
 
-Summary of promotion code changes made during configuration update
 
 ## Properties
 
 Name | Type
 ------------ | -------------
 `created` | [Array&lt;PromotionCodeChange&gt;](PromotionCodeChange.md)
-`updated` | [Array&lt;PromotionCodeChange&gt;](PromotionCodeChange.md)
 `deactivated` | [Array&lt;PromotionCodeChange&gt;](PromotionCodeChange.md)
+`updated` | [Array&lt;PromotionCodeChange&gt;](PromotionCodeChange.md)
 
 ## Example
 
@@ -19,8 +18,8 @@ import type { PromotionCodeChanges } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "created": null,
-  "updated": null,
   "deactivated": null,
+  "updated": null,
 } satisfies PromotionCodeChanges
 
 console.log(example)

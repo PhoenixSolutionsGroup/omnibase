@@ -4,19 +4,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | Meter identifier (config ID) | 
-**DisplayName** | **string** | Human-readable meter name | 
-**EventName** | **string** | Event name to track | 
-**DefaultAggregation** | [**MeterDefaultAggregation**](MeterDefaultAggregation.md) |  | 
 **CustomerMapping** | Pointer to [**MeterCustomerMapping**](MeterCustomerMapping.md) |  | [optional] 
+**DefaultAggregation** | [**MeterDefaultAggregation**](MeterDefaultAggregation.md) |  | 
+**DisplayName** | **string** |  | 
+**EventName** | **string** |  | 
+**Id** | **string** |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
 **ValueSettings** | Pointer to [**MeterValueSettings**](MeterValueSettings.md) |  | [optional] 
-**StripeId** | Pointer to **string** | Actual Stripe meter ID | [optional] 
 
 ## Methods
 
 ### NewMeterWithStripeID
 
-`func NewMeterWithStripeID(id string, displayName string, eventName string, defaultAggregation MeterDefaultAggregation, ) *MeterWithStripeID`
+`func NewMeterWithStripeID(defaultAggregation MeterDefaultAggregation, displayName string, eventName string, id string, ) *MeterWithStripeID`
 
 NewMeterWithStripeID instantiates a new MeterWithStripeID object
 This constructor will assign default values to properties that have it defined,
@@ -31,24 +31,49 @@ NewMeterWithStripeIDWithDefaults instantiates a new MeterWithStripeID object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
+### GetCustomerMapping
 
-`func (o *MeterWithStripeID) GetId() string`
+`func (o *MeterWithStripeID) GetCustomerMapping() MeterCustomerMapping`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetCustomerMapping returns the CustomerMapping field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetCustomerMappingOk
 
-`func (o *MeterWithStripeID) GetIdOk() (*string, bool)`
+`func (o *MeterWithStripeID) GetCustomerMappingOk() (*MeterCustomerMapping, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetCustomerMappingOk returns a tuple with the CustomerMapping field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetCustomerMapping
 
-`func (o *MeterWithStripeID) SetId(v string)`
+`func (o *MeterWithStripeID) SetCustomerMapping(v MeterCustomerMapping)`
 
-SetId sets Id field to given value.
+SetCustomerMapping sets CustomerMapping field to given value.
+
+### HasCustomerMapping
+
+`func (o *MeterWithStripeID) HasCustomerMapping() bool`
+
+HasCustomerMapping returns a boolean if a field has been set.
+
+### GetDefaultAggregation
+
+`func (o *MeterWithStripeID) GetDefaultAggregation() MeterDefaultAggregation`
+
+GetDefaultAggregation returns the DefaultAggregation field if non-nil, zero value otherwise.
+
+### GetDefaultAggregationOk
+
+`func (o *MeterWithStripeID) GetDefaultAggregationOk() (*MeterDefaultAggregation, bool)`
+
+GetDefaultAggregationOk returns a tuple with the DefaultAggregation field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDefaultAggregation
+
+`func (o *MeterWithStripeID) SetDefaultAggregation(v MeterDefaultAggregation)`
+
+SetDefaultAggregation sets DefaultAggregation field to given value.
 
 
 ### GetDisplayName
@@ -91,75 +116,25 @@ and a boolean to check if the value has been set.
 SetEventName sets EventName field to given value.
 
 
-### GetDefaultAggregation
+### GetId
 
-`func (o *MeterWithStripeID) GetDefaultAggregation() MeterDefaultAggregation`
+`func (o *MeterWithStripeID) GetId() string`
 
-GetDefaultAggregation returns the DefaultAggregation field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetDefaultAggregationOk
+### GetIdOk
 
-`func (o *MeterWithStripeID) GetDefaultAggregationOk() (*MeterDefaultAggregation, bool)`
+`func (o *MeterWithStripeID) GetIdOk() (*string, bool)`
 
-GetDefaultAggregationOk returns a tuple with the DefaultAggregation field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetDefaultAggregation
+### SetId
 
-`func (o *MeterWithStripeID) SetDefaultAggregation(v MeterDefaultAggregation)`
+`func (o *MeterWithStripeID) SetId(v string)`
 
-SetDefaultAggregation sets DefaultAggregation field to given value.
+SetId sets Id field to given value.
 
-
-### GetCustomerMapping
-
-`func (o *MeterWithStripeID) GetCustomerMapping() MeterCustomerMapping`
-
-GetCustomerMapping returns the CustomerMapping field if non-nil, zero value otherwise.
-
-### GetCustomerMappingOk
-
-`func (o *MeterWithStripeID) GetCustomerMappingOk() (*MeterCustomerMapping, bool)`
-
-GetCustomerMappingOk returns a tuple with the CustomerMapping field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetCustomerMapping
-
-`func (o *MeterWithStripeID) SetCustomerMapping(v MeterCustomerMapping)`
-
-SetCustomerMapping sets CustomerMapping field to given value.
-
-### HasCustomerMapping
-
-`func (o *MeterWithStripeID) HasCustomerMapping() bool`
-
-HasCustomerMapping returns a boolean if a field has been set.
-
-### GetValueSettings
-
-`func (o *MeterWithStripeID) GetValueSettings() MeterValueSettings`
-
-GetValueSettings returns the ValueSettings field if non-nil, zero value otherwise.
-
-### GetValueSettingsOk
-
-`func (o *MeterWithStripeID) GetValueSettingsOk() (*MeterValueSettings, bool)`
-
-GetValueSettingsOk returns a tuple with the ValueSettings field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetValueSettings
-
-`func (o *MeterWithStripeID) SetValueSettings(v MeterValueSettings)`
-
-SetValueSettings sets ValueSettings field to given value.
-
-### HasValueSettings
-
-`func (o *MeterWithStripeID) HasValueSettings() bool`
-
-HasValueSettings returns a boolean if a field has been set.
 
 ### GetStripeId
 
@@ -185,6 +160,31 @@ SetStripeId sets StripeId field to given value.
 `func (o *MeterWithStripeID) HasStripeId() bool`
 
 HasStripeId returns a boolean if a field has been set.
+
+### GetValueSettings
+
+`func (o *MeterWithStripeID) GetValueSettings() MeterValueSettings`
+
+GetValueSettings returns the ValueSettings field if non-nil, zero value otherwise.
+
+### GetValueSettingsOk
+
+`func (o *MeterWithStripeID) GetValueSettingsOk() (*MeterValueSettings, bool)`
+
+GetValueSettingsOk returns a tuple with the ValueSettings field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetValueSettings
+
+`func (o *MeterWithStripeID) SetValueSettings(v MeterValueSettings)`
+
+SetValueSettings sets ValueSettings field to given value.
+
+### HasValueSettings
+
+`func (o *MeterWithStripeID) HasValueSettings() bool`
+
+HasValueSettings returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -1,7 +1,6 @@
 
 # DeleteRelationshipResponse
 
-Relationship deletion result
 
 ## Properties
 
@@ -16,7 +15,7 @@ import type { DeleteRelationshipResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": Relationship deleted successfully,
+  "message": null,
 } satisfies DeleteRelationshipResponse
 
 console.log(example)

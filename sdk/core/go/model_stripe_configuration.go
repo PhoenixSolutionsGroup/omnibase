@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,18 +22,12 @@ var _ MappedNullable = &StripeConfiguration{}
 
 // StripeConfiguration struct for StripeConfiguration
 type StripeConfiguration struct {
-	// Configuration version in semantic versioning format
-	Version string `json:"version"`
-	// List of webhook endpoint configurations
-	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty"`
-	// List of billing meters for metered pricing (required when any price uses usage_type metered)
-	Meters []Meter `json:"meters,omitempty"`
-	// List of products with their prices
-	Products []Product `json:"products"`
-	// List of discount coupons
 	Coupons []Coupon `json:"coupons,omitempty"`
-	// List of promotion codes that apply coupons
+	Meters []Meter `json:"meters,omitempty"`
+	Products []Product `json:"products"`
 	PromotionCodes []PromotionCode `json:"promotion_codes,omitempty"`
+	Version string `json:"version"`
+	Webhooks []WebhookEndpointConfig `json:"webhooks,omitempty"`
 }
 
 type _StripeConfiguration StripeConfiguration
@@ -42,10 +36,10 @@ type _StripeConfiguration StripeConfiguration
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStripeConfiguration(version string, products []Product) *StripeConfiguration {
+func NewStripeConfiguration(products []Product, version string) *StripeConfiguration {
 	this := StripeConfiguration{}
-	this.Version = version
 	this.Products = products
+	this.Version = version
 	return &this
 }
 
@@ -55,6 +49,131 @@ func NewStripeConfiguration(version string, products []Product) *StripeConfigura
 func NewStripeConfigurationWithDefaults() *StripeConfiguration {
 	this := StripeConfiguration{}
 	return &this
+}
+
+// GetCoupons returns the Coupons field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *StripeConfiguration) GetCoupons() []Coupon {
+	if o == nil {
+		var ret []Coupon
+		return ret
+	}
+	return o.Coupons
+}
+
+// GetCouponsOk returns a tuple with the Coupons field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *StripeConfiguration) GetCouponsOk() ([]Coupon, bool) {
+	if o == nil || IsNil(o.Coupons) {
+		return nil, false
+	}
+	return o.Coupons, true
+}
+
+// HasCoupons returns a boolean if a field has been set.
+func (o *StripeConfiguration) HasCoupons() bool {
+	if o != nil && !IsNil(o.Coupons) {
+		return true
+	}
+
+	return false
+}
+
+// SetCoupons gets a reference to the given []Coupon and assigns it to the Coupons field.
+func (o *StripeConfiguration) SetCoupons(v []Coupon) {
+	o.Coupons = v
+}
+
+// GetMeters returns the Meters field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *StripeConfiguration) GetMeters() []Meter {
+	if o == nil {
+		var ret []Meter
+		return ret
+	}
+	return o.Meters
+}
+
+// GetMetersOk returns a tuple with the Meters field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *StripeConfiguration) GetMetersOk() ([]Meter, bool) {
+	if o == nil || IsNil(o.Meters) {
+		return nil, false
+	}
+	return o.Meters, true
+}
+
+// HasMeters returns a boolean if a field has been set.
+func (o *StripeConfiguration) HasMeters() bool {
+	if o != nil && !IsNil(o.Meters) {
+		return true
+	}
+
+	return false
+}
+
+// SetMeters gets a reference to the given []Meter and assigns it to the Meters field.
+func (o *StripeConfiguration) SetMeters(v []Meter) {
+	o.Meters = v
+}
+
+// GetProducts returns the Products field value
+// If the value is explicit nil, the zero value for []Product will be returned
+func (o *StripeConfiguration) GetProducts() []Product {
+	if o == nil {
+		var ret []Product
+		return ret
+	}
+
+	return o.Products
+}
+
+// GetProductsOk returns a tuple with the Products field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *StripeConfiguration) GetProductsOk() ([]Product, bool) {
+	if o == nil || IsNil(o.Products) {
+		return nil, false
+	}
+	return o.Products, true
+}
+
+// SetProducts sets field value
+func (o *StripeConfiguration) SetProducts(v []Product) {
+	o.Products = v
+}
+
+// GetPromotionCodes returns the PromotionCodes field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *StripeConfiguration) GetPromotionCodes() []PromotionCode {
+	if o == nil {
+		var ret []PromotionCode
+		return ret
+	}
+	return o.PromotionCodes
+}
+
+// GetPromotionCodesOk returns a tuple with the PromotionCodes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *StripeConfiguration) GetPromotionCodesOk() ([]PromotionCode, bool) {
+	if o == nil || IsNil(o.PromotionCodes) {
+		return nil, false
+	}
+	return o.PromotionCodes, true
+}
+
+// HasPromotionCodes returns a boolean if a field has been set.
+func (o *StripeConfiguration) HasPromotionCodes() bool {
+	if o != nil && !IsNil(o.PromotionCodes) {
+		return true
+	}
+
+	return false
+}
+
+// SetPromotionCodes gets a reference to the given []PromotionCode and assigns it to the PromotionCodes field.
+func (o *StripeConfiguration) SetPromotionCodes(v []PromotionCode) {
+	o.PromotionCodes = v
 }
 
 // GetVersion returns the Version field value
@@ -81,9 +200,9 @@ func (o *StripeConfiguration) SetVersion(v string) {
 	o.Version = v
 }
 
-// GetWebhooks returns the Webhooks field value if set, zero value otherwise.
+// GetWebhooks returns the Webhooks field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *StripeConfiguration) GetWebhooks() []WebhookEndpointConfig {
-	if o == nil || IsNil(o.Webhooks) {
+	if o == nil {
 		var ret []WebhookEndpointConfig
 		return ret
 	}
@@ -92,6 +211,7 @@ func (o *StripeConfiguration) GetWebhooks() []WebhookEndpointConfig {
 
 // GetWebhooksOk returns a tuple with the Webhooks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *StripeConfiguration) GetWebhooksOk() ([]WebhookEndpointConfig, bool) {
 	if o == nil || IsNil(o.Webhooks) {
 		return nil, false
@@ -113,126 +233,6 @@ func (o *StripeConfiguration) SetWebhooks(v []WebhookEndpointConfig) {
 	o.Webhooks = v
 }
 
-// GetMeters returns the Meters field value if set, zero value otherwise.
-func (o *StripeConfiguration) GetMeters() []Meter {
-	if o == nil || IsNil(o.Meters) {
-		var ret []Meter
-		return ret
-	}
-	return o.Meters
-}
-
-// GetMetersOk returns a tuple with the Meters field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *StripeConfiguration) GetMetersOk() ([]Meter, bool) {
-	if o == nil || IsNil(o.Meters) {
-		return nil, false
-	}
-	return o.Meters, true
-}
-
-// HasMeters returns a boolean if a field has been set.
-func (o *StripeConfiguration) HasMeters() bool {
-	if o != nil && !IsNil(o.Meters) {
-		return true
-	}
-
-	return false
-}
-
-// SetMeters gets a reference to the given []Meter and assigns it to the Meters field.
-func (o *StripeConfiguration) SetMeters(v []Meter) {
-	o.Meters = v
-}
-
-// GetProducts returns the Products field value
-func (o *StripeConfiguration) GetProducts() []Product {
-	if o == nil {
-		var ret []Product
-		return ret
-	}
-
-	return o.Products
-}
-
-// GetProductsOk returns a tuple with the Products field value
-// and a boolean to check if the value has been set.
-func (o *StripeConfiguration) GetProductsOk() ([]Product, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.Products, true
-}
-
-// SetProducts sets field value
-func (o *StripeConfiguration) SetProducts(v []Product) {
-	o.Products = v
-}
-
-// GetCoupons returns the Coupons field value if set, zero value otherwise.
-func (o *StripeConfiguration) GetCoupons() []Coupon {
-	if o == nil || IsNil(o.Coupons) {
-		var ret []Coupon
-		return ret
-	}
-	return o.Coupons
-}
-
-// GetCouponsOk returns a tuple with the Coupons field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *StripeConfiguration) GetCouponsOk() ([]Coupon, bool) {
-	if o == nil || IsNil(o.Coupons) {
-		return nil, false
-	}
-	return o.Coupons, true
-}
-
-// HasCoupons returns a boolean if a field has been set.
-func (o *StripeConfiguration) HasCoupons() bool {
-	if o != nil && !IsNil(o.Coupons) {
-		return true
-	}
-
-	return false
-}
-
-// SetCoupons gets a reference to the given []Coupon and assigns it to the Coupons field.
-func (o *StripeConfiguration) SetCoupons(v []Coupon) {
-	o.Coupons = v
-}
-
-// GetPromotionCodes returns the PromotionCodes field value if set, zero value otherwise.
-func (o *StripeConfiguration) GetPromotionCodes() []PromotionCode {
-	if o == nil || IsNil(o.PromotionCodes) {
-		var ret []PromotionCode
-		return ret
-	}
-	return o.PromotionCodes
-}
-
-// GetPromotionCodesOk returns a tuple with the PromotionCodes field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *StripeConfiguration) GetPromotionCodesOk() ([]PromotionCode, bool) {
-	if o == nil || IsNil(o.PromotionCodes) {
-		return nil, false
-	}
-	return o.PromotionCodes, true
-}
-
-// HasPromotionCodes returns a boolean if a field has been set.
-func (o *StripeConfiguration) HasPromotionCodes() bool {
-	if o != nil && !IsNil(o.PromotionCodes) {
-		return true
-	}
-
-	return false
-}
-
-// SetPromotionCodes gets a reference to the given []PromotionCode and assigns it to the PromotionCodes field.
-func (o *StripeConfiguration) SetPromotionCodes(v []PromotionCode) {
-	o.PromotionCodes = v
-}
-
 func (o StripeConfiguration) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -243,19 +243,21 @@ func (o StripeConfiguration) MarshalJSON() ([]byte, error) {
 
 func (o StripeConfiguration) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["version"] = o.Version
-	if !IsNil(o.Webhooks) {
-		toSerialize["webhooks"] = o.Webhooks
-	}
-	if !IsNil(o.Meters) {
-		toSerialize["meters"] = o.Meters
-	}
-	toSerialize["products"] = o.Products
-	if !IsNil(o.Coupons) {
+	if o.Coupons != nil {
 		toSerialize["coupons"] = o.Coupons
 	}
-	if !IsNil(o.PromotionCodes) {
+	if o.Meters != nil {
+		toSerialize["meters"] = o.Meters
+	}
+	if o.Products != nil {
+		toSerialize["products"] = o.Products
+	}
+	if o.PromotionCodes != nil {
 		toSerialize["promotion_codes"] = o.PromotionCodes
+	}
+	toSerialize["version"] = o.Version
+	if o.Webhooks != nil {
+		toSerialize["webhooks"] = o.Webhooks
 	}
 	return toSerialize, nil
 }
@@ -265,8 +267,8 @@ func (o *StripeConfiguration) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"version",
 		"products",
+		"version",
 	}
 
 	allProperties := make(map[string]interface{})

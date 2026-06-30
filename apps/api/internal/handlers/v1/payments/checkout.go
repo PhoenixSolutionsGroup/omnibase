@@ -1,10 +1,11 @@
 package payments
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 	"api/internal/services/billing"
@@ -13,57 +14,59 @@ import (
 var CreateCheckoutError = errors.New("Failed to create checkout session")
 
 type CreateCheckoutRequest struct {
-	PriceID             string  `json:"price_id" binding:"required,min=1"`
-	SuccessURL          string  `json:"success_url" binding:"required,min=1"`
-	CancelURL           string  `json:"cancel_url" binding:"required,min=1"`
-	TrialPeriodDays     *int64  `json:"trial_period_days,omitempty"`
-	PromotionCode       string  `json:"promotion_code,omitempty"`
-	AllowPromotionCodes *bool   `json:"allow_promotion_codes,omitempty"`
+	PriceID             string `json:"price_id" required:"true" minLength:"1"`
+	SuccessURL          string `json:"success_url" required:"true" minLength:"1"`
+	CancelURL           string `json:"cancel_url" required:"true" minLength:"1"`
+	TrialPeriodDays     *int64 `json:"trial_period_days,omitempty"`
+	PromotionCode       string `json:"promotion_code,omitempty"`
+	AllowPromotionCodes *bool  `json:"allow_promotion_codes,omitempty"`
 }
 
 type CreateCheckoutResponse struct {
-	URL       string `json:"url" binding:"required"`
-	SessionID string `json:"session_id" binding:"required"`
+	URL       string `json:"url" required:"true"`
+	SessionID string `json:"session_id" required:"true"`
 }
 
-func (h *Handler) CreateCheckout(ctx *gin.Context) {
-	var req CreateCheckoutRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(ctx, "Request payload incorrect")
-		return
-	}
+type CreateCheckoutInput struct {
+	PaymentsCtx
+	Body CreateCheckoutRequest
+}
 
-	mapping, err := h.billing.GetMappingByConfigID(ctx.Request.Context(), req.PriceID, "price")
+type CreateCheckoutOutput struct {
+	Body CreateCheckoutResponse
+}
+
+func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (*CreateCheckoutOutput, error) {
+	req := in.Body
+
+	mapping, err := h.billing.GetMappingByConfigID(ctx, req.PriceID, "price")
 	if err != nil {
-		handlers.NewNotFoundResponse(ctx, fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
-		return
+		return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
 	}
-
-	customerIDStr, _ := ctx.Get("stripe_customer_id")
-	customerID, _ := customerIDStr.(string)
 
 	var promotionCode *string
 	if req.PromotionCode != "" {
 		promotionCode = &req.PromotionCode
 	}
 
-	session, err := h.billing.CreateCheckoutSession(ctx.Request.Context(), billing.CreateCheckoutSessionArgs{
+	session, err := h.billing.CreateCheckoutSession(ctx, billing.CreateCheckoutSessionArgs{
 		StripePriceID:       mapping.StripeID,
 		SuccessURL:          req.SuccessURL,
 		CancelURL:           req.CancelURL,
-		StripeCustomerID:    customerID,
+		StripeCustomerID:    in.StripeCustomerID,
 		TrialPeriodDays:     req.TrialPeriodDays,
 		PromotionCode:       promotionCode,
 		AllowPromotionCodes: req.AllowPromotionCodes,
 	})
 	if err != nil {
-		if !handlers.HandleStripeError(ctx, err) {
-			handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", CreateCheckoutError, err))
+		if mapped := handlers.StripeError(err); mapped != nil {
+			return nil, mapped
 		}
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateCheckoutError, err).Error())
 	}
-	handlers.NewSuccessResponse(ctx, &CreateCheckoutResponse{
+
+	return &CreateCheckoutOutput{Body: CreateCheckoutResponse{
 		URL:       session.URL,
 		SessionID: session.ID,
-	})
+	}}, nil
 }

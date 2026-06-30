@@ -10,11 +10,9 @@ import {
   V1ConfigurationApi,
   V1StripeApi,
   ResponseError,
-  StripeConfigUpdateRequestFromJSON,
-  StripeConfigValidateRequestFromJSON,
-  type StripeConfigChanges,
+  type ConfigChanges,
   type Configuration,
-  type WebhookSecretResponse,
+  type ListStripeWebhooksRow,
 } from "@omnibase/core-js";
 
 async function extractErrorMessage(error: unknown): Promise<string> {
@@ -101,7 +99,7 @@ function expandEnvVars(str: string, env: Record<string, string>): string {
  * Log configuration changes from the API response
  */
 async function logConfigChanges(
-  changes: StripeConfigChanges | undefined,
+  changes: ConfigChanges | undefined,
   sdkConfig: Configuration
 ): Promise<void> {
   if (!changes) return;
@@ -357,7 +355,7 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
 
   try {
     const response = await configApi.updateStripeConfig({
-      stripeConfigUpdateRequest: StripeConfigUpdateRequestFromJSON(config),
+      body: config,
     });
 
     logger.succeed("Stripe configuration uploaded successfully");
@@ -393,8 +391,7 @@ export function addStripeCommands(program: Command): void {
         const configApi = new V1ConfigurationApi(sdkConfig);
 
         await configApi.validateStripeConfig({
-          stripeConfigValidateRequest:
-            StripeConfigValidateRequestFromJSON(config),
+          body: config,
         });
 
         logger.succeed("Configuration is valid!");
@@ -433,8 +430,7 @@ export function addStripeCommands(program: Command): void {
 
         try {
           const response = await configApi.updateStripeConfig({
-            stripeConfigUpdateRequest:
-              StripeConfigUpdateRequestFromJSON(config),
+            body: config,
           });
 
           logger.succeed("Configuration uploaded successfully!");
@@ -643,7 +639,7 @@ export function addStripeCommands(program: Command): void {
           return;
         }
 
-        let selectedWebhooks: WebhookSecretResponse[];
+        let selectedWebhooks: ListStripeWebhooksRow[];
 
         if (webhooks.length === 1) {
           // Single webhook - display directly

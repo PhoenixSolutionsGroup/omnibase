@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,18 +22,12 @@ var _ MappedNullable = &ConfigHistoryPagination{}
 
 // ConfigHistoryPagination struct for ConfigHistoryPagination
 type ConfigHistoryPagination struct {
-	// Total number of configurations
-	Total int64 `json:"total"`
-	// Current page number
-	Page int32 `json:"page"`
-	// Items per page
-	PerPage int32 `json:"per_page"`
-	// Total pages
-	TotalPages int32 `json:"total_pages"`
-	// Whether there is a next page
 	HasNext bool `json:"has_next"`
-	// Whether there is a previous page
 	HasPrev bool `json:"has_prev"`
+	Page int64 `json:"page"`
+	PerPage int64 `json:"per_page"`
+	Total int64 `json:"total"`
+	TotalPages int64 `json:"total_pages"`
 }
 
 type _ConfigHistoryPagination ConfigHistoryPagination
@@ -42,14 +36,14 @@ type _ConfigHistoryPagination ConfigHistoryPagination
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConfigHistoryPagination(total int64, page int32, perPage int32, totalPages int32, hasNext bool, hasPrev bool) *ConfigHistoryPagination {
+func NewConfigHistoryPagination(hasNext bool, hasPrev bool, page int64, perPage int64, total int64, totalPages int64) *ConfigHistoryPagination {
 	this := ConfigHistoryPagination{}
-	this.Total = total
-	this.Page = page
-	this.PerPage = perPage
-	this.TotalPages = totalPages
 	this.HasNext = hasNext
 	this.HasPrev = hasPrev
+	this.Page = page
+	this.PerPage = perPage
+	this.Total = total
+	this.TotalPages = totalPages
 	return &this
 }
 
@@ -59,102 +53,6 @@ func NewConfigHistoryPagination(total int64, page int32, perPage int32, totalPag
 func NewConfigHistoryPaginationWithDefaults() *ConfigHistoryPagination {
 	this := ConfigHistoryPagination{}
 	return &this
-}
-
-// GetTotal returns the Total field value
-func (o *ConfigHistoryPagination) GetTotal() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.Total
-}
-
-// GetTotalOk returns a tuple with the Total field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryPagination) GetTotalOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Total, true
-}
-
-// SetTotal sets field value
-func (o *ConfigHistoryPagination) SetTotal(v int64) {
-	o.Total = v
-}
-
-// GetPage returns the Page field value
-func (o *ConfigHistoryPagination) GetPage() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.Page
-}
-
-// GetPageOk returns a tuple with the Page field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryPagination) GetPageOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Page, true
-}
-
-// SetPage sets field value
-func (o *ConfigHistoryPagination) SetPage(v int32) {
-	o.Page = v
-}
-
-// GetPerPage returns the PerPage field value
-func (o *ConfigHistoryPagination) GetPerPage() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.PerPage
-}
-
-// GetPerPageOk returns a tuple with the PerPage field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryPagination) GetPerPageOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.PerPage, true
-}
-
-// SetPerPage sets field value
-func (o *ConfigHistoryPagination) SetPerPage(v int32) {
-	o.PerPage = v
-}
-
-// GetTotalPages returns the TotalPages field value
-func (o *ConfigHistoryPagination) GetTotalPages() int32 {
-	if o == nil {
-		var ret int32
-		return ret
-	}
-
-	return o.TotalPages
-}
-
-// GetTotalPagesOk returns a tuple with the TotalPages field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryPagination) GetTotalPagesOk() (*int32, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.TotalPages, true
-}
-
-// SetTotalPages sets field value
-func (o *ConfigHistoryPagination) SetTotalPages(v int32) {
-	o.TotalPages = v
 }
 
 // GetHasNext returns the HasNext field value
@@ -205,6 +103,102 @@ func (o *ConfigHistoryPagination) SetHasPrev(v bool) {
 	o.HasPrev = v
 }
 
+// GetPage returns the Page field value
+func (o *ConfigHistoryPagination) GetPage() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.Page
+}
+
+// GetPageOk returns a tuple with the Page field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryPagination) GetPageOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Page, true
+}
+
+// SetPage sets field value
+func (o *ConfigHistoryPagination) SetPage(v int64) {
+	o.Page = v
+}
+
+// GetPerPage returns the PerPage field value
+func (o *ConfigHistoryPagination) GetPerPage() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.PerPage
+}
+
+// GetPerPageOk returns a tuple with the PerPage field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryPagination) GetPerPageOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.PerPage, true
+}
+
+// SetPerPage sets field value
+func (o *ConfigHistoryPagination) SetPerPage(v int64) {
+	o.PerPage = v
+}
+
+// GetTotal returns the Total field value
+func (o *ConfigHistoryPagination) GetTotal() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.Total
+}
+
+// GetTotalOk returns a tuple with the Total field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryPagination) GetTotalOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Total, true
+}
+
+// SetTotal sets field value
+func (o *ConfigHistoryPagination) SetTotal(v int64) {
+	o.Total = v
+}
+
+// GetTotalPages returns the TotalPages field value
+func (o *ConfigHistoryPagination) GetTotalPages() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.TotalPages
+}
+
+// GetTotalPagesOk returns a tuple with the TotalPages field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryPagination) GetTotalPagesOk() (*int64, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.TotalPages, true
+}
+
+// SetTotalPages sets field value
+func (o *ConfigHistoryPagination) SetTotalPages(v int64) {
+	o.TotalPages = v
+}
+
 func (o ConfigHistoryPagination) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -215,12 +209,12 @@ func (o ConfigHistoryPagination) MarshalJSON() ([]byte, error) {
 
 func (o ConfigHistoryPagination) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["total"] = o.Total
-	toSerialize["page"] = o.Page
-	toSerialize["per_page"] = o.PerPage
-	toSerialize["total_pages"] = o.TotalPages
 	toSerialize["has_next"] = o.HasNext
 	toSerialize["has_prev"] = o.HasPrev
+	toSerialize["page"] = o.Page
+	toSerialize["per_page"] = o.PerPage
+	toSerialize["total"] = o.Total
+	toSerialize["total_pages"] = o.TotalPages
 	return toSerialize, nil
 }
 
@@ -229,12 +223,12 @@ func (o *ConfigHistoryPagination) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"total",
-		"page",
-		"per_page",
-		"total_pages",
 		"has_next",
 		"has_prev",
+		"page",
+		"per_page",
+		"total",
+		"total_pages",
 	}
 
 	allProperties := make(map[string]interface{})

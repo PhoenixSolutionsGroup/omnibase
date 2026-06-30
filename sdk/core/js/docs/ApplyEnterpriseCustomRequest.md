@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`tenantId` | string
 `enterpriseId` | string
+`tenantId` | string
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { ApplyEnterpriseCustomRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "tenantId": 7d5da463-8351-4abe-870c-8ccdefc4d78c,
-  "enterpriseId": acme_corp,
+  "enterpriseId": null,
+  "tenantId": null,
 } satisfies ApplyEnterpriseCustomRequest
 
 console.log(example)

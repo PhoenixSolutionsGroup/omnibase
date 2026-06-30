@@ -6,12 +6,12 @@
 
 Name | Type
 ------------ | -------------
+`billingScheme` | string
+`costCents` | number
+`currency` | string
+`effectiveUnitCostCents` | number
 `priceId` | string
 `quantity` | number
-`costCents` | number
-`effectiveUnitCostCents` | number
-`currency` | string
-`billingScheme` | string
 `tiersMode` | string
 
 ## Example
@@ -21,13 +21,13 @@ import type { CalculatePriceCostResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "priceId": compute_hourly,
-  "quantity": 1500,
-  "costCents": 15000,
-  "effectiveUnitCostCents": 10,
-  "currency": usd,
-  "billingScheme": per_unit,
-  "tiersMode": graduated,
+  "billingScheme": null,
+  "costCents": null,
+  "currency": null,
+  "effectiveUnitCostCents": null,
+  "priceId": null,
+  "quantity": null,
+  "tiersMode": null,
 } satisfies CalculatePriceCostResponse
 
 console.log(example)

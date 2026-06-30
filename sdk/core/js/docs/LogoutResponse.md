@@ -6,8 +6,8 @@
 
 Name | Type
 ------------ | -------------
-`logoutUrl` | string
 `logoutToken` | string
+`logoutUrl` | string
 
 ## Example
 
@@ -16,8 +16,8 @@ import type { LogoutResponse } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "logoutUrl": http://auth.test.example.com/self-service/logout?token=tok_test_abc123xyz,
-  "logoutToken": tok_test_abc123xyz,
+  "logoutToken": null,
+  "logoutUrl": null,
 } satisfies LogoutResponse
 
 console.log(example)

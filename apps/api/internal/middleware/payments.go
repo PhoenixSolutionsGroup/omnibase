@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"api/internal/config"
-	"api/internal/database"
 	"api/internal/handlers"
 	"api/internal/logger"
 	"fmt"
@@ -17,28 +16,13 @@ type PaymentsMiddleware struct {
 	db           *gorm.DB
 }
 
-func NewPaymentsMiddleware(cfg *config.Config) *PaymentsMiddleware {
-	logger.Logger.Debug("Initializing PaymentsMiddleware",
-		"kratos_url", cfg.AuthConfig.AuthURL,
-	)
-
-	// Public API client for session validation
+func NewPaymentsMiddleware(cfg *config.Config, db *gorm.DB) *PaymentsMiddleware {
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
 			URL: cfg.AuthConfig.AuthURL,
 		},
 	}
-
-	db, err := database.GetConnection(cfg.Database)
-	if err != nil {
-		logger.Logger.Error("Failed to get database connection for PaymentsMiddleware",
-			"error", err,
-		)
-		panic(err)
-	}
-
-	logger.Logger.Debug("PaymentsMiddleware initialized successfully")
 
 	return &PaymentsMiddleware{
 		kratosClient: kratos.NewAPIClient(publicConfig),

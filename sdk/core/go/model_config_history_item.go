@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -13,7 +13,6 @@ package omnibase
 
 import (
 	"encoding/json"
-	"time"
 	"bytes"
 	"fmt"
 )
@@ -23,17 +22,12 @@ var _ MappedNullable = &ConfigHistoryItem{}
 
 // ConfigHistoryItem struct for ConfigHistoryItem
 type ConfigHistoryItem struct {
-	// Configuration ID
-	Id string `json:"id"`
 	Config StripeConfigurationWithIDs `json:"config"`
-	// Configuration version
-	Version string `json:"version"`
-	// Creation timestamp
-	CreatedAt time.Time `json:"created_at"`
-	// Update timestamp
-	UpdatedAt time.Time `json:"updated_at"`
-	// Parse error if configuration is invalid
+	CreatedAt string `json:"created_at"`
+	Id string `json:"id"`
 	ParseError *string `json:"parse_error,omitempty"`
+	UpdatedAt string `json:"updated_at"`
+	Version string `json:"version"`
 }
 
 type _ConfigHistoryItem ConfigHistoryItem
@@ -42,13 +36,13 @@ type _ConfigHistoryItem ConfigHistoryItem
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConfigHistoryItem(id string, config StripeConfigurationWithIDs, version string, createdAt time.Time, updatedAt time.Time) *ConfigHistoryItem {
+func NewConfigHistoryItem(config StripeConfigurationWithIDs, createdAt string, id string, updatedAt string, version string) *ConfigHistoryItem {
 	this := ConfigHistoryItem{}
-	this.Id = id
 	this.Config = config
-	this.Version = version
 	this.CreatedAt = createdAt
+	this.Id = id
 	this.UpdatedAt = updatedAt
+	this.Version = version
 	return &this
 }
 
@@ -58,30 +52,6 @@ func NewConfigHistoryItem(id string, config StripeConfigurationWithIDs, version 
 func NewConfigHistoryItemWithDefaults() *ConfigHistoryItem {
 	this := ConfigHistoryItem{}
 	return &this
-}
-
-// GetId returns the Id field value
-func (o *ConfigHistoryItem) GetId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryItem) GetIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Id, true
-}
-
-// SetId sets field value
-func (o *ConfigHistoryItem) SetId(v string) {
-	o.Id = v
 }
 
 // GetConfig returns the Config field value
@@ -108,34 +78,10 @@ func (o *ConfigHistoryItem) SetConfig(v StripeConfigurationWithIDs) {
 	o.Config = v
 }
 
-// GetVersion returns the Version field value
-func (o *ConfigHistoryItem) GetVersion() string {
+// GetCreatedAt returns the CreatedAt field value
+func (o *ConfigHistoryItem) GetCreatedAt() string {
 	if o == nil {
 		var ret string
-		return ret
-	}
-
-	return o.Version
-}
-
-// GetVersionOk returns a tuple with the Version field value
-// and a boolean to check if the value has been set.
-func (o *ConfigHistoryItem) GetVersionOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Version, true
-}
-
-// SetVersion sets field value
-func (o *ConfigHistoryItem) SetVersion(v string) {
-	o.Version = v
-}
-
-// GetCreatedAt returns the CreatedAt field value
-func (o *ConfigHistoryItem) GetCreatedAt() time.Time {
-	if o == nil {
-		var ret time.Time
 		return ret
 	}
 
@@ -144,7 +90,7 @@ func (o *ConfigHistoryItem) GetCreatedAt() time.Time {
 
 // GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *ConfigHistoryItem) GetCreatedAtOk() (*time.Time, bool) {
+func (o *ConfigHistoryItem) GetCreatedAtOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -152,32 +98,32 @@ func (o *ConfigHistoryItem) GetCreatedAtOk() (*time.Time, bool) {
 }
 
 // SetCreatedAt sets field value
-func (o *ConfigHistoryItem) SetCreatedAt(v time.Time) {
+func (o *ConfigHistoryItem) SetCreatedAt(v string) {
 	o.CreatedAt = v
 }
 
-// GetUpdatedAt returns the UpdatedAt field value
-func (o *ConfigHistoryItem) GetUpdatedAt() time.Time {
+// GetId returns the Id field value
+func (o *ConfigHistoryItem) GetId() string {
 	if o == nil {
-		var ret time.Time
+		var ret string
 		return ret
 	}
 
-	return o.UpdatedAt
+	return o.Id
 }
 
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *ConfigHistoryItem) GetUpdatedAtOk() (*time.Time, bool) {
+func (o *ConfigHistoryItem) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.UpdatedAt, true
+	return &o.Id, true
 }
 
-// SetUpdatedAt sets field value
-func (o *ConfigHistoryItem) SetUpdatedAt(v time.Time) {
-	o.UpdatedAt = v
+// SetId sets field value
+func (o *ConfigHistoryItem) SetId(v string) {
+	o.Id = v
 }
 
 // GetParseError returns the ParseError field value if set, zero value otherwise.
@@ -212,6 +158,54 @@ func (o *ConfigHistoryItem) SetParseError(v string) {
 	o.ParseError = &v
 }
 
+// GetUpdatedAt returns the UpdatedAt field value
+func (o *ConfigHistoryItem) GetUpdatedAt() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryItem) GetUpdatedAtOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.UpdatedAt, true
+}
+
+// SetUpdatedAt sets field value
+func (o *ConfigHistoryItem) SetUpdatedAt(v string) {
+	o.UpdatedAt = v
+}
+
+// GetVersion returns the Version field value
+func (o *ConfigHistoryItem) GetVersion() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Version
+}
+
+// GetVersionOk returns a tuple with the Version field value
+// and a boolean to check if the value has been set.
+func (o *ConfigHistoryItem) GetVersionOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Version, true
+}
+
+// SetVersion sets field value
+func (o *ConfigHistoryItem) SetVersion(v string) {
+	o.Version = v
+}
+
 func (o ConfigHistoryItem) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -222,14 +216,14 @@ func (o ConfigHistoryItem) MarshalJSON() ([]byte, error) {
 
 func (o ConfigHistoryItem) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
 	toSerialize["config"] = o.Config
-	toSerialize["version"] = o.Version
 	toSerialize["created_at"] = o.CreatedAt
-	toSerialize["updated_at"] = o.UpdatedAt
+	toSerialize["id"] = o.Id
 	if !IsNil(o.ParseError) {
 		toSerialize["parse_error"] = o.ParseError
 	}
+	toSerialize["updated_at"] = o.UpdatedAt
+	toSerialize["version"] = o.Version
 	return toSerialize, nil
 }
 
@@ -238,11 +232,11 @@ func (o *ConfigHistoryItem) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
 		"config",
-		"version",
 		"created_at",
+		"id",
 		"updated_at",
+		"version",
 	}
 
 	allProperties := make(map[string]interface{})

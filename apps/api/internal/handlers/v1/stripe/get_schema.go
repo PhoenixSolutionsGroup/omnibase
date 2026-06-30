@@ -1,23 +1,34 @@
 package stripe
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
 )
 
 var GetSchemaError = errors.New("Failed to load stripe config schema")
 
-func (h *Handler) GetSchema(ctx *gin.Context) {
+type GetSchemaInput struct {
+	handlers.AuthCtx
+}
+
+type GetSchemaOutput struct {
+	ContentType string `header:"Content-Type"`
+	Body        []byte
+}
+
+func (h *Handler) GetSchema(_ context.Context, _ *GetSchemaInput) (*GetSchemaOutput, error) {
 	schemaBytes, err := os.ReadFile("./internal/static/stripe-config-schema.json")
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(ctx, fmt.Errorf("%w: %w", GetSchemaError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetSchemaError, err).Error())
 	}
-	ctx.Data(http.StatusOK, "application/schema+json", schemaBytes)
+	return &GetSchemaOutput{
+		ContentType: "application/schema+json",
+		Body:        schemaBytes,
+	}, nil
 }

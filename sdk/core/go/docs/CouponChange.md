@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**CouponId** | **string** | Coupon config ID | 
-**Name** | **string** | Coupon name | 
-**Action** | **string** | Action performed on the coupon | 
-**StripeId** | Pointer to **string** | Stripe coupon ID | [optional] 
+**Action** | **string** |  | 
+**CouponId** | **string** |  | 
+**Name** | **string** |  | 
+**StripeId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewCouponChange
 
-`func NewCouponChange(couponId string, name string, action string, ) *CouponChange`
+`func NewCouponChange(action string, couponId string, name string, ) *CouponChange`
 
 NewCouponChange instantiates a new CouponChange object
 This constructor will assign default values to properties that have it defined,
@@ -27,6 +27,26 @@ will change when the set of required properties is changed
 NewCouponChangeWithDefaults instantiates a new CouponChange object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetAction
+
+`func (o *CouponChange) GetAction() string`
+
+GetAction returns the Action field if non-nil, zero value otherwise.
+
+### GetActionOk
+
+`func (o *CouponChange) GetActionOk() (*string, bool)`
+
+GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAction
+
+`func (o *CouponChange) SetAction(v string)`
+
+SetAction sets Action field to given value.
+
 
 ### GetCouponId
 
@@ -66,26 +86,6 @@ and a boolean to check if the value has been set.
 `func (o *CouponChange) SetName(v string)`
 
 SetName sets Name field to given value.
-
-
-### GetAction
-
-`func (o *CouponChange) GetAction() string`
-
-GetAction returns the Action field if non-nil, zero value otherwise.
-
-### GetActionOk
-
-`func (o *CouponChange) GetActionOk() (*string, bool)`
-
-GetActionOk returns a tuple with the Action field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetAction
-
-`func (o *CouponChange) SetAction(v string)`
-
-SetAction sets Action field to given value.
 
 
 ### GetStripeId

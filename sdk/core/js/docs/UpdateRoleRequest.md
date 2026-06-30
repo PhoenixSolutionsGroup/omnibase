@@ -1,7 +1,6 @@
 
 # UpdateRoleRequest
 
-Request to update an existing role
 
 ## Properties
 
@@ -16,7 +15,7 @@ import type { UpdateRoleRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "permissions": [tenant#read, tenant#write],
+  "permissions": null,
 } satisfies UpdateRoleRequest
 
 console.log(example)

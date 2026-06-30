@@ -15,7 +15,7 @@ import type { MeterValueSettings } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "eventPayloadKey": value,
+  "eventPayloadKey": null,
 } satisfies MeterValueSettings
 
 console.log(example)

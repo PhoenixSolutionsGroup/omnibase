@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -27,33 +27,12 @@ type V1PaymentsAPIService service
 type ApiAddInvoiceLineItemRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	invoiceId string
-	addInvoiceLineItemRequest *AddInvoiceLineItemRequest
-	xTenantId *string
-	xStripeCustomerId *string
+	addLineItemRequest *AddLineItemRequest
 }
 
-// Service key for authentication
-func (r ApiAddInvoiceLineItemRequest) XServiceKey(xServiceKey string) ApiAddInvoiceLineItemRequest {
-	r.xServiceKey = &xServiceKey
-	return r
-}
-
-func (r ApiAddInvoiceLineItemRequest) AddInvoiceLineItemRequest(addInvoiceLineItemRequest AddInvoiceLineItemRequest) ApiAddInvoiceLineItemRequest {
-	r.addInvoiceLineItemRequest = &addInvoiceLineItemRequest
-	return r
-}
-
-// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
-func (r ApiAddInvoiceLineItemRequest) XTenantId(xTenantId string) ApiAddInvoiceLineItemRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
-func (r ApiAddInvoiceLineItemRequest) XStripeCustomerId(xStripeCustomerId string) ApiAddInvoiceLineItemRequest {
-	r.xStripeCustomerId = &xStripeCustomerId
+func (r ApiAddInvoiceLineItemRequest) AddLineItemRequest(addLineItemRequest AddLineItemRequest) ApiAddInvoiceLineItemRequest {
+	r.addLineItemRequest = &addLineItemRequest
 	return r
 }
 
@@ -62,29 +41,10 @@ func (r ApiAddInvoiceLineItemRequest) Execute() (*InvoiceLineItemResponse, *http
 }
 
 /*
-AddInvoiceLineItem Add invoice line item
-
-Adds a new line item to a draft invoice.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Customer Identification
-You must provide the Stripe customer ID using ONE of:
-- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
-- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
-
-## Prerequisites
-- Invoice must be in draft status
-
-## Use Cases
-- Adding platform fees
-- Adding additional charges
-- Custom billing line items
-
+AddInvoiceLineItem Add a line item to a Stripe invoice
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param invoiceId Stripe Invoice ID
+ @param invoiceId
  @return ApiAddInvoiceLineItemRequest
 */
 func (a *V1PaymentsAPIService) AddInvoiceLineItem(ctx context.Context, invoiceId string) ApiAddInvoiceLineItemRequest {
@@ -116,11 +76,8 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
-	if r.addInvoiceLineItemRequest == nil {
-		return localVarReturnValue, nil, reportError("addInvoiceLineItemRequest is required and must be specified")
+	if r.addLineItemRequest == nil {
+		return localVarReturnValue, nil, reportError("addLineItemRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -133,22 +90,29 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xStripeCustomerId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
-	}
 	// body params
-	localVarPostBody = r.addInvoiceLineItemRequest
+	localVarPostBody = r.addLineItemRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -171,8 +135,7 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -180,62 +143,6 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -254,33 +161,12 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemExecute(r ApiAddInvoiceLineItem
 type ApiAddInvoiceLineItemWithPriceIdRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	invoiceId string
-	addInvoiceLineItemWithPriceIDRequest *AddInvoiceLineItemWithPriceIDRequest
-	xTenantId *string
-	xStripeCustomerId *string
+	addLineItemByPriceRequest *AddLineItemByPriceRequest
 }
 
-// Service key for authentication
-func (r ApiAddInvoiceLineItemWithPriceIdRequest) XServiceKey(xServiceKey string) ApiAddInvoiceLineItemWithPriceIdRequest {
-	r.xServiceKey = &xServiceKey
-	return r
-}
-
-func (r ApiAddInvoiceLineItemWithPriceIdRequest) AddInvoiceLineItemWithPriceIDRequest(addInvoiceLineItemWithPriceIDRequest AddInvoiceLineItemWithPriceIDRequest) ApiAddInvoiceLineItemWithPriceIdRequest {
-	r.addInvoiceLineItemWithPriceIDRequest = &addInvoiceLineItemWithPriceIDRequest
-	return r
-}
-
-// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
-func (r ApiAddInvoiceLineItemWithPriceIdRequest) XTenantId(xTenantId string) ApiAddInvoiceLineItemWithPriceIdRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
-func (r ApiAddInvoiceLineItemWithPriceIdRequest) XStripeCustomerId(xStripeCustomerId string) ApiAddInvoiceLineItemWithPriceIdRequest {
-	r.xStripeCustomerId = &xStripeCustomerId
+func (r ApiAddInvoiceLineItemWithPriceIdRequest) AddLineItemByPriceRequest(addLineItemByPriceRequest AddLineItemByPriceRequest) ApiAddInvoiceLineItemWithPriceIdRequest {
+	r.addLineItemByPriceRequest = &addLineItemByPriceRequest
 	return r
 }
 
@@ -289,34 +175,10 @@ func (r ApiAddInvoiceLineItemWithPriceIdRequest) Execute() (*InvoiceLineItemResp
 }
 
 /*
-AddInvoiceLineItemWithPriceId Add invoice line item with price ID
-
-Adds a new line item to a draft invoice using a price ID and quantity.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Customer Identification
-You must provide the Stripe customer ID using ONE of:
-- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
-- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
-
-## Price ID Resolution
-You must provide ONE of:
-- `price_id`: A config price ID (e.g., "hetzner_cx23_nbg1_hourly") that will be looked up via the Stripe ID mapping table
-- `stripe_price_id`: A raw Stripe price ID (e.g., "price_1ABC...") that will be used directly
-
-## Prerequisites
-- Invoice must be in draft status
-
-## Use Cases
-- Adding metered usage line items
-- Adding subscription-based charges
-- Billing for compute hours, storage, etc.
-
+AddInvoiceLineItemWithPriceId Add a line item to a Stripe invoice using a price ID
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param invoiceId Stripe Invoice ID
+ @param invoiceId
  @return ApiAddInvoiceLineItemWithPriceIdRequest
 */
 func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceId(ctx context.Context, invoiceId string) ApiAddInvoiceLineItemWithPriceIdRequest {
@@ -348,11 +210,8 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvo
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
-	if r.addInvoiceLineItemWithPriceIDRequest == nil {
-		return localVarReturnValue, nil, reportError("addInvoiceLineItemWithPriceIDRequest is required and must be specified")
+	if r.addLineItemByPriceRequest == nil {
+		return localVarReturnValue, nil, reportError("addLineItemByPriceRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -365,22 +224,29 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvo
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xStripeCustomerId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
-	}
 	// body params
-	localVarPostBody = r.addInvoiceLineItemWithPriceIDRequest
+	localVarPostBody = r.addLineItemByPriceRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -403,8 +269,7 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvo
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -412,62 +277,6 @@ func (a *V1PaymentsAPIService) AddInvoiceLineItemWithPriceIdExecute(r ApiAddInvo
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -499,19 +308,7 @@ func (r ApiCreateCheckoutRequest) Execute() (*CreateCheckoutResponse, *http.Resp
 }
 
 /*
-CreateCheckout Create checkout session
-
-Creates a Stripe Checkout Session for the specified price ID. The session URL can be used to redirect users to complete payment.
-
-## Authentication
-Optional cookie authentication. If authenticated and user has a Stripe customer ID, it will be used; otherwise, a new customer will be created.
-
-## Use Cases
-- Subscription sign-ups
-- One-time purchases
-- Trial period checkouts
-- Promotional code redemption
-
+CreateCheckout Create a Stripe checkout session
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCheckoutRequest
@@ -557,7 +354,7 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -566,6 +363,34 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 	}
 	// body params
 	localVarPostBody = r.createCheckoutRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -588,8 +413,7 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -597,62 +421,6 @@ func (a *V1PaymentsAPIService) CreateCheckoutExecute(r ApiCreateCheckoutRequest)
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -684,24 +452,7 @@ func (r ApiCreateCustomerPortalRequest) Execute() (*CreatePortalResponse, *http.
 }
 
 /*
-CreateCustomerPortal Create customer portal session
-
-Creates a Stripe Customer Portal session where users can manage their subscription, payment methods, and billing history.
-
-## Authentication
-Requires cookie authentication with an associated Stripe customer ID (set via payments middleware).
-
-## Prerequisites
-- User must be authenticated
-- Tenant must have a Stripe customer ID configured
-- If stripe_customer_id not found in context, returns 400: "stripe_customer_id not found in context"
-
-## Use Cases
-- Subscription management
-- Payment method updates
-- Invoice history viewing
-- Subscription cancellation
-
+CreateCustomerPortal Create a Stripe customer portal session
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateCustomerPortalRequest
@@ -747,7 +498,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -756,6 +507,34 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 	}
 	// body params
 	localVarPostBody = r.createPortalRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -778,8 +557,7 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -787,40 +565,6 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -839,32 +583,11 @@ func (a *V1PaymentsAPIService) CreateCustomerPortalExecute(r ApiCreateCustomerPo
 type ApiCreateInvoiceRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	createInvoiceRequest *CreateInvoiceRequest
-	xTenantId *string
-	xStripeCustomerId *string
-}
-
-// Service key for authentication
-func (r ApiCreateInvoiceRequest) XServiceKey(xServiceKey string) ApiCreateInvoiceRequest {
-	r.xServiceKey = &xServiceKey
-	return r
 }
 
 func (r ApiCreateInvoiceRequest) CreateInvoiceRequest(createInvoiceRequest CreateInvoiceRequest) ApiCreateInvoiceRequest {
 	r.createInvoiceRequest = &createInvoiceRequest
-	return r
-}
-
-// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id is not provided.
-func (r ApiCreateInvoiceRequest) XTenantId(xTenantId string) ApiCreateInvoiceRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id is not provided.
-func (r ApiCreateInvoiceRequest) XStripeCustomerId(xStripeCustomerId string) ApiCreateInvoiceRequest {
-	r.xStripeCustomerId = &xStripeCustomerId
 	return r
 }
 
@@ -873,23 +596,7 @@ func (r ApiCreateInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, er
 }
 
 /*
-CreateInvoice Create invoice
-
-Creates a new draft invoice for the specified customer.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Customer Identification
-You must provide the Stripe customer ID using ONE of:
-- `X-Stripe-Customer-Id` header: Directly specify the Stripe customer ID
-- `X-Tenant-Id` header: Look up the Stripe customer ID from the tenant's configuration
-
-## Use Cases
-- Creating invoices for platform fees
-- Manual billing scenarios
-- Custom invoice generation
-
+CreateInvoice Create a Stripe invoice
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateInvoiceRequest
@@ -921,9 +628,6 @@ func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
 	if r.createInvoiceRequest == nil {
 		return localVarReturnValue, nil, reportError("createInvoiceRequest is required and must be specified")
 	}
@@ -938,22 +642,29 @@ func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xStripeCustomerId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
-	}
 	// body params
 	localVarPostBody = r.createInvoiceRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -976,8 +687,7 @@ func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -985,51 +695,6 @@ func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1048,19 +713,12 @@ func (a *V1PaymentsAPIService) CreateInvoiceExecute(r ApiCreateInvoiceRequest) (
 type ApiFinalizeInvoiceRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	invoiceId string
-	finalizeInvoiceRequest *FinalizeInvoiceRequest
+	finalizeRequest *FinalizeRequest
 }
 
-// Service key for authentication
-func (r ApiFinalizeInvoiceRequest) XServiceKey(xServiceKey string) ApiFinalizeInvoiceRequest {
-	r.xServiceKey = &xServiceKey
-	return r
-}
-
-func (r ApiFinalizeInvoiceRequest) FinalizeInvoiceRequest(finalizeInvoiceRequest FinalizeInvoiceRequest) ApiFinalizeInvoiceRequest {
-	r.finalizeInvoiceRequest = &finalizeInvoiceRequest
+func (r ApiFinalizeInvoiceRequest) FinalizeRequest(finalizeRequest FinalizeRequest) ApiFinalizeInvoiceRequest {
+	r.finalizeRequest = &finalizeRequest
 	return r
 }
 
@@ -1069,24 +727,10 @@ func (r ApiFinalizeInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, 
 }
 
 /*
-FinalizeInvoice Finalize invoice
-
-Finalizes a draft invoice, optionally auto-advancing to send it immediately.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Prerequisites
-- Invoice must be in draft status
-
-## Use Cases
-- Approving invoices for sending
-- Completing invoice preparation
-- Triggering invoice emails
-
+FinalizeInvoice Finalize a Stripe invoice
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param invoiceId Stripe Invoice ID
+ @param invoiceId
  @return ApiFinalizeInvoiceRequest
 */
 func (a *V1PaymentsAPIService) FinalizeInvoice(ctx context.Context, invoiceId string) ApiFinalizeInvoiceRequest {
@@ -1118,11 +762,8 @@ func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceReques
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
-	if r.finalizeInvoiceRequest == nil {
-		return localVarReturnValue, nil, reportError("finalizeInvoiceRequest is required and must be specified")
+	if r.finalizeRequest == nil {
+		return localVarReturnValue, nil, reportError("finalizeRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -1135,16 +776,29 @@ func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceReques
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
 	// body params
-	localVarPostBody = r.finalizeInvoiceRequest
+	localVarPostBody = r.finalizeRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1167,8 +821,7 @@ func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceReques
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1176,62 +829,6 @@ func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceReques
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1250,14 +847,7 @@ func (a *V1PaymentsAPIService) FinalizeInvoiceExecute(r ApiFinalizeInvoiceReques
 type ApiGetInvoiceRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	invoiceId string
-}
-
-// Service key for authentication
-func (r ApiGetInvoiceRequest) XServiceKey(xServiceKey string) ApiGetInvoiceRequest {
-	r.xServiceKey = &xServiceKey
-	return r
 }
 
 func (r ApiGetInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error) {
@@ -1265,21 +855,10 @@ func (r ApiGetInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, error
 }
 
 /*
-GetInvoice Get invoice
-
-Retrieves a Stripe invoice by its ID.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Use Cases
-- Webhook processing
-- Invoice status checking
-- Invoice data retrieval
-
+GetInvoice Get a Stripe invoice
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param invoiceId Stripe Invoice ID
+ @param invoiceId
  @return ApiGetInvoiceRequest
 */
 func (a *V1PaymentsAPIService) GetInvoice(ctx context.Context, invoiceId string) ApiGetInvoiceRequest {
@@ -1311,9 +890,6 @@ func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*Invoi
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1325,14 +901,27 @@ func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*Invoi
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1355,8 +944,7 @@ func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*Invoi
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1364,51 +952,6 @@ func (a *V1PaymentsAPIService) GetInvoiceExecute(r ApiGetInvoiceRequest) (*Invoi
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1428,8 +971,6 @@ type ApiRecordUsageRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
 	recordUsageRequest *RecordUsageRequest
-	xTenantId *string
-	xStripeCustomerId *string
 }
 
 func (r ApiRecordUsageRequest) RecordUsageRequest(recordUsageRequest RecordUsageRequest) ApiRecordUsageRequest {
@@ -1437,39 +978,12 @@ func (r ApiRecordUsageRequest) RecordUsageRequest(recordUsageRequest RecordUsage
 	return r
 }
 
-// Tenant ID (UUID) - Used to look up the Stripe customer ID from tenant configuration. Required if X-Stripe-Customer-Id and session cookie are absent.
-func (r ApiRecordUsageRequest) XTenantId(xTenantId string) ApiRecordUsageRequest {
-	r.xTenantId = &xTenantId
-	return r
-}
-
-// Stripe Customer ID (e.g., cus_xxx) - Directly specify the customer. Required if X-Tenant-Id and session cookie are absent.
-func (r ApiRecordUsageRequest) XStripeCustomerId(xStripeCustomerId string) ApiRecordUsageRequest {
-	r.xStripeCustomerId = &xStripeCustomerId
-	return r
-}
-
-func (r ApiRecordUsageRequest) Execute() (map[string]interface{}, *http.Response, error) {
+func (r ApiRecordUsageRequest) Execute() (interface{}, *http.Response, error) {
 	return r.ApiService.RecordUsageExecute(r)
 }
 
 /*
-RecordUsage Record metered usage
-
-Records a usage event for metered billing. The customer must have an active subscription with metered pricing.
-
-## Authentication
-Either:
-- Session cookie (Kratos) — customer resolved from the user's active tenant
-- `X-Service-Key` + `X-Tenant-Id` — customer resolved from the tenant record
-- `X-Service-Key` + `X-Stripe-Customer-Id` — customer specified directly
-
-## Use Cases
-- API request metering
-- Compute time tracking
-- Storage usage recording
-- Any metered billing scenario
-
+RecordUsage Record a Stripe meter usage event
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiRecordUsageRequest
@@ -1482,13 +996,13 @@ func (a *V1PaymentsAPIService) RecordUsage(ctx context.Context) ApiRecordUsageRe
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
-func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[string]interface{}, *http.Response, error) {
+//  @return interface{}
+func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarReturnValue  interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "V1PaymentsAPIService.RecordUsage")
@@ -1515,21 +1029,43 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	if r.xTenantId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Tenant-Id", r.xTenantId, "simple", "")
-	}
-	if r.xStripeCustomerId != nil {
-		parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Stripe-Customer-Id", r.xStripeCustomerId, "simple", "")
-	}
 	// body params
 	localVarPostBody = r.recordUsageRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["SessionTokenAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Session-Token"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1552,8 +1088,7 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1561,40 +1096,6 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1613,15 +1114,8 @@ func (a *V1PaymentsAPIService) RecordUsageExecute(r ApiRecordUsageRequest) (map[
 type ApiUpdateInvoiceRequest struct {
 	ctx context.Context
 	ApiService *V1PaymentsAPIService
-	xServiceKey *string
 	invoiceId string
 	updateInvoiceRequest *UpdateInvoiceRequest
-}
-
-// Service key for authentication
-func (r ApiUpdateInvoiceRequest) XServiceKey(xServiceKey string) ApiUpdateInvoiceRequest {
-	r.xServiceKey = &xServiceKey
-	return r
 }
 
 func (r ApiUpdateInvoiceRequest) UpdateInvoiceRequest(updateInvoiceRequest UpdateInvoiceRequest) ApiUpdateInvoiceRequest {
@@ -1634,24 +1128,10 @@ func (r ApiUpdateInvoiceRequest) Execute() (*InvoiceResponse, *http.Response, er
 }
 
 /*
-UpdateInvoice Update invoice
-
-Updates a draft invoice's description and metadata.
-
-## Authentication
-Requires service key authentication via `X-Service-Key` header.
-
-## Prerequisites
-- Invoice must be in draft status
-
-## Use Cases
-- Adding custom descriptions
-- Adding metadata for tracking
-- Customizing invoice before sending
-
+UpdateInvoice Update a Stripe invoice
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param invoiceId Stripe Invoice ID
+ @param invoiceId
  @return ApiUpdateInvoiceRequest
 */
 func (a *V1PaymentsAPIService) UpdateInvoice(ctx context.Context, invoiceId string) ApiUpdateInvoiceRequest {
@@ -1683,9 +1163,6 @@ func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.xServiceKey == nil {
-		return localVarReturnValue, nil, reportError("xServiceKey is required and must be specified")
-	}
 	if r.updateInvoiceRequest == nil {
 		return localVarReturnValue, nil, reportError("updateInvoiceRequest is required and must be specified")
 	}
@@ -1700,16 +1177,29 @@ func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "application/problem+json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	parameterAddToHeaderOrQuery(localVarHeaderParams, "X-Service-Key", r.xServiceKey, "simple", "")
 	// body params
 	localVarPostBody = r.updateInvoiceRequest
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["ServiceKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -1732,8 +1222,7 @@ func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v BadRequestResponse
+			var v ErrorModel
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -1741,62 +1230,6 @@ func (a *V1PaymentsAPIService) UpdateInvoiceExecute(r ApiUpdateInvoiceRequest) (
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v UnauthorizedResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v NotFoundResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v ConflictResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v TooManyRequestsResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v InternalServerErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

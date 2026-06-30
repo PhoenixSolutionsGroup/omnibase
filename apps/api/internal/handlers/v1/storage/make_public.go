@@ -1,10 +1,12 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/gin-gonic/gin"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"api/internal/database/repository"
@@ -16,7 +18,7 @@ import (
 var MakePublicError = errors.New("Failed to make file public")
 
 type MakePublicRequest struct {
-	Path string `json:"path" binding:"required" example:"test/avatars/user-123.png"`
+	Path string `json:"path" required:"true" example:"test/avatars/user-123.png"`
 }
 
 type MakePublicResponse struct {
@@ -24,16 +26,26 @@ type MakePublicResponse struct {
 	Path    string `json:"path"`
 }
 
-func (h *Handler) MakePublic(c *gin.Context) {
-	var req MakePublicRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		handlers.NewBadRequestResponse(c, err.Error())
-		return
-	}
+type MakePublicInput struct {
+	handlers.AuthCtx
+	Body MakePublicRequest
+}
 
-	userID := c.GetString("user_id")
-	tenantID := c.GetString("tenant_id")
-	ctx := c.Request.Context()
+type MakePublicOutput struct {
+	Body MakePublicResponse
+}
+
+func (h *Handler) MakePublic(ctx context.Context, in *MakePublicInput) (*MakePublicOutput, error) {
+	req := in.Body
+
+	userID := ""
+	if in.UserID != uuid.Nil {
+		userID = in.UserID.String()
+	}
+	tenantID := ""
+	if in.TenantID != uuid.Nil {
+		tenantID = in.TenantID.String()
+	}
 
 	row, err := h.repo.GetStorageObjectByPath(ctx, repository.GetStorageObjectByPathParams{
 		BucketName: h.bucketName,
@@ -42,34 +54,28 @@ func (h *Handler) MakePublic(c *gin.Context) {
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			handlers.NewNotFoundResponse(c, "File not found")
-			return
+			return nil, huma.Error404NotFound("File not found")
 		}
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MakePublicError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MakePublicError, err).Error())
 	}
 
 	if row.IsPublic {
-		handlers.NewSuccessResponse(c, MakePublicResponse{Message: "file is already public", Path: req.Path})
-		return
+		return &MakePublicOutput{Body: MakePublicResponse{Message: "file is already public", Path: req.Path}}, nil
 	}
 
 	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
 	allowed, err := h.perms.Check(ctx, "StorageObject", row.ID.String(), "make_public", subject)
 	if err != nil {
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MakePublicError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MakePublicError, err).Error())
 	}
 	if !allowed {
-		handlers.NewForbiddenResponse(c, "You do not have permission to make this file public")
-		return
+		return nil, huma.Error403Forbidden("You do not have permission to make this file public")
 	}
 
 	if err := h.repo.MarkStorageObjectPublic(ctx, row.ID); err != nil {
 		logger.Logger.Error("Failed to update is_public", "object_id", row.ID, "error", err)
-		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%w: %w", MakePublicError, err))
-		return
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MakePublicError, err).Error())
 	}
 
-	handlers.NewSuccessResponse(c, MakePublicResponse{Message: "file is now public", Path: req.Path})
+	return &MakePublicOutput{Body: MakePublicResponse{Message: "file is now public", Path: req.Path}}, nil
 }

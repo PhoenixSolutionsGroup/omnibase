@@ -6,11 +6,11 @@
 
 Name | Type
 ------------ | -------------
+`action` | string
+`details` | Array&lt;string&gt;
 `productId` | string
 `productName` | string
-`action` | string
 `stripeId` | string
-`details` | Array&lt;string&gt;
 
 ## Example
 
@@ -19,11 +19,11 @@ import type { ProductChange } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "productId": basic_plan,
-  "productName": Basic Plan,
-  "action": created,
-  "stripeId": prod_123abc,
-  "details": [Price test_price created, Price old_price archived],
+  "action": null,
+  "details": null,
+  "productId": null,
+  "productName": null,
+  "stripeId": null,
 } satisfies ProductChange
 
 console.log(example)

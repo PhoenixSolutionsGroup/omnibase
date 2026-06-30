@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -22,14 +22,10 @@ var _ MappedNullable = &WebhookEndpointConfig{}
 
 // WebhookEndpointConfig struct for WebhookEndpointConfig
 type WebhookEndpointConfig struct {
-	// Optional unique identifier for the webhook endpoint
-	Id *string `json:"id,omitempty"`
-	// Webhook endpoint URL (supports ${VAR} env var interpolation via CLI)
-	Url string `json:"url"`
-	// List of Stripe event types to subscribe to
-	Events []string `json:"events"`
-	// If true, listen to events from connected accounts (Stripe Connect)
 	Connect *bool `json:"connect,omitempty"`
+	Events []string `json:"events"`
+	Id *string `json:"id,omitempty"`
+	Url string `json:"url"`
 }
 
 type _WebhookEndpointConfig WebhookEndpointConfig
@@ -38,12 +34,10 @@ type _WebhookEndpointConfig WebhookEndpointConfig
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhookEndpointConfig(url string, events []string) *WebhookEndpointConfig {
+func NewWebhookEndpointConfig(events []string, url string) *WebhookEndpointConfig {
 	this := WebhookEndpointConfig{}
-	this.Url = url
 	this.Events = events
-	var connect bool = false
-	this.Connect = &connect
+	this.Url = url
 	return &this
 }
 
@@ -52,9 +46,65 @@ func NewWebhookEndpointConfig(url string, events []string) *WebhookEndpointConfi
 // but it doesn't guarantee that properties required by API are set
 func NewWebhookEndpointConfigWithDefaults() *WebhookEndpointConfig {
 	this := WebhookEndpointConfig{}
-	var connect bool = false
-	this.Connect = &connect
 	return &this
+}
+
+// GetConnect returns the Connect field value if set, zero value otherwise.
+func (o *WebhookEndpointConfig) GetConnect() bool {
+	if o == nil || IsNil(o.Connect) {
+		var ret bool
+		return ret
+	}
+	return *o.Connect
+}
+
+// GetConnectOk returns a tuple with the Connect field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WebhookEndpointConfig) GetConnectOk() (*bool, bool) {
+	if o == nil || IsNil(o.Connect) {
+		return nil, false
+	}
+	return o.Connect, true
+}
+
+// HasConnect returns a boolean if a field has been set.
+func (o *WebhookEndpointConfig) HasConnect() bool {
+	if o != nil && !IsNil(o.Connect) {
+		return true
+	}
+
+	return false
+}
+
+// SetConnect gets a reference to the given bool and assigns it to the Connect field.
+func (o *WebhookEndpointConfig) SetConnect(v bool) {
+	o.Connect = &v
+}
+
+// GetEvents returns the Events field value
+// If the value is explicit nil, the zero value for []string will be returned
+func (o *WebhookEndpointConfig) GetEvents() []string {
+	if o == nil {
+		var ret []string
+		return ret
+	}
+
+	return o.Events
+}
+
+// GetEventsOk returns a tuple with the Events field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *WebhookEndpointConfig) GetEventsOk() ([]string, bool) {
+	if o == nil || IsNil(o.Events) {
+		return nil, false
+	}
+	return o.Events, true
+}
+
+// SetEvents sets field value
+func (o *WebhookEndpointConfig) SetEvents(v []string) {
+	o.Events = v
 }
 
 // GetId returns the Id field value if set, zero value otherwise.
@@ -113,62 +163,6 @@ func (o *WebhookEndpointConfig) SetUrl(v string) {
 	o.Url = v
 }
 
-// GetEvents returns the Events field value
-func (o *WebhookEndpointConfig) GetEvents() []string {
-	if o == nil {
-		var ret []string
-		return ret
-	}
-
-	return o.Events
-}
-
-// GetEventsOk returns a tuple with the Events field value
-// and a boolean to check if the value has been set.
-func (o *WebhookEndpointConfig) GetEventsOk() ([]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return o.Events, true
-}
-
-// SetEvents sets field value
-func (o *WebhookEndpointConfig) SetEvents(v []string) {
-	o.Events = v
-}
-
-// GetConnect returns the Connect field value if set, zero value otherwise.
-func (o *WebhookEndpointConfig) GetConnect() bool {
-	if o == nil || IsNil(o.Connect) {
-		var ret bool
-		return ret
-	}
-	return *o.Connect
-}
-
-// GetConnectOk returns a tuple with the Connect field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *WebhookEndpointConfig) GetConnectOk() (*bool, bool) {
-	if o == nil || IsNil(o.Connect) {
-		return nil, false
-	}
-	return o.Connect, true
-}
-
-// HasConnect returns a boolean if a field has been set.
-func (o *WebhookEndpointConfig) HasConnect() bool {
-	if o != nil && !IsNil(o.Connect) {
-		return true
-	}
-
-	return false
-}
-
-// SetConnect gets a reference to the given bool and assigns it to the Connect field.
-func (o *WebhookEndpointConfig) SetConnect(v bool) {
-	o.Connect = &v
-}
-
 func (o WebhookEndpointConfig) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -179,14 +173,16 @@ func (o WebhookEndpointConfig) MarshalJSON() ([]byte, error) {
 
 func (o WebhookEndpointConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Connect) {
+		toSerialize["connect"] = o.Connect
+	}
+	if o.Events != nil {
+		toSerialize["events"] = o.Events
+	}
 	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
 	toSerialize["url"] = o.Url
-	toSerialize["events"] = o.Events
-	if !IsNil(o.Connect) {
-		toSerialize["connect"] = o.Connect
-	}
 	return toSerialize, nil
 }
 
@@ -195,8 +191,8 @@ func (o *WebhookEndpointConfig) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"url",
 		"events",
+		"url",
 	}
 
 	allProperties := make(map[string]interface{})

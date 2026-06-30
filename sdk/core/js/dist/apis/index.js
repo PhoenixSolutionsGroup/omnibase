@@ -18,8 +18,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable */
 __exportStar(require("./V1AuthApi"), exports);
 __exportStar(require("./V1ConfigurationApi"), exports);
+__exportStar(require("./V1DatabaseApi"), exports);
 __exportStar(require("./V1PaymentsApi"), exports);
 __exportStar(require("./V1PermissionsApi"), exports);
 __exportStar(require("./V1StorageApi"), exports);
 __exportStar(require("./V1StripeApi"), exports);
-__exportStar(require("./V1TenantsApi"), exports);
+__exportStar(require("./V1TenantsInvitesApi"), exports);
+__exportStar(require("./V1TenantsLifecycleApi"), exports);
+__exportStar(require("./V1TenantsRolesApi"), exports);
+__exportStar(require("./V1TenantsSubscriptionsApi"), exports);
+__exportStar(require("./V1TenantsUsersApi"), exports);

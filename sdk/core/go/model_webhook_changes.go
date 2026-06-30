@@ -1,9 +1,9 @@
 /*
 Omnibase REST API
 
-Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.  ## Features - **Database**: PostgreSQL with RLS and migrations - **Authentication**: Ory Kratos integration with session management - **Payments**: Stripe integration with version-controlled billing configs - **Storage**: S3-compatible object storage with RLS - **Email**: Transactional email service - **Permissions**: Fine-grained access control  ## Authentication Most endpoints require authentication via session cookies or JWT tokens. Use the appropriate security scheme based on the endpoint requirements. 
+Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.19.1
+API version: local
 Contact: support@omnibase.dev
 */
 
@@ -18,14 +18,11 @@ import (
 // checks if the WebhookChanges type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &WebhookChanges{}
 
-// WebhookChanges Summary of webhook changes made during configuration update
+// WebhookChanges struct for WebhookChanges
 type WebhookChanges struct {
-	// Webhooks that were created in Stripe
 	Created []WebhookChange `json:"created,omitempty"`
-	// Webhooks that were updated
-	Updated []WebhookChange `json:"updated,omitempty"`
-	// Webhooks that were unchanged
 	Unchanged []WebhookChange `json:"unchanged,omitempty"`
+	Updated []WebhookChange `json:"updated,omitempty"`
 }
 
 // NewWebhookChanges instantiates a new WebhookChanges object
@@ -45,9 +42,9 @@ func NewWebhookChangesWithDefaults() *WebhookChanges {
 	return &this
 }
 
-// GetCreated returns the Created field value if set, zero value otherwise.
+// GetCreated returns the Created field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *WebhookChanges) GetCreated() []WebhookChange {
-	if o == nil || IsNil(o.Created) {
+	if o == nil {
 		var ret []WebhookChange
 		return ret
 	}
@@ -56,6 +53,7 @@ func (o *WebhookChanges) GetCreated() []WebhookChange {
 
 // GetCreatedOk returns a tuple with the Created field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *WebhookChanges) GetCreatedOk() ([]WebhookChange, bool) {
 	if o == nil || IsNil(o.Created) {
 		return nil, false
@@ -77,41 +75,9 @@ func (o *WebhookChanges) SetCreated(v []WebhookChange) {
 	o.Created = v
 }
 
-// GetUpdated returns the Updated field value if set, zero value otherwise.
-func (o *WebhookChanges) GetUpdated() []WebhookChange {
-	if o == nil || IsNil(o.Updated) {
-		var ret []WebhookChange
-		return ret
-	}
-	return o.Updated
-}
-
-// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *WebhookChanges) GetUpdatedOk() ([]WebhookChange, bool) {
-	if o == nil || IsNil(o.Updated) {
-		return nil, false
-	}
-	return o.Updated, true
-}
-
-// HasUpdated returns a boolean if a field has been set.
-func (o *WebhookChanges) HasUpdated() bool {
-	if o != nil && !IsNil(o.Updated) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdated gets a reference to the given []WebhookChange and assigns it to the Updated field.
-func (o *WebhookChanges) SetUpdated(v []WebhookChange) {
-	o.Updated = v
-}
-
-// GetUnchanged returns the Unchanged field value if set, zero value otherwise.
+// GetUnchanged returns the Unchanged field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *WebhookChanges) GetUnchanged() []WebhookChange {
-	if o == nil || IsNil(o.Unchanged) {
+	if o == nil {
 		var ret []WebhookChange
 		return ret
 	}
@@ -120,6 +86,7 @@ func (o *WebhookChanges) GetUnchanged() []WebhookChange {
 
 // GetUnchangedOk returns a tuple with the Unchanged field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *WebhookChanges) GetUnchangedOk() ([]WebhookChange, bool) {
 	if o == nil || IsNil(o.Unchanged) {
 		return nil, false
@@ -141,6 +108,39 @@ func (o *WebhookChanges) SetUnchanged(v []WebhookChange) {
 	o.Unchanged = v
 }
 
+// GetUpdated returns the Updated field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *WebhookChanges) GetUpdated() []WebhookChange {
+	if o == nil {
+		var ret []WebhookChange
+		return ret
+	}
+	return o.Updated
+}
+
+// GetUpdatedOk returns a tuple with the Updated field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *WebhookChanges) GetUpdatedOk() ([]WebhookChange, bool) {
+	if o == nil || IsNil(o.Updated) {
+		return nil, false
+	}
+	return o.Updated, true
+}
+
+// HasUpdated returns a boolean if a field has been set.
+func (o *WebhookChanges) HasUpdated() bool {
+	if o != nil && !IsNil(o.Updated) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdated gets a reference to the given []WebhookChange and assigns it to the Updated field.
+func (o *WebhookChanges) SetUpdated(v []WebhookChange) {
+	o.Updated = v
+}
+
 func (o WebhookChanges) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -151,14 +151,14 @@ func (o WebhookChanges) MarshalJSON() ([]byte, error) {
 
 func (o WebhookChanges) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Created) {
+	if o.Created != nil {
 		toSerialize["created"] = o.Created
 	}
-	if !IsNil(o.Updated) {
-		toSerialize["updated"] = o.Updated
-	}
-	if !IsNil(o.Unchanged) {
+	if o.Unchanged != nil {
 		toSerialize["unchanged"] = o.Unchanged
+	}
+	if o.Updated != nil {
+		toSerialize["updated"] = o.Updated
 	}
 	return toSerialize, nil
 }
