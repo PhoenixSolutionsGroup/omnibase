@@ -855,6 +855,72 @@ func (_c *MockQuerier_DeactivateAllUserTenants_Call) RunAndReturn(run func(ctx c
 	return _c
 }
 
+// DeleteEmailTemplateByType provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error) {
+	ret := _mock.Called(ctx, type_)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteEmailTemplateByType")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (int64, error)); ok {
+		return returnFunc(ctx, type_)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) int64); ok {
+		r0 = returnFunc(ctx, type_)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, type_)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_DeleteEmailTemplateByType_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteEmailTemplateByType'
+type MockQuerier_DeleteEmailTemplateByType_Call struct {
+	*mock.Call
+}
+
+// DeleteEmailTemplateByType is a helper method to define mock.On call
+//   - ctx context.Context
+//   - type_ string
+func (_e *MockQuerier_Expecter) DeleteEmailTemplateByType(ctx any, type_ any) *MockQuerier_DeleteEmailTemplateByType_Call {
+	return &MockQuerier_DeleteEmailTemplateByType_Call{Call: _e.mock.On("DeleteEmailTemplateByType", ctx, type_)}
+}
+
+func (_c *MockQuerier_DeleteEmailTemplateByType_Call) Run(run func(ctx context.Context, type_ string)) *MockQuerier_DeleteEmailTemplateByType_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteEmailTemplateByType_Call) Return(n int64, err error) *MockQuerier_DeleteEmailTemplateByType_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteEmailTemplateByType_Call) RunAndReturn(run func(ctx context.Context, type_ string) (int64, error)) *MockQuerier_DeleteEmailTemplateByType_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteRoleByIDAndTenant provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) DeleteRoleByIDAndTenant(ctx context.Context, arg repository.DeleteRoleByIDAndTenantParams) error {
 	ret := _mock.Called(ctx, arg)
@@ -1865,6 +1931,68 @@ func (_c *MockQuerier_GetTenantUser_Call) Return(authTenantUser repository.AuthT
 }
 
 func (_c *MockQuerier_GetTenantUser_Call) RunAndReturn(run func(ctx context.Context, arg repository.GetTenantUserParams) (repository.AuthTenantUser, error)) *MockQuerier_GetTenantUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListEmailTemplates provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListEmailTemplates(ctx context.Context) ([]repository.EmailTemplate, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListEmailTemplates")
+	}
+
+	var r0 []repository.EmailTemplate
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]repository.EmailTemplate, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []repository.EmailTemplate); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.EmailTemplate)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListEmailTemplates_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListEmailTemplates'
+type MockQuerier_ListEmailTemplates_Call struct {
+	*mock.Call
+}
+
+// ListEmailTemplates is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockQuerier_Expecter) ListEmailTemplates(ctx any) *MockQuerier_ListEmailTemplates_Call {
+	return &MockQuerier_ListEmailTemplates_Call{Call: _e.mock.On("ListEmailTemplates", ctx)}
+}
+
+func (_c *MockQuerier_ListEmailTemplates_Call) Run(run func(ctx context.Context)) *MockQuerier_ListEmailTemplates_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListEmailTemplates_Call) Return(emailTemplates []repository.EmailTemplate, err error) *MockQuerier_ListEmailTemplates_Call {
+	_c.Call.Return(emailTemplates, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListEmailTemplates_Call) RunAndReturn(run func(ctx context.Context) ([]repository.EmailTemplate, error)) *MockQuerier_ListEmailTemplates_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -2986,6 +3114,72 @@ func (_c *MockQuerier_UpdateTenantUserRole_Call) Return(err error) *MockQuerier_
 }
 
 func (_c *MockQuerier_UpdateTenantUserRole_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateTenantUserRoleParams) error) *MockQuerier_UpdateTenantUserRole_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpsertEmailTemplate provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpsertEmailTemplate(ctx context.Context, arg repository.UpsertEmailTemplateParams) (repository.EmailTemplate, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpsertEmailTemplate")
+	}
+
+	var r0 repository.EmailTemplate
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertEmailTemplateParams) (repository.EmailTemplate, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertEmailTemplateParams) repository.EmailTemplate); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.EmailTemplate)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.UpsertEmailTemplateParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_UpsertEmailTemplate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpsertEmailTemplate'
+type MockQuerier_UpsertEmailTemplate_Call struct {
+	*mock.Call
+}
+
+// UpsertEmailTemplate is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpsertEmailTemplateParams
+func (_e *MockQuerier_Expecter) UpsertEmailTemplate(ctx any, arg any) *MockQuerier_UpsertEmailTemplate_Call {
+	return &MockQuerier_UpsertEmailTemplate_Call{Call: _e.mock.On("UpsertEmailTemplate", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpsertEmailTemplate_Call) Run(run func(ctx context.Context, arg repository.UpsertEmailTemplateParams)) *MockQuerier_UpsertEmailTemplate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpsertEmailTemplateParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpsertEmailTemplateParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpsertEmailTemplate_Call) Return(emailTemplate repository.EmailTemplate, err error) *MockQuerier_UpsertEmailTemplate_Call {
+	_c.Call.Return(emailTemplate, err)
+	return _c
+}
+
+func (_c *MockQuerier_UpsertEmailTemplate_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpsertEmailTemplateParams) (repository.EmailTemplate, error)) *MockQuerier_UpsertEmailTemplate_Call {
 	_c.Call.Return(run)
 	return _c
 }

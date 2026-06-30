@@ -9,6 +9,18 @@ import (
 	"context"
 )
 
+const deleteEmailTemplateByType = `-- name: DeleteEmailTemplateByType :execrows
+DELETE FROM email.templates WHERE type = $1
+`
+
+func (q *Queries) DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEmailTemplateByType, type_)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const getEmailTemplateByType = `-- name: GetEmailTemplateByType :one
 SELECT id, type, subject, html_body, created_at, updated_at
 FROM email.templates
@@ -17,6 +29,69 @@ WHERE type = $1
 
 func (q *Queries) GetEmailTemplateByType(ctx context.Context, type_ string) (EmailTemplate, error) {
 	row := q.db.QueryRow(ctx, getEmailTemplateByType, type_)
+	var i EmailTemplate
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Subject,
+		&i.HtmlBody,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listEmailTemplates = `-- name: ListEmailTemplates :many
+SELECT id, type, subject, html_body, created_at, updated_at
+FROM email.templates
+ORDER BY type ASC
+`
+
+func (q *Queries) ListEmailTemplates(ctx context.Context) ([]EmailTemplate, error) {
+	rows, err := q.db.Query(ctx, listEmailTemplates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EmailTemplate
+	for rows.Next() {
+		var i EmailTemplate
+		if err := rows.Scan(
+			&i.ID,
+			&i.Type,
+			&i.Subject,
+			&i.HtmlBody,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const upsertEmailTemplate = `-- name: UpsertEmailTemplate :one
+INSERT INTO email.templates (type, subject, html_body)
+VALUES ($1, $2, $3)
+ON CONFLICT (type) DO UPDATE
+SET subject = EXCLUDED.subject,
+    html_body = EXCLUDED.html_body,
+    updated_at = NOW()
+RETURNING id, type, subject, html_body, created_at, updated_at
+`
+
+type UpsertEmailTemplateParams struct {
+	Type     string `json:"type"`
+	Subject  string `json:"subject"`
+	HtmlBody string `json:"html_body"`
+}
+
+func (q *Queries) UpsertEmailTemplate(ctx context.Context, arg UpsertEmailTemplateParams) (EmailTemplate, error) {
+	row := q.db.QueryRow(ctx, upsertEmailTemplate, arg.Type, arg.Subject, arg.HtmlBody)
 	var i EmailTemplate
 	err := row.Scan(
 		&i.ID,

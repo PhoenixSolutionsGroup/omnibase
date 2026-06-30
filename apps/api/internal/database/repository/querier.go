@@ -24,6 +24,7 @@ type Querier interface {
 	CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error
 	CreateTenantUser(ctx context.Context, arg CreateTenantUserParams) (AuthTenantUser, error)
 	DeactivateAllUserTenants(ctx context.Context, userID string) error
+	DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error)
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
 	DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error
 	DeleteTenant(ctx context.Context, id string) error
@@ -40,6 +41,7 @@ type Querier interface {
 	GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error)
 	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error)
 	GetTenantUser(ctx context.Context, arg GetTenantUserParams) (AuthTenantUser, error)
+	ListEmailTemplates(ctx context.Context) ([]EmailTemplate, error)
 	ListNamespaceDefinitions(ctx context.Context) ([]ListNamespaceDefinitionsRow, error)
 	ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTemplate, error)
 	ListRolesByTenant(ctx context.Context, tenantID uuid.UUID) ([]ListRolesByTenantRow, error)
@@ -58,6 +60,7 @@ type Querier interface {
 	UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error
 	UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
+	UpsertEmailTemplate(ctx context.Context, arg UpsertEmailTemplateParams) (EmailTemplate, error)
 }
 
 var _ Querier = (*Queries)(nil)
