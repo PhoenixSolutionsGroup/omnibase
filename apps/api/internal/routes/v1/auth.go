@@ -1,6 +1,9 @@
 package v1
 
 import (
+	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
 	"api/internal/config"
@@ -12,7 +15,7 @@ import (
 	"api/internal/middleware"
 )
 
-func SetUpAuthRoutes(router *gin.RouterGroup) {
+func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API) {
 	logger.Logger.Info("Initializing auth routes")
 	cfg := config.New()
 
@@ -55,8 +58,19 @@ func SetUpAuthRoutes(router *gin.RouterGroup) {
 
 	router.GET("/session", authHandler.GetSession)
 	router.GET("/identity", authHandler.GetIdentity)
-	router.GET("/whoami", authHandler.WhoAmI)
 	router.POST("/logout", authHandler.Logout)
+
+	huma.Register(api, huma.Operation{
+		OperationID: "whoami",
+		Method:      http.MethodGet,
+		Path:        "/api/v1/auth/whoami",
+		Summary:     "Get authenticated user identity",
+		Tags:        []string{"V1Auth"},
+		Security:    []map[string][]string{{"SessionTokenAuth": {}}, {"CookieAuth": {}}},
+		Middlewares: huma.Middlewares{
+			middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSession()),
+		},
+	}, authHandler.WhoAmI)
 
 	logger.Logger.Info("Auth routes registration completed")
 }

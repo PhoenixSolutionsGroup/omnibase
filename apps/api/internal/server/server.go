@@ -12,6 +12,8 @@ import (
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
 
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humagin"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
@@ -74,9 +76,18 @@ func New(cfg *config.Config) *gin.Engine {
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
+	logger.Logger.Debug("Initializing huma API")
+	humaCfg := huma.DefaultConfig("OmniBase API", "0.20.0")
+	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
+		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token"},
+		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key"},
+		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session"},
+	}
+	api := humagin.New(r, humaCfg)
+
 	logger.Logger.Debug("Initializing v1 API routes")
 	v1_group := r.Group("/api/v1")
-	v1_routes.InitRoutes(v1_group)
+	v1_routes.InitRoutes(v1_group, api)
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
 	authProxyHandler := proxy.New(proxy.Deps{

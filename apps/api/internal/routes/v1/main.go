@@ -3,14 +3,15 @@ package v1
 import (
 	"api/internal/logger"
 
+	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(group *gin.RouterGroup) {
+func InitRoutes(group *gin.RouterGroup, api huma.API) {
 	logger.Logger.Info("Initializing v1 API routes")
 
 	logger.Logger.Debug("Setting up auth routes at /auth")
-	SetUpAuthRoutes(group.Group("/auth"))
+	SetUpAuthRoutes(group.Group("/auth"), api)
 
 	logger.Logger.Debug("Setting up storage routes at /storage")
 	SetUpStorageRoutes(group.Group("/storage"))
