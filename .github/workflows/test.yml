@@ -59,8 +59,8 @@ jobs:
       - name: Verify SDK has no drift
         run: |
           bun run generate:sdk
-          if ! git diff --quiet sdk/; then
-            echo "::error::SDK is out of sync with OpenAPI spec. Run 'bun run generate:sdk' and commit."
-            git diff --stat sdk/
+          if ! git diff --quiet sdk/ apps/api/docs/openapi.json; then
+            echo "::error::SDK is out of sync with huma-emitted OpenAPI spec. Run 'bun run generate:sdk' and commit."
+            git diff --stat sdk/ apps/api/docs/openapi.json
             exit 1
           fi

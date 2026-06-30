@@ -5309,7 +5309,6 @@ components:
           nullable: true
           type: array
       required:
-      - AdditionalProperties
       - id
       - schema_id
       - schema_url
@@ -5349,8 +5348,6 @@ components:
         version:
           format: int64
           type: integer
-      required:
-      - AdditionalProperties
     IdentityName:
       additionalProperties: false
       example:
@@ -6730,7 +6727,6 @@ components:
         via:
           type: string
       required:
-      - AdditionalProperties
       - id
       - value
       - via
@@ -6919,7 +6915,6 @@ components:
         tokenized:
           type: string
       required:
-      - AdditionalProperties
       - id
     SessionAuthenticationMethod:
       additionalProperties: {}
@@ -6945,8 +6940,6 @@ components:
           type: string
         provider:
           type: string
-      required:
-      - AdditionalProperties
     SessionDevice:
       additionalProperties: {}
       example:
@@ -6968,7 +6961,6 @@ components:
         user_agent:
           type: string
       required:
-      - AdditionalProperties
       - id
     SessionResponse:
       additionalProperties: false
@@ -8428,7 +8420,6 @@ components:
         via:
           type: string
       required:
-      - AdditionalProperties
       - status
       - value
       - verified

@@ -111,6 +111,8 @@ func New(cfg *config.Config) *gin.Engine {
 	v1_group := r.Group("/api/v1")
 	v1_routes.InitRoutes(v1_group, api)
 
+	relaxAdditionalPropertiesRequired(api)
+
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
 	authProxyHandler := proxy.New(proxy.Deps{
 		PublicURL: cfg.AuthConfig.AuthURL,
@@ -119,4 +121,21 @@ func New(cfg *config.Config) *gin.Engine {
 	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
 
 	return r
+}
+
+func relaxAdditionalPropertiesRequired(api huma.API) {
+	schemas := api.OpenAPI().Components.Schemas.Map()
+	for _, s := range schemas {
+		if len(s.Required) == 0 {
+			continue
+		}
+		filtered := s.Required[:0]
+		for _, name := range s.Required {
+			if name == "AdditionalProperties" {
+				continue
+			}
+			filtered = append(filtered, name)
+		}
+		s.Required = filtered
+	}
 }
