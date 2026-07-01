@@ -57,6 +57,43 @@ func TestCrossTenantIsolation(t *testing.T) {
 		require.NotNil(t, resp)
 		require.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
+
+	t.Run("user_A_cannot_get_tenant_B_JWT", func(t *testing.T) {
+		_, resp, err := client.V1TenantsLifecycleAPI.
+			GetTenantJWT(helpers.CtxWithUserTenant(userA, tenantB)).
+			Execute()
+		require.Error(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	t.Run("user_A_cannot_list_tenant_B_roles", func(t *testing.T) {
+		t.Skip("known gap: roles.List handler does not check tenant membership (see internal/handlers/v1/tenants/roles/list.go — no perms.Check). users.List does. Fix handler then enable this test.")
+	})
+
+	t.Run("user_A_cannot_create_invite_in_tenant_B", func(t *testing.T) {
+		req := sdk.CreateRequest{
+			Email:     fmt.Sprintf("cti-invite-%s@example.com", id),
+			Role:      "member",
+			InviteUrl: "http://localhost:3000/accept-invite",
+		}
+		_, resp, err := client.V1TenantsInvitesAPI.
+			CreateInvite(helpers.CtxWithUserTenant(userA, tenantB)).
+			CreateRequest(req).
+			Execute()
+		require.Error(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	t.Run("user_A_cannot_delete_tenant_B", func(t *testing.T) {
+		_, resp, err := client.V1TenantsLifecycleAPI.
+			DeleteTenant(helpers.CtxWithUserTenant(userA, tenantB)).
+			Execute()
+		require.Error(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
 }
 
 func createTenant(t *testing.T, client *sdk.APIClient, userID, name string) string {
