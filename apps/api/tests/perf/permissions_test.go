@@ -130,6 +130,7 @@ func preCreateTenantRoles(t *testing.T, client *sdk.APIClient, users []perf.User
 		tReq := sdk.CreateTenantRequest{
 			Name:         fmt.Sprintf("perf-perm-seed-%d", i),
 			BillingEmail: u.Email,
+			Type:         "organization",
 		}
 		tOut, tResp, tErr := client.V1TenantsLifecycleAPI.CreateTenant(helpers.CtxWithUser(u.ID)).
 			CreateTenantRequest(tReq).Execute()

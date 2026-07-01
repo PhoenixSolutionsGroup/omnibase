@@ -35,6 +35,7 @@ func TestPerf_TenantLifecycle(t *testing.T) {
 			body, _ := json.Marshal(map[string]any{
 				"name":          fmt.Sprintf("Perf-%d", n),
 				"billing_email": user.Email,
+				"type":          "organization",
 			})
 			tgt.Method = http.MethodPost
 			tgt.URL = apiURL + "/api/v1/tenants"
@@ -112,6 +113,7 @@ func preCreateTenants(t *testing.T, client *sdk.APIClient, users []perf.User) []
 		req := sdk.CreateTenantRequest{
 			Name:         fmt.Sprintf("perf-seed-%d", i),
 			BillingEmail: u.Email,
+			Type:         "organization",
 		}
 		out, resp, err := client.V1TenantsLifecycleAPI.CreateTenant(helpers.CtxWithUser(u.ID)).
 			CreateTenantRequest(req).Execute()

@@ -87,6 +87,7 @@ func seedDBTenants(t *testing.T, client *sdk.APIClient, users []perf.User) []dbS
 		req := sdk.CreateTenantRequest{
 			Name:         fmt.Sprintf("perf-db-seed-%d", i),
 			BillingEmail: u.Email,
+			Type:         "organization",
 		}
 		out, resp, err := client.V1TenantsLifecycleAPI.CreateTenant(helpers.CtxWithUser(u.ID)).
 			CreateTenantRequest(req).Execute()
