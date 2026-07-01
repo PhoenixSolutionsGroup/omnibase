@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,7 +19,10 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-const stackName = "ob-api-test-deps"
+const (
+	stackName       = "ob-api-test-deps"
+	stressStackName = "ob-api-stress"
+)
 
 type Env struct {
 	PostgresHost  string
@@ -35,9 +39,12 @@ type Env struct {
 	MailpitSMTP   string
 	MailpitWeb    string
 	RustFSURL     string
+	APIURL        string
 
 	stack compose.ComposeStack
 }
+
+func stressMode() bool { return os.Getenv("PERF_STACK") == "1" }
 
 func Start(t *testing.T) *Env {
 	t.Helper()
@@ -53,42 +60,57 @@ func Start(t *testing.T) *Env {
 	}
 
 	_, thisFile, _, _ := runtime.Caller(0)
-	composePath := filepath.Join(filepath.Dir(thisFile), "docker-compose.test-deps.yml")
+	composeFile := "docker-compose.test-deps.yml"
+	stackID := stackName
+	if stressMode() {
+		composeFile = "docker-compose.stress.yml"
+		stackID = stressStackName
+	}
+	composePath := filepath.Join(filepath.Dir(thisFile), composeFile)
 
 	t0 := time.Now()
 	stack, err := compose.NewDockerComposeWith(
 		compose.WithStackFiles(composePath),
-		compose.StackIdentifier(stackName),
+		compose.StackIdentifier(stackID),
 	)
 	require.NoError(t, err)
 	phase("NewDockerComposeWith", t0)
 
 	t0 = time.Now()
-	alreadyUp := stackAlreadyUp()
+	alreadyUp := stackAlreadyUpNamed(stackID)
 	phase("stackAlreadyUp check", t0)
 
 	if alreadyUp {
 		t.Log("[testenv] reattaching to existing stack (skip compose up)")
 	} else {
-		if hasStaleContainers() {
+		if hasStaleContainersNamed(stackID) {
 			t.Log("[testenv] removing stale (stopped) containers from prior run")
 			downCtx, downCancel := context.WithTimeout(ctx, 1*time.Minute)
 			_ = stack.Down(downCtx, compose.RemoveOrphans(true), compose.RemoveVolumes(true))
 			downCancel()
 		}
 
-		upCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+		upTimeout := 5 * time.Minute
+		if stressMode() {
+			upTimeout = 10 * time.Minute
+		}
+		upCtx, cancel := context.WithTimeout(ctx, upTimeout)
 		defer cancel()
 
 		t0 = time.Now()
-		err = stack.
+		waiter := stack.
 			WaitForService("postgres", wait.ForHealthCheck()).
 			WaitForService("pgbouncer", wait.ForHealthCheck()).
 			WaitForService("auth", wait.ForListeningPort("4434/tcp")).
 			WaitForService("permissions", wait.ForListeningPort("4466/tcp")).
 			WaitForService("stripe-mock", wait.ForListeningPort("12111/tcp")).
-			WaitForService("mailpit", wait.ForListeningPort("8025/tcp")).
-			Up(upCtx)
+			WaitForService("mailpit", wait.ForListeningPort("8025/tcp"))
+		if stressMode() {
+			waiter = waiter.WaitForService("api", wait.ForHTTP("/health").WithPort("8080/tcp"))
+			err = waiter.Up(upCtx, compose.Recreate("force"), compose.RecreateDependencies("force"))
+		} else {
+			err = waiter.Up(upCtx)
+		}
 		phase("compose Up + WaitForService", t0)
 		if err != nil {
 			dumpAllLogs(t, ctx, stack)
@@ -135,6 +157,20 @@ func Start(t *testing.T) *Env {
 	env.RustFSURL = httpURL(t, ctx, stack, "rustfs", "9000/tcp")
 	phase("endpoint rustfs", t0)
 
+	if stressMode() {
+		t0 = time.Now()
+		env.APIURL = httpURL(t, ctx, stack, "api", "8080/tcp")
+		phase("endpoint api", t0)
+
+		if alreadyUp {
+			t0 = time.Now()
+			waitForHTTP(t, env.KratosAdmin+"/admin/identities", 30*time.Second)
+			waitForHTTP(t, env.KetoRead+"/health/ready", 30*time.Second)
+			waitForHTTP(t, env.APIURL+"/health", 30*time.Second)
+			phase("post-reattach health poll", t0)
+		}
+	}
+
 	phase("TOTAL testenv.Start", overall)
 
 	t.Cleanup(func() {
@@ -166,6 +202,23 @@ func httpURL(t *testing.T, ctx context.Context, s compose.ComposeStack, svc, por
 	return fmt.Sprintf("http://%s:%s", host, hostPort)
 }
 
+func waitForHTTP(t *testing.T, url string, timeout time.Duration) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	client := &http.Client{Timeout: 2 * time.Second}
+	for time.Now().Before(deadline) {
+		resp, err := client.Get(url)
+		if err == nil {
+			resp.Body.Close()
+			if resp.StatusCode < 500 {
+				return
+			}
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+	require.Failf(t, "health poll timeout", "%s did not respond within %s", url, timeout)
+}
+
 func serviceContainer(t *testing.T, ctx context.Context, s compose.ComposeStack, svc string) testcontainers.Container {
 	t.Helper()
 	c, err := s.ServiceContainer(ctx, svc)
@@ -173,9 +226,9 @@ func serviceContainer(t *testing.T, ctx context.Context, s compose.ComposeStack,
 	return c
 }
 
-func stackAlreadyUp() bool {
+func stackAlreadyUpNamed(name string) bool {
 	out, err := exec.Command("docker", "ps",
-		"--filter", "label=com.docker.compose.project="+stackName,
+		"--filter", "label=com.docker.compose.project="+name,
 		"--filter", "status=running",
 		"--quiet").Output()
 	if err != nil {
@@ -184,9 +237,9 @@ func stackAlreadyUp() bool {
 	return strings.TrimSpace(string(out)) != ""
 }
 
-func hasStaleContainers() bool {
+func hasStaleContainersNamed(name string) bool {
 	out, err := exec.Command("docker", "ps", "-a",
-		"--filter", "label=com.docker.compose.project="+stackName,
+		"--filter", "label=com.docker.compose.project="+name,
 		"--quiet").Output()
 	if err != nil {
 		return false

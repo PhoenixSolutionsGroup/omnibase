@@ -59,6 +59,11 @@ func StartAPI(t *testing.T, env *Env) string {
 	t.Helper()
 
 	apiOnce.Do(func() {
+		if env.APIURL != "" {
+			apiURL = env.APIURL
+			t.Logf("[testenv] using containerized API at %s", apiURL)
+			return
+		}
 		envs := map[string]string{
 			"DB_HOST":              env.PgbouncerHost,
 			"DB_PORT":              env.PgbouncerPort,
