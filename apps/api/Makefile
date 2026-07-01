@@ -50,3 +50,8 @@ test-integration: sdk-if-changed
 
 test-e2e: sdk-if-changed
 	$(TEST_ENV) KEEP_STACK=1 go test ./tests/e2e/... $(GO_TEST_FLAGS) -p 1
+
+# Perf tests via vegeta. Env knobs: PERF_RATE (req/s), PERF_DURATION (e.g. 30s).
+# Example: make test-perf PERF_RATE=50 PERF_DURATION=1m
+test-perf: sdk-if-changed
+	$(TEST_ENV) KEEP_STACK=1 PERF=1 go test ./tests/perf/... $(GO_TEST_FLAGS) -p 1 -v

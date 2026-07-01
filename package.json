@@ -16,7 +16,6 @@
     "release:preview": "./scripts/preview-releases.sh"
   },
   "devDependencies": {
-    "@grafana/openapi-to-k6": "^0.3.2",
     "@openapitools/openapi-generator-cli": "^2.27.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
