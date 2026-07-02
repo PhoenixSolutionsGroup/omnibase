@@ -23,6 +23,8 @@ func TestEnterprisePricing(t *testing.T) {
 	testenv.StartAPI(t, env)
 	client := testenv.NewSDKClient(t)
 
+	testenv.EnsureStripeConfig(t, client, "example.config.json")
+
 	t.Log("happy-path enterprise apply requires a seeded stripe config with enterprise templates and an active tenant subscription; that setup is deferred and covered only for error/404 paths here")
 
 	t.Run("get_prices_by_template_unknown_returns_empty", func(t *testing.T) {
