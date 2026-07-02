@@ -50,3 +50,19 @@ test-integration: sdk-if-changed
 
 test-e2e: sdk-if-changed
 	$(TEST_ENV) KEEP_STACK=1 go test ./tests/e2e/... $(GO_TEST_FLAGS) -p 1
+
+# Perf tests: fixed rate, threshold assertions. Regression catcher.
+# Runs against containerized API with resource limits (docker-compose.stress.yml).
+# Tune via PERF_{API,AUTH,PERMS,DB}_{CPU,RAM} env vars (defaults 1cpu/1g each).
+# Env knobs: PERF_RATE (req/s), PERF_DURATION (e.g. 30s).
+test-perf: sdk-if-changed
+	$(TEST_ENV) KEEP_STACK=1 PERF=1 PERF_STACK=1 go test ./tests/perf/... $(GO_TEST_FLAGS) -run '^TestPerf_' -timeout 20m -p 1 -v
+
+# Stress tests: ramp until breakpoint. Same containerized stack as test-perf.
+# Example: PERF_API_CPU=2 PERF_API_RAM=2g make test-stress
+test-stress: sdk-if-changed
+	$(TEST_ENV) KEEP_STACK=1 PERF=1 PERF_STACK=1 go test ./tests/perf/... $(GO_TEST_FLAGS) -run '^TestStress_' -timeout 20m -p 1 -v
+
+# Bring down the stress stack (KEEP_STACK left containers running).
+test-stress-down:
+	docker compose -f tests/testenv/docker-compose.stress.yml -p ob-api-stress down --volumes --remove-orphans

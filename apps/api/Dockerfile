@@ -1,25 +1,20 @@
 ARG VERSION=local
 
 # Build stage
-FROM golang:1.24-alpine@sha256:8f8959f38530d159bf71d0b3eb0c547dc61e7959d8225d1599cf762477384923 AS builder
+FROM golang:1.25.5-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
 WORKDIR /build
 
-# Copy go mod files
-COPY go.mod go.sum ./
+COPY sdk/core/go /sdk/core/go
 
-# Download dependencies
+COPY apps/api/go.mod apps/api/go.sum ./
 RUN go mod download
 
-# Copy source code
-COPY . .
+COPY apps/api ./
 
-# Build the application
-# CGO_ENABLED=0 for static binary
-# -ldflags="-w -s" to strip debug info and reduce binary size
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags="-w -s" \
     -o /build/api \

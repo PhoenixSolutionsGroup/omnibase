@@ -33,10 +33,10 @@ else
   git push origin "sdk/core/go/v$VERSION"
 fi
 
-# Build Docker image
+# Build Docker image (context = repo root so Dockerfile can COPY sdk/core/go)
 echo "Building Docker image phoenixsolutionsgroup/omnibase-api:$VERSION..."
-cd apps/api
 docker build \
+  -f apps/api/Dockerfile \
   -t phoenixsolutionsgroup/omnibase-api:$VERSION \
   -t phoenixsolutionsgroup/omnibase-api:latest \
   --build-arg VERSION=$VERSION \
@@ -46,7 +46,6 @@ docker build \
 echo "Pushing Docker image..."
 docker push phoenixsolutionsgroup/omnibase-api:$VERSION
 docker push phoenixsolutionsgroup/omnibase-api:latest
-cd "$PROJECT_ROOT"
 
 echo "========================================"
 echo "Publish complete!"

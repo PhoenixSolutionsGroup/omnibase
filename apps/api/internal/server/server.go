@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime/debug"
 
 	"api/internal/config"
 	"api/internal/database"
@@ -32,7 +33,7 @@ func New(cfg *config.Config) *gin.Engine {
 	}
 
 	r.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
-		logger.Logger.Error("Panic recovered", "error", err)
+		logger.Logger.Error("Panic recovered", "error", err, "stack", string(debug.Stack()), "path", c.Request.URL.Path)
 		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("%v", err))
 	}))
 

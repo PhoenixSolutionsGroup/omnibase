@@ -25,7 +25,7 @@ func TestEnterprisePricingFetch(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
-		assert.Equal(t, int32(len(out.Prices)), out.Count)
+		assert.Equal(t, int64(len(out.Prices)), out.Count)
 		assert.GreaterOrEqual(t, len(out.Prices), 2, "fixture defines 2 prices for tier1_10pct_off")
 	})
 
@@ -50,7 +50,7 @@ func TestEnterprisePricingFetch(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
-		assert.Equal(t, int32(0), out.Count)
+		assert.Equal(t, int64(0), out.Count)
 	})
 }
 
@@ -93,7 +93,7 @@ func TestEnterprisePricingApplyTemplate(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
 		assert.Equal(t, tenant.Id, out.TenantId)
-		assert.GreaterOrEqual(t, out.PricesSwapped, int32(1), "at least one subscription item should be swapped")
+		assert.GreaterOrEqual(t, out.PricesSwapped, int64(1), "at least one subscription item should be swapped")
 	})
 
 	t.Run("tenant record reflects enterprise_template", func(t *testing.T) {
@@ -144,7 +144,7 @@ func TestEnterprisePricingApplyCustom(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NotNil(t, out)
 		assert.Equal(t, tenant.Id, out.TenantId)
-		assert.GreaterOrEqual(t, out.PricesSwapped, int32(1))
+		assert.GreaterOrEqual(t, out.PricesSwapped, int64(1))
 	})
 
 	t.Run("tenant record reflects enterprise_id", func(t *testing.T) {

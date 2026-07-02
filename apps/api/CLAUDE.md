@@ -103,8 +103,9 @@ func TestYourEndpoint(t *testing.T) {
 }
 ```
 
-Legacy k6 perf scenarios live in `apps/api/tests/k6/` for reference; they
-will be ported to Go + vegeta (see `REFACTOR.md` Refactor 2).
+Perf tests in `tests/perf/` use Go + vegeta. Gated by `PERF=1`. Env knobs:
+`PERF_RATE` (req/s, default 10), `PERF_DURATION` (default 10s). Run via
+`make test-perf`.
 
 ## Architecture
 
@@ -169,7 +170,7 @@ SetUpYourRoutes(group.Group("/your-feature"))
    - Create `docs/paths/{feature}.yaml` for endpoint definitions
    - Add path references to `docs/info.yaml`
 
-5. **Add k6 tests** in `tests/api/k6/{feature}/`
+5. **Add perf test** in `tests/perf/{feature}_test.go` if the endpoint has latency SLOs
 
 ### Authentication Patterns
 
