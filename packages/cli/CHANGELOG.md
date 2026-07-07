@@ -1,3 +1,18 @@
+# [0.7.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.6.0...cli-v0.7.0) (2026-07-07)
+
+
+### Bug Fixes
+
+* **cli:** drop legacy data envelope, SDK responses are unwrapped ([0783815](https://github.com/PhoenixSolutionsGroup/omnibase/commit/07838150f160759aee49db273f79296ef45260da))
+* **cli:** sync api docker image to 0.19.1 [skip ci] ([27f9f57](https://github.com/PhoenixSolutionsGroup/omnibase/commit/27f9f57dcd4473ada470bc9d10795693b1905f15))
+
+
+### Features
+
+* **api:** wire SDK gen from huma spec + split tenants tag + API_VERSION env ([bd7fcdc](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bd7fcdc0e5eb7e7591aff834950ea383490063d2))
+* **cli:** sync api docker image to 0.20.0 [skip ci] ([9227298](https://github.com/PhoenixSolutionsGroup/omnibase/commit/922729898e56b4c2a6a709b1c5f5a2138e2c8270))
+* Prisma Schema + Down Migrations + definePolicy RLS Compiler ([2120c4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2120c4a1842bdf50efc17e741a5f638c3b633903))
+
 # [0.6.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.5.0...cli-v0.6.0) (2026-05-30)
 
 
