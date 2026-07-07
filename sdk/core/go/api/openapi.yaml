@@ -11,7 +11,7 @@ info:
     url: https://opensource.org/licenses/MIT
   termsOfService: https://omnibase.dev/terms
   title: Omnibase REST API
-  version: local
+  version: 0.20.0
 servers:
 - description: Production server
   url: https://api.omnibase.tech

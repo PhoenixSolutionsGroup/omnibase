@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/core-js",
-  "version": "local",
+  "version": "0.20.0",
   "description": "OpenAPI client for @omnibase/core-js",
   "author": "OpenAPI-Generator",
   "repository": {

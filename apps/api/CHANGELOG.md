@@ -1,3 +1,30 @@
+# [0.20.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.1...api-v0.20.0) (2026-07-07)
+
+
+### Bug Fixes
+
+* **api:** parse_permission caser data race under concurrent load ([daa5c10](https://github.com/PhoenixSolutionsGroup/omnibase/commit/daa5c101b9e1806dc203e3b90924efe5d0a352e9))
+* **api:** perf tests missing required tenant type field ([6aa8f13](https://github.com/PhoenixSolutionsGroup/omnibase/commit/6aa8f1329a9bb29b7a723d64fff9e3e882e07982))
+* **release:** pass API_VERSION through prepare + drop deleted spec asset refs ([88c4426](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88c44261bae76095616304651fe6798c6c386b39))
+
+
+### Features
+
+* **api:** add handlers/ctx helpers and slim responses ([4128c98](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4128c98fdf7e0db7fc7fd5255a8757b71d61db75))
+* **api:** add services/auth (kratos identity + metadata) ([003bea5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/003bea578dfa62346126cfb25320c8ec02896246))
+* **api:** add services/email (SMTP send with template) ([88a8a87](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88a8a877423e81e8bb1b02f8bdda9932815616c1))
+* **api:** add services/permissions and rbac ([ac05573](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ac055734ee209fba8cc27b5cdbbe37c9d1fc81e6))
+* **api:** add services/tenants (JWT, active tenant, cleanup) ([ec74e4e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ec74e4e01bf8dc28d9b064baeefe4afdca689c56))
+* **api:** add sqlc queries and generated repository ([b2ac570](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b2ac570f169e60dc3ed16d334f37365d2f31b52d))
+* **api:** collapse stripe_config pyramid into services/stripe_config ([641c888](https://github.com/PhoenixSolutionsGroup/omnibase/commit/641c888ef1287d95638dfaf745c26b7b385f2b10))
+* **api:** port db/payments/permissions/stripe sub-packages to huma ([c75fbf3](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c75fbf3e8cc4d53956ac510d34ac23f5c084eb08))
+* **api:** port email + storage sub-packages to huma ([3a4a2e7](https://github.com/PhoenixSolutionsGroup/omnibase/commit/3a4a2e79a428d12fe8d047a0ad960823c0d8563a))
+* **api:** port full auth sub-package to huma ([a139cb5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a139cb52bd2b341e63942a2b376dd5f72655b909))
+* **api:** port tenants/ sub-package to huma ([121ea9d](https://github.com/PhoenixSolutionsGroup/omnibase/commit/121ea9de25d960da7682eb67d3938be9439060f6))
+* **api:** port whoami to huma + introduce AuthCtx resolver ([8dcf4bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8dcf4bf27cfbab8a8cab0b5e7a0c144c14b1a130))
+* **api:** wire SDK gen from huma spec + split tenants tag + API_VERSION env ([bd7fcdc](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bd7fcdc0e5eb7e7591aff834950ea383490063d2))
+* Prisma Schema + Down Migrations + definePolicy RLS Compiler ([2120c4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2120c4a1842bdf50efc17e741a5f638c3b633903))
+
 ## [0.19.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.0...api-v0.19.1) (2026-06-03)
 
 
