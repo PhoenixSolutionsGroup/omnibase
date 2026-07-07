@@ -34,7 +34,8 @@
   },
   "workspaces": [
     "sdk/*/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "peerDependencies": {
     "typescript": "^5.9.3"

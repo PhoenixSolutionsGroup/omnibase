@@ -27,12 +27,13 @@ services:
   rest-api:
     image: ""
     build:
-      context: ../../../apps/api
-      dockerfile: Dockerfile.dev
+      context: ../../..
+      dockerfile: apps/api/Dockerfile.dev
     environment:
       - ENABLE_PPROF=true
     volumes:
       - ../../../apps/api:/app:z
+      - ../../../sdk/core/go:/sdk/core/go:z
 
   permissions-migrate:
     image: ""

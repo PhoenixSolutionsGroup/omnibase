@@ -142,8 +142,8 @@ export function UsageChart({ data }: UsageChartProps) {
         uniquePriceIds.map(async (priceId) => {
           try {
             const response = await stripeApi.getPriceByID({ priceId });
-            if (response.data?.price?.amount !== undefined) {
-              newPriceMap.set(priceId, response.data.price.amount);
+            if (response.price?.amount !== undefined) {
+              newPriceMap.set(priceId, response.price.amount);
             }
           } catch {
             // Price lookup failed - will show as N/A

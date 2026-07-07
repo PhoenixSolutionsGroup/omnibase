@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { SwitchActiveTenant } from "@omnibase/shadcn";
-import type { Tenant } from "@omnibase/core-js";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 interface OrganizationDropdownProps {
   tenants?: Tenant[];

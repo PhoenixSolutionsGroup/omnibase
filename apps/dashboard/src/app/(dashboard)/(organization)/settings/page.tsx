@@ -4,14 +4,20 @@ import React from "react";
 import { DeleteSection } from "./delete-section";
 import { APIKeysSection } from "./api-keys-section";
 import { listAPIKeys } from "./actions";
-import { Role, TenantUserResponse, V1TenantsApi } from "@omnibase/core-js";
+import {
+  ListRolesByTenantRow,
+  UserResponse,
+  V1TenantsLifecycleApi,
+  V1TenantsRolesApi,
+  V1TenantsUsersApi,
+} from "@omnibase/core-js";
 
 async function removeUser(user_id: string) {
   "use server";
   const config = await getOmnibaseConfiguration();
-  const client = new V1TenantsApi(config);
+  const client = new V1TenantsUsersApi(config);
   await client.removeTenantUser({
-    deleteTenantUserRequest: {
+    deleteRequest: {
       userId: user_id,
     },
   });
@@ -20,9 +26,9 @@ async function removeUser(user_id: string) {
 async function updateUserRole(user_id: string, role: string) {
   "use server";
   const config = await getOmnibaseConfiguration();
-  const client = new V1TenantsApi(config);
+  const client = new V1TenantsUsersApi(config);
   await client.updateTenantUserRole({
-    updateTenantUserRoleRequest: {
+    updateUserRoleRequest: {
       role,
       userId: user_id,
     },
@@ -32,25 +38,20 @@ async function updateUserRole(user_id: string, role: string) {
 async function deleteTenantAction() {
   "use server";
   const config = await getOmnibaseConfiguration();
-  const client = new V1TenantsApi(config);
-  await client.deleteTenant({});
+  const client = new V1TenantsLifecycleApi(config);
+  await client.deleteTenant();
 }
 
 export default async function page() {
   const config = await getOmnibaseConfiguration();
-  const client = new V1TenantsApi(config);
+  const usersClient = new V1TenantsUsersApi(config);
+  const rolesClient = new V1TenantsRolesApi(config);
 
-  let users: TenantUserResponse[] = [];
-  let roles: Role[] = [];
+  let users: UserResponse[] = [];
+  let roles: ListRolesByTenantRow[] = [];
   try {
-    let { data: usersResp } = await client.listTenantUsers();
-    if (!!usersResp) {
-      users = usersResp;
-    }
-    const { data: rolesResp } = await client.listRoles();
-    if (!!rolesResp) {
-      roles = rolesResp.roles;
-    }
+    users = await usersClient.listTenantUsers();
+    roles = await rolesClient.listRoles();
   } catch (error) {}
 
   // Fetch API keys

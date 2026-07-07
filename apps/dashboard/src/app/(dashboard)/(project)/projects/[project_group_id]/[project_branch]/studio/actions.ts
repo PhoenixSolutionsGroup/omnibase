@@ -4,7 +4,7 @@ import { Client } from "pg";
 import { getProject } from "@/utils/get-project";
 import { fetchDatabaseConnectionString } from "../settings/actions";
 import { getOmnibaseProjectConfiguration } from "@/lib/server";
-import { V1TenantsApi } from "@omnibase/core-js";
+import { V1TenantsLifecycleApi } from "@omnibase/core-js";
 
 export interface TableColumn {
   name: string;
@@ -353,15 +353,12 @@ export async function getTenantJWT(
 
   try {
     const config = await getOmnibaseProjectConfiguration(project);
-    const tenantsApi = new V1TenantsApi(config);
+    const tenantsApi = new V1TenantsLifecycleApi(config);
 
-    const response = await tenantsApi.getTenantJWT({
-      xTenantId: tenantId,
-      xUserId: userId,
-    });
+    const response = await tenantsApi.getTenantJWT();
 
-    if (response.data?.token) {
-      return { success: true, token: response.data.token };
+    if (response.token) {
+      return { success: true, token: response.token };
     }
 
     return { success: false, error: "No token returned" };

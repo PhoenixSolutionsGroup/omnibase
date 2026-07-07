@@ -27,7 +27,7 @@ import {
 import { Trash2, Check, ChevronsUpDown, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import type { NamespaceDefinition } from "@omnibase/core-js";
+import type { NamespaceDefinitionResponse } from "@omnibase/core-js";
 import { createAPIKey, type Permission } from "../../actions";
 import Link from "next/link";
 
@@ -37,7 +37,7 @@ interface NamespaceMapEntry {
 }
 
 interface CreateAPIKeyFormProps {
-  definitions: NamespaceDefinition[];
+  definitions: NamespaceDefinitionResponse[];
   namespaceMap: Record<string, NamespaceMapEntry[]>;
 }
 
@@ -169,9 +169,9 @@ export function CreateAPIKeyForm({
   const getRelationsForNamespace = (namespace: string): ComboboxOption[] => {
     const def = definitions.find((d) => d.namespace === namespace);
     if (!def) return [];
-    return def.relations
-      .filter((rel) => rel.startsWith("can_") || rel.startsWith("is_"))
-      .map((rel) => ({ value: rel, label: formatRelation(rel) }));
+    return (def.relations ?? [])
+      .filter((rel: string) => rel.startsWith("can_") || rel.startsWith("is_"))
+      .map((rel: string) => ({ value: rel, label: formatRelation(rel) }));
   };
 
   const getObjectsForNamespace = (

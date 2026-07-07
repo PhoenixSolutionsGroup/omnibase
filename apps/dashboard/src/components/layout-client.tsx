@@ -6,7 +6,7 @@ import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
 import { useRouter } from "next/navigation";
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
-import type { Tenant } from "@omnibase/core-js";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 interface ProjectData {
   projectId: string;

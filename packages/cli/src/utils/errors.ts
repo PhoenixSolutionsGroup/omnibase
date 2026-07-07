@@ -1,5 +1,24 @@
 import axios from "axios";
+import { ResponseError } from "@omnibase/core-js";
 import { logger } from "./logger";
+
+export async function extractApiError(error: unknown): Promise<string> {
+  if (error instanceof ResponseError) {
+    try {
+      const body = await error.response.json();
+      return (
+        body.error ||
+        body.message ||
+        body.detail ||
+        `${error.response.status} - ${error.response.statusText}`
+      );
+    } catch {
+      return `${error.response.status} - ${error.response.statusText}`;
+    }
+  }
+
+  return formatHttpError(error);
+}
 
 export function formatHttpError(error: unknown): string {
   if (axios.isAxiosError(error)) {

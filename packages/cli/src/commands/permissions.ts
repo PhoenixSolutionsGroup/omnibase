@@ -12,9 +12,13 @@ import {
   selectEnvironment,
   EnvironmentConfig,
 } from "../utils/environment";
-import { createManagedHostingClient } from "../utils/api-client";
+import { V1ConfigurationApi } from "@omnibase/core-js";
+import {
+  createManagedHostingClient,
+  createOmnibaseSDKConfig,
+} from "../utils/api-client";
 import { logger } from "../utils/logger";
-import { formatHttpError } from "../utils/errors";
+import { extractApiError, formatHttpError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
 import { runDockerComposeCommand } from "../utils/docker";
 
@@ -99,41 +103,23 @@ export class PermissionsCommand {
 
     logger.update(`Uploading to ${env.omnibaseApiUrl}...`);
 
-    const FormData = require("form-data");
-    const axios = require("axios");
-
-    const formData = new FormData();
-    formData.append("namespaces", zipBuffer, {
-      filename: "namespaces.zip",
-      contentType: "application/zip",
-    });
-
     try {
-      const headers: Record<string, string> = {
-        ...formData.getHeaders(),
-      };
+      const sdkConfig = createOmnibaseSDKConfig(env);
+      const configApi = new V1ConfigurationApi(sdkConfig);
 
-      if (env.omnibaseServiceKey) {
-        headers["X-Service-Key"] = env.omnibaseServiceKey;
-      }
-
-      const response = await axios.post(
-        `${env.omnibaseApiUrl}/api/v1/permissions/namespaces`,
-        formData,
-        { headers }
-      );
-
-      const result = response.data.data;
+      const result = await configApi.deployPermissionNamespaces({
+        namespaces: new Blob([zipBuffer], { type: "application/zip" }),
+      });
 
       logger.succeed("Namespaces deployed successfully");
 
-      if (result.roles_synced) {
+      if (result.rolesSynced) {
         logger.log(
-          `   Synced ${result.roles_synced} system role(s) to database`
+          `   Synced ${result.rolesSynced} system role(s) to database`
         );
       }
 
-      if (result.managed_mode) {
+      if (result.managedMode) {
         logger.log("   Managed hosting service is restarting...");
 
         const apiClient = createManagedHostingClient(env);
@@ -172,7 +158,7 @@ export class PermissionsCommand {
       logger.newline();
       logger.succeed("Permissions pushed successfully");
     } catch (error) {
-      logger.fail(`Failed to deploy namespaces: ${formatHttpError(error)}`);
+      logger.fail(`Failed to deploy namespaces: ${await extractApiError(error)}`);
       process.exit(1);
     }
   }

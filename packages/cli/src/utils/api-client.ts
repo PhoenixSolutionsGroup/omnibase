@@ -10,9 +10,7 @@ import { Configuration } from "@omnibase/core-js";
  */
 export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
   const profile = getActiveProfile();
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+  const headers: Record<string, string> = {};
 
   if (env.projectId) {
     headers["X-Project-ID"] = env.projectId;

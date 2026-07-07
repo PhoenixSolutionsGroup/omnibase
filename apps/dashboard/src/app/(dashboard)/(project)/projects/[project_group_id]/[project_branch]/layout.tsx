@@ -46,7 +46,7 @@ export default async function ProjectLayout({
   const config = await getOmnibaseConfiguration();
   const authApi = new V1AuthApi(config);
   const response = await authApi.listTenants();
-  const tenantItems = response.data?.tenants ?? [];
+  const tenantItems = response.tenants ?? [];
 
   if (tenantItems.length === 0) {
     redirect("/auth/onboarding");
