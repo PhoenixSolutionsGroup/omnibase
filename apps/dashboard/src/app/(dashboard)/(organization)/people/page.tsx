@@ -1,6 +1,6 @@
 import React from "react";
 import { UserInvite, RoleCreator } from "@omnibase/shadcn";
-import { getAllProjects } from "@/utils/get-project";
+import { getAllProjectBranches } from "@/utils/get-project";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import {
   CreateInviteRequest,
@@ -55,7 +55,7 @@ export default async function Page() {
   const roles = await client.listRoles();
   const definitions = await client.listRoleDefinitions({ subject: "User" });
 
-  const projects = await getAllProjects();
+  const projects = await getAllProjectBranches();
 
   return (
     <div className="flex h-full w-full flex-col items-center my-8 gap-y-8">

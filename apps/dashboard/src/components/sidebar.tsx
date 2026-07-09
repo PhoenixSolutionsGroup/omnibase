@@ -26,10 +26,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSidebar } from "./sidebar-context";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 
 interface ProjectContext {
-  projectGroupId: string;
+  branchId: string;
+  projectId: string;
   projectBranch: string;
   projectName: string;
   branches: string[];
@@ -82,42 +83,42 @@ function NavItem({ href, icon: Icon, title, isActive, isCollapsed }: NavItemProp
 }
 
 const getProjectNavigationItems = (
-  projectGroupId: string,
+  projectId: string,
   projectBranch: string
 ) => [
   {
     title: "Dashboard",
-    href: `/projects/${projectGroupId}/${projectBranch}/dashboard`,
+    href: `/projects/${projectId}/${projectBranch}/dashboard`,
     icon: LayoutDashboard,
   },
   {
     title: "Studio",
-    href: `/projects/${projectGroupId}/${projectBranch}/studio`,
+    href: `/projects/${projectId}/${projectBranch}/studio`,
     icon: Database,
   },
   {
     title: "Stripe",
-    href: `/projects/${projectGroupId}/${projectBranch}/stripe-settings`,
+    href: `/projects/${projectId}/${projectBranch}/stripe-settings`,
     icon: CreditCard,
   },
   {
     title: "Logs",
-    href: `/projects/${projectGroupId}/${projectBranch}/logs`,
+    href: `/projects/${projectId}/${projectBranch}/logs`,
     icon: ScrollText,
   },
   {
     title: "Usage",
-    href: `/projects/${projectGroupId}/${projectBranch}/usage`,
+    href: `/projects/${projectId}/${projectBranch}/usage`,
     icon: BarChart3,
   },
   {
     title: "Configuration",
-    href: `/projects/${projectGroupId}/${projectBranch}/configuration`,
+    href: `/projects/${projectId}/${projectBranch}/configuration`,
     icon: Wrench,
   },
   {
     title: "Settings",
-    href: `/projects/${projectGroupId}/${projectBranch}/settings`,
+    href: `/projects/${projectId}/${projectBranch}/settings`,
     icon: Settings,
   },
 ];
@@ -157,7 +158,7 @@ export function UnifiedSidebar({
 
   const projectNavigationItems = projectContext
     ? getProjectNavigationItems(
-        projectContext.projectGroupId,
+        projectContext.projectId,
         projectContext.projectBranch
       )
     : [];
@@ -182,7 +183,7 @@ export function UnifiedSidebar({
                     Project
                   </label>
                   <ProjectDropdown
-                    projectGroupId={projectContext.projectGroupId}
+                    projectId={projectContext.projectId}
                     currentProject={projectContext.projectName}
                     currentBranch={projectContext.projectBranch}
                     projects={projectContext.projects}
@@ -201,7 +202,7 @@ export function UnifiedSidebar({
                     <BranchDropdown
                       currentBranch={projectContext.projectBranch}
                       branches={projectContext.branches}
-                      projectGroupId={projectContext.projectGroupId}
+                      projectId={projectContext.projectId}
                     />
                   </>
                 )}

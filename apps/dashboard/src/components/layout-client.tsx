@@ -5,12 +5,12 @@ import { TopNavbar } from "@/components/top-navbar";
 import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
 import { useRouter } from "next/navigation";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 interface ProjectData {
+  branchId: string;
   projectId: string;
-  projectGroupId: string;
   projectBranch: string;
   projectName: string;
   branches: string[];
@@ -41,7 +41,8 @@ export function UnifiedLayoutClient({
             projectContext={
               projectData
                 ? {
-                    projectGroupId: projectData.projectGroupId,
+                    branchId: projectData.branchId,
+                    projectId: projectData.projectId,
                     projectBranch: projectData.projectBranch,
                     projectName: projectData.projectName,
                     branches: projectData.branches,

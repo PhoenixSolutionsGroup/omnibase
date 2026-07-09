@@ -15,13 +15,13 @@ import {
 interface BranchDropdownProps {
   currentBranch: string;
   branches: string[];
-  projectGroupId?: string;
+  projectId?: string;
 }
 
 export function BranchDropdown({
   currentBranch,
   branches,
-  projectGroupId,
+  projectId,
 }: BranchDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,8 +29,8 @@ export function BranchDropdown({
   const handleBranchChange = (newBranch: string) => {
     if (newBranch === "__create_new__") {
       // Navigate to new branch creation page
-      if (projectGroupId) {
-        router.push(`/projects/${projectGroupId}/${currentBranch}/new-branch`);
+      if (projectId) {
+        router.push(`/projects/${projectId}/${currentBranch}/new-branch`);
       }
       return;
     }

@@ -12,12 +12,12 @@ import {
   getTenantJWT,
   Tenant,
   TenantUser,
-} from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/studio/actions";
+} from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 import { cn } from "@/lib/utils";
 
 interface RLSSimulatorProps {
   project: {
-    project_group_id: string;
+    project_id: string;
     branch_name: string;
   };
   onSimulate: (token: string | null) => void;
@@ -55,7 +55,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
   const loadTenants = async () => {
     setLoadingTenants(true);
     try {
-      const result = await fetchTenants(project.project_group_id, project.branch_name);
+      const result = await fetchTenants(project.project_id, project.branch_name);
       if (result.success && result.tenants) {
         setTenants(result.tenants);
       } else {
@@ -72,7 +72,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
     setLoadingUsers(true);
     setUserId("");
     try {
-      const result = await fetchTenantUsers(project.project_group_id, project.branch_name, tid);
+      const result = await fetchTenantUsers(project.project_id, project.branch_name, tid);
       if (result.success && result.users) {
         setUsers(result.users);
       } else {
@@ -93,7 +93,7 @@ export function RLSSimulator({ project, onSimulate }: RLSSimulatorProps) {
     setLoading(true);
     try {
       const result = await getTenantJWT(
-        project.project_group_id,
+        project.project_id,
         project.branch_name,
         tenantId,
         userId

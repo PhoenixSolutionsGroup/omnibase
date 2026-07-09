@@ -30,7 +30,7 @@ interface CreateAPIKeyResponse {
 export interface Permission {
   namespace: string;
   relation: string;
-  objectId?: string;
+  object?: string;
 }
 
 export async function createAPIKey(
@@ -64,8 +64,8 @@ export async function createAPIKey(
     throw new Error(error.error || "Failed to create API key");
   }
 
-  const data: CreateAPIKeyResponse = await response.json();
-  return data;
+  const result = await response.json();
+  return result.data as CreateAPIKeyResponse;
 }
 
 export async function listAPIKeys() {
@@ -100,7 +100,7 @@ export async function listAPIKeys() {
   // Success case - return api_keys with permission flag
   return {
     hasPermission: true,
-    api_keys: data.api_keys as APIKey[],
+    api_keys: (data.data ?? []) as APIKey[],
   };
 }
 

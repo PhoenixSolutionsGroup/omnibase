@@ -48,7 +48,7 @@ export function APIKeysSection({
   initialKeys,
   hasPermission,
 }: APIKeysSectionProps) {
-  const [apiKeys, setApiKeys] = useState<APIKey[]>(initialKeys);
+  const [apiKeys, setApiKeys] = useState<APIKey[]>(initialKeys ?? []);
   const [canViewKeys, setCanViewKeys] = useState(hasPermission);
 
   const handleRevokeAPIKey = async (keyId: string, keyName: string) => {

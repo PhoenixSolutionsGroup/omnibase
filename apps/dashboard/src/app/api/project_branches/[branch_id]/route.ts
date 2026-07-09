@@ -5,7 +5,7 @@ const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL;
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ project_id: string }> }
+  { params }: { params: Promise<{ branch_id: string }> }
 ) {
   try {
     const cookieStore = await cookies();
@@ -14,10 +14,10 @@ export async function DELETE(
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
 
-    const { project_id } = await params;
+    const { branch_id } = await params;
 
     const response = await fetch(
-      `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project_id}`,
+      `${MANAGED_HOSTING_API_URL}/api/v1/project_branches/${branch_id}`,
       {
         method: "DELETE",
         headers: {
@@ -29,9 +29,9 @@ export async function DELETE(
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ message: "Failed to delete project" }));
+        .catch(() => ({ message: "Failed to delete branch" }));
       return NextResponse.json(
-        { message: error.message || "Failed to delete project" },
+        { message: error.message || "Failed to delete branch" },
         { status: response.status }
       );
     }
@@ -39,7 +39,7 @@ export async function DELETE(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error deleting project:", error);
+    console.error("Error deleting branch:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

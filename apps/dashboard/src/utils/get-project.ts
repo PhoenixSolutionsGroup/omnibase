@@ -1,36 +1,69 @@
 import { createServerClient } from "@/lib/server";
 import { cache } from "react";
 
-export const getProject = cache(
-  async (projectGroupId: string, projectBranch: string) => {
+export const getProjectBranch = cache(
+  async (projectId: string, branchName: string) => {
     const db = await createServerClient();
-    const { data: project, error } = await db
-      .from("projects")
-      // .select("*, vps_hosts(*)")
-      .select("*")
-      .eq("project_group_id", projectGroupId)
-      .eq("branch_name", projectBranch)
+    const { data, error } = await db
+      .from("project_branches")
+      .select("*, project:projects!inner(name, tenant_id)")
+      .eq("project_id", projectId)
+      .eq("name", branchName)
       .single();
 
     if (error) {
       console.warn(error);
+      return null;
     }
 
-    return project;
-  }
+    const { project, name, ...branch } = data;
+    return {
+      ...branch,
+      name: project.name,
+      tenant_id: project.tenant_id,
+      branch_name: name,
+    };
+  },
 );
 
-export const getAllProjects = cache(async () => {
+export const getProjectBranches = cache(async (projectId: string) => {
   const db = await createServerClient();
-  const { data: projects, error } = await db
-    .from("projects")
-    .select("*")
+  const { data, error } = await db
+    .from("project_branches")
+    .select("*, project:projects!inner(name, tenant_id)")
+    .eq("project_id", projectId)
+    .order("name");
+
+  if (error) {
+    console.warn(error);
+    return null;
+  }
+
+  return data.map(({ project, name, ...branch }) => ({
+    ...branch,
+    name: project.name,
+    tenant_id: project.tenant_id,
+    branch_name: name,
+  }));
+});
+
+export const getAllProjectBranches = cache(async () => {
+  const db = await createServerClient();
+  const { data, error } = await db
+    .from("project_branches")
+    .select("*, project:projects!inner(name, tenant_id)")
     .in("status", ["active", "provisioning"])
     .order("created_at", { ascending: false });
 
   if (error) {
     console.warn(error);
+    return null;
   }
 
-  return projects;
+  return data.map(({ project, name, ...branch }) => ({
+    ...branch,
+    name: project.name,
+    tenant_id: project.tenant_id,
+    branch_name: name,
+  }));
 });

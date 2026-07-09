@@ -43,9 +43,8 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
         formAction={async (formData) => {
           await switchTenant(formData);
         }}
-        // TODO: Uncomment after publishing @omnibase/shadcn with onCreateTenant support
-        // onCreateTenant={() => router.push("/onboarding/create-tenant")}
-        // createTenantLabel="Create Organization"
+        createTenantLabel="Create Tenant"
+        onCreateTenant={() => router.push("/onboarding/create-tenant")}
       />
 
       <div className="flex-1" />

@@ -719,7 +719,7 @@ export function TableViewer({
                               </span>
                             ) : isForeignKey ? (
                               <a
-                                href={`/projects/${project.project_group_id}/${project.branch_name}/studio?table=${col.name.replace("_id", "s")}&id=${cellValue}`}
+                                href={`/projects/${project.project_id}/${project.branch_name}/studio?table=${col.name.replace("_id", "s")}&id=${cellValue}`}
                                 className="text-primary hover:underline"
                                 data-testid={`fk-link-${col.name}`}
                               >
