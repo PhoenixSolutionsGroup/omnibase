@@ -2274,6 +2274,15 @@
               "null"
             ]
           },
+          "relations_metadata": {
+            "items": {
+              "$ref": "#/components/schemas/RelationMetadataResponse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "subject_relations": {
             "additionalProperties": {
               "items": {
@@ -2295,6 +2304,7 @@
           "id",
           "namespace",
           "relations",
+          "relations_metadata",
           "subject_relations",
           "updated_at"
         ],
@@ -2943,6 +2953,36 @@
           "id",
           "value",
           "via"
+        ],
+        "type": "object"
+      },
+      "RelationMetadataResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "sub_group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "display_name",
+          "group",
+          "sub_group"
         ],
         "type": "object"
       },
