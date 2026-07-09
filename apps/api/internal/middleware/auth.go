@@ -377,8 +377,12 @@ func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
 			}
 
 			logger.Logger.Debug("Service key authentication successful", "tenant_id", tenantIDHeader, "user_id", userIDHeader)
-			c.Set("tenant_id", tenantIDHeader)
-			c.Set("user_id", userIDHeader)
+			if tenantIDHeader != "" {
+				c.Set("tenant_id", tenantIDHeader)
+			}
+			if userIDHeader != "" {
+				c.Set("user_id", userIDHeader)
+			}
 			c.Set("is_service_auth", true)
 			c.Next()
 			return
