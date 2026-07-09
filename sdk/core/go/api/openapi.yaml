@@ -5830,6 +5830,15 @@ components:
       additionalProperties: false
       example:
         updated_at: 2000-01-23T04:56:07.000+00:00
+        relations_metadata:
+        - sub_group: sub_group
+          name: name
+          display_name: display_name
+          group: group
+        - sub_group: sub_group
+          name: name
+          display_name: display_name
+          group: group
         namespace: namespace
         id: id
         subject_relations:
@@ -5849,6 +5858,11 @@ components:
             type: string
           nullable: true
           type: array
+        relations_metadata:
+          items:
+            $ref: "#/components/schemas/RelationMetadataResponse"
+          nullable: true
+          type: array
         subject_relations:
           additionalProperties:
             items:
@@ -5861,6 +5875,7 @@ components:
       - id
       - namespace
       - relations
+      - relations_metadata
       - subject_relations
       - updated_at
     NullableString:
@@ -6730,6 +6745,29 @@ components:
       - id
       - value
       - via
+    RelationMetadataResponse:
+      additionalProperties: false
+      example:
+        sub_group: sub_group
+        name: name
+        display_name: display_name
+        group: group
+      properties:
+        display_name:
+          type: string
+        group:
+          nullable: true
+          type: string
+        name:
+          type: string
+        sub_group:
+          nullable: true
+          type: string
+      required:
+      - display_name
+      - group
+      - name
+      - sub_group
     RemoveRequest:
       additionalProperties: false
       example:

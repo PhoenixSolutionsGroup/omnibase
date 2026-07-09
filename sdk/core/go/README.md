@@ -260,6 +260,7 @@ Class | Method | HTTP request | Description
  - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
  - [RecordUsageRequest](docs/RecordUsageRequest.md)
  - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
+ - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
  - [RemoveRequest](docs/RemoveRequest.md)
  - [RemoveResponse](docs/RemoveResponse.md)
  - [SendRequest](docs/SendRequest.md)

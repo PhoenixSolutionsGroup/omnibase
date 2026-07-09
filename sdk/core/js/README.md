@@ -235,6 +235,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
 - [RecordUsageRequest](docs/RecordUsageRequest.md)
 - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
+- [RelationMetadataResponse](docs/RelationMetadataResponse.md)
 - [RemoveRequest](docs/RemoveRequest.md)
 - [RemoveResponse](docs/RemoveResponse.md)
 - [SendRequest](docs/SendRequest.md)

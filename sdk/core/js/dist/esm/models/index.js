@@ -121,6 +121,7 @@ __exportStar(require("./PromotionCodeChanges"), exports);
 __exportStar(require("./PromotionCodeWithStripeID"), exports);
 __exportStar(require("./RecordUsageRequest"), exports);
 __exportStar(require("./RecoveryIdentityAddress"), exports);
+__exportStar(require("./RelationMetadataResponse"), exports);
 __exportStar(require("./RemoveRequest"), exports);
 __exportStar(require("./RemoveResponse"), exports);
 __exportStar(require("./SendRequest"), exports);
