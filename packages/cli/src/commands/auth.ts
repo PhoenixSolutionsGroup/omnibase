@@ -90,7 +90,7 @@ async function resetManagedService(env?: string): Promise<void> {
       });
     }
   } catch (error) {
-    handleCommandError(error);
+    await handleCommandError(error);
   }
 }
 

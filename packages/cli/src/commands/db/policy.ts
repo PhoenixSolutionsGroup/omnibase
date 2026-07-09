@@ -44,16 +44,16 @@ async function writePolicyFile(policiesDir: string, tableName: string): Promise<
 }
 
 async function interactivePolicyCreate(policiesDir: string, root: string): Promise<void> {
-  const schemaPath = path.join(root, "omnibase", "db", "schema.prisma");
+  const schemaPath = path.join(root, "omnibase", "db", "schema");
   const generatedDir = path.join(policiesDir, "generated");
 
   if (!existsSync(schemaPath)) {
-    throw new Error("No omnibase/db/schema.prisma found. Run `omnibase init` first.");
+    throw new Error("No omnibase/db/schema found. Run `omnibase init` first.");
   }
 
   if (!existsSync(path.join(generatedDir, "index.js"))) {
     logger.start("Generating Prisma client...");
-    execSync(`npx prisma generate --schema="${schemaPath}"`, { stdio: "inherit" });
+    execSync(`npx --yes prisma@6 generate --schema="${schemaPath}"`, { stdio: "inherit" });
     logger.succeed("Prisma client generated");
   }
 
@@ -113,7 +113,7 @@ export function dbPolicyCommands(program: Command): void {
       "`definePolicy<Prisma.XWhereInput>(...)` calls.\n\n" +
       "Run this after modifying the Prisma schema so the generated types " +
       "stay in sync.\n\n" +
-      "Before: ensure omnibase/db/schema.prisma exists.\n" +
+      "Before: ensure omnibase/db/schema exists.\n" +
       "After: types are available at omnibase/db/policies/generated/.",
     )
     .action(async () => {
@@ -121,11 +121,11 @@ export function dbPolicyCommands(program: Command): void {
         findOmnibaseRoot(),
         "omnibase",
         "db",
-        "schema.prisma",
+        "schema",
       );
       logger.start("Generating Prisma Client");
       try {
-        execSync(`npx prisma generate --schema="${schemaPath}"`, {
+        execSync(`npx --yes prisma@6 generate --schema="${schemaPath}"`, {
           stdio: "inherit",
         });
         logger.succeed("Prisma client generated");

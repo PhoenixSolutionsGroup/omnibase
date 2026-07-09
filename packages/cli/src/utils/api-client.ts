@@ -12,8 +12,8 @@ export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
   const profile = getActiveProfile();
   const headers: Record<string, string> = {};
 
-  if (env.projectId) {
-    headers["X-Project-ID"] = env.projectId;
+  if (env.branchId) {
+    headers["X-Project-ID"] = env.branchId;
   }
 
   if (env.name !== "local" && profile?.tenant_id) {
@@ -53,8 +53,8 @@ export function createManagedHostingClient(
     "Content-Type": "application/json",
   };
 
-  if (env.projectId) {
-    headers["X-Project-ID"] = env.projectId;
+  if (env.branchId) {
+    headers["X-Project-ID"] = env.branchId;
   }
 
   if (profile?.tenant_id) {

@@ -42,7 +42,7 @@ export function formatHttpError(error: unknown): string {
   return "Unknown error occurred";
 }
 
-export function handleCommandError(error: unknown): never {
-  logger.fail(formatHttpError(error));
+export async function handleCommandError(error: unknown): Promise<never> {
+  logger.fail(await extractApiError(error));
   process.exit(1);
 }

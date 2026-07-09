@@ -111,9 +111,6 @@ export class DatabaseMigrationService {
       logger.succeed(response.message || "Migrations applied successfully");
     } catch (error) {
       logger.fail("Failed to apply migrations");
-      if (error instanceof Error) {
-        logger.fail(error.message);
-      }
       throw error;
     }
   }

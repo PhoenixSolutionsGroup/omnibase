@@ -126,10 +126,10 @@ export class PermissionsCommand {
         try {
           await Promise.all([
             apiClient.post(
-              `/api/v1/projects/${env.projectId}/services/perm-read/restart`
+              `/api/v1/projects/${env.branchId}/services/perm-read/restart`
             ),
             apiClient.post(
-              `/api/v1/projects/${env.projectId}/services/perm-write/restart`
+              `/api/v1/projects/${env.branchId}/services/perm-write/restart`
             ),
           ]);
         } catch (error) {
