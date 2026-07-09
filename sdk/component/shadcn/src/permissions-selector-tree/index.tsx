@@ -12,7 +12,7 @@ import {
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { NamespaceDefinition } from "@omnibase/core-js";
+import type { NamespaceDefinitionResponse as NamespaceDefinition } from "@omnibase/core-js";
 
 export interface NamespaceMapEntry {
   id: string;
@@ -251,7 +251,7 @@ export function PermissionsSelectorTree({
       }));
     }
 
-    return def.relations
+    return (def.relations ?? [])
       .filter((rel) => rel.startsWith("can_") || rel.startsWith("is_"))
       .map((rel) => ({
         name: rel,

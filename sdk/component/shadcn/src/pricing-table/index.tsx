@@ -218,14 +218,14 @@ export function PricingTable({
   const hasMultipleIntervals = React.useMemo(
     () =>
       products.some(
-        (p) => new Set(p.prices.map((price) => price.interval)).size > 1
+        (p) => new Set((p.prices ?? []).map((price) => price.interval)).size > 1
       ),
     [products]
   );
 
   const getDisplayedPrice = (product: Product) =>
-    product.prices.find((price) => price.interval === selectedInterval) ||
-    product.prices[0];
+    (product.prices ?? []).find((price) => price.interval === selectedInterval) ||
+    (product.prices ?? [])[0];
 
   const renderCard = (product: Product) => {
     const displayedPrice = getDisplayedPrice(product);

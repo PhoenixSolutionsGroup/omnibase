@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { NamespaceDefinition, Role } from "@omnibase/core-js";
+import type {
+  NamespaceDefinitionResponse as NamespaceDefinition,
+  ListRolesByTenantRow as Role,
+} from "@omnibase/core-js";
 import {
   PermissionsSelector,
   type PermissionRow,
@@ -94,7 +97,7 @@ export function RoleCreator({
       setIsEditMode(true);
       setEditingRoleId(existingRole.id);
 
-      const rows: PermissionRow[] = existingRole.permissions.map((perm) => {
+      const rows: PermissionRow[] = (existingRole.permissions ?? []).map((perm) => {
         const parsed = parsePermissionString(perm);
         return {
           id: generateId(),

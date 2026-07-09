@@ -6,3 +6,7 @@ export * from "./user-invite";
 export * from "./role-creator";
 export * from "./user-viewer";
 export * from "./permissions-selector";
+export {
+  PermissionsSelectorTree,
+  type PermissionsSelectorTreeProps,
+} from "./permissions-selector-tree";
