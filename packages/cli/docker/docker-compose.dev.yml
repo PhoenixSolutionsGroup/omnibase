@@ -1,5 +1,9 @@
 # Development overrides - local builds with hot-reload
 services:
+  postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   auth-migrate:
     image: ""
     build:
@@ -46,3 +50,7 @@ services:
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
+
+volumes:
+  postgres_data:
+    driver: local
