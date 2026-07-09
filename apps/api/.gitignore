@@ -15,3 +15,6 @@ docs-old.sdk-docs.hash
 
 # SDK codegen cache
 .sdk-spec.hash
+
+# Compiled server binary
+/server
