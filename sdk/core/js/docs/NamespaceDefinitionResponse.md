@@ -9,6 +9,7 @@ Name | Type
 `id` | string
 `namespace` | string
 `relations` | Array&lt;string&gt;
+`relationsMetadata` | [Array&lt;RelationMetadataResponse&gt;](RelationMetadataResponse.md)
 `subjectRelations` | { [key: string]: Array&lt;string&gt; | null; }
 `updatedAt` | Date
 
@@ -22,6 +23,7 @@ const example = {
   "id": null,
   "namespace": null,
   "relations": null,
+  "relationsMetadata": null,
   "subjectRelations": null,
   "updatedAt": null,
 } satisfies NamespaceDefinitionResponse

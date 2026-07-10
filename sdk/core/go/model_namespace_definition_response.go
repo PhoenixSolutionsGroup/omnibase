@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.20.0
+API version: 0.0.0-dev
 Contact: support@omnibase.dev
 */
 
@@ -26,6 +26,7 @@ type NamespaceDefinitionResponse struct {
 	Id string `json:"id"`
 	Namespace string `json:"namespace"`
 	Relations []string `json:"relations"`
+	RelationsMetadata []RelationMetadataResponse `json:"relations_metadata"`
 	SubjectRelations map[string][]string `json:"subject_relations"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -36,11 +37,12 @@ type _NamespaceDefinitionResponse NamespaceDefinitionResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewNamespaceDefinitionResponse(id string, namespace string, relations []string, subjectRelations map[string][]string, updatedAt time.Time) *NamespaceDefinitionResponse {
+func NewNamespaceDefinitionResponse(id string, namespace string, relations []string, relationsMetadata []RelationMetadataResponse, subjectRelations map[string][]string, updatedAt time.Time) *NamespaceDefinitionResponse {
 	this := NamespaceDefinitionResponse{}
 	this.Id = id
 	this.Namespace = namespace
 	this.Relations = relations
+	this.RelationsMetadata = relationsMetadata
 	this.SubjectRelations = subjectRelations
 	this.UpdatedAt = updatedAt
 	return &this
@@ -128,6 +130,32 @@ func (o *NamespaceDefinitionResponse) SetRelations(v []string) {
 	o.Relations = v
 }
 
+// GetRelationsMetadata returns the RelationsMetadata field value
+// If the value is explicit nil, the zero value for []RelationMetadataResponse will be returned
+func (o *NamespaceDefinitionResponse) GetRelationsMetadata() []RelationMetadataResponse {
+	if o == nil {
+		var ret []RelationMetadataResponse
+		return ret
+	}
+
+	return o.RelationsMetadata
+}
+
+// GetRelationsMetadataOk returns a tuple with the RelationsMetadata field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *NamespaceDefinitionResponse) GetRelationsMetadataOk() ([]RelationMetadataResponse, bool) {
+	if o == nil || IsNil(o.RelationsMetadata) {
+		return nil, false
+	}
+	return o.RelationsMetadata, true
+}
+
+// SetRelationsMetadata sets field value
+func (o *NamespaceDefinitionResponse) SetRelationsMetadata(v []RelationMetadataResponse) {
+	o.RelationsMetadata = v
+}
+
 // GetSubjectRelations returns the SubjectRelations field value
 func (o *NamespaceDefinitionResponse) GetSubjectRelations() map[string][]string {
 	if o == nil {
@@ -191,6 +219,9 @@ func (o NamespaceDefinitionResponse) ToMap() (map[string]interface{}, error) {
 	if o.Relations != nil {
 		toSerialize["relations"] = o.Relations
 	}
+	if o.RelationsMetadata != nil {
+		toSerialize["relations_metadata"] = o.RelationsMetadata
+	}
 	toSerialize["subject_relations"] = o.SubjectRelations
 	toSerialize["updated_at"] = o.UpdatedAt
 	return toSerialize, nil
@@ -204,6 +235,7 @@ func (o *NamespaceDefinitionResponse) UnmarshalJSON(data []byte) (err error) {
 		"id",
 		"namespace",
 		"relations",
+		"relations_metadata",
 		"subject_relations",
 		"updated_at",
 	}
