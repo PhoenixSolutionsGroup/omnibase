@@ -213,7 +213,7 @@ services:
 
   # REST API Service
   rest-api:
-    image: phoenixsolutionsgroup/omnibase-api:0.19.1
+    image: phoenixsolutionsgroup/omnibase-api:0.20.0
     ports:
       - "8080:8080"
     depends_on:
@@ -321,16 +321,19 @@ services:
     networks:
       - app-network
 
-  # Workers - Hono app for background jobs
+  # Workers - Wrangler app
   workers:
     image: oven/bun:latest
     working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ${OMNIBASE_PROJECT_DIR}/omnibase/workers:/app:z
     ports:
       - "8787:8787"
     environment:
       - PORT=8787
+      - HOME=/tmp
+      - BUN_INSTALL_CACHE_DIR=/tmp/.bun-cache
     command: sh -c "bun install && bun run dev"
     networks:
       - app-network
