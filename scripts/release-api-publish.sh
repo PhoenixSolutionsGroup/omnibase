@@ -18,9 +18,12 @@ echo "========================================"
 echo "Publishing API release v$VERSION"
 echo "========================================"
 
-# Publish JavaScript SDK to npm
+# Publish JavaScript SDK to npm. Stamp the real version here (not committed
+# to git) so the published package carries $VERSION while the tracked source
+# keeps its placeholder.
 echo "Publishing @omnibase/core-js@$VERSION to npm..."
 cd sdk/core/js
+jq --arg v "$VERSION" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
 npm publish --access public
 cd "$PROJECT_ROOT"
 
