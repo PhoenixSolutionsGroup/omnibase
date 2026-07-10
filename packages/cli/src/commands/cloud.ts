@@ -1,7 +1,9 @@
 import { Command } from "commander";
 import { execSync } from "child_process";
-import { readFile } from "fs/promises";
+import { readFile, readdir } from "fs/promises";
 import FormData from "form-data";
+import JSZip from "jszip";
+import * as TOML from "smol-toml";
 import axios from "axios";
 import { checkbox, select } from "@inquirer/prompts";
 import * as path from "path";
@@ -257,7 +259,7 @@ async function deployWorkers(envFlag?: string): Promise<void> {
   logger.start(`Building workers for ${env.name} environment...`);
 
   try {
-    execSync("npm run build", {
+    execSync("bunx wrangler deploy --dry-run --outdir .bundle", {
       cwd: workersDir,
       stdio: "inherit",
     });
@@ -265,48 +267,95 @@ async function deployWorkers(envFlag?: string): Promise<void> {
     throw new Error("Build failed. Check the output above for details.");
   }
 
-  const scriptPath = path.join(workersDir, "dist/worker.js");
-  const script = await readFile(scriptPath, "utf-8");
-  logger.succeed(`Bundled workers: ${(script.length / 1024).toFixed(1)} KB`);
-
-  const config = await readFile(
-    path.join(workersDir, "wrangler.toml"),
-    "utf-8"
-  );
-
-  const envFilePath = path.join(
-    root,
-    "omnibase/environments",
-    `.env.${env.name}`
-  );
-  const envFile = await readFile(envFilePath, "utf-8");
+  const bundle = await packageWorkerBundle(workersDir);
+  logger.succeed(`Packaged worker bundle: ${(bundle.length / 1024).toFixed(1)} KB`);
 
   logger.start("Deploying to Cloudflare Workers...");
-  const result = await uploadToManagedHosting(env, script, config, envFile);
+  const result = await uploadToManagedHosting(env, bundle);
 
   logger.succeed("Workers deployed successfully");
   logger.log(`   URL: ${result.url}`);
 }
 
-async function uploadToManagedHosting(
-  env: EnvironmentConfig,
-  script: string,
-  config: string,
-  envFile: string
-) {
+/**
+ * Turn a `wrangler deploy --dry-run --outdir .bundle` output into a
+ * self-contained, deploy-ready zip the managed-hosting server hands to
+ * `wrangler deploy --dispatch-namespace`. Framework-agnostic: everything is
+ * derived from the project's own wrangler config.
+ */
+async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
+  const config = await loadWranglerConfig(workersDir);
+  delete config.build;
+  delete config.name;
+  config.main = "worker.js";
+
+  const zip = new JSZip();
+  await addDirToZip(zip, path.join(workersDir, ".bundle"));
+
+  const assetsDir = config.assets?.directory;
+  if (assetsDir) {
+    config.assets = { ...config.assets, directory: "assets" };
+    await addDirToZip(zip.folder("assets")!, path.join(workersDir, assetsDir));
+  }
+
+  zip.file("wrangler.json", JSON.stringify(config, null, 2));
+
+  return zip.generateAsync({
+    type: "nodebuffer",
+    compression: "DEFLATE",
+  });
+}
+
+async function loadWranglerConfig(workersDir: string): Promise<any> {
+  const parsers: Record<string, (text: string) => any> = {
+    "wrangler.jsonc": stripJsonc,
+    "wrangler.json": stripJsonc,
+    "wrangler.toml": parseToml,
+  };
+  for (const [name, parse] of Object.entries(parsers)) {
+    const p = path.join(workersDir, name);
+    try {
+      return parse(await readFile(p, "utf-8"));
+    } catch (error: any) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+  }
+  throw new Error(
+    "No wrangler.jsonc, wrangler.json, or wrangler.toml found in omnibase/workers."
+  );
+}
+
+function parseToml(text: string): any {
+  return TOML.parse(text);
+}
+
+function stripJsonc(text: string): any {
+  const noComments = text
+    .replace(/\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g, (m, comment) =>
+      comment ? "" : m
+    )
+    .replace(/,(\s*[}\]])/g, "$1");
+  return JSON.parse(noComments);
+}
+
+async function addDirToZip(folder: JSZip, dir: string): Promise<void> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      await addDirToZip(folder.folder(entry.name)!, full);
+    } else if (entry.isFile()) {
+      folder.file(entry.name, await readFile(full));
+    }
+  }
+}
+
+async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
   const api = createManagedHostingClient(env);
   const form = new FormData();
-  form.append("script", Buffer.from(script), {
-    filename: "worker.js",
-    contentType: "application/javascript",
-  });
-  form.append("config", Buffer.from(config), {
-    filename: "wrangler.toml",
-    contentType: "text/plain",
-  });
-  form.append("env", Buffer.from(envFile), {
-    filename: ".env",
-    contentType: "text/plain",
+  form.append("bundle", bundle, {
+    filename: "bundle.zip",
+    contentType: "application/zip",
   });
 
   try {
@@ -317,6 +366,8 @@ async function uploadToManagedHosting(
         headers: {
           ...form.getHeaders(),
         },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       }
     );
 
