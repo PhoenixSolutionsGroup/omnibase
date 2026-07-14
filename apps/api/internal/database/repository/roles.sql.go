@@ -172,17 +172,18 @@ func (q *Queries) GetRoleByNameAndTenant(ctx context.Context, arg GetRoleByNameA
 }
 
 const listNamespaceDefinitions = `-- name: ListNamespaceDefinitions :many
-SELECT id, namespace, relations, subject_relations, updated_at
+SELECT id, namespace, relations, relations_metadata, subject_relations, updated_at
 FROM permissions.definitions
 ORDER BY namespace
 `
 
 type ListNamespaceDefinitionsRow struct {
-	ID               uuid.UUID `json:"id"`
-	Namespace        string    `json:"namespace"`
-	Relations        []string  `json:"relations"`
-	SubjectRelations []byte    `json:"subject_relations"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	ID                uuid.UUID `json:"id"`
+	Namespace         string    `json:"namespace"`
+	Relations         []string  `json:"relations"`
+	RelationsMetadata []byte    `json:"relations_metadata"`
+	SubjectRelations  []byte    `json:"subject_relations"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func (q *Queries) ListNamespaceDefinitions(ctx context.Context) ([]ListNamespaceDefinitionsRow, error) {
@@ -198,6 +199,7 @@ func (q *Queries) ListNamespaceDefinitions(ctx context.Context) ([]ListNamespace
 			&i.ID,
 			&i.Namespace,
 			&i.Relations,
+			&i.RelationsMetadata,
 			&i.SubjectRelations,
 			&i.UpdatedAt,
 		); err != nil {

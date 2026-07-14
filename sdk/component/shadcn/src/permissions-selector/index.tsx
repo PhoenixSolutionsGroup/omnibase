@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/command";
 import { Trash2, Check, ChevronsUpDown, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { NamespaceDefinition } from "@omnibase/core-js";
+import type { NamespaceDefinitionResponse as NamespaceDefinition } from "@omnibase/core-js";
 
 export interface NamespaceMapEntry {
   id: string;
@@ -351,7 +351,7 @@ export function PermissionsSelector({
     }
 
     // Fallback to legacy behavior: filter can_/is_ relations with auto-formatted labels
-    return def.relations
+    return (def.relations ?? [])
       .filter((rel) => rel.startsWith("can_") || rel.startsWith("is_"))
       .map((rel) => ({ value: rel, label: formatRelation(rel) }));
   };

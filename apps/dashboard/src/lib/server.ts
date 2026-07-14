@@ -1,4 +1,4 @@
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import { Database } from "@/types/omnibase";
 import { Configuration } from "@omnibase/core-js";
 import { PostgrestClient } from "@supabase/postgrest-js";
@@ -47,7 +47,7 @@ export const getOmnibaseProjectConfiguration = async (
     .join("; ");
 
   const response = await fetch(
-    `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project.id}/api-service-key`,
+    `${MANAGED_HOSTING_API_URL}/api/v1/project_branches/${project.id}/api-service-key`,
     {
       headers: {
         Cookie: cookieHeader,

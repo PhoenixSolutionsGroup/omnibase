@@ -16,12 +16,20 @@ import (
 
 var ListDefinitionsError = errors.New("Failed to fetch definitions")
 
+type RelationMetadataResponse struct {
+	Name        string  `json:"name"`
+	DisplayName string  `json:"display_name"`
+	Group       *string `json:"group"`
+	SubGroup    *string `json:"sub_group"`
+}
+
 type NamespaceDefinitionResponse struct {
-	ID               uuid.UUID           `json:"id"`
-	Namespace        string              `json:"namespace"`
-	Relations        []string            `json:"relations"`
-	SubjectRelations map[string][]string `json:"subject_relations"`
-	UpdatedAt        time.Time           `json:"updated_at"`
+	ID                uuid.UUID                  `json:"id"`
+	Namespace         string                     `json:"namespace"`
+	Relations         []string                   `json:"relations"`
+	RelationsMetadata []RelationMetadataResponse `json:"relations_metadata"`
+	SubjectRelations  map[string][]string        `json:"subject_relations"`
+	UpdatedAt         time.Time                  `json:"updated_at"`
 }
 
 type ListDefinitionsInput struct {
@@ -64,12 +72,34 @@ func (h *Handler) ListDefinitions(ctx context.Context, in *ListDefinitionsInput)
 			}
 		}
 
+		metadata := []RelationMetadataResponse{}
+		if len(r.RelationsMetadata) > 0 {
+			if err := json.Unmarshal(r.RelationsMetadata, &metadata); err != nil {
+				logger.Logger.Warn("Failed to unmarshal relations_metadata", "namespace", r.Namespace, "error", err)
+				metadata = []RelationMetadataResponse{}
+			}
+		}
+		if subjectFilter != "" {
+			allowed := map[string]struct{}{}
+			for _, rel := range relations {
+				allowed[rel] = struct{}{}
+			}
+			filteredMeta := metadata[:0]
+			for _, m := range metadata {
+				if _, ok := allowed[m.Name]; ok {
+					filteredMeta = append(filteredMeta, m)
+				}
+			}
+			metadata = filteredMeta
+		}
+
 		defs = append(defs, NamespaceDefinitionResponse{
-			ID:               r.ID,
-			Namespace:        r.Namespace,
-			Relations:        relations,
-			SubjectRelations: sr,
-			UpdatedAt:        r.UpdatedAt,
+			ID:                r.ID,
+			Namespace:         r.Namespace,
+			Relations:         relations,
+			RelationsMetadata: metadata,
+			SubjectRelations:  sr,
+			UpdatedAt:         r.UpdatedAt,
 		})
 	}
 

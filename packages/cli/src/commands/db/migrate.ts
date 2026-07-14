@@ -44,7 +44,7 @@ export function dbMigrateCommands(program: Command): void {
       try {
         await service.new(options.dir, options.name);
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 
@@ -69,7 +69,7 @@ export function dbMigrateCommands(program: Command): void {
 
         await service.push(options.dir, ctx.env);
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 

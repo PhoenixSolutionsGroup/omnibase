@@ -43,8 +43,8 @@ async function login(
       }
     );
 
-    const data = response.data;
-    if (!data.valid) {
+    const data = response.data?.data ?? response.data;
+    if (!data?.tenant_id) {
       throw new Error("Invalid API key");
     }
 
@@ -62,7 +62,7 @@ async function login(
       tenant_name: data.tenant_name,
       key_name: data.key_name,
       key_prefix: data.key_prefix,
-      api_key: data.api_key,
+      api_key: apiKey,
       managed_hosting_url: managedHostingUrl,
     };
 
@@ -73,7 +73,7 @@ async function login(
 
     logger.succeed(`Profile '${profileName}' saved and set as active.`);
   } catch (error) {
-    handleCommandError(error);
+    await handleCommandError(error);
   }
 }
 
@@ -242,9 +242,9 @@ async function deployWorkers(envFlag?: string): Promise<void> {
     return;
   }
 
-  if (!env.projectId) {
+  if (!env.branchId) {
     throw new Error(
-      `OMNIBASE_PROJECT_ID not set in environment file.\n` +
+      `OMNIBASE_BRANCH_ID not set in environment file.\n` +
         `Please add it to omnibase/environments/.env.${env.name}`
     );
   }
@@ -290,7 +290,9 @@ async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
   config.main = "worker.js";
 
   const zip = new JSZip();
-  await addDirToZip(zip, path.join(workersDir, ".bundle"));
+  await addDirToZip(zip, path.join(workersDir, ".bundle"), (name) =>
+    name.endsWith(".map")
+  );
 
   const assetsDir = config.assets?.directory;
   if (assetsDir) {
@@ -338,13 +340,18 @@ function stripJsonc(text: string): any {
   return JSON.parse(noComments);
 }
 
-async function addDirToZip(folder: JSZip, dir: string): Promise<void> {
+async function addDirToZip(
+  folder: JSZip,
+  dir: string,
+  skip?: (name: string) => boolean
+): Promise<void> {
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      await addDirToZip(folder.folder(entry.name)!, full);
+      await addDirToZip(folder.folder(entry.name)!, full, skip);
     } else if (entry.isFile()) {
+      if (skip?.(entry.name)) continue;
       folder.file(entry.name, await readFile(full));
     }
   }
@@ -360,7 +367,7 @@ async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
 
   try {
     const response = await api.post(
-      `/api/v1/projects/${env.projectId}/workers/deploy`,
+      `/api/v1/projects/${env.branchId}/workers/deploy`,
       form,
       {
         headers: {
@@ -371,7 +378,7 @@ async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
       }
     );
 
-    return response.data;
+    return response.data?.data ?? response.data;
   } catch (error) {
     throw new Error(formatHttpError(error));
   }
@@ -399,9 +406,9 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
     return;
   }
 
-  if (!env.projectId) {
+  if (!env.branchId) {
     throw new Error(
-      `OMNIBASE_PROJECT_ID not set in environment file.\n` +
+      `OMNIBASE_BRANCH_ID not set in environment file.\n` +
         `Please add it to omnibase/environments/.env.${env.name}`
     );
   }
@@ -426,7 +433,7 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
 
   try {
     const response = await api.post<EnvPushResult>(
-      `/api/v1/projects/${env.projectId}/env`,
+      `/api/v1/projects/${env.branchId}/env`,
       envFileContent,
       {
         headers: {
@@ -505,7 +512,7 @@ export function addCloudCommands(program: Command): void {
           logger.warn("Logout cancelled");
           return;
         }
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 
@@ -523,7 +530,7 @@ export function addCloudCommands(program: Command): void {
           logger.warn("Switch cancelled");
           return;
         }
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 
@@ -547,7 +554,7 @@ export function addCloudCommands(program: Command): void {
         const globalOptions = program.opts();
         await deployWorkers(globalOptions.env);
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 
@@ -564,7 +571,7 @@ export function addCloudCommands(program: Command): void {
         const globalOptions = program.opts();
         await pushEnvConfig(globalOptions.env);
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 }

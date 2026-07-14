@@ -105,6 +105,7 @@ export * from './PromotionCodeChanges';
 export * from './PromotionCodeWithStripeID';
 export * from './RecordUsageRequest';
 export * from './RecoveryIdentityAddress';
+export * from './RelationMetadataResponse';
 export * from './RemoveRequest';
 export * from './RemoveResponse';
 export * from './SendRequest';

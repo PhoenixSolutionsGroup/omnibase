@@ -28,7 +28,7 @@ export function addMigrationCommands(program: Command): void {
       try {
         await createMigration(options.dir, options.name);
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 
@@ -57,7 +57,7 @@ export function addMigrationCommands(program: Command): void {
           options.dir
         );
       } catch (error) {
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 }

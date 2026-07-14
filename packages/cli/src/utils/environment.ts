@@ -8,7 +8,7 @@ export interface EnvironmentConfig {
   name: string;
   omnibaseApiUrl: string;
   omnibaseServiceKey?: string;
-  projectId?: string;
+  branchId?: string;
   managedHostingApiUrl?: string;
   stripeSecretKey?: string;
   stripePublishableKey?: string;
@@ -153,7 +153,7 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
     name: environmentName,
     omnibaseApiUrl: env.OMNIBASE_API_URL,
     omnibaseServiceKey: env.OMNIBASE_SERVICE_KEY,
-    projectId: env.OMNIBASE_PROJECT_ID,
+    branchId: env.OMNIBASE_BRANCH_ID || env.OMNIBASE_PROJECT_ID,
     managedHostingApiUrl:
       env.MANAGED_HOSTING_API_URL || "https://api.omnibase.com",
     stripeSecretKey: env.STRIPE_SECRET_KEY,

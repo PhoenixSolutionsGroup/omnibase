@@ -1,5 +1,9 @@
 # Development overrides - local builds with hot-reload
 services:
+  postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   auth-migrate:
     image: ""
     build:
@@ -27,12 +31,13 @@ services:
   rest-api:
     image: ""
     build:
-      context: ../../../apps/api
-      dockerfile: Dockerfile.dev
+      context: ../../..
+      dockerfile: apps/api/Dockerfile.dev
     environment:
       - ENABLE_PPROF=true
     volumes:
       - ../../../apps/api:/app:z
+      - ../../../sdk/core/go:/sdk/core/go:z
 
   permissions-migrate:
     image: ""
@@ -45,3 +50,7 @@ services:
     build:
       context: ../../../docker/permissions
       dockerfile: Dockerfile
+
+volumes:
+  postgres_data:
+    driver: local

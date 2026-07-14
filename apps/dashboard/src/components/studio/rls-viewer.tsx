@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { fetchRLSPolicies, RLSPolicy } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/studio/actions";
+import { fetchRLSPolicies, RLSPolicy } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 import { cn } from "@/lib/utils";
 
 interface RLSViewerProps {
     project: {
-        project_group_id: string;
+        project_id: string;
         branch_name: string;
     };
     tableName: string;
@@ -32,7 +32,7 @@ export function RLSViewer({ project, tableName, schemaName, hasRlsPolicies }: RL
         setError(null);
         try {
             const result = await fetchRLSPolicies(
-                project.project_group_id,
+                project.project_id,
                 project.branch_name,
                 tableName,
                 schemaName

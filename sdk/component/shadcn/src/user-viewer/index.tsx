@@ -28,7 +28,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, UserX } from "lucide-react";
-import type { TenantUserResponse } from "@omnibase/core-js";
+import type { UserResponse as TenantUserResponse } from "@omnibase/core-js";
 
 interface UserViewerProps {
   users: TenantUserResponse[];

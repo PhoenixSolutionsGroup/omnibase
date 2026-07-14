@@ -8,7 +8,7 @@ import {
   Product,
   V1PaymentsApi,
   V1StripeApi,
-  V1TenantsApi,
+  V1TenantsSubscriptionsApi,
 } from "@omnibase/core-js";
 
 async function createCustomerPortal() {
@@ -21,13 +21,13 @@ async function createCustomerPortal() {
   const protocol = headersList.get("x-forwarded-proto");
   const currentUrl = `${protocol}://${host}`;
 
-  const { data: portal } = await client.createCustomerPortal({
+  const portal = await client.createCustomerPortal({
     createPortalRequest: {
       returnUrl: currentUrl,
     },
   });
 
-  if (!portal?.url) return;
+  if (!portal.url) return;
   redirect(portal.url);
 }
 
@@ -41,7 +41,7 @@ async function createCheckout(id: string) {
   const protocol = headersList.get("x-forwarded-proto");
   const currentUrl = `${protocol}://${host}`;
 
-  const { data } = await client.createCheckout({
+  const checkout = await client.createCheckout({
     createCheckoutRequest: {
       priceId: id,
       successUrl: `${currentUrl}/subscriptions?success=true`,
@@ -51,26 +51,23 @@ async function createCheckout(id: string) {
     },
   });
 
-  if (!data) return;
-  redirect(data.url!);
+  if (!checkout.url) return;
+  redirect(checkout.url);
 }
 
 export default async function Page() {
   const config = await getOmnibaseConfiguration();
-  const tenantClient = new V1TenantsApi(config);
+  const tenantClient = new V1TenantsSubscriptionsApi(config);
   const stripeClient = new V1StripeApi(config);
 
-  const { data: configData } = await stripeClient.getStripeConfig();
-  if (!configData) {
-    throw new Error("Failed to fetch Stripe config");
-  }
-  const products = configData.config.products;
+  const stripeConfig = await stripeClient.getStripeConfig();
+  const products = stripeConfig.config.products ?? [];
 
-  const { data: subscriptions } = await tenantClient.listTenantSubscriptions();
+  const subscriptions = await tenantClient.listTenantSubscriptions();
 
   let active_subscription_id = undefined;
 
-  if (subscriptions && subscriptions?.length > 0) {
+  if (subscriptions && subscriptions.length > 0) {
     active_subscription_id = subscriptions[0].configPriceId;
   }
 

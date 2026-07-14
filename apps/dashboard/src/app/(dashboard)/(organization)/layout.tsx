@@ -17,7 +17,7 @@ export default async function ProjectLayout({ children }: { children: any }) {
   const authApi = new V1AuthApi(config);
 
   const response = await authApi.listTenants();
-  const tenantItems = response.data?.tenants ?? [];
+  const tenantItems = response.tenants ?? [];
 
   if (tenantItems.length === 0) {
     return redirect("/auth/onboarding");

@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Id** | **string** |  | 
 **Namespace** | **string** |  | 
 **Relations** | **[]string** |  | 
+**RelationsMetadata** | [**[]RelationMetadataResponse**](RelationMetadataResponse.md) |  | 
 **SubjectRelations** | **map[string][]string** |  | 
 **UpdatedAt** | **time.Time** |  | 
 
@@ -14,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewNamespaceDefinitionResponse
 
-`func NewNamespaceDefinitionResponse(id string, namespace string, relations []string, subjectRelations map[string][]string, updatedAt time.Time, ) *NamespaceDefinitionResponse`
+`func NewNamespaceDefinitionResponse(id string, namespace string, relations []string, relationsMetadata []RelationMetadataResponse, subjectRelations map[string][]string, updatedAt time.Time, ) *NamespaceDefinitionResponse`
 
 NewNamespaceDefinitionResponse instantiates a new NamespaceDefinitionResponse object
 This constructor will assign default values to properties that have it defined,
@@ -99,6 +100,36 @@ SetRelations sets Relations field to given value.
 `func (o *NamespaceDefinitionResponse) UnsetRelations()`
 
 UnsetRelations ensures that no value is present for Relations, not even an explicit nil
+### GetRelationsMetadata
+
+`func (o *NamespaceDefinitionResponse) GetRelationsMetadata() []RelationMetadataResponse`
+
+GetRelationsMetadata returns the RelationsMetadata field if non-nil, zero value otherwise.
+
+### GetRelationsMetadataOk
+
+`func (o *NamespaceDefinitionResponse) GetRelationsMetadataOk() (*[]RelationMetadataResponse, bool)`
+
+GetRelationsMetadataOk returns a tuple with the RelationsMetadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRelationsMetadata
+
+`func (o *NamespaceDefinitionResponse) SetRelationsMetadata(v []RelationMetadataResponse)`
+
+SetRelationsMetadata sets RelationsMetadata field to given value.
+
+
+### SetRelationsMetadataNil
+
+`func (o *NamespaceDefinitionResponse) SetRelationsMetadataNil(b bool)`
+
+ SetRelationsMetadataNil sets the value for RelationsMetadata to be an explicit nil
+
+### UnsetRelationsMetadata
+`func (o *NamespaceDefinitionResponse) UnsetRelationsMetadata()`
+
+UnsetRelationsMetadata ensures that no value is present for RelationsMetadata, not even an explicit nil
 ### GetSubjectRelations
 
 `func (o *NamespaceDefinitionResponse) GetSubjectRelations() map[string][]string`

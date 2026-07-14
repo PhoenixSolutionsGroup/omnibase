@@ -1,20 +1,14 @@
 import { getOmnibaseConfiguration } from "@/lib/server";
-import { getAllProjects } from "@/utils/get-project";
+import { getAllProjectBranches } from "@/utils/get-project";
 import { CreateAPIKeyForm } from "./create-api-key-form";
-import { V1TenantsApi } from "@omnibase/core-js";
+import { V1TenantsRolesApi } from "@omnibase/core-js";
 
 export default async function Page() {
   const config = await getOmnibaseConfiguration();
-  const client = new V1TenantsApi(config);
-  // Filter definitions to only show permissions that ApiKey can be granted
-  const { data: definitionsData } = await client.getRoleDefinitions({
-    subject: "ApiKey",
-  });
-  if (!definitionsData) {
-    return null;
-  }
+  const client = new V1TenantsRolesApi(config);
+  const definitions = await client.listRoleDefinitions({ subject: "ApiKey" });
 
-  const projects = await getAllProjects();
+  const projects = await getAllProjectBranches();
 
   const namespaceMap: Record<string, { id: string; label: string }[]> = {
     Project:
@@ -27,7 +21,7 @@ export default async function Page() {
   return (
     <div className="flex h-full w-full flex-col items-center my-8 gap-y-8 max-w-3xl mx-auto px-4">
       <CreateAPIKeyForm
-        definitions={definitionsData.definitions}
+        definitions={definitions}
         namespaceMap={namespaceMap}
       />
     </div>

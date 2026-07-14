@@ -1,7 +1,7 @@
 "use server";
 
 import { getOmnibaseConfiguration } from "@/lib/server";
-import { V1TenantsApi } from "@omnibase/core-js";
+import { V1TenantsLifecycleApi } from "@omnibase/core-js";
 import { revalidatePath } from "next/cache";
 
 export async function switchTenant(formData: FormData) {
@@ -12,11 +12,11 @@ export async function switchTenant(formData: FormData) {
   }
 
   const config = await getOmnibaseConfiguration();
-  const tenantsApi = new V1TenantsApi(config);
+  const tenantsApi = new V1TenantsLifecycleApi(config);
 
   try {
     await tenantsApi.switchActiveTenant({
-      switchTenantRequest: { tenantId },
+      switchActiveRequest: { tenantId },
     });
 
     revalidatePath("/", "page");

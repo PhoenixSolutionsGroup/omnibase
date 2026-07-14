@@ -8,9 +8,6 @@ node_modules
 dist
 tmp
 
-# Generated SDKs (committed by CI)
-sdk/core/
-
 api-old
 .kilocode
 

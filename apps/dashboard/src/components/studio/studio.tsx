@@ -7,9 +7,9 @@ import { SchemaBrowser } from "./schema-browser";
 import { TableViewer } from "./table-viewer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
-import { fetchPostgrestServiceKey } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/settings/actions";
-import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/studio/actions";
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { fetchPostgrestServiceKey } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/settings/actions";
+import { fetchSchemaInfo } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/studio/actions";
 
 interface StudioProps {
   project: Project;
@@ -73,7 +73,7 @@ export default function Studio({ project }: StudioProps) {
 
         // Fetch schema info directly from Postgres
         const schemaResult = await fetchSchemaInfo(
-          project.project_group_id,
+          project.project_id,
           project.branch_name
         );
         if (!schemaResult.success || !schemaResult.schemas) {

@@ -1,4 +1,5 @@
 import type { Session } from "@ory/client";
+import { Configuration, V1TenantsLifecycleApi } from "@omnibase/core-js";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -81,17 +82,24 @@ export const postgrestJWTCheckMiddleware = async (
     return NextResponse.next();
   }
 
-  // Fetch a new JWT - either missing or expired/expiring
-  const response = await fetch(`${api_url}/api/v1/tenants/jwt`, {
-    headers: {
-      Cookie: req.headers.get("cookie") || "",
-    },
-  });
+  // Fetch a new JWT via the SDK - either missing or expired/expiring
+  const api = new V1TenantsLifecycleApi(
+    new Configuration({
+      basePath: api_url,
+      headers: { Cookie: req.headers.get("cookie") || "" },
+    })
+  );
 
-  const json: any = await response.json();
-  if (!json || !json.data || !json.data.token) return NextResponse.next();
+  let token: string;
+  try {
+    ({ token } = await api.getTenantJWT());
+  } catch {
+    return NextResponse.next();
+  }
+  if (!token) return NextResponse.next();
+
   const nextResponse = NextResponse.next();
-  nextResponse.cookies.set("omnibase_postgrest_jwt", json.data.token, {
+  nextResponse.cookies.set("omnibase_postgrest_jwt", token, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",

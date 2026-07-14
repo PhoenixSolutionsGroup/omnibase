@@ -90,8 +90,8 @@ async function restartCloudService(
   env: EnvironmentConfig,
   serviceTypes: string[]
 ): Promise<boolean> {
-  if (!env.projectId) {
-    throw new Error("OMNIBASE_PROJECT_ID required for cloud restarts");
+  if (!env.branchId) {
+    throw new Error("OMNIBASE_BRANCH_ID required for cloud restarts");
   }
 
   const apiClient = createManagedHostingClient(env);
@@ -100,7 +100,7 @@ async function restartCloudService(
     await Promise.all(
       serviceTypes.map((type) =>
         apiClient.post(
-          `/api/v1/projects/${env.projectId}/services/${type}/restart`
+          `/api/v1/projects/${env.branchId}/services/${type}/restart`
         )
       )
     );
@@ -237,7 +237,7 @@ export function addRestartCommands(program: Command): void {
           logger.warn("Restart cancelled");
           return;
         }
-        handleCommandError(error);
+        await handleCommandError(error);
       }
     });
 }

@@ -13,7 +13,10 @@ import {
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOmnibaseConfiguration } from "@/lib/server";
-import { V1TenantsApi } from "@omnibase/core-js";
+import {
+  V1TenantsInvitesApi,
+  V1TenantsLifecycleApi,
+} from "@omnibase/core-js";
 
 // TODO - Fix type definitions
 export default function page({ params, searchParams }: any) {
@@ -87,21 +90,18 @@ export default function page({ params, searchParams }: any) {
                     }
 
                     const config = await getOmnibaseConfiguration();
-                    const client = new V1TenantsApi(config);
-                    const { data } = await client.createTenant({
+                    const client = new V1TenantsLifecycleApi(config);
+                    const created = await client.createTenant({
                       createTenantRequest: {
                         name: organizationName,
                         billingEmail: billingEmail,
+                        type: "organization",
                       },
-                      xUserId: session.identity?.id!,
                     });
 
-                    if (!data) {
-                      throw new Error("Failed to create tenant");
-                    }
                     const c = await cookies();
 
-                    c.set("omnibase_postgrest_jwt", data.token!);
+                    c.set("omnibase_postgrest_jwt", created.token);
                     redirect("/");
                   },
                   async joinOrganizationAction(formData) {
@@ -113,19 +113,15 @@ export default function page({ params, searchParams }: any) {
                     }
 
                     const config = await getOmnibaseConfiguration();
-                    const client = new V1TenantsApi(config);
-                    const { data } = await client.acceptInvite({
-                      acceptInviteRequest: {
+                    const client = new V1TenantsInvitesApi(config);
+                    const accepted = await client.acceptInvite({
+                      acceptRequest: {
                         token,
                       },
                     });
 
-                    if (!data) {
-                      throw new Error("Failed to accept invite");
-                    }
-
                     const c = await cookies();
-                    c.set("omnibase_postgrest_jwt", data.token!);
+                    c.set("omnibase_postgrest_jwt", accepted.token);
                     redirect("/");
                   },
                 }}

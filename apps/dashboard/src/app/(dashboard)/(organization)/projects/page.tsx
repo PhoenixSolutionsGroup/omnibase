@@ -8,9 +8,6 @@ export default async function ProjectsPage() {
   const { data: projects, error } = await db
     .from("projects")
     .select("id, name, created_at")
-    .eq("branch_name", "main")
-    .neq("status", "failed")
-    .neq("status", "deleted")
     .order("created_at", { ascending: false });
 
   if (error) {

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { Tenant } from "@omnibase/core-js";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 const CREATE_TENANT_VALUE = "__create_tenant__";
 

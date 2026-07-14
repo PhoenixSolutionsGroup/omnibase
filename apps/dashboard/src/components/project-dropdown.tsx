@@ -11,10 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_group_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 
 interface ProjectDropdownProps {
-  projectGroupId: string;
+  projectId: string;
   currentProject: string;
   projects?: Project[];
   onCreateProject?: () => void;
@@ -22,7 +22,7 @@ interface ProjectDropdownProps {
 }
 
 export function ProjectDropdown({
-  projectGroupId,
+  projectId,
   currentProject,
   projects = [],
   onCreateProject,
@@ -40,7 +40,7 @@ export function ProjectDropdown({
     // Navigate to the same page but for the new project
     const pathSegments = pathname.split("/");
     const projectGroupIndex = pathSegments.findIndex(
-      (segment) => segment === projectGroupId
+      (segment) => segment === projectId
     );
 
     if (projectGroupIndex !== -1) {
@@ -54,7 +54,7 @@ export function ProjectDropdown({
   };
 
   return (
-    <Select value={projectGroupId} onValueChange={handleProjectChange}>
+    <Select value={projectId} onValueChange={handleProjectChange}>
       <SelectTrigger
         className={cn(
           "h-auto w-full border-0 bg-transparent px-3 py-2 text-sm font-medium shadow-none",
@@ -70,8 +70,8 @@ export function ProjectDropdown({
         {projects.length > 0 ? (
           projects.map((project) => (
             <SelectItem
-              key={project.project_group_id}
-              value={project.project_group_id}
+              key={project.project_id}
+              value={project.project_id}
             >
               <div className="flex items-center gap-2">
                 <FolderGit2 className="h-4 w-4" />
@@ -80,7 +80,7 @@ export function ProjectDropdown({
             </SelectItem>
           ))
         ) : (
-          <SelectItem value={projectGroupId}>
+          <SelectItem value={projectId}>
             <div className="flex items-center gap-2">
               <FolderGit2 className="h-4 w-4" />
               <span>{currentProject}</span>

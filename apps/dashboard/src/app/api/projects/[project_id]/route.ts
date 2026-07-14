@@ -10,14 +10,12 @@ export async function DELETE(
   try {
     const cookieStore = await cookies();
 
-    // Forward cookies to the managed host API
     const cookieHeader = Array.from(cookieStore.getAll())
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
 
     const { project_id } = await params;
 
-    // Make DELETE request to managed host API
     const response = await fetch(
       `${MANAGED_HOSTING_API_URL}/api/v1/projects/${project_id}`,
       {

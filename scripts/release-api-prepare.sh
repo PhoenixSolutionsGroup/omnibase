@@ -18,13 +18,12 @@ echo "========================================"
 echo "Preparing API release v$VERSION"
 echo "========================================"
 
-# Bundle OpenAPI spec + regen SDKs (API_VERSION stamps spec.info.version)
-echo "Bundling OpenAPI spec at v$VERSION..."
-API_VERSION="$VERSION" ./scripts/generate-sdk.sh
-
-# Update JS SDK package.json version
-echo "Updating @omnibase/core-js version to $VERSION..."
-jq --arg v "$VERSION" '.version = $v' sdk/core/js/package.json > sdk/core/js/package.json.tmp && mv sdk/core/js/package.json.tmp sdk/core/js/package.json
+# Regen SDKs with placeholder version. Real version is served at runtime
+# from the API_VERSION env (Dockerfile), published to npm at publish time,
+# and tagged for Go — never committed to git, so the committed source stays
+# drift-check-stable between releases.
+echo "Regenerating SDKs (placeholder version)..."
+./scripts/generate-sdk.sh
 
 # Stage SDK files + spec for semantic-release/git to commit
 # Note: glob patterns with ../../ don't work in @semantic-release/git,

@@ -42,7 +42,7 @@ SET user_ids = array_remove(user_ids, sqlc.arg(user_id)::uuid), updated_at = NOW
 WHERE id = sqlc.arg(role_id) AND tenant_id = sqlc.arg(tenant_id);
 
 -- name: ListNamespaceDefinitions :many
-SELECT id, namespace, relations, subject_relations, updated_at
+SELECT id, namespace, relations, relations_metadata, subject_relations, updated_at
 FROM permissions.definitions
 ORDER BY namespace;
 

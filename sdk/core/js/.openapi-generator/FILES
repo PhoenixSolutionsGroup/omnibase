@@ -106,6 +106,7 @@ docs/PromotionCodeChanges.md
 docs/PromotionCodeWithStripeID.md
 docs/RecordUsageRequest.md
 docs/RecoveryIdentityAddress.md
+docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
 docs/SendRequest.md
@@ -271,6 +272,7 @@ src/models/PromotionCodeChanges.ts
 src/models/PromotionCodeWithStripeID.ts
 src/models/RecordUsageRequest.ts
 src/models/RecoveryIdentityAddress.ts
+src/models/RelationMetadataResponse.ts
 src/models/RemoveRequest.ts
 src/models/RemoveResponse.ts
 src/models/SendRequest.ts

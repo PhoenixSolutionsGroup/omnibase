@@ -11,23 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Trash2, Check, ChevronsUpDown, ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import type { NamespaceDefinition } from "@omnibase/core-js";
+import { PermissionsSelectorTree } from "@omnibase/shadcn";
+import type { NamespaceDefinitionResponse } from "@omnibase/core-js";
 import { createAPIKey, type Permission } from "../../actions";
 import Link from "next/link";
 
@@ -37,117 +24,28 @@ interface NamespaceMapEntry {
 }
 
 interface CreateAPIKeyFormProps {
-  definitions: NamespaceDefinition[];
+  definitions: NamespaceDefinitionResponse[];
   namespaceMap: Record<string, NamespaceMapEntry[]>;
 }
 
-interface PermissionRow {
-  id: string;
+function parsePermissionString(perm: string): {
   namespace: string;
   relation: string;
   objectId: string;
-}
+} {
+  const hashIndex = perm.indexOf("#");
+  if (hashIndex === -1) return { namespace: "", relation: "", objectId: "" };
 
-interface ComboboxOption {
-  value: string;
-  label: string;
-}
+  const beforeHash = perm.substring(0, hashIndex);
+  const relation = perm.substring(hashIndex + 1);
+  const colonIndex = beforeHash.indexOf(":");
 
-interface ComboboxProps {
-  options: ComboboxOption[];
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  searchPlaceholder?: string;
-  emptyText?: string;
-  disabled?: boolean;
-  className?: string;
-}
-
-function Combobox({
-  options,
-  value,
-  onChange,
-  placeholder,
-  searchPlaceholder = "Search...",
-  emptyText = "No results found.",
-  disabled = false,
-  className = "",
-}: ComboboxProps) {
-  const [open, setOpen] = useState(false);
-
-  const selectedOption = options.find((opt) => opt.value === value);
-  const isEmpty = options.length === 0;
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled || isEmpty}
-          className={cn(
-            "justify-between font-normal",
-            !value && "text-muted-foreground",
-            className
-          )}
-        >
-          {isEmpty ? (
-            <span className="text-muted-foreground">None</span>
-          ) : selectedOption ? (
-            <span className="truncate">{selectedOption.label}</span>
-          ) : (
-            placeholder
-          )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-[--radix-popover-trigger-width] p-0"
-        align="start"
-      >
-        <Command>
-          <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
-            <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.label}
-                  onSelect={() => {
-                    onChange(option.value);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-function formatRelation(relation: string): string {
-  const stripped = relation.replace(/^can_/, "");
-  return stripped
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
+  if (colonIndex === -1) return { namespace: beforeHash, relation, objectId: "" };
+  return {
+    namespace: beforeHash.substring(0, colonIndex),
+    relation,
+    objectId: beforeHash.substring(colonIndex + 1),
+  };
 }
 
 export function CreateAPIKeyForm({
@@ -156,89 +54,36 @@ export function CreateAPIKeyForm({
 }: CreateAPIKeyFormProps) {
   const [keyName, setKeyName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
-  const [permissionRows, setPermissionRows] = useState<PermissionRow[]>([
-    { id: generateId(), namespace: "", relation: "", objectId: "" },
-  ]);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
 
-  const namespaceOptions = useMemo(
-    () => definitions.map((d) => ({ value: d.namespace, label: d.namespace })),
-    [definitions]
-  );
-
-  const getRelationsForNamespace = (namespace: string): ComboboxOption[] => {
-    const def = definitions.find((d) => d.namespace === namespace);
-    if (!def) return [];
-    return def.relations
-      .filter((rel) => rel.startsWith("can_") || rel.startsWith("is_"))
-      .map((rel) => ({ value: rel, label: formatRelation(rel) }));
-  };
-
-  const getObjectsForNamespace = (
-    namespace: string
-  ): ComboboxOption[] | null => {
-    if (namespace.toLowerCase() === "tenant") {
-      return null;
+  // The tree looks up objects by lower-cased namespace key.
+  const lowerNamespaceMap = useMemo(() => {
+    const out: Record<string, NamespaceMapEntry[]> = {};
+    for (const [key, value] of Object.entries(namespaceMap)) {
+      out[key.toLowerCase()] = value;
     }
-    const objects = namespaceMap[namespace.toLowerCase()] || [];
-    return objects.map((obj) => ({ value: obj.id, label: obj.label }));
-  };
+    return out;
+  }, [namespaceMap]);
 
-  const hasAnyValue = (row: PermissionRow): boolean => {
-    return !!(row.namespace || row.relation || row.objectId);
-  };
-
-  const removePermissionRow = (id: string) => {
-    if (permissionRows.length > 1) {
-      setPermissionRows(permissionRows.filter((row) => row.id !== id));
-    }
-  };
-
-  const updatePermissionRow = (
-    id: string,
-    field: keyof PermissionRow,
-    value: string
-  ) => {
-    setPermissionRows((currentRows) => {
-      const updatedRows = currentRows.map((row) => {
-        if (row.id !== id) return row;
-
-        const updated = { ...row, [field]: value };
-
-        if (field === "namespace") {
-          updated.relation = "";
-          updated.objectId = "";
-        }
-
-        return updated;
-      });
-
-      const lastRow = updatedRows[updatedRows.length - 1];
-
-      if (hasAnyValue(lastRow)) {
-        return [
-          ...updatedRows,
-          { id: generateId(), namespace: "", relation: "", objectId: "" },
-        ];
-      }
-
-      return updatedRows;
-    });
-  };
+  // Restore original namespace casing (tree emits lower-cased) so the API's
+  // case-sensitive namespace matching works.
+  const originalNamespace = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const d of definitions) map.set(d.namespace.toLowerCase(), d.namespace);
+    return map;
+  }, [definitions]);
 
   const buildPermissions = (): Permission[] => {
-    return permissionRows
-      .filter((row) => row.namespace && row.relation)
-      .map((row) => {
-        const permission: Permission = {
-          namespace: row.namespace,
-          relation: row.relation,
-        };
-
-        if (row.namespace.toLowerCase() !== "tenant" && row.objectId) {
-          permission.objectId = row.objectId;
+    return selectedPermissions
+      .map((perm) => parsePermissionString(perm))
+      .filter((p) => p.namespace && p.relation)
+      .map((p) => {
+        const namespace = originalNamespace.get(p.namespace) ?? p.namespace;
+        const permission: Permission = { namespace, relation: p.relation };
+        if (namespace.toLowerCase() !== "tenant" && p.objectId) {
+          permission.object = p.objectId;
         }
-
         return permission;
       });
   };
@@ -330,7 +175,6 @@ export function CreateAPIKeyForm({
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Key Name */}
         <div className="space-y-2">
           <Label htmlFor="key-name">Name</Label>
           <Input
@@ -345,102 +189,18 @@ export function CreateAPIKeyForm({
           </p>
         </div>
 
-        {/* Permissions */}
         <div className="space-y-4">
           <Label>Permissions</Label>
-
-          <div className="space-y-3">
-            {permissionRows.map((row) => {
-              const relationOptions = getRelationsForNamespace(row.namespace);
-              const objectOptions = getObjectsForNamespace(row.namespace);
-              const showObjectSelect = objectOptions !== null;
-
-              return (
-                <div key={row.id} className="flex items-start gap-2">
-                  {/* Remove Button */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removePermissionRow(row.id)}
-                    disabled={isCreating || permissionRows.length === 1}
-                    className="shrink-0"
-                  >
-                    <Trash2 className="h-4 w-4 text-muted-foreground" />
-                  </Button>
-
-                  {/* Connected Comboboxes */}
-                  <div className="flex flex-1 gap-0">
-                    {/* Namespace Combobox */}
-                    <Combobox
-                      options={namespaceOptions}
-                      value={row.namespace}
-                      onChange={(value) =>
-                        updatePermissionRow(row.id, "namespace", value)
-                      }
-                      placeholder="Namespace"
-                      searchPlaceholder="Search namespaces..."
-                      disabled={isCreating}
-                      className="w-1/3 min-w-[120px] rounded-r-none border-r-0"
-                    />
-
-                    {/* Relation Combobox */}
-                    <Combobox
-                      options={relationOptions}
-                      value={row.relation}
-                      onChange={(value) =>
-                        updatePermissionRow(row.id, "relation", value)
-                      }
-                      placeholder="Permission"
-                      searchPlaceholder="Search permissions..."
-                      disabled={isCreating || !row.namespace}
-                      className={cn(
-                        "min-w-[160px]",
-                        showObjectSelect
-                          ? "w-1/3 rounded-none border-r-0"
-                          : "w-2/3 rounded-l-none"
-                      )}
-                    />
-
-                    {/* Object ID Combobox (only for non-Tenant namespaces) */}
-                    {showObjectSelect && (
-                      <Combobox
-                        options={objectOptions}
-                        value={row.objectId}
-                        onChange={(value) =>
-                          updatePermissionRow(row.id, "objectId", value)
-                        }
-                        placeholder="Resource"
-                        searchPlaceholder="Search resources..."
-                        disabled={isCreating || !row.namespace}
-                        className="w-1/3 min-w-[160px] rounded-l-none"
-                      />
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Permissions Preview */}
-          {permissionRows.some((row) => row.namespace && row.relation) && (
-            <div className="rounded-md bg-muted p-3">
-              <p className="text-xs text-muted-foreground mb-2">
-                Permissions to be granted:
-              </p>
-              <ul className="space-y-1 text-xs font-mono">
-                {buildPermissions().map((perm, idx) => (
-                  <li key={idx} className="text-muted-foreground">
-                    {perm.namespace.toLowerCase()}
-                    {perm.objectId ? `:${perm.objectId}` : ""}#{perm.relation}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <PermissionsSelectorTree
+            definitions={definitions}
+            namespaceMap={lowerNamespaceMap}
+            value={selectedPermissions}
+            onChange={setSelectedPermissions}
+            disabled={isCreating}
+            showPreview
+          />
         </div>
 
-        {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
           <Link
             href="/settings"

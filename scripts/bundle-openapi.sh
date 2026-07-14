@@ -10,7 +10,7 @@ OUT="$ROOT_DIR/apps/api/docs/openapi.json"
 cd "$ROOT_DIR/apps/api"
 GIN_MODE=release \
 LOG_LEVEL=ERROR \
-API_VERSION="${API_VERSION:-local}" \
+API_VERSION="${API_VERSION:-0.0.0-dev}" \
   go run ./cmd/openapi "$OUT"
 
-echo "✓ OpenAPI spec written to apps/api/docs/openapi.json (API_VERSION=${API_VERSION:-local})"
+echo "✓ OpenAPI spec written to apps/api/docs/openapi.json (API_VERSION=${API_VERSION:-0.0.0-dev})"

@@ -121,6 +121,7 @@ docs/PromotionCodeChanges.md
 docs/PromotionCodeWithStripeID.md
 docs/RecordUsageRequest.md
 docs/RecoveryIdentityAddress.md
+docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
 docs/SendRequest.md
@@ -274,6 +275,7 @@ model_promotion_code_changes.go
 model_promotion_code_with_stripe_id.go
 model_record_usage_request.go
 model_recovery_identity_address.go
+model_relation_metadata_response.go
 model_remove_request.go
 model_remove_response.go
 model_send_request.go

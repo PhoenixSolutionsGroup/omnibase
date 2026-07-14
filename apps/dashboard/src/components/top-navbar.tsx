@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { OrganizationDropdown } from "./organization-dropdown";
 import { switchTenant } from "@/app/(dashboard)/(organization)/actions";
-import type { Tenant } from "@omnibase/core-js";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 interface TopNavbarProps {
   tenants: Tenant[];
@@ -40,10 +40,11 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
       <OrganizationDropdown
         tenants={tenants}
         currentTenantId={currentTenantId}
-        formAction={switchTenant}
-        // TODO: Uncomment after publishing @omnibase/shadcn with onCreateTenant support
-        // onCreateTenant={() => router.push("/onboarding/create-tenant")}
-        // createTenantLabel="Create Organization"
+        formAction={async (formData) => {
+          await switchTenant(formData);
+        }}
+        createTenantLabel="Create Tenant"
+        onCreateTenant={() => router.push("/onboarding/create-tenant")}
       />
 
       <div className="flex-1" />
