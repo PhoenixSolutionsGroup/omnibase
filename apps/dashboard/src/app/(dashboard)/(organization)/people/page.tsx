@@ -3,14 +3,13 @@ import { UserInvite, RoleCreator } from "@omnibase/shadcn";
 import { getAllProjectBranches } from "@/utils/get-project";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import {
-  CreateInviteRequest,
+  CreateRequest,
   V1TenantsInvitesApi,
   V1TenantsRolesApi,
 } from "@omnibase/core-js";
 
-async function inviteUser(invite: CreateInviteRequest) {
+async function inviteUser(data: CreateRequest) {
   "use server";
-  const data = invite.createRequest;
   const config = await getOmnibaseConfiguration();
   const client = new V1TenantsInvitesApi(config);
   const websiteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL!;
