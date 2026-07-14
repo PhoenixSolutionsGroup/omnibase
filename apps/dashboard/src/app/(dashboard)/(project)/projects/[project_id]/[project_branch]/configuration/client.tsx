@@ -386,7 +386,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           sensitive: true,
           encryptedField: "connection_string",
         },
-        { label: "Neon Project ID", value: project.neon_project_id },
       ],
     },
     {
@@ -420,16 +419,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         },
       ],
     },
-    {
-      title: "Infrastructure",
-      description: "Hosting and infrastructure details",
-      icon: <Boxes className="h-5 w-5 text-primary" />,
-      items: [
-        { label: "VPS Host ID", value: project.vps_host_id },
-        { label: "Dedicated VPS ID", value: project.dedicated_vps_id },
-        { label: "Provisioning Type", value: project.provisioning_type },
-      ],
-    },
+
   ];
 
   // Filter out sections with no values

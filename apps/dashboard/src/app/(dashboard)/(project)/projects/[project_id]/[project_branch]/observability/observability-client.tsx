@@ -6,7 +6,6 @@ import { AlertCircle } from "lucide-react";
 interface ObservabilityClientProps {
   projectId: string;
   projectName: string;
-  projectId: string;
   projectBranch: string;
   dashboardUID: string;
 }
@@ -67,7 +66,6 @@ function buildEmbedURL(
 export function ObservabilityClient({
   projectId,
   projectName,
-  projectId,
   projectBranch,
   dashboardUID,
 }: ObservabilityClientProps) {

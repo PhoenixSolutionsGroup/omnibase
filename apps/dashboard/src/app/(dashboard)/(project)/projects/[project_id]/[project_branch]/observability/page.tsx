@@ -29,7 +29,6 @@ export default async function ObservabilityPage({
     <ObservabilityClient
       projectId={project.id}
       projectName={project.name}
-      projectId={project_id}
       projectBranch={project_branch}
       dashboardUID={dashboard}
     />
