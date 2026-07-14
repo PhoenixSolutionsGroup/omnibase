@@ -290,7 +290,9 @@ async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
   config.main = "worker.js";
 
   const zip = new JSZip();
-  await addDirToZip(zip, path.join(workersDir, ".bundle"));
+  await addDirToZip(zip, path.join(workersDir, ".bundle"), (name) =>
+    name.endsWith(".map")
+  );
 
   const assetsDir = config.assets?.directory;
   if (assetsDir) {
@@ -338,13 +340,18 @@ function stripJsonc(text: string): any {
   return JSON.parse(noComments);
 }
 
-async function addDirToZip(folder: JSZip, dir: string): Promise<void> {
+async function addDirToZip(
+  folder: JSZip,
+  dir: string,
+  skip?: (name: string) => boolean
+): Promise<void> {
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      await addDirToZip(folder.folder(entry.name)!, full);
+      await addDirToZip(folder.folder(entry.name)!, full, skip);
     } else if (entry.isFile()) {
+      if (skip?.(entry.name)) continue;
       folder.file(entry.name, await readFile(full));
     }
   }
