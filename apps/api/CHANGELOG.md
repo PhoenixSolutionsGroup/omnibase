@@ -1,3 +1,12 @@
+## [0.20.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.0...api-v0.20.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* add ApiServiceKey environment variable ([9e0d81a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9e0d81a25f85365978ab54801c4ef11f82410d42))
+* Add Service Key to docker-compose and tests ([f98fdd5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f98fdd5e5b6242c4c4041cb29ea890785ad8259c))
+* Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
+
 # [0.20.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.19.1...api-v0.20.0) (2026-07-07)
 
 
