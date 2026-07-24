@@ -1,3 +1,10 @@
+## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.8.0...shadcn-v0.8.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
+
 # [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.7.2...shadcn-v0.8.0) (2026-02-06)
 
 
