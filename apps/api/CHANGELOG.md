@@ -1,3 +1,10 @@
+## [0.20.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.1...api-v0.20.2) (2026-07-24)
+
+
+### Bug Fixes
+
+* ensure /tmp dir in Dockerfile ([926434f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/926434f9a78630bde5317a3ca16b9c2d7e991860))
+
 ## [0.20.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.0...api-v0.20.1) (2026-07-24)
 
 
