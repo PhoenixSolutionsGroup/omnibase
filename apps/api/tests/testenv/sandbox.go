@@ -117,6 +117,7 @@ func StartAPIWithSandbox(t *testing.T, env *Env, sandboxKey string) string {
 			"FRONTEND_URL":          "http://127.0.0.1:3000",
 			"JWT_SIGNING_KEY":       "test-jwt-signing-key-for-integration-tests",
 			"JWT_SECRET":            ServiceKey,
+			"API_SERVICE_KEY":       ServiceKey,
 			"ENCRYPTION_MASTER_KEY": "integration-test-master-key-32by",
 			"S3_ENDPOINT":           env.RustFSURL,
 			"S3_PUBLIC_ENDPOINT":    env.RustFSURL,

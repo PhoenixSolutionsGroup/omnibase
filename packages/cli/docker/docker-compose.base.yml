@@ -255,6 +255,7 @@ services:
       # JWT Configuration
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
       - JWT_SECRET=${JWT_SECRET:-VERY_SECRET_KEY}
+      - API_SERVICE_KEY=${API_SERVICE_KEY:-VERY_SECRET_KEY}
 
       # Permissions Configuration
       - PERMISSIONS_READ_URL=http://permissions:4466
