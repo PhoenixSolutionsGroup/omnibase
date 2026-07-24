@@ -21,10 +21,11 @@ import (
 )
 
 type AuthMiddleware struct {
-	kratosClient *kratos.APIClient
-	db           *gorm.DB
-	JWTSecret    string
-	jwksData     string
+	kratosClient   *kratos.APIClient
+	db             *gorm.DB
+	JWTSecret      string
+	APIServiceKey  string
+	jwksData       string
 }
 
 // JWK represents a JSON Web Key
@@ -60,10 +61,11 @@ func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
 	}
 
 	return &AuthMiddleware{
-		kratosClient: kratos.NewAPIClient(publicConfig),
-		db:           db,
-		JWTSecret:    cfg.JWTSecret,
-		jwksData:     cfg.AuthConfig.AuthJWTJWKS,
+		kratosClient:  kratos.NewAPIClient(publicConfig),
+		db:            db,
+		JWTSecret:     cfg.JWTSecret,
+		APIServiceKey: cfg.APIServiceKey,
+		jwksData:      cfg.AuthConfig.AuthJWTJWKS,
 	}
 }
 
@@ -310,7 +312,7 @@ func (m *AuthMiddleware) RequireServiceKey() gin.HandlerFunc {
 		tenantIDHeader := c.GetHeader("X-Tenant-Id")
 		userIDHeader := c.GetHeader("X-User-Id")
 
-		if serviceKey == "" || subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.JWTSecret)) != 1 {
+		if serviceKey == "" || subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.APIServiceKey)) != 1 {
 			handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing service key")
 			c.Abort()
 			return
@@ -356,7 +358,7 @@ func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
 
 		// Try service key authentication first
 		if serviceKey != "" {
-			if subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.JWTSecret)) != 1 {
+			if subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.APIServiceKey)) != 1 {
 				handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid service key")
 				c.Abort()
 				return

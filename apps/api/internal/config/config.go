@@ -21,6 +21,7 @@ type Config struct {
 	PostgRESTURL         string
 	TypegenURL           string
 	JWTSecret            string
+	APIServiceKey        string
 	EncryptionMasterKey  string
 	EnablePprof          bool
 	CORSAllowedOrigins   []string
@@ -149,6 +150,7 @@ func New() *Config {
 		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
 		TypegenURL:          getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
 		JWTSecret:            os.Getenv("JWT_SECRET"),
+		APIServiceKey:        os.Getenv("API_SERVICE_KEY"),
 		EncryptionMasterKey:  os.Getenv("ENCRYPTION_MASTER_KEY"),
 		EnablePprof:          os.Getenv("ENABLE_PPROF") == "true",
 		CORSAllowedOrigins:   parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
