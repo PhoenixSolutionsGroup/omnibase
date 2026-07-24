@@ -1,3 +1,17 @@
+# [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.7.0...cli-v0.8.0) (2026-07-24)
+
+
+### Bug Fixes
+
+* Add Service Key to docker-compose and tests ([f98fdd5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f98fdd5e5b6242c4c4041cb29ea890785ad8259c))
+* **cli:** sync api docker image to 0.20.1 [skip ci] ([73c65ce](https://github.com/PhoenixSolutionsGroup/omnibase/commit/73c65ce22f63014c8060882db20c341631f1436c))
+* Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
+
+
+### Features
+
+* **cli:** enhance worker deployment options ([c655f25](https://github.com/PhoenixSolutionsGroup/omnibase/commit/c655f25ca2c34b8b0b8c415637e83a2af603b900))
+
 # [0.7.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.6.0...cli-v0.7.0) (2026-07-07)
 
 
