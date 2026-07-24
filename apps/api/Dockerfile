@@ -29,6 +29,9 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # Copy timezone data (if your app needs it)
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 
+# Ensure /tmp exists (needed for multipart form temp files)
+COPY --from=builder /tmp /tmp
+
 # Copy the binary
 COPY --from=builder /build/api /api
 
