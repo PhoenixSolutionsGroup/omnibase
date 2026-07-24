@@ -1,3 +1,10 @@
+## [0.20.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.2...api-v0.20.3) (2026-07-24)
+
+
+### Bug Fixes
+
+* retry migrations on connection failures (for scale-to-zero) ([4b4e80b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4b4e80bed67a3fef233616f57c5260932315b67b))
+
 ## [0.20.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.1...api-v0.20.2) (2026-07-24)
 
 
