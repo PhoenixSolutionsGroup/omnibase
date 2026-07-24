@@ -1,3 +1,11 @@
+## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.8.0...cli-v0.8.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* **cli:** sync api docker image to 0.20.2 [skip ci] ([05cc3bf](https://github.com/PhoenixSolutionsGroup/omnibase/commit/05cc3bf06d2da95fc38ebdb3db6b3a6c469d1946))
+* **cli:** sync api docker image to 0.20.3 [skip ci] ([5daae6f](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5daae6f27fbe6cebab6871161f1dee85aa5d264d))
+
 # [0.8.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.7.0...cli-v0.8.0) (2026-07-24)
 
 
