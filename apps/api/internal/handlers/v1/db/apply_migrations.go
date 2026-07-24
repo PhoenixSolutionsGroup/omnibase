@@ -10,6 +10,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -68,6 +69,49 @@ func (h *Handler) ApplyMigrations(ctx context.Context, in *ApplyMigrationsInput)
 }
 
 func (h *Handler) runMigrations(ctx context.Context, dir string) error {
+	const maxRetries = 5
+	var lastErr error
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		if attempt > 1 {
+			delay := time.Duration(attempt) * time.Second
+			logger.Logger.Info("Retrying migration application", "attempt", attempt, "delay", delay)
+			select {
+			case <-time.After(delay):
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+
+		err := h.runMigrationsOnce(ctx, dir)
+		if err == nil {
+			return nil
+		}
+
+		if !isTransientDBError(err) {
+			return err
+		}
+
+		lastErr = err
+	}
+
+	return fmt.Errorf("migrations failed after %d retries: %w", maxRetries, lastErr)
+}
+
+func isTransientDBError(err error) bool {
+	var pgErr *pgconn.PgError
+	if !errors.As(err, &pgErr) {
+		return false
+	}
+	switch pgErr.SQLState() {
+	case "57P01", "08P01":
+		logger.Logger.Warn("Transient database error, will retry", "sqlstate", pgErr.SQLState(), "error", err)
+		return true
+	}
+	return false
+}
+
+func (h *Handler) runMigrationsOnce(ctx context.Context, dir string) error {
 	if _, err := h.pool.Exec(ctx, `CREATE SCHEMA IF NOT EXISTS "migrations"`); err != nil {
 		return fmt.Errorf("create migrations schema: %w", err)
 	}
