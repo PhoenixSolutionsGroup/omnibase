@@ -47,10 +47,12 @@
   },
   "dependencies": {
     "@omnibase/core-js": "workspace:*",
+    "@ory/client-fetch": "1.22.22",
     "@ory/elements-react": "^1.1.0",
     "@ory/nextjs": "^1.0.0-rc.0",
     "cookie": "^1.0.2",
     "psl": "^1.15.0",
-    "set-cookie-parser": "^2.7.1"
+    "set-cookie-parser": "^2.7.1",
+    "uuid": "^11"
   }
 }
