@@ -1,3 +1,10 @@
+## [0.8.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.2...nextjs-v0.8.3) (2026-07-24)
+
+
+### Bug Fixes
+
+* Dashboard Patches ([#48](https://github.com/PhoenixSolutionsGroup/omnibase/issues/48)) ([9c62ebb](https://github.com/PhoenixSolutionsGroup/omnibase/commit/9c62ebb14fbff33704be291e98dc40acad1ae476))
+
 ## [0.8.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.1...nextjs-v0.8.2) (2026-01-21)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@omnibase/nextjs",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "OmniBase NextJS 13+ SDK",
   "repository": {
     "type": "git",
