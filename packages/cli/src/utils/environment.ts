@@ -92,19 +92,26 @@ export function saveOmnibaseConfig(config: OmnibaseConfig): void {
 }
 
 /**
+ * Resolve the path of a local env file (omnibase/.env.<name>)
+ */
+export function resolveEnvFilePath(envName: string): string {
+  const projectRoot = findOmnibaseRoot();
+  return path.join(projectRoot, "omnibase", `.env.${envName}`);
+}
+
+/**
  * Get list of available environments
  */
 export function getAvailableEnvironments(): string[] {
   try {
-    const projectRoot = findOmnibaseRoot();
-    const environmentsDir = path.join(projectRoot, "omnibase", "environments");
+    const omnibaseDir = path.join(findOmnibaseRoot(), "omnibase");
 
-    if (!fs.existsSync(environmentsDir)) {
+    if (!fs.existsSync(omnibaseDir)) {
       return [];
     }
 
     return fs
-      .readdirSync(environmentsDir)
+      .readdirSync(omnibaseDir)
       .filter((file) => file.startsWith(".env."))
       .map((file) => file.replace(".env.", ""))
       .sort();
@@ -117,8 +124,6 @@ export function getAvailableEnvironments(): string[] {
  * Load environment configuration
  */
 export function loadEnvironment(envName?: string): EnvironmentConfig {
-  const projectRoot = findOmnibaseRoot();
-
   // Determine which environment to use
   let environmentName = envName;
 
@@ -129,12 +134,7 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
   }
 
   // Load the .env file
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${environmentName}`
-  );
+  const envPath = resolveEnvFilePath(environmentName);
 
   if (!fs.existsSync(envPath)) {
     throw new Error(
@@ -190,7 +190,7 @@ export async function selectEnvironment(
 
   if (available.length === 0) {
     throw new Error(
-      "No environment files found in omnibase/environments/\n" +
+      "No environment files found in omnibase/\n" +
         "Create a .env.local or .env.dev file to get started."
     );
   }

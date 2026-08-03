@@ -7,6 +7,7 @@ import * as TOML from "smol-toml";
 import axios from "axios";
 import { checkbox, select } from "@inquirer/prompts";
 import * as path from "path";
+import { config as dotenvConfig } from "dotenv";
 import {
   EnvironmentConfig,
   findOmnibaseRoot,
@@ -15,11 +16,18 @@ import {
 import {
   loadCredentials,
   saveCredentials,
+  getActiveProfile,
   Profile,
 } from "../utils/credentials";
 import { logger } from "../utils/logger";
 import { handleCommandError, formatHttpError } from "../utils/errors";
 import { createManagedHostingClient } from "../utils/api-client";
+import {
+  loadOmnibaseConfig,
+  interpolate,
+  cloudConfigOf,
+  VarSource,
+} from "../config/omnibase-config";
 
 /**
  * Login to OmniBase Cloud
@@ -245,14 +253,14 @@ async function deployWorkers(envFlag?: string): Promise<void> {
   if (!env.branchId) {
     throw new Error(
       `OMNIBASE_BRANCH_ID not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+        `Please add it to omnibase/.env.${env.name}`
     );
   }
 
   if (!env.managedHostingApiUrl) {
     throw new Error(
       `MANAGED_HOSTING_API_URL not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+        `Please add it to omnibase/.env.${env.name}`
     );
   }
 
@@ -384,93 +392,152 @@ async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
   }
 }
 
-interface EnvPushResult {
-  applied: Record<string, string[]>;
-  ignored: { key: string; reason: string }[];
-  services_to_restart: string[];
+interface BranchSummary {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
 }
 
 /**
- * Push environment configuration to managed hosting
+ * Resolve a branch for the project from managed hosting. A `--env` value
+ * matches by name, slug, or id; otherwise a single branch is auto-selected or
+ * the user is prompted.
  */
-export async function pushEnvConfig(envFlag?: string): Promise<void> {
-  const root = findOmnibaseRoot();
-  const env = await selectEnvironment(envFlag);
+async function resolveBranch(
+  managedHostingUrl: string,
+  projectId: string,
+  branchFlag?: string
+): Promise<BranchSummary> {
+  const api = createManagedHostingClient({
+    name: branchFlag || "cloud",
+    managedHostingApiUrl: managedHostingUrl,
+  } as EnvironmentConfig);
 
-  if (env.name === "local") {
-    logger.warn("Environment push is not available for local environment.");
-    logger.log("Use --env flag to specify a cloud environment:");
-    logger.log("   omnibase cloud env push --env dev");
-    logger.log("   omnibase cloud env push --env staging");
-    logger.log("   omnibase cloud env push --env production");
+  const { data } = await api.get<BranchSummary[]>(
+    `/api/v1/projects/${projectId}/branches`
+  );
+  const branches = data ?? [];
+  if (branches.length === 0) {
+    throw new Error(`No branches found for project ${projectId}`);
+  }
+
+  if (branchFlag) {
+    const found = branches.find(
+      (b) =>
+        b.name === branchFlag || b.slug === branchFlag || b.id === branchFlag
+    );
+    if (!found) {
+      throw new Error(
+        `Branch '${branchFlag}' not found. Available: ${branches
+          .map((b) => b.name)
+          .join(", ")}`
+      );
+    }
+    return found;
+  }
+
+  if (branches.length === 1) return branches[0];
+
+  const id = await select({
+    message: "Select branch:",
+    choices: branches.map((b) => ({
+      name: `${b.name} (${b.status})`,
+      value: b.id,
+    })),
+  });
+  return branches.find((b) => b.id === id)!;
+}
+
+/**
+ * Push config from omnibase.toml to managed hosting.
+ *
+ * Everything except [local] is sent; managed hosting maps what it understands
+ * and reports the rest. [local] stays on this machine — that is where Stripe
+ * lives, since managed hosting owns Stripe env via the Connect account it
+ * provisions per branch.
+ *
+ * {VAR} secrets resolve from process.env, then an optional --from-env file.
+ * .env.local is NEVER read here — it is strictly for local dev (omnibase start).
+ */
+export async function pushEnvConfig(
+  branchFlag?: string,
+  fromEnvPath?: string
+): Promise<void> {
+  const root = findOmnibaseRoot();
+
+  const profile = getActiveProfile();
+  if (!profile) {
+    throw new Error("Not logged in. Run 'omnibase cloud login <api_key>' first.");
+  }
+  if (!profile.managed_hosting_url) {
+    throw new Error("Active profile has no managed_hosting_url. Re-login.");
+  }
+
+  const rawConfig = loadOmnibaseConfig(root);
+  if (!rawConfig.project_id) {
+    throw new Error("project_id is not set in omnibase/omnibase.toml");
+  }
+
+  // {VAR} resolution order (cloud): process.env -> --from-env file -> literal.
+  const sources: VarSource[] = [process.env as VarSource];
+  if (fromEnvPath) {
+    const resolved = path.resolve(fromEnvPath);
+    const parsed = dotenvConfig({ path: resolved }).parsed;
+    if (!parsed) {
+      throw new Error(`--from-env file not found or empty: ${resolved}`);
+    }
+    sources.push(parsed);
+  }
+
+  const missing = new Set<string>();
+  const cfg = interpolate(rawConfig, sources, missing);
+
+  const payload = cloudConfigOf(cfg);
+  const sections = Object.keys(payload);
+  if (sections.length === 0) {
+    logger.info("Nothing to push: omnibase.toml has no cloud config sections.");
     return;
   }
 
-  if (!env.branchId) {
-    throw new Error(
-      `OMNIBASE_BRANCH_ID not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
-    );
-  }
-
-  if (!env.managedHostingApiUrl) {
-    throw new Error(
-      `MANAGED_HOSTING_API_URL not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
-    );
-  }
-
-  const envFilePath = path.join(
-    root,
-    "omnibase/environments",
-    `.env.${env.name}`
+  const branch = await resolveBranch(
+    profile.managed_hosting_url,
+    cfg.project_id!,
+    branchFlag
   );
-  const envFileContent = await readFile(envFilePath, "utf-8");
 
-  logger.start(`Pushing environment config to ${env.name}...`);
+  if (missing.size > 0) {
+    logger.warn(
+      `Unresolved {VAR} left literal: ${[...missing].join(", ")}. ` +
+        `Set them in process.env or pass --from-env <file>.`
+    );
+  }
 
-  const api = createManagedHostingClient(env);
+  logger.start(
+    `Applying config (${sections.join(", ")}) to branch ${branch.name}...`
+  );
+
+  const api = createManagedHostingClient({
+    name: branch.name,
+    managedHostingApiUrl: profile.managed_hosting_url,
+    branchId: branch.id,
+  } as EnvironmentConfig);
 
   try {
-    const response = await api.post<EnvPushResult>(
-      `/api/v1/projects/${env.branchId}/env`,
-      envFileContent,
-      {
-        headers: {
-          "Content-Type": "text/plain",
-        },
-      }
-    );
+    const response = await api.post<{
+      message: string;
+      applied: string[];
+      ignored: string[];
+    }>(`/api/v1/project_branches/${branch.id}/env/config`, payload);
 
     const result = response.data;
-
-    // Show applied keys per service
-    const appliedServices = Object.keys(result.applied);
-    if (appliedServices.length > 0) {
-      logger.succeed("Environment variables applied:");
-      for (const service of appliedServices) {
-        const keys = result.applied[service];
-        logger.log(`   ${service}: ${keys.join(", ")}`);
-      }
+    if (result.applied && result.applied.length > 0) {
+      logger.succeed(`Config applied: ${result.applied.join(", ")}`);
     } else {
-      logger.info("No configurable environment variables found to apply.");
+      logger.info("No config changes applied.");
     }
-
-    // Show ignored keys
     if (result.ignored && result.ignored.length > 0) {
-      logger.newline();
-      logger.warn(`${result.ignored.length} key(s) ignored:`);
-      for (const item of result.ignored) {
-        logger.log(`   ${item.key}: ${item.reason}`);
-      }
-    }
-
-    // Show restart hint
-    if (result.services_to_restart && result.services_to_restart.length > 0) {
-      logger.newline();
-      logger.info("Services need restart to apply changes:");
-      logger.log(`   ${result.services_to_restart.join(", ")}`);
-      logger.log("   Run: omnibase restart <service> --env " + env.name);
+      logger.warn(`Ignored: ${result.ignored.join(", ")}`);
     }
   } catch (error) {
     throw new Error(formatHttpError(error));
@@ -565,11 +632,15 @@ export function addCloudCommands(program: Command): void {
 
   envCmd
     .command("push")
-    .description("Push environment variables to managed hosting")
-    .action(async () => {
+    .description("Push omnibase.toml config to managed hosting")
+    .option(
+      "--from-env <path>",
+      "Env file to resolve {VAR} secrets from (in addition to process.env). Never reads .env.local."
+    )
+    .action(async (cmdOptions) => {
       try {
         const globalOptions = program.opts();
-        await pushEnvConfig(globalOptions.env);
+        await pushEnvConfig(globalOptions.env, cmdOptions.fromEnv);
       } catch (error) {
         await handleCommandError(error);
       }

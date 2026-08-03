@@ -11,7 +11,7 @@ export function addEnvironmentCommands(program: Command): void {
         const available = getAvailableEnvironments();
 
         if (available.length === 0) {
-          logger.warn("No environment files found in omnibase/environments/");
+          logger.warn("No environment files found in omnibase/");
           return;
         }
 

@@ -3,7 +3,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { config as dotenvConfig } from "dotenv";
 import { checkbox } from "@inquirer/prompts";
-import { selectEnvironment, findOmnibaseRoot } from "../utils/environment";
+import {
+  selectEnvironment,
+  findOmnibaseRoot,
+  resolveEnvFilePath,
+} from "../utils/environment";
 import { createOmnibaseSDKConfig } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import {
@@ -65,13 +69,7 @@ interface WebhookConfig {
  * Load raw environment variables from .env file for variable expansion
  */
 function loadRawEnv(envName: string): Record<string, string> {
-  const projectRoot = findOmnibaseRoot();
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${envName}`
-  );
+  const envPath = resolveEnvFilePath(envName);
 
   if (!fs.existsSync(envPath)) {
     return {};
