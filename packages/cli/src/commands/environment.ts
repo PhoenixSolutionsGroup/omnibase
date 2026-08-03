@@ -1,24 +1,33 @@
 import { Command } from "commander";
-import { getAvailableEnvironments } from "../utils/environment";
+import { getAvailableEnvironments, getCloudBranches } from "../utils/environment";
 import { logger } from "../utils/logger";
 
 export function addEnvironmentCommands(program: Command): void {
   program
     .command("env")
     .description("List available environments")
-    .action(() => {
+    .action(async () => {
       try {
-        const available = getAvailableEnvironments();
+        const localEnvs = getAvailableEnvironments();
+        const cloudBranches = await getCloudBranches();
 
-        if (available.length === 0) {
-          logger.warn("No environment files found in omnibase/");
+        if (localEnvs.length === 0 && cloudBranches.length === 0) {
+          logger.warn("No environments found.");
+          logger.log("Set up omnibase/.env.local for local development,");
+          logger.log("or connect to OmniBase Cloud with 'omnibase cloud login'.");
           return;
         }
 
-        logger.log("Available environments:");
-        available.forEach((env) => {
-          logger.log(`  - ${env}`);
-        });
+        if (localEnvs.length > 0) {
+          logger.log("Local:");
+          localEnvs.forEach((env) => { logger.log(`  - ${env}`); });
+        }
+
+        if (cloudBranches.length > 0) {
+          if (localEnvs.length > 0) logger.log("");
+          logger.log("Cloud:");
+          cloudBranches.forEach((name) => { logger.log(`  - ${name}`); });
+        }
       } catch (error) {
         logger.fail(
           `Failed to list environments: ${error instanceof Error ? error.message : error}`

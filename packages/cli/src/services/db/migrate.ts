@@ -109,8 +109,12 @@ export class DatabaseMigrationService {
         migrations: blob,
       })) as { message?: string };
       logger.succeed(response.message || "Migrations applied successfully");
-    } catch (error) {
+    } catch (error: any) {
       logger.fail("Failed to apply migrations");
+      if (error?.response) {
+        const text = await error.response.text().catch(() => "");
+        console.log("[db-debug] response", { status: error.response.status, body: text });
+      }
       throw error;
     }
   }

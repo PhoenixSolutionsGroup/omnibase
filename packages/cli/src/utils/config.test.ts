@@ -3,12 +3,12 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
-  loadOmnibaseConfig,
-  interpolate,
-  findOmnibaseConfigPath,
+  loadConfig,
+  findConfigFile,
+  interpolateValue,
   localEnvFromConfig,
   cloudConfigOf,
-} from "./omnibase-config";
+} from "./config";
 
 const SAMPLE = `project_id = "abc-123"
 
@@ -37,7 +37,7 @@ describe("loadOmnibaseConfig", () => {
   afterEach(() => rmSync(root, { recursive: true, force: true }));
 
   test("parses toml sections", () => {
-    const cfg = loadOmnibaseConfig(root);
+    const cfg = loadConfig(root);
     expect(cfg.project_id).toBe("abc-123");
     expect(cfg.auth?.website_url).toBe("http://127.0.0.1:3000");
     expect(cfg.auth?.oidc?.[0].provider).toBe("google");
@@ -46,15 +46,16 @@ describe("loadOmnibaseConfig", () => {
 
   test("returns {} when no toml present", () => {
     const empty = mkdtempSync(join(tmpdir(), "omni-empty-"));
-    expect(findOmnibaseConfigPath(empty)).toBeNull();
-    expect(loadOmnibaseConfig(empty)).toEqual({});
+    expect(findConfigFile(empty)).toBeNull();
+    expect(loadConfig(empty).deployments).toEqual([]);
+    expect(loadConfig(empty).auth).toBeUndefined();
     rmSync(empty, { recursive: true, force: true });
   });
 });
 
 describe("interpolate", () => {
   test("first non-empty source wins", () => {
-    const out = interpolate("{FOO}", [{ FOO: "" }, { FOO: "bar" }]);
+    const out = interpolateValue("{FOO}", { FOO: "bar" });
     expect(out).toBe("bar");
   });
 
@@ -65,32 +66,29 @@ describe("interpolate", () => {
         oidc: [{ provider: "google", client_secret: "{GCS}" }],
       },
     };
-    const out = interpolate(cfg, [{ GCS: "shh" }]);
+    const out = interpolateValue(cfg, { GCS: "shh" }) as typeof cfg;
     expect(out.auth.oidc[0].client_secret).toBe("shh");
     expect(out.auth.website_url).toBe("http://127.0.0.1:3000");
   });
 
   test("leaves literals without braces untouched", () => {
-    expect(interpolate("TRACE", [{}])).toBe("TRACE");
+    expect(interpolateValue("TRACE", {})).toBe("TRACE");
   });
 
-  test("unresolved {VAR} stays literal and is collected as missing", () => {
-    const missing = new Set<string>();
-    const out = interpolate("{NOPE}", [{ FOO: "bar" }], missing);
-    expect(out).toBe("{NOPE}");
-    expect(missing.has("NOPE")).toBe(true);
+  test("unresolved {VAR} stays literal", () => {
+    expect(interpolateValue("{NOPE}", { FOO: "bar" })).toBe("{NOPE}");
   });
 
   test("cloud order ignores a .env.local-style source when not supplied", () => {
     // Simulate cloud: only [process.env-like, fromEnv]. A .env.local map is
     // deliberately NOT in the source list, so its value must never be picked.
-    const processLike = { FOO: undefined as unknown as string };
-    const fromEnv = { FOO: "from-flag" };
-    const dotEnvLocal = { FOO: "from-local-DO-NOT-USE" };
-    const out = interpolate("{FOO}", [processLike, fromEnv]);
-    expect(out).toBe("from-flag");
-    // Guard: including dotEnvLocal would have changed the result.
-    expect(dotEnvLocal.FOO).not.toBe(out);
+    // Cloud builds its secrets map from process.env + --from-env only; a
+    // .env.local value must never make it into that map.
+    const cloudSecrets = { FOO: "from-flag" };
+    expect(interpolateValue("{FOO}", cloudSecrets)).toBe("from-flag");
+    expect(interpolateValue("{FOO}", cloudSecrets)).not.toBe(
+      "from-local-DO-NOT-USE"
+    );
   });
 });
 

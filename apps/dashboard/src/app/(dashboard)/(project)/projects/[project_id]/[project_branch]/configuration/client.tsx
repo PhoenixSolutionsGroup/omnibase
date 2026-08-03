@@ -195,9 +195,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         `OMNIBASE_POSTMARK_SERVER_TOKEN=${getValue(postmarkResult, "token")}`
       );
 
-      // Worker
-      if (project.worker_url)
-        envVars.push(`OMNIBASE_WORKER_URL=${project.worker_url}`);
+      // Worker URLs are now managed per-deployment — use 'cloud workers list' to see them
 
       navigator.clipboard.writeText(envVars.join("\n"));
 
@@ -353,7 +351,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           sensitive: true,
           encryptedField: "service_key",
         },
-        { label: "Worker URL", value: project.worker_url },
       ],
     },
     {

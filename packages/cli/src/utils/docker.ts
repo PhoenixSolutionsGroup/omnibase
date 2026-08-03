@@ -6,15 +6,15 @@ import { config as dotenvConfig } from "dotenv";
 import {
   findOmnibaseRoot,
   getProjectName,
-  resolveEnvFilePath,
   EnvironmentConfig,
 } from "./environment";
 import {
-  loadOmnibaseConfig,
-  interpolate,
+  loadConfig,
+  loadSecretsMap,
+  interpolateValue,
   localEnvFromConfig,
-  VarSource,
-} from "../config/omnibase-config";
+  OmnibaseConfig,
+} from "./config";
 
 /**
  * Get the path to the CLI's docker directory
@@ -82,19 +82,17 @@ export interface DockerComposeOptions {
  * so projects without a toml behave as before.
  */
 export function buildEffectiveEnvFile(envName: string): string {
-  const envPath = resolveEnvFilePath(envName);
   const root = findOmnibaseRoot();
+  const config = loadConfig(root);
+  const envPath = path.join(root, "omnibase", ".env.local");
 
   const fileText = fs.existsSync(envPath)
     ? fs.readFileSync(envPath, "utf-8")
     : "";
-  const fileEnv = fs.existsSync(envPath)
-    ? dotenvConfig({ path: envPath }).parsed || {}
-    : {};
 
-  const sources: VarSource[] = [process.env as VarSource, fileEnv];
-  const cfg = interpolate(loadOmnibaseConfig(root), sources);
-  const derived = localEnvFromConfig(cfg);
+  const secrets = loadSecretsMap(root, envName, config.local?.env_path);
+  const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
+  const derived = localEnvFromConfig(resolved);
 
   if (Object.keys(derived).length === 0) {
     return envPath;

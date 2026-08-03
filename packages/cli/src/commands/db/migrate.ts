@@ -4,7 +4,6 @@ import { DatabaseMigrationService } from "../../services/db/migrate";
 import { getCommandContextWithEnv } from "../../utils/context";
 import { userInput } from "../../utils/user-input";
 import { logger } from "../../utils/logger";
-import { selectEnvironment } from "../../utils/environment";
 
 /**
  * @param program - The parent Command object
@@ -92,7 +91,15 @@ export function dbMigrateCommands(program: Command): void {
     )
     .option("-y, --yes", "Skip confirmation prompt")
     .action(async (options) => {
-      const env = await selectEnvironment("local");
+      const ctx = await getCommandContextWithEnv(program);
+      const env = ctx.env;
+
+      if (env.name !== "local") {
+        throw new Error(
+          "Reset is only available for the local environment.\n" +
+          "Use 'db migrate push --env <name>' to apply migrations to a remote environment.",
+        );
+      }
 
       if (!env.omnibaseServiceKey) {
         throw new Error(
