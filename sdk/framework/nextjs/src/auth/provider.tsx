@@ -6,6 +6,7 @@ import {
 } from "@ory/elements-react/client";
 import { getServerSession as getServerSessionOry } from "@ory/nextjs/app";
 import type { Session } from "@ory/client";
+import { SessionToJSON } from "@omnibase/core-js";
 import { getTokenSession } from "./session";
 
 /**
@@ -57,8 +58,10 @@ import { getTokenSession } from "./session";
  */
 export const getServerSession = async (): Promise<Session | null> => {
   const tokenSession = await getTokenSession();
-  if (tokenSession) return tokenSession as unknown as Session;
-  return getServerSessionOry() as unknown as Promise<Session | null>;
+  if (tokenSession) {
+    return SessionToJSON(tokenSession) as Session;
+  }
+  return getServerSessionOry();
 };
 
 /**
