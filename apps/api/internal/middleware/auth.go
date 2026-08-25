@@ -103,6 +103,7 @@ func isJWTToken(sessionToken string) bool {
 // JWT-shaped tokens are validated locally against the JWKS, opaque tokens
 // are forwarded to Kratos whoami.
 func (m *AuthMiddleware) validateSessionHeader(ctx context.Context, sessionToken string) (*kratos.Session, error) {
+	sessionToken = strings.TrimSpace(sessionToken)
 	if isJWTToken(sessionToken) {
 		return m.validateSessionWithJWT(ctx, sessionToken)
 	}
