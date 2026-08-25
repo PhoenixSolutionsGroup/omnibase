@@ -116,7 +116,7 @@ export function LoginForm({
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({
           csrf_token: getCsrfToken(flow),
-          identifier,
+          identifier: identifier.trim(),
           password,
           method: "password",
         }),
