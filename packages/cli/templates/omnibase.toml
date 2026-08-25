@@ -7,6 +7,10 @@ path = "workers"
 
 # [auth]
 # website_url = "http://127.0.0.1:3000"
+# allowed_return_urls = [
+#   "http://127.0.0.1:3000",
+#   "http://localhost:3000",
+# ]
 # cookie_secret = "{COOKIE_SECRET}"
 # log_level = "TRACE"
 #

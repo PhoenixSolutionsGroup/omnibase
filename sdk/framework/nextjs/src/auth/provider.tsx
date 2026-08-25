@@ -6,6 +6,7 @@ import {
 } from "@ory/elements-react/client";
 import { getServerSession as getServerSessionOry } from "@ory/nextjs/app";
 import type { Session } from "@ory/client";
+import { getTokenSession } from "./session";
 
 /**
  * Fetches the current session on the server side
@@ -13,6 +14,13 @@ import type { Session } from "@ory/client";
  * This helper function retrieves the authenticated user's session from Ory Kratos
  * in Next.js Server Components and Server Actions. It works with server-side rendering
  * and leverages Next.js's cookie handling to access session data securely.
+ *
+ * The session is resolved in two ways:
+ * - When an `omnibase_session_token` cookie is present, the session is validated
+ *   against the OmniBase API using the `X-Session-Token` header. This is the
+ *   origin-independent path (works from any domain).
+ * - Otherwise it falls back to the Ory cookie session (`ory_kratos_session`),
+ *   which only works when the app shares a registrable domain with the API.
  *
  * The session object contains the user's identity, authentication status, and session
  * metadata. Use this function to check authentication status, access user data, or
@@ -47,8 +55,11 @@ import type { Session } from "@ory/client";
  * @public
  * @group Session Management
  */
-export const getServerSession =
-  getServerSessionOry as unknown as () => Promise<Session>;
+export const getServerSession = async (): Promise<Session | null> => {
+  const tokenSession = await getTokenSession();
+  if (tokenSession) return tokenSession as unknown as Session;
+  return getServerSessionOry() as unknown as Promise<Session | null>;
+};
 
 /**
  * Server-side React component that provides session context to the component tree

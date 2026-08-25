@@ -70,7 +70,7 @@ function isJWTExpiredOrExpiring(token: string, bufferSeconds = 300): boolean {
  */
 export const postgrestJWTCheckMiddleware = async (
   req: NextRequest,
-  session: Session,
+  session: Session | null,
   api_url: string
 ) => {
   if (!session || !session.active) return NextResponse.next();
@@ -82,11 +82,16 @@ export const postgrestJWTCheckMiddleware = async (
     return NextResponse.next();
   }
 
-  // Fetch a new JWT via the SDK - either missing or expired/expiring
+  // Fetch a new JWT via the SDK - either missing or expired/expiring.
+  // Prefer the session token (origin-independent) over the Kratos cookie.
+  const sessionToken = req.cookies.get("omnibase_session_token")?.value;
+  const headers = sessionToken
+    ? { "X-Session-Token": sessionToken }
+    : { Cookie: req.headers.get("cookie") || "" };
   const api = new V1TenantsLifecycleApi(
     new Configuration({
       basePath: api_url,
-      headers: { Cookie: req.headers.get("cookie") || "" },
+      headers,
     })
   );
 

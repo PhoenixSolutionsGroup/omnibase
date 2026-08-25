@@ -44,7 +44,7 @@ import type { Session } from "@ory/client";
  */
 export const tenantCheckMiddleware = (
   req: NextRequest,
-  session: Session,
+  session: Session | null,
   {
     tenant_check,
     tenant_check_paths,

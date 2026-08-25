@@ -13,10 +13,13 @@ import {
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOmnibaseConfiguration } from "@/lib/server";
+import { setSessionTokenAction } from "@/app/auth/actions";
 import {
   V1TenantsInvitesApi,
   V1TenantsLifecycleApi,
 } from "@omnibase/core-js";
+
+const API_URL = process.env.NEXT_PUBLIC_OMNIBASE_API_URL!;
 
 // TODO - Fix type definitions
 export default function page({ params, searchParams }: any) {
@@ -24,9 +27,13 @@ export default function page({ params, searchParams }: any) {
     <div className="mt-[20vh]">
       <FlowRouter
         flowMap={{
-          login: (flow) => {
+          login: () => {
             return (
-              <LoginForm flow={flow as any} register_url="/auth/registration" />
+              <LoginForm
+                api_url={API_URL}
+                onToken={setSessionTokenAction}
+                register_url="/auth/registration"
+              />
             );
           },
           registration: (flow) => {

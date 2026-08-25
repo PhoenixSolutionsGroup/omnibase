@@ -10,7 +10,7 @@ const meta: Meta<typeof LoginForm> = {
     docs: {
       description: {
         component:
-          "Login form component for Ory Kratos flows with OIDC support.",
+          "Login form component for Ory Kratos flows with dynamic OIDC provider buttons.",
       },
     },
   },
@@ -21,7 +21,23 @@ export default meta;
 
 export const Login: StoryObj<typeof meta> = {
   args: {
-    flow: mockLogin as any,
+    api_url: "http://127.0.0.1:8080",
+    onToken: async () => {},
     Header: "Sign In",
+    register_url: "/auth/registration",
+  },
+  loaders: [
+    async () => {
+      const original = window.fetch;
+      window.fetch = (async () =>
+        new Response(JSON.stringify(mockLogin), {
+          headers: { "Content-Type": "application/json" },
+        })) as typeof fetch;
+      return { original };
+    },
+  ],
+  render: (args, { loaded }) => {
+    window.fetch = loaded.original;
+    return <LoginForm {...args} />;
   },
 };

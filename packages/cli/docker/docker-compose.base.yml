@@ -89,8 +89,9 @@ services:
     environment:
       - DSN=postgres://auth:auth@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
 
-      # Required - will fail if not set
-      - WEBSITE_URL=${WEBSITE_URL:-http://127.0.0.1:3000}
+      # Sourced from the omnibase.toml [auth] section via OMNIBASE_ENV_FILE:
+      # WEBSITE_URL, ALLOWED_RETURN_URLS, COOKIE_SECRET, OIDC_* — the image
+      # fails fast when required ones are missing.
       - COOKIE_SECRET=${COOKIE_SECRET:-PLEASE-CHANGE-ME-I-AM-VERY-INSECURE}
       - CIPHER_SECRET=${CIPHER_SECRET:-32-LONG-SECRET-NOT-SECURE-AT-ALL}
       - COOKIE_DOMAIN=${COOKIE_DOMAIN:-127.0.0.1}
