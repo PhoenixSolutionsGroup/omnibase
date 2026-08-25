@@ -246,8 +246,12 @@ export function localEnvFromConfig(
   const auth = config.auth;
   if (auth) {
     if (auth.website_url) out.WEBSITE_URL = auth.website_url;
-    if (auth.allowed_return_urls?.length)
-      out.ALLOWED_RETURN_URLS = auth.allowed_return_urls.join(",");
+    if (auth.allowed_return_urls?.length) {
+      const urls = auth.allowed_return_urls
+        .map((u) => u.trim())
+        .filter((u) => u.length > 0);
+      if (urls.length) out.ALLOWED_RETURN_URLS = urls.join(",");
+    }
     if (auth.cookie_secret) out.COOKIE_SECRET = auth.cookie_secret;
     // Kratos rejects anything but lowercase levels.
     if (auth.log_level) out.AUTH_LOG_LEVEL = auth.log_level.toLowerCase();
