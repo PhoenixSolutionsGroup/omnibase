@@ -1,8 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
-import { config } from "dotenv";
+import { config as dotenvConfig } from "dotenv";
 import { select } from "@inquirer/prompts";
+import axios from "axios";
 import { getActiveProfile } from "./credentials";
+import { loadConfig, OmnibaseConfig } from "./config";
 
 export interface EnvironmentConfig {
   name: string;
@@ -17,14 +19,14 @@ export interface EnvironmentConfig {
   profileApiKey?: string;
 }
 
-export interface OmnibaseConfig {
-  defaultEnvironment?: string;
-  version: string;
+interface BranchSummary {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
+  api_url?: string;
 }
 
-/**
- * Find the omnibase root directory
- */
 export function findOmnibaseRoot(): string {
   let currentDir = process.cwd();
 
@@ -37,121 +39,80 @@ export function findOmnibaseRoot(): string {
   }
 
   throw new Error(
-    "OmniBase project not found. Run 'omnibase init' to initialize a project."
+    "OmniBase project not found. Run 'omnibase init' to initialize a project.",
   );
 }
 
-/**
- * Get the project name from the parent directory of omnibase folder
- * Used for Docker Compose project namespacing to isolate different projects
- */
 export function getProjectName(): string {
   const projectRoot = findOmnibaseRoot();
   return path.basename(projectRoot);
 }
 
-/**
- * Get the path to the omnibase config file
- */
-export function getConfigPath(): string {
-  const projectRoot = findOmnibaseRoot();
-  return path.join(projectRoot, "omnibase", ".omnibase-config");
-}
-
-/**
- * Load omnibase configuration
- */
-export function loadOmnibaseConfig(): OmnibaseConfig {
-  const configPath = getConfigPath();
-
-  if (!fs.existsSync(configPath)) {
-    return { version: "1.0.0" };
-  }
-
-  try {
-    const configContent = fs.readFileSync(configPath, "utf8");
-    return JSON.parse(configContent);
-  } catch (error) {
-    console.warn(`Warning: Could not parse config file. Using defaults.`);
-    return { version: "1.0.0" };
-  }
-}
-
-/**
- * Save omnibase configuration
- */
-export function saveOmnibaseConfig(config: OmnibaseConfig): void {
-  const configPath = getConfigPath();
-  const configDir = path.dirname(configPath);
-
-  if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir, { recursive: true });
-  }
-
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-}
-
-/**
- * Get list of available environments
- */
 export function getAvailableEnvironments(): string[] {
+  const envs: string[] = [];
+  const root = findOmnibaseRoot();
+
+  const localEnvPath = path.join(root, "omnibase", ".env.local");
+  if (fs.existsSync(localEnvPath)) {
+    envs.push("local");
+  }
+
+  return envs;
+}
+
+export async function getCloudBranches(): Promise<string[]> {
+  const profile = getActiveProfile();
+  if (!profile) return [];
+
+  const config = loadConfig(findOmnibaseRoot());
+  if (!config.project_id) return [];
+
   try {
-    const projectRoot = findOmnibaseRoot();
-    const environmentsDir = path.join(projectRoot, "omnibase", "environments");
-
-    if (!fs.existsSync(environmentsDir)) {
-      return [];
-    }
-
-    return fs
-      .readdirSync(environmentsDir)
-      .filter((file) => file.startsWith(".env."))
-      .map((file) => file.replace(".env.", ""))
-      .sort();
-  } catch (error) {
+    const branches = await fetchBranches(config.project_id);
+    return branches.map((b) => b.name);
+  } catch {
     return [];
   }
 }
 
-/**
- * Load environment configuration
- */
-export function loadEnvironment(envName?: string): EnvironmentConfig {
-  const projectRoot = findOmnibaseRoot();
+function getManagedHostingUrl(): string | undefined {
+  const profile = getActiveProfile();
+  if (profile?.managed_hosting_url) return profile.managed_hosting_url;
+  return process.env.MANAGED_HOSTING_API_URL || undefined;
+}
 
-  // Determine which environment to use
-  let environmentName = envName;
+function getProfileApiKey(): string | undefined {
+  const profile = getActiveProfile();
+  return profile?.api_key || undefined;
+}
 
-  if (!environmentName) {
-    // Check stored default
-    const config = loadOmnibaseConfig();
-    environmentName = config.defaultEnvironment || "local";
-  }
+async function fetchBranches(projectId: string): Promise<BranchSummary[]> {
+  const baseUrl = getManagedHostingUrl();
+  if (!baseUrl) throw new Error("No managed hosting URL configured. Login with 'omnibase cloud login'.");
 
-  // Load the .env file
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${environmentName}`
-  );
+  const apiKey = getProfileApiKey();
+  const headers: Record<string, string> = {};
+  if (apiKey) headers["X-Api-Key"] = apiKey;
 
-  if (!fs.existsSync(envPath)) {
-    throw new Error(
-      `Environment file not found: .env.${environmentName}\n` +
-        `Available environments: ${getAvailableEnvironments().join(", ")}`
-    );
-  }
+  const response = await axios.get(`${baseUrl}/api/v1/projects/${projectId}/branches`, { headers });
+  const data = response.data;
+  return Array.isArray(data) ? data : [];
+}
 
-  // Parse environment file
-  const envConfig = config({ path: envPath });
+export function loadLocalEnvironment(
+  projectRoot?: string,
+  config?: OmnibaseConfig,
+): EnvironmentConfig {
+  const root = projectRoot ?? findOmnibaseRoot();
+
+  const envPath = path.join(root, "omnibase", ".env.local");
+
+  const envConfig = dotenvConfig({ path: envPath });
   const env = envConfig.parsed || {};
 
-  if (!env.OMNIBASE_API_URL) throw new Error("OMNIBASE_API_URL not set");
-
   return {
-    name: environmentName,
-    omnibaseApiUrl: env.OMNIBASE_API_URL,
+    name: "local",
+    omnibaseApiUrl: env.OMNIBASE_API_URL || "http://localhost:8080",
     omnibaseServiceKey: env.OMNIBASE_SERVICE_KEY,
     branchId: env.OMNIBASE_BRANCH_ID || env.OMNIBASE_PROJECT_ID,
     managedHostingApiUrl:
@@ -163,66 +124,115 @@ export function loadEnvironment(envName?: string): EnvironmentConfig {
   };
 }
 
-/**
- * Select environment interactively if no flag provided
- * Use this for remote commands (db push, permissions push, sync, etc.)
- */
-export async function selectEnvironment(
-  envFlag?: string
+async function loadBranchEnvironment(
+  branch: BranchSummary,
+  projectId: string,
 ): Promise<EnvironmentConfig> {
-  // If user explicitly specified an environment, use it directly
-  if (envFlag) {
-    const envConfig = loadEnvironment(envFlag);
+  const baseUrl = getManagedHostingUrl();
+  const apiKey = getProfileApiKey();
+  const headers: Record<string, string> = {};
+  if (apiKey) headers["X-Api-Key"] = apiKey;
 
-    const profile = getActiveProfile();
-    if (profile) {
-      return {
-        ...envConfig,
-        profileApiKey: profile.api_key,
-      };
-    }
+  let apiUrl = branch.api_url || "";
+  let serviceKey: string | undefined;
 
-    return envConfig;
+  try {
+    const keyResponse = await axios.get(
+      `${baseUrl}/api/v1/project_branches/${branch.id}/api-service-key`,
+      { headers },
+    );
+    const keyData = keyResponse.data?.data ?? keyResponse.data;
+    serviceKey = keyData?.api_service_key ?? keyData?.service_key;
+  } catch {
+    // service key fetch is optional — proceed without it
   }
 
-  // No flag provided - show interactive picker
-  const available = getAvailableEnvironments();
+  return {
+    name: branch.name,
+    omnibaseApiUrl: apiUrl,
+    omnibaseServiceKey: serviceKey,
+    branchId: branch.id,
+    managedHostingApiUrl: baseUrl,
+    profileApiKey: apiKey,
+  };
+}
 
-  if (available.length === 0) {
+export async function selectEnvironment(
+  envFlag?: string,
+): Promise<EnvironmentConfig> {
+  const root = findOmnibaseRoot();
+  const config = loadConfig(root);
+  const profile = getActiveProfile();
+
+  if (envFlag) {
+    if (envFlag === "local") {
+      const envConfig = loadLocalEnvironment(root, config);
+      if (profile) {
+        return { ...envConfig, profileApiKey: profile.api_key };
+      }
+      return envConfig;
+    }
+
+    if (config.project_id) {
+      const branches = await fetchBranches(config.project_id);
+      const match = branches.find((b) => b.name === envFlag || b.slug === envFlag);
+      if (match) {
+        return loadBranchEnvironment(match, config.project_id);
+      }
+    }
+
     throw new Error(
-      "No environment files found in omnibase/environments/\n" +
-        "Create a .env.local or .env.dev file to get started."
+      `Environment not found: ${envFlag}`,
     );
   }
 
-  if (available.length === 1) {
-    // Only one environment, use it directly
-    return loadEnvironment(available[0]);
+  let remote: BranchSummary[] = [];
+
+  if (config.project_id) {
+    try {
+      remote = await fetchBranches(config.project_id);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(`Warning: could not fetch branches: ${msg}`);
+    }
   }
 
-  available.sort((a, b) => {
-    if (a === "local") return -1;
-    if (b === "local") return 1;
-    return a.localeCompare(b);
-  });
+  const hasLocal = fs.existsSync(path.join(root, "omnibase", ".env.local"));
 
-  const selectedEnv = await select({
+  if (remote.length === 0 && !hasLocal) {
+    throw new Error(
+      "No environments available. Either set up omnibase/.env.local or connect to OmniBase Cloud with 'omnibase cloud login'.",
+    );
+  }
+
+  const choices: { name: string; value: string }[] = [];
+
+  if (hasLocal && remote.length === 0) {
+    choices.push({ name: "local", value: "local" });
+  }
+
+  for (const branch of remote) {
+    choices.push({ name: branch.name, value: branch.name });
+  }
+
+  if (hasLocal && remote.length > 0) {
+    choices.push({ name: "local", value: "local" });
+  }
+
+  const selectedValue = await select({
     message: "Select environment:",
-    choices: available.map((env) => ({
-      name: env,
-      value: env,
-    })),
+    choices,
   });
 
-  const envConfig = loadEnvironment(selectedEnv);
-
-  const profile = getActiveProfile();
-  if (profile) {
-    return {
-      ...envConfig,
-      profileApiKey: profile.api_key,
-    };
+  if (selectedValue === "local") {
+    const envConfig = loadLocalEnvironment(root, config);
+    if (profile) {
+      return { ...envConfig, profileApiKey: profile.api_key };
+    }
+    return envConfig;
   }
 
-  return envConfig;
+  const match = remote.find((b) => b.name === selectedValue);
+  if (!match) throw new Error(`Branch '${selectedValue}' not found`);
+  return loadBranchEnvironment(match, config.project_id!);
 }

@@ -1,0 +1,26 @@
+# OmniBase project configuration
+# project_id = ""
+
+[[deployments]]
+name = "default"
+path = "workers"
+
+# [auth]
+# website_url = "http://127.0.0.1:3000"
+# cookie_secret = "{COOKIE_SECRET}"
+# log_level = "TRACE"
+#
+#   [[auth.oidc]]
+#   provider = "google"
+#   client_id = "{GOOGLE_CLIENT_ID}"
+#   client_secret = "{GOOGLE_CLIENT_SECRET}"
+
+# Stripe keys are required for local dev (omnibase start / self-hosted).
+# Set them via process env or in the omnibase/.env.local file.
+# Managed hosting will auto-inject these on cloud deploy.
+# [stripe]
+# secret_key = "{STRIPE_SECRET_KEY}"
+# publishable_key = "{STRIPE_PUBLISHABLE_KEY}"
+
+# [local]
+# env_path = ".env"

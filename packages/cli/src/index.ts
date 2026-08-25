@@ -3,6 +3,7 @@
 import { Command } from "commander";
 import * as path from "path";
 import * as fs from "fs";
+import { spawn, ChildProcess } from "child_process";
 import packageJson from "../package.json";
 import { addPermissionsCommands } from "./commands/permissions";
 import { addEnvironmentCommands } from "./commands/environment";
@@ -13,7 +14,8 @@ import { addAuthCommands } from "./commands/auth";
 import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
-import { selectEnvironment } from "./utils/environment";
+import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
+import { loadConfig } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
   getComposeFiles,
@@ -93,24 +95,111 @@ program
     logger.succeed("Project initialized successfully");
     logger.newline();
     logger.log("Next steps:");
-    logger.log("  1. Organize the template files in omnibase/ as needed");
-    logger.log("  2. Edit the .env files with your configuration");
+    logger.log("  1. Edit omnibase/omnibase.toml with your project configuration");
+    logger.log("  2. Add secrets to omnibase/.env.local");
     logger.log("  3. Edit stripe.config.json with your Stripe products");
     logger.log("  4. Run 'omnibase start' to begin development");
   });
 
+let childProcesses: ChildProcess[] = [];
+
+function cleanup(): void {
+  for (const cp of childProcesses) {
+    if (!cp.killed) cp.kill("SIGTERM");
+  }
+  childProcesses = [];
+}
+
+process.on("SIGINT", () => {
+  logger.newline();
+  logger.info("Shutting down...");
+  cleanup();
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  cleanup();
+  process.exit(0);
+});
+
 program
   .command("start")
-  .description("Start the Docker Compose services")
+  .description("Start the Docker Compose services and deployment dev servers")
   .option("--build", "Build images before starting containers")
   .action(async (cmdOptions) => {
     try {
       const globalOptions = program.opts();
-      const command = cmdOptions.build ? "up -d --build" : "up -d";
+      const mode = globalOptions.mode || "local";
+      const composeCommand = cmdOptions.build ? "up -d --build" : "up -d";
+
       logger.start("Starting services...");
-      await runDockerCompose("local", globalOptions.mode, command);
-      logger.succeed("Services started");
+      await runDockerCompose("local", mode, composeCommand);
+      logger.succeed("Control plane services started");
+
+      const root = findOmnibaseRoot();
+      const config = loadConfig(root);
+
+      const deployments = config.deployments.length > 0
+        ? config.deployments
+        : fs.existsSync(path.join(root, "omnibase", "workers"))
+          ? [{ name: "default", path: "workers" }]
+          : [];
+
+      if (deployments.length === 0) {
+        logger.info("No deployments configured. Add [[deployments]] to omnibase.toml");
+        return;
+      }
+
+      logger.newline();
+      logger.log("Starting deployment dev servers:");
+      logger.log("");
+
+      const table: string[] = [];
+      for (let i = 0; i < deployments.length; i++) {
+        const dep = deployments[i];
+        const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
+        const port = dep.port ?? 8787 + i;
+
+        if (!fs.existsSync(depPath)) {
+          logger.warn(`  ${dep.name}: directory not found at ${depPath}`);
+          continue;
+        }
+
+        const cp = spawn("bun", ["run", "dev"], {
+          cwd: depPath,
+          stdio: ["ignore", "pipe", "pipe"],
+          env: { ...process.env, PORT: String(port) },
+        });
+
+        cp.stdout?.on("data", (data: Buffer) => {
+          for (const line of data.toString().split("\n").filter(Boolean)) {
+            logger.log(`[${dep.name}] ${line}`);
+          }
+        });
+
+        cp.stderr?.on("data", (data: Buffer) => {
+          for (const line of data.toString().split("\n").filter(Boolean)) {
+            logger.log(`[${dep.name}] ${line}`);
+          }
+        });
+
+        cp.on("exit", (code) => {
+          if (code !== null && code !== 0) {
+            logger.warn(`[${dep.name}] exited with code ${code}`);
+          }
+        });
+
+        childProcesses.push(cp);
+        table.push(`  ${dep.name.padEnd(16)} http://localhost:${port}`);
+      }
+
+      logger.newline();
+      logger.log("Dev servers running:");
+      table.forEach((line) => { logger.log(line); });
+      logger.newline();
+      logger.log("Press Ctrl+C to stop all services");
     } catch (error) {
+      cleanup();
       logger.fail(error instanceof Error ? error.message : String(error));
       process.exit(1);
     }
@@ -123,6 +212,7 @@ program
     try {
       const options = program.opts();
       logger.start("Stopping services...");
+      cleanup();
       await runDockerCompose("local", options.mode, "down");
       logger.succeed("Services stopped");
     } catch (error) {

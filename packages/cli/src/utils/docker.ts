@@ -1,11 +1,20 @@
 import * as path from "path";
 import * as fs from "fs";
+import * as os from "os";
 import { spawnSync } from "child_process";
+import { config as dotenvConfig } from "dotenv";
 import {
   findOmnibaseRoot,
   getProjectName,
   EnvironmentConfig,
 } from "./environment";
+import {
+  loadConfig,
+  loadSecretsMap,
+  interpolateValue,
+  localEnvFromConfig,
+  OmnibaseConfig,
+} from "./config";
 
 /**
  * Get the path to the CLI's docker directory
@@ -57,6 +66,57 @@ export interface DockerComposeOptions {
 }
 
 /**
+ * Build the env file handed to docker compose.
+ *
+ * The local env file supplies secrets and machine-specific values; anything
+ * declared in omnibase.toml is layered on top so the same config drives local
+ * containers and cloud deployments. {VAR} resolves from process.env then the
+ * env file — for local dev that file is .env.local, which is exactly where
+ * dev-only secrets belong.
+ *
+ * The original file's text is copied verbatim and the derived values appended,
+ * so multi-line values (JWKS blobs and the like) survive untouched and the
+ * later definitions win.
+ *
+ * Returns the original env file path when omnibase.toml contributes nothing,
+ * so projects without a toml behave as before.
+ */
+export function buildEffectiveEnvFile(envName: string): string {
+  const root = findOmnibaseRoot();
+  const config = loadConfig(root);
+  const envPath = path.join(root, "omnibase", ".env.local");
+
+  const fileText = fs.existsSync(envPath)
+    ? fs.readFileSync(envPath, "utf-8")
+    : "";
+
+  const secrets = loadSecretsMap(root, envName, config.local?.env_path);
+  const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
+  const derived = localEnvFromConfig(resolved);
+
+  if (Object.keys(derived).length === 0) {
+    return envPath;
+  }
+
+  const appended = Object.entries(derived)
+    .map(([k, v]) => `${k}=${v}`)
+    .join("\n");
+  const body =
+    (fileText.endsWith("\n") || fileText === "" ? fileText : fileText + "\n") +
+    "\n# --- derived from omnibase.toml (overrides the above) ---\n" +
+    appended +
+    "\n";
+
+  const effectivePath = path.join(
+    os.tmpdir(),
+    `omnibase-${getProjectName()}-${envName}.env`
+  );
+  fs.writeFileSync(effectivePath, body, { mode: 0o600 });
+
+  return effectivePath;
+}
+
+/**
  * Run a docker compose command with the correct compose files and environment
  */
 export function runDockerComposeCommand(
@@ -70,12 +130,7 @@ export function runDockerComposeCommand(
 
   validateComposeFiles(composeFiles);
 
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${options.envConfig.name}`,
-  );
+  const envPath = buildEffectiveEnvFile(options.envConfig.name);
 
   const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
   const serviceArgs = services.length > 0 ? services : [];
@@ -121,12 +176,7 @@ export function composeExec(
 
   validateComposeFiles(composeFiles);
 
-  const envPath = path.join(
-    projectRoot,
-    "omnibase",
-    "environments",
-    `.env.${options.envConfig.name}`,
-  );
+  const envPath = buildEffectiveEnvFile(options.envConfig.name);
   const composeArgs = composeFiles.flatMap((f) => ["-f", f]);
   const cmdArgs = [
     "compose",

@@ -62,6 +62,7 @@ export function ProjectDashboardClient({
   const [serviceStatuses, setServiceStatuses] = useState<ServiceStatus[]>([]);
   const [serviceLogs, setServiceLogs] = useState<ServiceLogs>({});
   const [logsLoading, setLogsLoading] = useState(true);
+  const [deployments, setDeployments] = useState<{ name: string; worker_url?: string }[]>([]);
 
   // Define services to check (with service type mapping)
   // Note: Auth and Permissions are now proxied through the API, so we only need to check
@@ -78,12 +79,6 @@ export function ProjectDashboardClient({
       url: project.postgrest_url,
       health_url: project.postgrest_url + "/ready",
       serviceType: "postgrest",
-    },
-    {
-      name: "Worker",
-      url: project.worker_url,
-      health_url: project.worker_url,
-      serviceType: "worker",
     },
   ].filter(
     (
@@ -248,6 +243,22 @@ export function ProjectDashboardClient({
 
   const region = "Unknown";
 
+  // Fetch deployments (workers) via API proxy
+  useEffect(() => {
+    const fetchDeployments = async () => {
+      try {
+        const res = await fetch(`/api/project_branches/${project.id}/workers`);
+        if (res.ok) {
+          const data = await res.json();
+          setDeployments(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    fetchDeployments();
+  }, [project.id]);
+
   // Helper to get severity badge
   const getSeverityBadge = (severity: string) => {
     const config: Record<string, { label: string; className: string }> = {
@@ -390,6 +401,36 @@ export function ProjectDashboardClient({
               </div>
             </CardContent>
           </Card>
+
+          {deployments.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deployments</CardTitle>
+                <CardDescription>Worker deployments for this branch</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {deployments.map((dep) => (
+                    <div key={dep.name} className="flex items-center justify-between rounded-lg border p-3">
+                      <div>
+                        <p className="font-medium">{dep.name}</p>
+                        {dep.worker_url && (
+                          <a
+                            href={dep.worker_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary hover:underline"
+                          >
+                            {dep.worker_url}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Service Health & Errors */}
           <Card>

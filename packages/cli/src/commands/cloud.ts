@@ -1,12 +1,14 @@
 import { Command } from "commander";
 import { execSync } from "child_process";
 import { readFile, readdir } from "fs/promises";
+import * as fs from "fs";
 import FormData from "form-data";
 import JSZip from "jszip";
 import * as TOML from "smol-toml";
 import axios from "axios";
-import { checkbox, select } from "@inquirer/prompts";
+import { checkbox, select, input } from "@inquirer/prompts";
 import * as path from "path";
+import { config as dotenvConfig } from "dotenv";
 import {
   EnvironmentConfig,
   findOmnibaseRoot,
@@ -15,11 +17,20 @@ import {
 import {
   loadCredentials,
   saveCredentials,
+  getActiveProfile,
   Profile,
 } from "../utils/credentials";
 import { logger } from "../utils/logger";
 import { handleCommandError, formatHttpError } from "../utils/errors";
-import { createManagedHostingClient } from "../utils/api-client";
+import { createManagedHostingClient, createProfileClient } from "../utils/api-client";
+import {
+  loadConfig,
+  getResolvedConfig,
+  interpolateValue,
+  cloudConfigOf,
+  DeploymentConfig,
+  OmnibaseConfig,
+} from "../utils/config";
 
 /**
  * Login to OmniBase Cloud
@@ -43,7 +54,7 @@ async function login(
       }
     );
 
-    const data = response.data?.data ?? response.data;
+    const data = response.data;
     if (!data?.tenant_id) {
       throw new Error("Invalid API key");
     }
@@ -171,7 +182,7 @@ async function switchProfile(profileName?: string): Promise<void> {
     if (!credentials.profiles[profileName]) {
       logger.fail(`Profile '${profileName}' not found.`);
       logger.log("Available profiles:");
-      profiles.forEach((p) => logger.log(`   - ${p}`));
+      profiles.forEach((p) => { logger.log(`   - ${p}`); });
       return;
     }
 
@@ -224,18 +235,38 @@ async function listProfiles(): Promise<void> {
 }
 
 /**
+ * Get deployments from config or fall back to legacy single-worker dir
+ */
+function getDeployments(root: string): DeploymentConfig[] {
+  const config = loadConfig(root);
+  if (config.deployments.length > 0) return config.deployments;
+
+  const legacyWorkersDir = path.join(root, "omnibase", "workers");
+  if (fs.existsSync(legacyWorkersDir)) {
+    return [{ name: "default", path: "workers" }];
+  }
+
+  throw new Error(
+    "No deployments found. Add [[deployments]] to omnibase/omnibase.toml\n" +
+      "  or create omnibase/workers/ for the default deployment.",
+  );
+}
+
+/**
  * Deploy workers to Cloudflare via managed hosting
  */
-async function deployWorkers(envFlag?: string): Promise<void> {
+async function deployWorkers(
+  envFlag?: string,
+  nameFlag?: string,
+  allFlag?: boolean,
+): Promise<void> {
   const root = findOmnibaseRoot();
-  const workersDir = path.join(root, "omnibase/workers");
 
   const env = await selectEnvironment(envFlag);
 
   if (env.name === "local") {
     logger.warn("Workers deployment is not available for local environment.");
-    logger.log("Tip: Use 'npm run dev' in omnibase/workers for local testing.");
-    logger.log("Or deploy to a cloud environment with --env flag:");
+    logger.log("Use --env flag to specify a cloud environment:");
     logger.log("   omnibase cloud workers deploy --env dev");
     logger.log("   omnibase cloud workers deploy --env staging");
     logger.log("   omnibase cloud workers deploy --env production");
@@ -244,37 +275,74 @@ async function deployWorkers(envFlag?: string): Promise<void> {
 
   if (!env.branchId) {
     throw new Error(
-      `OMNIBASE_BRANCH_ID not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+      `No branch ID resolved for environment '${env.name}'.\n` +
+        `Ensure your branch has finished provisioning.`
     );
   }
 
   if (!env.managedHostingApiUrl) {
     throw new Error(
-      `MANAGED_HOSTING_API_URL not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+      `No managed hosting URL resolved for environment '${env.name}'.\n` +
+        `Ensure your profile is configured: 'omnibase cloud login'`
     );
   }
 
-  logger.start(`Building workers for ${env.name} environment...`);
+  const deployments = getDeployments(root);
+  let targets: DeploymentConfig[];
 
-  try {
-    execSync("bunx wrangler deploy --dry-run --outdir .bundle", {
-      cwd: workersDir,
-      stdio: "inherit",
+  if (nameFlag) {
+    const match = deployments.find((d) => d.name === nameFlag);
+    if (!match) {
+      throw new Error(
+        `Deployment '${nameFlag}' not found.\n` +
+          `Available deployments: ${deployments.map((d) => d.name).join(", ")}`
+      );
+    }
+    targets = [match];
+  } else if (allFlag) {
+    targets = deployments;
+  } else if (deployments.length === 1) {
+    targets = deployments;
+  } else {
+    const selected = await select({
+      message: "Select deployment to deploy:",
+      choices: deployments.map((d) => ({ name: d.name, value: d })),
     });
-  } catch (error) {
-    throw new Error("Build failed. Check the output above for details.");
+    targets = [selected];
   }
 
-  const bundle = await packageWorkerBundle(workersDir);
-  logger.succeed(`Packaged worker bundle: ${(bundle.length / 1024).toFixed(1)} KB`);
+  for (const dep of targets) {
+    const workersDir = path.join(root, "omnibase", dep.path ?? dep.name);
 
-  logger.start("Deploying to Cloudflare Workers...");
-  const result = await uploadToManagedHosting(env, bundle);
+    if (!fs.existsSync(workersDir)) {
+      logger.fail(`Deployment '${dep.name}' directory not found: ${workersDir}`);
+      continue;
+    }
 
-  logger.succeed("Workers deployed successfully");
-  logger.log(`   URL: ${result.url}`);
+    logger.start(`Building '${dep.name}' for ${env.name}...`);
+
+    try {
+      execSync("bunx wrangler deploy --dry-run --outdir .bundle", {
+        cwd: workersDir,
+        stdio: "inherit",
+      });
+    } catch (error) {
+      logger.fail(`Build failed for '${dep.name}'. Check the output above.`);
+      continue;
+    }
+
+    const bundle = await packageWorkerBundle(workersDir);
+    logger.succeed(`${dep.name}: packaged (${(bundle.length / 1024).toFixed(1)} KB)`);
+
+    logger.start(`Deploying '${dep.name}'...`);
+    try {
+      const result = await uploadToManagedHosting(env, bundle, dep.name);
+      logger.succeed(`${dep.name} deployed`);
+      logger.log(`   URL: ${result.url}`);
+    } catch (error) {
+      logger.fail(`${dep.name} deploy failed: ${formatHttpError(error)}`);
+    }
+  }
 }
 
 /**
@@ -357,7 +425,11 @@ async function addDirToZip(
   }
 }
 
-async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
+async function uploadToManagedHosting(
+  env: EnvironmentConfig,
+  bundle: Buffer,
+  deploymentName: string = "default",
+) {
   const api = createManagedHostingClient(env);
   const form = new FormData();
   form.append("bundle", bundle, {
@@ -367,7 +439,7 @@ async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
 
   try {
     const response = await api.post(
-      `/api/v1/projects/${env.branchId}/workers/deploy`,
+      `/api/v1/project_branches/${env.branchId}/workers/${encodeURIComponent(deploymentName)}/deploy`,
       form,
       {
         headers: {
@@ -378,101 +450,346 @@ async function uploadToManagedHosting(env: EnvironmentConfig, bundle: Buffer) {
       }
     );
 
-    return response.data?.data ?? response.data;
+    return response.data;
   } catch (error) {
     throw new Error(formatHttpError(error));
   }
 }
 
-interface EnvPushResult {
-  applied: Record<string, string[]>;
-  ignored: { key: string; reason: string }[];
-  services_to_restart: string[];
+interface BranchSummary {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
 }
 
 /**
- * Push environment configuration to managed hosting
+ * Resolve a branch for the project from managed hosting. A `--env` value
+ * matches by name, slug, or id; otherwise a single branch is auto-selected or
+ * the user is prompted.
  */
-export async function pushEnvConfig(envFlag?: string): Promise<void> {
+async function resolveBranch(
+  managedHostingUrl: string,
+  projectId: string,
+  branchFlag?: string
+): Promise<BranchSummary> {
+  const api = createManagedHostingClient({
+    name: branchFlag || "cloud",
+    managedHostingApiUrl: managedHostingUrl,
+  } as EnvironmentConfig);
+
+  const { data } = await api.get<BranchSummary[]>(
+    `/api/v1/projects/${projectId}/branches`
+  );
+  const branches = data ?? [];
+  if (branches.length === 0) {
+    throw new Error(`No branches found for project ${projectId}`);
+  }
+
+  if (branchFlag) {
+    const found = branches.find(
+      (b) =>
+        b.name === branchFlag || b.slug === branchFlag || b.id === branchFlag
+    );
+    if (!found) {
+      throw new Error(
+        `Branch '${branchFlag}' not found. Available: ${branches
+          .map((b) => b.name)
+          .join(", ")}`
+      );
+    }
+    return found;
+  }
+
+  if (branches.length === 1) return branches[0];
+
+  const id = await select({
+    message: "Select branch:",
+    choices: branches.map((b) => ({
+      name: `${b.name} (${b.status})`,
+      value: b.id,
+    })),
+  });
+  return branches.find((b) => b.id === id)!;
+}
+
+/**
+ * Push config from omnibase.toml to managed hosting.
+ *
+ * Everything except [local] is sent; managed hosting maps what it understands
+ * and reports the rest. [local] stays on this machine — that is where Stripe
+ * lives, since managed hosting owns Stripe env via the Connect account it
+ * provisions per branch.
+ *
+ * {VAR} secrets resolve from process.env, then an optional --from-env file.
+ * .env.local is NEVER read here — it is strictly for local dev (omnibase start).
+ */
+export async function pushEnvConfig(
+  envFlag?: string,
+  fromEnvPath?: string
+): Promise<void> {
   const root = findOmnibaseRoot();
   const env = await selectEnvironment(envFlag);
 
   if (env.name === "local") {
-    logger.warn("Environment push is not available for local environment.");
-    logger.log("Use --env flag to specify a cloud environment:");
-    logger.log("   omnibase cloud env push --env dev");
-    logger.log("   omnibase cloud env push --env staging");
-    logger.log("   omnibase cloud env push --env production");
+    logger.warn("Environment push is not available for the local environment.");
+    logger.log("   omnibase cloud env push --env <branch>");
     return;
   }
 
   if (!env.branchId) {
     throw new Error(
-      `OMNIBASE_BRANCH_ID not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+      `No branch ID resolved for environment '${env.name}'.\n` +
+        `Ensure your branch has finished provisioning.`
     );
   }
 
   if (!env.managedHostingApiUrl) {
     throw new Error(
-      `MANAGED_HOSTING_API_URL not set in environment file.\n` +
-        `Please add it to omnibase/environments/.env.${env.name}`
+      `No managed hosting URL resolved for environment '${env.name}'.\n` +
+        `Ensure your profile is configured: 'omnibase cloud login'`
     );
   }
 
-  const envFilePath = path.join(
-    root,
-    "omnibase/environments",
-    `.env.${env.name}`
-  );
-  const envFileContent = await readFile(envFilePath, "utf-8");
+  const config = loadConfig(root);
+  if (!config.project_id) {
+    throw new Error(
+      "project_id is required in omnibase/omnibase.toml for cloud env push."
+    );
+  }
 
-  logger.start(`Pushing environment config to ${env.name}...`);
+  // Cloud resolution is process.env then --from-env; .env.local is local-only.
+  const secrets: Record<string, string> = {};
+  for (const [k, v] of Object.entries(process.env)) {
+    if (v !== undefined) secrets[k] = v;
+  }
+  if (fromEnvPath) {
+    const resolvedPath = path.resolve(fromEnvPath);
+    const parsed = dotenvConfig({ path: resolvedPath }).parsed;
+    if (!parsed) {
+      throw new Error(`--from-env file not found or empty: ${resolvedPath}`);
+    }
+    for (const [k, v] of Object.entries(parsed)) {
+      if (!(k in secrets)) secrets[k] = v;
+    }
+  }
+
+  const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
+  const payload = cloudConfigOf(resolved);
+  const sections = Object.keys(payload);
+  if (sections.length === 0) {
+    logger.info("Nothing to push: omnibase.toml has no cloud config sections.");
+    return;
+  }
+
+  const unresolved = [
+    ...new Set(JSON.stringify(payload).match(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g) ?? []),
+  ];
+  if (unresolved.length > 0) {
+    logger.warn(
+      `Unresolved ${unresolved.join(", ")} left literal. ` +
+        `Set them in process.env or pass --from-env <file>.`
+    );
+  }
+
+  logger.start(
+    `Applying config (${sections.join(", ")}) to branch ${env.name}...`
+  );
 
   const api = createManagedHostingClient(env);
 
   try {
-    const response = await api.post<EnvPushResult>(
-      `/api/v1/projects/${env.branchId}/env`,
-      envFileContent,
-      {
-        headers: {
-          "Content-Type": "text/plain",
-        },
-      }
-    );
+    const response = await api.post<{
+      message: string;
+      applied: string[];
+      ignored: string[];
+    }>(`/api/v1/project_branches/${env.branchId}/env/config`, payload);
 
     const result = response.data;
-
-    // Show applied keys per service
-    const appliedServices = Object.keys(result.applied);
-    if (appliedServices.length > 0) {
-      logger.succeed("Environment variables applied:");
-      for (const service of appliedServices) {
-        const keys = result.applied[service];
-        logger.log(`   ${service}: ${keys.join(", ")}`);
-      }
+    if (result.applied && result.applied.length > 0) {
+      logger.succeed(`Config applied: ${result.applied.join(", ")}`);
     } else {
-      logger.info("No configurable environment variables found to apply.");
+      logger.info("No config changes applied.");
     }
-
-    // Show ignored keys
     if (result.ignored && result.ignored.length > 0) {
-      logger.newline();
-      logger.warn(`${result.ignored.length} key(s) ignored:`);
-      for (const item of result.ignored) {
-        logger.log(`   ${item.key}: ${item.reason}`);
-      }
-    }
-
-    // Show restart hint
-    if (result.services_to_restart && result.services_to_restart.length > 0) {
-      logger.newline();
-      logger.info("Services need restart to apply changes:");
-      logger.log(`   ${result.services_to_restart.join(", ")}`);
-      logger.log("   Run: omnibase restart <service> --env " + env.name);
+      logger.warn(`Ignored: ${result.ignored.join(", ")}`);
     }
   } catch (error) {
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Create a new branch
+ */
+async function branchNew(options: {
+  projectId?: string;
+  name?: string;
+  region?: string;
+  tier?: string;
+  email?: string;
+}): Promise<void> {
+  const root = findOmnibaseRoot();
+  const config = loadConfig(root);
+  const api = createProfileClient();
+
+  const projectId = options.projectId ?? config.project_id ?? (await input({ message: "Project ID:" }));
+  const branchName = options.name ?? (await input({ message: "Branch name:", default: "dev" }));
+  const email = options.email ?? (await input({ message: "Billing email:" }));
+
+  let region = options.region;
+  let tier = options.tier;
+
+  if (!region || !tier) {
+    try {
+      const optsRes = await api.get("/api/v1/options");
+      const opts = optsRes.data;
+
+      if (!region && opts.regions?.length) {
+        region = await select({
+          message: "Region:",
+          choices: opts.regions.map((r: any) => ({ name: `${r.name} (${r.id})`, value: r.id })),
+        });
+      }
+
+      if (!tier && opts.tiers?.length) {
+        tier = await select({
+          message: "Deployment tier:",
+          choices: opts.tiers.map((t: any) => ({ name: `${t.name}`, value: t.id })),
+        });
+      }
+    } catch {
+      if (!region) region = await input({ message: "Region:", default: "syd" });
+      if (!tier) tier = await input({ message: "Deployment tier:", default: "shared" });
+    }
+  }
+
+  logger.start(`Creating branch '${branchName}'...`);
+
+  try {
+    const response = await api.post("/api/v1/project_branches", {
+      project_id: projectId,
+      branch_name: branchName,
+      region,
+      deployment_tier: tier,
+      billing_email: email,
+    });
+
+    const data = response.data;
+    logger.succeed(`Branch '${branchName}' provisioning started`);
+    logger.log(`   Branch ID: ${data.branch_id}`);
+    logger.log(`   Status: ${data.status}`);
+    logger.log("");
+    logger.log("Next steps:");
+    logger.log(`   Use --env ${branchName} with any command once provisioning completes:`);
+    logger.log(`   omnibase cloud workers deploy --env ${branchName}`);
+    logger.log(`   omnibase db migrate push --env ${branchName}`);
+  } catch (error) {
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * List branches for a project
+ */
+async function branchList(projectIdFlag?: string): Promise<void> {
+  const root = findOmnibaseRoot();
+  const api = createProfileClient();
+
+  const config = loadConfig(root);
+  const projectId = projectIdFlag ?? config.project_id;
+
+  if (!projectId) {
+    throw new Error("project_id is required. Provide --project-id or set it in omnibase.toml");
+  }
+
+  logger.start("Fetching branches...");
+
+  try {
+    const response = await api.get(`/api/v1/projects/${projectId}/branches`);
+    const branches = response.data;
+
+    logger.succeed(`Found ${branches?.length || 0} branches`);
+
+    if (!branches || branches.length === 0) return;
+
+    for (const b of branches) {
+      const statusIcon = b.status === "active" ? "✓" : b.status === "provisioning" ? "…" : "✗";
+      logger.log(` ${statusIcon} ${b.name} (${b.slug}) — ${b.status}`);
+      if (b.api_url) logger.log(`      URL: ${b.api_url}`);
+    }
+  } catch (error) {
+    logger.fail("Failed to fetch branches");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Delete a branch by name or ID
+ */
+async function branchDelete(branchRef: string, projectIdFlag?: string): Promise<void> {
+  const root = findOmnibaseRoot();
+  const api = createProfileClient();
+
+  const config = loadConfig(root);
+  const projectId = projectIdFlag ?? config.project_id;
+
+  if (!projectId) {
+    throw new Error("project_id is required. Provide --project-id or set it in omnibase.toml");
+  }
+
+  logger.start(`Resolving branch '${branchRef}'...`);
+
+  const response = await api.get(`/api/v1/projects/${projectId}/branches`);
+  const branches = response.data;
+  const match = branches.find(
+    (b: any) => b.id === branchRef || b.name === branchRef || b.slug === branchRef,
+  );
+  if (!match) {
+    logger.fail(`Branch '${branchRef}' not found`);
+    throw new Error(`Branch '${branchRef}' not found in project ${projectId}`);
+  }
+
+  logger.succeed(`Resolved to ${match.name} (${match.id})`);
+  logger.start(`Deprovisioning branch '${branchRef}'...`);
+
+  try {
+    await api.delete(`/api/v1/project_branches/${match.id}`);
+    logger.succeed(`Branch '${branchRef}' deprovisioning started`);
+  } catch (error) {
+    logger.fail("Failed to deprovision branch");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * List workers for a branch
+ */
+async function listWorkers(envFlag?: string): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+
+  const api = createManagedHostingClient(env);
+  const branchId = env.branchId;
+
+  if (!branchId) {
+    throw new Error("No branch selected");
+  }
+
+  logger.start("Fetching workers...");
+
+  try {
+    const response = await api.get(`/api/v1/project_branches/${branchId}/workers`);
+    const workers = response.data;
+
+    logger.succeed(`Found ${workers?.length || 0} worker(s)`);
+
+    if (!workers || workers.length === 0) return;
+
+    for (const w of workers) {
+      logger.log(` ${w.name}${w.worker_url ? ` — ${w.worker_url}` : ""}`);
+    }
+  } catch (error) {
+    logger.fail("Failed to fetch workers");
     throw new Error(formatHttpError(error));
   }
 }
@@ -549,10 +866,69 @@ export function addCloudCommands(program: Command): void {
   workers
     .command("deploy")
     .description("Deploy workers to Cloudflare")
+    .option("--name <name>", "Deploy a specific deployment by name")
+    .option("--all", "Deploy all deployments")
+    .action(async (cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await deployWorkers(globalOptions.env, cmdOptions.name, cmdOptions.all);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  workers
+    .command("list")
+    .description("List deployed workers for a branch")
     .action(async () => {
       try {
         const globalOptions = program.opts();
-        await deployWorkers(globalOptions.env);
+        await listWorkers(globalOptions.env);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  // Branch subcommand
+  const branch = cloud
+    .command("branch")
+    .description("Manage project branches");
+
+  branch
+    .command("new")
+    .description("Create a new project branch")
+    .option("--project-id <id>", "Project ID")
+    .option("--name <name>", "Branch name")
+    .option("--region <region>", "Region (e.g. syd)")
+    .option("--tier <tier>", "Deployment tier (e.g. shared)")
+    .option("--email <email>", "Billing email")
+    .action(async (cmdOptions) => {
+      try {
+        await branchNew(cmdOptions);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  branch
+    .command("list")
+    .description("List branches")
+    .option("--project-id <id>", "Project ID")
+    .action(async (cmdOptions) => {
+      try {
+        await branchList(cmdOptions.projectId);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  branch
+    .command("rm <branch>")
+    .description("Delete a branch by name, slug, or ID")
+    .option("--project-id <id>", "Project ID")
+    .action(async (branchRef, cmdOptions) => {
+      try {
+        await branchDelete(branchRef, cmdOptions.projectId);
       } catch (error) {
         await handleCommandError(error);
       }
@@ -565,11 +941,15 @@ export function addCloudCommands(program: Command): void {
 
   envCmd
     .command("push")
-    .description("Push environment variables to managed hosting")
-    .action(async () => {
+    .description("Push omnibase.toml config to managed hosting")
+    .option(
+      "--from-env <path>",
+      "Env file to resolve {VAR} secrets from (in addition to process.env). Never reads .env.local."
+    )
+    .action(async (cmdOptions) => {
       try {
         const globalOptions = program.opts();
-        await pushEnvConfig(globalOptions.env);
+        await pushEnvConfig(globalOptions.env, cmdOptions.fromEnv);
       } catch (error) {
         await handleCommandError(error);
       }

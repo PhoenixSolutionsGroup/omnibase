@@ -32,6 +32,36 @@ export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
 }
 
 /**
+ * Create API client from the active profile directly, without needing an EnvironmentConfig.
+ * Used for commands that don't depend on a specific branch/env (login, branch list, etc.).
+ */
+export function createProfileClient(): AxiosInstance {
+  const profile = getActiveProfile();
+  if (!profile?.managed_hosting_url) {
+    throw new Error(
+      "Not logged in. Run 'omnibase cloud login' first."
+    );
+  }
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (profile.tenant_id) {
+    headers["X-Tenant-ID"] = profile.tenant_id;
+  }
+
+  if (profile.api_key) {
+    headers["X-Api-Key"] = profile.api_key;
+  }
+
+  return axios.create({
+    baseURL: profile.managed_hosting_url,
+    headers,
+  });
+}
+
+/**
  * Create API client for managed hosting operations.
  * Used for: workers deployment, cloud auth verification.
  * Uses: MANAGED_HOSTING_API_URL
