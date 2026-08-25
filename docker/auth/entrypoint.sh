@@ -105,6 +105,7 @@ download_templates() {
 
 build_allowed_return_urls() {
     local extra=""
+    ALLOWED_RETURN_URLS=$(echo "$ALLOWED_RETURN_URLS" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     if [ -n "$ALLOWED_RETURN_URLS" ]; then
         local old_ifs="$IFS"
         IFS=','
