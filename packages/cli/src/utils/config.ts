@@ -17,6 +17,7 @@ export interface OidcProviderConfig {
 
 export interface AuthConfig {
   website_url?: string;
+  allowed_return_urls?: string[];
   cookie_secret?: string;
   log_level?: string;
   oidc?: OidcProviderConfig[];
@@ -245,6 +246,8 @@ export function localEnvFromConfig(
   const auth = config.auth;
   if (auth) {
     if (auth.website_url) out.WEBSITE_URL = auth.website_url;
+    if (auth.allowed_return_urls?.length)
+      out.ALLOWED_RETURN_URLS = auth.allowed_return_urls.join(",");
     if (auth.cookie_secret) out.COOKIE_SECRET = auth.cookie_secret;
     // Kratos rejects anything but lowercase levels.
     if (auth.log_level) out.AUTH_LOG_LEVEL = auth.log_level.toLowerCase();

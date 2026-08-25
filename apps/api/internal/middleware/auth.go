@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -21,11 +22,11 @@ import (
 )
 
 type AuthMiddleware struct {
-	kratosClient   *kratos.APIClient
-	db             *gorm.DB
-	JWTSecret      string
-	APIServiceKey  string
-	jwksData       string
+	kratosClient  *kratos.APIClient
+	db            *gorm.DB
+	JWTSecret     string
+	APIServiceKey string
+	jwksData      string
 }
 
 // JWK represents a JSON Web Key
@@ -67,6 +68,45 @@ func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
 		APIServiceKey: cfg.APIServiceKey,
 		jwksData:      cfg.AuthConfig.AuthJWTJWKS,
 	}
+}
+
+// validateSessionWithToken validates an opaque Kratos session token (ory_st_...)
+// by forwarding it to Kratos whoami with the X-Session-Token header
+func (m *AuthMiddleware) validateSessionWithToken(ctx context.Context, sessionToken string) (*kratos.Session, error) {
+	logger.Logger.Debug("Validating session with Kratos session token")
+
+	toSessionReq := m.kratosClient.FrontendAPI.ToSession(ctx).XSessionToken(sessionToken)
+	session, res, err := toSessionReq.Execute()
+
+	if err != nil {
+		if res != nil {
+			logger.Logger.Error("Error validating session token", "error", err, "http_status", res.StatusCode)
+		} else {
+			logger.Logger.Error("Error validating session token", "error", err, "http_status", "no_response")
+		}
+		return nil, fmt.Errorf("invalid or expired session: %w", err)
+	}
+
+	if session.Identity == nil {
+		return nil, fmt.Errorf("no identity found in session")
+	}
+
+	logger.Logger.Debug("Session validated successfully with token", "user_id", session.Identity.GetId())
+	return session, nil
+}
+
+func isJWTToken(sessionToken string) bool {
+	return strings.Count(sessionToken, ".") == 2
+}
+
+// validateSessionHeader dispatches validation based on the token format:
+// JWT-shaped tokens are validated locally against the JWKS, opaque tokens
+// are forwarded to Kratos whoami.
+func (m *AuthMiddleware) validateSessionHeader(ctx context.Context, sessionToken string) (*kratos.Session, error) {
+	if isJWTToken(sessionToken) {
+		return m.validateSessionWithJWT(ctx, sessionToken)
+	}
+	return m.validateSessionWithToken(ctx, sessionToken)
 }
 
 // validateSessionWithCookie validates a session using cookie header
@@ -261,10 +301,12 @@ func (m *AuthMiddleware) RequireSession() gin.HandlerFunc {
 		var session *kratos.Session
 		var err error
 
-		// Prioritize session header (JWT) if present, otherwise use cookie
 		if sessionHeader != "" {
-			logger.Logger.Debug("Using JWT session validation")
-			session, err = m.validateSessionWithJWT(c.Request.Context(), sessionHeader)
+			logger.Logger.Debug("Session header received",
+				"length", len(sessionHeader),
+				"prefix", sessionHeader[:min(10, len(sessionHeader))],
+				"is_jwt", isJWTToken(sessionHeader))
+			session, err = m.validateSessionHeader(c.Request.Context(), sessionHeader)
 		} else {
 			logger.Logger.Debug("Using cookie session validation")
 			session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)
@@ -408,10 +450,12 @@ func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
 		var session *kratos.Session
 		var err error
 
-		// Prioritize session header (JWT) if present, otherwise use cookie
 		if sessionHeader != "" {
-			logger.Logger.Debug("Using JWT session validation")
-			session, err = m.validateSessionWithJWT(c.Request.Context(), sessionHeader)
+			logger.Logger.Debug("Session header received",
+				"length", len(sessionHeader),
+				"prefix", sessionHeader[:min(10, len(sessionHeader))],
+				"is_jwt", isJWTToken(sessionHeader))
+			session, err = m.validateSessionHeader(c.Request.Context(), sessionHeader)
 		} else {
 			logger.Logger.Debug("Using cookie session validation")
 			session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)

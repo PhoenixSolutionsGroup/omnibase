@@ -11,7 +11,7 @@ serve:
 selfservice:    
   default_browser_return_url: ${WEBSITE_URL}
   allowed_return_urls:
-    - ${WEBSITE_URL}
+    - ${WEBSITE_URL}${ALLOWED_RETURN_URLS_EXTRA}
 
   methods:
     password:

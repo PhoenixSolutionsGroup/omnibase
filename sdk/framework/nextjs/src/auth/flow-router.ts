@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import {
-  getLoginFlow,
   getRecoveryFlow,
   getRegistrationFlow,
   getSettingsFlow,
@@ -16,9 +15,6 @@ import type {
   SettingsFlow,
   VerificationFlow,
 } from "@ory/client-fetch";
-import { redirect } from "next/navigation";
-
-const SESSION_VERIFIED_ADDRESS_REQUIRED_ERROR_ID = 4000010;
 
 /**
  * Maps auth flow types to their corresponding React component functions
@@ -111,7 +107,10 @@ export async function getFlow(
 ): Promise<FlowObject | null> {
   switch (flowType) {
     case "login":
-      return await getLoginFlow(props);
+      // Login is self-contained: the token-based LoginForm initializes its own
+      // native (API) flow on the client, so no browser-flow fetch is needed.
+      // This avoids the cross-origin cookie round-trip entirely.
+      return null;
     case "registration":
       return await getRegistrationFlow(props);
     case "recovery":
@@ -224,7 +223,11 @@ export async function FlowRouter({
   const componentFunction = flowMap[flowType];
 
   if (componentFunction) {
-    if (flowType === "onboarding") return componentFunction(null);
+    // Onboarding and login are self-contained: the components initialize
+    // their own flows on the client, so no flow fetch is needed.
+    if (flowType === "onboarding" || flowType === "login") {
+      return componentFunction(null);
+    }
 
     // Error flow uses 'id' param instead of 'flow' param
     if (flowType === "error") {
@@ -239,16 +242,6 @@ export async function FlowRouter({
     const flowObject = await getFlow(flowType, { url, searchParams });
 
     if (flowObject) {
-      // Check if login flow has verification required error
-      if (flowType === "login" && flowMap.verification) {
-        const hasVerificationRequiredError = flowObject.ui.messages?.some(
-          (msg) => msg.id === SESSION_VERIFIED_ADDRESS_REQUIRED_ERROR_ID
-        );
-        if (hasVerificationRequiredError) {
-          redirect(`${url}/verification?return_to=${encodeURIComponent(returnTo)}`);
-        }
-      }
-
       // Call the component function with the flow object
       return componentFunction(flowObject as any);
     }

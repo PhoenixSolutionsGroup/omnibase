@@ -111,6 +111,27 @@ describe("localEnvFromConfig", () => {
     expect(env.AUTH_LOG_LEVEL).toBe("info");
   });
 
+  test("joins allowed_return_urls into a comma-separated env var", () => {
+    const env = localEnvFromConfig({
+      auth: {
+        allowed_return_urls: ["http://localhost:3000", "http://127.0.0.1:3000"],
+      },
+    });
+    expect(env.ALLOWED_RETURN_URLS).toBe(
+      "http://localhost:3000,http://127.0.0.1:3000",
+    );
+  });
+
+  test("omits ALLOWED_RETURN_URLS when unset or empty", () => {
+    expect(
+      localEnvFromConfig({ auth: {} }).ALLOWED_RETURN_URLS,
+    ).toBeUndefined();
+    expect(
+      localEnvFromConfig({ auth: { allowed_return_urls: [] } })
+        .ALLOWED_RETURN_URLS,
+    ).toBeUndefined();
+  });
+
   test("maps oidc providers to OIDC_<P>_ENABLED and credentials", () => {
     const env = localEnvFromConfig({
       auth: {

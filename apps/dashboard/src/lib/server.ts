@@ -24,15 +24,16 @@ export const createServerClient = async () => {
 
 export const getOmnibaseConfiguration = async () => {
   const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("omnibase_session_token")?.value;
   const cookieHeader = cookieStore
     .getAll()
     .map((cookie) => `${cookie.name}=${cookie.value}`)
     .join("; ");
   return new Configuration({
     basePath: OMNIBASE_API_URL,
-    headers: {
-      Cookie: cookieHeader,
-    },
+    headers: sessionToken
+      ? { "X-Session-Token": sessionToken }
+      : { Cookie: cookieHeader },
   });
 };
 

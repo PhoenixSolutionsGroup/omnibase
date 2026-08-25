@@ -103,6 +103,23 @@ download_templates() {
     echo "Template download process complete" >&2
 }
 
+build_allowed_return_urls() {
+    local extra=""
+    if [ -n "$ALLOWED_RETURN_URLS" ]; then
+        local old_ifs="$IFS"
+        IFS=','
+        for url in $ALLOWED_RETURN_URLS; do
+            url=$(echo "$url" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            if [ -n "$url" ] && [ "$url" != "$WEBSITE_URL" ]; then
+                extra="${extra}
+    - $url"
+            fi
+        done
+        IFS="$old_ifs"
+    fi
+    export ALLOWED_RETURN_URLS_EXTRA="$extra"
+}
+
 generate_config() {
     local template_file="/etc/config/auth/auth.tmpl.yml"
     local output_file="/tmp/auth.yml"
@@ -166,6 +183,8 @@ ensure_jwks
 wait_for_api_health
 
 download_templates
+
+build_allowed_return_urls
 
 generate_config
 
