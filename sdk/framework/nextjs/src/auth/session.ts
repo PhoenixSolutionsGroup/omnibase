@@ -76,6 +76,7 @@ export async function exchangeSessionToken(
   initCode: string,
   returnToCode: string
 ): Promise<string | null> {
+  if (!initCode.trim() || !returnToCode.trim()) return null;
   const basePath =
     process.env.NEXT_PUBLIC_OMNIBASE_API_URL ?? process.env.OMNIBASE_API_URL;
   if (!basePath) return null;
