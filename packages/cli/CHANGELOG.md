@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.8.1...cli-v0.9.0) (2026-08-25)
+
+
+### Features
+
+* **cli:** drive local and cloud config from omnibase.toml ([0b19bc4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0b19bc4c1f0c2188cfc6f9ba31b7f9eefdbda7aa))
+
 ## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.8.0...cli-v0.8.1) (2026-07-24)
 
 
