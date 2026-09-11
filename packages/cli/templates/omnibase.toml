@@ -28,3 +28,10 @@ path = "workers"
 
 # [local]
 # env_path = ".env"
+
+# Pin the version of an OmniBase-built service. Omitted services use "latest".
+# Must be an exact published tag; checked against Docker Hub before applying.
+# [versions]
+# auth = "0.4.1"
+# api = "0.20.3"
+# perm = "0.4.0"

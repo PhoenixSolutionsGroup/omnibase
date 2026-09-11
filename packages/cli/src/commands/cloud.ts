@@ -28,6 +28,7 @@ import {
   getResolvedConfig,
   interpolateValue,
   cloudConfigOf,
+  assertValidVersions,
   DeploymentConfig,
   OmnibaseConfig,
 } from "../utils/config";
@@ -575,6 +576,9 @@ export async function pushEnvConfig(
   }
 
   const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
+  if (resolved.versions) {
+    assertValidVersions(resolved.versions);
+  }
   const payload = cloudConfigOf(resolved);
   const sections = Object.keys(payload);
   if (sections.length === 0) {

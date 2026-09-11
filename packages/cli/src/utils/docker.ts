@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { spawnSync } from "child_process";
+import { spawnSync, execSync } from "child_process";
 import { config as dotenvConfig } from "dotenv";
 import {
   findOmnibaseRoot,
@@ -13,8 +13,75 @@ import {
   loadSecretsMap,
   interpolateValue,
   localEnvFromConfig,
+  assertValidVersions,
   OmnibaseConfig,
 } from "./config";
+
+const VERSION_REPOS: Record<string, string> = {
+  auth: "phoenixsolutionsgroup/omnibase-auth",
+  api: "phoenixsolutionsgroup/omnibase-api",
+  perm: "phoenixsolutionsgroup/omnibase-permissions",
+};
+
+const VERSION_COMPOSE_SERVICES: Record<string, string[]> = {
+  auth: ["auth", "auth-migrate"],
+  api: ["rest-api"],
+  perm: ["permissions", "permissions-migrate"],
+};
+
+/**
+ * Fail fast if a [versions] tag doesn't exist on the registry, before
+ * `docker compose up` starts pulling. Uses `docker manifest inspect` so the
+ * real registry (with Docker's auth/rate-limit handling) answers, not a
+ * hand-rolled HTTP call. Network/daemon errors warn and continue — the
+ * compose pull will surface the real failure.
+ */
+function verifyVersionsExist(versions: Record<string, string>): void {
+  const missing: string[] = [];
+  for (const [svc, ver] of Object.entries(versions)) {
+    const repo = VERSION_REPOS[svc];
+    if (!repo) continue;
+    try {
+      execSync(`docker manifest inspect ${repo}:${ver}`, { stdio: "ignore" });
+    } catch {
+      missing.push(`${svc}=${ver}`);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `[versions] tag(s) not found on Docker Hub: ${missing.join(", ")}`,
+    );
+  }
+}
+
+/**
+ * Build a small override compose file pinning the image tags for the services
+ * declared under [versions]. Returned path is appended to the compose file
+ * list so later files win. Returns null when there is nothing to override.
+ */
+export function buildVersionsOverrideCompose(
+  projectRoot: string,
+  versions: Record<string, string>,
+): string | null {
+  const entries: string[] = [];
+  for (const svc of Object.keys(versions)) {
+    const repo = VERSION_REPOS[svc];
+    const composeServices = VERSION_COMPOSE_SERVICES[svc] ?? [];
+    if (!repo || composeServices.length === 0) continue;
+    for (const name of composeServices) {
+      entries.push(`  ${name}:`, `    image: ${repo}:${versions[svc]}`);
+    }
+  }
+  if (entries.length === 0) return null;
+
+  const body = ["services:", ...entries, ""].join("\n");
+  const overridePath = path.join(
+    os.tmpdir(),
+    `omnibase-${path.basename(projectRoot)}-versions.yaml`,
+  );
+  fs.writeFileSync(overridePath, body);
+  return overridePath;
+}
 
 /**
  * Get the path to the CLI's docker directory
@@ -129,6 +196,14 @@ export function runDockerComposeCommand(
   const composeFiles = getComposeFiles(options.mode);
 
   validateComposeFiles(composeFiles);
+
+  const config = loadConfig(projectRoot);
+  if (config.versions && Object.keys(config.versions).length > 0 && options.mode !== "dev") {
+    assertValidVersions(config.versions);
+    verifyVersionsExist(config.versions);
+    const override = buildVersionsOverrideCompose(projectRoot, config.versions);
+    if (override) composeFiles.push(override);
+  }
 
   const envPath = buildEffectiveEnvFile(options.envConfig.name);
 

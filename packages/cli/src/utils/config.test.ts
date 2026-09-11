@@ -8,6 +8,7 @@ import {
   interpolateValue,
   localEnvFromConfig,
   cloudConfigOf,
+  assertValidVersions,
 } from "./config";
 
 const SAMPLE = `project_id = "abc-123"
@@ -25,6 +26,10 @@ log_level = "TRACE"
   provider = "google"
   client_id = "{GOOGLE_CLIENT_ID}"
   client_secret = "{GOOGLE_CLIENT_SECRET}"
+
+[versions]
+auth = "0.4.1"
+api = "0.20.3"
 `;
 
 describe("loadOmnibaseConfig", () => {
@@ -42,6 +47,17 @@ describe("loadOmnibaseConfig", () => {
     expect(cfg.auth?.website_url).toBe("http://127.0.0.1:3000");
     expect(cfg.auth?.oidc?.[0].provider).toBe("google");
     expect(cfg.auth?.oidc?.[0].client_secret).toBe("{GOOGLE_CLIENT_SECRET}");
+  });
+
+  test("parses [versions] section", () => {
+    const cfg = loadConfig(root);
+    expect(cfg.versions).toEqual({ auth: "0.4.1", api: "0.20.3" });
+  });
+
+  test("[versions] reaches cloudConfigOf for the push", () => {
+    const cfg = loadConfig(root);
+    const cloud = cloudConfigOf(cfg);
+    expect(cloud.versions).toEqual({ auth: "0.4.1", api: "0.20.3" });
   });
 
   test("returns {} when no toml present", () => {
@@ -176,5 +192,27 @@ describe("cloudConfigOf", () => {
     });
     expect(Object.keys(cloud)).toEqual(["auth"]);
     expect(JSON.stringify(cloud)).not.toContain("sk_test");
+  });
+});
+
+describe("assertValidVersions", () => {
+  test("accepts auth/api/perm exact tags", () => {
+    expect(() =>
+      assertValidVersions({ auth: "0.4.1", api: "0.20.3", perm: "0.4.0" }),
+    ).not.toThrow();
+  });
+
+  test("rejects unknown service keys", () => {
+    expect(() => assertValidVersions({ postgrest: "v14.3" })).toThrow(
+      "[versions] key 'postgrest' is not allowed",
+    );
+  });
+
+  test("rejects image references as specs", () => {
+    for (const bad of ["evil.io/x:1", "repo/img:1", "0.20@sha256:abc", "0.20/3"]) {
+      expect(() => assertValidVersions({ api: bad })).toThrow(
+        "must be a tag, not an image reference",
+      );
+    }
   });
 });
