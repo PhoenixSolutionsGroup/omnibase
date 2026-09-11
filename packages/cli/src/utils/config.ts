@@ -39,7 +39,26 @@ export interface OmnibaseConfig {
   deployments: DeploymentConfig[];
   auth?: AuthConfig;
   local?: LocalConfig;
+  env?: Record<string, string>;
+  versions?: Record<string, string>;
   [key: string]: unknown;
+}
+
+export const VERSION_SERVICES = ["auth", "api", "perm"] as const;
+
+export function assertValidVersions(versions: Record<string, string>): void {
+  for (const [svc, ver] of Object.entries(versions)) {
+    if (!VERSION_SERVICES.includes(svc as (typeof VERSION_SERVICES)[number])) {
+      throw new Error(
+        `[versions] key '${svc}' is not allowed. Use ${VERSION_SERVICES.join(", ")}.`,
+      );
+    }
+    if (/[/:@]/.test(ver)) {
+      throw new Error(
+        `[versions] '${svc}' spec '${ver}' must be a tag, not an image reference.`,
+      );
+    }
+  }
 }
 
 export function findConfigFile(projectRoot: string): string | null {
@@ -179,6 +198,8 @@ export function loadConfig(projectRoot: string): OmnibaseConfig {
       })),
       auth: parsed.auth as AuthConfig | undefined,
       local: rawLocal,
+      env: parsed.env as Record<string, string> | undefined,
+      versions: parsed.versions as Record<string, string> | undefined,
     };
   } catch (error) {
     console.warn(`Warning: Could not parse config file at ${configPath}`);
