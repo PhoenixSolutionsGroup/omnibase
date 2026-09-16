@@ -1,3 +1,10 @@
+## [0.20.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.3...api-v0.20.4) (2026-09-16)
+
+
+### Bug Fixes
+
+* **api:** trim whitespace on session token header ([17f2c44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/17f2c44c87ecca1a30b0d53d5deff201081a3582))
+
 ## [0.20.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.2...api-v0.20.3) (2026-07-24)
 
 
