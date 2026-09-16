@@ -1,3 +1,10 @@
+## [0.8.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.3...nextjs-v0.8.4) (2026-09-16)
+
+
+### Bug Fixes
+
+* **nextjs:** guard against empty session exchange codes ([555e655](https://github.com/PhoenixSolutionsGroup/omnibase/commit/555e655a1afdb8bd015f8c8908dd29354cba4565))
+
 ## [0.8.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.2...nextjs-v0.8.3) (2026-07-24)
 
 
