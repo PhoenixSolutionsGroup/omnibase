@@ -339,7 +339,7 @@ async function deployWorkers(
     try {
       const result = await uploadToManagedHosting(env, bundle, dep.name);
       logger.succeed(`${dep.name} deployed`);
-      logger.log(`   URL: ${result.url}`);
+      logger.log(`   URL: ${result.data?.url}`);
     } catch (error) {
       logger.fail(`${dep.name} deploy failed: ${formatHttpError(error)}`);
     }
@@ -356,11 +356,14 @@ async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
   const config = await loadWranglerConfig(workersDir);
   delete config.build;
   delete config.name;
-  config.main = "worker.js";
+  config.main = await resolveBundleEntry(
+    path.join(workersDir, ".bundle"),
+    config.main
+  );
 
   const zip = new JSZip();
   await addDirToZip(zip, path.join(workersDir, ".bundle"), (name) =>
-    name.endsWith(".map")
+    name.endsWith(".map") || name === "README.md"
   );
 
   const assetsDir = config.assets?.directory;
@@ -375,6 +378,33 @@ async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
     type: "nodebuffer",
     compression: "DEFLATE",
   });
+}
+
+export async function resolveBundleEntry(
+  bundleDir: string,
+  configuredMain?: string
+): Promise<string> {
+  const entries = await readdir(bundleDir, { withFileTypes: true });
+  const files = entries
+    .filter((e) => e.isFile() && !e.name.endsWith(".map"))
+    .map((e) => e.name);
+
+  if (configuredMain) {
+    const base = path.basename(configuredMain).replace(/\.[^.]+$/, "");
+    const match = files.find(
+      (f) => path.basename(f).replace(/\.[^.]+$/, "") === base
+    );
+    if (match) return match;
+  }
+
+  const candidates = files.filter(
+    (f) => !f.startsWith("chunk-") && /\.(js|mjs)$/.test(f)
+  );
+  if (candidates.length === 1) return candidates[0];
+
+  throw new Error(
+    "Could not determine the worker entry module. Check the .bundle output."
+  );
 }
 
 async function loadWranglerConfig(workersDir: string): Promise<any> {
