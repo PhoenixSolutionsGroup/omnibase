@@ -1,3 +1,10 @@
+## [0.8.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.8.1...shadcn-v0.8.2) (2026-09-16)
+
+
+### Bug Fixes
+
+* **shadcn:** trim identifier before password login ([d928ae6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d928ae628db527ff20d698ec1c7f9ebdbae1f253))
+
 ## [0.8.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.8.0...shadcn-v0.8.1) (2026-07-24)
 
 
