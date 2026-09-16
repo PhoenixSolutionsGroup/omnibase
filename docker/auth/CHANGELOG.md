@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.1...auth-v0.4.2) (2026-09-16)
+
+
+### Bug Fixes
+
+* **auth:** trim whitespace on allowed return urls env ([87530a2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/87530a20db5b2ca38530b5ef4eac56159ed8b007))
+
 ## [0.4.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.0...auth-v0.4.1) (2026-05-30)
 
 
