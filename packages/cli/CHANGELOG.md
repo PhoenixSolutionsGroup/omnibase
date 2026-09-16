@@ -1,3 +1,17 @@
+# [0.10.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.9.0...cli-v0.10.0) (2026-09-16)
+
+
+### Bug Fixes
+
+* **cli:** skip empty allowed return urls entries ([7f51ff9](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7f51ff9d3e25eb62c774d3232dc1cb721558fad9))
+* **cli:** sync api docker image to 0.20.4 [skip ci] ([73ac6d2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/73ac6d2879fb963232dd6c4dd608c54e69b45fd2))
+* **cli:** sync auth docker image to 0.4.2 [skip ci] ([47f80c5](https://github.com/PhoenixSolutionsGroup/omnibase/commit/47f80c56be3350e973a47d251290e20c5362b4cb))
+
+
+### Features
+
+* **cli:** Application version pinning ([5ebd13b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5ebd13bc12562bf3f54bdcfb306a785b0452cfce))
+
 # [0.9.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.8.1...cli-v0.9.0) (2026-08-25)
 
 
