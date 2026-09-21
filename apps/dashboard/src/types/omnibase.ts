@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      account_domains: {
+        Row: {
+          cf_custom_hostname_id: string | null
+          created_at: string
+          dcv_record_name: string | null
+          dcv_record_value: string | null
+          hostname: string
+          id: string
+          is_wildcard: boolean
+          ssl_status: string | null
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          cf_custom_hostname_id?: string | null
+          created_at?: string
+          dcv_record_name?: string | null
+          dcv_record_value?: string | null
+          hostname: string
+          id?: string
+          is_wildcard?: boolean
+          ssl_status?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          cf_custom_hostname_id?: string | null
+          created_at?: string
+          dcv_record_name?: string | null
+          dcv_record_value?: string | null
+          hostname?: string
+          id?: string
+          is_wildcard?: boolean
+          ssl_status?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
@@ -50,6 +92,86 @@ export type Database = {
           tenant_id?: string
         }
         Relationships: []
+      }
+      branch_worker_domains: {
+        Row: {
+          account_domain_id: string
+          branch_worker_id: string
+          created_at: string
+          hostname: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          account_domain_id: string
+          branch_worker_id: string
+          created_at?: string
+          hostname: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          account_domain_id?: string
+          branch_worker_id?: string
+          created_at?: string
+          hostname?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branch_worker_domains_account_domain_id_fkey"
+            columns: ["account_domain_id"]
+            referencedRelation: "account_domains"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "branch_worker_domains_branch_worker_id_fkey"
+            columns: ["branch_worker_id"]
+            referencedRelation: "branch_workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branch_workers: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          project_branch_id: string
+          updated_at: string
+          worker_deployment_id: string | null
+          worker_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          project_branch_id: string
+          updated_at?: string
+          worker_deployment_id?: string | null
+          worker_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          project_branch_id?: string
+          updated_at?: string
+          worker_deployment_id?: string | null
+          worker_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branch_workers_project_branch_id_fkey"
+            columns: ["project_branch_id"]
+            referencedRelation: "project_branches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clusters: {
         Row: {
@@ -116,6 +238,7 @@ export type Database = {
           database_host: string | null
           database_name: string | null
           database_password_encrypted: string | null
+          database_pooler_host: string | null
           database_port: number | null
           database_service_key_encrypted: string | null
           database_username: string | null
@@ -130,6 +253,7 @@ export type Database = {
           postmark_server_id: string | null
           postmark_server_token_encrypted: string | null
           project_id: string
+          slug: string
           status: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key: string | null
           storage_bucket_name: string | null
@@ -139,8 +263,6 @@ export type Database = {
           stripe_environment: string | null
           suspension_reason: string | null
           updated_at: string
-          worker_url: string | null
-          workers_deployment_id: string | null
         }
         Insert: {
           api_service_key_encrypted?: string | null
@@ -152,6 +274,7 @@ export type Database = {
           database_host?: string | null
           database_name?: string | null
           database_password_encrypted?: string | null
+          database_pooler_host?: string | null
           database_port?: number | null
           database_service_key_encrypted?: string | null
           database_username?: string | null
@@ -166,6 +289,7 @@ export type Database = {
           postmark_server_id?: string | null
           postmark_server_token_encrypted?: string | null
           project_id: string
+          slug: string
           status?: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key?: string | null
           storage_bucket_name?: string | null
@@ -175,8 +299,6 @@ export type Database = {
           stripe_environment?: string | null
           suspension_reason?: string | null
           updated_at?: string
-          worker_url?: string | null
-          workers_deployment_id?: string | null
         }
         Update: {
           api_service_key_encrypted?: string | null
@@ -188,6 +310,7 @@ export type Database = {
           database_host?: string | null
           database_name?: string | null
           database_password_encrypted?: string | null
+          database_pooler_host?: string | null
           database_port?: number | null
           database_service_key_encrypted?: string | null
           database_username?: string | null
@@ -202,6 +325,7 @@ export type Database = {
           postmark_server_id?: string | null
           postmark_server_token_encrypted?: string | null
           project_id?: string
+          slug?: string
           status?: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key?: string | null
           storage_bucket_name?: string | null
@@ -211,8 +335,6 @@ export type Database = {
           stripe_environment?: string | null
           suspension_reason?: string | null
           updated_at?: string
-          worker_url?: string | null
-          workers_deployment_id?: string | null
         }
         Relationships: [
           {
@@ -237,6 +359,7 @@ export type Database = {
           error_message: string | null
           id: string
           name: string
+          slug: string
           suspension_reason: string | null
           tenant_id: string
           updated_at: string
@@ -248,6 +371,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           name: string
+          slug: string
           suspension_reason?: string | null
           tenant_id: string
           updated_at?: string
@@ -259,6 +383,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           name?: string
+          slug?: string
           suspension_reason?: string | null
           tenant_id?: string
           updated_at?: string

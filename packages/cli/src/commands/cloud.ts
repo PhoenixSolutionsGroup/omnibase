@@ -829,6 +829,187 @@ async function listWorkers(envFlag?: string): Promise<void> {
 }
 
 /**
+ * Add an account-level custom domain (e.g. example.com or *.example.com)
+ */
+async function domainAdd(
+  envFlag: string | undefined,
+  domain: string
+): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+
+  logger.start(`Adding domain ${domain}...`);
+
+  try {
+    const response = await api.post(`/api/v1/domains`, { hostname: domain });
+    const d = response.data;
+
+    logger.succeed(`Domain ${domain} added (status: ${d.status})`);
+    if (d.dcv_record_name && d.dcv_record_value) {
+      logger.log("Add these DNS records at your domain provider:");
+      logger.log(` ${d.hostname} CNAME → ${d.cname_target}`);
+      logger.log(` ${d.dcv_record_name} TXT → ${d.dcv_record_value}`);
+      logger.log("Then run: omnibase cloud domains status <id>");
+    } else {
+      logger.log(`Point ${domain} to ${d.cname_target}`);
+    }
+  } catch (error) {
+    logger.fail("Failed to add domain");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * List account-level domains
+ */
+async function domainList(envFlag: string | undefined): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+
+  logger.start("Fetching domains...");
+
+  try {
+    const response = await api.get(`/api/v1/domains`);
+    const domains = response.data;
+
+    logger.succeed(`Found ${domains?.length || 0} domain(s)`);
+
+    if (!domains || domains.length === 0) return;
+
+    for (const d of domains) {
+      logger.log(` ${d.hostname} — ${d.status}${d.ssl_status ? ` (ssl: ${d.ssl_status})` : ""}`);
+    }
+  } catch (error) {
+    logger.fail("Failed to fetch domains");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Remove an account-level domain
+ */
+async function domainRemove(
+  envFlag: string | undefined,
+  domainId: string
+): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+
+  logger.start("Removing domain...");
+
+  try {
+    await api.delete(`/api/v1/domains/${domainId}`);
+    logger.succeed("Domain removed");
+  } catch (error) {
+    logger.fail("Failed to remove domain");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Poll the status of an account-level domain until it activates or times out
+ */
+async function domainStatus(
+  envFlag: string | undefined,
+  domainId: string,
+  pollSeconds: number
+): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+
+  const deadline = Date.now() + pollSeconds * 1000;
+
+  try {
+    while (Date.now() < deadline) {
+      const response = await api.get(`/api/v1/domains/${domainId}/status`);
+      const d = response.data;
+
+      logger.log(` ${d.hostname} — ${d.status}${d.ssl_status ? ` (ssl: ${d.ssl_status})` : ""}`);
+
+      if (d.status === "active") {
+        logger.succeed(`Domain ${d.hostname} is live`);
+        return;
+      }
+
+      if (d.dcv_record_name && d.dcv_record_value && d.status !== "active") {
+        logger.log("DNS records needed:");
+        logger.log(` ${d.hostname} CNAME → ${d.cname_target}`);
+        logger.log(` ${d.dcv_record_name} TXT → ${d.dcv_record_value}`);
+        logger.log("Waiting for DNS + certificate issuance...");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+    logger.fail("Timed out waiting for domain activation");
+  } catch (error) {
+    logger.fail("Failed to check domain status");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Attach a validated account domain to a worker
+ */
+async function domainAttach(
+  envFlag: string | undefined,
+  domainId: string,
+  workerName: string,
+  hostname?: string
+): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+  const branchId = env.branchId;
+
+  if (!branchId) {
+    throw new Error("No branch selected");
+  }
+
+  logger.start(`Attaching domain ${domainId} to worker ${workerName}...`);
+
+  try {
+    const body: Record<string, string> = { account_domain_id: domainId };
+    if (hostname) body.hostname = hostname;
+
+    const response = await api.post(
+      `/api/v1/project_branches/${branchId}/workers/${encodeURIComponent(workerName)}/domains`,
+      body
+    );
+    const d = response.data;
+
+    logger.succeed(`Domain ${d.hostname} attached (status: ${d.status})`);
+  } catch (error) {
+    logger.fail("Failed to attach domain");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
+ * Detach a domain from a worker
+ */
+async function domainDetach(
+  envFlag: string | undefined,
+  domainId: string
+): Promise<void> {
+  const env = await selectEnvironment(envFlag);
+  const api = createManagedHostingClient(env);
+  const branchId = env.branchId;
+
+  if (!branchId) {
+    throw new Error("No branch selected");
+  }
+
+  logger.start("Removing domain from worker...");
+
+  try {
+    await api.delete(`/api/v1/project_branches/${branchId}/worker-domains/${domainId}`);
+    logger.succeed("Domain removed from worker");
+  } catch (error) {
+    logger.fail("Failed to remove domain from worker");
+    throw new Error(formatHttpError(error));
+  }
+}
+
+/**
  * Add cloud commands to the CLI program
  */
 export function addCloudCommands(program: Command): void {
@@ -918,6 +1099,85 @@ export function addCloudCommands(program: Command): void {
       try {
         const globalOptions = program.opts();
         await listWorkers(globalOptions.env);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  const domains = cloud
+    .command("domains")
+    .description("Manage account-level custom domains");
+
+  domains
+    .command("add <domain>")
+    .description("Add a custom domain (e.g. example.com or *.example.com)")
+    .action(async (domain, cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await domainAdd(globalOptions.env, domain);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  domains
+    .command("list")
+    .description("List account-level custom domains")
+    .action(async () => {
+      try {
+        const globalOptions = program.opts();
+        await domainList(globalOptions.env);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  domains
+    .command("rm <domain-id>")
+    .description("Remove a custom domain and detach it from all workers")
+    .action(async (domainId, cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await domainRemove(globalOptions.env, domainId);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  domains
+    .command("status <domain-id>")
+    .description("Poll domain status until active (default 120s)")
+    .option("--timeout <seconds>", "Poll timeout in seconds", "120")
+    .action(async (domainId, cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await domainStatus(globalOptions.env, domainId, parseInt(cmdOptions.timeout, 10));
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  domains
+    .command("attach <domain-id>")
+    .description("Attach a validated domain to a worker")
+    .requiredOption("--worker <name>", "Worker deployment name")
+    .option("--hostname <hostname>", "Concrete hostname to route (required for wildcard domains)")
+    .action(async (domainId, cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await domainAttach(globalOptions.env, domainId, cmdOptions.worker, cmdOptions.hostname);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  domains
+    .command("detach <domain-id>")
+    .description("Detach a domain from the current branch's worker")
+    .action(async (domainId, cmdOptions) => {
+      try {
+        const globalOptions = program.opts();
+        await domainDetach(globalOptions.env, domainId);
       } catch (error) {
         await handleCommandError(error);
       }

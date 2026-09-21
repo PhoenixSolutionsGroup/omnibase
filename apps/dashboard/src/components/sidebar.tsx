@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronRight,
   Wrench,
+  Globe,
 } from "lucide-react";
 import { ProjectDropdown } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
@@ -138,6 +139,11 @@ const organizationNavigationItems = [
     title: "Subscriptions",
     href: "/subscriptions",
     icon: CreditCard,
+  },
+  {
+    title: "Domains",
+    href: "/domains",
+    icon: Globe,
   },
   {
     title: "Settings",
