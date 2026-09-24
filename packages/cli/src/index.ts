@@ -15,7 +15,7 @@ import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
 import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
-import { loadConfig } from "./utils/config";
+import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
   getComposeFiles,
@@ -133,11 +133,12 @@ program
       const composeCommand = cmdOptions.build ? "up -d --build" : "up -d";
 
       logger.start("Starting services...");
-      await runDockerCompose("local", mode, composeCommand);
+      await runDockerCompose(globalOptions.env || "local", mode, composeCommand);
       logger.succeed("Control plane services started");
 
       const root = findOmnibaseRoot();
       const config = loadConfig(root);
+      const envName = globalOptions.env || "local";
 
       const deployments = config.deployments.length > 0
         ? config.deployments
@@ -165,10 +166,13 @@ program
           continue;
         }
 
+        const wranglerConfig = loadWranglerConfigFile(depPath);
+        const env = resolveStartEnv(root, envName, config, wranglerConfig);
+
         const cp = spawn("bun", ["run", "dev"], {
           cwd: depPath,
           stdio: ["ignore", "pipe", "pipe"],
-          env: { ...process.env, PORT: String(port) },
+          env: { ...env, PORT: String(port) },
         });
 
         cp.stdout?.on("data", (data: Buffer) => {
