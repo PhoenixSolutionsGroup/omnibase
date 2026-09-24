@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as TOML from "smol-toml";
-import { config as dotenvConfig } from "dotenv";
+import { parse as dotenvParse } from "dotenv";
 
 export interface DeploymentConfig {
   name: string;
@@ -108,6 +108,11 @@ export function parseConfigFile(filePath: string): Record<string, unknown> {
   throw new Error(`Unsupported config file format: ${ext}`);
 }
 
+function loadEnvFile(pathToEnv: string): Record<string, string> {
+  if (!fs.existsSync(pathToEnv)) return {};
+  return dotenvParse(fs.readFileSync(pathToEnv, "utf-8"));
+}
+
 export function loadSecretsMap(
   projectRoot: string,
   envName?: string,
@@ -122,29 +127,92 @@ export function loadSecretsMap(
     }
   }
 
-  const defaultLocalPath = path.join(
-    projectRoot,
-    "omnibase",
-    ".env.local",
-  );
-  if (fs.existsSync(defaultLocalPath)) {
-    const parsed = dotenvConfig({ path: defaultLocalPath }).parsed || {};
-    for (const [k, v] of Object.entries(parsed)) {
+  if (envName && envName !== "local") {
+    const branchEnv = loadEnvFile(
+      path.join(projectRoot, "omnibase", `.env.${envName}`),
+    );
+    for (const [k, v] of Object.entries(branchEnv)) {
       if (!(k in secrets)) secrets[k] = v;
     }
   }
 
+  const defaultLocal = loadEnvFile(
+    path.join(projectRoot, "omnibase", ".env.local"),
+  );
+  for (const [k, v] of Object.entries(defaultLocal)) {
+    if (!(k in secrets)) secrets[k] = v;
+  }
+
   if (localEnvPath) {
-    const resolvedPath = path.resolve(projectRoot, localEnvPath);
-    if (fs.existsSync(resolvedPath)) {
-      const parsed = dotenvConfig({ path: resolvedPath }).parsed || {};
-      for (const [k, v] of Object.entries(parsed)) {
-        if (!(k in secrets)) secrets[k] = v;
-      }
+    const resolved = loadEnvFile(path.resolve(projectRoot, localEnvPath));
+    for (const [k, v] of Object.entries(resolved)) {
+      if (!(k in secrets)) secrets[k] = v;
     }
   }
 
   return secrets;
+}
+
+function findWranglerConfigFile(workersDir: string): string | null {
+  for (const name of ["wrangler.toml", "wrangler.jsonc", "wrangler.json"]) {
+    const p = path.join(workersDir, name);
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
+function parseWranglerConfigFile(filePath: string): Record<string, unknown> {
+  const content = fs.readFileSync(filePath, "utf-8");
+  if (path.extname(filePath) === ".toml") {
+    return TOML.parse(content) as Record<string, unknown>;
+  }
+  const noComments = content
+    .replace(
+      /\\"|"(?:\\"|[^"])*"|(\/\/[^\n\r]*|\/\*[\s\S]*?\*\/)/g,
+      (m, comment) => (comment ? "" : m),
+    )
+    .replace(/,(\s*[}\]])/g, "$1");
+  return JSON.parse(noComments);
+}
+
+export function loadWranglerConfigFile(
+  workersDir: string,
+): Record<string, unknown> | null {
+  const p = findWranglerConfigFile(workersDir);
+  if (!p) return null;
+  return parseWranglerConfigFile(p);
+}
+
+/**
+ * Resolve the env vars a local dev-server process should get, mirroring the
+ * cloud deploy: process.env → omnibase/.env.<env> → .env.local → [local]
+ * env_path, plus `[vars]` from the deployment's wrangler config after {VAR}
+ * interpolation. Later sources win.
+ */
+export function resolveStartEnv(
+  projectRoot: string,
+  envName: string,
+  config: OmnibaseConfig,
+  wranglerConfig?: Record<string, unknown> | null,
+): Record<string, string> {
+  const secrets = loadSecretsMap(projectRoot, envName, config.local?.env_path);
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(process.env)) {
+    if (v !== undefined) out[k] = v;
+  }
+  Object.assign(out, secrets);
+
+  if (wranglerConfig) {
+    const resolved = interpolateValue(
+      wranglerConfig,
+      secrets,
+    ) as Record<string, { vars?: Record<string, unknown> }>;
+    for (const [k, v] of Object.entries(resolved.vars ?? {})) {
+      if (typeof v === "string") out[k] = v;
+    }
+  }
+
+  return out;
 }
 
 export function interpolateValue(

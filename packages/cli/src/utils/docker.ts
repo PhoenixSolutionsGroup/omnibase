@@ -151,7 +151,11 @@ export interface DockerComposeOptions {
 export function buildEffectiveEnvFile(envName: string): string {
   const root = findOmnibaseRoot();
   const config = loadConfig(root);
-  const envPath = path.join(root, "omnibase", ".env.local");
+  const branchEnvPath = path.join(root, "omnibase", `.env.${envName}`);
+  const envPath =
+    envName && envName !== "local" && fs.existsSync(branchEnvPath)
+      ? branchEnvPath
+      : path.join(root, "omnibase", ".env.local");
 
   const fileText = fs.existsSync(envPath)
     ? fs.readFileSync(envPath, "utf-8")

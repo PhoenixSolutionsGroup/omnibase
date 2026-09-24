@@ -9,6 +9,9 @@ import {
   localEnvFromConfig,
   cloudConfigOf,
   assertValidVersions,
+  loadSecretsMap,
+  loadWranglerConfigFile,
+  resolveStartEnv,
 } from "./config";
 
 const SAMPLE = `project_id = "abc-123"
@@ -98,13 +101,157 @@ describe("interpolate", () => {
   test("cloud order ignores a .env.local-style source when not supplied", () => {
     // Simulate cloud: only [process.env-like, fromEnv]. A .env.local map is
     // deliberately NOT in the source list, so its value must never be picked.
-    // Cloud builds its secrets map from process.env + --from-env only; a
-    // .env.local value must never make it into that map.
+    // Cloud builds its secrets map from process.env + branch env file; a
+    // .env.local value must never make it into that map unless it is the
+    // branch file itself.
     const cloudSecrets = { FOO: "from-flag" };
     expect(interpolateValue("{FOO}", cloudSecrets)).toBe("from-flag");
     expect(interpolateValue("{FOO}", cloudSecrets)).not.toBe(
       "from-local-DO-NOT-USE"
     );
+  });
+});
+
+describe("loadSecretsMap", () => {
+  let root: string;
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), "omni-secrets-"));
+    mkdirSync(join(root, "omnibase"), { recursive: true });
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+
+  test("loads omnibase/.env.<name> when envName is provided", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.staging"),
+      "WEBSITE_URL=https://staging.omnibase.tech\nCOOKIE_SECRET=branch-secret\n",
+    );
+    const secrets = loadSecretsMap(root, "staging");
+    expect(secrets.WEBSITE_URL).toBe("https://staging.omnibase.tech");
+    expect(secrets.COOKIE_SECRET).toBe("branch-secret");
+  });
+
+  test("branch env file wins over .env.local", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.local"),
+      "WEBSITE_URL=http://127.0.0.1:3000\n",
+    );
+    writeFileSync(
+      join(root, "omnibase", ".env.dev"),
+      "WEBSITE_URL=https://dev.omnibase.tech\n",
+    );
+    const secrets = loadSecretsMap(root, "dev");
+    expect(secrets.WEBSITE_URL).toBe("https://dev.omnibase.tech");
+  });
+
+  test("process.env wins over branch env file", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.staging"),
+      "WEBSITE_URL=https://staging.omnibase.tech\n",
+    );
+    process.env.WEBSITE_URL = "https://ci.example.com";
+    try {
+      const secrets = loadSecretsMap(root, "staging");
+      expect(secrets.WEBSITE_URL).toBe("https://ci.example.com");
+    } finally {
+      delete process.env.WEBSITE_URL;
+    }
+  });
+
+  test("missing branch env file falls back to .env.local", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.local"),
+      "COOKIE_SECRET=local-secret\n",
+    );
+    const secrets = loadSecretsMap(root, "nope");
+    expect(secrets.COOKIE_SECRET).toBe("local-secret");
+  });
+
+  test("local envName does not load a .env.local file twice", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.local"),
+      "COOKIE_SECRET=local-secret\n",
+    );
+    const secrets = loadSecretsMap(root, "local");
+    expect(secrets.COOKIE_SECRET).toBe("local-secret");
+  });
+});
+
+describe("loadWranglerConfigFile", () => {
+  let root: string;
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), "omni-wrangler-"));
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+
+  test("returns null when no wrangler config exists", () => {
+    expect(loadWranglerConfigFile(root)).toBeNull();
+  });
+
+  test("parses wrangler.toml", () => {
+    writeFileSync(
+      join(root, "wrangler.toml"),
+      'name = "dash"\nmain = "src/index.ts"\n[vars]\nFOO = "{FOO}"\n',
+    );
+    const cfg = loadWranglerConfigFile(root)!;
+    expect(cfg.name).toBe("dash");
+    expect((cfg.vars as any).FOO).toBe("{FOO}");
+  });
+
+  test("parses wrangler.jsonc with comments", () => {
+    writeFileSync(
+      join(root, "wrangler.jsonc"),
+      '{ "name": "dash", "vars": { "FOO": "{FOO}" } }\n',
+    );
+    const cfg = loadWranglerConfigFile(root)!;
+    expect((cfg.vars as any).FOO).toBe("{FOO}");
+  });
+});
+
+describe("resolveStartEnv", () => {
+  let root: string;
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), "omni-start-"));
+    mkdirSync(join(root, "omnibase"), { recursive: true });
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+
+  test("merges process.env then branch env file then wrangler vars", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.dev"),
+      "WEBSITE_URL=https://dev.omnibase.tech\nCOOKIE_SECRET=shh\n",
+    );
+    const env = resolveStartEnv(
+      root,
+      "dev",
+      { deployments: [] },
+      { vars: { WEBSITE_URL: "{WEBSITE_URL}", STATIC: "x" } },
+    );
+    expect(env.WEBSITE_URL).toBe("https://dev.omnibase.tech");
+    expect(env.COOKIE_SECRET).toBe("shh");
+    expect(env.STATIC).toBe("x");
+  });
+
+  test("process.env wins over the branch env file", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.dev"),
+      "WEBSITE_URL=https://dev.omnibase.tech\n",
+    );
+    process.env.WEBSITE_URL = "https://ci.example.com";
+    try {
+      const env = resolveStartEnv(root, "dev", { deployments: [] });
+      expect(env.WEBSITE_URL).toBe("https://ci.example.com");
+    } finally {
+      delete process.env.WEBSITE_URL;
+    }
+  });
+
+  test("no wrangler config yields the secrets map only", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.local"),
+      "COOKIE_SECRET=local-secret\n",
+    );
+    const env = resolveStartEnv(root, "local", { deployments: [] });
+    expect(env.COOKIE_SECRET).toBe("local-secret");
   });
 });
 
