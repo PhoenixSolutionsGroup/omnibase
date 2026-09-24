@@ -26,9 +26,15 @@ export async function getSessionToken(): Promise<string | undefined> {
   return c.get(SESSION_TOKEN_COOKIE)?.value;
 }
 
-export async function setSessionToken(token: string): Promise<void> {
+export async function setSessionToken(
+  token: string,
+  cookieDomain?: string
+): Promise<void> {
   const c = await cookies();
-  c.set(SESSION_TOKEN_COOKIE, token, SESSION_TOKEN_COOKIE_OPTIONS);
+  c.set(SESSION_TOKEN_COOKIE, token, {
+    ...SESSION_TOKEN_COOKIE_OPTIONS,
+    ...(cookieDomain ? { domain: cookieDomain } : {}),
+  });
 }
 
 export async function clearSessionToken(): Promise<void> {
@@ -109,10 +115,12 @@ export function createSessionTokenExchangeHandler({
   api_url,
   success_path = "/",
   login_path = "/auth/login",
+  cookie_domain,
 }: {
   api_url: string;
   success_path?: string;
   login_path?: string;
+  cookie_domain?: string;
 }) {
   return async function sessionTokenExchangeHandler(
     req: Request
@@ -140,7 +148,10 @@ export function createSessionTokenExchangeHandler({
     if (!token) return fail("exchange_failed");
 
     const res = NextResponse.redirect(new URL(success_path, url));
-    res.cookies.set(SESSION_TOKEN_COOKIE, token, SESSION_TOKEN_COOKIE_OPTIONS);
+    res.cookies.set(SESSION_TOKEN_COOKIE, token, {
+      ...SESSION_TOKEN_COOKIE_OPTIONS,
+      ...(cookie_domain ? { domain: cookie_domain } : {}),
+    });
     res.cookies.delete(OIDC_INIT_CODE_COOKIE);
     return res;
   };
