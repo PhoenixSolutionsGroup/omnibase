@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "omnibase-dashboard",
+  "compatibility_date": "2026-09-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "build": {
+    "command": "bun run build:cloudflare"
+  },
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "NEXT_PUBLIC_WEBSITE_URL": "{NEXT_PUBLIC_WEBSITE_URL}",
+    "OMNIBASE_API_URL": "{OMNIBASE_API_URL}",
+    "NEXT_PUBLIC_OMNIBASE_API_URL": "{NEXT_PUBLIC_OMNIBASE_API_URL}",
+    "OMNIBASE_POSTGREST_URL": "{OMNIBASE_POSTGREST_URL}",
+    "OMNIBASE_ANON_KEY": "",
+    "NEXT_PUBLIC_OMNIBASE_ANON_KEY": "",
+    "MANAGED_HOSTING_API_URL": "{MANAGED_HOSTING_API_URL}",
+    "NEXT_PUBLIC_MANAGED_HOSTING_API_URL": "{NEXT_PUBLIC_MANAGED_HOSTING_API_URL}",
+    "NEXT_PUBLIC_OMNIBASE_WORKER_URL": "{NEXT_PUBLIC_OMNIBASE_WORKER_URL}",
+    "OMNIBASE_COOKIE_DOMAIN": "{OMNIBASE_COOKIE_DOMAIN}"
+  }
+}
