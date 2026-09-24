@@ -12,8 +12,8 @@ const OMNIBASE_ANON_KEY = process.env.OMNIBASE_ANON_KEY!;
 
 export const createServerClient = async () => {
   const cookieStore = await cookies();
-  const key =
-    cookieStore.get("omnibase_postgrest_jwt")?.value || OMNIBASE_ANON_KEY;
+  const jwtCookie = cookieStore.get("omnibase_postgrest_jwt")?.value;
+  const key = jwtCookie || OMNIBASE_ANON_KEY;
 
   return new PostgrestClient<Database>(OMNIBASE_POSTGREST_URL, {
     headers: {
