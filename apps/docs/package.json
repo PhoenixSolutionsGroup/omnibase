@@ -5,6 +5,9 @@
   "scripts": {
     "prebuild": "cp ../../apps/api/docs/openapi.yaml ./openapi.yaml 2>/dev/null; echo '✓ Synced OpenAPI spec'",
     "build": "next build",
+    "build:cloudflare": "bun run prebuild && opennextjs-cloudflare build",
+    "preview": "bun run build:cloudflare && opennextjs-cloudflare preview",
+    "deploy": "bun run build:cloudflare && opennextjs-cloudflare deploy",
     "dev": "next dev",
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
@@ -17,23 +20,25 @@
     "fumadocs-openapi": "10.9.1",
     "fumadocs-ui": "16.9.3",
     "lucide-react": "^0.562.0",
-    "next": "16.1.1",
+    "next": "16.2.10",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "shiki": "^3.20.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.2",
-    "eslint-config-next": "16.1.1",
+    "eslint-config-next": "16.2.10",
     "json-schema-typed": "^8.0.2",
     "openapi-types": "^12.1.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.135.0"
   }
 }

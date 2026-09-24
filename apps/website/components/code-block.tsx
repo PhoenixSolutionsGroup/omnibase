@@ -1,4 +1,4 @@
-import { codeToHtml } from "shiki";
+import { getSingletonHighlighter, createJavaScriptRegexEngine } from "shiki";
 
 interface CodeBlockProps {
   code: string;
@@ -6,7 +6,12 @@ interface CodeBlockProps {
 }
 
 export async function CodeBlock({ code, language }: CodeBlockProps) {
-  const html = await codeToHtml(code, {
+  const highlighter = await getSingletonHighlighter({
+    engine: createJavaScriptRegexEngine(),
+    themes: ["dark-plus"],
+    langs: [language],
+  });
+  const html = highlighter.codeToHtml(code, {
     lang: language,
     theme: "dark-plus",
   });

@@ -4,6 +4,14 @@ project_id = "69df45c1-2580-4781-915f-b6ecdc792683"
 name = "dashboard"
 path = "../apps/dashboard"
 
+[[deployments]]
+name = "docs"
+path = "../apps/docs"
+
+[[deployments]]
+name = "website"
+path = "../apps/website"
+
 [auth]
 website_url = "{WEBSITE_URL}"
 allowed_return_urls = ["{ALLOWED_RETURN_URLS}"]

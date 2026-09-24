@@ -8,6 +8,8 @@
 /coverage
 /.next/
 /out/
+/.open-next/
+/.bundle/
 /build
 *.tsbuildinfo
 
