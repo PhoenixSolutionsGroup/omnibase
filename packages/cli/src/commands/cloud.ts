@@ -8,7 +8,6 @@ import * as TOML from "smol-toml";
 import axios from "axios";
 import { checkbox, select, input } from "@inquirer/prompts";
 import * as path from "path";
-import { config as dotenvConfig } from "dotenv";
 import {
   EnvironmentConfig,
   findOmnibaseRoot,
@@ -28,6 +27,7 @@ import {
   getResolvedConfig,
   interpolateValue,
   cloudConfigOf,
+  loadSecretsMap,
   assertValidVersions,
   DeploymentConfig,
   OmnibaseConfig,
@@ -289,6 +289,8 @@ async function deployWorkers(
   }
 
   const deployments = getDeployments(root);
+  const config = loadConfig(root);
+  const secrets = loadSecretsMap(root, env.name, config.local?.env_path);
   let targets: DeploymentConfig[];
 
   if (nameFlag) {
@@ -326,13 +328,14 @@ async function deployWorkers(
       execSync("bunx wrangler deploy --dry-run --outdir .bundle", {
         cwd: workersDir,
         stdio: "inherit",
+        env: { ...process.env, ...secrets },
       });
     } catch (error) {
       logger.fail(`Build failed for '${dep.name}'. Check the output above.`);
       continue;
     }
 
-    const bundle = await packageWorkerBundle(workersDir);
+    const bundle = await packageWorkerBundle(workersDir, secrets);
     logger.succeed(`${dep.name}: packaged (${(bundle.length / 1024).toFixed(1)} KB)`);
 
     logger.start(`Deploying '${dep.name}'...`);
@@ -352,8 +355,14 @@ async function deployWorkers(
  * `wrangler deploy --dispatch-namespace`. Framework-agnostic: everything is
  * derived from the project's own wrangler config.
  */
-async function packageWorkerBundle(workersDir: string): Promise<Buffer> {
-  const config = await loadWranglerConfig(workersDir);
+export async function packageWorkerBundle(
+  workersDir: string,
+  secrets: Record<string, string> = {},
+): Promise<Buffer> {
+  const config = (await interpolateValue(
+    await loadWranglerConfig(workersDir),
+    secrets,
+  )) as any;
   delete config.build;
   delete config.name;
   config.main = await resolveBundleEntry(
@@ -552,13 +561,10 @@ async function resolveBranch(
  * lives, since managed hosting owns Stripe env via the Connect account it
  * provisions per branch.
  *
- * {VAR} secrets resolve from process.env, then an optional --from-env file.
- * .env.local is NEVER read here — it is strictly for local dev (omnibase start).
+ * {VAR} secrets resolve from process.env → omnibase/.env.<branch> → .env.local
+ * → [local].env_path.
  */
-export async function pushEnvConfig(
-  envFlag?: string,
-  fromEnvPath?: string
-): Promise<void> {
+export async function pushEnvConfig(envFlag?: string): Promise<void> {
   const root = findOmnibaseRoot();
   const env = await selectEnvironment(envFlag);
 
@@ -589,21 +595,7 @@ export async function pushEnvConfig(
     );
   }
 
-  // Cloud resolution is process.env then --from-env; .env.local is local-only.
-  const secrets: Record<string, string> = {};
-  for (const [k, v] of Object.entries(process.env)) {
-    if (v !== undefined) secrets[k] = v;
-  }
-  if (fromEnvPath) {
-    const resolvedPath = path.resolve(fromEnvPath);
-    const parsed = dotenvConfig({ path: resolvedPath }).parsed;
-    if (!parsed) {
-      throw new Error(`--from-env file not found or empty: ${resolvedPath}`);
-    }
-    for (const [k, v] of Object.entries(parsed)) {
-      if (!(k in secrets)) secrets[k] = v;
-    }
-  }
+  const secrets = loadSecretsMap(root, env.name, config.local?.env_path);
 
   const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
   if (resolved.versions) {
@@ -622,7 +614,7 @@ export async function pushEnvConfig(
   if (unresolved.length > 0) {
     logger.warn(
       `Unresolved ${unresolved.join(", ")} left literal. ` +
-        `Set them in process.env or pass --from-env <file>.`
+        `Set them in process.env or omnibase/.env.${env.name}.`
     );
   }
 
@@ -1236,14 +1228,10 @@ export function addCloudCommands(program: Command): void {
   envCmd
     .command("push")
     .description("Push omnibase.toml config to managed hosting")
-    .option(
-      "--from-env <path>",
-      "Env file to resolve {VAR} secrets from (in addition to process.env). Never reads .env.local."
-    )
     .action(async (cmdOptions) => {
       try {
         const globalOptions = program.opts();
-        await pushEnvConfig(globalOptions.env, cmdOptions.fromEnv);
+        await pushEnvConfig(globalOptions.env);
       } catch (error) {
         await handleCommandError(error);
       }
