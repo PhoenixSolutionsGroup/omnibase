@@ -1,6 +1,7 @@
 import React from "react";
 import { StripeSettingsClient } from "./client";
 import { getProjectBranch } from "@/utils/get-project";
+import { Project } from "../dashboard/project-provisioning-dashboard";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 
@@ -15,7 +16,9 @@ export default async function StripeSettingsPage({
   const { project_id, project_branch } = await params;
 
   // Get the project to check if Stripe is set up
-  const project = await getProjectBranch(project_id, project_branch);
+  const project = (await getProjectBranch(project_id, project_branch)) as
+    | Project
+    | null;
 
   if (!project) {
     return (
@@ -55,8 +58,7 @@ export default async function StripeSettingsPage({
       if (data.url) {
         onboardingUrl = data.url;
       }
-    } catch (error) {
-      console.error("Failed to fetch Stripe onboarding link:", error);
+    } catch {
     }
   }
 
@@ -71,7 +73,7 @@ export default async function StripeSettingsPage({
 
       <StripeSettingsClient
         stripeAccountId={project.stripe_customer_id || ""}
-        isOnboarded={project.stripe_onboarding_complete}
+        isOnboarded={project.stripe_onboarding_complete ?? false}
         onboardingUrl={onboardingUrl}
       />
     </div>
