@@ -73,7 +73,9 @@ export const postgrestJWTCheckMiddleware = async (
   session: Session | null,
   api_url: string
 ) => {
-  if (!session || !session.active) return NextResponse.next();
+  if (!session || !session.active) {
+    return NextResponse.next();
+  }
 
   const jwt = req.cookies.get("omnibase_postgrest_jwt");
 
@@ -85,7 +87,7 @@ export const postgrestJWTCheckMiddleware = async (
   // Fetch a new JWT via the SDK - either missing or expired/expiring.
   // Prefer the session token (origin-independent) over the Kratos cookie.
   const sessionToken = req.cookies.get("omnibase_session_token")?.value;
-  const headers = sessionToken
+  const headers: Record<string, string> = sessionToken
     ? { "X-Session-Token": sessionToken }
     : { Cookie: req.headers.get("cookie") || "" };
   const api = new V1TenantsLifecycleApi(
@@ -101,7 +103,9 @@ export const postgrestJWTCheckMiddleware = async (
   } catch {
     return NextResponse.next();
   }
-  if (!token) return NextResponse.next();
+  if (!token) {
+    return NextResponse.next();
+  }
 
   const nextResponse = NextResponse.next();
   nextResponse.cookies.set("omnibase_postgrest_jwt", token, {
