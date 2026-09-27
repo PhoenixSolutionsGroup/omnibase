@@ -1,8 +1,9 @@
 FROM oryd/kratos:v25.4.0
 
-# Install envsubst (part of gettext package) and curl for template downloads
+# Install envsubst (part of gettext package), curl for template downloads,
+# and yq to hand the rendered config to kratos as env vars
 USER root
-RUN apk add --no-cache gettext curl
+RUN apk add --no-cache gettext curl yq-go
 
 # Copy default config (can be overridden via volume mounts)
 COPY auth.tmpl.yml /etc/config/auth/auth.tmpl.yml

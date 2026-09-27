@@ -195,4 +195,16 @@ if [ -n "$WEBSITE_URL" ] && echo "$WEBSITE_URL" | grep -q "^http://"; then
     KRATOS_ARGS="--dev"
 fi
 
-exec kratos "$@" $KRATOS_ARGS -c /tmp/auth.yml
+# Config via env, not -c: kratos inotify-watches config files, which breaks CRIU (zeropod).
+for key in $(yq 'keys | .[]' /tmp/auth.yml); do
+    var=$(echo "$key" | tr '[:lower:]' '[:upper:]')
+    if printenv "$var" >/dev/null; then
+        continue
+    fi
+    case "$(yq ".$key | tag" /tmp/auth.yml)" in
+        '!!map'|'!!seq') export "$var=$(yq -o=json -I=0 ".$key" /tmp/auth.yml)" ;;
+        *) export "$var=$(yq ".$key" /tmp/auth.yml)" ;;
+    esac
+done
+
+exec kratos "$@" $KRATOS_ARGS
