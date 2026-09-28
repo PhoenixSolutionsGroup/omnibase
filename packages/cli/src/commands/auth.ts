@@ -100,11 +100,28 @@ async function resetManagedService(env?: string): Promise<void> {
 export function addAuthCommands(program: Command): void {
   const auth = program
     .command("auth")
-    .description("Manage authentication service");
+    .summary("Manage the authentication service")
+    .description(
+      "Manage the authentication (auth) service — currently restarting it in " +
+      "the local or cloud environment."
+    );
 
   auth
     .command("reset")
-    .description("Reset (restart) the authentication service")
+    .summary("Reset (restart) the authentication service")
+    .description(
+      "Restart the authentication service.\n\n" +
+      "For the local environment (`--env local` or unset) it restarts the " +
+      "`auth` Docker Compose service. For a cloud environment it calls the " +
+      "branch's API to restart the auth service and reports which services " +
+      "restarted or failed.\n\n" +
+      "Use this after changing auth configuration to pick up the new settings.\n\n" +
+      "```bash\n" +
+      "omnibase auth reset\n" +
+      "omnibase auth reset --env local\n" +
+      "omnibase auth reset --env dev\n" +
+      "```"
+    )
     .action(async () => {
       const ctx = getCommandContext(program);
       await resetAuth({ env: ctx.environment, mode: ctx.mode });

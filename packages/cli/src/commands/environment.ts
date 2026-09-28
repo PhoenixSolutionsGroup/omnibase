@@ -5,7 +5,18 @@ import { logger } from "../utils/logger";
 export function addEnvironmentCommands(program: Command): void {
   program
     .command("env")
-    .description("List available environments")
+    .summary("List available environments")
+    .description(
+      "List the environments available to this project.\n\n" +
+      "Local environments come from `omnibase/.env.local`; cloud environments " +
+      "come from the branches of the project connected to OmniBase Cloud. If " +
+      "no environments exist, the command hints at how to set them up.\n\n" +
+      "Before: a profile must be configured and `project_id` set in " +
+      "omnibase.toml to show cloud branches.\n\n" +
+      "```bash\n" +
+      "omnibase env\n" +
+      "```"
+    )
     .action(async () => {
       try {
         const localEnvs = getAvailableEnvironments();

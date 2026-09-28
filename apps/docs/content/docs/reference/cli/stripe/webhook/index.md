@@ -2,6 +2,10 @@
 title: "Webhook"
 ---
 
+## Summary
+
+Manage Stripe webhook configuration
+
 ## Usage
 
 ```bash
@@ -10,7 +14,7 @@ omnibase stripe webhook
 
 ## Description
 
-Manage Stripe webhook configuration
+Inspect Stripe webhooks and retrieve their signing secrets for use in your environment.
 
 ## Subcommands
 

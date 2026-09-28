@@ -291,11 +291,34 @@ export async function pushPermissions(
 export function addPermissionsCommands(program: Command): void {
   const permissions = program
     .command("permissions")
-    .description("Manage Ory Keto permissions");
+    .summary("Manage Ory Keto permissions")
+    .description(
+      "Manage the Ory Keto permission namespaces and relationships.\n\n" +
+      "`push` deploys the namespace files in `omnibase/permissions/` to the " +
+      "API, `validate` checks their TypeScript syntax locally, `check` asks " +
+      "whether a subject has a permission, and `set` grants one."
+    );
 
   permissions
     .command("push")
-    .description("Deploy namespace files to API")
+    .summary("Deploy namespace files to the API")
+    .description(
+      "Deploy the permission namespace files in `omnibase/permissions/` to " +
+      "the selected environment's API.\n\n" +
+      "All `*.ts` namespace files (except `types.ts`) are merged into a " +
+      "single bundle — imports and `export class` prefixes are stripped — " +
+      "and uploaded alongside `roles.config.json` if present. The API " +
+      "deploys the namespaces and syncs any system roles.\n\n" +
+      "After a successful deploy the permissions services are restarted: " +
+      "locally via `docker compose restart permissions`, or in managed mode " +
+      "via the managed-hosting restart endpoints.\n\n" +
+      "Before: `omnibase/permissions/` must exist with at least one namespace " +
+      "file, and a running API is required.\n\n" +
+      "```bash\n" +
+      "omnibase permissions push\n" +
+      "omnibase permissions push --env dev\n" +
+      "```"
+    )
     .action(async () => {
       try {
         const ctx = await getCommandContextWithEnv(program);
@@ -311,7 +334,16 @@ export function addPermissionsCommands(program: Command): void {
 
   permissions
     .command("validate")
-    .description("Validate TypeScript namespace syntax")
+    .summary("Validate namespace TypeScript syntax")
+    .description(
+      "Type-check every namespace file in `omnibase/permissions/` locally by " +
+      "running `bun build --no-bundle --target=node` on each.\n\n" +
+      "No changes are sent to the API. Exits non-zero if any file has syntax " +
+      "errors. Use this before `push`.\n\n" +
+      "```bash\n" +
+      "omnibase permissions validate\n" +
+      "```"
+    )
     .action(async () => {
       try {
         const ctx = await getCommandContextWithEnv(program);
@@ -328,7 +360,19 @@ export function addPermissionsCommands(program: Command): void {
 
   permissions
     .command("check")
-    .description("Check if subject has permission")
+    .summary("Check if a subject has permission")
+    .description(
+      "Check whether a subject holds a relation on an object in the " +
+      "permission system, reporting GRANTED or DENIED.\n\n" +
+      "`<subject>` and `<object>` may be `namespace:id` pairs or bare ids — a " +
+      "bare subject defaults to the `User` namespace and a bare object to the " +
+      "`Tenant` namespace.\n\n" +
+      "```bash\n" +
+      "omnibase permissions check user:123 tenant:456 view\n" +
+      "omnibase permissions check 123 456 invite\n" +
+      "omnibase permissions check 123 456 delete --env dev\n" +
+      "```"
+    )
     .argument("<subject>", "Subject (e.g., user:123 or just 123)")
     .argument("<object>", "Object (e.g., tenant:456 or just 456)")
     .argument("<relation>", "Relation (e.g., invite, delete, view)")
@@ -347,7 +391,17 @@ export function addPermissionsCommands(program: Command): void {
 
   permissions
     .command("set")
-    .description("Set a permission relation")
+    .summary("Grant a permission relation")
+    .description(
+      "Create a relationship granting a subject a relation on an object.\n\n" +
+      "As with `check`, `<subject>` and `<object>` accept `namespace:id` " +
+      "pairs or bare ids defaulting to the `User` and `Tenant` namespaces.\n\n" +
+      "```bash\n" +
+      "omnibase permissions set user:123 tenant:456 owners\n" +
+      "omnibase permissions set 123 456 can_invite\n" +
+      "omnibase permissions set user:123 tenant:456 admins --env dev\n" +
+      "```"
+    )
     .argument("<subject>", "Subject (e.g., user:123 or just 123)")
     .argument("<object>", "Object (e.g., tenant:456 or just 456)")
     .argument("<relation>", "Relation (e.g., owners, admins, can_invite)")

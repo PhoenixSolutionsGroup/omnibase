@@ -77,7 +77,18 @@ async function runDockerCompose(
 
 program
   .command("init")
-  .description("Initialize a new omnibase project with template files")
+  .summary("Initialize a new omnibase project")
+  .description(
+    "Scaffold an `omnibase/` directory with the project template files.\n\n" +
+    "Creates `omnibase/omnibase.toml`, `omnibase/.env.local`, a Stripe " +
+    "config, and the default `omnibase/db/` layout. If an `omnibase/` " +
+    "directory already exists the command exits without changing anything.\n\n" +
+    "```bash\n" +
+    "omnibase init\n" +
+    "```\n\n" +
+    "After: edit `omnibase/omnibase.toml`, add secrets to " +
+    "`omnibase/.env.local`, then run `omnibase start`."
+  )
   .action(() => {
     const currentDir = process.cwd();
     const omnibaseDir = path.join(currentDir, "omnibase");
@@ -124,7 +135,24 @@ process.on("SIGTERM", () => {
 
 program
   .command("start")
-  .description("Start the Docker Compose services and deployment dev servers")
+  .summary("Start services and deployment dev servers")
+  .description(
+    "Start the local control-plane services with Docker Compose, then spawn " +
+    "a dev server for every deployment configured in omnibase.toml (or " +
+    "`omnibase/workers/`).\n\n" +
+    "The control plane starts with `docker compose up -d`. Each deployment " +
+    "directory runs `bun run dev` on `http://localhost:<port>` (default " +
+    "ports start at 8787 and increment per deployment).\n\n" +
+    "Environment variables: the dev-server processes receive the same " +
+    "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
+    "→ `.env.local` → `[local].env_path`, plus the deployment's wrangler " +
+    "`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
+    "the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+    "```bash\n" +
+    "omnibase start\n" +
+    "omnibase start --build\n" +
+    "```"
+  )
   .option("--build", "Build images before starting containers")
   .action(async (cmdOptions) => {
     try {
@@ -211,7 +239,15 @@ program
 
 program
   .command("stop")
-  .description("Stop the Docker Compose services")
+  .summary("Stop the Docker Compose services")
+  .description(
+    "Stop the local control-plane services started by `omnibase start` and " +
+    "terminate any spawned deployment dev servers.\n\n" +
+    "Runs `docker compose down` for the current compose mode.\n\n" +
+    "```bash\n" +
+    "omnibase stop\n" +
+    "```"
+  )
   .action(async () => {
     try {
       const options = program.opts();

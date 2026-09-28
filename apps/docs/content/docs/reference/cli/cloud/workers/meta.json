@@ -1,6 +1,7 @@
 {
   "title": "Workers",
   "pages": [
-    "deploy"
+    "deploy",
+    "list"
   ]
 }

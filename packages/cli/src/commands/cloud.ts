@@ -1007,11 +1007,32 @@ async function domainDetach(
 export function addCloudCommands(program: Command): void {
   const cloud = program
     .command("cloud")
-    .description("Manage OmniBase Cloud (authentication and deployments)");
+    .summary("Manage OmniBase Cloud")
+    .description(
+      "Manage OmniBase Cloud — profile authentication, branch provisioning, " +
+      "Cloudflare Workers deployments, custom domains, and environment config.\n\n" +
+      "Start with `login` to authenticate with an API key and create a profile, " +
+      "then `workers deploy` to ship deployments and `env push` to sync " +
+      "omnibase.toml config to a branch."
+    );
 
   cloud
     .command("login")
-    .description("Login to OmniBase Cloud")
+    .summary("Authenticate with an API key and save a profile")
+    .description(
+      "Verify an API key against the managed hosting API and save it as a " +
+      "local profile.\n\n" +
+      "The profile is named after the tenant and key (or `--name`) and is set " +
+      "as active, so subsequent cloud commands use it automatically. " +
+      "Authentication is stored in the CLI credentials file, not in the project.\n\n" +
+      "Before: obtain an API key from the OmniBase dashboard.\n" +
+      "After: a profile is saved and active. Verify with `omnibase cloud profiles`.\n\n" +
+      "```bash\n" +
+      "omnibase cloud login sk_live_abc123\n" +
+      "omnibase cloud login sk_live_abc123 --name staging\n" +
+      "omnibase cloud login sk_live_abc123 --url https://api.omnibase.io\n" +
+      "```"
+    )
     .argument("<api_key>", "API Key")
     .option("--url <url>", "Managed hosting URL")
     .option("--name <name>", "Profile name")
@@ -1021,8 +1042,19 @@ export function addCloudCommands(program: Command): void {
 
   cloud
     .command("logout [profile]")
+    .summary("Remove saved authentication profiles")
     .description(
-      "Logout from OmniBase Cloud (interactive if no profile specified)"
+      "Remove one, several, or all saved profiles.\n\n" +
+      "With a `[profile]` argument only that profile is removed. Without one, " +
+      "an interactive multi-select prompt shows all profiles. `--all` removes " +
+      "every profile and clears the active profile.\n\n" +
+      "If the active profile is removed, the first remaining profile becomes " +
+      "active (or none if the list is empty).\n\n" +
+      "```bash\n" +
+      "omnibase cloud logout\n" +
+      "omnibase cloud logout staging\n" +
+      "omnibase cloud logout --all\n" +
+      "```"
     )
     .option("--all", "Remove all profiles")
     .action(async (profile, options) => {
@@ -1042,7 +1074,19 @@ export function addCloudCommands(program: Command): void {
 
   cloud
     .command("switch [profile]")
-    .description("Switch active profile (interactive if no profile specified)")
+    .summary("Change the active profile")
+    .description(
+      "Set which saved profile subsequent cloud commands use.\n\n" +
+      "With a `[profile]` argument the profile is switched directly. Without " +
+      "one, an interactive select shows all saved profiles with the current " +
+      "one marked.\n\n" +
+      "Before: at least one profile must exist (see `omnibase cloud login`).\n" +
+      "After: cloud commands resolve credentials from the active profile.\n\n" +
+      "```bash\n" +
+      "omnibase cloud switch\n" +
+      "omnibase cloud switch acme-prod\n" +
+      "```"
+    )
     .action(async (profile) => {
       try {
         await switchProfile(profile);
@@ -1060,7 +1104,15 @@ export function addCloudCommands(program: Command): void {
 
   cloud
     .command("profiles")
-    .description("List authentication profiles")
+    .summary("List saved authentication profiles")
+    .description(
+      "List every saved profile with its tenant, key name, and key prefix, " +
+      "marking the active profile.\n\n" +
+      "Before: at least one profile must exist (see `omnibase cloud login`).\n\n" +
+      "```bash\n" +
+      "omnibase cloud profiles\n" +
+      "```"
+    )
     .action(async () => {
       await listProfiles();
     });
@@ -1068,11 +1120,52 @@ export function addCloudCommands(program: Command): void {
   // Workers subcommand
   const workers = cloud
     .command("workers")
-    .description("Manage Cloudflare Workers deployments");
+    .summary("Manage Cloudflare Workers deployments")
+    .description(
+      "Deploy and inspect the Workers deployments defined in omnibase.toml " +
+      "or `omnibase/workers/`.\n\n" +
+      "Each deployment maps to a directory (default `omnibase/workers/`) " +
+      "containing a `wrangler.toml`, `wrangler.jsonc`, or `wrangler.json`. " +
+      "`deploy` ships a deployment to the managed hosting cloud; `list` shows " +
+      "what is currently deployed for a branch."
+    );
 
   workers
     .command("deploy")
-    .description("Deploy workers to Cloudflare")
+    .summary("Deploy workers to Cloudflare via managed hosting")
+    .description(
+      "Build, package, and upload one or more Workers deployments for the " +
+      "selected cloud branch.\n\n" +
+      "End-to-end flow:\n" +
+      "1. Resolve the target environment (`--env` or interactive picker).\n" +
+      "2. Load the resolved secrets for that branch (see env resolution below).\n" +
+      "3. Run `bunx wrangler deploy --dry-run --outdir .bundle` in the " +
+      "   deployment directory with the resolved env exported, producing a " +
+      "   production bundle.\n" +
+      "4. Package the bundle plus any `[assets]` into a self-contained zip, " +
+      "   with the deployment's `wrangler.json` `[vars]` interpolated at " +
+      "   package time.\n" +
+      "5. Upload the bundle to managed hosting, which runs " +
+      "   `wrangler deploy --dispatch-namespace` and returns the live URL.\n\n" +
+      "By default a single-deployment project deploys it directly; with " +
+      "multiple deployments you are prompted to select one. `--name` picks a " +
+      "specific deployment by name and `--all` deploys every deployment.\n\n" +
+      "Before: the branch must be provisioned (has a branch ID) and a profile " +
+      "must be configured (`omnibase cloud login`). Deployments must exist in " +
+      "omnibase.toml or `omnibase/workers/`. Cloud environments are required — " +
+      "deploying to `local` is not supported.\n\n" +
+      "Environment variables: `{VAR}` references in the wrangler `[vars]` " +
+      "resolve from the branch env file. See the env resolution model on the " +
+      "[`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+      "Caveats: values in `[vars]` are visible in the deployed worker — put " +
+      "secrets in `wrangler secret` or the managed-hosting secrets API, not in " +
+      "`[vars]`. Unresolved `{VAR}` values are left literal and the CLI warns.\n\n" +
+      "```bash\n" +
+      "omnibase cloud workers deploy --env dev\n" +
+      "omnibase cloud workers deploy --env staging --name api\n" +
+      "omnibase cloud workers deploy --env production --all\n" +
+      "```"
+    )
     .option("--name <name>", "Deploy a specific deployment by name")
     .option("--all", "Deploy all deployments")
     .action(async (cmdOptions) => {
@@ -1086,7 +1179,15 @@ export function addCloudCommands(program: Command): void {
 
   workers
     .command("list")
-    .description("List deployed workers for a branch")
+    .summary("List deployed workers for a branch")
+    .description(
+      "List the workers currently deployed for the selected branch, including " +
+      "their public URLs.\n\n" +
+      "Before: a profile must be configured and the branch must be provisioned.\n\n" +
+      "```bash\n" +
+      "omnibase cloud workers list --env dev\n" +
+      "```"
+    )
     .action(async () => {
       try {
         const globalOptions = program.opts();
@@ -1098,11 +1199,30 @@ export function addCloudCommands(program: Command): void {
 
   const domains = cloud
     .command("domains")
-    .description("Manage account-level custom domains");
+    .summary("Manage account-level custom domains")
+    .description(
+      "Add, validate, and attach custom domains (e.g. `example.com` or " +
+      "`*.example.com`) to workers.\n\n" +
+      "Domains are account-level: add one, point your DNS records at it, " +
+      "wait for activation with `status`, then attach it to a worker with " +
+      "`attach`."
+    );
 
   domains
     .command("add <domain>")
-    .description("Add a custom domain (e.g. example.com or *.example.com)")
+    .summary("Add a custom domain")
+    .description(
+      "Add an account-level custom domain, for example `example.com` or " +
+      "`*.example.com`.\n\n" +
+      "The response includes the CNAME target and, when required, a TXT " +
+      "DCV record. Add these at your DNS provider, then poll with " +
+      "`omnibase cloud domains status <id>` until the domain is active.\n\n" +
+      "Before: a profile and a provisioned branch must be configured.\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains add example.com --env dev\n" +
+      "omnibase cloud domains add '*.example.com' --env dev\n" +
+      "```"
+    )
     .action(async (domain, cmdOptions) => {
       try {
         const globalOptions = program.opts();
@@ -1114,7 +1234,13 @@ export function addCloudCommands(program: Command): void {
 
   domains
     .command("list")
-    .description("List account-level custom domains")
+    .summary("List account-level custom domains")
+    .description(
+      "List every account-level domain with its status and SSL status.\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains list --env dev\n" +
+      "```"
+    )
     .action(async () => {
       try {
         const globalOptions = program.opts();
@@ -1126,7 +1252,15 @@ export function addCloudCommands(program: Command): void {
 
   domains
     .command("rm <domain-id>")
-    .description("Remove a custom domain and detach it from all workers")
+    .summary("Remove a custom domain")
+    .description(
+      "Remove a custom domain by ID and detach it from all workers.\n\n" +
+      "Use `omnibase cloud domains list` to find the domain ID.\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains list --env dev\n" +
+      "omnibase cloud domains rm dom_123 --env dev\n" +
+      "```"
+    )
     .action(async (domainId, cmdOptions) => {
       try {
         const globalOptions = program.opts();
@@ -1138,7 +1272,18 @@ export function addCloudCommands(program: Command): void {
 
   domains
     .command("status <domain-id>")
-    .description("Poll domain status until active (default 120s)")
+    .summary("Poll domain status until active")
+    .description(
+      "Poll the status of a custom domain until it activates or the timeout " +
+      "elapses (default 120s).\n\n" +
+      "While DNS and certificate issuance are pending it prints the records " +
+      "still needed; it exits successfully as soon as the domain is live.\n\n" +
+      "Before: the domain must exist (see `omnibase cloud domains add`).\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains status dom_123 --env dev\n" +
+      "omnibase cloud domains status dom_123 --timeout 300 --env dev\n" +
+      "```"
+    )
     .option("--timeout <seconds>", "Poll timeout in seconds", "120")
     .action(async (domainId, cmdOptions) => {
       try {
@@ -1151,7 +1296,19 @@ export function addCloudCommands(program: Command): void {
 
   domains
     .command("attach <domain-id>")
-    .description("Attach a validated domain to a worker")
+    .summary("Attach a validated domain to a worker")
+    .description(
+      "Attach an activated account-level domain to a worker on the current " +
+      "branch.\n\n" +
+      "`--worker` is required and names the deployment (matching the name in " +
+      "omnibase.toml or `omnibase/workers/`). For wildcard domains use " +
+      "`--hostname` to choose the concrete hostname to route.\n\n" +
+      "Before: the domain must be active (see `omnibase cloud domains status`).\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains attach dom_123 --worker api --env dev\n" +
+      "omnibase cloud domains attach dom_123 --worker api --hostname www.example.com --env dev\n" +
+      "```"
+    )
     .requiredOption("--worker <name>", "Worker deployment name")
     .option("--hostname <hostname>", "Concrete hostname to route (required for wildcard domains)")
     .action(async (domainId, cmdOptions) => {
@@ -1165,7 +1322,14 @@ export function addCloudCommands(program: Command): void {
 
   domains
     .command("detach <domain-id>")
-    .description("Detach a domain from the current branch's worker")
+    .summary("Detach a domain from a worker")
+    .description(
+      "Detach a domain from the current branch's worker. The account-level " +
+      "domain itself is kept.\n\n" +
+      "```bash\n" +
+      "omnibase cloud domains detach dom_123 --env dev\n" +
+      "```"
+    )
     .action(async (domainId, cmdOptions) => {
       try {
         const globalOptions = program.opts();
@@ -1178,11 +1342,31 @@ export function addCloudCommands(program: Command): void {
   // Branch subcommand
   const branch = cloud
     .command("branch")
-    .description("Manage project branches");
+    .summary("Manage project branches")
+    .description(
+      "Provision, list, and deprovision project branches.\n\n" +
+      "Each branch is an isolated environment with its own database, API, " +
+      "permissions, and workers. Use `new` to provision one, then reference " +
+      "it with `--env <branch>` on other cloud commands."
+    );
 
   branch
     .command("new")
-    .description("Create a new project branch")
+    .summary("Create a new project branch")
+    .description(
+      "Provision a new branch (environment) for the project.\n\n" +
+      "The project ID comes from `--project-id` or the `project_id` in " +
+      "omnibase.toml, and is prompted for if neither is set. Region and tier " +
+      "default to a picker fed by the managed hosting options endpoint " +
+      "(falling back to `syd` / `shared` prompts). A billing email is " +
+      "required.\n\n" +
+      "After: provisioning starts asynchronously. Once complete, use the " +
+      "branch with `--env <branch>` on other commands.\n\n" +
+      "```bash\n" +
+      "omnibase cloud branch new --name staging\n" +
+      "omnibase cloud branch new --project-id proj_123 --name dev --region syd --tier shared\n" +
+      "```"
+    )
     .option("--project-id <id>", "Project ID")
     .option("--name <name>", "Branch name")
     .option("--region <region>", "Region (e.g. syd)")
@@ -1198,7 +1382,16 @@ export function addCloudCommands(program: Command): void {
 
   branch
     .command("list")
-    .description("List branches")
+    .summary("List project branches")
+    .description(
+      "List all branches for the project with their status and API URL.\n\n" +
+      "Before: a profile must be configured and `project_id` must be set in " +
+      "omnibase.toml (or passed with `--project-id`).\n\n" +
+      "```bash\n" +
+      "omnibase cloud branch list\n" +
+      "omnibase cloud branch list --project-id proj_123\n" +
+      "```"
+    )
     .option("--project-id <id>", "Project ID")
     .action(async (cmdOptions) => {
       try {
@@ -1210,7 +1403,17 @@ export function addCloudCommands(program: Command): void {
 
   branch
     .command("rm <branch>")
-    .description("Delete a branch by name, slug, or ID")
+    .summary("Delete a project branch")
+    .description(
+      "Delete a branch by name, slug, or ID. The branch is resolved against " +
+      "the project's branch list, then deprovisioning is started.\n\n" +
+      "This is destructive — the branch's database, workers, and services are " +
+      "deprovisioned.\n\n" +
+      "```bash\n" +
+      "omnibase cloud branch rm staging\n" +
+      "omnibase cloud branch rm br_123 --project-id proj_123\n" +
+      "```"
+    )
     .option("--project-id <id>", "Project ID")
     .action(async (branchRef, cmdOptions) => {
       try {
@@ -1223,11 +1426,53 @@ export function addCloudCommands(program: Command): void {
   // Environment subcommand
   const envCmd = cloud
     .command("env")
-    .description("Manage environment configuration");
+    .summary("Manage environment configuration")
+    .description(
+      "Push configuration to a cloud branch and resolve per-environment " +
+      "variables.\n\n" +
+      "**Environment variable injection**\n\n" +
+      "Several commands resolve `{VAR}` references in your configuration " +
+      "(e.g. `website_url = \"{NEXT_PUBLIC_WEBSITE_URL}\"`) from a two-layer " +
+      "model:\n\n" +
+      "- **omnibase/omnibase.toml** (committed) — the structure, with `{VAR}` " +
+      "references for per-environment values.\n" +
+      "- **omnibase/.env.<branch>** (gitignored) — flat `KEY=VALUE`, one file " +
+      "per branch/environment, plus `omnibase/.env.local` and an optional " +
+      "`[local].env_path`.\n\n" +
+      "Resolution order, per key, first non-empty wins:\n" +
+      "`process.env` → `omnibase/.env.<branch>` (from `--env` or the " +
+      "interactive picker) → `omnibase/.env.local` → `[local].env_path` → the " +
+      "literal `{VAR}` left in place.\n\n" +
+      "This drives `cloud workers deploy` (wrangler build env + packaged " +
+      "`[vars]`), `cloud env push` (interpolation of the cloud config " +
+      "sections), and `omnibase start` (control-plane env + dev-server spawns).\n\n" +
+      "Caveats: unresolved `{VAR}` values are left literal and the CLI warns; " +
+      "secrets belong in the managed-hosting secrets API or `wrangler secret`, " +
+      "never in `[vars]` (vars are visible in the deployed worker)."
+    );
 
   envCmd
     .command("push")
-    .description("Push omnibase.toml config to managed hosting")
+    .summary("Push omnibase.toml config to managed hosting")
+    .description(
+      "Push the cloud-relevant sections of omnibase.toml to the selected " +
+      "branch, interpolating `{VAR}` references first.\n\n" +
+      "Everything except `[local]`, `project_id`, and `deployments` is sent; " +
+      "managed hosting applies what it understands and reports the rest. " +
+      "`[local]` stays on this machine — that is where Stripe lives, since " +
+      "managed hosting owns Stripe env via the Connect account it provisions " +
+      "per branch. `[versions]` keys are validated before push.\n\n" +
+      "Before: `project_id` must be set in omnibase.toml, a profile must be " +
+      "configured, and the branch must be provisioned. Pushing to `local` is " +
+      "not supported.\n\n" +
+      "After: the branch reports which sections were applied and which were " +
+      "ignored. Unresolved `{VAR}` values are warned about and left literal.\n\n" +
+      "See the env resolution model on the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+      "```bash\n" +
+      "omnibase cloud env push --env dev\n" +
+      "omnibase cloud env push --env staging\n" +
+      "```"
+    )
     .action(async (cmdOptions) => {
       try {
         const globalOptions = program.opts();

@@ -118,12 +118,34 @@ export async function pushEmailTemplates(envOverride?: string): Promise<void> {
 }
 
 export function addEmailCommands(program: Command): void {
-  const email = program.command("email").description("Manage email templates");
+  const email = program
+    .command("email")
+    .summary("Manage email templates")
+    .description(
+      "List and upload HTML email templates from `omnibase/email/` to the " +
+      "API.\n\n" +
+      "Each `*.html` file in `omnibase/email/` becomes a template; the file " +
+      "name (with dashes and capitals normalized) is used as the template " +
+      "type and subject."
+    );
 
   email
     .command("push [filename]")
+    .summary("Push email templates to the API")
     .description(
-      "Push email templates to PostgreSQL database (leave empty to push all templates)"
+      "Upload one or all HTML email templates from `omnibase/email/` to the " +
+      "selected environment's API (upsert).\n\n" +
+      "With no `[filename]` argument every `*.html` template is uploaded; " +
+      "with one, only that template (matched as `name.html` or `name`) is.\n\n" +
+      "Before: `omnibase/email/` must exist and contain at least one `*.html` " +
+      "file. A running API is required.\n\n" +
+      "After: templates are created or updated in the database. A summary " +
+      "reports successful and failed uploads.\n\n" +
+      "```bash\n" +
+      "omnibase email push\n" +
+      "omnibase email push welcome\n" +
+      "omnibase email push --env dev\n" +
+      "```"
     )
     .option("--env <environment>", "Override environment for this command")
     .action(async (filename: string | undefined, options) => {
@@ -184,7 +206,15 @@ export function addEmailCommands(program: Command): void {
 
   email
     .command("list")
-    .description("List all email templates in the project")
+    .summary("List email templates in the project")
+    .description(
+      "List the HTML email template files found in `omnibase/email/`.\n\n" +
+      "This reads the local project directory only — it does not query the " +
+      "API.\n\n" +
+      "```bash\n" +
+      "omnibase email list\n" +
+      "```"
+    )
     .action(() => {
       try {
         const templatesPath = getEmailTemplatesPath();

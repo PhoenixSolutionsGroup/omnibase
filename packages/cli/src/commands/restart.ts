@@ -180,7 +180,22 @@ async function runRestart(
 export function addRestartCommands(program: Command): void {
   program
     .command("restart [services...]")
-    .description("Restart services (interactive if none specified)")
+    .summary("Restart one or more services")
+    .description(
+      "Restart services, either named explicitly, all of them with `--all`, " +
+      "or via an interactive multi-select when nothing is given.\n\n" +
+      "Available services: `api`, `auth`, `permissions`, `postgrest`, and " +
+      "the local-only `postgres`, `mailpit`, and `rustfs`.\n\n" +
+      "Locally, services restart via Docker Compose. For a cloud environment " +
+      "the managed-hosting API restarts the matching cloud services; " +
+      "local-only services are skipped.\n\n" +
+      "```bash\n" +
+      "omnibase restart\n" +
+      "omnibase restart api auth\n" +
+      "omnibase restart --all\n" +
+      "omnibase restart api --env dev\n" +
+      "```"
+    )
     .option("--all", "Restart all services")
     .action(async (services: string[], options) => {
       try {

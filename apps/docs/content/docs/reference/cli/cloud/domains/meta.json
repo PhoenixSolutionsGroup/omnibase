@@ -1,0 +1,11 @@
+{
+  "title": "Domains",
+  "pages": [
+    "add",
+    "list",
+    "rm",
+    "status",
+    "attach",
+    "detach"
+  ]
+}

@@ -18,5 +18,5 @@ Generate the Prisma client used by policy files for type-safe `definePolicy<Pris
 
 Run this after modifying the Prisma schema so the generated types stay in sync.
 
-Before: ensure omnibase/db/schema.prisma exists.
+Before: ensure omnibase/db/schema exists.
 After: types are available at omnibase/db/policies/generated/.

@@ -108,7 +108,24 @@ async function runSync(
 export function addSyncCommands(program: Command): void {
   program
     .command("sync [services...]")
-    .description("Sync local configuration to remote environment")
+    .summary("Sync local configuration to a remote environment")
+    .description(
+      "Push local project configuration to the selected environment.\n\n" +
+      "Available services: `permissions` (Ory Keto namespaces), `db` (SQL " +
+      "migration files), `email` (HTML templates), `stripe` (product/price " +
+      "config), and `env` (environment config, cloud only).\n\n" +
+      "With no arguments an interactive multi-select shows the available " +
+      "services (all pre-checked). Pass service names directly, or `all` to " +
+      "sync every service available for the environment. Cloud-only services " +
+      "are filtered out for the local environment.\n\n" +
+      "After: a per-service summary reports what synced and what failed.\n\n" +
+      "```bash\n" +
+      "omnibase sync\n" +
+      "omnibase sync all\n" +
+      "omnibase sync permissions db\n" +
+      "omnibase sync permissions --env dev\n" +
+      "```"
+    )
     .action(async (services: string[]) => {
       try {
         const ctx = await getCommandContextWithEnv(program);

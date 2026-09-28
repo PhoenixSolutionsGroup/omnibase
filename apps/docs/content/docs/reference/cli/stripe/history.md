@@ -2,6 +2,10 @@
 title: "History"
 ---
 
+## Summary
+
+Get the Stripe configuration history
+
 ## Usage
 
 ```bash
@@ -10,7 +14,16 @@ omnibase stripe history
 
 ## Description
 
-Get the Stripe configuration history
+Fetch past Stripe configuration versions with pagination, showing the ID, version, and timestamps of each.
+
+Use `--limit` and `--offset` to page through results, or `--output <file>` to save the raw response.
+
+```bash
+omnibase stripe history
+omnibase stripe history --limit 25
+omnibase stripe history --limit 10 --offset 10
+omnibase stripe history --output history.json
+```
 
 ## Options
 
