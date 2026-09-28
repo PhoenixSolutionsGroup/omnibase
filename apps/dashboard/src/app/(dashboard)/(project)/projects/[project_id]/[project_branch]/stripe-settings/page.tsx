@@ -3,7 +3,6 @@ import { StripeSettingsClient } from "./client";
 import { getProjectBranch } from "@/utils/get-project";
 import { Project } from "../dashboard/project-provisioning-dashboard";
 import { cookies, headers } from "next/headers";
-import Link from "next/link";
 
 export default async function StripeSettingsPage({
   params,
@@ -31,35 +30,34 @@ export default async function StripeSettingsPage({
     );
   }
 
-  // Get the onboarding link if not complete
-  let onboardingUrl = "#";
-  if (!project.stripe_onboarding_complete) {
-    const headersList = await headers();
-    const host = headersList.get("host");
-    const protocol = headersList.get("x-forwarded-proto");
-    const currentUrl = `${protocol}://${host}/projects/${project_id}/${project_branch}/stripe-settings`;
-    const returnTo = encodeURIComponent(currentUrl);
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = headersList.get("x-forwarded-proto");
+  const currentUrl = `${protocol}://${host}/projects/${project_id}/${project_branch}/stripe-settings`;
+  const returnTo = encodeURIComponent(currentUrl);
 
-    const cookieStore = await cookies();
-    const cookieHeader = Array.from(cookieStore.getAll())
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join("; ");
+  const cookieStore = await cookies();
+  const cookieHeader = Array.from(cookieStore.getAll())
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
 
-    try {
-      const response = await fetch(
-        `${process.env.MANAGED_HOSTING_API_URL}/api/v1/project_branches/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
-        {
-          headers: {
-            Cookie: cookieHeader,
-          },
-        }
-      );
-      const data = await response.json();
-      if (data.url) {
-        onboardingUrl = data.url;
+  let onboardingRequired = false;
+  let onboardingUrl: string | undefined;
+
+  try {
+    const response = await fetch(
+      `${process.env.MANAGED_HOSTING_API_URL}/api/v1/project_branches/${project.id}/stripe-onboarding-link?return_to=${returnTo}`,
+      {
+        headers: {
+          Cookie: cookieHeader,
+        },
+        cache: "no-store",
       }
-    } catch {
-    }
+    );
+    const data = await response.json();
+    onboardingRequired = data.onboarding_required === true;
+    onboardingUrl = data.url;
+  } catch {
   }
 
   return (
@@ -72,8 +70,9 @@ export default async function StripeSettingsPage({
       </div>
 
       <StripeSettingsClient
-        stripeAccountId={project.stripe_customer_id || ""}
-        isOnboarded={project.stripe_onboarding_complete ?? false}
+        stripeAccountId={project.stripe_account_id || ""}
+        stripeEnvironment={project.stripe_environment}
+        isOnboarded={!onboardingRequired}
         onboardingUrl={onboardingUrl}
       />
     </div>

@@ -5,27 +5,37 @@ import { Card } from "@/components/ui/card";
 
 interface StripeSettingsClientProps {
   stripeAccountId: string;
+  stripeEnvironment?: string | null;
   isOnboarded: boolean;
-  onboardingUrl: string;
+  onboardingUrl?: string;
 }
 
 export function StripeSettingsClient({
   stripeAccountId,
+  stripeEnvironment,
   isOnboarded,
   onboardingUrl,
 }: StripeSettingsClientProps) {
+  const isTestMode = stripeEnvironment === "sandbox";
+
   // Generate Stripe Dashboard deep links
+  const dashboardBase = isTestMode
+    ? `https://dashboard.stripe.com/test/${stripeAccountId}`
+    : `https://dashboard.stripe.com/${stripeAccountId}`;
+
   const stripeDashboardUrls = {
-    branding: `https://dashboard.stripe.com/${stripeAccountId}/settings/branding`,
-    emails: `https://dashboard.stripe.com/${stripeAccountId}/settings/emails`,
-    domains: `https://dashboard.stripe.com/${stripeAccountId}/settings/public`,
-    account: `https://dashboard.stripe.com/${stripeAccountId}/settings/account`,
+    branding: `${dashboardBase}/settings/branding`,
+    emails: `${dashboardBase}/settings/emails`,
+    domains: `${dashboardBase}/settings/public`,
+    account: `${dashboardBase}/settings/account`,
   };
+
+  const showOnboardingCta = !isOnboarded && !!onboardingUrl;
 
   return (
     <div className="space-y-6">
       {/* Show onboarding notice if not complete */}
-      {!isOnboarded && (
+      {showOnboardingCta && (
         <Card className="p-6 border-orange-300 dark:border-orange-700">
           <h2 className="text-lg font-semibold mb-2">
             Stripe Onboarding Required
@@ -39,6 +49,16 @@ export function StripeSettingsClient({
           >
             Finish Stripe Onboarding
           </a>
+        </Card>
+      )}
+
+      {isTestMode && (
+        <Card className="p-6 border-blue-300 dark:border-blue-700">
+          <h2 className="text-lg font-semibold mb-2">Sandbox Mode</h2>
+          <p className="text-sm text-muted-foreground">
+            This branch uses a sandbox (test) Stripe account. No onboarding is
+            required and all charges are in test mode.
+          </p>
         </Card>
       )}
 

@@ -11,8 +11,6 @@ export type Project = Omit<
   branch_name: string;
   name: string;
   tenant_id: string;
-  stripe_customer_id?: string | null;
-  stripe_onboarding_complete?: boolean | null;
 };
 
 interface ProjectProvisioningDashboardProps {
@@ -24,29 +22,26 @@ export function ProjectProvisioningDashboard({
 }: ProjectProvisioningDashboardProps) {
   useEffect(() => {
     const checkStripeOnboarding = async () => {
-      if (project.stripe_customer_id && !project.stripe_onboarding_complete) {
-        try {
-          const returnTo = encodeURIComponent(window.location.href);
-          const response = await fetch(
-            `/api/project_branches/${project.id}/stripe-onboarding?return_to=${returnTo}`
-          );
-          const data = await response.json();
+      if (!project.stripe_account_id) {
+        return;
+      }
+      try {
+        const returnTo = encodeURIComponent(window.location.href);
+        const response = await fetch(
+          `/api/project_branches/${project.id}/stripe-onboarding?return_to=${returnTo}`
+        );
+        const data = await response.json();
 
-          if (data.onboarding_required && data.url) {
-            window.location.href = data.url;
-          }
-        } catch (error) {
-          console.error("Failed to check Stripe onboarding:", error);
+        if (data.onboarding_required && data.url) {
+          window.location.href = data.url;
         }
+      } catch (error) {
+        console.error("Failed to check Stripe onboarding:", error);
       }
     };
 
     checkStripeOnboarding();
-  }, [
-    project.id,
-    project.stripe_customer_id,
-    project.stripe_onboarding_complete,
-  ]);
+  }, [project.id, project.stripe_account_id]);
 
   return (
     <div className="flex h-full flex-col items-center justify-center p-6">
