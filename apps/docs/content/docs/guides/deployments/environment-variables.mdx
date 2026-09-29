@@ -1,0 +1,101 @@
+---
+title: Environment Variables & Secrets
+description: How variables reach your deployments — build-time injection, {VAR} interpolation in wrangler configs, and where secrets live
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+# Environment Variables & Secrets
+
+Deployments get variables from your `omnibase/.env.*` files. There are two distinct moments variables are used, and it's important to know which is which:
+
+1. **Build time** — when the worker is compiled, variables are injected into the build process.
+2. **Runtime** — when the worker runs, variables in the wrangler config `[vars]` are baked into the deployed worker.
+
+## Resolution Order
+
+Wherever a value is needed, it resolves per key, first non-empty wins:
+
+`process.env` → `omnibase/.env.<env>` (selected with `--env`) → `omnibase/.env.local` → `[local].env_path`
+
+So `omnibase cloud workers deploy --env main` pulls its values from `omnibase/.env.main`, with `omnibase/.env.local` as the local fallback.
+
+## Build-Time Variable Injection
+
+`omnibase cloud workers deploy` runs `bunx wrangler deploy --dry-run --outdir .bundle` in each deployment directory with the resolved variables exported into the build process. Anything your build command reads from the environment is available at build time.
+
+This matters most for frameworks that **inline** values at compile time. Next.js/OpenNext, for example, inlines `NEXT_PUBLIC_*` variables into the client bundle during `opennextjs-cloudflare build`. To set those:
+
+```bash
+# omnibase/.env.main
+NEXT_PUBLIC_WEBSITE_URL=https://my-app.com
+NEXT_PUBLIC_OMNIBASE_API_URL=https://api.my-app.com
+```
+
+Set them in the env file for the branch you're deploying, then:
+
+```bash
+omnibase cloud workers deploy --env main
+```
+
+The values are present when the build runs, so they end up baked into the output bundle.
+
+## Runtime Variables and `{VAR}` Interpolation
+
+Runtime values live in the `[vars]` section of your deployment's wrangler config. Omnibase interpolates `{VAR}` references at package time, replacing each placeholder with the resolved value from `omnibase/.env.<env>`.
+
+```jsonc
+// apps/dashboard/wrangler.jsonc
+{
+  "vars": {
+    "NEXT_PUBLIC_WEBSITE_URL": "{NEXT_PUBLIC_WEBSITE_URL}",
+    "OMNIBASE_API_URL": "{OMNIBASE_API_URL}",
+    "OMNIBASE_ANON_KEY": ""
+  }
+}
+```
+
+With `NEXT_PUBLIC_WEBSITE_URL=https://my-app.com` in `omnibase/.env.main`, deploying `--env main` packages the worker with `NEXT_PUBLIC_WEBSITE_URL` set to `https://my-app.com`.
+
+This works the same in every wrangler format:
+
+<Tabs items={['wrangler.jsonc', 'wrangler.toml', 'wrangler.json']}>
+<Tab value="wrangler.jsonc">
+```jsonc
+{
+  "vars": {
+    "OMNIBASE_API_URL": "{OMNIBASE_API_URL}"
+  }
+}
+```
+</Tab>
+<Tab value="wrangler.toml">
+```toml
+[vars]
+OMNIBASE_API_URL = "{OMNIBASE_API_URL}"
+```
+</Tab>
+<Tab value="wrangler.json">
+```json
+{
+  "vars": {
+    "OMNIBASE_API_URL": "{OMNIBASE_API_URL}"
+  }
+}
+```
+</Tab>
+</Tabs>
+
+<Callout type="info">
+Unresolved `{VAR}` references are left literal and the CLI warns, so a typo'd key shows up at deploy time rather than silently failing later.
+</Callout>
+
+## Secrets
+
+Never put secrets in `[vars]`. Values in `[vars]` are visible in the deployed worker (they're embedded in the worker's environment). For API keys, signing secrets, and tokens use either:
+
+- **`wrangler secret`** — stored as a Worker secret at deploy time
+- **The managed-hosting secrets API** — secrets injected into the branch environment
+
+`omnibase/.env.*` files are gitignored, so local secrets like Stripe keys stay off-disk-committed, but anything needed at runtime in the deployed worker should still go through `wrangler secret`.

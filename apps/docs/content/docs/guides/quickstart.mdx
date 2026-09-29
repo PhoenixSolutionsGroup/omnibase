@@ -1,14 +1,18 @@
 ---
 title: Quickstart
-description: Go from zero to a working app with auth and multi-tenancy in 15 minutes
+description: Go from zero to a working app with auth, multi-tenancy, and Stripe billing in 15 minutes
 ---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Rocket, Settings, Play, RefreshCcw, Code, CreditCard } from 'lucide-react';
 
 # Quickstart
 
 This guide walks you through setting up Omnibase locally, creating your first user and tenant, and configuring Stripe billing. By the end, you'll have a working backend with authentication, multi-tenancy, and payments.
 
 **Time:** ~15 minutes
-**Prerequisites:** Docker, Node.js 18+ (or Bun)
+**Prerequisites:** Docker, Bun (or Node.js 18+)
 
 ---
 
@@ -24,6 +28,12 @@ Verify the installation:
 omnibase --version
 ```
 
+<Cards>
+  <Card href="/reference/cli" title="CLI Reference" icon={<Rocket />}>
+    Every `omnibase` command, option, and environment override
+  </Card>
+</Cards>
+
 ---
 
 ## 2. Initialize Your Project
@@ -38,28 +48,54 @@ omnibase init
 This creates an `omnibase/` directory with:
 
 ```
-omnibase/
-├── environments/        # Environment configs (.env.local, .env.prod, etc.)
-├── stripe/              # Stripe billing configurations
-├── permissions/         # RBAC permission definitions
-├── db/                  # Database migrations
-├── email/               # Email templates
-└── workers/             # Edge functions (Cloudflare Workers)
+my-app/
+└── omnibase/
+    ├── omnibase.toml        # Project config: deployments, auth, versions
+    ├── .env.local           # Local env vars & secrets (gitignored)
+    ├── db/                  # Database migrations + RLS policies
+    ├── email/               # HTML email templates
+    ├── permissions/         # RBAC permission namespaces
+    └── stripe/              # Stripe product/price config (*.config.json)
 ```
+
+<Callout type="info">
+The scaffolder also drops in a sample `omnibase/workers/` Cloudflare Worker so `omnibase start` has something to run out of the box. For real projects you'll usually delete it and point `[[deployments]]` at your own wrangler apps instead.
+</Callout>
+
+The heart of your project is `omnibase/omnibase.toml`. It declares which apps to deploy, the auth settings, and which service versions to use:
+
+```toml
+project_id = "..." # set when you create a cloud project
+
+[[deployments]]
+name = "api"
+path = "../apps/api"        # any dir with a wrangler.toml + `bun run dev`
+port = 8787                 # optional; defaults to 8787 + deployment index
+
+[auth]
+website_url = "http://127.0.0.1:3000"
+allowed_return_urls = ["http://127.0.0.1:3000", "http://localhost:3000"]
+```
+
+<Cards>
+  <Card href="/guides/configuration" title="Project Configuration" icon={<Settings />}>
+    Every section of `omnibase.toml`: deployments, auth, OIDC, local, and version pinning
+  </Card>
+</Cards>
 
 ---
 
 ## 3. Configure Environment
 
-Edit `omnibase/environments/.env.local`:
+Local secrets and environment variables live in `omnibase/.env.local`:
 
 ```bash
 # Required
 OMNIBASE_API_URL=http://localhost:8080
-OMNIBASE_SERVICE_KEY=your-secret-service-key
+OMNIBASE_SERVICE_KEY=VERY_SECRET_KEY
 
 # Auth Configuration
-WEBSITE_URL=http://localhost:3000
+WEBSITE_URL=http://127.0.0.1:3000
 COOKIE_SECRET=change-this-to-a-secure-random-string
 CIPHER_SECRET=32-character-secret-for-encryption
 
@@ -69,31 +105,52 @@ STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 <Callout type="info">
-For local development, you can use your own Stripe keys. Real keys are required for payment features.
+For other environments (a branch, staging, prod) create a matching file — `omnibase/.env.<environment>` or `omnibase/.env.<branch_name>` — and select it with `omnibase --env <name>`. These files are gitignored. Values resolve in order: `process.env` → `omnibase/.env.<env>` → `omnibase/.env.local` → `[local].env_path`.
 </Callout>
+
+<Cards>
+  <Card href="/guides/configuration" title="Environment Files" icon={<Settings />}>
+    Where secrets live, per-environment files, and the resolution order
+  </Card>
+</Cards>
 
 ---
 
 ## 4. Start Services
 
-Launch all Omnibase services:
+Launch everything with a single command:
 
 ```bash
 omnibase start
 ```
 
-This starts:
-- **API** at `http://localhost:8080`
-- **PostgreSQL** database
-- **Ory Kratos** (authentication)
-- **Ory Keto** (permissions)
+`omnibase start` does two things:
+
+1. **Starts the control plane** with Docker Compose — Postgres + PgBouncer, the REST API, Auth (Kratos), Permissions (Keto), PostgREST, Mailpit (email), RustFS (S3-compatible storage), and Adminer, then runs database migrations.
+2. **Spawns a dev server** (`bun run dev`) for every deployment in `omnibase.toml`, on ports starting at `8787`.
+
+| Service | URL |
+|---------|-----|
+| REST API | `http://localhost:8080` |
+| Auth (Kratos) | `http://127.0.0.1:4433` |
+| PostgREST | `http://localhost:8001` |
+| Adminer (DB UI) | `http://localhost:8081` |
+| RustFS console (storage) | `http://localhost:9001` |
+| Mailpit (email UI) | `http://localhost:8025` |
+| Your deployments | `http://localhost:8787`+ |
 
 Wait for the health check to pass:
 
 ```bash
 curl http://localhost:8080/health/ready
-# {"ready":true,"services":{"database":"ok","auth":"ok","permissions":"ok"}}
+# {"status":"ready","ready":true,"services":{"database":"ok","auth":"ok","permissions":"ok","postgrest":"ok","storage":"ok"}}
 ```
+
+<Cards>
+  <Card href="/reference/cli/start" title="`omnibase start` Reference" icon={<Play />}>
+    Options like `--build`, ports, and how deployment env is resolved
+  </Card>
+</Cards>
 
 ---
 
@@ -106,16 +163,30 @@ omnibase sync all
 ```
 
 This syncs:
-- Permission namespaces to Keto
-- Database migrations
-- Email templates
-- Stripe configuration
+- **Permissions** — RBAC namespaces to Keto
+- **Database** — SQL migration files
+- **Email** — HTML email templates
+- **Stripe** — product/price configuration
+
+(The `env` service is cloud-only and is skipped locally.)
+
+<Cards>
+  <Card href="/reference/cli/sync" title="`omnibase sync` Reference" icon={<RefreshCcw />}>
+    Selecting individual services and syncing to cloud environments
+  </Card>
+</Cards>
 
 ---
 
 ## 6. Create Your First User and Tenant
 
-Install the SDK in your application:
+Omnibase ships **typed SDKs generated from the OpenAPI spec** in several languages, so you can use whichever fits your stack:
+
+- **JavaScript / TypeScript** — `@omnibase/core-js`
+- **Go** — `github.com/phoenixsolutionsgroup/omnibase/sdk/core/go`
+- **Framework SDKs** — `@omnibase/nextjs`, `@omnibase/react`, and shadcn/ui components
+
+Every SDK exposes the same API surface. For this demo we'll use the JavaScript SDK:
 
 ```bash
 npm install @omnibase/core-js
@@ -126,18 +197,16 @@ bun add @omnibase/core-js
 Create a user and tenant programmatically:
 
 ```typescript
-import { Configuration, V1AuthApi, V1TenantsApi } from '@omnibase/core-js';
+import { Configuration, V1AuthApi, V1TenantsLifecycleApi } from '@omnibase/core-js';
 
 const config = new Configuration({
   basePath: 'http://localhost:8080',
-  headers: {
-    'X-Service-Key': 'your-secret-service-key', // For server-side operations
-  },
+  apiKey: (name) => (name === 'X-Service-Key' ? 'VERY_SECRET_KEY' : ''), // Server-side operations
 });
 
 // Create a user
 const authApi = new V1AuthApi(config);
-const { data: userData } = await authApi.createUser({
+const user = await authApi.createUser({
   createUserRequest: {
     email: 'admin@example.com',
     password: 'secure-password-123',
@@ -145,37 +214,41 @@ const { data: userData } = await authApi.createUser({
   },
 });
 
-console.log('User created:', userData.data.id);
+console.log('User created:', user.id);
 
-// Create a tenant (organization)
-const tenantsApi = new V1TenantsApi(config);
-const { data: tenantData } = await tenantsApi.createTenant(
-  {
-    createTenantRequest: {
-      name: 'Acme Corporation',
-      billingEmail: 'billing@acme.com',
-    },
+// Create a tenant (organization). The creator becomes the tenant owner.
+const tenantsApi = new V1TenantsLifecycleApi(config);
+const { tenant, token } = await tenantsApi.createTenant({
+  createTenantRequest: {
+    name: 'Acme Corporation',
+    billingEmail: 'billing@acme.com',
   },
-  { headers: { 'X-User-Id': userData.data.id } }
-);
+});
 
-console.log('Tenant created:', tenantData.data.tenant.id);
-console.log('Stripe Customer:', tenantData.data.tenant.stripe_customer_id);
+console.log('Tenant created:', tenant.id);
+console.log('Stripe Customer:', tenant.stripeCustomerId);
+console.log('Tenant JWT:', token);
 ```
 
 <Callout type="info">
-When a tenant is created, Omnibase automatically creates a Stripe customer and assigns the creating user as the tenant owner.
+When a tenant is created, Omnibase automatically creates a Stripe customer and returns a tenant-scoped JWT (`token`) you can use for subsequent requests.
 </Callout>
+
+<Cards>
+  <Card href="/reference/sdk" title="SDK Reference" icon={<Code />}>
+    JS, Go, and framework SDKs — generated from the same OpenAPI spec
+  </Card>
+</Cards>
 
 ---
 
 ## 7. Configure Stripe Products
 
-Create a billing configuration in `omnibase/stripe/products.config.json`:
+Create a billing configuration as a `*.config.json` file in `omnibase/stripe/` (any name works, e.g. `products.config.json`). The `$schema` points at the running API so your editor gives you typed validation and autocomplete:
 
 ```json
 {
-  "$schema": "../../../../apps/api/internal/static/stripe-config-schema.json",
+  "$schema": "http://localhost:8080/api/v1/stripe/schema",
   "version": "1.0.0",
   "products": [
     {
@@ -216,6 +289,10 @@ Create a billing configuration in `omnibase/stripe/products.config.json`:
 }
 ```
 
+<Callout type="info">
+The schema is served by the API at `/api/v1/stripe/schema`, so start services (`omnibase start`) before your editor tries to fetch it. If you don't want editor validation, drop the `$schema` line.
+</Callout>
+
 Push to Stripe:
 
 ```bash
@@ -237,6 +314,12 @@ Prices created: 3
    - pro_yearly (product: pro_plan)
 ```
 
+<Cards>
+  <Card href="/guides/stripe/configuration" title="Stripe Configuration" icon={<CreditCard />}>
+    Version control, metered billing, webhooks, and the config schema
+  </Card>
+</Cards>
+
 ---
 
 ## 8. Create a Checkout Session
@@ -248,7 +331,7 @@ import { V1PaymentsApi } from '@omnibase/core-js';
 
 const paymentsApi = new V1PaymentsApi(config);
 
-const { data: checkout } = await paymentsApi.createCheckout({
+const { url } = await paymentsApi.createCheckout({
   createCheckoutRequest: {
     priceId: 'pro_monthly',
     successUrl: 'http://localhost:3000/success',
@@ -256,8 +339,8 @@ const { data: checkout } = await paymentsApi.createCheckout({
   },
 });
 
-console.log('Checkout URL:', checkout.data.url);
-// Redirect user to checkout.data.url
+console.log('Checkout URL:', url);
+// Redirect user to url
 ```
 
 ---
@@ -271,9 +354,10 @@ You now have a working Omnibase setup with:
 
 **Continue learning:**
 
+- [Project Configuration](/guides/configuration) — `omnibase.toml` and environment files
 - [Multi-Tenancy Guide](/guides/multi-tenancy) — Deep dive into tenant isolation, invitations, and RBAC
-- [Stripe Configuration](/guides/stripe-config) — Version control, rollbacks, and metered billing
-- [Self-Hosting Guide(/self-hosting) — Production deployment options
+- [Stripe Guide](/guides/stripe) — Subscriptions, invoices, metering, and webhooks
+- [Self-Hosting Guide](/self-hosting) — Production deployment options
 - [API Reference](/reference/api/v1) — Complete API documentation
 
 ---
@@ -286,7 +370,7 @@ When you're done developing:
 omnibase stop
 ```
 
-This gracefully shuts down all Docker containers while preserving your data.
+This gracefully shuts down the control plane containers and terminates any spawned deployment dev servers, while preserving your data.
 
 ---
 
@@ -301,13 +385,19 @@ docker info
 
 ### Health check fails
 
-View service logs:
+List running containers and inspect the API logs (containers are prefixed with `omnibase-<your-project-dir>`):
+
 ```bash
-docker logs api-rest-api-1
-docker logs api-auth-1
-docker logs api-permissions-1
+docker ps
+docker logs omnibase-my-app-rest-api-1
+```
+
+Or restart a single service with the CLI:
+
+```bash
+omnibase restart api
 ```
 
 ### Stripe push fails
 
-Verify your Stripe keys in `.env.local` and ensure you're using test mode keys (`sk_test_...`).
+Verify your Stripe keys in `omnibase/.env.local` and ensure you're using test mode keys (`sk_test_...`).

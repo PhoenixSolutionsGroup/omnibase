@@ -5,11 +5,13 @@
   "icon": "Book",
   "pages": [
     "quickstart",
+    "configuration",
     "authentication",
     "multi-tenancy",
     "rbac",
     "stripe",
     "postgresql",
+    "deployments",
     "workers",
     "storage",
     "mcp-server"

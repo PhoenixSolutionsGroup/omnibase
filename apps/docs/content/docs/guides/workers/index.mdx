@@ -11,6 +11,10 @@ import { Zap, Clock, Layers } from 'lucide-react';
 
 Omnibase Workers provide serverless compute on [Cloudflare Workers](https://workers.cloudflare.com/) using the [Hono](https://hono.dev/) web framework. Build globally distributed APIs, background jobs, and scheduled tasks that run at the edge.
 
+<Callout type="info">
+A Worker is one kind of [deployment](/guides/deployments) — anything `wrangler` can deploy works, from Hono edge functions to Next.js apps compiled with OpenNext. See the [Deployments guide](/guides/deployments) for how apps are declared in `omnibase.toml`, run locally, and ship to the edge.
+</Callout>
+
 ## What Are Workers?
 
 Workers are lightweight, serverless functions that run on Cloudflare's global network across 300+ cities. They execute close to your users for ultra-low latency and can handle millions of requests per second.
@@ -26,13 +30,13 @@ Workers are lightweight, serverless functions that run on Cloudflare's global ne
 ## Features
 
 <Cards>
-  <Card title="Edge Functions" icon={<Zap />} href="/docs/guides/workers/edge-functions">
+  <Card title="Edge Functions" icon={<Zap />} href="/guides/workers/edge-functions">
     HTTP APIs that run globally at the edge with sub-10ms latency
   </Card>
-  <Card title="Cron Jobs" icon={<Clock />} href="/docs/guides/workers/cron">
+  <Card title="Cron Jobs" icon={<Clock />} href="/guides/workers/cron">
     Scheduled tasks for automated workflows and background processing
   </Card>
-  <Card title="Queues" icon={<Layers />} href="/docs/guides/workers/queues">
+  <Card title="Queues" icon={<Layers />} href="/guides/workers/queues">
     Background job processing with guaranteed delivery and automatic retries
   </Card>
 </Cards>
@@ -40,7 +44,7 @@ Workers are lightweight, serverless functions that run on Cloudflare's global ne
 ## Quick Start
 
 ```bash
-# Initialize Omnibase (creates omnibase/workers/)
+# Initialize Omnibase (scaffolds the sample omnibase/workers/ app)
 omnibase init
 
 # Navigate to workers directory
@@ -49,7 +53,7 @@ cd omnibase/workers
 # Install dependencies
 bun install
 
-# Start local development
+# Run the app locally (or use `omnibase start` to run the full stack)
 bun dev
 
 # Deploy to Omnibase
@@ -154,24 +158,20 @@ app.get("/old-path", (c) => {
 
 ## Environment Variables
 
-Environment variables are managed through Omnibase environment files in `omnibase/environments/`.
+Environment variables are managed through Omnibase env files in `omnibase/.env.*` — see [Environment Variables & Secrets](/guides/deployments/environment-variables) for build-time injection, `{VAR}` interpolation, and where secrets live.
 
 ### Configure Variables
 
-Add your variables to the appropriate environment file:
+Add your variables to the appropriate env file, one per environment:
 
 ```bash
-# omnibase/environments/.env.production
-OMNIBASE_API_URL=https://api.yourdomain.com
-DATABASE_URL=postgresql://...
-API_KEY=your-secret-key
+# omnibase/.env.local (local dev)
+OMNIBASE_API_URL=http://localhost:8080
 ```
 
 ```bash
-# omnibase/environments/.env.staging
-OMNIBASE_API_URL=https://staging-api.yourdomain.com
-DATABASE_URL=postgresql://...
-API_KEY=your-staging-key
+# omnibase/.env.production (deployed with `--env production`)
+OMNIBASE_API_URL=https://api.yourdomain.com
 ```
 
 ### Access in Workers
@@ -181,14 +181,13 @@ Access environment variables via `c.env` in your worker code:
 ```typescript
 app.get("/api/data", async (c) => {
   const apiUrl = c.env.OMNIBASE_API_URL;
-  const apiKey = c.env.API_KEY;
 
   return c.json({ connected: true });
 });
 ```
 
 <Callout type="info">
-When you deploy with `omnibase cloud workers deploy --env production`, the CLI automatically injects variables from `omnibase/environments/.env.production` into your worker.
+When you deploy with `omnibase cloud workers deploy --env production`, the CLI resolves variables from `omnibase/.env.production` and injects them into the build and the packaged worker.
 </Callout>
 
 ## Deployment
@@ -287,7 +286,7 @@ app.get("/api/data", async (c) => {
 ## Next Steps
 
 <Cards>
-  <Card title="Edge Functions" href="/docs/guides/workers/edge-functions">
+  <Card title="Edge Functions" href="/guides/workers/edge-functions">
     Learn how to build and deploy edge functions with Hono
   </Card>
   <Card title="Hono Documentation" href="https://hono.dev/">

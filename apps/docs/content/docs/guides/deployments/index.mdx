@@ -1,0 +1,113 @@
+---
+title: Deployments
+description: Attach any Cloudflare Workers app to your Omnibase project, run it locally, and deploy it to the edge
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Boxes, Cloud, Terminal } from 'lucide-react';
+
+# Deployments
+
+A **deployment** is any app you're building that runs on Cloudflare Workers. It doesn't matter what framework it uses — Hono, Next.js via OpenNext, a plain wrangler Worker, or anything else that can be deployed with `wrangler`. Omnibase treats every deployment the same way: it runs the app locally during development and ships it to the edge on deploy.
+
+Deployments are declared in `omnibase/omnibase.toml` under `[[deployments]]`, each pointing at a directory with a `wrangler.toml`, `wrangler.jsonc`, or `wrangler.json`.
+
+## What Can Be a Deployment?
+
+Anything `wrangler` can deploy:
+
+- **Hono / plain Workers** — a `src/index.ts` entrypoint
+- **Next.js via OpenNext** — a Next.js app compiled with `opennextjs-cloudflare`
+- **Any other wrangler app** — as long as it has a wrangler config and produces a worker bundle
+
+## Declaring Deployments
+
+```toml
+# omnibase/omnibase.toml
+[[deployments]]
+name = "dashboard"
+path = "../apps/dashboard"
+
+[[deployments]]
+name = "api"
+path = "../apps/api"
+port = 8788
+```
+
+- **`name`** — a label used in CLI output and cloud deploy naming
+- **`path`** — directory relative to `omnibase/`; must contain a wrangler config and a `bun run dev` script
+- **`port`** — local dev port, defaults to `8787 + deployment index`
+
+<Callout type="info">
+The Omnibase repo itself is a real example — `public/omnibase.toml` declares three OpenNext apps (`dashboard`, `docs`, `website`) pointing at `public/apps/*`, each with its own `wrangler.jsonc`.
+</Callout>
+
+## Run Locally
+
+```bash
+omnibase start
+```
+
+This starts the control plane (API, auth, permissions, Postgres, storage, email) with Docker Compose, then spawns `bun run dev` in every deployment directory on `http://localhost:<port>` (default `8787` for the first). Each dev server receives the same resolved environment it would get in the cloud.
+
+## Deploy
+
+```bash
+omnibase cloud workers deploy
+```
+
+This builds, packages, and uploads one or more deployments to managed hosting:
+
+1. Resolve the target environment — the one you selected interactively or passed with `--env`.
+2. Load the resolved variables for that branch from `omnibase/.env.<env>` (falling back through the normal resolution order).
+3. Run `bunx wrangler deploy --dry-run --outdir .bundle` in each deployment directory with those variables exported.
+4. Package the output into a self-contained bundle and upload it; managed hosting deploys it to the edge and returns the live URL.
+
+Pick a deployment with `--name`, deploy them all with `--all`, or choose one interactively:
+
+```bash
+omnibase cloud workers deploy --env main
+omnibase cloud workers deploy --env main --name dashboard
+omnibase cloud workers deploy --env main --all
+```
+
+<Cards>
+  <Card href="/reference/cli/cloud/workers/deploy" title="Deploy Reference" icon={<Cloud />}>
+    Full flags and the end-to-end build and upload flow
+  </Card>
+  <Card href="/guides/deployments/environment-variables" title="Environment Variables" icon={<Terminal />}>
+    Build-time injection, `{VAR}` interpolation, and where secrets live
+  </Card>
+</Cards>
+
+## The OpenNext Example
+
+Omnibase's own apps show a real-world deployment setup. Each app in `public/apps/` has a `wrangler.jsonc` that points at the OpenNext worker output and assets:
+
+```jsonc
+// public/apps/dashboard/wrangler.jsonc
+{
+  "main": ".open-next/worker.js",
+  "name": "omnibase-dashboard",
+  "compatibility_date": "2026-09-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "build": {
+    "command": "bun run build:cloudflare"
+  },
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "NEXT_PUBLIC_WEBSITE_URL": "{NEXT_PUBLIC_WEBSITE_URL}",
+    "OMNIBASE_API_URL": "{OMNIBASE_API_URL}"
+  }
+}
+```
+
+The build command compiles the Next.js app into a worker (`.open-next/worker.js`) plus static assets (`.open-next/assets`). Values like `{NEXT_PUBLIC_WEBSITE_URL}` are placeholders that get filled from `omnibase/.env.<env>` at deploy time — see [Environment Variables](/guides/deployments/environment-variables).
+
+## Workers
+
+For Hono-based edge functions, cron jobs, and queues on top of the sample worker, see the [Workers guide](/guides/workers).

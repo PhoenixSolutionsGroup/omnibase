@@ -1,0 +1,126 @@
+---
+title: Project Configuration
+description: Everything you can put in omnibase.toml and omnibase/.env.* — deployments, auth, OIDC, local secrets, and version pinning
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Project Configuration
+
+Your project's behavior is defined by a single config file in the `omnibase/` directory — `omnibase.toml` — plus a set of gitignored environment files. The same file drives local development (`omnibase start`), the CLI, and managed hosting deploys.
+
+`omnibase init` scaffolds a commented `omnibase/omnibase.toml` with every section below. TOML is the default, but `.jsonc`, `.json`, `.yaml`, and `.yml` are also supported.
+
+## Full Example
+
+```toml
+# omnibase/omnibase.toml
+project_id = "69df45c1-2580-4781-915f-b6ecdc792683"
+
+# Apps to run locally and deploy. Each is a directory with a wrangler
+# config and a `bun run dev` script.
+[[deployments]]
+name = "dashboard"
+path = "../apps/dashboard"
+
+[[deployments]]
+name = "api"
+path = "../apps/api"
+port = 8788
+
+[auth]
+website_url = "{WEBSITE_URL}"
+allowed_return_urls = ["{ALLOWED_RETURN_URLS}"]
+cookie_secret = "{COOKIE_SECRET}"
+log_level = "info"
+
+  [[auth.oidc]]
+  provider = "google"
+  client_id = "{GOOGLE_CLIENT_ID}"
+  client_secret = "{GOOGLE_CLIENT_SECRET}"
+
+# Local-only. Never pushed to the cloud.
+[local]
+env_path = ".env"
+
+# Version pins for the OmniBase control-plane images.
+# Omitted services use "latest". Must be exact published tags.
+[versions]
+auth = "0.4.1"
+api = "0.20.3"
+perm = "0.4.0"
+```
+
+## Sections
+
+### `project_id`
+
+Your Omnibase Cloud project ID, created when you set up managed hosting. Not needed for purely local development.
+
+### `[[deployments]]`
+
+The apps you're building. Each entry points at a directory containing a Cloudflare Wrangler app (a `wrangler.toml`/`wrangler.jsonc` plus a `bun run dev` script) — the same app you'd deploy to the edge.
+
+- **`name`** — a label used in CLI output and cloud deploy naming
+- **`path`** — directory relative to `omnibase/`
+- **`port`** — local dev port; defaults to `8787 + deployment index`
+
+`omnibase start` spawns `bun run dev` in every deployment directory and passes each the resolved environment (see below). If no deployments are configured, it falls back to a bundled sample `omnibase/workers/`.
+
+### `[auth]`
+
+Controls the authentication service (Ory Kratos):
+
+- **`website_url`** — your app's URL; used to build auth flow redirects
+- **`allowed_return_urls`** — URLs Kratos will redirect back to after a flow
+- **`cookie_secret`** — secret used to sign session cookies
+- **`log_level`** — Kratos log level (`trace`, `debug`, `info`, `warn`, `error`)
+
+#### `[[auth.oidc]]`
+
+Enables social login. One block per provider:
+
+- **`provider`** — the provider key (e.g. `google`)
+- **`client_id`** / **`client_secret`** — OAuth app credentials
+
+The CLI maps these to `OIDC_<PROVIDER>_ENABLED`, `<PROVIDER>_CLIENT_ID`, and `<PROVIDER>_CLIENT_SECRET` env vars for the auth container.
+
+### `[local]`
+
+Local-development-only settings that are **never sent to the cloud**:
+
+- **`env_path`** — an extra env file to load (relative to the project root), last in the resolution order
+- **`stripe`** — Stripe keys for local dev. On managed hosting, Stripe env is owned by the Connect account provisioned per branch, so it never lives here in the cloud.
+
+### `[env]`
+
+Extra `KEY=VALUE` pairs applied to the local control-plane containers (merged into the same env the auth/API images receive).
+
+### `[versions]`
+
+Pins the Docker image tags for the control plane. Valid keys are `auth`, `api`, and `perm`. Values must be exact published tags (checked against Docker Hub before applying); omitted services use `latest`.
+
+## Environment Files
+
+Secrets and per-environment values live in gitignored files next to the config:
+
+```
+omnibase/
+├── omnibase.toml      # structure, committed
+├── .env.local         # local secrets & defaults, gitignored
+└── .env.<branch>      # per-environment overrides, gitignored
+```
+
+For example `omnibase/.env.local` for local dev, `omnibase/.env.staging` for staging, or `omnibase/.env.<branch_name>` for a cloud branch. Select one with `omnibase --env <name>`.
+
+<Callout type="info">
+Values resolve per key, first non-empty wins:
+
+`process.env` → `omnibase/.env.<branch>` (from `--env` or the interactive picker) → `omnibase/.env.local` → `[local].env_path` → the literal `{VAR}` left in place.
+</Callout>
+
+`{VAR}` references in `omnibase.toml` are interpolated from these sources. Unresolved references are left literal and the CLI warns. Secrets belong in `.env.*` files or `wrangler secret` — never in `[[deployments]]` wrangler `[vars]`, which are visible in the deployed worker.
+
+## What Goes to the Cloud
+
+When you run `omnibase cloud env push`, everything is sent **except** `project_id`, `[[deployments]]`, and `[local]` — those stay local. Managed hosting applies the sections it understands (`[auth]`, `[versions]`, `[env]`, etc.) and reports the rest.
