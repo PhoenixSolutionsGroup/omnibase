@@ -39,22 +39,6 @@ wait_for_api_health() {
     return 1
 }
 
-ensure_jwks() {
-    local jwks_dir="/tmp/auth/tokenizer-templates/jwt"
-    local jwks_file="$jwks_dir/jwks.json"
-    
-    if [ -z "$AUTH_JWT_JWKS" ]; then
-        echo "ERROR: AUTH_JWT_JWKS environment variable is not set" >&2
-    fi
-    
-    echo "Creating JWKS directory: $jwks_dir" >&2
-    mkdir -p "$jwks_dir"
-    
-    echo "Writing JWKS to: $jwks_file" >&2
-    printf '%b\n' "$AUTH_JWT_JWKS" > "$jwks_file"
-    chmod 600 "$jwks_file"
-}
-
 download_templates() {
     if [ -z "${API_URL}" ]; then
         echo "Skipping template download (API_URL not set, will use Auth defaults)" >&2
@@ -178,8 +162,6 @@ EOF
     
     rm -f "$output_file.tmp"
 }
-
-ensure_jwks
 
 wait_for_api_health
 

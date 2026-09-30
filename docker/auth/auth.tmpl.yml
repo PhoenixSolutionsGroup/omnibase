@@ -107,15 +107,6 @@ identity:
     - id: default
       url: file:///etc/config/auth/identity.schema.json
 
-session:
-  whoami:
-    tokenizer:
-      templates:
-        jwt:
-          jwks_url: file:///tmp/auth/tokenizer-templates/jwt/jwks.json
-          ttl: 10m
-          claims_mapper_url: file:///etc/config/auth/jwt/claims.jsonnet
-
 courier:
   smtp:
     connection_uri: ${SMTP_CONNECTION_URI}

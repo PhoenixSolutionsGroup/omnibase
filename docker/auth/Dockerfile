@@ -9,7 +9,6 @@ RUN apk add --no-cache gettext curl yq-go
 COPY auth.tmpl.yml /etc/config/auth/auth.tmpl.yml
 COPY oidc/ /etc/config/auth/oidc/
 COPY identity.schema.json /etc/config/auth/identity.schema.json
-COPY jwt/ /etc/config/auth/jwt/
 
 COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
 
