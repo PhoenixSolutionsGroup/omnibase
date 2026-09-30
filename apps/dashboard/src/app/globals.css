@@ -3,7 +3,7 @@
 @import "shadcn/tailwind.css";
 
 /* Scan @omnibase/shadcn package for Tailwind classes */
-@source "../../node_modules/@omnibase/shadcn/dist";
+@source "../../../../node_modules/@omnibase/shadcn/dist";
 
 @custom-variant dark (&:is(.dark *));
 
