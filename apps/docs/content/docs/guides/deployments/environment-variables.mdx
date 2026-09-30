@@ -17,23 +17,21 @@ Deployments get variables from your `omnibase/.env.*` files. There are two disti
 
 Wherever a value is needed, it resolves per key, first non-empty wins:
 
-`process.env` → `omnibase/.env.<env>` (selected with `--env`) → `omnibase/.env.local` → `[local].env_path`
-
-So `omnibase cloud workers deploy --env main` pulls its values from `omnibase/.env.main`, with `omnibase/.env.local` as the local fallback.
+`process.env` → `omnibase/.env.<env>` (selected with `--env`) → the literal `{VAR}` left in place
 
 ## Build-Time Variable Injection
 
-`omnibase cloud workers deploy` runs `bunx wrangler deploy --dry-run --outdir .bundle` in each deployment directory with the resolved variables exported into the build process. Anything your build command reads from the environment is available at build time.
+`omnibase cloud workers deploy` runs `bunx wrangler deploy --dry-run --outdir .bundle` in each deployment directory with the resolved variables exported into the build process. Whatever your `build.command` reads from the environment is available while it runs.
 
-This matters most for frameworks that **inline** values at compile time. Next.js/OpenNext, for example, inlines `NEXT_PUBLIC_*` variables into the client bundle during `opennextjs-cloudflare build`. To set those:
+This matters for anything that **inlines** values at build time — bundled client assets, generated config, static pages. Put those keys in the env file for the branch you're deploying:
 
 ```bash
 # omnibase/.env.main
-NEXT_PUBLIC_WEBSITE_URL=https://my-app.com
-NEXT_PUBLIC_OMNIBASE_API_URL=https://api.my-app.com
+PUBLIC_API_URL=https://api.my-app.com
+PUBLIC_WEBSITE_URL=https://my-app.com
 ```
 
-Set them in the env file for the branch you're deploying, then:
+Then deploy:
 
 ```bash
 omnibase cloud workers deploy --env main
@@ -46,17 +44,17 @@ The values are present when the build runs, so they end up baked into the output
 Runtime values live in the `[vars]` section of your deployment's wrangler config. Omnibase interpolates `{VAR}` references at package time, replacing each placeholder with the resolved value from `omnibase/.env.<env>`.
 
 ```jsonc
-// apps/dashboard/wrangler.jsonc
+// apps/api/wrangler.jsonc
 {
   "vars": {
-    "NEXT_PUBLIC_WEBSITE_URL": "{NEXT_PUBLIC_WEBSITE_URL}",
+    "PUBLIC_WEBSITE_URL": "{PUBLIC_WEBSITE_URL}",
     "OMNIBASE_API_URL": "{OMNIBASE_API_URL}",
     "OMNIBASE_ANON_KEY": ""
   }
 }
 ```
 
-With `NEXT_PUBLIC_WEBSITE_URL=https://my-app.com` in `omnibase/.env.main`, deploying `--env main` packages the worker with `NEXT_PUBLIC_WEBSITE_URL` set to `https://my-app.com`.
+With `PUBLIC_WEBSITE_URL=https://my-app.com` in `omnibase/.env.main`, deploying `--env main` packages the worker with `PUBLIC_WEBSITE_URL` set to `https://my-app.com`.
 
 This works the same in every wrangler format:
 

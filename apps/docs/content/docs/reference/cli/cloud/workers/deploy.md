@@ -19,7 +19,7 @@ Build, package, and upload one or more Workers deployments for the selected clou
 End-to-end flow:
 1. Resolve the target environment (`--env` or interactive picker).
 2. Load the resolved secrets for that branch (see env resolution below).
-3. Run `bunx wrangler deploy --dry-run --outdir .bundle` in the    deployment directory with the resolved env exported, producing a    production bundle.
+3. Run `bunx wrangler deploy --dry-run --outdir .bundle` in the    deployment directory with the resolved env exported. If the wrangler    config declares a `build.command`, wrangler runs it first, so the app    is built as part of the deploy; the result is a production bundle.
 4. Package the bundle plus any `[assets]` into a self-contained zip,    with the deployment's `wrangler.json` `[vars]` interpolated at    package time.
 5. Upload the bundle to managed hosting, which runs    `wrangler deploy --dispatch-namespace` and returns the live URL.
 
