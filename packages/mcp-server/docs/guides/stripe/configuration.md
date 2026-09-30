@@ -69,7 +69,7 @@ You can split your configuration across multiple files for better organization:
 - `shared-tiers.config.json`
 - `cloudflare-workers.config.json`
 - `neon.config.json`
-- `postmark.config.json`
+- `ses.config.json`
 
 ### Example: Subscription Plans
 
