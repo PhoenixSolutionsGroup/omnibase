@@ -26,9 +26,6 @@ path = "workers"
 # secret_key = "{STRIPE_SECRET_KEY}"
 # publishable_key = "{STRIPE_PUBLISHABLE_KEY}"
 
-# [local]
-# env_path = ".env"
-
 # Pin the version of an OmniBase-built service. Omitted services use "latest".
 # Must be an exact published tag; checked against Docker Hub before applying.
 # [versions]

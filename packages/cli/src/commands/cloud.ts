@@ -290,7 +290,7 @@ async function deployWorkers(
 
   const deployments = getDeployments(root);
   const config = loadConfig(root);
-  const secrets = loadSecretsMap(root, env.name, config.local?.env_path);
+  const secrets = loadSecretsMap(root, env.name);
   let targets: DeploymentConfig[];
 
   if (nameFlag) {
@@ -561,8 +561,7 @@ async function resolveBranch(
  * lives, since managed hosting owns Stripe env via the Connect account it
  * provisions per branch.
  *
- * {VAR} secrets resolve from process.env → omnibase/.env.<branch> → .env.local
- * → [local].env_path.
+ * {VAR} secrets resolve from process.env → omnibase/.env.<branch>.
  */
 export async function pushEnvConfig(envFlag?: string): Promise<void> {
   const root = findOmnibaseRoot();
@@ -595,7 +594,7 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
     );
   }
 
-  const secrets = loadSecretsMap(root, env.name, config.local?.env_path);
+  const secrets = loadSecretsMap(root, env.name);
 
   const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
   if (resolved.versions) {
@@ -1140,8 +1139,9 @@ export function addCloudCommands(program: Command): void {
       "1. Resolve the target environment (`--env` or interactive picker).\n" +
       "2. Load the resolved secrets for that branch (see env resolution below).\n" +
       "3. Run `bunx wrangler deploy --dry-run --outdir .bundle` in the " +
-      "   deployment directory with the resolved env exported, producing a " +
-      "   production bundle.\n" +
+      "   deployment directory with the resolved env exported. If the wrangler " +
+      "   config declares a `build.command`, wrangler runs it first, so the app " +
+      "   is built as part of the deploy; the result is a production bundle.\n" +
       "4. Package the bundle plus any `[assets]` into a self-contained zip, " +
       "   with the deployment's `wrangler.json` `[vars]` interpolated at " +
       "   package time.\n" +
@@ -1432,17 +1432,15 @@ export function addCloudCommands(program: Command): void {
       "variables.\n\n" +
       "**Environment variable injection**\n\n" +
       "Several commands resolve `{VAR}` references in your configuration " +
-      "(e.g. `website_url = \"{NEXT_PUBLIC_WEBSITE_URL}\"`) from a two-layer " +
+      "(e.g. `website_url = \"{PUBLIC_WEBSITE_URL}\"`) from a two-layer " +
       "model:\n\n" +
       "- **omnibase/omnibase.toml** (committed) — the structure, with `{VAR}` " +
       "references for per-environment values.\n" +
       "- **omnibase/.env.<branch>** (gitignored) — flat `KEY=VALUE`, one file " +
-      "per branch/environment, plus `omnibase/.env.local` and an optional " +
-      "`[local].env_path`.\n\n" +
+      "per branch/environment (`.env.local` for local dev).\n\n" +
       "Resolution order, per key, first non-empty wins:\n" +
       "`process.env` → `omnibase/.env.<branch>` (from `--env` or the " +
-      "interactive picker) → `omnibase/.env.local` → `[local].env_path` → the " +
-      "literal `{VAR}` left in place.\n\n" +
+      "interactive picker) → the literal `{VAR}` left in place.\n\n" +
       "This drives `cloud workers deploy` (wrangler build env + packaged " +
       "`[vars]`), `cloud env push` (interpolation of the cloud config " +
       "sections), and `omnibase start` (control-plane env + dev-server spawns).\n\n" +

@@ -29,7 +29,6 @@ export interface AuthConfig {
  * per branch.
  */
 export interface LocalConfig {
-  env_path?: string;
   stripe?: Record<string, string>;
   [key: string]: unknown;
 }
@@ -116,7 +115,6 @@ function loadEnvFile(pathToEnv: string): Record<string, string> {
 export function loadSecretsMap(
   projectRoot: string,
   envName?: string,
-  localEnvPath?: string,
 ): Record<string, string> {
   const secrets: Record<string, string> = {};
 
@@ -134,18 +132,11 @@ export function loadSecretsMap(
     for (const [k, v] of Object.entries(branchEnv)) {
       if (!(k in secrets)) secrets[k] = v;
     }
-  }
-
-  const defaultLocal = loadEnvFile(
-    path.join(projectRoot, "omnibase", ".env.local"),
-  );
-  for (const [k, v] of Object.entries(defaultLocal)) {
-    if (!(k in secrets)) secrets[k] = v;
-  }
-
-  if (localEnvPath) {
-    const resolved = loadEnvFile(path.resolve(projectRoot, localEnvPath));
-    for (const [k, v] of Object.entries(resolved)) {
+  } else {
+    const defaultLocal = loadEnvFile(
+      path.join(projectRoot, "omnibase", ".env.local"),
+    );
+    for (const [k, v] of Object.entries(defaultLocal)) {
       if (!(k in secrets)) secrets[k] = v;
     }
   }
@@ -185,17 +176,15 @@ export function loadWranglerConfigFile(
 
 /**
  * Resolve the env vars a local dev-server process should get, mirroring the
- * cloud deploy: process.env → omnibase/.env.<env> → .env.local → [local]
- * env_path, plus `[vars]` from the deployment's wrangler config after {VAR}
- * interpolation. Later sources win.
+ * cloud deploy: process.env → omnibase/.env.<env>, plus `[vars]` from the
+ * deployment's wrangler config after {VAR} interpolation.
  */
 export function resolveStartEnv(
   projectRoot: string,
   envName: string,
-  config: OmnibaseConfig,
   wranglerConfig?: Record<string, unknown> | null,
 ): Record<string, string> {
-  const secrets = loadSecretsMap(projectRoot, envName, config.local?.env_path);
+  const secrets = loadSecretsMap(projectRoot, envName);
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(process.env)) {
     if (v !== undefined) out[k] = v;
@@ -255,7 +244,7 @@ export function loadConfig(projectRoot: string): OmnibaseConfig {
     const rawDeployments = (parsed.deployments as
       | Array<Record<string, unknown>>
       | undefined) ?? [];
-    const rawLocal = parsed.local as { env_path?: string } | undefined;
+    const rawLocal = parsed.local as LocalConfig | undefined;
 
     return {
       project_id: parsed.project_id as string | undefined,
@@ -280,11 +269,7 @@ export function getResolvedConfig(
   envName?: string,
 ): OmnibaseConfig {
   const config = loadConfig(projectRoot);
-  const secrets = loadSecretsMap(
-    projectRoot,
-    envName,
-    config.local?.env_path,
-  );
+  const secrets = loadSecretsMap(projectRoot, envName);
   return interpolateValue(config, secrets) as OmnibaseConfig;
 }
 

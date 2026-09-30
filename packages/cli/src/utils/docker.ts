@@ -161,7 +161,7 @@ export function buildEffectiveEnvFile(envName: string): string {
     ? fs.readFileSync(envPath, "utf-8")
     : "";
 
-  const secrets = loadSecretsMap(root, envName, config.local?.env_path);
+  const secrets = loadSecretsMap(root, envName);
   const resolved = interpolateValue(config, secrets) as OmnibaseConfig;
   const derived = localEnvFromConfig(resolved);
 

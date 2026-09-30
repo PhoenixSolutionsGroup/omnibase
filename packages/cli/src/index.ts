@@ -145,7 +145,8 @@ program
     "ports start at 8787 and increment per deployment).\n\n" +
     "Environment variables: the dev-server processes receive the same " +
     "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
-    "→ `.env.local` → `[local].env_path`, plus the deployment's wrangler " +
+    "(and `omnibase/.env.local` for the local environment), plus the " +
+    "deployment's wrangler " +
     "`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
     "the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
     "```bash\n" +
@@ -195,7 +196,7 @@ program
         }
 
         const wranglerConfig = loadWranglerConfigFile(depPath);
-        const env = resolveStartEnv(root, envName, config, wranglerConfig);
+        const env = resolveStartEnv(root, envName, wranglerConfig);
 
         const cp = spawn("bun", ["run", "dev"], {
           cwd: depPath,

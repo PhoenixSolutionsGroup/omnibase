@@ -157,13 +157,27 @@ describe("loadSecretsMap", () => {
     }
   });
 
-  test("missing branch env file falls back to .env.local", () => {
+  test("missing branch env file does not fall back to .env.local", () => {
     writeFileSync(
       join(root, "omnibase", ".env.local"),
       "COOKIE_SECRET=local-secret\n",
     );
     const secrets = loadSecretsMap(root, "nope");
-    expect(secrets.COOKIE_SECRET).toBe("local-secret");
+    expect(secrets.COOKIE_SECRET).toBeUndefined();
+  });
+
+  test("branch env does not inherit keys only present in .env.local", () => {
+    writeFileSync(
+      join(root, "omnibase", ".env.local"),
+      "COOKIE_SECRET=local-secret\n",
+    );
+    writeFileSync(
+      join(root, "omnibase", ".env.dev"),
+      "WEBSITE_URL=https://dev.omnibase.tech\n",
+    );
+    const secrets = loadSecretsMap(root, "dev");
+    expect(secrets.WEBSITE_URL).toBe("https://dev.omnibase.tech");
+    expect(secrets.COOKIE_SECRET).toBeUndefined();
   });
 
   test("local envName does not load a .env.local file twice", () => {
@@ -223,7 +237,6 @@ describe("resolveStartEnv", () => {
     const env = resolveStartEnv(
       root,
       "dev",
-      { deployments: [] },
       { vars: { WEBSITE_URL: "{WEBSITE_URL}", STATIC: "x" } },
     );
     expect(env.WEBSITE_URL).toBe("https://dev.omnibase.tech");
@@ -238,7 +251,7 @@ describe("resolveStartEnv", () => {
     );
     process.env.WEBSITE_URL = "https://ci.example.com";
     try {
-      const env = resolveStartEnv(root, "dev", { deployments: [] });
+      const env = resolveStartEnv(root, "dev");
       expect(env.WEBSITE_URL).toBe("https://ci.example.com");
     } finally {
       delete process.env.WEBSITE_URL;
@@ -250,7 +263,7 @@ describe("resolveStartEnv", () => {
       join(root, "omnibase", ".env.local"),
       "COOKIE_SECRET=local-secret\n",
     );
-    const env = resolveStartEnv(root, "local", { deployments: [] });
+    const env = resolveStartEnv(root, "local");
     expect(env.COOKIE_SECRET).toBe("local-secret");
   });
 });
@@ -318,7 +331,7 @@ describe("localEnvFromConfig", () => {
 
   test("ignores [local] entirely", () => {
     const env = localEnvFromConfig({
-      local: { env_path: ".env.local", stripe: { secret_key: "sk_test" } },
+      local: { stripe: { secret_key: "sk_test" } },
     });
     expect(Object.keys(env)).toHaveLength(0);
     expect(JSON.stringify(env)).not.toContain("sk_test");
