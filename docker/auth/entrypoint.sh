@@ -89,7 +89,7 @@ download_templates() {
             url="${API_URL}/api/v1/email/templates/${template_name}/${template_type}"
             output="$template_dir/$template_name/valid/$filename"
             
-            if curl -f -s --connect-timeout 2 --max-time 5 -H "X-Service-Key: ${SERVICE_KEY}" -o "$output" "$url" 2>/dev/null; then
+            if curl -f -s --retry 4 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 30 -H "X-Service-Key: ${SERVICE_KEY}" -o "$output" "$url" 2>/dev/null; then
                 echo "✓ Downloaded: $template_name/$template_type" >&2
             else
                 echo "✗ Failed to download $template_name/$template_type (will use Auth defaults)" >&2
