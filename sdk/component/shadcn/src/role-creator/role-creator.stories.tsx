@@ -4,7 +4,7 @@ import {
   mockRoleCreatorDefinitions,
   mockEnrichedDefinitions,
 } from "./mock-definitions";
-import type { Role } from "@omnibase/core-js";
+import type { ListRolesByTenantRow as Role } from "@omnibase/core-js";
 
 const mockRoles: Role[] = [
   {
@@ -21,6 +21,7 @@ const mockRoles: Role[] = [
       "tenant#can_revoke_api_keys",
     ],
     userIds: ["user_1", "user_2"],
+    templateId: "template_admin",
     createdAt: new Date("2024-01-15T10:30:00Z"),
     updatedAt: new Date("2024-01-15T10:30:00Z"),
   },
@@ -35,6 +36,7 @@ const mockRoles: Role[] = [
       "project:proj_main#can_view_database_connection_string",
     ],
     userIds: ["user_3", "user_4", "user_5"],
+    templateId: "template_developer",
     createdAt: new Date("2024-02-20T14:45:00Z"),
     updatedAt: new Date("2024-02-20T14:45:00Z"),
   },
@@ -44,6 +46,7 @@ const mockRoles: Role[] = [
     roleName: "viewer",
     permissions: ["tenant#can_view_users", "tenant#can_view_api_keys"],
     userIds: ["user_6"],
+    templateId: "template_viewer",
     createdAt: new Date("2024-03-10T09:15:00Z"),
     updatedAt: new Date("2024-03-10T09:15:00Z"),
   },

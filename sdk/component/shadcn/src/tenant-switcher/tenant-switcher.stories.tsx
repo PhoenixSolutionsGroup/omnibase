@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SwitchActiveTenant } from ".";
-import type { Tenant } from "@omnibase/core-js";
+import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
 // Mock tenants data
 const mockTenants: Tenant[] = [
@@ -8,6 +8,8 @@ const mockTenants: Tenant[] = [
     id: "tenant_1",
     name: "Acme Corporation",
     stripeCustomerId: "cus_acme123",
+    enterpriseId: null,
+    enterpriseTemplate: null,
     type: "business",
     createdAt: new Date("2024-01-15T10:30:00Z"),
     updatedAt: new Date("2024-01-15T10:30:00Z"),
@@ -16,6 +18,8 @@ const mockTenants: Tenant[] = [
     id: "tenant_2",
     name: "TechStart Inc",
     stripeCustomerId: "cus_tech456",
+    enterpriseId: null,
+    enterpriseTemplate: null,
     type: "startup",
     createdAt: new Date("2024-02-20T14:45:00Z"),
     updatedAt: new Date("2024-02-20T14:45:00Z"),
@@ -24,6 +28,8 @@ const mockTenants: Tenant[] = [
     id: "tenant_3",
     name: "Global Enterprises",
     stripeCustomerId: "cus_global789",
+    enterpriseId: null,
+    enterpriseTemplate: null,
     type: "enterprise",
     createdAt: new Date("2024-03-10T09:15:00Z"),
     updatedAt: new Date("2024-03-10T09:15:00Z"),
@@ -32,6 +38,8 @@ const mockTenants: Tenant[] = [
     id: "tenant_4",
     name: "Creative Studio",
     stripeCustomerId: "cus_creative101",
+    enterpriseId: null,
+    enterpriseTemplate: null,
     type: "creative",
     createdAt: new Date("2024-04-05T16:20:00Z"),
     updatedAt: new Date("2024-04-05T16:20:00Z"),
@@ -129,6 +137,8 @@ export const ManyTenants: Story = {
         id: "tenant_5",
         name: "Another Company Ltd",
         stripeCustomerId: "cus_another202",
+        enterpriseId: null,
+        enterpriseTemplate: null,
         type: "business",
         createdAt: new Date("2024-05-01T12:00:00Z"),
         updatedAt: new Date("2024-05-01T12:00:00Z"),
@@ -137,6 +147,8 @@ export const ManyTenants: Story = {
         id: "tenant_6",
         name: "Small Business Co",
         stripeCustomerId: "cus_small303",
+        enterpriseId: null,
+        enterpriseTemplate: null,
         type: "small_business",
         createdAt: new Date("2024-05-15T08:30:00Z"),
         updatedAt: new Date("2024-05-15T08:30:00Z"),
@@ -145,6 +157,8 @@ export const ManyTenants: Story = {
         id: "tenant_7",
         name: "Consulting Group",
         stripeCustomerId: "cus_consult404",
+        enterpriseId: null,
+        enterpriseTemplate: null,
         type: "consulting",
         createdAt: new Date("2024-06-01T17:45:00Z"),
         updatedAt: new Date("2024-06-01T17:45:00Z"),

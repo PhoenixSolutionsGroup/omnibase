@@ -1,4 +1,7 @@
-import type { NamespaceDefinition, RelationMetadata } from "@omnibase/core-js";
+import type {
+  NamespaceDefinitionResponse as NamespaceDefinition,
+  RelationMetadataResponse as RelationMetadata,
+} from "@omnibase/core-js";
 
 // Legacy definitions without relationsMetadata (for backwards compatibility testing)
 export const mockRoleCreatorDefinitions: NamespaceDefinition[] = [
@@ -17,6 +20,7 @@ export const mockRoleCreatorDefinitions: NamespaceDefinition[] = [
       "parent_project",
       "tenant",
     ],
+    relationsMetadata: null,
     subjectRelations: {
       ApiKey: [
         "can_view_db_secret_key",
@@ -67,6 +71,7 @@ export const mockRoleCreatorDefinitions: NamespaceDefinition[] = [
       "can_view_api_keys",
       "can_revoke_api_keys",
     ],
+    relationsMetadata: null,
     subjectRelations: {
       ApiKey: [
         "can_rotate_keys",
@@ -182,7 +187,7 @@ export const mockEnrichedDefinitions: NamespaceDefinition[] = [
         roles: ["owner", "admin"],
         subjects: ["User", "ApiKey"],
       },
-    ] as RelationMetadata[],
+    ] as unknown as RelationMetadata[],
     subjectRelations: {
       ApiKey: [
         "can_view_db_secret_key",
@@ -380,7 +385,7 @@ export const mockEnrichedDefinitions: NamespaceDefinition[] = [
         roles: ["owner", "admin"],
         subjects: ["User", "ApiKey"],
       },
-    ] as RelationMetadata[],
+    ] as unknown as RelationMetadata[],
     subjectRelations: {
       ApiKey: [
         "can_rotate_keys",
