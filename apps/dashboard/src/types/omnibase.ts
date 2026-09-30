@@ -250,9 +250,10 @@ export type Database = {
           name: string
           namespace: string | null
           postgrest_url: string | null
-          postmark_server_id: string | null
-          postmark_server_token_encrypted: string | null
           project_id: string
+          ses_config_set: string | null
+          ses_tenant_id: string | null
+          ses_tenant_name: string | null
           slug: string
           status: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key: string | null
@@ -286,9 +287,10 @@ export type Database = {
           name: string
           namespace?: string | null
           postgrest_url?: string | null
-          postmark_server_id?: string | null
-          postmark_server_token_encrypted?: string | null
           project_id: string
+          ses_config_set?: string | null
+          ses_tenant_id?: string | null
+          ses_tenant_name?: string | null
           slug: string
           status?: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key?: string | null
@@ -322,9 +324,10 @@ export type Database = {
           name?: string
           namespace?: string | null
           postgrest_url?: string | null
-          postmark_server_id?: string | null
-          postmark_server_token_encrypted?: string | null
           project_id?: string
+          ses_config_set?: string | null
+          ses_tenant_id?: string | null
+          ses_tenant_name?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["project_branch_status"]
           storage_access_key?: string | null

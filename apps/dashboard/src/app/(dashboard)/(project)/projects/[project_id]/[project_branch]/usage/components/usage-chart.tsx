@@ -35,11 +35,10 @@ export interface WorkerUsage {
   cpu_time_p99_us: number;
 }
 
-export interface PostmarkUsage {
+export interface SESUsage {
   sent: number;
   bounced: number;
   spam_complaints: number;
-  opens: number;
 }
 
 export interface UsageResponse {
@@ -47,7 +46,7 @@ export interface UsageResponse {
   period: { start: string; end: string };
   r2?: R2Usage;
   workers?: WorkerUsage;
-  postmark?: PostmarkUsage;
+  ses?: SESUsage;
 }
 
 interface UsageChartProps {
@@ -87,7 +86,7 @@ export function UsageChart({ data }: UsageChartProps) {
   const sources: Array<{ label: string; present: boolean }> = [
     { label: "Storage (R2)", present: !!data.r2 },
     { label: "Workers", present: !!data.workers },
-    { label: "Email (Postmark)", present: !!data.postmark },
+    { label: "Email (SES)", present: !!data.ses },
   ];
 
   const presentCount = sources.filter((s) => s.present).length;
@@ -135,14 +134,15 @@ export function UsageChart({ data }: UsageChartProps) {
                     </p>
                   </div>
                 )}
-                {data.postmark && (
+                {data.ses && (
                   <div className="flex flex-col space-y-1 p-4 border rounded-lg">
                     <span className="text-sm font-medium">Email</span>
                     <p className="text-2xl font-bold">
-                      {formatNumber(data.postmark.sent)}
+                      {formatNumber(data.ses.sent)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      sent ({formatNumber(data.postmark.bounced)} bounced)
+                      sent ({formatNumber(data.ses.bounced)} bounced,{" "}
+                      {formatNumber(data.ses.spam_complaints)} complaints)
                     </p>
                   </div>
                 )}
@@ -226,33 +226,27 @@ export function UsageChart({ data }: UsageChartProps) {
                       </TableRow>
                     </>
                   )}
-                  {data.postmark && (
+                  {data.ses && (
                     <>
                       <TableRow>
-                        <TableCell rowSpan={4} className="font-medium align-top">
+                        <TableCell rowSpan={3} className="font-medium align-top">
                           Email
                         </TableCell>
                         <TableCell>Sent</TableCell>
                         <TableCell className="text-right font-mono">
-                          {formatNumber(data.postmark.sent)}
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Opens</TableCell>
-                        <TableCell className="text-right font-mono">
-                          {formatNumber(data.postmark.opens)}
+                          {formatNumber(data.ses.sent)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Bounced</TableCell>
                         <TableCell className="text-right font-mono">
-                          {formatNumber(data.postmark.bounced)}
+                          {formatNumber(data.ses.bounced)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Spam complaints</TableCell>
                         <TableCell className="text-right font-mono">
-                          {formatNumber(data.postmark.spam_complaints)}
+                          {formatNumber(data.ses.spam_complaints)}
                         </TableCell>
                       </TableRow>
                     </>

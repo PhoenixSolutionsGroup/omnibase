@@ -62,11 +62,15 @@ func (s *Service) sendPlain(addr, from, to, msg string) error {
 	return client.Quit()
 }
 
-func buildMessage(from, to, subject, htmlBody string) string {
+func buildMessage(from, to, subject, htmlBody string, extraHeaders ...string) string {
 	var msg strings.Builder
 	fmt.Fprintf(&msg, "From: %s\r\n", from)
 	fmt.Fprintf(&msg, "To: %s\r\n", to)
 	fmt.Fprintf(&msg, "Subject: %s\r\n", subject)
+	for _, h := range extraHeaders {
+		msg.WriteString(h)
+		msg.WriteString("\r\n")
+	}
 	msg.WriteString("MIME-Version: 1.0\r\n")
 	msg.WriteString("Content-Type: text/html; charset=\"UTF-8\"\r\n")
 	msg.WriteString("\r\n")

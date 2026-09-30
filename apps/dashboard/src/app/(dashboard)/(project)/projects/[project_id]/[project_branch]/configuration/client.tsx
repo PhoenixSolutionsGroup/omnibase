@@ -34,7 +34,6 @@ import {
   fetchPostgrestServiceKey,
   fetchDatabasePassword,
   fetchDatabaseConnectionString,
-  fetchPostmarkServerToken,
   fetchStorageCredentials,
 } from "../settings/actions";
 import { cn } from "@/lib/utils";
@@ -52,7 +51,6 @@ interface ConfigItem {
     | "postgrest_service_key"
     | "database_password"
     | "connection_string"
-    | "postmark_token"
     | "storage_secret_key";
 }
 
@@ -123,13 +121,11 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         serviceKeyResult,
         dbPasswordResult,
         connStringResult,
-        postmarkResult,
         storageResult,
       ] = await Promise.all([
         fetchProjectSecretKey(project.id),
         fetchDatabasePassword(project.id),
         fetchDatabaseConnectionString(project.id),
-        fetchPostmarkServerToken(project.id),
         fetchStorageCredentials(project.id),
       ]);
 
@@ -188,13 +184,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       );
 
       // Email
-      if (project.postmark_server_id)
-        envVars.push(
-          `OMNIBASE_POSTMARK_SERVER_ID=${project.postmark_server_id}`
-        );
-      envVars.push(
-        `OMNIBASE_POSTMARK_SERVER_TOKEN=${getValue(postmarkResult, "token")}`
-      );
+      // Email is configured via SES (tenant name + config set); no per-branch token.
 
       // Worker URLs are now managed per-deployment — use 'cloud workers list' to see them
 
@@ -294,14 +284,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           if (result?.success && result.connectionString) {
             setDecryptedValues((prev) =>
               new Map(prev).set(key, result!.connectionString!)
-            );
-          }
-          break;
-        case "postmark_token":
-          result = await fetchPostmarkServerToken(project.id);
-          if (result?.success && result.token) {
-            setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.token!)
             );
           }
           break;
@@ -408,13 +390,8 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       description: "Email service configuration",
       icon: <Mail className="h-5 w-5 text-primary" />,
       items: [
-        { label: "Postmark Server ID", value: project.postmark_server_id },
-        {
-          label: "Postmark Server Token",
-          value: project.postmark_server_token_encrypted,
-          sensitive: true,
-          encryptedField: "postmark_token",
-        },
+        { label: "SES Tenant Name", value: project.ses_tenant_name },
+        { label: "SES Config Set", value: project.ses_config_set },
       ],
     },
 

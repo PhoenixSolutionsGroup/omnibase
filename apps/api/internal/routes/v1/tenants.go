@@ -36,6 +36,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Repo:          repo,
 		ConnectionURI: cfg.SMTPConfig.ConnectionURI,
 		DefaultFrom:   cfg.SMTPConfig.FromEmail,
+		ExtraHeaders:  cfg.SMTPConfig.ExtraHeaders,
 	})
 	if err != nil {
 		logger.Logger.Error("Failed to initialize email service", "error", err)

@@ -41,7 +41,7 @@ func (s *Service) SendWithTemplate(ctx context.Context, req SendWithTemplateRequ
 	}
 
 	from := s.fromOrDefault(req.From)
-	msg := buildMessage(from, req.To, row.Subject, body.String())
+	msg := buildMessage(from, req.To, row.Subject, body.String(), s.extraHeaders...)
 	if err := s.send(from, req.To, msg); err != nil {
 		return fmt.Errorf("%w: %w", SendError, err)
 	}

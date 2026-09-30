@@ -43,6 +43,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Repo:          repo,
 		ConnectionURI: cfg.SMTPConfig.ConnectionURI,
 		DefaultFrom:   cfg.SMTPConfig.FromEmail,
+		ExtraHeaders:  cfg.SMTPConfig.ExtraHeaders,
 	})
 	if err != nil {
 		panic(fmt.Sprintf("Failed to initialize email service: %s", err))

@@ -20,12 +20,14 @@ type Service struct {
 	password        string
 	defaultFrom     string
 	disableStartTLS bool
+	extraHeaders    []string
 }
 
 type Deps struct {
 	Repo          repository.Querier
 	ConnectionURI string
 	DefaultFrom   string
+	ExtraHeaders  []string
 }
 
 func New(deps Deps) (*Service, error) {
@@ -64,6 +66,7 @@ func New(deps Deps) (*Service, error) {
 		password:        password,
 		defaultFrom:     deps.DefaultFrom,
 		disableStartTLS: disableStartTLS,
+		extraHeaders:    deps.ExtraHeaders,
 	}, nil
 }
 

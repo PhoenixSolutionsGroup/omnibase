@@ -20,16 +20,16 @@ func (s *Service) Send(ctx context.Context, args SendArgs) error {
 	logger.Logger.Debug("Sending email", "to", args.To, "subject", args.Subject)
 
 	from := s.fromOrDefault(args.From)
-	msg := buildMessageMultipart(from, args.To, args.Subject, args.HTML, args.Plain)
+	msg := buildMessageMultipart(from, args.To, args.Subject, args.HTML, args.Plain, s.extraHeaders...)
 	if err := s.send(from, args.To, msg); err != nil {
 		return fmt.Errorf("%w: %w", SendError, err)
 	}
 	return nil
 }
 
-func buildMessageMultipart(from, to, subject, htmlBody, plainBody string) string {
+func buildMessageMultipart(from, to, subject, htmlBody, plainBody string, extraHeaders ...string) string {
 	if plainBody == "" {
-		return buildMessage(from, to, subject, htmlBody)
+		return buildMessage(from, to, subject, htmlBody, extraHeaders...)
 	}
 
 	const boundary = "----=_Part_0_omnibase"
@@ -38,6 +38,10 @@ func buildMessageMultipart(from, to, subject, htmlBody, plainBody string) string
 	fmt.Fprintf(&msg, "From: %s\r\n", from)
 	fmt.Fprintf(&msg, "To: %s\r\n", to)
 	fmt.Fprintf(&msg, "Subject: %s\r\n", subject)
+	for _, h := range extraHeaders {
+		msg.WriteString(h)
+		msg.WriteString("\r\n")
+	}
 	msg.WriteString("MIME-Version: 1.0\r\n")
 	fmt.Fprintf(&msg, "Content-Type: multipart/alternative; boundary=\"%s\"\r\n", boundary)
 	msg.WriteString("\r\n")

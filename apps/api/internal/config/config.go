@@ -91,6 +91,7 @@ type SMTPConfig struct {
 	ConnectionURI string
 	FromEmail     string
 	FrontendURL   string
+	ExtraHeaders  []string
 }
 
 func New() *Config {
@@ -136,6 +137,7 @@ func New() *Config {
 			ConnectionURI: os.Getenv("SMTP_CONNECTION_URI"),
 			FromEmail:     os.Getenv("SMTP_FROM_EMAIL"),
 			FrontendURL:   os.Getenv("FRONTEND_URL"),
+			ExtraHeaders:  parseCommaSeparated(os.Getenv("SMTP_EXTRA_HEADERS")),
 		},
 		PermissionsConfig: PermissionsConfig{
 			ReadURL:  os.Getenv("PERMISSIONS_READ_URL"),
