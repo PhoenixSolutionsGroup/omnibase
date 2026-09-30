@@ -131,6 +131,7 @@ func shouldForwardHeader(header string) bool {
 		"transfer-encoding":   true,
 		"upgrade":             true,
 		"x-service-key":       true,
+		"origin":              true,
 	}
 	return !skip[strings.ToLower(header)]
 }
