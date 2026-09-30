@@ -86,11 +86,8 @@ func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string) {
 }
 
 func rewriteResponseHeader(key, value string) string {
-	switch strings.ToLower(key) {
-	case "location":
+	if strings.EqualFold(key, "location") {
 		return rewriteLocationHeader(value)
-	case "set-cookie":
-		return rewriteSetCookieHeader(value)
 	}
 	return value
 }
@@ -121,19 +118,6 @@ func isKratosPath(path string) bool {
 		}
 	}
 	return false
-}
-
-func rewriteSetCookieHeader(cookie string) string {
-	parts := strings.Split(cookie, ";")
-	out := make([]string, 0, len(parts))
-	for _, part := range parts {
-		trimmed := strings.TrimSpace(part)
-		if strings.HasPrefix(strings.ToLower(trimmed), "domain=") {
-			continue
-		}
-		out = append(out, trimmed)
-	}
-	return strings.Join(out, "; ")
 }
 
 func shouldForwardHeader(header string) bool {
