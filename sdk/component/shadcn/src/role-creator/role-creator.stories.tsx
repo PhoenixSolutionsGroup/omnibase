@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RoleCreator } from ".";
-import { mockRoleCreatorDefinitions } from "./mock-definitions";
+import {
+  mockRoleCreatorDefinitions,
+  mockEnrichedDefinitions,
+} from "./mock-definitions";
 import type { Role } from "@omnibase/core-js";
 
 const mockRoles: Role[] = [
@@ -68,6 +71,12 @@ const meta: Meta<typeof RoleCreator> = {
   },
   tags: ["autodocs"],
   argTypes: {
+    selector: {
+      description:
+        'Which permission picker to render. "tree" (default) uses a grouped checkbox tree, "rows" uses combobox rows.',
+      control: "inline-radio",
+      options: ["tree", "rows"],
+    },
     definitions: {
       description:
         "Array of namespace definitions that define available permissions",
@@ -115,6 +124,21 @@ export const Default: Story = {
           roleData.role_name
         }\nPermissions: ${roleData.permissions.join(", ")}`
       );
+    },
+  },
+};
+
+export const RowsMode: Story = {
+  args: {
+    selector: "rows",
+    definitions: mockRoleCreatorDefinitions,
+    roles: mockRoles,
+    namespaceMap: mockNamespaceMap,
+    onRoleCreate: (roleData) => {
+      console.log("Creating role:", roleData);
+    },
+    onRoleUpdate: (roleData) => {
+      console.log("Updating role:", roleData);
     },
   },
 };
@@ -183,6 +207,52 @@ export const WithManyProjects: Story = {
     },
     onRoleUpdate: (roleData) => {
       console.log("Updating role:", roleData);
+    },
+  },
+};
+
+export const FullJSDocAnnotations: Story = {
+  args: {
+    selector: "tree",
+    definitions: mockEnrichedDefinitions,
+    roles: mockRoles,
+    namespaceMap: mockNamespaceMap,
+    onRoleCreate: (roleData) => {
+      console.log("Creating role:", roleData);
+    },
+    onRoleUpdate: (roleData) => {
+      console.log("Updating role:", roleData);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Enriched definitions with full JSDoc annotations: relationsMetadata drives custom display names and collapsible groups/subgroups. Pick the Tenant or Project namespace to see the tree.",
+      },
+    },
+  },
+};
+
+export const FullJSDocAnnotationsRows: Story = {
+  args: {
+    selector: "rows",
+    definitions: mockEnrichedDefinitions,
+    roles: mockRoles,
+    namespaceMap: mockNamespaceMap,
+    onRoleCreate: (roleData) => {
+      console.log("Creating role:", roleData);
+    },
+    onRoleUpdate: (roleData) => {
+      console.log("Updating role:", roleData);
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The same fully annotated definitions rendered with the combobox rows selector. The permission picker is grouped and shows custom display-name labels.",
+      },
     },
   },
 };

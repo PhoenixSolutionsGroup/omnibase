@@ -50,10 +50,13 @@ interface ComboboxOption {
 
 interface GroupedOptions {
   ungrouped: ComboboxOption[];
-  groups: Record<string, {
-    options: ComboboxOption[];
-    subGroups: Record<string, ComboboxOption[]>;
-  }>;
+  groups: Record<
+    string,
+    {
+      options: ComboboxOption[];
+      subGroups: Record<string, ComboboxOption[]>;
+    }
+  >;
 }
 
 interface ComboboxProps {
@@ -103,7 +106,7 @@ function renderCommandItem(
   value: string,
   onChange: (value: string) => void,
   setOpen: (open: boolean) => void,
-  indent: number = 0
+  indent: number = 0,
 ) {
   return (
     <CommandItem
@@ -118,7 +121,7 @@ function renderCommandItem(
       <Check
         className={cn(
           "mr-2 h-4 w-4",
-          value === option.value ? "opacity-100" : "opacity-0"
+          value === option.value ? "opacity-100" : "opacity-0",
         )}
       />
       {option.label}
@@ -144,11 +147,10 @@ function Combobox({
   const isEmpty = options.length === 0;
   const groupedOpts = useMemo(
     () => (grouped ? groupOptions(options) : null),
-    [options, grouped]
+    [options, grouped],
   );
 
-  const hasGroups =
-    groupedOpts && Object.keys(groupedOpts.groups).length > 0;
+  const hasGroups = groupedOpts && Object.keys(groupedOpts.groups).length > 0;
 
   const handleSelectGroup = (groupName: string) => {
     if (!groupedOpts || !onSelectMultiple) return;
@@ -159,7 +161,7 @@ function Combobox({
     const allValues = [
       ...group.options.map((o) => o.value),
       ...Object.values(group.subGroups).flatMap((opts) =>
-        opts.map((o) => o.value)
+        opts.map((o) => o.value),
       ),
     ];
     onSelectMultiple(allValues);
@@ -186,7 +188,7 @@ function Combobox({
           className={cn(
             "justify-between font-normal transition-[width] duration-200 ease-in-out",
             !value && "text-muted-foreground",
-            className
+            className,
           )}
         >
           {isEmpty ? (
@@ -213,7 +215,7 @@ function Combobox({
                 {groupedOpts.ungrouped.length > 0 && (
                   <CommandGroup>
                     {groupedOpts.ungrouped.map((opt) =>
-                      renderCommandItem(opt, value, onChange, setOpen)
+                      renderCommandItem(opt, value, onChange, setOpen),
                     )}
                   </CommandGroup>
                 )}
@@ -243,7 +245,7 @@ function Combobox({
                     >
                       {/* Direct group options */}
                       {group.options.map((opt) =>
-                        renderCommandItem(opt, value, onChange, setOpen)
+                        renderCommandItem(opt, value, onChange, setOpen),
                       )}
                       {/* SubGroup options */}
                       {Object.entries(group.subGroups).map(
@@ -259,30 +261,40 @@ function Combobox({
                                 }}
                                 className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-muted-foreground/70 uppercase tracking-wider hover:text-muted-foreground transition-colors group w-full text-left"
                               >
-                                <span className="text-muted-foreground/40 group-hover:text-muted-foreground/70">—</span>
+                                <span className="text-muted-foreground/40 group-hover:text-muted-foreground/70">
+                                  —
+                                </span>
                                 <Plus className="h-2.5 w-2.5 opacity-0 group-hover:opacity-70 transition-opacity" />
                                 {subGroupName}
                               </button>
                             ) : (
                               <div className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-muted-foreground/70 uppercase tracking-wider">
-                                <span className="text-muted-foreground/40">—</span>
+                                <span className="text-muted-foreground/40">
+                                  —
+                                </span>
                                 {subGroupName}
                               </div>
                             )}
                             {subOpts.map((opt) =>
-                              renderCommandItem(opt, value, onChange, setOpen, 1)
+                              renderCommandItem(
+                                opt,
+                                value,
+                                onChange,
+                                setOpen,
+                                1,
+                              ),
                             )}
                           </div>
-                        )
+                        ),
                       )}
                     </CommandGroup>
-                  )
+                  ),
                 )}
               </>
             ) : (
               <CommandGroup>
                 {options.map((option) =>
-                  renderCommandItem(option, value, onChange, setOpen)
+                  renderCommandItem(option, value, onChange, setOpen),
                 )}
               </CommandGroup>
             )}
@@ -333,7 +345,7 @@ export function PermissionsSelector({
 
   const namespaceOptions = useMemo(
     () => definitions.map((d) => ({ value: d.namespace, label: d.namespace })),
-    [definitions]
+    [definitions],
   );
 
   const getRelationsForNamespace = (namespace: string): ComboboxOption[] => {
@@ -362,7 +374,7 @@ export function PermissionsSelector({
   };
 
   const getObjectsForNamespace = (
-    namespace: string
+    namespace: string,
   ): ComboboxOption[] | null => {
     if (namespace.toLowerCase() === "tenant") {
       return null;
@@ -386,7 +398,7 @@ export function PermissionsSelector({
   const updatePermissionRow = (
     id: string,
     field: keyof PermissionRow,
-    value: string
+    value: string,
   ) => {
     setPermissionRows((currentRows) => {
       const updatedRows = currentRows.map((row) => {
@@ -420,7 +432,7 @@ export function PermissionsSelector({
   const addMultiplePermissions = (
     rowId: string,
     namespace: string,
-    relations: string[]
+    relations: string[],
   ) => {
     if (relations.length === 0) return;
 
@@ -433,7 +445,7 @@ export function PermissionsSelector({
       const existingRelations = new Set(
         currentRows
           .filter((r) => r.namespace === namespace && r.relation)
-          .map((r) => r.relation)
+          .map((r) => r.relation),
       );
       const newRelations = relations.filter((r) => !existingRelations.has(r));
 
@@ -538,7 +550,7 @@ export function PermissionsSelector({
                     "min-w-40 ease-out duration-450",
                     showObjectSelect
                       ? "w-1/3 rounded-none border-r-0"
-                      : "w-2/3 rounded-l-none"
+                      : "w-2/3 rounded-l-none",
                   )}
                 />
 
@@ -555,7 +567,7 @@ export function PermissionsSelector({
                     "rounded-l-none invisible ease-out duration-450 overflow-hidden",
                     showObjectSelect
                       ? "w-1/3 visible"
-                      : "w-0 min-w-0 border-0 p-0"
+                      : "w-0 min-w-0 border-0 p-0",
                   )}
                 />
               </div>

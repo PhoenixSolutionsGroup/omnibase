@@ -23,8 +23,12 @@ import {
   generateId,
   buildPermissionString,
 } from "../permissions-selector";
+import { PermissionsSelectorTree } from "@/permissions-selector-tree";
 
-interface RoleCreatorProps {
+export type PermissionSelectorMode = "tree" | "rows";
+
+export interface RoleCreatorProps {
+  selector?: PermissionSelectorMode;
   definitions: NamespaceDefinition[];
   roles: Role[];
   namespaceMap?: Record<string, NamespaceMapEntry[]>;
@@ -40,6 +44,7 @@ interface RoleCreatorProps {
 }
 
 export function RoleCreator({
+  selector = "tree",
   definitions,
   roles,
   namespaceMap = {},
@@ -59,7 +64,7 @@ export function RoleCreator({
   }, [roles]);
 
   const parsePermissionString = (
-    perm: string
+    perm: string,
   ): { namespace: string; relation: string; objectId: string } => {
     const hashIndex = perm.indexOf("#");
     if (hashIndex === -1) return { namespace: "", relation: "", objectId: "" };
@@ -71,7 +76,7 @@ export function RoleCreator({
     if (colonIndex === -1) {
       const namespace =
         definitions.find(
-          (d) => d.namespace.toLowerCase() === leftPart.toLowerCase()
+          (d) => d.namespace.toLowerCase() === leftPart.toLowerCase(),
         )?.namespace || leftPart;
       return { namespace, relation, objectId: "" };
     }
@@ -80,24 +85,35 @@ export function RoleCreator({
     const objectId = leftPart.substring(colonIndex + 1);
     const namespace =
       definitions.find(
-        (d) => d.namespace.toLowerCase() === nsLower.toLowerCase()
+        (d) => d.namespace.toLowerCase() === nsLower.toLowerCase(),
       )?.namespace || nsLower;
 
     return { namespace, relation, objectId };
   };
 
-  const handleRoleNameChange = (value: string) => {
-    setRoleName(value);
+  const permissionStrings = useMemo(
+    () =>
+      permissionRows
+        .filter((row) => row.namespace && row.relation)
+        .map((row) => buildPermissionString(row))
+        .filter((perm) => perm !== ""),
+    [permissionRows],
+  );
 
-    const existingRole = roles.find(
-      (role) => role.roleName.toLowerCase() === value.toLowerCase()
+  const selectorRows = useMemo(() => {
+    const hasEmptyRow = permissionRows.some(
+      (row) => !row.namespace && !row.relation && !row.objectId,
     );
+    if (hasEmptyRow || permissionRows.length === 0) return permissionRows;
+    return [
+      ...permissionRows,
+      { id: generateId(), namespace: "", relation: "", objectId: "" },
+    ];
+  }, [permissionRows]);
 
-    if (existingRole) {
-      setIsEditMode(true);
-      setEditingRoleId(existingRole.id);
-
-      const rows: PermissionRow[] = (existingRole.permissions ?? []).map((perm) => {
+  const handleTreeChange = (permissions: string[]) => {
+    setPermissionRows(
+      permissions.map((perm) => {
         const parsed = parsePermissionString(perm);
         return {
           id: generateId(),
@@ -105,7 +121,32 @@ export function RoleCreator({
           relation: parsed.relation,
           objectId: parsed.objectId,
         };
-      });
+      }),
+    );
+  };
+
+  const handleRoleNameChange = (value: string) => {
+    setRoleName(value);
+
+    const existingRole = roles.find(
+      (role) => role.roleName.toLowerCase() === value.toLowerCase(),
+    );
+
+    if (existingRole) {
+      setIsEditMode(true);
+      setEditingRoleId(existingRole.id);
+
+      const rows: PermissionRow[] = (existingRole.permissions ?? []).map(
+        (perm) => {
+          const parsed = parsePermissionString(perm);
+          return {
+            id: generateId(),
+            namespace: parsed.namespace,
+            relation: parsed.relation,
+            objectId: parsed.objectId,
+          };
+        },
+      );
 
       if (rows.length === 0) {
         rows.push({
@@ -123,12 +164,7 @@ export function RoleCreator({
     }
   };
 
-  const buildPermissions = (): string[] => {
-    return permissionRows
-      .filter((row) => row.namespace && row.relation)
-      .map((row) => buildPermissionString(row))
-      .filter((perm) => perm !== "");
-  };
+  const buildPermissions = (): string[] => permissionStrings;
 
   const handleSubmit = () => {
     if (!roleName.trim()) return;
@@ -187,7 +223,7 @@ export function RoleCreator({
             <div className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-48 overflow-y-auto">
               {roleSuggestions
                 .filter((suggestion) =>
-                  suggestion.toLowerCase().includes(roleName.toLowerCase())
+                  suggestion.toLowerCase().includes(roleName.toLowerCase()),
                 )
                 .map((suggestion) => (
                   <button
@@ -218,12 +254,21 @@ export function RoleCreator({
         <div className="space-y-4">
           <Label>Permissions</Label>
 
-          <PermissionsSelector
-            definitions={definitions}
-            namespaceMap={namespaceMap}
-            initialPermissions={permissionRows}
-            onPermissionsChange={setPermissionRows}
-          />
+          {selector === "rows" ? (
+            <PermissionsSelector
+              definitions={definitions}
+              namespaceMap={namespaceMap}
+              initialPermissions={selectorRows}
+              onPermissionsChange={setPermissionRows}
+            />
+          ) : (
+            <PermissionsSelectorTree
+              definitions={definitions}
+              namespaceMap={namespaceMap}
+              value={permissionStrings}
+              onChange={handleTreeChange}
+            />
+          )}
         </div>
 
         <Separator />
@@ -243,4 +288,12 @@ export function RoleCreator({
       </CardContent>
     </Card>
   );
+}
+
+export function RoleCreatorTree(props: RoleCreatorProps) {
+  return <RoleCreator {...props} selector="tree" />;
+}
+
+export function RoleCreatorRows(props: RoleCreatorProps) {
+  return <RoleCreator {...props} selector="rows" />;
 }
