@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { generateRlsSql } from "./emit";
+import { generateRlsSql, PRIVILEGE_ORDER } from "./emit";
 
 function parsePolicies(sql: string): Map<string, string> {
   const map = new Map<string, string>();
@@ -8,12 +8,39 @@ function parsePolicies(sql: string): Map<string, string> {
   for (const part of parts) {
     let t = part.trim();
     if (!t.startsWith('CREATE POLICY "')) continue;
-    const dropIdx = t.search(/\n\s*DROP POLICY /);
-    if (dropIdx !== -1) t = t.slice(0, dropIdx).trim();
+    const endIdx = t.search(/\n\s*(?:DROP POLICY|GRANT|REVOKE)\s/);
+    if (endIdx !== -1) t = t.slice(0, endIdx).trim();
     const m = t.match(/^CREATE POLICY "([^"]+)"/);
     if (m) map.set(m[1], t);
   }
   return map;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function privilegeTokens(raw: string): string[] {
+  return raw
+    .split(",")
+    .map((s) => s.trim().toUpperCase())
+    .filter(Boolean);
+}
+
+function parseGrantedPrivileges(sql: string, table: string): string[] {
+  const re = new RegExp(
+    `GRANT\\s+([A-Z, ]+?)\\s+ON\\s+${escapeRegExp(table)}\\s+TO\\s+anon_user`,
+    "gi",
+  );
+  return [...sql.matchAll(re)].flatMap((m) => privilegeTokens(m[1]));
+}
+
+function parseRevokedPrivileges(sql: string, table: string): string[] {
+  const re = new RegExp(
+    `REVOKE\\s+([A-Z, ]+?)\\s+ON\\s+${escapeRegExp(table)}\\s+FROM\\s+anon_user`,
+    "gi",
+  );
+  return [...sql.matchAll(re)].flatMap((m) => privilegeTokens(m[1]));
 }
 
 export function generateRlsDiffFromMigrations(
@@ -22,6 +49,11 @@ export function generateRlsDiffFromMigrations(
   excludeNewerThan?: string,
 ): { upSQL: string; downSQL: string } {
   const { perTable: existing, policyOrigins } = fetchExistingPoliciesFromMigrations(
+    migrationsDir,
+    tables,
+    excludeNewerThan,
+  );
+  const existingGrants = fetchExistingGrantsFromMigrations(
     migrationsDir,
     tables,
     excludeNewerThan,
@@ -36,6 +68,15 @@ export function generateRlsDiffFromMigrations(
 
     const existingPolicies = parsePolicies(existing.get(table) ?? "");
     const desiredPolicies = parsePolicies(desired.upSQL);
+    const currentPrivileges = existingGrants.get(table) ?? new Set<string>();
+    const desiredPrivileges = new Set(parseGrantedPrivileges(desired.upSQL, table));
+
+    const newPrivileges = PRIVILEGE_ORDER.filter(
+      (p) => desiredPrivileges.has(p) && !currentPrivileges.has(p),
+    );
+    const stalePrivileges = PRIVILEGE_ORDER.filter(
+      (p) => currentPrivileges.has(p) && !desiredPrivileges.has(p),
+    );
 
     const allNames = new Set([
       ...existingPolicies.keys(),
@@ -66,13 +107,30 @@ export function generateRlsDiffFromMigrations(
       downParts.push(downEntry.join("\n"));
     }
 
-    if (tableUp.length === 0) continue;
+    const grantChanged =
+      newPrivileges.length > 0 || stalePrivileges.length > 0;
+    if (tableUp.length === 0 && !grantChanged) continue;
 
     if (existingPolicies.size === 0) {
       upParts.push(`ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;`);
       downDisables.push(`ALTER TABLE ${table} DISABLE ROW LEVEL SECURITY;`);
     }
     upParts.push(...tableUp);
+
+    if (newPrivileges.length > 0) {
+      upParts.push(`GRANT ${newPrivileges.join(", ")} ON ${table} TO anon_user;`);
+      downParts.push(
+        `REVOKE ${newPrivileges.join(", ")} ON ${table} FROM anon_user;`,
+      );
+    }
+    if (stalePrivileges.length > 0) {
+      upParts.push(
+        `REVOKE ${stalePrivileges.join(", ")} ON ${table} FROM anon_user;`,
+      );
+      downParts.push(
+        `GRANT ${stalePrivileges.join(", ")} ON ${table} TO anon_user;`,
+      );
+    }
   }
 
   const downSQLParts: string[] = [];
@@ -122,4 +180,33 @@ function fetchExistingPoliciesFromMigrations(
     if (m.size > 0) map.set(table, [...m.values()].join("\n\n"));
   }
   return { perTable: map, policyOrigins };
+}
+
+function fetchExistingGrantsFromMigrations(
+  migrationsDir: string,
+  tables: string[],
+  excludeNewerThan?: string,
+): Map<string, Set<string>> {
+  const dirs = readdirSync(migrationsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+
+  const perTable = new Map<string, Set<string>>();
+  for (const t of tables) perTable.set(t, new Set());
+
+  for (const dir of dirs) {
+    if (excludeNewerThan && dir === excludeNewerThan) continue;
+    const file = join(migrationsDir, dir, "migration.sql");
+    if (!existsSync(file)) continue;
+    const sql = readFileSync(file, "utf-8");
+
+    for (const table of tables) {
+      const set = perTable.get(table)!;
+      for (const p of parseGrantedPrivileges(sql, table)) set.add(p);
+      for (const p of parseRevokedPrivileges(sql, table)) set.delete(p);
+    }
+  }
+
+  return perTable;
 }

@@ -69,6 +69,8 @@ describe("generateRlsSql", () => {
         'CREATE POLICY "projects_delete_auth" ON projects',
         "  FOR DELETE",
         "  USING (auth.user_id() IS NOT NULL);",
+        "",
+        "GRANT SELECT, INSERT, DELETE ON projects TO anon_user;",
       ].join("\n"),
     );
   });
@@ -91,6 +93,7 @@ describe("generateRlsSql", () => {
         `  WITH CHECK (${GUARD});`,
       ].join("\n"),
     );
+    expect(upSQL).toContain("GRANT UPDATE ON projects TO anon_user;");
   });
 
   test("an operation with no policy entry is omitted", () => {
@@ -105,7 +108,37 @@ describe("generateRlsSql", () => {
     expect(upSQL).not.toContain("projects_delete");
   });
 
-  test("downSQL drops every emitted policy and disables RLS", () => {
+  test("grants only the privileges for operations that have a policy", () => {
+    definePolicy<any>("projects", {
+      select: { anon: { using: true } },
+    });
+
+    const { upSQL } = generateRlsSql("projects");
+    expect(upSQL).toContain("GRANT SELECT ON projects TO anon_user;");
+    expect(upSQL).not.toContain("INSERT");
+    expect(upSQL).not.toContain("UPDATE");
+    expect(upSQL).not.toContain("DELETE");
+  });
+
+  test("an auth-only policy is allowed and still grants the privilege", () => {
+    definePolicy<any>("projects", {
+      select: { auth: { using: tenant } },
+    });
+
+    const { upSQL, downSQL } = generateRlsSql("projects");
+    expect(upSQL).toContain('CREATE POLICY "projects_select_auth" ON projects');
+    expect(upSQL).not.toContain("projects_select_anon");
+    expect(upSQL).toContain("GRANT SELECT ON projects TO anon_user;");
+    expect(downSQL).toContain("REVOKE SELECT ON projects FROM anon_user;");
+  });
+
+  test("an operation declaring neither anon nor auth throws", () => {
+    expect(() => definePolicy<any>("projects", { select: {} })).toThrow(
+      /must declare at least one of `anon` or `auth`/,
+    );
+  });
+
+  test("downSQL drops every emitted policy, revokes grants and disables RLS", () => {
     definePolicy<any>("projects", {
       select: { anon: { using: true }, auth: { using: tenant } },
     });
@@ -115,6 +148,7 @@ describe("generateRlsSql", () => {
       [
         'DROP POLICY IF EXISTS "projects_select_anon" ON projects;',
         'DROP POLICY IF EXISTS "projects_select_auth" ON projects;',
+        "REVOKE SELECT ON projects FROM anon_user;",
         "ALTER TABLE projects DISABLE ROW LEVEL SECURITY;",
       ].join("\n"),
     );
@@ -128,5 +162,6 @@ describe("generateRlsSql", () => {
     const { upSQL } = generateRlsSql("Account");
     expect(upSQL).toContain("ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;");
     expect(upSQL).toContain('CREATE POLICY "accounts_select_anon" ON accounts');
+    expect(upSQL).toContain("GRANT SELECT ON accounts TO anon_user;");
   });
 });

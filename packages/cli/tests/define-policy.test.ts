@@ -76,10 +76,16 @@ describe("definePolicy + RLS generation end to end", () => {
     expect([...getRegistry().keys()]).toEqual(["projects"]);
   });
 
-  test("definePolicy rejects an operation that omits anon", () => {
+  test("definePolicy allows an operation that declares only auth", () => {
     expect(() =>
-      definePolicy<any>("projects", { select: { auth: { using: true } } as any }),
-    ).toThrow(/must declare `anon`/);
+      definePolicy<any>("projects", { select: { auth: { using: true } } }),
+    ).not.toThrow();
+  });
+
+  test("definePolicy rejects an operation that declares neither anon nor auth", () => {
+    expect(() => definePolicy<any>("projects", { select: {} })).toThrow(
+      /must declare at least one of `anon` or `auth`/,
+    );
   });
 
   test("a tenant-scoped policy compiles to the expected RLS SQL", () => {
@@ -105,6 +111,8 @@ describe("definePolicy + RLS generation end to end", () => {
         'CREATE POLICY "projects_delete_auth" ON projects',
         "  FOR DELETE",
         "  USING (auth.user_id() IS NOT NULL);",
+        "",
+        "GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user;",
       ].join("\n"),
     );
   });

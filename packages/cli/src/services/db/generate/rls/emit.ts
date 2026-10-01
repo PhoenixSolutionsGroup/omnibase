@@ -23,6 +23,17 @@ const OP_CLAUSES: Record<Operation, Clause[]> = {
   delete: ["using"],
 };
 
+const OP_ORDER: Operation[] = ["insert", "select", "update", "delete"];
+
+const OP_PRIVILEGE: Record<Operation, string> = {
+  select: "SELECT",
+  insert: "INSERT",
+  update: "UPDATE",
+  delete: "DELETE",
+};
+
+export const PRIVILEGE_ORDER = ["SELECT", "INSERT", "UPDATE", "DELETE"];
+
 function isAbsent(v: unknown): boolean {
   return v === undefined || v === false;
 }
@@ -38,9 +49,9 @@ export function generateRlsSql(modelName: string): {
 
   const table = resolveTableName(modelName);
 
-  const ops: Operation[] = ["insert", "select", "update", "delete"];
   const upParts: string[] = [];
   const downParts: string[] = [];
+  const grantedPrivileges = new Set<string>();
 
   const resolvers: Record<string, ClauseResolver> = {
     anon: (cl, opDef) => {
@@ -55,7 +66,7 @@ export function generateRlsSql(modelName: string): {
     },
   };
 
-  for (const op of ops) {
+  for (const op of OP_ORDER) {
     const opDef = entry[op];
     if (!opDef) continue;
     const clauses = OP_CLAUSES[op];
@@ -73,14 +84,33 @@ export function generateRlsSql(modelName: string): {
         const name = `${table}_${op}_${role}`;
         upParts.push(buildCreateSQL(table, op, name, usingSQL, checkSQL));
         downParts.push(`DROP POLICY IF EXISTS "${name}" ON ${table};`);
+        grantedPrivileges.add(OP_PRIVILEGE[op]);
       }
     }
   }
 
   if (upParts.length === 0) return { upSQL: "", downSQL: "" };
 
+  const privileges = PRIVILEGE_ORDER.filter((p) => grantedPrivileges.has(p));
+  const grantSQL =
+    privileges.length > 0
+      ? `GRANT ${privileges.join(", ")} ON ${table} TO anon_user;`
+      : "";
+  const revokeSQL =
+    privileges.length > 0
+      ? `REVOKE ${privileges.join(", ")} ON ${table} FROM anon_user;`
+      : "";
+
   return {
-    upSQL: `ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;\n\n${upParts.join("\n\n")}`,
-    downSQL: `${downParts.join("\n")}\nALTER TABLE ${table} DISABLE ROW LEVEL SECURITY;`,
+    upSQL: [
+      `ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;`,
+      ...upParts,
+      ...(grantSQL ? [grantSQL] : []),
+    ].join("\n\n"),
+    downSQL: [
+      ...downParts,
+      ...(revokeSQL ? [revokeSQL] : []),
+      `ALTER TABLE ${table} DISABLE ROW LEVEL SECURITY;`,
+    ].join("\n"),
   };
 }
