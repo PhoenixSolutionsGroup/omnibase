@@ -45,6 +45,8 @@ describe("generateRlsDiffFromMigrations", () => {
     expect(upSQL).toContain("ALTER TABLE projects ENABLE ROW LEVEL SECURITY;");
     expect(upSQL).toContain('DROP POLICY IF EXISTS "projects_select_anon" ON projects;');
     expect(upSQL).toContain('CREATE POLICY "projects_select_anon" ON projects');
+    expect(upSQL).toContain("GRANT SELECT ON projects TO anon_user;");
+    expect(downSQL).toContain("REVOKE SELECT ON projects FROM anon_user;");
     expect(downSQL).toContain("ALTER TABLE projects DISABLE ROW LEVEL SECURITY;");
   });
 
@@ -78,5 +80,33 @@ describe("generateRlsDiffFromMigrations", () => {
 
     const diff = generateRlsDiffFromMigrations(dir, ["projects"], "100_init");
     expect(diff.upSQL).toContain('CREATE POLICY "projects_select_anon" ON projects');
+  });
+
+  test("adding an operation grants only the new privilege", () => {
+    migration("100_init", generateRlsSql("projects").upSQL);
+
+    definePolicy<any>("projects", {
+      select: { anon: { using: true } },
+      insert: { anon: { check: { published: true } } },
+    });
+
+    const { upSQL, downSQL } = generateRlsDiffFromMigrations(dir, ["projects"]);
+    expect(upSQL).toContain("GRANT INSERT ON projects TO anon_user;");
+    expect(upSQL).not.toContain("GRANT SELECT");
+    expect(downSQL).toContain("REVOKE INSERT ON projects FROM anon_user;");
+  });
+
+  test("removing an operation revokes the stale privilege and rollback restores it", () => {
+    definePolicy<any>("projects", {
+      select: { anon: { using: true } },
+      insert: { anon: { check: { published: true } } },
+    });
+    migration("100_init", generateRlsSql("projects").upSQL);
+
+    definePolicy<any>("projects", { select: { anon: { using: true } } });
+
+    const { upSQL, downSQL } = generateRlsDiffFromMigrations(dir, ["projects"]);
+    expect(upSQL).toContain("REVOKE INSERT ON projects FROM anon_user;");
+    expect(downSQL).toContain("GRANT INSERT ON projects TO anon_user;");
   });
 });

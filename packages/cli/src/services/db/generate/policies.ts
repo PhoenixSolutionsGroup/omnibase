@@ -19,7 +19,7 @@ export type PolicyDef<T> = {
 };
 
 type RolePolicy<T, Clauses extends "using" | "check"> = {
-  anon: { [K in Clauses]?: AnonPred<T> };
+  anon?: { [K in Clauses]?: AnonPred<T> };
   auth?: { [K in Clauses]?: AuthPred<T> };
 };
 
@@ -58,10 +58,10 @@ function compileOp(def: Record<string, any>): CompiledOp {
 export function definePolicy<T>(model: string, policy: PolicyDef<T>): void {
   for (const op of ["select", "insert", "update", "delete"] as Operation[]) {
     const def = policy[op];
-    if (def && def.anon === undefined) {
+    if (def && def.anon === undefined && def.auth === undefined) {
       throw new Error(
-        `Policy "${model}.${op}" must declare \`anon\` ` +
-        `(use \`anon: { using: false }\` to deny anonymous access).`,
+        `Policy "${model}.${op}" must declare at least one of ` +
+        `\`anon\` or \`auth\` (use \`anon: { using: false }\` to deny anonymous access).`,
       );
     }
   }
