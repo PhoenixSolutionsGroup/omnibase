@@ -1,0 +1,21 @@
+{
+  "name": "@omnibase/mitosis",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Framework-agnostic OmniBase UI components authored in Mitosis and compiled to React, Vue, and Svelte.",
+  "scripts": {
+    "build": "mitosis build --c mitosis.config.cjs",
+    "start": "watch \"bun run build\" ./src",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@builder.io/mitosis": "^0.14.1"
+  },
+  "devDependencies": {
+    "@builder.io/eslint-plugin-mitosis": "^0.0.15",
+    "@builder.io/mitosis-cli": "^0.14.1",
+    "eslint": "^8.57.1",
+    "typescript": "^5.9.3"
+  }
+}

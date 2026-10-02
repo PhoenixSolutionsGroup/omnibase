@@ -23,3 +23,10 @@ __pycache__
 lerna-debug.log
 
 .sdk-docs.hash
+
+storybook-static
+debug-storybook.log
+
+# Storybook/Angular build caches
+.angular
+*.tsbuildinfo

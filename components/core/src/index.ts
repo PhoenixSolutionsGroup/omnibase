@@ -1,0 +1,13 @@
+export { default as RoleCreatorTree } from "./role-creator/role-creator.lite";
+export type {
+  GroupedPermissions,
+  NamespaceDefinition,
+  NamespaceMapEntry,
+  PermissionGroup,
+  PermissionOption,
+  RelationMetadata,
+  Role,
+  RoleCreateData,
+  RoleCreatorTreeProps,
+  RoleUpdateData,
+} from "./role-creator/role-creator.types";
