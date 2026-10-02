@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import type { StorybookConfig } from "@storybook/angular-vite";
 
 const config: StorybookConfig = {
@@ -5,7 +6,9 @@ const config: StorybookConfig = {
   addons: ["@storybook/addon-docs"],
   framework: {
     name: "@storybook/angular-vite",
-    options: {},
+    options: {
+      tsconfig: resolve(process.cwd(), "tsconfig.json"),
+    },
   },
   async viteFinal(config) {
     const { default: tailwindcss } = await import("@tailwindcss/vite");
