@@ -12,6 +12,10 @@ path = "../apps/docs"
 name = "website"
 path = "../apps/website"
 
+[[deployments]]
+name = "demo"
+path = "../apps/demo"
+
 [auth]
 website_url = "{WEBSITE_URL}"
 allowed_return_urls = ["{ALLOWED_RETURN_URLS}"]
