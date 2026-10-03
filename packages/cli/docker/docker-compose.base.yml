@@ -111,6 +111,7 @@ services:
       - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI:-smtp://mailpit:1025?disable_starttls=true}
       - SMTP_FROM_ADDRESS=${SMTP_FROM_ADDRESS:-no-reply@omnibase.tech}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-"Omnibase Auth"}
+      - SES_TENANT_NAME=local
 
       - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - API_URL=http://rest-api:8080
@@ -125,6 +126,8 @@ services:
       - HASHER_ARGON2_ITERATIONS=${HASHER_ARGON2_ITERATIONS:-2}
       - HASHER_ARGON2_SALT_LENGTH=${HASHER_ARGON2_SALT_LENGTH:-16}
       - HASHER_ARGON2_KEY_LENGTH=${HASHER_ARGON2_KEY_LENGTH:-32}
+      
+
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
     command: serve --dev --watch-courier
     networks:
