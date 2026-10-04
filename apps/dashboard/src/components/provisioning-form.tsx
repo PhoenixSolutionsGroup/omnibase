@@ -91,7 +91,8 @@ const TIER_ORDER: Record<Tier["deployment_type"], number> = {
 
 function sortTiers(tiers: Tier[]): Tier[] {
   return [...tiers].sort((a, b) => {
-    const typeDiff = TIER_ORDER[a.deployment_type] - TIER_ORDER[b.deployment_type];
+    const typeDiff =
+      TIER_ORDER[a.deployment_type] - TIER_ORDER[b.deployment_type];
     if (typeDiff !== 0) return typeDiff;
     return a.vcpus - b.vcpus;
   });
@@ -180,9 +181,7 @@ function RegionCombobox({
     }
 
     for (const [, regionList] of groups) {
-      regionList.sort(
-        (a, b) => getLatencyValue(a.id) - getLatencyValue(b.id),
-      );
+      regionList.sort((a, b) => getLatencyValue(a.id) - getLatencyValue(b.id));
     }
 
     const sortedEntries = Array.from(groups.entries()).sort(
@@ -258,7 +257,7 @@ function RegionCombobox({
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[620px] p-0" align="start">
+      <PopoverContent className="w-155 p-0" align="start">
         <Command>
           <CommandInput placeholder="Search regions..." />
           <CommandList>
@@ -389,9 +388,7 @@ export function ProvisioningForm({
           throw new Error(err.error || err.message || "Branch creation failed");
         }
         toast.success("Branch creation initiated!");
-        router.push(
-          `/projects/${projectId}/${formData.branch_name}/dashboard`,
-        );
+        router.push(`/projects/${projectId}/${formData.branch_name}/dashboard`);
       } else {
         const res = await fetch(managed_hosting_url + "/api/v1/projects", {
           method: "POST",
@@ -423,7 +420,7 @@ export function ProvisioningForm({
 
   if (loading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
+      <div className="flex h-100 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -607,9 +604,7 @@ export function ProvisioningForm({
                     regions={options.regions}
                     value={formData.region}
                     autoSelectLowestLatency
-                    onSelect={(id) =>
-                      setFormData({ ...formData, region: id })
-                    }
+                    onSelect={(id) => setFormData({ ...formData, region: id })}
                   />
                 </div>
               </CardContent>
@@ -620,9 +615,7 @@ export function ProvisioningForm({
 
       <Button
         type="submit"
-        disabled={
-          submitting || !formData.deployment_tier || !formData.region
-        }
+        disabled={submitting || !formData.deployment_tier || !formData.region}
         size="lg"
       >
         {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

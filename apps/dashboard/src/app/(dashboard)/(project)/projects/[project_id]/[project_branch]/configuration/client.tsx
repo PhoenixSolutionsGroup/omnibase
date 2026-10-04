@@ -64,10 +64,10 @@ interface ConfigSection {
 
 export function ConfigurationClient({ project }: ConfigurationClientProps) {
   const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [decryptedValues, setDecryptedValues] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
   const [loadingSecrets, setLoadingSecrets] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
@@ -99,7 +99,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 
       if (!result?.success) {
         toast.warning(
-          "OmniBase env copied with placeholder for unauthorized keys"
+          "OmniBase env copied with placeholder for unauthorized keys",
         );
       } else {
         toast.success("OmniBase environment variables copied to clipboard");
@@ -132,7 +132,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       // Helper to get value or UNAUTHORIZED
       const getValue = (
         result: { success: boolean; [key: string]: any } | undefined,
-        key: string
+        key: string,
       ) => {
         if (result?.success && result[key]) {
           return result[key];
@@ -147,7 +147,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       envVars.push(`OMNIBASE_BRANCH_ID=${project.id}`);
       if (project.api_url) envVars.push(`OMNIBASE_API_URL=${project.api_url}`);
       envVars.push(
-        `OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`
+        `OMNIBASE_SERVICE_KEY=${getValue(serviceKeyResult, "serviceKey")}`,
       );
 
       // Database
@@ -164,10 +164,10 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       if (project.database_username)
         envVars.push(`OMNIBASE_DATABASE_USERNAME=${project.database_username}`);
       envVars.push(
-        `OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`
+        `OMNIBASE_DATABASE_PASSWORD=${getValue(dbPasswordResult, "password")}`,
       );
       envVars.push(
-        `OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`
+        `OMNIBASE_DATABASE_URL=${getValue(connStringResult, "connectionString")}`,
       );
 
       // Storage
@@ -177,10 +177,10 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         envVars.push(`OMNIBASE_STORAGE_ENDPOINT=${project.storage_endpoint}`);
       if (project.storage_access_key)
         envVars.push(
-          `OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`
+          `OMNIBASE_STORAGE_ACCESS_KEY=${project.storage_access_key}`,
         );
       envVars.push(
-        `OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`
+        `OMNIBASE_STORAGE_SECRET_KEY=${getValue(storageResult, "secretKey")}`,
       );
 
       // Email
@@ -192,7 +192,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
 
       if (hasUnauthorized) {
         toast.warning(
-          "Environment variables copied. Some values show UNAUTHORIZED due to missing permissions."
+          "Environment variables copied. Some values show UNAUTHORIZED due to missing permissions.",
         );
       } else {
         toast.success("All environment variables copied to clipboard");
@@ -259,7 +259,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           result = await fetchProjectSecretKey(project.id);
           if (result?.success && result.serviceKey) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.serviceKey!)
+              new Map(prev).set(key, result!.serviceKey!),
             );
           }
           break;
@@ -267,7 +267,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           result = await fetchPostgrestServiceKey(project.id);
           if (result?.success && result.serviceKey) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.serviceKey!)
+              new Map(prev).set(key, result!.serviceKey!),
             );
           }
           break;
@@ -275,7 +275,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           result = await fetchDatabasePassword(project.id);
           if (result?.success && result.password) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.password!)
+              new Map(prev).set(key, result!.password!),
             );
           }
           break;
@@ -283,7 +283,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           result = await fetchDatabaseConnectionString(project.id);
           if (result?.success && result.connectionString) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.connectionString!)
+              new Map(prev).set(key, result!.connectionString!),
             );
           }
           break;
@@ -291,7 +291,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           result = await fetchStorageCredentials(project.id);
           if (result?.success && result.secretKey) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.secretKey!)
+              new Map(prev).set(key, result!.secretKey!),
             );
           }
           break;
@@ -394,7 +394,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         { label: "SES Config Set", value: project.ses_config_set },
       ],
     },
-
   ];
 
   // Filter out sections with no values
@@ -406,7 +405,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     .filter((section) => section.items.length > 0);
 
   const [activeSection, setActiveSection] = useState<string>(
-    visibleSections[0]?.title || ""
+    visibleSections[0]?.title || "",
   );
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -561,13 +560,13 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                   {displayValue}
                                 </p>
                               </div>
-                              <div className="flex flex-shrink-0 gap-2">
+                              <div className="flex shrink-0 gap-2">
                                 {item.sensitive && item.value && (
                                   <button
                                     onClick={() =>
                                       toggleReveal(
                                         secretKey,
-                                        item.encryptedField
+                                        item.encryptedField,
                                       )
                                     }
                                     disabled={isLoading}
@@ -591,7 +590,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                         decryptedValue
                                         ? decryptedValue
                                         : item.value || "",
-                                      item.label
+                                      item.label,
                                     )
                                   }
                                   disabled={item.sensitive && !isRevealed}
@@ -614,7 +613,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           </div>
 
           {/* Sidebar Navigation */}
-          <nav className="hidden lg:block w-48 flex-shrink-0 border-l p-4">
+          <nav className="hidden lg:block w-48 shrink-0 border-l p-4">
             <div className="sticky top-0 space-y-1">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 On this page
@@ -627,7 +626,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                     "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors text-left",
                     activeSection === section.title
                       ? "bg-muted font-medium text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                   )}
                 >
                   {section.icon}
