@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import LoginForm from "./login-form";
 
 export default function CardDemo() {
   const router = useRouter();
@@ -24,51 +25,33 @@ export default function CardDemo() {
   };
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-        <CardAction>
-          <Button variant="link">Sign Up</Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <form id="login-form" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-              <Input id="password" type="password" required />
+    <div className="grid grid-cols-1 md:grid-cols-4 h-full">
+      <div className="col-span-3 bg-primary flex justify-center items-center">
+        <div className="text-primary-foreground w-1/3 flex flex-col gap-4 relative">
+          <p className="text-9xl absolute -top-9 -left-5 text-primary-foreground/20">
+            "
+          </p>
+          <p className="font-bold text-2xl">
+            Instead of spending a month on scheduling and planing, I get shift
+            planing done in minutes. My employes are happy and I have time to
+            focus on what I love in the business.
+          </p>
+          <div className="flex items-start gap-2">
+            <img
+              src="/assets/avatar.jpg"
+              alt="avatar"
+              className="rounded-full w-10 h-10 object-cover"
+            />
+            <div className="flex flex-col">
+              <span>Sarah Willmer</span>
+              <span className="text-xs">Moretime CEO</span>
             </div>
           </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <Button type="submit" form="login-form" className="w-full">
-          Login
-        </Button>
-        <Button type="button" variant="outline" className="w-full">
-          Login with Google
-        </Button>
-      </CardFooter>
-    </Card>
+        </div>
+      </div>
+      <div className="flex items-center justify-center">
+        <LoginForm />
+      </div>
+    </div>
   );
 }

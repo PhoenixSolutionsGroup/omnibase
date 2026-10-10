@@ -125,3 +125,8 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+html,
+body {
+  height: 100%;
+}
