@@ -130,3 +130,7 @@ html,
 body {
   height: 100%;
 }
+
+.main-container {
+  @apply min-h-full bg-red-500 w-full;
+}

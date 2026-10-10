@@ -9,7 +9,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CalendarDays, Layout, User } from "lucide-react";
+import {
+  BuildingComplex,
+  CalendarDays,
+  ClipboardList,
+  Layout,
+  User,
+  UserGroup,
+} from "lucide-react";
 
 export function AppSidebar() {
   return (
@@ -28,20 +35,34 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup />
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton render={<a href="/schedules" />}>
-              <Layout />
-              Schedules
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton render={<a href="/users" />}>
-              <User />
-              Users
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<a href="/dashboard" />}>
+                <Layout />
+                Home
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<a href="/workplaces" />}>
+                <BuildingComplex />
+                Workplaces
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<a href="/schedules" />}>
+                <ClipboardList />
+                Schedules
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton render={<a href="/users" />}>
+                <UserGroup />
+                Users
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter />
