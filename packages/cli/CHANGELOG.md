@@ -1,3 +1,21 @@
+# [0.11.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.10.0...cli-v0.11.0) (2026-10-11)
+
+
+### Bug Fixes
+
+* **cli:** don't fall back to .env.local for branch env resolution ([8f867af](https://github.com/PhoenixSolutionsGroup/omnibase/commit/8f867afd39b2dcd5cb0f4c07661af77b3f8db854))
+* **cli:** resolve bundle entry file ([948ee57](https://github.com/PhoenixSolutionsGroup/omnibase/commit/948ee571217a7d0fcb579ae99099ae736a90613b))
+* **cli:** sync api docker image to 0.20.5 [skip ci] ([79b8962](https://github.com/PhoenixSolutionsGroup/omnibase/commit/79b8962fb7c922b12f9e84edd0b09f9b5507b719))
+* **cli:** sync auth docker image to 0.4.3 [skip ci] ([a2dd03b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/a2dd03bbf012a9b190ea1433d3ee7664b8c42c7b))
+
+
+### Features
+
+* add domain to workers ([f296668](https://github.com/PhoenixSolutionsGroup/omnibase/commit/f2966681a7ab4eb4f9d3692b2414d15e39f83cb8))
+* **cli:** inject branch env into worker builds, vars and env push ([ae3c1e2](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ae3c1e23827a6ba2637918d96ede3ca953fb3d62))
+* **cli:** load per-branch env files for config resolution ([d82ad45](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d82ad45681c0252e5b2dcb285a348fa4c6ffe66a))
+* **cli:** resolve branch env for omnibase start dev servers ([714f683](https://github.com/PhoenixSolutionsGroup/omnibase/commit/714f6836f16bfe3c3f526c84f9e2d7936a147786))
+
 # [0.10.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.9.0...cli-v0.10.0) (2026-09-16)
 
 
