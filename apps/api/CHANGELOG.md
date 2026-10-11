@@ -1,3 +1,11 @@
+## [0.20.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.4...api-v0.20.5) (2026-10-11)
+
+
+### Bug Fixes
+
+* remove set-cookie header rewrite ([32f62f1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/32f62f1989b21b51f82d07f26faa5ec3dc2bb5f6))
+* skip Origin header ([0aac259](https://github.com/PhoenixSolutionsGroup/omnibase/commit/0aac25923a5c5ee5de3f301b4f6fd3506ca00a72))
+
 ## [0.20.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.3...api-v0.20.4) (2026-09-16)
 
 
