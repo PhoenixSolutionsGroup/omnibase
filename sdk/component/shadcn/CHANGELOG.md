@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.8.2...shadcn-v0.9.0) (2026-10-11)
+
+
+### Features
+
+* add "tree" mode for role-creator ([88fa038](https://github.com/PhoenixSolutionsGroup/omnibase/commit/88fa038df6c59dd5a4bc60380363015ee3f02818))
+
 ## [0.8.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/shadcn-v0.8.1...shadcn-v0.8.2) (2026-09-16)
 
 
