@@ -1,3 +1,11 @@
+## [0.4.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.2...auth-v0.4.3) (2026-10-11)
+
+
+### Bug Fixes
+
+* **auth:** pass kratos config via env, not -c ([b9d794e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/b9d794e899d6310c7c128f1a83b55c776f0e3516))
+* **auth:** retry template downloads on startup ([11097e1](https://github.com/PhoenixSolutionsGroup/omnibase/commit/11097e1d2d036976baf6321f81a8ea38c4cad9ed))
+
 ## [0.4.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.1...auth-v0.4.2) (2026-09-16)
 
 
