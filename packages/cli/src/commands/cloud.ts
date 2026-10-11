@@ -55,8 +55,9 @@ async function login(
       }
     );
 
-    const data = response.data;
+    const data = response.data.data;
     if (!data?.tenant_id) {
+      console.log(response.data)
       throw new Error("Invalid API key");
     }
 
@@ -157,8 +158,7 @@ async function logout(
   saveCredentials(credentials);
 
   logger.succeed(
-    `Logged out from ${
-      profilesToRemove.length
+    `Logged out from ${profilesToRemove.length
     } profile(s): ${profilesToRemove.join(", ")}`
   );
 
@@ -249,7 +249,7 @@ function getDeployments(root: string): DeploymentConfig[] {
 
   throw new Error(
     "No deployments found. Add [[deployments]] to omnibase/omnibase.toml\n" +
-      "  or create omnibase/workers/ for the default deployment.",
+    "  or create omnibase/workers/ for the default deployment.",
   );
 }
 
@@ -277,14 +277,14 @@ async function deployWorkers(
   if (!env.branchId) {
     throw new Error(
       `No branch ID resolved for environment '${env.name}'.\n` +
-        `Ensure your branch has finished provisioning.`
+      `Ensure your branch has finished provisioning.`
     );
   }
 
   if (!env.managedHostingApiUrl) {
     throw new Error(
       `No managed hosting URL resolved for environment '${env.name}'.\n` +
-        `Ensure your profile is configured: 'omnibase cloud login'`
+      `Ensure your profile is configured: 'omnibase cloud login'`
     );
   }
 
@@ -298,7 +298,7 @@ async function deployWorkers(
     if (!match) {
       throw new Error(
         `Deployment '${nameFlag}' not found.\n` +
-          `Available deployments: ${deployments.map((d) => d.name).join(", ")}`
+        `Available deployments: ${deployments.map((d) => d.name).join(", ")}`
       );
     }
     targets = [match];
@@ -576,14 +576,14 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
   if (!env.branchId) {
     throw new Error(
       `No branch ID resolved for environment '${env.name}'.\n` +
-        `Ensure your branch has finished provisioning.`
+      `Ensure your branch has finished provisioning.`
     );
   }
 
   if (!env.managedHostingApiUrl) {
     throw new Error(
       `No managed hosting URL resolved for environment '${env.name}'.\n` +
-        `Ensure your profile is configured: 'omnibase cloud login'`
+      `Ensure your profile is configured: 'omnibase cloud login'`
     );
   }
 
@@ -613,7 +613,7 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
   if (unresolved.length > 0) {
     logger.warn(
       `Unresolved ${unresolved.join(", ")} left literal. ` +
-        `Set them in process.env or omnibase/.env.${env.name}.`
+      `Set them in process.env or omnibase/.env.${env.name}.`
     );
   }
 

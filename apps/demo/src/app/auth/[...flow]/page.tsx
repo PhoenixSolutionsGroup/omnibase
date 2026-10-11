@@ -9,8 +9,11 @@ import {
   ErrorForm,
 } from "@omnibase/shadcn";
 import { Calendar } from "lucide-react";
+import { setSessionTokenAction } from "../actions";
 
 export default function AuthPage({ params, searchParams }: any) {
+  const API_URL = process.env.NEXT_PUBLIC_OMNIBASE_API_URL!;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 h-full">
       <div className="col-span-3 bg-primary flex justify-center items-center">
@@ -43,16 +46,20 @@ export default function AuthPage({ params, searchParams }: any) {
         </div>
       </div>
       <div className="flex items-center justify-center flex-col">
-        <CustomLoginForm />
-        <div className="">
+        {/* <CustomLoginForm /> */}
+        <div>
           <FlowRouter
             params={params}
             searchParams={searchParams}
             url="/auth"
             returnTo="/"
             flowMap={{
-              login: (flow) => (
-                <LoginForm flow={flow} register_url="/auth/registration" />
+              login: () => (
+                <LoginForm
+                  register_url="/auth/registration"
+                  api_url="https://api-monthly-settling-silkworm-dinosaur.syd.omnibase.tech"
+                  onToken={setSessionTokenAction}
+                />
               ),
               registration: (flow) => (
                 <RegistrationForm flow={flow} login_url="/auth/login" />

@@ -1,0 +1,34 @@
+# OmniBase project configuration
+project_id = "597001c3-68f3-4d6d-86fa-b3505640c178"
+
+[[deployments]]
+name = "demo"
+path = "../"
+
+[auth]
+website_url = "http://localhost:3000"
+allowed_return_urls = [
+  "http://127.0.0.1:3000",
+  "http://localhost:3000",
+]
+# cookie_secret = "{COOKIE_SECRET}"
+# log_level = "TRACE"
+#
+#   [[auth.oidc]]
+#   provider = "google"
+#   client_id = "{GOOGLE_CLIENT_ID}"
+#   client_secret = "{GOOGLE_CLIENT_SECRET}"
+
+# Stripe keys are required for local dev (omnibase start / self-hosted).
+# Set them via process env or in the omnibase/.env.local file.
+# Managed hosting will auto-inject these on cloud deploy.
+# [stripe]
+# secret_key = "{STRIPE_SECRET_KEY}"
+# publishable_key = "{STRIPE_PUBLISHABLE_KEY}"
+
+# Pin the version of an OmniBase-built service. Omitted services use "latest".
+# Must be an exact published tag; checked against Docker Hub before applying.
+[versions]
+auth = "0.4.3"
+api = "0.20.5"
+perm = "0.4.0"
