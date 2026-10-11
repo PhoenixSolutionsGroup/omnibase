@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.4...nextjs-v0.9.0) (2026-10-11)
+
+
+### Features
+
+* **nextjs:** support custom cookie domain for session token exchange ([35cafd4](https://github.com/PhoenixSolutionsGroup/omnibase/commit/35cafd403f5de28bf9d0a76c8ff958fbebe157d2))
+
 ## [0.8.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/nextjs-v0.8.3...nextjs-v0.8.4) (2026-09-16)
 
 
