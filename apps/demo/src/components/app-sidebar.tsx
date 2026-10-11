@@ -1,4 +1,3 @@
-"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +13,6 @@ import {
   CalendarDays,
   ClipboardList,
   HandCoins,
-  Layout,
   LogOut,
   UserGroup,
 } from "lucide-react";
@@ -22,7 +20,6 @@ import {
 export function AppSidebar() {
   const isOwner = true; // get that from omnibase user role
 
-  const doLogout = () => {};
   return (
     <Sidebar>
       <SidebarHeader>
@@ -73,7 +70,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenuItem>
-          <SidebarMenuButton onClick={doLogout}>
+          <SidebarMenuButton render={<a href="/api/auth/logout" />}>
             <LogOut />
             Logout
           </SidebarMenuButton>

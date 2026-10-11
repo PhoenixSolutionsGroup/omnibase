@@ -2,19 +2,8 @@
 
 import { FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import LoginForm from "./login-form";
+import { Calendar } from "lucide-react";
 
 export default function CardDemo() {
   const router = useRouter();
@@ -27,6 +16,12 @@ export default function CardDemo() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 h-full">
       <div className="col-span-3 bg-primary flex justify-center items-center">
+        <div className="fixed top-0 left-0 z-50 p-6">
+          <span className="flex items-center gap-2 text-white font-semibold text-lg">
+            <Calendar className="w-4 h-4" />
+            Shiftly
+          </span>
+        </div>
         <div className="text-primary-foreground w-1/3 flex flex-col gap-4 relative">
           <p className="text-9xl absolute -top-9 -left-5 text-primary-foreground/20">
             "

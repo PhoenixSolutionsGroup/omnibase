@@ -8,11 +8,18 @@ import {
   SettingsForm,
   ErrorForm,
 } from "@omnibase/shadcn";
+import { Calendar } from "lucide-react";
 
 export default function AuthPage({ params, searchParams }: any) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 h-full">
       <div className="col-span-3 bg-primary flex justify-center items-center">
+        <div className="fixed top-0 left-0 z-50 p-6">
+          <span className="flex items-center gap-2 text-white font-semibold text-lg">
+            <Calendar className="w-4 h-4" />
+            Shiftly
+          </span>
+        </div>
         <div className="text-primary-foreground w-1/3 flex flex-col gap-4 relative">
           <p className="text-9xl absolute -top-9 -left-5 text-primary-foreground/20">
             "
@@ -35,8 +42,8 @@ export default function AuthPage({ params, searchParams }: any) {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-center ">
-        {/* <CustomLoginForm /> */}
+      <div className="flex items-center justify-center flex-col">
+        <CustomLoginForm />
         <div className="">
           <FlowRouter
             params={params}
