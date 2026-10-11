@@ -7,7 +7,7 @@ import {
 } from "@omnibase/nextjs/auth";
 
 export async function setSessionTokenAction(token: string): Promise<void> {
-  // await setSessionToken(token, process.env.OMNIBASE_COOKIE_DOMAIN);
+  await setSessionToken(token, process.env.OMNIBASE_COOKIE_DOMAIN);
   redirect("/");
 }
 
