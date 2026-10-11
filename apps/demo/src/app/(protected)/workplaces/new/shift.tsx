@@ -2,22 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSeparator,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 const months = [
@@ -48,19 +38,33 @@ const years = [
 
 export default function Shift() {
   return (
-    <Card>
-      <CardContent>
+    <Card className="p-0 drop-shadow-none shadow-none ring-0 rounded-none border-t pt-4">
+      <CardContent className="p-0">
         <div className="w-full">
           <form>
             <FieldGroup>
               <FieldSet>
-                {/* <FieldLegend>Basic Information</FieldLegend>
-            <FieldDescription>
-              Add the basic information for this workplace
-            </FieldDescription> */}
                 <FieldGroup>
                   <div className="flex gap-2">
-                    <Field className="w-32">
+                    <Field>
+                      <FieldLabel htmlFor="name">Name of the shift</FieldLabel>
+                      <Input id="name" placeholder="Morning shift" required />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel htmlFor="worker-count">
+                        Workers needed
+                      </FieldLabel>
+                      <Input
+                        id="worker-count"
+                        required
+                        type="number"
+                        placeholder="0"
+                      />
+                    </Field>
+                  </div>
+                  <div className="flex gap-2">
+                    <Field>
                       <FieldLabel htmlFor="start-time-picker">
                         Start time
                       </FieldLabel>
@@ -73,7 +77,7 @@ export default function Shift() {
                         required
                       />
                     </Field>
-                    <Field className="w-32">
+                    <Field>
                       <FieldLabel htmlFor="end-time-picker">
                         End time
                       </FieldLabel>
@@ -81,16 +85,10 @@ export default function Shift() {
                         type="time"
                         id="end-time-picker"
                         step="1"
-                        defaultValue="10:30:00"
+                        defaultValue="12:30:00"
                         className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                         required
                       />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor="worker-count">
-                        Workers needed
-                      </FieldLabel>
-                      <Input id="worker-count" required type="number" />
                     </Field>
                   </div>
                 </FieldGroup>
@@ -111,10 +109,10 @@ export default function Shift() {
                 </FieldGroup>
               </FieldSet>
               <Field orientation="horizontal" className="flex justify-end">
-                <Button type="submit">Add</Button>
                 <Button variant="outline" type="button">
                   Cancel
                 </Button>
+                <Button type="submit">Add</Button>
               </Field>
             </FieldGroup>
           </form>

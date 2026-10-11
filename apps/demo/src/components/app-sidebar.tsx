@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -5,7 +6,6 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
@@ -14,11 +14,12 @@ import {
   CalendarDays,
   ClipboardList,
   Layout,
-  User,
+  LogOut,
   UserGroup,
 } from "lucide-react";
 
 export function AppSidebar() {
+  const doLogout = () => {};
   return (
     <Sidebar>
       <SidebarHeader>
@@ -65,7 +66,14 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={doLogout}>
+            <LogOut />
+            Logout
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -5,6 +5,13 @@ import Link from "next/link";
 import Basic from "./basic";
 import Shift from "./shift";
 import ShiftList from "./shift-list";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import shift from "./shift";
 
 export default function NewSchedule() {
   return (
@@ -45,12 +52,21 @@ export default function NewSchedule() {
               </span>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              List team members table. Member 1 member 2 Warehouse 3 Each shift
-              has: from to notes (which area or anything special to do during
-              that shift) amount of people
+              <Accordion className="rounded-lg border" defaultValue={["1"]}>
+                <AccordionItem className="border-b px-4 last:border-b-0 hover:no-underline!">
+                  <AccordionTrigger>
+                    <div className="flex gap-2">
+                      <span>Add new shift</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Shift />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <hr></hr>
               <ShiftList />
-              <div className="flex gap-2">add a shift</div>
-              <Shift />
             </CardContent>
           </Card>
         </div>

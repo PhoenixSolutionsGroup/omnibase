@@ -1,9 +1,31 @@
+"use client";
+
+import { useState } from "react";
+import PaginatedSelect from "@/components/paginated-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import MultiSelect from "@/components/multi-select";
+
+const workplaceItems = [
+  { label: "Select a workplace", value: null },
+  { label: "Warehouse Sydney", value: "sydney" },
+  { label: "Warehouse Melbourne", value: "melbourne" },
+];
+
+// Plain { label, value: string }[] so it can be swapped for backend data later.
+const workerItems = [
+  { label: "Sam Smith", value: "id-123" },
+  { label: "Sarah Smith", value: "id-124" },
+  { label: "Carl Cont ", value: "id-125" },
+  { label: "Thomas Treck", value: "id-126" },
+  { label: "Ben Brown", value: "id-127" },
+];
 
 export default function NewSchedule() {
+  const [workerIds, setWorkerIds] = useState<string[]>([]);
+
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col gap-4 h-full max-w-200 w-full ">
@@ -31,7 +53,7 @@ export default function NewSchedule() {
               </span>
             </CardHeader>
             <CardContent>
-              List workplace table. Warehouse 1 Warehouse 2 Warehouse 3
+              <PaginatedSelect items={workplaceItems} />
             </CardContent>
           </Card>
           <Card>
@@ -42,7 +64,13 @@ export default function NewSchedule() {
               </span>
             </CardHeader>
             <CardContent>
-              List team members table. Member 1 member 2 Warehouse 3
+              <MultiSelect
+                items={workerItems}
+                value={workerIds}
+                onChange={setWorkerIds}
+                placeholder="Select workers"
+                className="max-w-100"
+              />
             </CardContent>
           </Card>
           <Card>
