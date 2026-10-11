@@ -14,6 +14,8 @@
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.8.0",
+		"@omnibase/nextjs": "^0.8.4",
+		"@omnibase/shadcn": "^0.8.2",
 		"@opennextjs/cloudflare": "^1.20.3",
 		"class-variance-authority": "^0.7.1",
 		"cmdk": "^1.1.1",
