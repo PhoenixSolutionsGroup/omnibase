@@ -29,7 +29,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <a href="/dashboard" className="flex items-center gap-2">
+              <a href="/schedules" className="flex items-center gap-2">
                 <CalendarDays className="size-5!" />
                 <span className="text-base font-semibold">Shiftly</span>
               </a>
@@ -42,21 +42,15 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton render={<a href="/dashboard" />}>
-                <Layout />
-                Home
+              <SidebarMenuButton render={<a href="/schedules" />}>
+                <ClipboardList />
+                Schedules
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton render={<a href="/workplaces" />}>
                 <BuildingComplex />
                 Workplaces
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton render={<a href="/schedules" />}>
-                <ClipboardList />
-                Schedules
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>

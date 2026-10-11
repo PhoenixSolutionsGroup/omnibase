@@ -20,7 +20,7 @@ export default function LoginForm() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push("/dashboard");
+    router.push("/schedules");
   };
 
   return (
