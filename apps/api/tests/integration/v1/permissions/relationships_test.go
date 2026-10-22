@@ -84,6 +84,23 @@ func TestPermissionsRelationships(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
+	t.Run("app mode cannot create relationships", func(t *testing.T) {
+		req := sdk.CreateRelationshipRequest{
+			Namespace: "Tenant",
+			Object:    tenant.Id,
+			Relation:  "can_invite_user",
+			SubjectSet: sdk.SubjectSetRequest{
+				Namespace: "User",
+				Object:    userID,
+			},
+		}
+		_, resp, err := client.V1PermissionsAPI.CreateRelationship(helpers.CtxWithUserTenant(userID, tenant.Id)).
+			CreateRelationshipRequest(req).Execute()
+		require.Error(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
 	t.Run("delete non-existent is idempotent", func(t *testing.T) {
 		req := sdk.DeleteRelationshipRequest{
 			Namespace: "Tenant",

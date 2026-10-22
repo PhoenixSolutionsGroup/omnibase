@@ -62,7 +62,7 @@ func TestStorageSharing(t *testing.T) {
 				Object:    memberID,
 			},
 		}
-		_, resp, err := client.V1PermissionsAPI.CreateRelationship(helpers.CtxWithUserTenant(ownerID, tenant.Id)).
+		_, resp, err := client.V1PermissionsAPI.CreateRelationship(helpers.Ctx()).
 			CreateRelationshipRequest(req).Execute()
 		helpers.EnsureOK(t, resp, err, "createRelationship can_read")
 	})
