@@ -8,7 +8,7 @@ export function OpenSourceSection() {
       <div className="container mx-auto max-w-6xl px-4">
         <div className="rounded-2xl border bg-gradient-to-br from-background to-muted/50 p-8 md:p-12">
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full">
               <Heart className="h-8 w-8 text-primary animate-pulse" />
             </div>
 

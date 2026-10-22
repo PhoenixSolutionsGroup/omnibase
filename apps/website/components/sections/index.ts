@@ -3,6 +3,7 @@ export { ProblemSection } from "./problem";
 export { FeaturesSection } from "./features";
 export { CodeSnippetSection } from "./code-snippet";
 export { ComparisonSection } from "./comparison";
+export { UseCaseSection } from "./use-cases";
 export { PricingSection } from "./pricing";
 export { OpenSourceSection } from "./open-source";
 export { CTASection } from "./cta";

@@ -103,7 +103,7 @@ export function FeaturesSection() {
               <Card className="h-full transition-shadow duration-300 group-hover:shadow-xl">
                 <CardHeader>
                   <div className="flex items-center gap-2">
-                    <feature.icon className="h-6 w-6 text-primary" />
+                    <feature.icon className="h-6 w-6" />
                     <CardTitle>{feature.title}</CardTitle>
                   </div>
                   <CardDescription>{feature.description}</CardDescription>

@@ -79,7 +79,7 @@ export function PricingSection() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col ${
+              className={`relative flex flex-col hover:shadow-xl duration-200 ${
                 plan.popular ? "border-primary shadow-lg" : ""
               }`}
             >
@@ -115,11 +115,7 @@ export function PricingSection() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  variant={plan.variant}
-                  className="w-full"
-                  asChild
-                >
+                <Button variant={plan.variant} className="w-full" asChild>
                   <Link
                     href={plan.ctaHref}
                     {...(plan.ctaHref.startsWith("http")

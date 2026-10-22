@@ -85,11 +85,17 @@ export function CodeSnippetSection() {
         </div>
 
         <div className="mt-12 mx-auto max-w-3xl">
-          <Tabs defaultValue="tenant" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="tenant">Multi-Tenancy</TabsTrigger>
-              <TabsTrigger value="permission">Permissions</TabsTrigger>
-              <TabsTrigger value="stripe">Stripe Config</TabsTrigger>
+          <Tabs defaultValue="tenant" className="w-full ">
+            <TabsList className="grid w-full grid-cols-3 ">
+              <TabsTrigger value="tenant" className="cursor-pointer">
+                Multi-Tenancy
+              </TabsTrigger>
+              <TabsTrigger value="permission" className="cursor-pointer">
+                Permissions
+              </TabsTrigger>
+              <TabsTrigger value="stripe" className="cursor-pointer">
+                Stripe Config
+              </TabsTrigger>
             </TabsList>
             {Object.entries(codeExamples).map(([key, { language, code }]) => (
               <TabsContent key={key} value={key} className="mt-4">

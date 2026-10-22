@@ -33,7 +33,7 @@ export function Header() {
             className="rounded-lg"
             unoptimized
           />
-          <span className="font-semibold text-xl">omnibase</span>
+          <span className="font-semibold text-xl">Omnibase</span>
         </Link>
 
         {/* Desktop Navigation */}

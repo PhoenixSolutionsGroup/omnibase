@@ -7,6 +7,7 @@ import {
   PricingSection,
   OpenSourceSection,
   CTASection,
+  UseCaseSection,
 } from "@/components/sections";
 
 export default function HomePage() {
@@ -18,6 +19,7 @@ export default function HomePage() {
       <CodeSnippetSection />
       <ComparisonSection />
       <PricingSection />
+      <UseCaseSection />
       <OpenSourceSection />
       <CTASection />
     </>
