@@ -6,9 +6,9 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
+	"api/internal/authn"
 	"api/internal/handlers/v1/db"
 	"api/internal/logger"
-	"api/internal/middleware"
 )
 
 func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
@@ -22,51 +22,37 @@ func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		TypegenURL:   cfg.TypegenURL,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
-	serviceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
-	}
-	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
-
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "uploadDatabaseMigrations",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/database/migrations",
 		Summary:     "Apply database migrations",
 		Tags:        []string{"V1Database"},
-		Security:    serviceSec,
-		Middlewares: serviceMW,
-	}, handler.ApplyMigrations)
+	}, authn.AuthServiceKey, nil, handler.ApplyMigrations)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getDatabaseMigrationStatus",
 		Method:      http.MethodGet,
 		Path:        "/api/v1/database/migrations/status",
 		Summary:     "Get the status of applied migrations",
 		Tags:        []string{"V1Database"},
-		Security:    serviceSec,
-		Middlewares: serviceMW,
-	}, handler.MigrationsStatus)
+	}, authn.AuthServiceKey, nil, handler.MigrationsStatus)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "rollbackDatabaseMigrations",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/database/migrations/down",
 		Summary:     "Roll back database migrations",
 		Tags:        []string{"V1Database"},
-		Security:    serviceSec,
-		Middlewares: serviceMW,
-	}, handler.MigrationsDown)
+	}, authn.AuthServiceKey, nil, handler.MigrationsDown)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "generateDatabaseTypes",
 		Method:      http.MethodGet,
 		Path:        "/api/v1/database/typegen",
 		Summary:     "Generate type definitions for the database schema",
 		Tags:        []string{"V1Database"},
-		Security:    serviceSec,
-		Middlewares: serviceMW,
-	}, handler.Typegen)
+	}, authn.AuthServiceKey, nil, handler.Typegen)
 
 	logger.Logger.Info("Database routes registration completed")
 }

@@ -2,6 +2,7 @@ package v1
 
 import (
 	"api/internal/logger"
+	"api/internal/middleware"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,8 @@ import (
 
 func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing v1 API routes")
+
+	d.Auth = middleware.NewAuthMiddleware(d.Cfg, d.DB)
 
 	logger.Logger.Debug("Setting up auth routes at /auth")
 	SetUpAuthRoutes(group.Group("/auth"), api, d)

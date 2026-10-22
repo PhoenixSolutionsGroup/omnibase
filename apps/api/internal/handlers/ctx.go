@@ -1,28 +1,26 @@
 package handlers
 
 import (
-	"fmt"
+	"api/internal/authn"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 func Tenant(c *gin.Context) uuid.UUID {
-	id := c.GetString("tenant_id")
-	u, err := uuid.Parse(id)
-	if err != nil {
-		panic(fmt.Sprintf("handlers.Tenant: invalid tenant_id in context: %q", id))
+	principal, ok := authn.Get(c)
+	if !ok || principal.TenantID == uuid.Nil {
+		panic("handlers.Tenant: no tenant in principal")
 	}
-	return u
+	return principal.TenantID
 }
 
 func User(c *gin.Context) uuid.UUID {
-	id := c.GetString("user_id")
-	u, err := uuid.Parse(id)
-	if err != nil {
-		panic(fmt.Sprintf("handlers.User: invalid user_id in context: %q", id))
+	principal, ok := authn.Get(c)
+	if !ok || principal.UserID == uuid.Nil {
+		panic("handlers.User: no user in principal")
 	}
-	return u
+	return principal.UserID
 }
 
 func UserAndTenant(c *gin.Context) (user, tenant uuid.UUID) {

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"api/internal/authn"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
@@ -19,27 +19,14 @@ type AuthCtx struct {
 func (a *AuthCtx) Resolve(ctx huma.Context) []error {
 	gc := humagin.Unwrap(ctx)
 
-	if v := gc.GetString("user_id"); v != "" {
-		parsed, err := uuid.Parse(v)
-		if err != nil {
-			return []error{fmt.Errorf("invalid user_id: %w", err)}
-		}
-		a.UserID = parsed
+	principal, ok := authn.Get(gc)
+	if !ok {
+		return nil
 	}
 
-	if v := gc.GetString("tenant_id"); v != "" {
-		parsed, err := uuid.Parse(v)
-		if err != nil {
-			return []error{fmt.Errorf("invalid tenant_id: %w", err)}
-		}
-		a.TenantID = parsed
-	}
-
-	if s, ok := gc.Get("session"); ok {
-		a.Session, _ = s.(*kratos.Session)
-	}
-	if i, ok := gc.Get("identity"); ok {
-		a.Identity, _ = i.(*kratos.Identity)
-	}
+	a.UserID = principal.UserID
+	a.TenantID = principal.TenantID
+	a.Session = principal.Session
+	a.Identity = principal.Identity
 	return nil
 }

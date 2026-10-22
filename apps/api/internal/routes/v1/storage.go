@@ -12,10 +12,10 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
+	"api/internal/authn"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/storage"
 	"api/internal/logger"
-	"api/internal/middleware"
 	"api/internal/services/permissions"
 )
 
@@ -56,55 +56,37 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		BucketName: cfg.S3Config.BucketName,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
-	sessionOrServiceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
-	}
-	sessionOrServiceSec := []map[string][]string{
-		{"SessionTokenAuth": {}},
-		{"CookieAuth": {}},
-		{"ServiceKeyAuth": {}},
-	}
-
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "uploadFile",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/upload",
 		Summary:     "Upload file to storage",
 		Tags:        []string{"V1Storage"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.Upload)
+	}, authn.AuthSessionOrServiceKey, nil, handler.Upload)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "downloadFile",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/download",
 		Summary:     "Download file from storage",
 		Tags:        []string{"V1Storage"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.Download)
+	}, authn.AuthSessionOrServiceKey, nil, handler.Download)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteObject",
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/storage/object",
 		Summary:     "Delete file from storage",
 		Tags:        []string{"V1Storage"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.DeleteObject)
+	}, authn.AuthSessionOrServiceKey, nil, handler.DeleteObject)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "makeFilePublic",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/make-public",
 		Summary:     "Make a file publicly accessible",
 		Tags:        []string{"V1Storage"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.MakePublic)
+	}, authn.AuthSessionOrServiceKey, nil, handler.MakePublic)
 
 	logger.Logger.Info("Storage routes registration completed")
 }

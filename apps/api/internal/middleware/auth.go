@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"api/internal/authn"
 	"api/internal/config"
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -259,238 +260,121 @@ func base64urlDecode(s string) ([]byte, error) {
 	return base64.RawURLEncoding.DecodeString(s)
 }
 
-// RequireAuthHeaders validates that at least one authentication header is present.
-// Returns 401 Unauthorized if all authentication headers are missing.
-// This middleware should run BEFORE authentication validation middleware.
-func (m *AuthMiddleware) RequireAuthHeaders() gin.HandlerFunc {
+func (m *AuthMiddleware) RequireAuth(allowed authn.AuthMethod) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookieHeader := c.GetHeader("Cookie")
-		sessionHeader := c.GetHeader("X-Session-Token")
-		serviceKey := c.GetHeader("X-Service-Key")
-
-		// Check if at least one auth header is present
-		if cookieHeader == "" && sessionHeader == "" && serviceKey == "" {
-			handlers.NewUnauthorizedResponse(c, "Authentication required: provide one of Cookie, X-Session-Token, or X-Service-Key")
-			c.Abort()
-			return
+		if allowed&authn.AuthServiceKey != 0 {
+			if serviceKey := c.GetHeader("X-Service-Key"); serviceKey != "" {
+				m.authenticateServiceKey(c, serviceKey)
+				return
+			}
 		}
 
-		c.Next()
+		if allowed&authn.AuthSession != 0 {
+			cookieHeader := c.GetHeader("Cookie")
+			sessionHeader := strings.TrimSpace(c.GetHeader("X-Session-Token"))
+			if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
+				sessionHeader = sessionHeader[:len(sessionHeader)-1]
+			}
+			if cookieHeader != "" || sessionHeader != "" {
+				m.authenticateSession(c, cookieHeader, sessionHeader)
+				return
+			}
+		}
+
+		handlers.NewUnauthorizedResponse(c, "Authentication required")
+		c.Abort()
 	}
 }
 
-// RequireSession validates user session via Cookie or X-Session-Token header.
-// Sets context: user_id, session, identity, tenant_id (if user has active tenant)
-// Used for: User-facing endpoints that require authentication
-func (m *AuthMiddleware) RequireSession() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		cookieHeader := c.GetHeader("Cookie")
-		sessionHeader := c.GetHeader("X-Session-Token")
+func (m *AuthMiddleware) authenticateServiceKey(c *gin.Context, serviceKey string) {
+	if subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.APIServiceKey)) != 1 {
+		handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing service key")
+		c.Abort()
+		return
+	}
 
-		// Remove trailing '=' if present in session header
-		if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
-			sessionHeader = sessionHeader[:len(sessionHeader)-1]
-		}
+	principal := &authn.Principal{Method: authn.AuthServiceKey}
 
-		// Require at least one authentication method (Cookie OR X-Session-Token)
-		if cookieHeader == "" && sessionHeader == "" {
-			handlers.NewUnauthorizedResponse(c, "Authentication required")
-			c.Abort()
-			return
-		}
-
-		var session *kratos.Session
-		var err error
-
-		if sessionHeader != "" {
-			logger.Logger.Debug("Session header received",
-				"length", len(sessionHeader),
-				"prefix", sessionHeader[:min(10, len(sessionHeader))],
-				"is_jwt", isJWTToken(sessionHeader))
-			session, err = m.validateSessionHeader(c.Request.Context(), sessionHeader)
-		} else {
-			logger.Logger.Debug("Using cookie session validation")
-			session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)
-		}
-
+	if userIDHeader := c.GetHeader("X-User-Id"); userIDHeader != "" {
+		userID, err := uuid.Parse(userIDHeader)
 		if err != nil {
-			logger.Logger.Error("Session validation failed", "error", err)
-			handlers.NewUnauthorizedResponse(c, "Invalid or expired session")
+			handlers.NewBadRequestResponse(c, "Invalid X-User-Id header")
 			c.Abort()
 			return
 		}
-
-		if session.Identity == nil {
-			handlers.NewUnauthorizedResponse(c, "No identity found in session")
-			c.Abort()
-			return
-		}
-
-		userID := session.Identity.GetId()
-		c.Set("user_id", userID)
-		c.Set("session", session)
-		c.Set("identity", session.Identity)
-
-		// Query for active tenant_id
-		var tenantID string
-		err = m.db.Table("auth.tenant_users").
-			Select("tenant_id").
-			Where("user_id = ? AND is_active = true", userID).
-			Scan(&tenantID).Error
-
-		if err == nil && tenantID != "" {
-			c.Set("tenant_id", tenantID)
-		}
-
-		c.Next()
+		principal.UserID = userID
 	}
-}
 
-// RequireServiceKey validates service-to-service authentication via X-Service-Key header.
-// Sets context: is_service_auth, tenant_id (optional), user_id (optional)
-// Used for: Admin/backend operations with optional tenant context
-func (m *AuthMiddleware) RequireServiceKey() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		serviceKey := c.GetHeader("X-Service-Key")
-		tenantIDHeader := c.GetHeader("X-Tenant-Id")
-		userIDHeader := c.GetHeader("X-User-Id")
-
-		if serviceKey == "" || subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.APIServiceKey)) != 1 {
-			handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing service key")
-			c.Abort()
-			return
-		}
-
-		// Validate and set tenant ID if provided
-		if tenantIDHeader != "" {
-			_, err := uuid.Parse(tenantIDHeader)
-			if err != nil {
-				handlers.NewBadRequestResponse(c, "Invalid X-Tenant-Id header")
-				c.Abort()
-				return
-			}
-			c.Set("tenant_id", tenantIDHeader)
-		}
-
-		// Validate and set user ID if provided
-		if userIDHeader != "" {
-			_, err := uuid.Parse(userIDHeader)
-			if err != nil {
-				handlers.NewBadRequestResponse(c, "Invalid X-User-Id header")
-				c.Abort()
-				return
-			}
-			c.Set("user_id", userIDHeader)
-		}
-
-		logger.Logger.Debug("Service key authentication successful", "tenant_id", tenantIDHeader, "user_id", userIDHeader)
-		c.Set("is_service_auth", true)
-		c.Next()
-	}
-}
-
-// RequireSessionOrServiceKey validates either session auth OR service key with tenant ID.
-// For session auth: Sets user_id, session, identity, tenant_id (from DB)
-// For service auth: Sets tenant_id (from header), is_service_auth
-// Used for: Tenant-scoped endpoints accessible by users or backend services
-func (m *AuthMiddleware) RequireSessionOrServiceKey() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		serviceKey := c.GetHeader("X-Service-Key")
-		tenantIDHeader := c.GetHeader("X-Tenant-Id")
-		userIDHeader := c.GetHeader("X-User-Id")
-
-		// Try service key authentication first
-		if serviceKey != "" {
-			if subtle.ConstantTimeCompare([]byte(serviceKey), []byte(m.APIServiceKey)) != 1 {
-				handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid service key")
-				c.Abort()
-				return
-			}
-
-			_, err := uuid.Parse(userIDHeader)
-			if err != nil && userIDHeader != "" {
-				handlers.NewBadRequestResponse(c, "Invalid X-User-Id header")
-				c.Abort()
-				return
-			}
-
-			_, err = uuid.Parse(tenantIDHeader)
-			if err != nil && tenantIDHeader != "" {
-				handlers.NewBadRequestResponse(c, "Invalid X-Tenant-Id header")
-				c.Abort()
-				return
-			}
-
-			logger.Logger.Debug("Service key authentication successful", "tenant_id", tenantIDHeader, "user_id", userIDHeader)
-			if tenantIDHeader != "" {
-				c.Set("tenant_id", tenantIDHeader)
-			}
-			if userIDHeader != "" {
-				c.Set("user_id", userIDHeader)
-			}
-			c.Set("is_service_auth", true)
-			c.Next()
-			return
-		}
-
-		// Fallback to session authentication
-		cookieHeader := c.GetHeader("Cookie")
-		sessionHeader := c.GetHeader("X-Session-Token")
-
-		// Remove trailing '=' if present in session header
-		if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
-			sessionHeader = sessionHeader[:len(sessionHeader)-1]
-		}
-
-		if cookieHeader == "" && sessionHeader == "" {
-			handlers.NewUnauthorizedResponse(c, "Authentication required")
-			c.Abort()
-			return
-		}
-
-		var session *kratos.Session
-		var err error
-
-		if sessionHeader != "" {
-			logger.Logger.Debug("Session header received",
-				"length", len(sessionHeader),
-				"prefix", sessionHeader[:min(10, len(sessionHeader))],
-				"is_jwt", isJWTToken(sessionHeader))
-			session, err = m.validateSessionHeader(c.Request.Context(), sessionHeader)
-		} else {
-			logger.Logger.Debug("Using cookie session validation")
-			session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)
-		}
-
+	if tenantIDHeader := c.GetHeader("X-Tenant-Id"); tenantIDHeader != "" {
+		tenantID, err := uuid.Parse(tenantIDHeader)
 		if err != nil {
-			logger.Logger.Error("Session validation failed", "error", err)
-			handlers.NewUnauthorizedResponse(c, "Invalid or expired session")
+			handlers.NewBadRequestResponse(c, "Invalid X-Tenant-Id header")
 			c.Abort()
 			return
 		}
-
-		if session.Identity == nil {
-			handlers.NewUnauthorizedResponse(c, "No identity found in session")
-			c.Abort()
-			return
-		}
-
-		userID := session.Identity.GetId()
-		c.Set("user_id", userID)
-		c.Set("session", session)
-		c.Set("identity", session.Identity)
-
-		// Query for active tenant_id
-		var tenantID string
-		err = m.db.Table("auth.tenant_users").
-			Select("tenant_id").
-			Where("user_id = ? AND is_active = true", userID).
-			Scan(&tenantID).Error
-
-		if err == nil && tenantID != "" {
-			c.Set("tenant_id", tenantID)
-		}
-
-		c.Next()
+		principal.TenantID = tenantID
 	}
+
+	logger.Logger.Debug("Service key authentication successful",
+		"tenant_id", principal.TenantID,
+		"user_id", principal.UserID)
+	authn.Set(c, principal)
+	c.Next()
+}
+
+func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessionHeader string) {
+	var (
+		session *kratos.Session
+		err     error
+	)
+
+	if sessionHeader != "" {
+		logger.Logger.Debug("Session header received",
+			"length", len(sessionHeader),
+			"is_jwt", isJWTToken(sessionHeader))
+		session, err = m.validateSessionHeader(c.Request.Context(), sessionHeader)
+	} else {
+		logger.Logger.Debug("Using cookie session validation")
+		session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)
+	}
+
+	if err != nil {
+		logger.Logger.Error("Session validation failed", "error", err)
+		handlers.NewUnauthorizedResponse(c, "Invalid or expired session")
+		c.Abort()
+		return
+	}
+
+	if session.Identity == nil {
+		handlers.NewUnauthorizedResponse(c, "No identity found in session")
+		c.Abort()
+		return
+	}
+
+	userID, err := uuid.Parse(session.Identity.GetId())
+	if err != nil {
+		logger.Logger.Error("Session identity ID is not a UUID", "error", err)
+		handlers.NewUnauthorizedResponse(c, "Invalid session identity")
+		c.Abort()
+		return
+	}
+
+	principal := &authn.Principal{
+		Method:   authn.AuthSession,
+		UserID:   userID,
+		Session:  session,
+		Identity: session.Identity,
+	}
+
+	var tenantID string
+	err = m.db.Table("auth.tenant_users").
+		Select("tenant_id").
+		Where("user_id = ? AND is_active = true", userID).
+		Scan(&tenantID).Error
+	if err == nil && tenantID != "" {
+		principal.TenantID, _ = uuid.Parse(tenantID)
+	}
+
+	authn.Set(c, principal)
+	c.Next()
 }
