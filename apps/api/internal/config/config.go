@@ -84,7 +84,6 @@ type StripeConfig struct {
 type AuthConfig struct {
 	AuthURL      string
 	AuthAdminURL string
-	AuthJWTJWKS  string
 }
 
 type SMTPConfig struct {
@@ -131,7 +130,6 @@ func New() *Config {
 		AuthConfig: AuthConfig{
 			AuthURL:      os.Getenv("AUTH_URL"),
 			AuthAdminURL: os.Getenv("AUTH_ADMIN_URL"),
-			AuthJWTJWKS:  os.Getenv("AUTH_JWT_JWKS"),
 		},
 		SMTPConfig: SMTPConfig{
 			ConnectionURI: os.Getenv("SMTP_CONNECTION_URI"),

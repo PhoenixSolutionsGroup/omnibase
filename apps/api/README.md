@@ -94,7 +94,6 @@ DB_SSLMODE=disable
 # Authentication (Ory Kratos)
 AUTH_URL=
 AUTH_ADMIN_URL=
-AUTH_JWT_JWKS=
 
 # Permissions (Ory Keto)
 PERMISSIONS_READ_URL=
