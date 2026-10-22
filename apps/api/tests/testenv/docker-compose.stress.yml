@@ -100,6 +100,7 @@ services:
       - SMTP_CONNECTION_URI=smtp://mailpit:1025?disable_starttls=true
       - SMTP_FROM_ADDRESS=no-reply@test.omnibase
       - SMTP_FROM_NAME=Test Auth
+      - SES_TENANT_NAME=test
       - AUTH_JWT_JWKS={}
       - API_URL=http://api:8080
       - SERVICE_KEY=VERY_SECRET_KEY
