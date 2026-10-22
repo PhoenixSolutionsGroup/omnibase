@@ -100,7 +100,7 @@ async function restartCloudService(
     await Promise.all(
       serviceTypes.map((type) =>
         apiClient.post(
-          `/api/v1/projects/${env.branchId}/services/${type}/restart`
+          `/api/v1/project_branches/${env.branchId}/services/${type}/restart`
         )
       )
     );
