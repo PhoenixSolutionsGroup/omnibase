@@ -148,15 +148,16 @@ func (h *YourHandler) YourEndpoint(ctx *gin.Context) {
 
 2. **Create route setup** in `internal/routes/v1/{feature}.go`:
 ```go
-func SetUpYourRoutes(router *gin.RouterGroup) {
-    cfg := config.New()
-    handler := v1.NewYourHandler(cfg)
-    authMiddleware := middleware.NewAuthMiddleware(cfg)
+func SetUpYourRoutes(router *gin.RouterGroup, api huma.API, d v1.Deps) {
+    handler := v1.NewYourHandler(d.Cfg)
 
-    router.Use(authMiddleware.RequireAuthHeaders())
-    router.Use(authMiddleware.RequireSessionOrServiceKey())
-
-    router.POST("/endpoint", handler.YourEndpoint)
+    register(api, d.Auth, huma.Operation{
+        OperationID: "yourEndpoint",
+        Method:      http.MethodPost,
+        Path:        "/api/v1/your-feature/endpoint",
+        Summary:     "Your endpoint",
+        Tags:        []string{"V1YourFeature"},
+    }, authn.AuthSessionOrServiceKey, nil, handler.YourEndpoint)
 }
 ```
 
@@ -174,27 +175,39 @@ SetUpYourRoutes(group.Group("/your-feature"))
 
 ### Authentication Patterns
 
-Middleware options for routes:
+Every route declares its auth mask through `register`, which sets both `op.Security`
+and the middleware from the same value:
+
 ```go
-// Require any auth header present
-authMiddleware.RequireAuthHeaders()
+// Session only (cookie or X-Session-Token)
+authn.AuthSession
 
-// Session only (cookie or JWT)
-authMiddleware.RequireSession()
-
-// Service key only
-authMiddleware.RequireServiceKey()
+// Service key only (admin / internal)
+authn.AuthServiceKey
 
 // Either session or service key
-authMiddleware.RequireSessionOrServiceKey()
+authn.AuthSessionOrServiceKey
+
+// App key (customer backend, requires X-User-Id)
+authn.AuthAppKey
 ```
 
-Context values set by middleware:
-- `user_id` - UUID string
-- `tenant_id` - UUID string
-- `session` - Kratos session object
-- `identity` - User identity
-- `is_service_auth` - Boolean
+Public routes pass `authn.AuthNone` and no auth middleware is installed.
+
+Authentication is stored as a typed principal under one context key:
+
+```go
+type Principal struct {
+    Method   AuthMethod
+    UserID   uuid.UUID
+    TenantID uuid.UUID
+    Session  *kratos.Session
+    Identity *kratos.Identity
+}
+```
+
+Read it with `authn.Get(c)`. Huma handlers embed `handlers.AuthCtx`, which resolves
+the principal automatically.
 
 ## OpenAPI Schema Guidelines
 

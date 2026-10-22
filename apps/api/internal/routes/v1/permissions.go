@@ -12,10 +12,10 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
+	"api/internal/authn"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/permissions"
 	"api/internal/logger"
-	"api/internal/middleware"
 	permsvc "api/internal/services/permissions"
 )
 
@@ -50,59 +50,37 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		IsManaged:  cfg.ManagedHostingConfig.IsManaged,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
-	sessionOrServiceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
-	}
-	serviceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireServiceKey()),
-	}
-	sessionOrServiceSec := []map[string][]string{
-		{"SessionTokenAuth": {}},
-		{"CookieAuth": {}},
-		{"ServiceKeyAuth": {}},
-	}
-	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
-
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "checkPermission",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/check",
 		Summary:     "Check permission",
 		Tags:        []string{"V1Permissions"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.Check)
+	}, authn.AuthSessionOrServiceKey, nil, handler.Check)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "createRelationship",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Create relationship",
 		Tags:        []string{"V1Permissions"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.CreateRelationship)
+	}, authn.AuthSessionOrServiceKey, nil, handler.CreateRelationship)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRelationship",
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Delete relationship",
 		Tags:        []string{"V1Permissions"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.DeleteRelationship)
+	}, authn.AuthSessionOrServiceKey, nil, handler.DeleteRelationship)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deployPermissionNamespaces",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/namespaces",
 		Summary:     "Deploy Keto namespace configurations",
 		Tags:        []string{"V1Configuration"},
-		Security:    serviceSec,
-		Middlewares: serviceMW,
-	}, handler.DeployNamespaces)
+	}, authn.AuthServiceKey, nil, handler.DeployNamespaces)
 
 	logger.Logger.Info("Permission routes registration completed")
 }

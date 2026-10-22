@@ -12,10 +12,10 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
+	"api/internal/authn"
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/email"
 	"api/internal/logger"
-	"api/internal/middleware"
 	emailsvc "api/internal/services/email"
 )
 
@@ -56,65 +56,45 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		BucketName: cfg.S3Config.BucketName,
 	})
 
-	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
-	sessionOrServiceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
-	}
-	sessionOrServiceSec := []map[string][]string{
-		{"SessionTokenAuth": {}},
-		{"CookieAuth": {}},
-		{"ServiceKeyAuth": {}},
-	}
-
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "createOrUpdateEmailTemplate",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/templates",
 		Summary:     "Create or update email template",
 		Tags:        []string{"V1Configuration"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.CreateOrUpdateTemplate)
+	}, authn.AuthSessionOrServiceKey, nil, handler.CreateOrUpdateTemplate)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getEmailTemplates",
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/templates",
 		Summary:     "Get all email templates",
 		Tags:        []string{"V1Configuration"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.ListTemplates)
+	}, authn.AuthSessionOrServiceKey, nil, handler.ListTemplates)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteEmailTemplate",
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/email/templates/{type}",
 		Summary:     "Delete email template",
 		Tags:        []string{"V1Configuration"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.DeleteTemplate)
+	}, authn.AuthSessionOrServiceKey, nil, handler.DeleteTemplate)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "sendEmail",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/send",
 		Summary:     "Send an email",
 		Tags:        []string{"V1Configuration"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.Send)
+	}, authn.AuthSessionOrServiceKey, nil, handler.Send)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "serveEmailTemplate",
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/templates/{template_name}/{type}",
 		Summary:     "Serve an email template file",
 		Tags:        []string{"V1Configuration"},
-		Security:    sessionOrServiceSec,
-		Middlewares: sessionOrServiceMW,
-	}, handler.ServeTemplate)
+	}, authn.AuthSessionOrServiceKey, nil, handler.ServeTemplate)
 
 	logger.Logger.Info("Email routes registration completed")
 }
