@@ -12,6 +12,7 @@ import (
 	"api/internal/handlers/v1/tenants/subscriptions"
 	"api/internal/handlers/v1/tenants/users"
 	"api/internal/logger"
+	"api/internal/middleware"
 	"api/internal/services/auth"
 	"api/internal/services/billing"
 	"api/internal/services/email"
@@ -85,6 +86,10 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	usersTag := []string{"V1TenantsUsers"}
 	subsTag := []string{"V1TenantsSubscriptions"}
 
+	tenantPermission := func(relation string) huma.Middlewares {
+		return huma.Middlewares{middleware.GinToHuma(d.RBAC.CheckTenantPermission(relation))}
+	}
+
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantByID", Method: http.MethodGet, Path: "/api/v1/tenants/by-id/{tenant_id}",
 		Summary: "Get tenant by ID", Tags: lifecycleTag,
@@ -103,7 +108,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
 		Summary: "Delete the current tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.DeleteTenant)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_tenant"), lifecycleHandler.DeleteTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
@@ -118,7 +123,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
 		Summary: "Create a tenant invite", Tags: invitesTag,
-	}, authn.AuthSessionOrBackendKey, nil, invitesHandler.Create)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("invite_user"), invitesHandler.Create)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
@@ -138,32 +143,32 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
 		Summary: "Create a role", Tags: rolesTag,
-	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.CreateRole)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("create_roles"), rolesHandler.CreateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
 		Summary: "Update a role", Tags: rolesTag,
-	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.UpdateRole)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("update_roles"), rolesHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
 		Summary: "Delete a role", Tags: rolesTag,
-	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.DeleteRole)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_roles"), rolesHandler.DeleteRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
 		Summary: "List users in the tenant", Tags: usersTag,
-	}, authn.AuthSessionOrBackendKey, nil, usersHandler.List)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("view_users"), usersHandler.List)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
 		Summary: "Update a tenant user's role", Tags: usersTag,
-	}, authn.AuthSessionOrBackendKey, nil, usersHandler.UpdateRole)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("update_user_role"), usersHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
 		Summary: "Remove a user from the tenant", Tags: usersTag,
-	}, authn.AuthSessionOrBackendKey, nil, usersHandler.Delete)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("remove_user"), usersHandler.Delete)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",

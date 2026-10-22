@@ -9,10 +9,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"api/internal/authz"
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var DeleteError = errors.New("Failed to delete tenant user")
@@ -50,22 +50,9 @@ func (h *Handler) Delete(ctx context.Context, in *DeleteInput) (*DeleteOutput, e
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteError, err).Error())
 	}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
-	canRemove, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "remove_user", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteError, err).Error())
-	}
-	if !canRemove {
-		return nil, huma.Error403Forbidden("Insufficient permissions")
-	}
-
 	if target.Role == "owner" {
-		canRemoveOwner, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "remove_owner_role", subject)
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteError, err).Error())
-		}
-		if !canRemoveOwner {
-			return nil, huma.Error403Forbidden("Insufficient permissions - must have `remove_owner_role` permission to remove an owner")
+		if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "Tenant", in.TenantID.String(), "remove_owner_role"); err != nil {
+			return nil, err
 		}
 
 		owners, err := h.repo.CountOwnersByTenant(ctx, in.TenantID.String())

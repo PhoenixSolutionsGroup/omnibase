@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"api/internal/authz"
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -39,10 +40,6 @@ type DeleteObjectOutput struct {
 func (h *Handler) DeleteObject(ctx context.Context, in *DeleteObjectInput) (*DeleteObjectOutput, error) {
 	req := in.Body
 
-	userID := ""
-	if in.UserID != uuid.Nil {
-		userID = in.UserID.String()
-	}
 	tenantID := ""
 	if in.TenantID != uuid.Nil {
 		tenantID = in.TenantID.String()
@@ -61,13 +58,8 @@ func (h *Handler) DeleteObject(ctx context.Context, in *DeleteObjectInput) (*Del
 	}
 
 	objectID := row.ID.String()
-	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
-	allowed, err := h.perms.Check(ctx, "StorageObject", objectID, "delete", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteObjectError, err).Error())
-	}
-	if !allowed {
-		return nil, huma.Error403Forbidden("You do not have permission to delete this file")
+	if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "StorageObject", objectID, "delete"); err != nil {
+		return nil, err
 	}
 
 	if err := h.repo.DeleteStorageObjectByID(ctx, row.ID); err != nil {

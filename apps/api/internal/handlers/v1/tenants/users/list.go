@@ -9,7 +9,6 @@ import (
 
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var ListError = errors.New("Failed to list tenant users")
@@ -31,16 +30,6 @@ type ListOutput struct {
 }
 
 func (h *Handler) List(ctx context.Context, in *ListInput) (*ListOutput, error) {
-	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
-	canView, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "view_users", subject)
-	if err != nil {
-		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", in.TenantID, "user_id", in.UserID)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ListError, err).Error())
-	}
-	if !canView {
-		return nil, huma.Error403Forbidden("Insufficient permissions - must have `view_users` permission")
-	}
-
 	rows, err := h.repo.ListTenantUsersByTenant(ctx, in.TenantID.String())
 	if err != nil {
 		logger.Logger.Error("Failed to fetch tenant users", "error", err, "tenant_id", in.TenantID)

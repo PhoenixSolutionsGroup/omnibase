@@ -181,7 +181,7 @@ func TestRequireAuth_AppKey(t *testing.T) {
 
 	t.Run("malformed tenant id", func(t *testing.T) {
 		code, principal := runRequireAuthWith(t, newAppKeyMiddleware(true, nil), authn.AuthSessionOrBackendKey, withHeader("X-Tenant-Id", "not-a-uuid"))
-		assert.Equal(t, http.StatusForbidden, code)
+		assert.Equal(t, http.StatusBadRequest, code)
 		assert.Nil(t, principal)
 	})
 
