@@ -9,7 +9,7 @@ export function OpenSourceSection() {
         <div className="rounded-2xl border bg-gradient-to-br from-background to-muted/50 p-8 md:p-12">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Heart className="h-8 w-8 text-primary" />
+              <Heart className="h-8 w-8 text-primary animate-pulse" />
             </div>
 
             <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -17,7 +17,8 @@ export function OpenSourceSection() {
             </h2>
 
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-              Omnibase is fully open source under the Apache 2.0 license.
+              Omnibase has always been fully open source under the Apache 2.0
+              license.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -31,15 +32,6 @@ export function OpenSourceSection() {
                   Star on GitHub
                 </Link>
               </Button>
-            </div>
-
-            <div className="mt-10 grid gap-8 text-center sm:grid-cols-1">
-              <div>
-                <div className="text-3xl font-bold">Apache 2.0</div>
-                <div className="text-sm text-muted-foreground">
-                  Open source license
-                </div>
-              </div>
             </div>
           </div>
         </div>

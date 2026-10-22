@@ -15,9 +15,7 @@ import {
 import { Menu, Github, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-const compareItems = [
-  { title: "Supabase", href: "/compare/supabase" },
-];
+const compareItems = [{ title: "Supabase", href: "/compare/supabase" }];
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -35,7 +33,7 @@ export function Header() {
             className="rounded-lg"
             unoptimized
           />
-          <span className="font-semibold text-xl">Omnibase</span>
+          <span className="font-semibold text-xl">omnibase</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -93,7 +91,9 @@ export function Header() {
             </Link>
           </Button>
           <Button asChild>
-            <Link href="https://docs.omnibase.tech/quickstart">Get Started</Link>
+            <Link href="https://docs.omnibase.tech/quickstart">
+              Get Started
+            </Link>
           </Button>
         </div>
 
@@ -155,7 +155,9 @@ export function Header() {
               </Link>
 
               <Button asChild className="mt-4">
-                <Link href="https://docs.omnibase.tech/quickstart">Get Started</Link>
+                <Link href="https://docs.omnibase.tech/quickstart">
+                  Get Started
+                </Link>
               </Button>
             </nav>
           </SheetContent>

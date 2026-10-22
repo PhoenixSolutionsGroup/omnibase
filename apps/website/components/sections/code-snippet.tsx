@@ -78,7 +78,9 @@ export function CodeSnippetSection() {
             Developer-friendly by design
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Clean APIs that just work. Get productive in minutes, not weeks.
+            With our intuitive UI, comprehensive SDKs, and powerful APIs, you
+            can focus on growing your business while we handle the
+            infrastructure.
           </p>
         </div>
 

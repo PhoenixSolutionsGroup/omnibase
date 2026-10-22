@@ -16,16 +16,14 @@ export function HeroSection() {
           </Badge>
 
           <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            The open-source backend for{" "}
-            <span className="text-primary">
-              multi-tenant SaaS
-            </span>
+            Who said <span className="text-primary italic">finishing fast</span>{" "}
+            <br></br>is bad?
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl">
-            Omnibase gives you everything you need to build production-ready SaaS
-            applications: authentication, team management, permissions, and
-            billing. No reinventing the wheel.
+            Launch your entire backend in less than 5 minutes completely for
+            free. Everything you need already included: authentication, team
+            management, permissions, and billing. No coding required.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
