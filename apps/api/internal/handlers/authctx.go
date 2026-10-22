@@ -10,6 +10,7 @@ import (
 )
 
 type AuthCtx struct {
+	Method   authn.AuthMethod
 	UserID   uuid.UUID
 	TenantID uuid.UUID
 	Session  *kratos.Session
@@ -24,6 +25,7 @@ func (a *AuthCtx) Resolve(ctx huma.Context) []error {
 		return nil
 	}
 
+	a.Method = principal.Method
 	a.UserID = principal.UserID
 	a.TenantID = principal.TenantID
 	a.Session = principal.Session

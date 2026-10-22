@@ -9,10 +9,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"api/internal/authz"
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var MakePublicError = errors.New("Failed to make file public")
@@ -38,10 +38,6 @@ type MakePublicOutput struct {
 func (h *Handler) MakePublic(ctx context.Context, in *MakePublicInput) (*MakePublicOutput, error) {
 	req := in.Body
 
-	userID := ""
-	if in.UserID != uuid.Nil {
-		userID = in.UserID.String()
-	}
 	tenantID := ""
 	if in.TenantID != uuid.Nil {
 		tenantID = in.TenantID.String()
@@ -63,13 +59,8 @@ func (h *Handler) MakePublic(ctx context.Context, in *MakePublicInput) (*MakePub
 		return &MakePublicOutput{Body: MakePublicResponse{Message: "file is already public", Path: req.Path}}, nil
 	}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
-	allowed, err := h.perms.Check(ctx, "StorageObject", row.ID.String(), "make_public", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", MakePublicError, err).Error())
-	}
-	if !allowed {
-		return nil, huma.Error403Forbidden("You do not have permission to make this file public")
+	if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "StorageObject", row.ID.String(), "make_public"); err != nil {
+		return nil, err
 	}
 
 	if err := h.repo.MarkStorageObjectPublic(ctx, row.ID); err != nil {

@@ -13,4 +13,5 @@ type Deps struct {
 	Pool *pgxpool.Pool
 	DB   *gorm.DB
 	Auth *middleware.AuthMiddleware
+	RBAC *middleware.RBACMiddleware
 }

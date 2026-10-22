@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -32,16 +33,43 @@ type ctxHeaderTransport struct {
 
 func (t ctxHeaderTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	ctx := req.Context()
-	if v := helpers.UserIDFromCtx(ctx); v != "" {
-		req.Header.Set("X-User-Id", v)
+	userID := helpers.UserIDFromCtx(ctx)
+	tenantID := helpers.TenantIDFromCtx(ctx)
+	serviceKey := helpers.ServiceKeyFromCtx(ctx)
+
+	if userID != "" {
+		req.Header.Set("X-User-Id", userID)
 	}
-	if v := helpers.TenantIDFromCtx(ctx); v != "" {
-		req.Header.Set("X-Tenant-Id", v)
+	if tenantID != "" {
+		req.Header.Set("X-Tenant-Id", tenantID)
 	}
-	if v := helpers.ServiceKeyFromCtx(ctx); v != "" {
-		req.Header.Set("X-Service-Key", v)
+	if serviceKey != "" {
+		req.Header.Set("X-Service-Key", serviceKey)
 	}
+
+	if userID != "" && tenantID != "" && serviceKey == "" && !adminOnlyPath(req.URL.Path) {
+		req.Header.Del("X-Service-Key")
+		req.Header.Set("X-App-Key", ServiceKey)
+	}
+
 	return t.rt.RoundTrip(req)
+}
+
+func adminOnlyPath(path string) bool {
+	for _, prefix := range []string{
+		"/api/v1/auth/users",
+		"/api/v1/auth/admin/proxy",
+		"/api/v1/database/",
+		"/api/v1/stripe/admin/",
+		"/api/v1/permissions/namespaces",
+		"/api/v1/tenants/by-id/",
+		"/api/v1/tenants/by-stripe-customer/",
+	} {
+		if strings.HasPrefix(path, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func NewSDKClient(t *testing.T) *sdk.APIClient {

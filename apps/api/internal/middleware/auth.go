@@ -179,9 +179,16 @@ func (m *AuthMiddleware) authenticateAppKey(c *gin.Context, appKey string) {
 		return
 	}
 
-	tenantID, err := uuid.Parse(c.GetHeader("X-Tenant-Id"))
-	if err != nil {
+	tenantIDHeader := c.GetHeader("X-Tenant-Id")
+	if tenantIDHeader == "" {
 		handlers.NewForbiddenResponse(c, "X-Tenant-Id must be a tenant the user belongs to")
+		c.Abort()
+		return
+	}
+
+	tenantID, err := uuid.Parse(tenantIDHeader)
+	if err != nil {
+		handlers.NewBadRequestResponse(c, "Invalid X-Tenant-Id header")
 		c.Abort()
 		return
 	}

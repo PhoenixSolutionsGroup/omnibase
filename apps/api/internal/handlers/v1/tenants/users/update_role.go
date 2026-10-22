@@ -9,10 +9,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"api/internal/authz"
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var UpdateUserRoleError = errors.New("Failed to update user role")
@@ -43,15 +43,6 @@ func (h *Handler) UpdateRole(ctx context.Context, in *UpdateUserRoleInput) (*Upd
 		return nil, huma.Error400BadRequest("Invalid user_id")
 	}
 
-	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
-	canManage, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "update_user_role", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
-	}
-	if !canManage {
-		return nil, huma.Error403Forbidden("Insufficient permissions - must have `update_user_role` permission")
-	}
-
 	target, err := h.repo.GetTenantUser(ctx, repository.GetTenantUserParams{
 		TenantID: in.TenantID.String(),
 		UserID:   targetUuid.String(),
@@ -65,22 +56,14 @@ func (h *Handler) UpdateRole(ctx context.Context, in *UpdateUserRoleInput) (*Upd
 	previousRole := target.Role
 
 	if req.Role == "owner" {
-		canPromote, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "update_user_role_to_owner", subject)
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
-		}
-		if !canPromote {
-			return nil, huma.Error403Forbidden("Insufficient permissions - must have `update_user_role_to_owner` permission to promote to owner")
+		if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "Tenant", in.TenantID.String(), "update_user_role_to_owner"); err != nil {
+			return nil, err
 		}
 	}
 
 	if previousRole == "owner" && req.Role != "owner" {
-		canDemote, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "remove_owner_role", subject)
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateUserRoleError, err).Error())
-		}
-		if !canDemote {
-			return nil, huma.Error403Forbidden("Insufficient permissions - must have `remove_owner_role` permission to demote an owner")
+		if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "Tenant", in.TenantID.String(), "remove_owner_role"); err != nil {
+			return nil, err
 		}
 
 		owners, err := h.repo.CountOwnersByTenant(ctx, in.TenantID.String())

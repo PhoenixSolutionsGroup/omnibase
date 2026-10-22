@@ -209,6 +209,11 @@ type Principal struct {
 Read it with `authn.Get(c)`. Huma handlers embed `handlers.AuthCtx`, which resolves
 the principal automatically.
 
+Tenant authorization uses `RBACMiddleware.CheckTenantPermission(relation)` as route
+middleware (pass it in the `register` extras). Handlers that cannot check in
+middleware, such as storage objects addressed by `path`, call `authz.Check(...)`,
+which applies the same admin bypass and 400/401/403/500 mapping.
+
 ## OpenAPI Schema Guidelines
 
 ### Use Named `$ref` Schemas for `oneOf`

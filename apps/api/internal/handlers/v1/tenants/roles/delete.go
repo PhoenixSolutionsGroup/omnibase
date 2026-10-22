@@ -27,18 +27,7 @@ type DeleteRoleOutput struct {
 }
 
 func (h *Handler) DeleteRole(ctx context.Context, in *DeleteRoleInput) (*DeleteRoleOutput, error) {
-	userUuid := in.UserID
 	tenantUuid := in.TenantID
-
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canDeleteRoles, err := h.perms.Check(ctx, "Tenant", tenantUuid.String(), "delete_roles", subject)
-	if err != nil {
-		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantUuid, "user_id", userUuid)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteRoleError, err).Error())
-	}
-	if !canDeleteRoles {
-		return nil, huma.Error403Forbidden("Insufficient permissions - must have `delete_roles` permission")
-	}
 
 	roleUuid, err := uuid.Parse(in.RoleID)
 	if err != nil {
