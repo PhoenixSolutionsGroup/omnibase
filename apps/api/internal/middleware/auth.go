@@ -20,6 +20,7 @@ type AuthMiddleware struct {
 	kratosClient  *kratos.APIClient
 	db            *gorm.DB
 	APIServiceKey string
+	tenantMember  func(context.Context, uuid.UUID, uuid.UUID) (bool, error)
 }
 
 func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
@@ -30,11 +31,13 @@ func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
 		},
 	}
 
-	return &AuthMiddleware{
+	middleware := &AuthMiddleware{
 		kratosClient:  kratos.NewAPIClient(publicConfig),
 		db:            db,
 		APIServiceKey: cfg.APIServiceKey,
 	}
+	middleware.tenantMember = middleware.isTenantMember
+	return middleware
 }
 
 // validateSessionWithToken validates an opaque Kratos session token (ory_st_...)
@@ -95,6 +98,13 @@ func (m *AuthMiddleware) RequireAuth(allowed authn.AuthMethod) gin.HandlerFunc {
 			}
 		}
 
+		if allowed&authn.AuthAppKey != 0 {
+			if appKey := c.GetHeader("X-App-Key"); appKey != "" {
+				m.authenticateAppKey(c, appKey)
+				return
+			}
+		}
+
 		if allowed&authn.AuthSession != 0 {
 			cookieHeader := c.GetHeader("Cookie")
 			sessionHeader := strings.TrimSpace(c.GetHeader("X-Session-Token"))
@@ -146,6 +156,69 @@ func (m *AuthMiddleware) authenticateServiceKey(c *gin.Context, serviceKey strin
 		"user_id", principal.UserID)
 	authn.Set(c, principal)
 	c.Next()
+}
+
+func (m *AuthMiddleware) authenticateAppKey(c *gin.Context, appKey string) {
+	if subtle.ConstantTimeCompare([]byte(appKey), []byte(m.APIServiceKey)) != 1 {
+		handlers.NewUnauthorizedResponse(c, "Unauthorized: Invalid or missing app key")
+		c.Abort()
+		return
+	}
+
+	userIDHeader := c.GetHeader("X-User-Id")
+	if userIDHeader == "" {
+		handlers.NewUnauthorizedResponse(c, "X-User-Id is required for app key authentication")
+		c.Abort()
+		return
+	}
+
+	userID, err := uuid.Parse(userIDHeader)
+	if err != nil {
+		handlers.NewUnauthorizedResponse(c, "Invalid X-User-Id header")
+		c.Abort()
+		return
+	}
+
+	tenantID, err := uuid.Parse(c.GetHeader("X-Tenant-Id"))
+	if err != nil {
+		handlers.NewForbiddenResponse(c, "X-Tenant-Id must be a tenant the user belongs to")
+		c.Abort()
+		return
+	}
+
+	member, err := m.tenantMember(c.Request.Context(), userID, tenantID)
+	if err != nil {
+		logger.Logger.Error("Failed to verify tenant membership",
+			"user_id", userID,
+			"tenant_id", tenantID,
+			"error", err)
+		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to verify tenant membership: %w", err))
+		c.Abort()
+		return
+	}
+	if !member {
+		handlers.NewForbiddenResponse(c, "X-Tenant-Id must be a tenant the user belongs to")
+		c.Abort()
+		return
+	}
+
+	logger.Logger.Debug("App key authentication successful",
+		"user_id", userID,
+		"tenant_id", tenantID)
+	authn.Set(c, &authn.Principal{
+		Method:   authn.AuthAppKey,
+		UserID:   userID,
+		TenantID: tenantID,
+	})
+	c.Next()
+}
+
+func (m *AuthMiddleware) isTenantMember(ctx context.Context, userID, tenantID uuid.UUID) (bool, error) {
+	var count int64
+	err := m.db.Table("auth.tenant_users").
+		Where("user_id = ? AND tenant_id = ? AND is_active = true", userID, tenantID).
+		Count(&count).Error
+	return count > 0, err
 }
 
 func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessionHeader string) {

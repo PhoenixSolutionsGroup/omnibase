@@ -300,6 +300,27 @@ Class | Method | HTTP request | Description
 
 
 Authentication schemes defined for the API:
+### AppKeyAuth
+
+- **Type**: API key
+- **API key parameter name**: X-App-Key
+- **Location**: HTTP header
+
+Note, each API key must be added to a map of `map[string]APIKey` where the key is: AppKeyAuth and passed in as the auth context for each request.
+
+Example
+
+```go
+auth := context.WithValue(
+		context.Background(),
+		omnibase.ContextAPIKeys,
+		map[string]omnibase.APIKey{
+			"AppKeyAuth": {Key: "API_KEY_STRING"},
+		},
+	)
+r, err := client.Service.Operation(auth, args)
+```
+
 ### CookieAuth
 
 - **Type**: API key

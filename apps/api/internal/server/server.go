@@ -111,7 +111,8 @@ func BuildAPI(r *gin.Engine, d v1_routes.Deps) huma.API {
 	humaCfg.Servers = []*huma.Server{{URL: "https://api.omnibase.tech", Description: "Production server"}}
 	humaCfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
 		"SessionTokenAuth": {Type: "apiKey", In: "header", Name: "X-Session-Token", Description: "Kratos session JWT token. Alternative to cookie authentication for non-browser clients."},
-		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key", Description: "Service-to-service authentication key for backend operations."},
+		"ServiceKeyAuth":   {Type: "apiKey", In: "header", Name: "X-Service-Key", Description: "Admin service-to-service key. Trusted for all routes and skips permission checks."},
+		"AppKeyAuth":       {Type: "apiKey", In: "header", Name: "X-App-Key", Description: "Customer app backend key. Requires X-User-Id and X-Tenant-Id and is authorized as that user."},
 		"CookieAuth":       {Type: "apiKey", In: "cookie", Name: "ory_kratos_session", Description: "Session cookie set by Kratos after login."},
 	}
 	huma.NewErrorWithContext = func(ctx huma.Context, status int, msg string, errs ...error) huma.StatusError {

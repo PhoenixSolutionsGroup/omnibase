@@ -95,6 +95,10 @@ DB_SSLMODE=disable
 AUTH_URL=
 AUTH_ADMIN_URL=
 
+# Backend API keys
+# API_SERVICE_KEY is used for both X-Service-Key (admin mode) and X-App-Key (user mode)
+API_SERVICE_KEY=
+
 # Permissions (Ory Keto)
 PERMISSIONS_READ_URL=
 PERMISSIONS_WRITE_URL=

@@ -98,95 +98,95 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createTenant", Method: http.MethodPost, Path: "/api/v1/tenants",
 		Summary: "Create a tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrServiceKey, nil, lifecycleHandler.CreateTenant)
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.CreateTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
 		Summary: "Delete the current tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrServiceKey, nil, lifecycleHandler.DeleteTenant)
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.DeleteTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
 		Summary: "Get JWT for the current tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrServiceKey, nil, lifecycleHandler.GetJWT)
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.GetJWT)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",
 		Summary: "Switch the active tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrServiceKey, nil, lifecycleHandler.SwitchActive)
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.SwitchActive)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
 		Summary: "Create a tenant invite", Tags: invitesTag,
-	}, authn.AuthSessionOrServiceKey, nil, invitesHandler.Create)
+	}, authn.AuthSessionOrBackendKey, nil, invitesHandler.Create)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
 		Summary: "Accept a tenant invite", Tags: invitesTag,
-	}, authn.AuthSessionOrServiceKey, nil, invitesHandler.Accept)
+	}, authn.AuthSessionOrBackendKey, nil, invitesHandler.Accept)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoles", Method: http.MethodGet, Path: "/api/v1/tenants/roles",
 		Summary: "List roles for the tenant", Tags: rolesTag,
-	}, authn.AuthSessionOrServiceKey, nil, rolesHandler.ListRoles)
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListRoles)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoleDefinitions", Method: http.MethodGet, Path: "/api/v1/tenants/roles/definitions",
 		Summary: "List role definitions", Tags: rolesTag,
-	}, authn.AuthSessionOrServiceKey, nil, rolesHandler.ListDefinitions)
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListDefinitions)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
 		Summary: "Create a role", Tags: rolesTag,
-	}, authn.AuthSessionOrServiceKey, nil, rolesHandler.CreateRole)
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.CreateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
 		Summary: "Update a role", Tags: rolesTag,
-	}, authn.AuthSessionOrServiceKey, nil, rolesHandler.UpdateRole)
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
 		Summary: "Delete a role", Tags: rolesTag,
-	}, authn.AuthSessionOrServiceKey, nil, rolesHandler.DeleteRole)
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.DeleteRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
 		Summary: "List users in the tenant", Tags: usersTag,
-	}, authn.AuthSessionOrServiceKey, nil, usersHandler.List)
+	}, authn.AuthSessionOrBackendKey, nil, usersHandler.List)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
 		Summary: "Update a tenant user's role", Tags: usersTag,
-	}, authn.AuthSessionOrServiceKey, nil, usersHandler.UpdateRole)
+	}, authn.AuthSessionOrBackendKey, nil, usersHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
 		Summary: "Remove a user from the tenant", Tags: usersTag,
-	}, authn.AuthSessionOrServiceKey, nil, usersHandler.Delete)
+	}, authn.AuthSessionOrBackendKey, nil, usersHandler.Delete)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
 		Summary: "List subscriptions for the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrServiceKey, nil, subscriptionsHandler.List)
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.List)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
 		Summary: "Get a single tenant subscription", Tags: subsTag,
-	}, authn.AuthSessionOrServiceKey, nil, subscriptionsHandler.Get)
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Get)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
 		Summary: "Add a subscription to the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrServiceKey, nil, subscriptionsHandler.Add)
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Add)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
 		Summary: "Remove a subscription from the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrServiceKey, nil, subscriptionsHandler.Remove)
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Remove)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
 		Summary: "Get tenant billing status", Tags: subsTag,
-	}, authn.AuthSessionOrServiceKey, nil, subscriptionsHandler.BillingStatus)
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.BillingStatus)
 }

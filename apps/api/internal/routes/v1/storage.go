@@ -62,7 +62,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/storage/upload",
 		Summary:     "Upload file to storage",
 		Tags:        []string{"V1Storage"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.Upload)
+	}, authn.AuthSessionOrBackendKey, nil, handler.Upload)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "downloadFile",
@@ -70,7 +70,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/storage/download",
 		Summary:     "Download file from storage",
 		Tags:        []string{"V1Storage"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.Download)
+	}, authn.AuthSessionOrBackendKey, nil, handler.Download)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteObject",
@@ -78,7 +78,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/storage/object",
 		Summary:     "Delete file from storage",
 		Tags:        []string{"V1Storage"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.DeleteObject)
+	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteObject)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "makeFilePublic",
@@ -86,7 +86,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/storage/make-public",
 		Summary:     "Make a file publicly accessible",
 		Tags:        []string{"V1Storage"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.MakePublic)
+	}, authn.AuthSessionOrBackendKey, nil, handler.MakePublic)
 
 	logger.Logger.Info("Storage routes registration completed")
 }

@@ -8,5 +8,5 @@ export type OmnibaseOptions = {
 export const createConfig = (opts: OmnibaseOptions) =>
   new Configuration({
     basePath: opts.basePath,
-    apiKey: opts.apiKey,
+    headers: { "X-Service-Key": opts.apiKey },
   });

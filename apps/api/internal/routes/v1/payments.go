@@ -41,7 +41,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/payments/checkout",
 		Summary:     "Create a Stripe checkout session",
 		Tags:        []string{"V1Payments"},
-	}, authn.AuthSessionOrServiceKey, customerResolver, paymentHandler.CreateCheckout)
+	}, authn.AuthSessionOrBackendKey, customerResolver, paymentHandler.CreateCheckout)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "recordUsage",
@@ -49,7 +49,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/payments/usage",
 		Summary:     "Record a Stripe meter usage event",
 		Tags:        []string{"V1Payments"},
-	}, authn.AuthSessionOrServiceKey, customerResolver, paymentHandler.RecordUsage)
+	}, authn.AuthSessionOrBackendKey, customerResolver, paymentHandler.RecordUsage)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createCustomerPortal",
@@ -57,7 +57,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/payments/portal",
 		Summary:     "Create a Stripe customer portal session",
 		Tags:        []string{"V1Payments"},
-	}, authn.AuthSessionOrServiceKey, customerResolver, paymentHandler.CreateCustomerPortal)
+	}, authn.AuthSessionOrBackendKey, customerResolver, paymentHandler.CreateCustomerPortal)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvoice",

@@ -62,7 +62,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates",
 		Summary:     "Create or update email template",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.CreateOrUpdateTemplate)
+	}, authn.AuthSessionOrBackendKey, nil, handler.CreateOrUpdateTemplate)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getEmailTemplates",
@@ -70,7 +70,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates",
 		Summary:     "Get all email templates",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.ListTemplates)
+	}, authn.AuthSessionOrBackendKey, nil, handler.ListTemplates)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteEmailTemplate",
@@ -78,7 +78,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates/{type}",
 		Summary:     "Delete email template",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.DeleteTemplate)
+	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteTemplate)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "sendEmail",
@@ -86,7 +86,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/send",
 		Summary:     "Send an email",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.Send)
+	}, authn.AuthSessionOrBackendKey, nil, handler.Send)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "serveEmailTemplate",
@@ -94,7 +94,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates/{template_name}/{type}",
 		Summary:     "Serve an email template file",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrServiceKey, nil, handler.ServeTemplate)
+	}, authn.AuthSessionOrBackendKey, nil, handler.ServeTemplate)
 
 	logger.Logger.Info("Email routes registration completed")
 }

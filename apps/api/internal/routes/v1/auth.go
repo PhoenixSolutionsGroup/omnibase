@@ -51,7 +51,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/auth/active-tenant",
 		Summary:     "Get the active tenant for the authenticated user",
 		Tags:        []string{"V1Auth"},
-	}, authn.AuthSessionOrServiceKey, nil, authHandler.GetActiveTenant)
+	}, authn.AuthSessionOrBackendKey, nil, authHandler.GetActiveTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenants",
@@ -59,7 +59,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/auth/tenants",
 		Summary:     "List tenants the authenticated user belongs to",
 		Tags:        []string{"V1Auth"},
-	}, authn.AuthSessionOrServiceKey, nil, authHandler.ListTenants)
+	}, authn.AuthSessionOrBackendKey, nil, authHandler.ListTenants)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getSession",
