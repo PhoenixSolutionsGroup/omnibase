@@ -66,7 +66,6 @@ services:
     image: phoenixsolutionsgroup/omnibase-auth:latest
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
-      - AUTH_JWT_JWKS={}
       - WAIT_FOR_API_HEALTH=false
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
     command: migrate sql -e --yes
@@ -101,7 +100,6 @@ services:
       - SMTP_FROM_ADDRESS=no-reply@test.omnibase
       - SMTP_FROM_NAME=Test Auth
       - SES_TENANT_NAME=test
-      - AUTH_JWT_JWKS={}
       - API_URL=http://api:8080
       - SERVICE_KEY=VERY_SECRET_KEY
       - WAIT_FOR_API_HEALTH=false

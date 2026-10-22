@@ -64,7 +64,6 @@ services:
     image: phoenixsolutionsgroup/omnibase-auth:0.4.3
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
-      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - WAIT_FOR_API_HEALTH=true
       - API_URL=http://rest-api:8080
     entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
@@ -112,7 +111,6 @@ services:
       - SMTP_FROM_ADDRESS=${SMTP_FROM_ADDRESS:-no-reply@omnibase.tech}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-"Omnibase Auth"}
 
-      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS-{}}
       - API_URL=http://rest-api:8080
       - API_PUBLIC_URL=${API_PUBLIC_URL:-http://127.0.0.1:8080}
       - SERVICE_KEY=VERY_SECRET_KEY
@@ -273,8 +271,6 @@ services:
       - LOG_FORMAT=${LOG_FORMAT:-pretty}
 
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-*}
-
-      - AUTH_JWT_JWKS=${AUTH_JWT_JWKS}
 
   permissions-migrate:
     image: phoenixsolutionsgroup/omnibase-permissions:0.4.0
