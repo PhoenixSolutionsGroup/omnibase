@@ -15,7 +15,7 @@ const (
 	AuthServiceKey
 	AuthAppKey
 
-	AuthSessionOrServiceKey = AuthSession | AuthServiceKey
+	AuthSessionOrBackendKey = AuthSession | AuthServiceKey | AuthAppKey
 )
 
 type Principal struct {

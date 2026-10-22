@@ -1,0 +1,63 @@
+---
+title: Backend API Keys
+description: Choosing between admin mode, app mode, and user sessions
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Backend API Keys
+
+Server-side callers use one key. The request header selects how that key is interpreted.
+
+| Header | Mode | User context | Checks |
+|--------|------|--------------|--------|
+| `X-Service-Key` | Admin | optional, trusted | skipped |
+| `X-App-Key` | App | required (`X-User-Id`, `X-Tenant-Id`) | run as that user |
+| Cookie / `X-Session-Token` | Session | from the Kratos session | run as that user |
+
+The admin key and app key are the **same value** (`API_SERVICE_KEY`). Do not create a second secret.
+
+## Admin mode
+
+Use `X-Service-Key` for infrastructure, CI, migrations, Stripe admin, archive-all, and cleanup jobs. This mode is trusted: it does not require tenant headers, and any `X-User-Id`/`X-Tenant-Id` you send are taken at face value.
+
+```ts
+import { Configuration } from '@omnibase/core-js';
+
+const admin = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: {
+    'X-Service-Key': process.env.OMNIBASE_SERVICE_KEY!,
+  },
+});
+```
+
+Admin-only routes — database migrations, `stripe/admin/*`, `archive-all`, and permission namespaces — reject app mode.
+
+## App mode
+
+Use `X-App-Key` from a customer backend that calls Omnibase on behalf of a signed-in user. The value is the same key, but the request must identify the user and tenant:
+
+- `X-User-Id` — required; missing or invalid returns `401`.
+- `X-Tenant-Id` — required; missing, invalid, or not an active membership returns `403`.
+
+The API acts as that user in that tenant and runs the route's authorization as that user.
+
+```ts
+const forUser = new Configuration({
+  basePath: process.env.OMNIBASE_API_URL,
+  headers: {
+    'X-App-Key': process.env.OMNIBASE_SERVICE_KEY!,
+    'X-User-Id': user.id,
+    'X-Tenant-Id': tenant.id,
+  },
+});
+```
+
+<Callout type="warn">
+Neither key belongs in a browser. Call Omnibase from your server, then forward only the data the browser needs.
+</Callout>
+
+## Precedence
+
+If a request sends both `X-Service-Key` and `X-App-Key`, admin mode wins. Send exactly one.

@@ -157,7 +157,7 @@ func SetUpYourRoutes(router *gin.RouterGroup, api huma.API, d v1.Deps) {
         Path:        "/api/v1/your-feature/endpoint",
         Summary:     "Your endpoint",
         Tags:        []string{"V1YourFeature"},
-    }, authn.AuthSessionOrServiceKey, nil, handler.YourEndpoint)
+    }, authn.AuthSessionOrBackendKey, nil, handler.YourEndpoint)
 }
 ```
 
@@ -182,13 +182,13 @@ and the middleware from the same value:
 // Session only (cookie or X-Session-Token)
 authn.AuthSession
 
-// Service key only (admin / internal)
+// Admin/god key only (X-Service-Key), skips checks
 authn.AuthServiceKey
 
-// Either session or service key
-authn.AuthSessionOrServiceKey
+// Session, admin key, or app key
+authn.AuthSessionOrBackendKey
 
-// App key (customer backend, requires X-User-Id)
+// App key only (X-App-Key), requires X-User-Id + X-Tenant-Id and runs checks
 authn.AuthAppKey
 ```
 

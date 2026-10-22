@@ -24,10 +24,13 @@ export function createOmnibaseSDKConfig(env: EnvironmentConfig): Configuration {
     headers["X-Api-Key"] = profile.api_key;
   }
 
+  if (env.omnibaseServiceKey) {
+    headers["X-Service-Key"] = env.omnibaseServiceKey;
+  }
+
   return new Configuration({
     basePath: env.omnibaseApiUrl,
     headers,
-    apiKey: env.omnibaseServiceKey ? () => env.omnibaseServiceKey! : undefined,
   });
 }
 

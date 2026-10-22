@@ -4,6 +4,7 @@
   "icon": "KeyRound",
   "pages": [
     "sessions",
+    "api-keys",
     "flows",
     "middleware"
   ]

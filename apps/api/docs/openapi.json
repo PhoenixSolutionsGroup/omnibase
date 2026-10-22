@@ -3935,6 +3935,12 @@
       }
     },
     "securitySchemes": {
+      "AppKeyAuth": {
+        "description": "Customer app backend key. Requires X-User-Id and X-Tenant-Id and is authorized as that user.",
+        "in": "header",
+        "name": "X-App-Key",
+        "type": "apiKey"
+      },
       "CookieAuth": {
         "description": "Session cookie set by Kratos after login.",
         "in": "cookie",
@@ -3942,7 +3948,7 @@
         "type": "apiKey"
       },
       "ServiceKeyAuth": {
-        "description": "Service-to-service authentication key for backend operations.",
+        "description": "Admin service-to-service key. Trusted for all routes and skips permission checks.",
         "in": "header",
         "name": "X-Service-Key",
         "type": "apiKey"
@@ -4006,6 +4012,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Get the active tenant for the authenticated user",
@@ -4174,6 +4183,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "List tenants the authenticated user belongs to",
@@ -4550,6 +4562,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Send an email",
@@ -4592,6 +4607,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Get all email templates",
@@ -4642,6 +4660,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create or update email template",
@@ -4715,6 +4736,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Serve an email template file",
@@ -4767,6 +4791,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Delete email template",
@@ -4819,6 +4846,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create a Stripe checkout session",
@@ -5185,6 +5215,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create a Stripe customer portal session",
@@ -5235,6 +5268,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Record a Stripe meter usage event",
@@ -5287,6 +5323,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Check permission",
@@ -5400,6 +5439,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Delete relationship",
@@ -5450,6 +5492,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create relationship",
@@ -5502,6 +5547,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Download file from storage",
@@ -5554,6 +5602,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Make a file publicly accessible",
@@ -5606,6 +5657,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Delete file from storage",
@@ -5658,6 +5712,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Upload file to storage",
@@ -6463,6 +6520,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Delete the current tenant",
@@ -6513,6 +6573,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create a tenant",
@@ -6555,6 +6618,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Get tenant billing status",
@@ -6699,6 +6765,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create a tenant invite",
@@ -6751,6 +6820,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Accept a tenant invite",
@@ -6793,6 +6865,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Get JWT for the current tenant",
@@ -6841,6 +6916,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "List roles for the tenant",
@@ -6891,6 +6969,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Create a role",
@@ -6949,6 +7030,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "List role definitions",
@@ -6999,6 +7083,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Delete a role",
@@ -7059,6 +7146,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Update a role",
@@ -7111,6 +7201,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Remove a subscription from the tenant",
@@ -7157,6 +7250,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "List subscriptions for the tenant",
@@ -7207,6 +7303,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Add a subscription to the tenant",
@@ -7259,6 +7358,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Get a single tenant subscription",
@@ -7311,6 +7413,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Switch the active tenant",
@@ -7361,6 +7466,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Remove a user from the tenant",
@@ -7407,6 +7515,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "List users in the tenant",
@@ -7457,6 +7568,9 @@
           },
           {
             "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
           }
         ],
         "summary": "Update a tenant user's role",

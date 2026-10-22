@@ -230,6 +230,20 @@ func (a *V1AuthAPIService) GetActiveTenantExecute(r ApiGetActiveTenantRequest) (
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["AppKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-App-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
 			if apiKey, ok := auth["SessionTokenAuth"]; ok {
 				var key string
 				if apiKey.Prefix != "" {
@@ -595,6 +609,20 @@ func (a *V1AuthAPIService) ListTenantsExecute(r ApiListTenantsRequest) (*ListTen
 					key = apiKey.Key
 				}
 				localVarHeaderParams["X-Service-Key"] = key
+			}
+		}
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["AppKeyAuth"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["X-App-Key"] = key
 			}
 		}
 	}

@@ -36,6 +36,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Get the active tenant for the authenticated user
       tags:
       - V1Auth
@@ -133,6 +134,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: List tenants the authenticated user belongs to
       tags:
       - V1Auth
@@ -345,6 +347,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Send an email
       tags:
       - V1Configuration
@@ -368,6 +371,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Get all email templates
       tags:
       - V1Configuration
@@ -396,6 +400,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create or update email template
       tags:
       - V1Configuration
@@ -445,6 +450,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Serve an email template file
       tags:
       - V1Configuration
@@ -476,6 +482,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Delete email template
       tags:
       - V1Configuration
@@ -505,6 +512,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create a Stripe checkout session
       tags:
       - V1Payments
@@ -729,6 +737,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create a Stripe customer portal session
       tags:
       - V1Payments
@@ -757,6 +766,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Record a Stripe meter usage event
       tags:
       - V1Payments
@@ -786,6 +796,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Check permission
       tags:
       - V1Permissions
@@ -845,6 +856,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Delete relationship
       tags:
       - V1Permissions
@@ -873,6 +885,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create relationship
       tags:
       - V1Permissions
@@ -902,6 +915,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Download file from storage
       tags:
       - V1Storage
@@ -931,6 +945,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Make a file publicly accessible
       tags:
       - V1Storage
@@ -960,6 +975,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Delete file from storage
       tags:
       - V1Storage
@@ -989,6 +1005,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Upload file to storage
       tags:
       - V1Storage
@@ -1486,6 +1503,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Delete the current tenant
       tags:
       - V1TenantsLifecycle
@@ -1514,6 +1532,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create a tenant
       tags:
       - V1TenantsLifecycle
@@ -1537,6 +1556,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Get tenant billing status
       tags:
       - V1TenantsSubscriptions
@@ -1624,6 +1644,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create a tenant invite
       tags:
       - V1TenantsInvites
@@ -1653,6 +1674,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Accept a tenant invite
       tags:
       - V1TenantsInvites
@@ -1676,6 +1698,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Get JWT for the current tenant
       tags:
       - V1TenantsLifecycle
@@ -1702,6 +1725,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: List roles for the tenant
       tags:
       - V1TenantsRoles
@@ -1730,6 +1754,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Create a role
       tags:
       - V1TenantsRoles
@@ -1764,6 +1789,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: List role definitions
       tags:
       - V1TenantsRoles
@@ -1794,6 +1820,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Delete a role
       tags:
       - V1TenantsRoles
@@ -1830,6 +1857,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Update a role
       tags:
       - V1TenantsRoles
@@ -1859,6 +1887,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Remove a subscription from the tenant
       tags:
       - V1TenantsSubscriptions
@@ -1884,6 +1913,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: List subscriptions for the tenant
       tags:
       - V1TenantsSubscriptions
@@ -1912,6 +1942,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Add a subscription to the tenant
       tags:
       - V1TenantsSubscriptions
@@ -1943,6 +1974,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Get a single tenant subscription
       tags:
       - V1TenantsSubscriptions
@@ -1972,6 +2004,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Switch the active tenant
       tags:
       - V1TenantsLifecycle
@@ -2000,6 +2033,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Remove a user from the tenant
       tags:
       - V1TenantsUsers
@@ -2025,6 +2059,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: List users in the tenant
       tags:
       - V1TenantsUsers
@@ -2053,6 +2088,7 @@ paths:
       - SessionTokenAuth: []
       - CookieAuth: []
       - ServiceKeyAuth: []
+      - AppKeyAuth: []
       summary: Update a tenant user's role
       tags:
       - V1TenantsUsers
@@ -8589,13 +8625,20 @@ components:
       required:
       - namespaces
   securitySchemes:
+    AppKeyAuth:
+      description: Customer app backend key. Requires X-User-Id and X-Tenant-Id and
+        is authorized as that user.
+      in: header
+      name: X-App-Key
+      type: apiKey
     CookieAuth:
       description: Session cookie set by Kratos after login.
       in: cookie
       name: ory_kratos_session
       type: apiKey
     ServiceKeyAuth:
-      description: Service-to-service authentication key for backend operations.
+      description: Admin service-to-service key. Trusted for all routes and skips
+        permission checks.
       in: header
       name: X-Service-Key
       type: apiKey

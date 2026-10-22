@@ -106,6 +106,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
             if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
             }
             let urlPath = `/api/v1/email/templates`;
@@ -140,6 +143,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
             const headerParameters = {};
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
             }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -224,6 +230,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
             const headerParameters = {};
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
             }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
@@ -357,6 +366,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
             if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
             }
             let urlPath = `/api/v1/email/send`;
@@ -394,6 +406,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
             const headerParameters = {};
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
             }
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
