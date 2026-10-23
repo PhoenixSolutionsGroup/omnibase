@@ -164,7 +164,10 @@ export function UseCaseSection() {
                       className="h-6 w-6 object-contain grayscale opacity-60 transition-all duration-200
       group-hover:opacity-100 group-hover:brightness-50
       group-focus-visible:opacity-100 group-focus-visible:brightness-50
-      group-data-[state=active]:opacity-100 group-data-[state=active]:brightness-50"
+      group-data-[state=active]:opacity-100 group-data-[state=active]:brightness-50
+      dark:group-hover:brightness-200
+      dark:group-focus-visible:brightness-200
+      dark:group-data-[state=active]:brightness-200"
                     />
                   </TabsTrigger>
                 ))}

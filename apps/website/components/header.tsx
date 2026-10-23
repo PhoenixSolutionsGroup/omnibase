@@ -12,19 +12,23 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Github, ChevronDown, SunMoon } from "lucide-react";
+import { Menu, Github, ChevronDown, Moon, Sun } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 const compareItems = [{ title: "Supabase", href: "/compare/supabase" }];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
-  const changeTheme = () => {};
+  const changeTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -82,9 +86,18 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => changeTheme()}>
-            <SunMoon className="h-5 w-5" />
-            <span className="sr-only">GitHub</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={changeTheme}
+            className="cursor-pointer"
+          >
+            {resolvedTheme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+            <span className="sr-only">Toggle theme</span>
           </Button>
           <Button variant="ghost" size="icon" asChild>
             <Link

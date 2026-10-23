@@ -6,8 +6,8 @@ import {
   PricingSection,
   OpenSourceSection,
   CTASection,
-  UseCaseSection,
   HeroSection,
+  UseCaseSection,
 } from "@/components/sections";
 
 export default function HomePage() {
