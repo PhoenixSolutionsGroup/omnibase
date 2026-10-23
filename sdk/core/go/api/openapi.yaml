@@ -853,10 +853,7 @@ paths:
                 $ref: "#/components/schemas/ErrorModel"
           description: Error
       security:
-      - SessionTokenAuth: []
-      - CookieAuth: []
       - ServiceKeyAuth: []
-      - AppKeyAuth: []
       summary: Delete relationship
       tags:
       - V1Permissions
@@ -882,10 +879,7 @@ paths:
                 $ref: "#/components/schemas/ErrorModel"
           description: Error
       security:
-      - SessionTokenAuth: []
-      - CookieAuth: []
       - ServiceKeyAuth: []
-      - AppKeyAuth: []
       summary: Create relationship
       tags:
       - V1Permissions

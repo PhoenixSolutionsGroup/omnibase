@@ -64,7 +64,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Create relationship",
 		Tags:        []string{"V1Permissions"},
-	}, authn.AuthSessionOrBackendKey, nil, handler.CreateRelationship)
+	}, authn.AuthServiceKey, nil, handler.CreateRelationship)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRelationship",
@@ -72,7 +72,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Delete relationship",
 		Tags:        []string{"V1Permissions"},
-	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteRelationship)
+	}, authn.AuthServiceKey, nil, handler.DeleteRelationship)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deployPermissionNamespaces",
