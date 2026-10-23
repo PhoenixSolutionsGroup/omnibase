@@ -27,6 +27,7 @@ func (s *Service) Send(ctx context.Context, args SendArgs) error {
 	if err := s.send(from, args.To, msg); err != nil {
 		return fmt.Errorf("%w: %w", SendError, err)
 	}
+	s.recordHistory(ctx, args.TenantID, args.To, args.Subject, args.HTML, args.Plain, "", nil)
 	return nil
 }
 

@@ -249,6 +249,8 @@ services:
       # Email Configuration
       - SMTP_CONNECTION_URI=smtp://mailpit:1025
       - SMTP_FROM_EMAIL=noreply@yourapp.com
+      - EMAIL_SEND_LIMIT=${EMAIL_SEND_LIMIT:-100}
+      - EMAIL_SEND_WINDOW=${EMAIL_SEND_WINDOW:-1h}
       - FRONTEND_URL=http://localhost:3000
 
       # JWT Configuration
