@@ -8,8 +8,8 @@ const payments: Payment[] = [
   { product: "Product A", amount: "+49.00 $" },
   { product: "Product B", amount: "+120.00 $" },
   { product: "Product C", amount: "+9.00 $" },
-  { product: "Product C", amount: "+9.00 $" },
-  { product: "Product C", amount: "+9.00 $" },
+  { product: "Product D", amount: "+19.00 $" },
+  { product: "Product E", amount: "+270.00 $" },
 ];
 
 export function Payments() {

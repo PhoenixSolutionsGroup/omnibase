@@ -12,7 +12,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Github, ChevronDown } from "lucide-react";
+import { Menu, Github, ChevronDown, SunMoon } from "lucide-react";
 import { useState } from "react";
 
 const compareItems = [{ title: "Supabase", href: "/compare/supabase" }];
@@ -20,6 +20,8 @@ const compareItems = [{ title: "Supabase", href: "/compare/supabase" }];
 export function Header() {
   const [open, setOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+
+  const changeTheme = () => {};
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -80,6 +82,10 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => changeTheme()}>
+            <SunMoon className="h-5 w-5" />
+            <span className="sr-only">GitHub</span>
+          </Button>
           <Button variant="ghost" size="icon" asChild>
             <Link
               href="https://github.com/PhoenixSolutionsGroup/omnibase"

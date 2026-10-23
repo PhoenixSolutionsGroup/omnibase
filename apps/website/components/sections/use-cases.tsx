@@ -139,7 +139,7 @@ const { data: todos } = await useAsyncData(
 
 export function UseCaseSection() {
   return (
-    <section className="py-20">
+    <section className="py-20 bg-muted/30">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 gap-10 rounded-xl p-8 md:grid-cols-2 md:p-12">
           <div>
@@ -156,13 +156,15 @@ export function UseCaseSection() {
                   <TabsTrigger
                     value={item.key}
                     key={item.key}
-                    className="p-4 cursor-pointer"
+                    className="group cursor-pointer p-4"
                   >
-                    {" "}
                     <img
                       src={item.logo}
-                      alt="logo"
-                      className="h-6 w-6 object-contain grayscale"
+                      alt={`${item.key} logo`}
+                      className="h-6 w-6 object-contain grayscale opacity-60 transition-all duration-200
+      group-hover:opacity-100 group-hover:brightness-50
+      group-focus-visible:opacity-100 group-focus-visible:brightness-50
+      group-data-[state=active]:opacity-100 group-data-[state=active]:brightness-50"
                     />
                   </TabsTrigger>
                 ))}
