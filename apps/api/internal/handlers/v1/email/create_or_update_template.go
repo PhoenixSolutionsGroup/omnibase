@@ -37,14 +37,51 @@ type CreateOrUpdateTemplateOutput struct {
 func (h *Handler) CreateOrUpdateTemplate(ctx context.Context, in *CreateOrUpdateTemplateInput) (*CreateOrUpdateTemplateOutput, error) {
 	req := in.Body
 
-	tmpl, err := h.repo.UpsertEmailTemplate(ctx, repository.UpsertEmailTemplateParams{
-		Type:     req.Type,
-		Subject:  req.Subject,
-		HtmlBody: req.HTMLBody,
-	})
+	tenantID, err := tenantScope(in.Method, in.TenantID)
 	if err != nil {
-		logger.Logger.Error("Failed to upsert email template", "type", req.Type, "error", err)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpsertTemplateError, err).Error())
+		return nil, err
+	}
+
+	var tmpl repository.EmailTemplate
+	if tenantID == nil {
+		row, err := h.repo.UpsertAppEmailTemplate(ctx, repository.UpsertAppEmailTemplateParams{
+			Type:     req.Type,
+			Subject:  req.Subject,
+			HtmlBody: req.HTMLBody,
+		})
+		if err != nil {
+			logger.Logger.Error("Failed to upsert app email template", "type", req.Type, "error", err)
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpsertTemplateError, err).Error())
+		}
+		tmpl = repository.EmailTemplate{
+			ID:        row.ID,
+			Type:      row.Type,
+			Subject:   row.Subject,
+			HtmlBody:  row.HtmlBody,
+			TenantID:  row.TenantID,
+			CreatedAt: row.CreatedAt,
+			UpdatedAt: row.UpdatedAt,
+		}
+	} else {
+		row, err := h.repo.UpsertTenantEmailTemplate(ctx, repository.UpsertTenantEmailTemplateParams{
+			Type:     req.Type,
+			Subject:  req.Subject,
+			HtmlBody: req.HTMLBody,
+			TenantID: tenantID,
+		})
+		if err != nil {
+			logger.Logger.Error("Failed to upsert tenant email template", "type", req.Type, "tenant_id", *tenantID, "error", err)
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpsertTemplateError, err).Error())
+		}
+		tmpl = repository.EmailTemplate{
+			ID:        row.ID,
+			Type:      row.Type,
+			Subject:   row.Subject,
+			HtmlBody:  row.HtmlBody,
+			TenantID:  row.TenantID,
+			CreatedAt: row.CreatedAt,
+			UpdatedAt: row.UpdatedAt,
+		}
 	}
 
 	return &CreateOrUpdateTemplateOutput{Body: UpsertTemplateResponse{

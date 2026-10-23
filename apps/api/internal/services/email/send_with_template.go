@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"html/template"
 
+	"github.com/google/uuid"
+
+	"api/internal/database/repository"
 	"api/internal/logger"
 )
 
@@ -19,13 +22,23 @@ type SendWithTemplateRequest struct {
 	From         string
 	To           string
 	TemplateType string
+	TenantID     uuid.UUID
 	Data         any
 }
 
 func (s *Service) SendWithTemplate(ctx context.Context, req SendWithTemplateRequest) error {
 	logger.Logger.Debug("Sending email", "to", req.To, "template", req.TemplateType)
 
-	row, err := s.repo.GetEmailTemplateByType(ctx, req.TemplateType)
+	var tenantID *string
+	if req.TenantID != uuid.Nil {
+		id := req.TenantID.String()
+		tenantID = &id
+	}
+
+	row, err := s.repo.GetEmailTemplateForTenant(ctx, repository.GetEmailTemplateForTenantParams{
+		Type:     req.TemplateType,
+		TenantID: tenantID,
+	})
 	if err != nil {
 		return fmt.Errorf("%w: %w", TemplateError, err)
 	}
@@ -40,8 +53,18 @@ func (s *Service) SendWithTemplate(ctx context.Context, req SendWithTemplateRequ
 		return fmt.Errorf("%w: %w", TemplateError, err)
 	}
 
+	subjectTmpl, err := template.New(req.TemplateType + "-subject").Parse(row.Subject)
+	if err != nil {
+		return fmt.Errorf("%w: %w", TemplateError, err)
+	}
+
+	var subject bytes.Buffer
+	if err := subjectTmpl.Execute(&subject, req.Data); err != nil {
+		return fmt.Errorf("%w: %w", TemplateError, err)
+	}
+
 	from := s.fromOrDefault(req.From)
-	msg := buildMessage(from, req.To, row.Subject, body.String(), s.extraHeaders...)
+	msg := buildMessage(from, req.To, subject.String(), body.String(), s.extraHeaders...)
 	if err := s.send(from, req.To, msg); err != nil {
 		return fmt.Errorf("%w: %w", SendError, err)
 	}

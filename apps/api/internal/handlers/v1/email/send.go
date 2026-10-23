@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/jackc/pgx/v5"
 
 	"api/internal/handlers"
 	"api/internal/logger"
@@ -14,36 +15,39 @@ import (
 
 var SendError = errors.New("Failed to send email")
 
-type SendRequest struct {
-	To      string `json:"to" required:"true" example:"user@example.com"`
-	Subject string `json:"subject" required:"true" example:"Welcome"`
-	Body    string `json:"body" required:"true" example:"<h1>Hello</h1>"`
-	Plain   string `json:"plain,omitempty" example:"Hello"`
+type SendTemplateRequest struct {
+	To           string         `json:"to" required:"true" example:"user@example.com"`
+	TemplateType string         `json:"template_type" required:"true" example:"tenant-user-invite"`
+	Data         map[string]any `json:"data,omitempty"`
 }
 
 type SendResponse struct {
 	Message string `json:"message"`
 }
 
-type SendInput struct {
+type SendTemplateInput struct {
 	handlers.AuthCtx
-	Body SendRequest
+	Body SendTemplateRequest
 }
 
 type SendOutput struct {
 	Body SendResponse
 }
 
-func (h *Handler) Send(ctx context.Context, in *SendInput) (*SendOutput, error) {
-	req := in.Body
-
-	if err := h.email.Send(ctx, email.SendArgs{
-		To:      req.To,
-		Subject: req.Subject,
-		HTML:    req.Body,
-		Plain:   req.Plain,
+func (h *Handler) Send(ctx context.Context, in *SendTemplateInput) (*SendOutput, error) {
+	if err := h.email.SendWithTemplate(ctx, email.SendWithTemplateRequest{
+		To:           in.Body.To,
+		TemplateType: in.Body.TemplateType,
+		TenantID:     in.TenantID,
+		Data:         in.Body.Data,
 	}); err != nil {
-		logger.Logger.Error("Failed to send email", "error", err, "to", req.To)
+		logger.Logger.Error("Failed to send templated email",
+			"error", err,
+			"to", in.Body.To,
+			"template", in.Body.TemplateType)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, huma.Error404NotFound("Template not found")
+		}
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", SendError, err).Error())
 	}
 

@@ -91,6 +91,8 @@ type SMTPConfig struct {
 	FromEmail     string
 	FrontendURL   string
 	ExtraHeaders  []string
+	SendLimit     int
+	SendWindow    time.Duration
 }
 
 func New() *Config {
@@ -136,6 +138,8 @@ func New() *Config {
 			FromEmail:     os.Getenv("SMTP_FROM_EMAIL"),
 			FrontendURL:   os.Getenv("FRONTEND_URL"),
 			ExtraHeaders:  parseCommaSeparated(os.Getenv("SMTP_EXTRA_HEADERS")),
+			SendLimit:     getIntEnv("EMAIL_SEND_LIMIT", 100),
+			SendWindow:    getDurationEnv("EMAIL_SEND_WINDOW", time.Hour),
 		},
 		PermissionsConfig: PermissionsConfig{
 			ReadURL:  os.Getenv("PERMISSIONS_READ_URL"),
@@ -149,11 +153,11 @@ func New() *Config {
 		},
 		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
 		TypegenURL:          getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
-		JWTSecret:            os.Getenv("JWT_SECRET"),
-		APIServiceKey:        os.Getenv("API_SERVICE_KEY"),
-		EncryptionMasterKey:  os.Getenv("ENCRYPTION_MASTER_KEY"),
-		EnablePprof:          os.Getenv("ENABLE_PPROF") == "true",
-		CORSAllowedOrigins:   parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
+		JWTSecret:           os.Getenv("JWT_SECRET"),
+		APIServiceKey:       os.Getenv("API_SERVICE_KEY"),
+		EncryptionMasterKey: os.Getenv("ENCRYPTION_MASTER_KEY"),
+		EnablePprof:         os.Getenv("ENABLE_PPROF") == "true",
+		CORSAllowedOrigins:  parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
 	}
 }
 
