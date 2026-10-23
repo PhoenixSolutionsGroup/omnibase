@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Check, X } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -37,9 +46,9 @@ const comparisonData = [
   },
 ];
 
-function renderValue(value: string | boolean) {
-  if (value === true) return <Check className="h-5 w-5 text-green-600" />;
-  if (value === false) return <X className="h-5 w-5 text-red-500" />;
+function CellValue({ value }: { value: string | boolean }) {
+  if (value === true) return <Check className="mx-auto h-5 w-5 text-primary" />;
+  if (value === false) return <X className="mx-auto h-5 w-5 text-red-500" />;
   return <span className="text-sm">{value}</span>;
 }
 
@@ -74,108 +83,127 @@ export default function SupabaseComparisonPage() {
           <div>
             <h2 className="text-xl font-semibold mb-3">Multi-tenancy</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Supabase
-                </p>
-                <p className="text-sm">
-                  Requires manual Row-Level Security (RLS) policies per table.
-                  Works, but becomes complex and error-prone at scale.
-                  Multi-tenancy is not yet supported in Supabase Auth.
-                </p>
-              </div>
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Omnibase
-                </p>
-                <p className="text-sm">
-                  First-class tenant context switching. When users switch
-                  tenants, they get a new JWT with the active tenant ID. RLS
-                  policies use the built-in <code>auth.active_tenant_id()</code>{" "}
-                  helper. RBAC/ReBAC via Ory Keto for fine-grained permissions.
-                </p>
-              </div>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Omnibase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    First-class tenant context switching. When users switch
+                    tenants, they get a new JWT with the active tenant ID. RLS
+                    policies use the built-in{" "}
+                    <code>auth.active_tenant_id()</code> helper. RBAC/ReBAC via
+                    Ory Keto for fine-grained permissions.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Supabase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    Requires manual Row-Level Security (RLS) policies per table.
+                    Works, but becomes complex and error-prone at scale.
+                    Multi-tenancy is not yet supported in Supabase Auth.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-3">
-              RBAC / Permissions
-            </h2>
+            <h2 className="text-xl font-semibold mb-3">RBAC / Permissions</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Supabase
-                </p>
-                <p className="text-sm">
-                  No built-in role system beyond Postgres roles. RBAC requires
-                  Custom Claims via Auth Hooks combined with RLS policies. JWT
-                  changes require re-login to take effect.
-                </p>
-              </div>
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Omnibase
-                </p>
-                <p className="text-sm">
-                  Role-based access control built on Ory Keto (ReBAC). Define
-                  roles and permissions that map to your app&apos;s domain.
-                  Changes take effect immediately.
-                </p>
-              </div>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Omnibase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    Role-based access control built on Ory Keto (ReBAC). Define
+                    roles and permissions that map to your app&apos;s domain.
+                    Changes take effect immediately.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Supabase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    No built-in role system beyond Postgres roles. RBAC requires
+                    Custom Claims via Auth Hooks combined with RLS policies. JWT
+                    changes require re-login to take effect.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
           <div>
             <h2 className="text-xl font-semibold mb-3">Stripe / Billing</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Supabase
-                </p>
-                <p className="text-sm">
-                  Stripe Sync Engine provides one-way sync from Stripe to your
-                  database. Foreign Data Wrapper for querying Stripe. Webhook
-                  handling and product management is manual.
-                </p>
-              </div>
-              <div className="p-4 border bg-card">
-                <p className="font-medium text-sm text-muted-foreground mb-2">
-                  Omnibase
-                </p>
-                <p className="text-sm">
-                  Declarative Stripe config in JSON. Define products and prices
-                  in code, push with CLI. Webhooks handled automatically. Two-way
-                  sync.
-                </p>
-              </div>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Omnibase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    Declarative Stripe config in JSON. Define products and
+                    prices in code, push with CLI. Webhooks handled
+                    automatically. Two-way sync.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="h-full overflow-hidden">
+                <CardHeader>
+                  <CardTitle>Supabase</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    Stripe Sync Engine provides one-way sync from Stripe to your
+                    database. Foreign Data Wrapper for querying Stripe. Webhook
+                    handling and product management is manual.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
-
         </section>
 
         {/* Summary Table */}
         <section className="mb-16">
           <h2 className="text-xl font-semibold mb-4">At a glance</h2>
-          <div className="border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="text-left p-3 font-medium">Feature</th>
-                  <th className="text-left p-3 font-medium">Omnibase</th>
-                  <th className="text-left p-3 font-medium">Supabase</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="rounded-lg border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="py-5 sm:w-50 pl-4">Feature</TableHead>
+                  <TableHead className="py-5 text-center font-semibold text-foreground">
+                    Omnibase
+                  </TableHead>
+                  <TableHead className="py-5 text-center">Supabase</TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
                 {comparisonData.map((row) => (
-                  <tr key={row.feature} className="border-b last:border-b-0">
-                    <td className="p-3 font-medium">{row.feature}</td>
-                    <td className="p-3">{renderValue(row.omnibase)}</td>
-                    <td className="p-3">{renderValue(row.supabase)}</td>
-                  </tr>
+                  <TableRow key={row.feature}>
+                    <TableCell className="py-5 font-medium whitespace-normal pl-4">
+                      {row.feature}
+                    </TableCell>
+                    <TableCell className="py-5 text-center  whitespace-normal">
+                      <CellValue value={row.omnibase} />
+                    </TableCell>
+                    <TableCell className="py-5 text-center whitespace-normal">
+                      <CellValue value={row.supabase} />
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </section>
 

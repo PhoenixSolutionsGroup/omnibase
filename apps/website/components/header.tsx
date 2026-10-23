@@ -3,7 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,11 +18,27 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Menu, Github, ChevronDown, Moon, Sun } from "lucide-react";
+import { Menu, Github, ChevronDown, Moon, Sun, X } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "next-themes";
 
 const compareItems = [{ title: "Supabase", href: "/compare/supabase" }];
+
+function Logo({ onClick }: { onClick?: () => void }) {
+  return (
+    <Link href="/" onClick={onClick} className="flex items-center gap-2">
+      <Image
+        src="/omnibase-logo.png"
+        alt="Omnibase"
+        width={16}
+        height={16}
+        className="rounded-lg"
+        unoptimized
+      />
+      <span className="font-semibold text-xl">Omnibase</span>
+    </Link>
+  );
+}
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -30,17 +52,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/omnibase-logo.png"
-            alt="Omnibase"
-            width={32}
-            height={32}
-            className="rounded-lg"
-            unoptimized
-          />
-          <span className="font-semibold text-xl">Omnibase</span>
-        </Link>
+        <Logo />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
@@ -124,12 +136,30 @@ export function Header() {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px]">
-            <nav className="flex flex-col gap-4 mt-8">
+          <SheetContent
+            side="top"
+            className="w-full gap-0 p-0 [&>button]:hidden"
+          >
+            <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+
+            {/* Header row, mirrors the real header */}
+            <div className="border-b border-border/40 bg-background">
+              <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+                <Logo onClick={() => setOpen(false)} />
+                <SheetClose asChild>
+                  <Button variant="ghost" size="icon">
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close menu</span>
+                  </Button>
+                </SheetClose>
+              </div>
+            </div>
+
+            <nav className="flex flex-col gap-4 p-4">
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
-                className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-md font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Home
               </Link>
@@ -138,7 +168,7 @@ export function Header() {
               <div>
                 <button
                   onClick={() => setCompareOpen(!compareOpen)}
-                  className="flex items-center justify-between w-full text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center justify-between w-full text-md font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Compare
                   <ChevronDown
@@ -148,7 +178,7 @@ export function Header() {
                   />
                 </button>
                 {compareOpen && (
-                  <div className="mt-2 ml-4 flex flex-col gap-2">
+                  <div className="mt-2 ml-2 flex flex-col gap-2">
                     {compareItems.map((item) => (
                       <Link
                         key={item.href}
@@ -168,16 +198,46 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
-                className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="text-md font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Docs
               </Link>
 
-              <Button asChild className="mt-4">
-                <Link href="https://docs.omnibase.tech/quickstart">
-                  Get Started
-                </Link>
-              </Button>
+              {/* Theme toggle, GitHub and CTA */}
+              <div className="mt-2 flex items-center gap-3 border-t border-border/40 pt-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={changeTheme}
+                  className="cursor-pointer"
+                >
+                  {resolvedTheme === "dark" ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+                <Button variant="ghost" size="icon" asChild>
+                  <Link
+                    href="https://github.com/PhoenixSolutionsGroup/omnibase"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                  >
+                    <Github className="h-5 w-5" />
+                    <span className="sr-only">GitHub</span>
+                  </Link>
+                </Button>
+                <Button asChild className="flex-1">
+                  <Link
+                    href="https://docs.omnibase.tech/quickstart"
+                    onClick={() => setOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </Button>
+              </div>
             </nav>
           </SheetContent>
         </Sheet>

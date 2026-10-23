@@ -78,7 +78,7 @@ export function ComparisonSection() {
                     <TableCell className="py-5 font-medium">
                       {row.feature}
                     </TableCell>
-                    <TableCell className="py-5 text-center bg-primary/5">
+                    <TableCell className="py-5 text-center ">
                       <CellValue value={row.omnibase} />
                     </TableCell>
                     <TableCell className="py-5 text-center">

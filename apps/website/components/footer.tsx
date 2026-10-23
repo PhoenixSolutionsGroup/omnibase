@@ -28,8 +28,8 @@ export function Footer() {
               <Image
                 src="/omnibase-logo.png"
                 alt="Omnibase"
-                width={32}
-                height={32}
+                width={16}
+                height={16}
                 className="rounded-lg"
                 unoptimized
               />

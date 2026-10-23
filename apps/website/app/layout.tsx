@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Header } from "@/components/header";
 
 const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -44,6 +44,10 @@ export const metadata: Metadata = {
     title: "Omnibase - The Open-Source Backend for Multi-Tenant SaaS",
     description:
       "Ship your SaaS in days, not months. Multi-tenancy, RBAC, and Stripe included.",
+  },
+  icons: {
+    icon: "/omnibase-logo.png",
+    apple: "/omnibase-logo.png",
   },
 };
 
