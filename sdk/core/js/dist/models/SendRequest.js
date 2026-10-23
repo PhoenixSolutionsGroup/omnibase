@@ -22,10 +22,6 @@ exports.SendRequestToJSONTyped = SendRequestToJSONTyped;
  * Check if a given object implements the SendRequest interface.
  */
 function instanceOfSendRequest(value) {
-    if (!('body' in value) || value['body'] === undefined)
-        return false;
-    if (!('subject' in value) || value['subject'] === undefined)
-        return false;
     if (!('to' in value) || value['to'] === undefined)
         return false;
     return true;
@@ -38,9 +34,11 @@ function SendRequestFromJSONTyped(json, ignoreDiscriminator) {
         return json;
     }
     return {
-        'body': json['body'],
+        'body': json['body'] == null ? undefined : json['body'],
+        'data': json['data'] == null ? undefined : json['data'],
         'plain': json['plain'] == null ? undefined : json['plain'],
-        'subject': json['subject'],
+        'subject': json['subject'] == null ? undefined : json['subject'],
+        'templateType': json['template_type'] == null ? undefined : json['template_type'],
         'to': json['to'],
     };
 }
@@ -53,8 +51,10 @@ function SendRequestToJSONTyped(value, ignoreDiscriminator = false) {
     }
     return {
         'body': value['body'],
+        'data': value['data'],
         'plain': value['plain'],
         'subject': value['subject'],
+        'template_type': value['templateType'],
         'to': value['to'],
     };
 }

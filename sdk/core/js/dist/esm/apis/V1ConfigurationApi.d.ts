@@ -10,12 +10,18 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, DeleteTemplateResponse, DeployNamespacesResponse, ListTemplatesResponse, SendRequest, SendResponse, StripeConfiguration, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
+import type { ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, DeleteSystemTemplateResponse, DeleteTemplateResponse, DeployNamespacesResponse, ListSystemTemplatesResponse, ListTemplatesResponse, SendHTMLRequest, SendResponse, SendTemplateRequest, StripeConfiguration, UpsertSystemTemplateRequest, UpsertSystemTemplateResponse, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
 export interface CreateOrUpdateEmailTemplateRequest {
     upsertTemplateRequest: UpsertTemplateRequest;
 }
+export interface CreateOrUpdateSystemEmailTemplateRequest {
+    upsertSystemTemplateRequest: UpsertSystemTemplateRequest;
+}
 export interface DeleteEmailTemplateRequest {
     type: string;
+}
+export interface DeleteSystemEmailTemplateRequest {
+    name: string;
 }
 export interface DeployPermissionNamespacesRequest {
     namespaces: Blob;
@@ -25,10 +31,17 @@ export interface GetStripeConfigHistoryRequest {
     offset?: number;
 }
 export interface SendEmailRequest {
-    sendRequest: SendRequest;
+    sendTemplateRequest: SendTemplateRequest;
+}
+export interface SendEmailHTMLRequest {
+    sendHTMLRequest: SendHTMLRequest;
 }
 export interface ServeEmailTemplateRequest {
     templateName: string;
+    type: string;
+}
+export interface ServeSystemEmailTemplateRequest {
+    name: string;
     type: string;
 }
 export interface UpdateStripeConfigRequest {
@@ -58,6 +71,14 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      */
     createOrUpdateEmailTemplate(requestParameters: CreateOrUpdateEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertTemplateResponse>;
     /**
+     * Create or update a system email template
+     */
+    createOrUpdateSystemEmailTemplateRaw(requestParameters: CreateOrUpdateSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertSystemTemplateResponse>>;
+    /**
+     * Create or update a system email template
+     */
+    createOrUpdateSystemEmailTemplate(requestParameters: CreateOrUpdateSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertSystemTemplateResponse>;
+    /**
      * Delete email template
      */
     deleteEmailTemplateRaw(requestParameters: DeleteEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTemplateResponse>>;
@@ -65,6 +86,14 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Delete email template
      */
     deleteEmailTemplate(requestParameters: DeleteEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTemplateResponse>;
+    /**
+     * Delete a system email template
+     */
+    deleteSystemEmailTemplateRaw(requestParameters: DeleteSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteSystemTemplateResponse>>;
+    /**
+     * Delete a system email template
+     */
+    deleteSystemEmailTemplate(requestParameters: DeleteSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteSystemTemplateResponse>;
     /**
      * Deploy Keto namespace configurations
      */
@@ -98,6 +127,14 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      */
     getStripeConfigSchema(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
     /**
+     * Get all system email templates
+     */
+    getSystemEmailTemplatesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListSystemTemplatesResponse>>;
+    /**
+     * Get all system email templates
+     */
+    getSystemEmailTemplates(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListSystemTemplatesResponse>;
+    /**
      * Pull config from Stripe
      */
     pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfiguration>>;
@@ -106,13 +143,21 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      */
     pullStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StripeConfiguration>;
     /**
-     * Send an email
+     * Send an email using an app template
      */
     sendEmailRaw(requestParameters: SendEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendResponse>>;
     /**
-     * Send an email
+     * Send an email using an app template
      */
     sendEmail(requestParameters: SendEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendResponse>;
+    /**
+     * Send a raw HTML email
+     */
+    sendEmailHTMLRaw(requestParameters: SendEmailHTMLRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendResponse>>;
+    /**
+     * Send a raw HTML email
+     */
+    sendEmailHTML(requestParameters: SendEmailHTMLRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendResponse>;
     /**
      * Serve an email template file
      */
@@ -121,6 +166,14 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Serve an email template file
      */
     serveEmailTemplate(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
+    /**
+     * Serve a system email template file
+     */
+    serveSystemEmailTemplateRaw(requestParameters: ServeSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
+    /**
+     * Serve a system email template file
+     */
+    serveSystemEmailTemplate(requestParameters: ServeSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
     /**
      * Update Stripe config
      */

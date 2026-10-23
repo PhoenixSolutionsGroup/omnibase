@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **HtmlBody** | **string** |  | 
 **Id** | **string** |  | 
 **Subject** | **string** |  | 
+**TenantId** | **NullableString** |  | 
 **Type** | **string** |  | 
 **UpdatedAt** | **time.Time** |  | 
 
@@ -15,7 +16,7 @@ Name | Type | Description | Notes
 
 ### NewEmailTemplate
 
-`func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, type_ string, updatedAt time.Time, ) *EmailTemplate`
+`func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, tenantId NullableString, type_ string, updatedAt time.Time, ) *EmailTemplate`
 
 NewEmailTemplate instantiates a new EmailTemplate object
 This constructor will assign default values to properties that have it defined,
@@ -110,6 +111,36 @@ and a boolean to check if the value has been set.
 SetSubject sets Subject field to given value.
 
 
+### GetTenantId
+
+`func (o *EmailTemplate) GetTenantId() string`
+
+GetTenantId returns the TenantId field if non-nil, zero value otherwise.
+
+### GetTenantIdOk
+
+`func (o *EmailTemplate) GetTenantIdOk() (*string, bool)`
+
+GetTenantIdOk returns a tuple with the TenantId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTenantId
+
+`func (o *EmailTemplate) SetTenantId(v string)`
+
+SetTenantId sets TenantId field to given value.
+
+
+### SetTenantIdNil
+
+`func (o *EmailTemplate) SetTenantIdNil(b bool)`
+
+ SetTenantIdNil sets the value for TenantId to be an explicit nil
+
+### UnsetTenantId
+`func (o *EmailTemplate) UnsetTenantId()`
+
+UnsetTenantId ensures that no value is present for TenantId, not even an explicit nil
 ### GetType
 
 `func (o *EmailTemplate) GetType() string`

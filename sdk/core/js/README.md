@@ -63,14 +63,19 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1AuthApi* | [**whoAmI**](docs/V1AuthApi.md#whoami) | **GET** /api/v1/auth/whoami | Get authenticated user identity
 *V1ConfigurationApi* | [**archiveAllStripeConfig**](docs/V1ConfigurationApi.md#archiveallstripeconfig) | **POST** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
 *V1ConfigurationApi* | [**createOrUpdateEmailTemplate**](docs/V1ConfigurationApi.md#createorupdateemailtemplate) | **POST** /api/v1/email/templates | Create or update email template
+*V1ConfigurationApi* | [**createOrUpdateSystemEmailTemplate**](docs/V1ConfigurationApi.md#createorupdatesystememailtemplate) | **POST** /api/v1/email/system-templates | Create or update a system email template
 *V1ConfigurationApi* | [**deleteEmailTemplate**](docs/V1ConfigurationApi.md#deleteemailtemplate) | **DELETE** /api/v1/email/templates/{type} | Delete email template
+*V1ConfigurationApi* | [**deleteSystemEmailTemplate**](docs/V1ConfigurationApi.md#deletesystememailtemplate) | **DELETE** /api/v1/email/system-templates/{name} | Delete a system email template
 *V1ConfigurationApi* | [**deployPermissionNamespaces**](docs/V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 *V1ConfigurationApi* | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates
 *V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
+*V1ConfigurationApi* | [**getSystemEmailTemplates**](docs/V1ConfigurationApi.md#getsystememailtemplates) | **GET** /api/v1/email/system-templates | Get all system email templates
 *V1ConfigurationApi* | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-*V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email
+*V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email using an app template
+*V1ConfigurationApi* | [**sendEmailHTML**](docs/V1ConfigurationApi.md#sendemailhtml) | **POST** /api/v1/email/send/html | Send a raw HTML email
 *V1ConfigurationApi* | [**serveEmailTemplate**](docs/V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
+*V1ConfigurationApi* | [**serveSystemEmailTemplate**](docs/V1ConfigurationApi.md#servesystememailtemplate) | **GET** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file
 *V1ConfigurationApi* | [**updateStripeConfig**](docs/V1ConfigurationApi.md#updatestripeconfig) | **POST** /api/v1/stripe/admin/config | Update Stripe config
 *V1ConfigurationApi* | [**validateStripeConfig**](docs/V1ConfigurationApi.md#validatestripeconfig) | **POST** /api/v1/stripe/admin/config/validate | Validate Stripe config
 *V1DatabaseApi* | [**generateDatabaseTypes**](docs/V1DatabaseApi.md#generatedatabasetypes) | **GET** /api/v1/database/typegen | Generate type definitions for the database schema
@@ -177,11 +182,13 @@ All URIs are relative to *https://api.omnibase.tech*
 - [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
 - [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
 - [DeleteRequest](docs/DeleteRequest.md)
+- [DeleteSystemTemplateResponse](docs/DeleteSystemTemplateResponse.md)
 - [DeleteTemplateResponse](docs/DeleteTemplateResponse.md)
 - [DeleteTenantResponse](docs/DeleteTenantResponse.md)
 - [DeployNamespacesResponse](docs/DeployNamespacesResponse.md)
 - [DownloadRequest](docs/DownloadRequest.md)
 - [DownloadResponse](docs/DownloadResponse.md)
+- [EmailSystemTemplate](docs/EmailSystemTemplate.md)
 - [EmailTemplate](docs/EmailTemplate.md)
 - [EnterpriseApplyResponse](docs/EnterpriseApplyResponse.md)
 - [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
@@ -202,6 +209,7 @@ All URIs are relative to *https://api.omnibase.tech*
 - [JWTResponse](docs/JWTResponse.md)
 - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
 - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
+- [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)
 - [ListTemplatesResponse](docs/ListTemplatesResponse.md)
 - [ListTenantsResponse](docs/ListTenantsResponse.md)
 - [ListWebhooksResponse](docs/ListWebhooksResponse.md)
@@ -238,8 +246,9 @@ All URIs are relative to *https://api.omnibase.tech*
 - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
 - [RemoveRequest](docs/RemoveRequest.md)
 - [RemoveResponse](docs/RemoveResponse.md)
-- [SendRequest](docs/SendRequest.md)
+- [SendHTMLRequest](docs/SendHTMLRequest.md)
 - [SendResponse](docs/SendResponse.md)
+- [SendTemplateRequest](docs/SendTemplateRequest.md)
 - [Session](docs/Session.md)
 - [SessionAuthenticationMethod](docs/SessionAuthenticationMethod.md)
 - [SessionDevice](docs/SessionDevice.md)
@@ -260,6 +269,8 @@ All URIs are relative to *https://api.omnibase.tech*
 - [UpdateUserRoleResponse](docs/UpdateUserRoleResponse.md)
 - [UploadRequest](docs/UploadRequest.md)
 - [UploadResponse](docs/UploadResponse.md)
+- [UpsertSystemTemplateRequest](docs/UpsertSystemTemplateRequest.md)
+- [UpsertSystemTemplateResponse](docs/UpsertSystemTemplateResponse.md)
 - [UpsertTemplateRequest](docs/UpsertTemplateRequest.md)
 - [UpsertTemplateResponse](docs/UpsertTemplateResponse.md)
 - [UserResponse](docs/UserResponse.md)

@@ -63,11 +63,13 @@ docs/DeleteObjectResponse.md
 docs/DeleteRelationshipRequest.md
 docs/DeleteRelationshipResponse.md
 docs/DeleteRequest.md
+docs/DeleteSystemTemplateResponse.md
 docs/DeleteTemplateResponse.md
 docs/DeleteTenantResponse.md
 docs/DeployNamespacesResponse.md
 docs/DownloadRequest.md
 docs/DownloadResponse.md
+docs/EmailSystemTemplate.md
 docs/EmailTemplate.md
 docs/EnterpriseApplyResponse.md
 docs/EnterprisePricesResponse.md
@@ -88,6 +90,7 @@ docs/InvoiceResponse.md
 docs/JWTResponse.md
 docs/ListRolesByTenantRow.md
 docs/ListStripeWebhooksRow.md
+docs/ListSystemTemplatesResponse.md
 docs/ListTemplatesResponse.md
 docs/ListTenantsResponse.md
 docs/ListWebhooksResponse.md
@@ -124,8 +127,9 @@ docs/RecoveryIdentityAddress.md
 docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
-docs/SendRequest.md
+docs/SendHTMLRequest.md
 docs/SendResponse.md
+docs/SendTemplateRequest.md
 docs/Session.md
 docs/SessionAuthenticationMethod.md
 docs/SessionDevice.md
@@ -146,6 +150,8 @@ docs/UpdateUserRoleRequest.md
 docs/UpdateUserRoleResponse.md
 docs/UploadRequest.md
 docs/UploadResponse.md
+docs/UpsertSystemTemplateRequest.md
+docs/UpsertSystemTemplateResponse.md
 docs/UpsertTemplateRequest.md
 docs/UpsertTemplateResponse.md
 docs/UserResponse.md
@@ -217,11 +223,13 @@ model_delete_object_response.go
 model_delete_relationship_request.go
 model_delete_relationship_response.go
 model_delete_request.go
+model_delete_system_template_response.go
 model_delete_template_response.go
 model_delete_tenant_response.go
 model_deploy_namespaces_response.go
 model_download_request.go
 model_download_response.go
+model_email_system_template.go
 model_email_template.go
 model_enterprise_apply_response.go
 model_enterprise_prices_response.go
@@ -242,6 +250,7 @@ model_invoice_response.go
 model_jwt_response.go
 model_list_roles_by_tenant_row.go
 model_list_stripe_webhooks_row.go
+model_list_system_templates_response.go
 model_list_templates_response.go
 model_list_tenants_response.go
 model_list_webhooks_response.go
@@ -278,8 +287,9 @@ model_recovery_identity_address.go
 model_relation_metadata_response.go
 model_remove_request.go
 model_remove_response.go
-model_send_request.go
+model_send_html_request.go
 model_send_response.go
+model_send_template_request.go
 model_session.go
 model_session_authentication_method.go
 model_session_device.go
@@ -300,6 +310,8 @@ model_update_user_role_request.go
 model_update_user_role_response.go
 model_upload_request.go
 model_upload_response.go
+model_upsert_system_template_request.go
+model_upsert_system_template_response.go
 model_upsert_template_request.go
 model_upsert_template_response.go
 model_user_response.go

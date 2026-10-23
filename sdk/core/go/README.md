@@ -88,14 +88,19 @@ Class | Method | HTTP request | Description
 *V1AuthAPI* | [**WhoAmI**](docs/V1AuthAPI.md#whoami) | **Get** /api/v1/auth/whoami | Get authenticated user identity
 *V1ConfigurationAPI* | [**ArchiveAllStripeConfig**](docs/V1ConfigurationAPI.md#archiveallstripeconfig) | **Post** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
 *V1ConfigurationAPI* | [**CreateOrUpdateEmailTemplate**](docs/V1ConfigurationAPI.md#createorupdateemailtemplate) | **Post** /api/v1/email/templates | Create or update email template
+*V1ConfigurationAPI* | [**CreateOrUpdateSystemEmailTemplate**](docs/V1ConfigurationAPI.md#createorupdatesystememailtemplate) | **Post** /api/v1/email/system-templates | Create or update a system email template
 *V1ConfigurationAPI* | [**DeleteEmailTemplate**](docs/V1ConfigurationAPI.md#deleteemailtemplate) | **Delete** /api/v1/email/templates/{type} | Delete email template
+*V1ConfigurationAPI* | [**DeleteSystemEmailTemplate**](docs/V1ConfigurationAPI.md#deletesystememailtemplate) | **Delete** /api/v1/email/system-templates/{name} | Delete a system email template
 *V1ConfigurationAPI* | [**DeployPermissionNamespaces**](docs/V1ConfigurationAPI.md#deploypermissionnamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 *V1ConfigurationAPI* | [**GetEmailTemplates**](docs/V1ConfigurationAPI.md#getemailtemplates) | **Get** /api/v1/email/templates | Get all email templates
 *V1ConfigurationAPI* | [**GetStripeConfigHistory**](docs/V1ConfigurationAPI.md#getstripeconfighistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationAPI* | [**GetStripeConfigSchema**](docs/V1ConfigurationAPI.md#getstripeconfigschema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
+*V1ConfigurationAPI* | [**GetSystemEmailTemplates**](docs/V1ConfigurationAPI.md#getsystememailtemplates) | **Get** /api/v1/email/system-templates | Get all system email templates
 *V1ConfigurationAPI* | [**PullStripeConfig**](docs/V1ConfigurationAPI.md#pullstripeconfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-*V1ConfigurationAPI* | [**SendEmail**](docs/V1ConfigurationAPI.md#sendemail) | **Post** /api/v1/email/send | Send an email
+*V1ConfigurationAPI* | [**SendEmail**](docs/V1ConfigurationAPI.md#sendemail) | **Post** /api/v1/email/send | Send an email using an app template
+*V1ConfigurationAPI* | [**SendEmailHTML**](docs/V1ConfigurationAPI.md#sendemailhtml) | **Post** /api/v1/email/send/html | Send a raw HTML email
 *V1ConfigurationAPI* | [**ServeEmailTemplate**](docs/V1ConfigurationAPI.md#serveemailtemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
+*V1ConfigurationAPI* | [**ServeSystemEmailTemplate**](docs/V1ConfigurationAPI.md#servesystememailtemplate) | **Get** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file
 *V1ConfigurationAPI* | [**UpdateStripeConfig**](docs/V1ConfigurationAPI.md#updatestripeconfig) | **Post** /api/v1/stripe/admin/config | Update Stripe config
 *V1ConfigurationAPI* | [**ValidateStripeConfig**](docs/V1ConfigurationAPI.md#validatestripeconfig) | **Post** /api/v1/stripe/admin/config/validate | Validate Stripe config
 *V1DatabaseAPI* | [**GenerateDatabaseTypes**](docs/V1DatabaseAPI.md#generatedatabasetypes) | **Get** /api/v1/database/typegen | Generate type definitions for the database schema
@@ -202,11 +207,13 @@ Class | Method | HTTP request | Description
  - [DeleteRelationshipRequest](docs/DeleteRelationshipRequest.md)
  - [DeleteRelationshipResponse](docs/DeleteRelationshipResponse.md)
  - [DeleteRequest](docs/DeleteRequest.md)
+ - [DeleteSystemTemplateResponse](docs/DeleteSystemTemplateResponse.md)
  - [DeleteTemplateResponse](docs/DeleteTemplateResponse.md)
  - [DeleteTenantResponse](docs/DeleteTenantResponse.md)
  - [DeployNamespacesResponse](docs/DeployNamespacesResponse.md)
  - [DownloadRequest](docs/DownloadRequest.md)
  - [DownloadResponse](docs/DownloadResponse.md)
+ - [EmailSystemTemplate](docs/EmailSystemTemplate.md)
  - [EmailTemplate](docs/EmailTemplate.md)
  - [EnterpriseApplyResponse](docs/EnterpriseApplyResponse.md)
  - [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
@@ -227,6 +234,7 @@ Class | Method | HTTP request | Description
  - [JWTResponse](docs/JWTResponse.md)
  - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
  - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
+ - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)
  - [ListTemplatesResponse](docs/ListTemplatesResponse.md)
  - [ListTenantsResponse](docs/ListTenantsResponse.md)
  - [ListWebhooksResponse](docs/ListWebhooksResponse.md)
@@ -263,8 +271,9 @@ Class | Method | HTTP request | Description
  - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
  - [RemoveRequest](docs/RemoveRequest.md)
  - [RemoveResponse](docs/RemoveResponse.md)
- - [SendRequest](docs/SendRequest.md)
+ - [SendHTMLRequest](docs/SendHTMLRequest.md)
  - [SendResponse](docs/SendResponse.md)
+ - [SendTemplateRequest](docs/SendTemplateRequest.md)
  - [Session](docs/Session.md)
  - [SessionAuthenticationMethod](docs/SessionAuthenticationMethod.md)
  - [SessionDevice](docs/SessionDevice.md)
@@ -285,6 +294,8 @@ Class | Method | HTTP request | Description
  - [UpdateUserRoleResponse](docs/UpdateUserRoleResponse.md)
  - [UploadRequest](docs/UploadRequest.md)
  - [UploadResponse](docs/UploadResponse.md)
+ - [UpsertSystemTemplateRequest](docs/UpsertSystemTemplateRequest.md)
+ - [UpsertSystemTemplateResponse](docs/UpsertSystemTemplateResponse.md)
  - [UpsertTemplateRequest](docs/UpsertTemplateRequest.md)
  - [UpsertTemplateResponse](docs/UpsertTemplateResponse.md)
  - [UserResponse](docs/UserResponse.md)

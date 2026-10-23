@@ -18,13 +18,18 @@ import type {
   ArchiveAllResponse,
   ConfigHistoryResponse,
   ConfigResponse,
+  DeleteSystemTemplateResponse,
   DeleteTemplateResponse,
   DeployNamespacesResponse,
   ErrorModel,
+  ListSystemTemplatesResponse,
   ListTemplatesResponse,
-  SendRequest,
+  SendHTMLRequest,
   SendResponse,
+  SendTemplateRequest,
   StripeConfiguration,
+  UpsertSystemTemplateRequest,
+  UpsertSystemTemplateResponse,
   UpsertTemplateRequest,
   UpsertTemplateResponse,
 } from '../models/index';
@@ -35,20 +40,30 @@ import {
     ConfigHistoryResponseToJSON,
     ConfigResponseFromJSON,
     ConfigResponseToJSON,
+    DeleteSystemTemplateResponseFromJSON,
+    DeleteSystemTemplateResponseToJSON,
     DeleteTemplateResponseFromJSON,
     DeleteTemplateResponseToJSON,
     DeployNamespacesResponseFromJSON,
     DeployNamespacesResponseToJSON,
     ErrorModelFromJSON,
     ErrorModelToJSON,
+    ListSystemTemplatesResponseFromJSON,
+    ListSystemTemplatesResponseToJSON,
     ListTemplatesResponseFromJSON,
     ListTemplatesResponseToJSON,
-    SendRequestFromJSON,
-    SendRequestToJSON,
+    SendHTMLRequestFromJSON,
+    SendHTMLRequestToJSON,
     SendResponseFromJSON,
     SendResponseToJSON,
+    SendTemplateRequestFromJSON,
+    SendTemplateRequestToJSON,
     StripeConfigurationFromJSON,
     StripeConfigurationToJSON,
+    UpsertSystemTemplateRequestFromJSON,
+    UpsertSystemTemplateRequestToJSON,
+    UpsertSystemTemplateResponseFromJSON,
+    UpsertSystemTemplateResponseToJSON,
     UpsertTemplateRequestFromJSON,
     UpsertTemplateRequestToJSON,
     UpsertTemplateResponseFromJSON,
@@ -59,8 +74,16 @@ export interface CreateOrUpdateEmailTemplateRequest {
     upsertTemplateRequest: UpsertTemplateRequest;
 }
 
+export interface CreateOrUpdateSystemEmailTemplateRequest {
+    upsertSystemTemplateRequest: UpsertSystemTemplateRequest;
+}
+
 export interface DeleteEmailTemplateRequest {
     type: string;
+}
+
+export interface DeleteSystemEmailTemplateRequest {
+    name: string;
 }
 
 export interface DeployPermissionNamespacesRequest {
@@ -73,11 +96,20 @@ export interface GetStripeConfigHistoryRequest {
 }
 
 export interface SendEmailRequest {
-    sendRequest: SendRequest;
+    sendTemplateRequest: SendTemplateRequest;
+}
+
+export interface SendEmailHTMLRequest {
+    sendHTMLRequest: SendHTMLRequest;
 }
 
 export interface ServeEmailTemplateRequest {
     templateName: string;
+    type: string;
+}
+
+export interface ServeSystemEmailTemplateRequest {
+    name: string;
     type: string;
 }
 
@@ -179,6 +211,49 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     }
 
     /**
+     * Create or update a system email template
+     */
+    async createOrUpdateSystemEmailTemplateRaw(requestParameters: CreateOrUpdateSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpsertSystemTemplateResponse>> {
+        if (requestParameters['upsertSystemTemplateRequest'] == null) {
+            throw new runtime.RequiredError(
+                'upsertSystemTemplateRequest',
+                'Required parameter "upsertSystemTemplateRequest" was null or undefined when calling createOrUpdateSystemEmailTemplate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/system-templates`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpsertSystemTemplateRequestToJSON(requestParameters['upsertSystemTemplateRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpsertSystemTemplateResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Create or update a system email template
+     */
+    async createOrUpdateSystemEmailTemplate(requestParameters: CreateOrUpdateSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpsertSystemTemplateResponse> {
+        const response = await this.createOrUpdateSystemEmailTemplateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Delete email template
      */
     async deleteEmailTemplateRaw(requestParameters: DeleteEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteTemplateResponse>> {
@@ -224,6 +299,47 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      */
     async deleteEmailTemplate(requestParameters: DeleteEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteTemplateResponse> {
         const response = await this.deleteEmailTemplateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete a system email template
+     */
+    async deleteSystemEmailTemplateRaw(requestParameters: DeleteSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteSystemTemplateResponse>> {
+        if (requestParameters['name'] == null) {
+            throw new runtime.RequiredError(
+                'name',
+                'Required parameter "name" was null or undefined when calling deleteSystemEmailTemplate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/system-templates/{name}`;
+        urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteSystemTemplateResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete a system email template
+     */
+    async deleteSystemEmailTemplate(requestParameters: DeleteSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteSystemTemplateResponse> {
+        const response = await this.deleteSystemEmailTemplateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -404,6 +520,39 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get all system email templates
+     */
+    async getSystemEmailTemplatesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ListSystemTemplatesResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/system-templates`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ListSystemTemplatesResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get all system email templates
+     */
+    async getSystemEmailTemplates(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListSystemTemplatesResponse> {
+        const response = await this.getSystemEmailTemplatesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Pull config from Stripe
      */
     async pullStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StripeConfiguration>> {
@@ -437,13 +586,13 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     }
 
     /**
-     * Send an email
+     * Send an email using an app template
      */
     async sendEmailRaw(requestParameters: SendEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendResponse>> {
-        if (requestParameters['sendRequest'] == null) {
+        if (requestParameters['sendTemplateRequest'] == null) {
             throw new runtime.RequiredError(
-                'sendRequest',
-                'Required parameter "sendRequest" was null or undefined when calling sendEmail().'
+                'sendTemplateRequest',
+                'Required parameter "sendTemplateRequest" was null or undefined when calling sendEmail().'
             );
         }
 
@@ -473,17 +622,68 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: SendRequestToJSON(requestParameters['sendRequest']),
+            body: SendTemplateRequestToJSON(requestParameters['sendTemplateRequest']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SendResponseFromJSON(jsonValue));
     }
 
     /**
-     * Send an email
+     * Send an email using an app template
      */
     async sendEmail(requestParameters: SendEmailRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendResponse> {
         const response = await this.sendEmailRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Send a raw HTML email
+     */
+    async sendEmailHTMLRaw(requestParameters: SendEmailHTMLRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SendResponse>> {
+        if (requestParameters['sendHTMLRequest'] == null) {
+            throw new runtime.RequiredError(
+                'sendHTMLRequest',
+                'Required parameter "sendHTMLRequest" was null or undefined when calling sendEmailHTML().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/send/html`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SendHTMLRequestToJSON(requestParameters['sendHTMLRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SendResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Send a raw HTML email
+     */
+    async sendEmailHTML(requestParameters: SendEmailHTMLRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SendResponse> {
+        const response = await this.sendEmailHTMLRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -545,6 +745,59 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      */
     async serveEmailTemplate(requestParameters: ServeEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.serveEmailTemplateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Serve a system email template file
+     */
+    async serveSystemEmailTemplateRaw(requestParameters: ServeSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+        if (requestParameters['name'] == null) {
+            throw new runtime.RequiredError(
+                'name',
+                'Required parameter "name" was null or undefined when calling serveSystemEmailTemplate().'
+            );
+        }
+
+        if (requestParameters['type'] == null) {
+            throw new runtime.RequiredError(
+                'type',
+                'Required parameter "type" was null or undefined when calling serveSystemEmailTemplate().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/email/system-templates/{name}/{type}`;
+        urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+        urlPath = urlPath.replace(`{${"type"}}`, encodeURIComponent(String(requestParameters['type'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     * Serve a system email template file
+     */
+    async serveSystemEmailTemplate(requestParameters: ServeSystemEmailTemplateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.serveSystemEmailTemplateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

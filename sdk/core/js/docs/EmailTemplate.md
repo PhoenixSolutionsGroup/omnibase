@@ -10,6 +10,7 @@ Name | Type
 `htmlBody` | string
 `id` | string
 `subject` | string
+`tenantId` | string
 `type` | string
 `updatedAt` | Date
 
@@ -24,6 +25,7 @@ const example = {
   "htmlBody": null,
   "id": null,
   "subject": null,
+  "tenantId": null,
   "type": null,
   "updatedAt": null,
 } satisfies EmailTemplate

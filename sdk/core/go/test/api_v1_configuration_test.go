@@ -46,6 +46,18 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1ConfigurationAPIService CreateOrUpdateSystemEmailTemplate", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.CreateOrUpdateSystemEmailTemplate(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1ConfigurationAPIService DeleteEmailTemplate", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -53,6 +65,20 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 		var type_ string
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.DeleteEmailTemplate(context.Background(), type_).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1ConfigurationAPIService DeleteSystemEmailTemplate", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var name string
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.DeleteSystemEmailTemplate(context.Background(), name).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -108,6 +134,18 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1ConfigurationAPIService GetSystemEmailTemplates", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.GetSystemEmailTemplates(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1ConfigurationAPIService PullStripeConfig", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -132,6 +170,18 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test V1ConfigurationAPIService SendEmailHTML", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.SendEmailHTML(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test V1ConfigurationAPIService ServeEmailTemplate", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -140,6 +190,21 @@ func Test_omnibase_V1ConfigurationAPIService(t *testing.T) {
 		var type_ string
 
 		resp, httpRes, err := apiClient.V1ConfigurationAPI.ServeEmailTemplate(context.Background(), templateName, type_).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test V1ConfigurationAPIService ServeSystemEmailTemplate", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var name string
+		var type_ string
+
+		resp, httpRes, err := apiClient.V1ConfigurationAPI.ServeSystemEmailTemplate(context.Background(), name, type_).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

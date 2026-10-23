@@ -20,7 +20,13 @@ export interface SendRequest {
      * @type {string}
      * @memberof SendRequest
      */
-    body: string;
+    body?: string;
+    /**
+     *
+     * @type {object}
+     * @memberof SendRequest
+     */
+    data?: object;
     /**
      *
      * @type {string}
@@ -32,7 +38,13 @@ export interface SendRequest {
      * @type {string}
      * @memberof SendRequest
      */
-    subject: string;
+    subject?: string;
+    /**
+     *
+     * @type {string}
+     * @memberof SendRequest
+     */
+    templateType?: string;
     /**
      *
      * @type {string}

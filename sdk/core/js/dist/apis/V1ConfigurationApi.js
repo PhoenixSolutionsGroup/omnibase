@@ -132,6 +132,40 @@ class V1ConfigurationApi extends runtime.BaseAPI {
         });
     }
     /**
+     * Create or update a system email template
+     */
+    createOrUpdateSystemEmailTemplateRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['upsertSystemTemplateRequest'] == null) {
+                throw new runtime.RequiredError('upsertSystemTemplateRequest', 'Required parameter "upsertSystemTemplateRequest" was null or undefined when calling createOrUpdateSystemEmailTemplate().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            headerParameters['Content-Type'] = 'application/json';
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/email/system-templates`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'POST',
+                headers: headerParameters,
+                query: queryParameters,
+                body: (0, index_1.UpsertSystemTemplateRequestToJSON)(requestParameters['upsertSystemTemplateRequest']),
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.UpsertSystemTemplateResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Create or update a system email template
+     */
+    createOrUpdateSystemEmailTemplate(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.createOrUpdateSystemEmailTemplateRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
      * Delete email template
      */
     deleteEmailTemplateRaw(requestParameters, initOverrides) {
@@ -167,6 +201,39 @@ class V1ConfigurationApi extends runtime.BaseAPI {
     deleteEmailTemplate(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.deleteEmailTemplateRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
+     * Delete a system email template
+     */
+    deleteSystemEmailTemplateRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['name'] == null) {
+                throw new runtime.RequiredError('name', 'Required parameter "name" was null or undefined when calling deleteSystemEmailTemplate().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/email/system-templates/{name}`;
+            urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+            const response = yield this.request({
+                path: urlPath,
+                method: 'DELETE',
+                headers: headerParameters,
+                query: queryParameters,
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.DeleteSystemTemplateResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Delete a system email template
+     */
+    deleteSystemEmailTemplate(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.deleteSystemEmailTemplateRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -323,6 +390,35 @@ class V1ConfigurationApi extends runtime.BaseAPI {
         });
     }
     /**
+     * Get all system email templates
+     */
+    getSystemEmailTemplatesRaw(initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queryParameters = {};
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/email/system-templates`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ListSystemTemplatesResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Get all system email templates
+     */
+    getSystemEmailTemplates(initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.getSystemEmailTemplatesRaw(initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
      * Pull config from Stripe
      */
     pullStripeConfigRaw(initOverrides) {
@@ -352,12 +448,12 @@ class V1ConfigurationApi extends runtime.BaseAPI {
         });
     }
     /**
-     * Send an email
+     * Send an email using an app template
      */
     sendEmailRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (requestParameters['sendRequest'] == null) {
-                throw new runtime.RequiredError('sendRequest', 'Required parameter "sendRequest" was null or undefined when calling sendEmail().');
+            if (requestParameters['sendTemplateRequest'] == null) {
+                throw new runtime.RequiredError('sendTemplateRequest', 'Required parameter "sendTemplateRequest" was null or undefined when calling sendEmail().');
             }
             const queryParameters = {};
             const headerParameters = {};
@@ -377,17 +473,57 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 method: 'POST',
                 headers: headerParameters,
                 query: queryParameters,
-                body: (0, index_1.SendRequestToJSON)(requestParameters['sendRequest']),
+                body: (0, index_1.SendTemplateRequestToJSON)(requestParameters['sendTemplateRequest']),
             }, initOverrides);
             return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SendResponseFromJSON)(jsonValue));
         });
     }
     /**
-     * Send an email
+     * Send an email using an app template
      */
     sendEmail(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.sendEmailRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
+     * Send a raw HTML email
+     */
+    sendEmailHTMLRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['sendHTMLRequest'] == null) {
+                throw new runtime.RequiredError('sendHTMLRequest', 'Required parameter "sendHTMLRequest" was null or undefined when calling sendEmailHTML().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            headerParameters['Content-Type'] = 'application/json';
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+            }
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
+            }
+            let urlPath = `/api/v1/email/send/html`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'POST',
+                headers: headerParameters,
+                query: queryParameters,
+                body: (0, index_1.SendHTMLRequestToJSON)(requestParameters['sendHTMLRequest']),
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.SendResponseFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Send a raw HTML email
+     */
+    sendEmailHTML(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.sendEmailHTMLRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }
@@ -436,6 +572,48 @@ class V1ConfigurationApi extends runtime.BaseAPI {
     serveEmailTemplate(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.serveEmailTemplateRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
+     * Serve a system email template file
+     */
+    serveSystemEmailTemplateRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['name'] == null) {
+                throw new runtime.RequiredError('name', 'Required parameter "name" was null or undefined when calling serveSystemEmailTemplate().');
+            }
+            if (requestParameters['type'] == null) {
+                throw new runtime.RequiredError('type', 'Required parameter "type" was null or undefined when calling serveSystemEmailTemplate().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/email/system-templates/{name}/{type}`;
+            urlPath = urlPath.replace(`{${"name"}}`, encodeURIComponent(String(requestParameters['name'])));
+            urlPath = urlPath.replace(`{${"type"}}`, encodeURIComponent(String(requestParameters['type'])));
+            const response = yield this.request({
+                path: urlPath,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            }, initOverrides);
+            if (this.isJsonMime(response.headers.get('content-type'))) {
+                return new runtime.JSONApiResponse(response);
+            }
+            else {
+                return new runtime.TextApiResponse(response);
+            }
+        });
+    }
+    /**
+     * Serve a system email template file
+     */
+    serveSystemEmailTemplate(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.serveSystemEmailTemplateRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }

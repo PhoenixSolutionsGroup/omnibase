@@ -48,6 +48,12 @@ export interface EmailTemplate {
      * @type {string}
      * @memberof EmailTemplate
      */
+    tenantId: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof EmailTemplate
+     */
     type: string;
     /**
      * 
@@ -65,6 +71,7 @@ export function instanceOfEmailTemplate(value: object): value is EmailTemplate {
     if (!('htmlBody' in value) || value['htmlBody'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('subject' in value) || value['subject'] === undefined) return false;
+    if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
     if (!('type' in value) || value['type'] === undefined) return false;
     if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
     return true;
@@ -84,6 +91,7 @@ export function EmailTemplateFromJSONTyped(json: any, ignoreDiscriminator: boole
         'htmlBody': json['html_body'],
         'id': json['id'],
         'subject': json['subject'],
+        'tenantId': json['tenant_id'],
         'type': json['type'],
         'updatedAt': (new Date(json['updated_at'])),
     };
@@ -104,6 +112,7 @@ export function EmailTemplateToJSONTyped(value?: EmailTemplate | null, ignoreDis
         'html_body': value['htmlBody'],
         'id': value['id'],
         'subject': value['subject'],
+        'tenant_id': value['tenantId'],
         'type': value['type'],
         'updated_at': value['updatedAt'].toISOString(),
     };

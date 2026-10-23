@@ -16,50 +16,50 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface SendRequest
+ * @interface SendHTMLRequest
  */
-export interface SendRequest {
+export interface SendHTMLRequest {
     /**
      * 
      * @type {string}
-     * @memberof SendRequest
+     * @memberof SendHTMLRequest
      */
     body: string;
     /**
      * 
      * @type {string}
-     * @memberof SendRequest
+     * @memberof SendHTMLRequest
      */
     plain?: string;
     /**
      * 
      * @type {string}
-     * @memberof SendRequest
+     * @memberof SendHTMLRequest
      */
     subject: string;
     /**
      * 
      * @type {string}
-     * @memberof SendRequest
+     * @memberof SendHTMLRequest
      */
     to: string;
 }
 
 /**
- * Check if a given object implements the SendRequest interface.
+ * Check if a given object implements the SendHTMLRequest interface.
  */
-export function instanceOfSendRequest(value: object): value is SendRequest {
+export function instanceOfSendHTMLRequest(value: object): value is SendHTMLRequest {
     if (!('body' in value) || value['body'] === undefined) return false;
     if (!('subject' in value) || value['subject'] === undefined) return false;
     if (!('to' in value) || value['to'] === undefined) return false;
     return true;
 }
 
-export function SendRequestFromJSON(json: any): SendRequest {
-    return SendRequestFromJSONTyped(json, false);
+export function SendHTMLRequestFromJSON(json: any): SendHTMLRequest {
+    return SendHTMLRequestFromJSONTyped(json, false);
 }
 
-export function SendRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SendRequest {
+export function SendHTMLRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SendHTMLRequest {
     if (json == null) {
         return json;
     }
@@ -72,11 +72,11 @@ export function SendRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean
     };
 }
 
-export function SendRequestToJSON(json: any): SendRequest {
-    return SendRequestToJSONTyped(json, false);
+export function SendHTMLRequestToJSON(json: any): SendHTMLRequest {
+    return SendHTMLRequestToJSONTyped(json, false);
 }
 
-export function SendRequestToJSONTyped(value?: SendRequest | null, ignoreDiscriminator: boolean = false): any {
+export function SendHTMLRequestToJSONTyped(value?: SendHTMLRequest | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

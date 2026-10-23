@@ -44,6 +44,12 @@ export interface EmailTemplate {
      * @type {string}
      * @memberof EmailTemplate
      */
+    tenantId: string | null;
+    /**
+     *
+     * @type {string}
+     * @memberof EmailTemplate
+     */
     type: string;
     /**
      *

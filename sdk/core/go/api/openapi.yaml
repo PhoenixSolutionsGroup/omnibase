@@ -328,7 +328,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SendRequest"
+              $ref: "#/components/schemas/SendTemplateRequest"
         required: true
       responses:
         "200":
@@ -348,7 +348,160 @@ paths:
       - CookieAuth: []
       - ServiceKeyAuth: []
       - AppKeyAuth: []
-      summary: Send an email
+      summary: Send an email using an app template
+      tags:
+      - V1Configuration
+  /api/v1/email/send/html:
+    post:
+      operationId: sendEmailHTML
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendHTMLRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - SessionTokenAuth: []
+      - CookieAuth: []
+      - ServiceKeyAuth: []
+      - AppKeyAuth: []
+      summary: Send a raw HTML email
+      tags:
+      - V1Configuration
+  /api/v1/email/system-templates:
+    get:
+      operationId: getSystemEmailTemplates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSystemTemplatesResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - ServiceKeyAuth: []
+      summary: Get all system email templates
+      tags:
+      - V1Configuration
+    post:
+      operationId: createOrUpdateSystemEmailTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertSystemTemplateRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpsertSystemTemplateResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - ServiceKeyAuth: []
+      summary: Create or update a system email template
+      tags:
+      - V1Configuration
+  /api/v1/email/system-templates/{name}:
+    delete:
+      operationId: deleteSystemEmailTemplate
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteSystemTemplateResponse"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - ServiceKeyAuth: []
+      summary: Delete a system email template
+      tags:
+      - V1Configuration
+  /api/v1/email/system-templates/{name}/{type}:
+    get:
+      operationId: serveSystemEmailTemplate
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: type
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: string
+          description: OK
+          headers:
+            Cache-Control:
+              explode: false
+              schema:
+                type: string
+              style: simple
+            Content-Type:
+              explode: false
+              schema:
+                type: string
+              style: simple
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - ServiceKeyAuth: []
+      summary: Serve a system email template file
       tags:
       - V1Configuration
   /api/v1/email/templates:
@@ -4606,6 +4759,15 @@ components:
           type: string
       required:
       - user_id
+    DeleteSystemTemplateResponse:
+      additionalProperties: false
+      example:
+        message: message
+      properties:
+        message:
+          type: string
+      required:
+      - message
     DeleteTemplateResponse:
       additionalProperties: false
       example:
@@ -4667,9 +4829,45 @@ components:
           type: string
       required:
       - download_url
+    EmailSystemTemplate:
+      additionalProperties: false
+      example:
+        plaintext_body: plaintext_body
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        html_body: html_body
+        subject: subject
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        html_body:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        plaintext_body:
+          type: string
+        subject:
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      required:
+      - created_at
+      - html_body
+      - id
+      - name
+      - plaintext_body
+      - subject
+      - updated_at
     EmailTemplate:
       additionalProperties: false
       example:
+        tenant_id: tenant_id
         updated_at: 2000-01-23T04:56:07.000+00:00
         html_body: html_body
         subject: subject
@@ -4686,6 +4884,9 @@ components:
           type: string
         subject:
           type: string
+        tenant_id:
+          nullable: true
+          type: string
         type:
           type: string
         updated_at:
@@ -4696,6 +4897,7 @@ components:
       - html_body
       - id
       - subject
+      - tenant_id
       - type
       - updated_at
     EnterpriseApplyResponse:
@@ -5544,17 +5746,50 @@ components:
       - stripe_id
       - updated_at
       - url
+    ListSystemTemplatesResponse:
+      additionalProperties: false
+      example:
+        templates:
+        - plaintext_body: plaintext_body
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          html_body: html_body
+          subject: subject
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        - plaintext_body: plaintext_body
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          html_body: html_body
+          subject: subject
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        count: 0
+      properties:
+        count:
+          format: int64
+          type: integer
+        templates:
+          items:
+            $ref: "#/components/schemas/EmailSystemTemplate"
+          nullable: true
+          type: array
+      required:
+      - count
+      - templates
     ListTemplatesResponse:
       additionalProperties: false
       example:
         templates:
-        - updated_at: 2000-01-23T04:56:07.000+00:00
+        - tenant_id: tenant_id
+          updated_at: 2000-01-23T04:56:07.000+00:00
           html_body: html_body
           subject: subject
           created_at: 2000-01-23T04:56:07.000+00:00
           id: id
           type: type
-        - updated_at: 2000-01-23T04:56:07.000+00:00
+        - tenant_id: tenant_id
+          updated_at: 2000-01-23T04:56:07.000+00:00
           html_body: html_body
           subject: subject
           created_at: 2000-01-23T04:56:07.000+00:00
@@ -6826,7 +7061,7 @@ components:
       - message
       - status
       - subscription_id
-    SendRequest:
+    SendHTMLRequest:
       additionalProperties: false
       example:
         plain: plain
@@ -6855,6 +7090,23 @@ components:
           type: string
       required:
       - message
+    SendTemplateRequest:
+      additionalProperties: {}
+      example:
+        data: "{}"
+        template_type: template_type
+        to: to
+      properties:
+        data:
+          additionalProperties: false
+          type: object
+        template_type:
+          type: string
+        to:
+          type: string
+      required:
+      - template_type
+      - to
     Session:
       additionalProperties: {}
       example:
@@ -8367,6 +8619,46 @@ components:
       - id
       - path
       - upload_url
+    UpsertSystemTemplateRequest:
+      additionalProperties: false
+      example:
+        plaintext_body: plaintext_body
+        html_body: html_body
+        subject: subject
+        name: name
+      properties:
+        html_body:
+          type: string
+        name:
+          type: string
+        plaintext_body:
+          type: string
+        subject:
+          type: string
+      required:
+      - html_body
+      - name
+      - subject
+    UpsertSystemTemplateResponse:
+      additionalProperties: false
+      example:
+        template:
+          plaintext_body: plaintext_body
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          html_body: html_body
+          subject: subject
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        message: message
+      properties:
+        message:
+          type: string
+        template:
+          $ref: "#/components/schemas/EmailSystemTemplate"
+      required:
+      - message
+      - template
     UpsertTemplateRequest:
       additionalProperties: false
       example:
@@ -8388,6 +8680,7 @@ components:
       additionalProperties: false
       example:
         template:
+          tenant_id: tenant_id
           updated_at: 2000-01-23T04:56:07.000+00:00
           html_body: html_body
           subject: subject

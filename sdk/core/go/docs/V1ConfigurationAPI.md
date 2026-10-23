@@ -6,14 +6,19 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ArchiveAllStripeConfig**](V1ConfigurationAPI.md#ArchiveAllStripeConfig) | **Post** /api/v1/stripe/admin/config/archive-all | Archive all Stripe config
 [**CreateOrUpdateEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateEmailTemplate) | **Post** /api/v1/email/templates | Create or update email template
+[**CreateOrUpdateSystemEmailTemplate**](V1ConfigurationAPI.md#CreateOrUpdateSystemEmailTemplate) | **Post** /api/v1/email/system-templates | Create or update a system email template
 [**DeleteEmailTemplate**](V1ConfigurationAPI.md#DeleteEmailTemplate) | **Delete** /api/v1/email/templates/{type} | Delete email template
+[**DeleteSystemEmailTemplate**](V1ConfigurationAPI.md#DeleteSystemEmailTemplate) | **Delete** /api/v1/email/system-templates/{name} | Delete a system email template
 [**DeployPermissionNamespaces**](V1ConfigurationAPI.md#DeployPermissionNamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 [**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates) | **Get** /api/v1/email/templates | Get all email templates
 [**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 [**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
+[**GetSystemEmailTemplates**](V1ConfigurationAPI.md#GetSystemEmailTemplates) | **Get** /api/v1/email/system-templates | Get all system email templates
 [**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
-[**SendEmail**](V1ConfigurationAPI.md#SendEmail) | **Post** /api/v1/email/send | Send an email
+[**SendEmail**](V1ConfigurationAPI.md#SendEmail) | **Post** /api/v1/email/send | Send an email using an app template
+[**SendEmailHTML**](V1ConfigurationAPI.md#SendEmailHTML) | **Post** /api/v1/email/send/html | Send a raw HTML email
 [**ServeEmailTemplate**](V1ConfigurationAPI.md#ServeEmailTemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
+[**ServeSystemEmailTemplate**](V1ConfigurationAPI.md#ServeSystemEmailTemplate) | **Get** /api/v1/email/system-templates/{name}/{type} | Serve a system email template file
 [**UpdateStripeConfig**](V1ConfigurationAPI.md#UpdateStripeConfig) | **Post** /api/v1/stripe/admin/config | Update Stripe config
 [**ValidateStripeConfig**](V1ConfigurationAPI.md#ValidateStripeConfig) | **Post** /api/v1/stripe/admin/config/validate | Validate Stripe config
 
@@ -142,6 +147,70 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
+## CreateOrUpdateSystemEmailTemplate
+
+> UpsertSystemTemplateResponse CreateOrUpdateSystemEmailTemplate(ctx).UpsertSystemTemplateRequest(upsertSystemTemplateRequest).Execute()
+
+Create or update a system email template
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	upsertSystemTemplateRequest := *openapiclient.NewUpsertSystemTemplateRequest("HtmlBody_example", "Name_example", "Subject_example") // UpsertSystemTemplateRequest | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.CreateOrUpdateSystemEmailTemplate(context.Background()).UpsertSystemTemplateRequest(upsertSystemTemplateRequest).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.CreateOrUpdateSystemEmailTemplate``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `CreateOrUpdateSystemEmailTemplate`: UpsertSystemTemplateResponse
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.CreateOrUpdateSystemEmailTemplate`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateOrUpdateSystemEmailTemplateRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **upsertSystemTemplateRequest** | [**UpsertSystemTemplateRequest**](UpsertSystemTemplateRequest.md) |  | 
+
+### Return type
+
+[**UpsertSystemTemplateResponse**](UpsertSystemTemplateResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## DeleteEmailTemplate
 
 > DeleteTemplateResponse DeleteEmailTemplate(ctx, type_).Execute()
@@ -199,6 +268,74 @@ Name | Type | Description  | Notes
 ### Authorization
 
 [ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteSystemEmailTemplate
+
+> DeleteSystemTemplateResponse DeleteSystemEmailTemplate(ctx, name).Execute()
+
+Delete a system email template
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	name := "name_example" // string | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.DeleteSystemEmailTemplate(context.Background(), name).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.DeleteSystemEmailTemplate``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `DeleteSystemEmailTemplate`: DeleteSystemTemplateResponse
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.DeleteSystemEmailTemplate`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteSystemEmailTemplateRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**DeleteSystemTemplateResponse**](DeleteSystemTemplateResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 
@@ -458,6 +595,65 @@ No authorization required
 [[Back to README]](../README.md)
 
 
+## GetSystemEmailTemplates
+
+> ListSystemTemplatesResponse GetSystemEmailTemplates(ctx).Execute()
+
+Get all system email templates
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.GetSystemEmailTemplates(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetSystemEmailTemplates``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetSystemEmailTemplates`: ListSystemTemplatesResponse
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetSystemEmailTemplates`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetSystemEmailTemplatesRequest struct via the builder pattern
+
+
+### Return type
+
+[**ListSystemTemplatesResponse**](ListSystemTemplatesResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## PullStripeConfig
 
 > StripeConfiguration PullStripeConfig(ctx).Execute()
@@ -519,9 +715,9 @@ Other parameters are passed through a pointer to a apiPullStripeConfigRequest st
 
 ## SendEmail
 
-> SendResponse SendEmail(ctx).SendRequest(sendRequest).Execute()
+> SendResponse SendEmail(ctx).SendTemplateRequest(sendTemplateRequest).Execute()
 
-Send an email
+Send an email using an app template
 
 ### Example
 
@@ -536,11 +732,11 @@ import (
 )
 
 func main() {
-	sendRequest := *openapiclient.NewSendRequest("Body_example", "Subject_example", "To_example") // SendRequest | 
+	sendTemplateRequest := *openapiclient.NewSendTemplateRequest("TemplateType_example", "To_example") // SendTemplateRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.SendEmail(context.Background()).SendRequest(sendRequest).Execute()
+	resp, r, err := apiClient.V1ConfigurationAPI.SendEmail(context.Background()).SendTemplateRequest(sendTemplateRequest).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.SendEmail``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -561,7 +757,71 @@ Other parameters are passed through a pointer to a apiSendEmailRequest struct vi
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **sendRequest** | [**SendRequest**](SendRequest.md) |  | 
+ **sendTemplateRequest** | [**SendTemplateRequest**](SendTemplateRequest.md) |  | 
+
+### Return type
+
+[**SendResponse**](SendResponse.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## SendEmailHTML
+
+> SendResponse SendEmailHTML(ctx).SendHTMLRequest(sendHTMLRequest).Execute()
+
+Send a raw HTML email
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	sendHTMLRequest := *openapiclient.NewSendHTMLRequest("Body_example", "Subject_example", "To_example") // SendHTMLRequest | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.SendEmailHTML(context.Background()).SendHTMLRequest(sendHTMLRequest).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.SendEmailHTML``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `SendEmailHTML`: SendResponse
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.SendEmailHTML`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiSendEmailHTMLRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **sendHTMLRequest** | [**SendHTMLRequest**](SendHTMLRequest.md) |  | 
 
 ### Return type
 
@@ -641,6 +901,77 @@ Name | Type | Description  | Notes
 ### Authorization
 
 [ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ServeSystemEmailTemplate
+
+> string ServeSystemEmailTemplate(ctx, name, type_).Execute()
+
+Serve a system email template file
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	name := "name_example" // string | 
+	type_ := "type__example" // string | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.ServeSystemEmailTemplate(context.Background(), name, type_).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.ServeSystemEmailTemplate``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `ServeSystemEmailTemplate`: string
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.ServeSystemEmailTemplate`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string** |  | 
+**type_** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiServeSystemEmailTemplateRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+**string**
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 

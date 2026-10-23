@@ -30,6 +30,8 @@ function instanceOfEmailTemplate(value) {
         return false;
     if (!('subject' in value) || value['subject'] === undefined)
         return false;
+    if (!('tenantId' in value) || value['tenantId'] === undefined)
+        return false;
     if (!('type' in value) || value['type'] === undefined)
         return false;
     if (!('updatedAt' in value) || value['updatedAt'] === undefined)
@@ -48,6 +50,7 @@ function EmailTemplateFromJSONTyped(json, ignoreDiscriminator) {
         'htmlBody': json['html_body'],
         'id': json['id'],
         'subject': json['subject'],
+        'tenantId': json['tenant_id'],
         'type': json['type'],
         'updatedAt': (new Date(json['updated_at'])),
     };
@@ -64,6 +67,7 @@ function EmailTemplateToJSONTyped(value, ignoreDiscriminator = false) {
         'html_body': value['htmlBody'],
         'id': value['id'],
         'subject': value['subject'],
+        'tenant_id': value['tenantId'],
         'type': value['type'],
         'updated_at': value['updatedAt'].toISOString(),
     };

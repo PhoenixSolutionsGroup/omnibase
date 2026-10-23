@@ -7,8 +7,10 @@
 Name | Type
 ------------ | -------------
 `body` | string
+`data` | object
 `plain` | string
 `subject` | string
+`templateType` | string
 `to` | string
 
 ## Example
@@ -19,8 +21,10 @@ import type { SendRequest } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "body": null,
+  "data": null,
   "plain": null,
   "subject": null,
+  "templateType": null,
   "to": null,
 } satisfies SendRequest
 

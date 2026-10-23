@@ -27,6 +27,7 @@ type EmailTemplate struct {
 	HtmlBody string `json:"html_body"`
 	Id string `json:"id"`
 	Subject string `json:"subject"`
+	TenantId NullableString `json:"tenant_id"`
 	Type string `json:"type"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -37,12 +38,13 @@ type _EmailTemplate EmailTemplate
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, type_ string, updatedAt time.Time) *EmailTemplate {
+func NewEmailTemplate(createdAt time.Time, htmlBody string, id string, subject string, tenantId NullableString, type_ string, updatedAt time.Time) *EmailTemplate {
 	this := EmailTemplate{}
 	this.CreatedAt = createdAt
 	this.HtmlBody = htmlBody
 	this.Id = id
 	this.Subject = subject
+	this.TenantId = tenantId
 	this.Type = type_
 	this.UpdatedAt = updatedAt
 	return &this
@@ -152,6 +154,32 @@ func (o *EmailTemplate) SetSubject(v string) {
 	o.Subject = v
 }
 
+// GetTenantId returns the TenantId field value
+// If the value is explicit nil, the zero value for string will be returned
+func (o *EmailTemplate) GetTenantId() string {
+	if o == nil || o.TenantId.Get() == nil {
+		var ret string
+		return ret
+	}
+
+	return *o.TenantId.Get()
+}
+
+// GetTenantIdOk returns a tuple with the TenantId field value
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *EmailTemplate) GetTenantIdOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.TenantId.Get(), o.TenantId.IsSet()
+}
+
+// SetTenantId sets field value
+func (o *EmailTemplate) SetTenantId(v string) {
+	o.TenantId.Set(&v)
+}
+
 // GetType returns the Type field value
 func (o *EmailTemplate) GetType() string {
 	if o == nil {
@@ -214,6 +242,7 @@ func (o EmailTemplate) ToMap() (map[string]interface{}, error) {
 	toSerialize["html_body"] = o.HtmlBody
 	toSerialize["id"] = o.Id
 	toSerialize["subject"] = o.Subject
+	toSerialize["tenant_id"] = o.TenantId.Get()
 	toSerialize["type"] = o.Type
 	toSerialize["updated_at"] = o.UpdatedAt
 	return toSerialize, nil
@@ -228,6 +257,7 @@ func (o *EmailTemplate) UnmarshalJSON(data []byte) (err error) {
 		"html_body",
 		"id",
 		"subject",
+		"tenant_id",
 		"type",
 		"updated_at",
 	}
