@@ -5261,16 +5261,7 @@
         },
         "security": [
           {
-            "SessionTokenAuth": []
-          },
-          {
-            "CookieAuth": []
-          },
-          {
             "ServiceKeyAuth": []
-          },
-          {
-            "AppKeyAuth": []
           }
         ],
         "summary": "Record a Stripe meter usage event",

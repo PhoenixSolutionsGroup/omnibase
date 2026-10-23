@@ -538,7 +538,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
 
 ### HTTP request headers
 

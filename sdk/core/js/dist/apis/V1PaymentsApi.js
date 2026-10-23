@@ -337,12 +337,6 @@ class V1PaymentsApi extends runtime.BaseAPI {
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
-            if (this.configuration && this.configuration.apiKey) {
-                headerParameters["X-App-Key"] = yield this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-            }
-            if (this.configuration && this.configuration.apiKey) {
-                headerParameters["X-Session-Token"] = yield this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-            }
             let urlPath = `/api/v1/payments/usage`;
             const response = yield this.request({
                 path: urlPath,
