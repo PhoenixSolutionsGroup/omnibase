@@ -91,9 +91,8 @@ export default function SupabaseComparisonPage() {
                   <p className="text-sm">
                     First-class tenant context switching. When users switch
                     tenants, they get a new JWT with the active tenant ID. RLS
-                    policies use the built-in{" "}
-                    <code>auth.active_tenant_id()</code> helper. RBAC/ReBAC via
-                    Ory Keto for fine-grained permissions.
+                    policies use the built-in auth.active_tenant_id() helper.
+                    RBAC/ReBAC via Ory Keto for fine-grained permissions.
                   </p>
                 </CardContent>
               </Card>
