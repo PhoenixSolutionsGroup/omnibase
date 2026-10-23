@@ -7,6 +7,7 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
+	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
 )
@@ -27,7 +28,15 @@ type DeleteTemplateOutput struct {
 }
 
 func (h *Handler) DeleteTemplate(ctx context.Context, in *DeleteTemplateInput) (*DeleteTemplateOutput, error) {
-	rows, err := h.repo.DeleteEmailTemplateByType(ctx, in.Type)
+	tenantID, err := tenantScope(in.Method, in.TenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := h.repo.DeleteEmailTemplateByType(ctx, repository.DeleteEmailTemplateByTypeParams{
+		Type:     in.Type,
+		TenantID: tenantID,
+	})
 	if err != nil {
 		logger.Logger.Error("Failed to delete email template", "type", in.Type, "error", err)
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTemplateError, err).Error())

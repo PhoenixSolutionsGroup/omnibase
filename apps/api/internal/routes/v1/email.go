@@ -1,14 +1,9 @@
 package v1
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/gin-gonic/gin"
 
@@ -16,28 +11,14 @@ import (
 	"api/internal/database/repository"
 	"api/internal/handlers/v1/email"
 	"api/internal/logger"
+	"api/internal/middleware"
 	emailsvc "api/internal/services/email"
 )
 
-func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
+func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing email routes")
 	cfg := d.Cfg
 	repo := repository.New(d.Pool)
-
-	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
-		awsconfig.WithRegion(cfg.S3Config.Region),
-		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
-			cfg.S3Config.AccessKey, cfg.S3Config.SecretKey, "")),
-	)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load AWS config: %s", err))
-	}
-	s3Client := s3.NewFromConfig(awsCfg, func(o *s3.Options) {
-		if cfg.S3Config.Endpoint != "" {
-			o.BaseEndpoint = aws.String(cfg.S3Config.Endpoint)
-		}
-		o.UsePathStyle = cfg.S3Config.ForcePathStyle
-	})
 
 	emailService, err := emailsvc.New(emailsvc.Deps{
 		Repo:          repo,
@@ -52,9 +33,13 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	handler := email.New(email.Deps{
 		Repo:       repo,
 		Email:      emailService,
-		S3:         s3Client,
-		BucketName: cfg.S3Config.BucketName,
+		SendLimit:  cfg.SMTPConfig.SendLimit,
+		SendWindow: cfg.SMTPConfig.SendWindow,
 	})
+
+	tenantPermission := func(relation string) huma.Middlewares {
+		return huma.Middlewares{middleware.GinToHuma(d.RBAC.CheckTenantPermission(relation))}
+	}
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createOrUpdateEmailTemplate",
@@ -62,7 +47,7 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates",
 		Summary:     "Create or update email template",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrBackendKey, nil, handler.CreateOrUpdateTemplate)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("manage_email_templates"), handler.CreateOrUpdateTemplate)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getEmailTemplates",
@@ -78,15 +63,23 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/email/templates/{type}",
 		Summary:     "Delete email template",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteTemplate)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("manage_email_templates"), handler.DeleteTemplate)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "sendEmail",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/send",
-		Summary:     "Send an email",
+		Summary:     "Send an email using an app template",
 		Tags:        []string{"V1Configuration"},
-	}, authn.AuthSessionOrBackendKey, nil, handler.Send)
+	}, authn.AuthSessionOrBackendKey, tenantPermission("send_email"), handler.Send)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "sendEmailHTML",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/email/send/html",
+		Summary:     "Send a raw HTML email",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthSessionOrBackendKey, tenantPermission("send_email"), handler.SendHTML)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "serveEmailTemplate",
@@ -95,6 +88,38 @@ func SetUpEmailRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Summary:     "Serve an email template file",
 		Tags:        []string{"V1Configuration"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.ServeTemplate)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "createOrUpdateSystemEmailTemplate",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/email/system-templates",
+		Summary:     "Create or update a system email template",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, handler.CreateOrUpdateSystemTemplate)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "getSystemEmailTemplates",
+		Method:      http.MethodGet,
+		Path:        "/api/v1/email/system-templates",
+		Summary:     "Get all system email templates",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, handler.ListSystemTemplates)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "deleteSystemEmailTemplate",
+		Method:      http.MethodDelete,
+		Path:        "/api/v1/email/system-templates/{name}",
+		Summary:     "Delete a system email template",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, handler.DeleteSystemTemplate)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "serveSystemEmailTemplate",
+		Method:      http.MethodGet,
+		Path:        "/api/v1/email/system-templates/{name}/{type}",
+		Summary:     "Serve a system email template file",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, handler.ServeSystemTemplate)
 
 	logger.Logger.Info("Email routes registration completed")
 }

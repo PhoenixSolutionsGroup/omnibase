@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"api/internal/logger"
 )
 
 type SendArgs struct {
-	From    string
-	To      string
-	Subject string
-	HTML    string
-	Plain   string
+	From     string
+	To       string
+	Subject  string
+	HTML     string
+	Plain    string
+	TenantID uuid.UUID
 }
 
 func (s *Service) Send(ctx context.Context, args SendArgs) error {
