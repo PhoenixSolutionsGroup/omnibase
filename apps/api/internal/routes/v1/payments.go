@@ -49,7 +49,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/payments/usage",
 		Summary:     "Record a Stripe meter usage event",
 		Tags:        []string{"V1Payments"},
-	}, authn.AuthSessionOrBackendKey, customerResolver, paymentHandler.RecordUsage)
+	}, authn.AuthServiceKey, customerResolver, paymentHandler.RecordUsage)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createCustomerPortal",
