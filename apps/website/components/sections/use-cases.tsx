@@ -143,7 +143,7 @@ export function UseCaseSection() {
       <div className="container mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 gap-10 rounded-xl p-8 md:grid-cols-2 md:p-12">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-center sm:text-left sm:text-4xl">
               Use Omnibase with <br />
               <span className="text-muted-foreground">your framework</span>
             </h2>

@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ArrowRight,
   Building2,
   CreditCard,
   HardDrive,
@@ -37,11 +36,7 @@ const features = [
     description:
       "Products, prices, subscription, coupons, promotion codes and webhooks. Ready to use out of the box.",
     href: "https://docs.omnibase.tech/guides/stripe",
-    content: (
-      <div className="">
-        <Payments />
-      </div>
-    ),
+    content: <Payments />,
   },
   {
     icon: Lock,
@@ -91,7 +86,7 @@ export function FeaturesSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 overflow-hidden">
           {features.map((feature) => (
             <Link
               key={feature.title}
@@ -100,7 +95,7 @@ export function FeaturesSection() {
               rel="noopener noreferrer"
               className="group relative cursor-pointer"
             >
-              <Card className="h-full transition-shadow duration-300 group-hover:shadow-xl">
+              <Card className="h-full overflow-hidden transition-shadow duration-300 group-hover:shadow-xl">
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <feature.icon className="h-6 w-6" />

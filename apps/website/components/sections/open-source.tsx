@@ -7,8 +7,8 @@ export function OpenSourceSection() {
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto max-w-6xl px-4">
-        <div className="p-8 md:p-12 grid grid-cols-2">
-          <div className="flex flex-col items-start">
+        <div className="p-8 md:p-12 grid md:grid-cols-2">
+          <div className="flex flex-col items-center text-center md:text-left md:items-start">
             <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">
               Built in the open
             </h2>

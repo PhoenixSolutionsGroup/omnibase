@@ -11,8 +11,8 @@ function StorageItem({
     <div
       className={
         highlight
-          ? "text-ring border rounded-lg p-4 transition-colors group-hover:text-primary duration-500"
-          : "text-ring border rounded-lg p-4"
+          ? "shrink-0 text-ring border rounded-lg p-4 transition-colors group-hover:text-primary duration-500"
+          : "shrink-0 text-ring border rounded-lg p-4"
       }
     >
       <Icon />
@@ -28,18 +28,20 @@ const rows: { icon: LucideIcon; highlighted: number[] }[] = [
 
 export function Storage() {
   return (
-    <div className="flex flex-col gap-2">
-      {rows.map(({ icon, highlighted }) => (
-        <div key={icon.displayName} className="flex items-center gap-1">
-          {[1, 2, 3, 4, 5, 6].map((id) => (
-            <StorageItem
-              key={id}
-              icon={icon}
-              highlight={highlighted.includes(id)}
-            />
-          ))}
-        </div>
-      ))}
+    <div aria-hidden="true" className="relative h-50 w-full">
+      <div className="absolute left-0 top-0 flex flex-col gap-2">
+        {rows.map(({ icon, highlighted }) => (
+          <div key={icon.displayName} className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5, 6].map((id) => (
+              <StorageItem
+                key={id}
+                icon={icon}
+                highlight={highlighted.includes(id)}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
