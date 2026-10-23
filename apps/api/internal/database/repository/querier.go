@@ -14,6 +14,7 @@ type Querier interface {
 	ActivateUserTenant(ctx context.Context, arg ActivateUserTenantParams) error
 	AddUserToRole(ctx context.Context, arg AddUserToRoleParams) error
 	CountOwnersByTenant(ctx context.Context, tenantID string) (int64, error)
+	CountRecentEmailSends(ctx context.Context, arg CountRecentEmailSendsParams) (int64, error)
 	CountStripeConfigs(ctx context.Context) (int64, error)
 	CreateMapping(ctx context.Context, arg CreateMappingParams) (CreateMappingRow, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (CreateRoleRow, error)
@@ -25,15 +26,16 @@ type Querier interface {
 	CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error
 	CreateTenantUser(ctx context.Context, arg CreateTenantUserParams) (AuthTenantUser, error)
 	DeactivateAllUserTenants(ctx context.Context, userID string) error
-	DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error)
+	DeleteEmailTemplateByType(ctx context.Context, arg DeleteEmailTemplateByTypeParams) (int64, error)
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
 	DeleteStorageObjectByID(ctx context.Context, id uuid.UUID) error
 	DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error
+	DeleteSystemEmailTemplateByName(ctx context.Context, name string) (int64, error)
 	DeleteTenant(ctx context.Context, id string) error
 	DeleteTenantUser(ctx context.Context, arg DeleteTenantUserParams) error
 	GetActiveInviteByToken(ctx context.Context, token string) (AuthTenantInvite, error)
 	GetActiveTenantForUser(ctx context.Context, userID string) (GetActiveTenantForUserRow, error)
-	GetEmailTemplateByType(ctx context.Context, type_ string) (EmailTemplate, error)
+	GetEmailTemplateForTenant(ctx context.Context, arg GetEmailTemplateForTenantParams) (GetEmailTemplateForTenantRow, error)
 	GetLatestStripeConfig(ctx context.Context) (StripeStripeConfig, error)
 	GetMappingByConfigItemID(ctx context.Context, arg GetMappingByConfigItemIDParams) (GetMappingByConfigItemIDRow, error)
 	GetMappingByStripeID(ctx context.Context, stripeID string) (GetMappingByStripeIDRow, error)
@@ -42,10 +44,11 @@ type Querier interface {
 	GetRoleByNameAndTenant(ctx context.Context, arg GetRoleByNameAndTenantParams) (GetRoleByNameAndTenantRow, error)
 	GetStorageObjectByPath(ctx context.Context, arg GetStorageObjectByPathParams) (GetStorageObjectByPathRow, error)
 	GetStripeWebhookByStripeID(ctx context.Context, stripeID string) (GetStripeWebhookByStripeIDRow, error)
+	GetSystemEmailTemplateByName(ctx context.Context, name string) (EmailSystemTemplate, error)
 	GetTenantByID(ctx context.Context, id string) (GetTenantByIDRow, error)
 	GetTenantByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (GetTenantByStripeCustomerIDRow, error)
 	GetTenantUser(ctx context.Context, arg GetTenantUserParams) (AuthTenantUser, error)
-	ListEmailTemplates(ctx context.Context) ([]EmailTemplate, error)
+	ListEmailTemplatesForTenant(ctx context.Context, tenantID *string) ([]ListEmailTemplatesForTenantRow, error)
 	ListNamespaceDefinitions(ctx context.Context) ([]ListNamespaceDefinitionsRow, error)
 	ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTemplate, error)
 	ListRolesByTenant(ctx context.Context, tenantID uuid.UUID) ([]ListRolesByTenantRow, error)
@@ -53,11 +56,13 @@ type Querier interface {
 	ListStripeConfigsPaginated(ctx context.Context, arg ListStripeConfigsPaginatedParams) ([]StripeStripeConfig, error)
 	ListStripeWebhooks(ctx context.Context) ([]ListStripeWebhooksRow, error)
 	ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error)
+	ListSystemEmailTemplates(ctx context.Context) ([]EmailSystemTemplate, error)
 	ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]AuthTenantUser, error)
 	ListTenantUsersByUser(ctx context.Context, userID string) ([]AuthTenantUser, error)
 	ListTenantsForUser(ctx context.Context, userID string) ([]ListTenantsForUserRow, error)
 	MarkInviteUsed(ctx context.Context, id string) error
 	MarkStorageObjectPublic(ctx context.Context, id uuid.UUID) error
+	RecordEmailSend(ctx context.Context, arg RecordEmailSendParams) (EmailHistory, error)
 	RemoveUserFromRole(ctx context.Context, arg RemoveUserFromRoleParams) error
 	UpdateMappingStripeID(ctx context.Context, arg UpdateMappingStripeIDParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
@@ -65,9 +70,11 @@ type Querier interface {
 	UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error
 	UpdateTenantEnterpriseTemplate(ctx context.Context, arg UpdateTenantEnterpriseTemplateParams) error
 	UpdateTenantUserRole(ctx context.Context, arg UpdateTenantUserRoleParams) error
-	UpsertEmailTemplate(ctx context.Context, arg UpsertEmailTemplateParams) (EmailTemplate, error)
+	UpsertAppEmailTemplate(ctx context.Context, arg UpsertAppEmailTemplateParams) (UpsertAppEmailTemplateRow, error)
 	UpsertNamespaceDefinition(ctx context.Context, arg UpsertNamespaceDefinitionParams) error
 	UpsertRoleTemplate(ctx context.Context, arg UpsertRoleTemplateParams) error
+	UpsertSystemEmailTemplate(ctx context.Context, arg UpsertSystemEmailTemplateParams) (EmailSystemTemplate, error)
+	UpsertTenantEmailTemplate(ctx context.Context, arg UpsertTenantEmailTemplateParams) (UpsertTenantEmailTemplateRow, error)
 }
 
 var _ Querier = (*Queries)(nil)
