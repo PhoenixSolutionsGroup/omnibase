@@ -1244,6 +1244,18 @@
         ],
         "type": "object"
       },
+      "DeleteSystemTemplateResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "type": "object"
+      },
       "DeleteTemplateResponse": {
         "additionalProperties": false,
         "properties": {
@@ -1323,6 +1335,44 @@
         ],
         "type": "object"
       },
+      "EmailSystemTemplate": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "html_body": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "plaintext_body": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "subject",
+          "html_body",
+          "plaintext_body",
+          "created_at",
+          "updated_at"
+        ],
+        "type": "object"
+      },
       "EmailTemplate": {
         "additionalProperties": false,
         "properties": {
@@ -1339,6 +1389,12 @@
           "subject": {
             "type": "string"
           },
+          "tenant_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "type": {
             "type": "string"
           },
@@ -1353,7 +1409,8 @@
           "subject",
           "html_body",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "tenant_id"
         ],
         "type": "object"
       },
@@ -1962,6 +2019,29 @@
           "config_id",
           "created_at",
           "updated_at"
+        ],
+        "type": "object"
+      },
+      "ListSystemTemplatesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "templates": {
+            "items": {
+              "$ref": "#/components/schemas/EmailSystemTemplate"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "templates",
+          "count"
         ],
         "type": "object"
       },
@@ -3029,7 +3109,7 @@
         ],
         "type": "object"
       },
-      "SendRequest": {
+      "SendHTMLRequest": {
         "additionalProperties": false,
         "properties": {
           "body": {
@@ -3073,6 +3153,32 @@
         },
         "required": [
           "message"
+        ],
+        "type": "object"
+      },
+      "SendTemplateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": {},
+            "type": "object"
+          },
+          "template_type": {
+            "examples": [
+              "tenant-user-invite"
+            ],
+            "type": "string"
+          },
+          "to": {
+            "examples": [
+              "user@example.com"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "to",
+          "template_type"
         ],
         "type": "object"
       },
@@ -3675,6 +3781,57 @@
           "upload_url",
           "path",
           "id"
+        ],
+        "type": "object"
+      },
+      "UpsertSystemTemplateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "html_body": {
+            "examples": [
+              "\u003ch1\u003eVerify your email\u003c/h1\u003e"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "examples": [
+              "verification"
+            ],
+            "type": "string"
+          },
+          "plaintext_body": {
+            "examples": [
+              "Verify your email"
+            ],
+            "type": "string"
+          },
+          "subject": {
+            "examples": [
+              "Verify your email"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "subject",
+          "html_body"
+        ],
+        "type": "object"
+      },
+      "UpsertSystemTemplateResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "template": {
+            "$ref": "#/components/schemas/EmailSystemTemplate"
+          }
+        },
+        "required": [
+          "message",
+          "template"
         ],
         "type": "object"
       },
@@ -4525,7 +4682,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SendRequest"
+                "$ref": "#/components/schemas/SendTemplateRequest"
               }
             }
           },
@@ -4567,7 +4724,255 @@
             "AppKeyAuth": []
           }
         ],
-        "summary": "Send an email",
+        "summary": "Send an email using an app template",
+        "tags": [
+          "V1Configuration"
+        ]
+      }
+    },
+    "/api/v1/email/send/html": {
+      "post": {
+        "operationId": "sendEmailHTML",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendHTMLRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "SessionTokenAuth": []
+          },
+          {
+            "CookieAuth": []
+          },
+          {
+            "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
+          }
+        ],
+        "summary": "Send a raw HTML email",
+        "tags": [
+          "V1Configuration"
+        ]
+      }
+    },
+    "/api/v1/email/system-templates": {
+      "get": {
+        "operationId": "getSystemEmailTemplates",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSystemTemplatesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          }
+        ],
+        "summary": "Get all system email templates",
+        "tags": [
+          "V1Configuration"
+        ]
+      },
+      "post": {
+        "operationId": "createOrUpdateSystemEmailTemplate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertSystemTemplateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpsertSystemTemplateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          }
+        ],
+        "summary": "Create or update a system email template",
+        "tags": [
+          "V1Configuration"
+        ]
+      }
+    },
+    "/api/v1/email/system-templates/{name}": {
+      "delete": {
+        "operationId": "deleteSystemEmailTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteSystemTemplateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          }
+        ],
+        "summary": "Delete a system email template",
+        "tags": [
+          "V1Configuration"
+        ]
+      }
+    },
+    "/api/v1/email/system-templates/{name}/{type}": {
+      "get": {
+        "operationId": "serveSystemEmailTemplate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "contentEncoding": "base64",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "OK",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          }
+        ],
+        "summary": "Serve a system email template file",
         "tags": [
           "V1Configuration"
         ]
