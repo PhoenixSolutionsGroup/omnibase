@@ -68,5 +68,6 @@ func (s *Service) SendWithTemplate(ctx context.Context, req SendWithTemplateRequ
 	if err := s.send(from, req.To, msg); err != nil {
 		return fmt.Errorf("%w: %w", SendError, err)
 	}
+	s.recordHistory(ctx, req.TenantID, req.To, subject.String(), body.String(), "", req.TemplateType, req.Data)
 	return nil
 }

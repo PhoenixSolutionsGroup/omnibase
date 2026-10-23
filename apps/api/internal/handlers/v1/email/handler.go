@@ -1,6 +1,7 @@
 package email
 
 import (
+	"context"
 	"regexp"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 
 	"api/internal/authn"
 	"api/internal/database/repository"
+	"api/internal/logger"
 	"api/internal/services/email"
 )
 
@@ -54,4 +56,36 @@ func tenantScope(method authn.AuthMethod, tenantID uuid.UUID) (*string, error) {
 	}
 	id := tenantID.String()
 	return &id, nil
+}
+
+func (h *Handler) allowSend(ctx context.Context, tenantID uuid.UUID) (bool, error) {
+	if tenantID == uuid.Nil || h.sendLimit <= 0 {
+		return true, nil
+	}
+
+	id := tenantID.String()
+	count, err := h.repo.CountRecentEmailSends(ctx, repository.CountRecentEmailSendsParams{
+		TenantID:      &id,
+		WindowSeconds: h.sendWindow.Seconds(),
+	})
+	if err != nil {
+		return false, err
+	}
+	return count < int64(h.sendLimit), nil
+}
+
+func (h *Handler) checkSendAllowed(ctx context.Context, tenantID uuid.UUID) error {
+	allowed, err := h.allowSend(ctx, tenantID)
+	if err != nil {
+		logger.Logger.Error("Failed to check email send limit", "tenant_id", tenantID, "error", err)
+		return huma.Error500InternalServerError("Failed to check email send limit")
+	}
+	if !allowed {
+		logger.Logger.Warn("Email send rate limit exceeded",
+			"tenant_id", tenantID,
+			"limit", h.sendLimit,
+			"window", h.sendWindow.String())
+		return huma.Error429TooManyRequests("Email send rate limit exceeded")
+	}
+	return nil
 }

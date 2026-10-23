@@ -24,6 +24,10 @@ type SendHTMLInput struct {
 }
 
 func (h *Handler) SendHTML(ctx context.Context, in *SendHTMLInput) (*SendOutput, error) {
+	if err := h.checkSendAllowed(ctx, in.TenantID); err != nil {
+		return nil, err
+	}
+
 	if err := h.email.Send(ctx, email.SendArgs{
 		To:       in.Body.To,
 		Subject:  in.Body.Subject,

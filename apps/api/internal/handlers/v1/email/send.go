@@ -35,6 +35,10 @@ type SendOutput struct {
 }
 
 func (h *Handler) Send(ctx context.Context, in *SendTemplateInput) (*SendOutput, error) {
+	if err := h.checkSendAllowed(ctx, in.TenantID); err != nil {
+		return nil, err
+	}
+
 	if err := h.email.SendWithTemplate(ctx, email.SendWithTemplateRequest{
 		To:           in.Body.To,
 		TemplateType: in.Body.TemplateType,
