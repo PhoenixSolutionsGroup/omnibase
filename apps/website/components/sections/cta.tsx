@@ -4,15 +4,15 @@ import { ArrowRight, BookOpen } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Ready to ship your SaaS?
+            Ready to ship your idea?
           </h2>
 
           <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-            Stop rebuilding infrastructure. Start building what matters.
+            Get set up in less than 5 minutes and start building what matters.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">

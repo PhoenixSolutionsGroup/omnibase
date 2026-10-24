@@ -1,35 +1,50 @@
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Building2, CreditCard, HardDrive, Key, Shield, Users } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Building2,
+  CreditCard,
+  HardDrive,
+  Lock,
+  Shield,
+  Users,
+} from "lucide-react";
+import { Storage } from "./features /storage";
+import { Authentication } from "./features /authentication";
+import { Roles } from "./features /roles";
+import { Payments } from "./features /payments";
+import { Hosting } from "./features /hosting";
+import { MultiTenancy } from "./features /multi-tenancy";
 
 const features = [
   {
-    icon: Building2,
-    title: "Multi-Tenancy",
-    description:
-      "First-class tenant context switching with JWTs. RLS policies use auth.active_tenant_id(). Custom roles per organization.",
-    href: "https://docs.omnibase.tech/guides/multi-tenancy",
-  },
-  {
     icon: Shield,
-    title: "RBAC",
+    title: "Roles & Permissions",
     description:
-      "Define roles and permissions that make sense for your app. Built on Ory Keto for production-grade permissions without the complexity.",
+      "Define custom roles and permissions. Allow users to only see and do what their roles permit, all without touching a single line of code.",
     href: "https://docs.omnibase.tech/guides/rbac",
+    content: <Roles />,
   },
   {
     icon: CreditCard,
     title: "Stripe as Code",
     description:
-      "Products, prices, coupons, promotion codes, meters, and webhooks - all defined in config files. Push changes with the CLI.",
+      "Products, prices, subscription, coupons, promotion codes and webhooks. Ready to use out of the box.",
     href: "https://docs.omnibase.tech/guides/stripe",
+    content: <Payments />,
   },
   {
-    icon: Key,
+    icon: Lock,
     title: "Authentication",
     description:
-      "Secure auth powered by Ory Kratos. Social logins, magic links, MFA. Configured, not coded.",
+      "Secure logins and sign ups powered by Ory Kratos. Social logins, magic links, MFA. All configured, no code needed.",
     href: "https://docs.omnibase.tech/guides/authentication",
+    content: <Authentication />,
   },
   {
     icon: HardDrive,
@@ -37,13 +52,23 @@ const features = [
     description:
       "File storage with tenant-aware access controls. Upload, serve, and manage files without bolting on another service.",
     href: "https://docs.omnibase.tech/guides/storage",
+    content: <Storage />,
   },
   {
     icon: Users,
     title: "Self-Hosting",
     description:
-      "Run Omnibase on your own infrastructure with full feature parity. Docker Compose up and you're live.",
+      "Use our free managed hosting or run Omnibase on your own infrastructure. Go live in minutes.",
     href: "https://docs.omnibase.tech/self-hosting",
+    content: <Hosting />,
+  },
+  {
+    icon: Building2,
+    title: "Multi-Tenancy",
+    description:
+      "First-class tenant context switching with JWTs. RLS policies use auth.active_tenant_id(). Custom roles per organization.",
+    href: "https://docs.omnibase.tech/guides/multi-tenancy",
+    content: <MultiTenancy />,
   },
 ];
 
@@ -53,36 +78,36 @@ export function FeaturesSection() {
       <div className="container mx-auto max-w-6xl px-4">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything you need to ship SaaS
+            Everything you need to ship your idea
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Stop rebuilding the same infrastructure. Focus on what makes your
-            product unique.
+            Stop rebuilding the same infrastructure again and again. Focus on
+            what makes your product unique and ship it today.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3 overflow-hidden">
           {features.map((feature) => (
-            <Card key={feature.title} className="group relative overflow-hidden">
-              <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link
-                  href={feature.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-sm font-medium text-primary hover:underline"
-                >
-                  Learn more
-                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </CardContent>
-            </Card>
+            <Link
+              key={feature.title}
+              href={feature.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative cursor-pointer"
+            >
+              <Card className="h-full overflow-hidden transition-shadow duration-300 group-hover:shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <feature.icon className="h-6 w-6" />
+                    <CardTitle>{feature.title}</CardTitle>
+                  </div>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="overflow-hidden">
+                  {feature.content}
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>

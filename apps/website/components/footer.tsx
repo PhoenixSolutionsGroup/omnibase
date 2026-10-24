@@ -9,11 +9,12 @@ const footerLinks = {
     { href: "https://docs.omnibase.tech/self-hosting", label: "Self-Hosting" },
     { href: "https://docs.omnibase.tech/roadmap", label: "Roadmap" },
   ],
-  Compare: [
-    { href: "/compare/supabase", label: "Supabase" },
-  ],
+  Compare: [{ href: "/compare/supabase", label: "Supabase" }],
   Community: [
-    { href: "https://github.com/PhoenixSolutionsGroup/omnibase", label: "GitHub" },
+    {
+      href: "https://github.com/PhoenixSolutionsGroup/omnibase",
+      label: "GitHub",
+    },
   ],
 };
 
@@ -27,15 +28,15 @@ export function Footer() {
               <Image
                 src="/omnibase-logo.png"
                 alt="Omnibase"
-                width={32}
-                height={32}
+                width={16}
+                height={16}
                 className="rounded-lg"
                 unoptimized
               />
               <span className="font-semibold text-xl">Omnibase</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              The open-source backend for multi-tenant SaaS applications.
+              The free open-source backend for your applications.
             </p>
           </div>
 
@@ -48,7 +49,9 @@ export function Footer() {
                     <Link
                       href={link.href}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      {...(link.href.startsWith("http")
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
                     >
                       {link.label}
                     </Link>
@@ -63,7 +66,8 @@ export function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Omnibase. Open source under Apache 2.0.
+            &copy; {new Date().getFullYear()} Omnibase. Open source under Apache
+            2.0.
           </p>
         </div>
       </div>
