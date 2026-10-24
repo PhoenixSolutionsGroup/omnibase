@@ -104,11 +104,8 @@ export function Header() {
             onClick={changeTheme}
             className="cursor-pointer"
           >
-            {resolvedTheme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
+            <Sun className="hidden h-5 w-5 dark:block" />
+            <Moon className="block h-5 w-5 dark:hidden" />
             <span className="sr-only">Toggle theme</span>
           </Button>
           <Button variant="ghost" size="icon" asChild>
