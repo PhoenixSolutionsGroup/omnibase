@@ -113,7 +113,7 @@ courier:
     from_address: ${SMTP_FROM_ADDRESS}
     from_name: ${SMTP_FROM_NAME}
     headers:
-      X-SES-TENANT: ${SES_TENANT_NAME}
+      X-SES-TENANT: \"${SES_TENANT_NAME:-}\"
   templates:
     verification_code:
       valid:

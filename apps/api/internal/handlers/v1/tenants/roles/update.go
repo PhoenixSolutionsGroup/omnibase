@@ -32,18 +32,7 @@ type UpdateRoleOutput struct {
 }
 
 func (h *Handler) UpdateRole(ctx context.Context, in *UpdateRoleInput) (*UpdateRoleOutput, error) {
-	userUuid := in.UserID
 	tenantUuid := in.TenantID
-
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canUpdateRoles, err := h.perms.Check(ctx, "Tenant", tenantUuid.String(), "update_roles", subject)
-	if err != nil {
-		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantUuid, "user_id", userUuid)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", UpdateRoleError, err).Error())
-	}
-	if !canUpdateRoles {
-		return nil, huma.Error403Forbidden("Insufficient permissions - must have `update_roles` permission")
-	}
 
 	roleUuid, err := uuid.Parse(in.RoleID)
 	if err != nil {

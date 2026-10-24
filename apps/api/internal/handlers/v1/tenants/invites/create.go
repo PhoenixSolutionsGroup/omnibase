@@ -14,7 +14,6 @@ import (
 	"api/internal/handlers"
 	"api/internal/logger"
 	"api/internal/services/email"
-	"api/internal/services/permissions"
 )
 
 var CreateError = errors.New("Failed to create invite")
@@ -50,15 +49,6 @@ type CreateOutput struct {
 
 func (h *Handler) Create(ctx context.Context, in *CreateInput) (*CreateOutput, error) {
 	req := in.Body
-
-	subject := permissions.SubjectSet{Namespace: "User", Object: in.UserID.String()}
-	canInvite, err := h.perms.Check(ctx, "Tenant", in.TenantID.String(), "invite_user", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateError, err).Error())
-	}
-	if !canInvite {
-		return nil, huma.Error403Forbidden("Insufficient permissions to invite users")
-	}
 
 	tenant, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
 	if err != nil {

@@ -68,7 +68,12 @@ func TestCrossTenantIsolation(t *testing.T) {
 	})
 
 	t.Run("user_A_cannot_list_tenant_B_roles", func(t *testing.T) {
-		t.Skip("known gap: roles.List handler does not check tenant membership (see internal/handlers/v1/tenants/roles/list.go — no perms.Check). users.List does. Fix handler then enable this test.")
+		_, resp, err := client.V1TenantsRolesAPI.
+			ListRoles(helpers.CtxWithUserTenant(userA, tenantB)).
+			Execute()
+		require.Error(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
 
 	t.Run("user_A_cannot_create_invite_in_tenant_B", func(t *testing.T) {

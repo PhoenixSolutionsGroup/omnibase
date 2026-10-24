@@ -274,6 +274,13 @@ All URIs are relative to *https://api.omnibase.tech*
 
 
 Authentication schemes defined for the API:
+<a id="AppKeyAuth"></a>
+#### AppKeyAuth
+
+
+- **Type**: API key
+- **API key parameter name**: `X-App-Key`
+- **Location**: HTTP header
 <a id="CookieAuth"></a>
 #### CookieAuth
 

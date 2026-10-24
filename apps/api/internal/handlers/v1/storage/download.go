@@ -12,10 +12,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"api/internal/authz"
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var DownloadError = errors.New("Failed to create download")
@@ -40,10 +40,6 @@ type DownloadOutput struct {
 func (h *Handler) Download(ctx context.Context, in *DownloadInput) (*DownloadOutput, error) {
 	req := in.Body
 
-	userID := ""
-	if in.UserID != uuid.Nil {
-		userID = in.UserID.String()
-	}
 	tenantID := ""
 	if in.TenantID != uuid.Nil {
 		tenantID = in.TenantID.String()
@@ -58,13 +54,8 @@ func (h *Handler) Download(ctx context.Context, in *DownloadInput) (*DownloadOut
 	}
 
 	if !isPublic {
-		subject := permissions.SubjectSet{Namespace: "User", Object: userID}
-		allowed, err := h.perms.Check(ctx, "StorageObject", objectID, "read", subject)
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DownloadError, err).Error())
-		}
-		if !allowed {
-			return nil, huma.Error403Forbidden("Access denied")
+		if err := authz.Check(ctx, h.perms, in.Method, in.UserID, in.TenantID, "StorageObject", objectID, "read"); err != nil {
+			return nil, err
 		}
 	}
 

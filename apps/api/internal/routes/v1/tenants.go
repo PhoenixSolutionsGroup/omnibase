@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"api/internal/authn"
 	"api/internal/database/repository"
 	tenantsh "api/internal/handlers/v1/tenants"
 	"api/internal/handlers/v1/tenants/invites"
@@ -78,16 +79,6 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Repo:    repo,
 		Billing: billingSvc,
 	})
-	authMiddleware := middleware.NewAuthMiddleware(cfg, d.DB)
-
-	serviceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireServiceKey()),
-	}
-	sessionOrServiceMW := huma.Middlewares{
-		middleware.GinToHuma(authMiddleware.RequireAuthHeaders(), authMiddleware.RequireSessionOrServiceKey()),
-	}
-	serviceSec := []map[string][]string{{"ServiceKeyAuth": {}}}
-	sessionOrServiceSec := []map[string][]string{{"SessionTokenAuth": {}}, {"CookieAuth": {}}, {"ServiceKeyAuth": {}}}
 
 	lifecycleTag := []string{"V1TenantsLifecycle"}
 	invitesTag := []string{"V1TenantsInvites"}
@@ -95,108 +86,112 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	usersTag := []string{"V1TenantsUsers"}
 	subsTag := []string{"V1TenantsSubscriptions"}
 
-	huma.Register(api, huma.Operation{
+	tenantPermission := func(relation string) huma.Middlewares {
+		return huma.Middlewares{middleware.GinToHuma(d.RBAC.CheckTenantPermission(relation))}
+	}
+
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantByID", Method: http.MethodGet, Path: "/api/v1/tenants/by-id/{tenant_id}",
-		Summary: "Get tenant by ID", Tags: lifecycleTag, Security: serviceSec, Middlewares: serviceMW,
-	}, tenantHandler.GetTenantByID)
+		Summary: "Get tenant by ID", Tags: lifecycleTag,
+	}, authn.AuthServiceKey, nil, tenantHandler.GetTenantByID)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantByStripeCustomerID", Method: http.MethodGet, Path: "/api/v1/tenants/by-stripe-customer/{stripe_customer_id}",
-		Summary: "Get tenant by Stripe customer ID", Tags: lifecycleTag, Security: serviceSec, Middlewares: serviceMW,
-	}, tenantHandler.GetTenantByStripeCustomerID)
+		Summary: "Get tenant by Stripe customer ID", Tags: lifecycleTag,
+	}, authn.AuthServiceKey, nil, tenantHandler.GetTenantByStripeCustomerID)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "createTenant", Method: http.MethodPost, Path: "/api/v1/tenants",
-		Summary: "Create a tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, lifecycleHandler.CreateTenant)
+		Summary: "Create a tenant", Tags: lifecycleTag,
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.CreateTenant)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
-		Summary: "Delete the current tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, lifecycleHandler.DeleteTenant)
+		Summary: "Delete the current tenant", Tags: lifecycleTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_tenant"), lifecycleHandler.DeleteTenant)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
-		Summary: "Get JWT for the current tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, lifecycleHandler.GetJWT)
+		Summary: "Get JWT for the current tenant", Tags: lifecycleTag,
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.GetJWT)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",
-		Summary: "Switch the active tenant", Tags: lifecycleTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, lifecycleHandler.SwitchActive)
+		Summary: "Switch the active tenant", Tags: lifecycleTag,
+	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.SwitchActive)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
-		Summary: "Create a tenant invite", Tags: invitesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, invitesHandler.Create)
+		Summary: "Create a tenant invite", Tags: invitesTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("invite_user"), invitesHandler.Create)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
-		Summary: "Accept a tenant invite", Tags: invitesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, invitesHandler.Accept)
+		Summary: "Accept a tenant invite", Tags: invitesTag,
+	}, authn.AuthSessionOrBackendKey, nil, invitesHandler.Accept)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoles", Method: http.MethodGet, Path: "/api/v1/tenants/roles",
-		Summary: "List roles for the tenant", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, rolesHandler.ListRoles)
+		Summary: "List roles for the tenant", Tags: rolesTag,
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListRoles)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoleDefinitions", Method: http.MethodGet, Path: "/api/v1/tenants/roles/definitions",
-		Summary: "List role definitions", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, rolesHandler.ListDefinitions)
+		Summary: "List role definitions", Tags: rolesTag,
+	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListDefinitions)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
-		Summary: "Create a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, rolesHandler.CreateRole)
+		Summary: "Create a role", Tags: rolesTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("create_roles"), rolesHandler.CreateRole)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
-		Summary: "Update a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, rolesHandler.UpdateRole)
+		Summary: "Update a role", Tags: rolesTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("update_roles"), rolesHandler.UpdateRole)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
-		Summary: "Delete a role", Tags: rolesTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, rolesHandler.DeleteRole)
+		Summary: "Delete a role", Tags: rolesTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_roles"), rolesHandler.DeleteRole)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
-		Summary: "List users in the tenant", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, usersHandler.List)
+		Summary: "List users in the tenant", Tags: usersTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("view_users"), usersHandler.List)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
-		Summary: "Update a tenant user's role", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, usersHandler.UpdateRole)
+		Summary: "Update a tenant user's role", Tags: usersTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("update_user_role"), usersHandler.UpdateRole)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
-		Summary: "Remove a user from the tenant", Tags: usersTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, usersHandler.Delete)
+		Summary: "Remove a user from the tenant", Tags: usersTag,
+	}, authn.AuthSessionOrBackendKey, tenantPermission("remove_user"), usersHandler.Delete)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
-		Summary: "List subscriptions for the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, subscriptionsHandler.List)
+		Summary: "List subscriptions for the tenant", Tags: subsTag,
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.List)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
-		Summary: "Get a single tenant subscription", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, subscriptionsHandler.Get)
+		Summary: "Get a single tenant subscription", Tags: subsTag,
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Get)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
-		Summary: "Add a subscription to the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, subscriptionsHandler.Add)
+		Summary: "Add a subscription to the tenant", Tags: subsTag,
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Add)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
-		Summary: "Remove a subscription from the tenant", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, subscriptionsHandler.Remove)
+		Summary: "Remove a subscription from the tenant", Tags: subsTag,
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Remove)
 
-	huma.Register(api, huma.Operation{
+	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
-		Summary: "Get tenant billing status", Tags: subsTag, Security: sessionOrServiceSec, Middlewares: sessionOrServiceMW,
-	}, subscriptionsHandler.BillingStatus)
+		Summary: "Get tenant billing status", Tags: subsTag,
+	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.BillingStatus)
 }

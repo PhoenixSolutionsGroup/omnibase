@@ -94,7 +94,10 @@ DB_SSLMODE=disable
 # Authentication (Ory Kratos)
 AUTH_URL=
 AUTH_ADMIN_URL=
-AUTH_JWT_JWKS=
+
+# Backend API keys
+# API_SERVICE_KEY is used for both X-Service-Key (admin mode) and X-App-Key (user mode)
+API_SERVICE_KEY=
 
 # Permissions (Ory Keto)
 PERMISSIONS_READ_URL=

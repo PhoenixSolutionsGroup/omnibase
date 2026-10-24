@@ -32,6 +32,8 @@ async function example() {
     apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
+    // To configure API key authorization: AppKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
     apiKey: "YOUR API KEY",
   });
@@ -59,7 +61,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -98,6 +100,8 @@ async function example() {
     apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
+    // To configure API key authorization: AppKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
     apiKey: "YOUR API KEY",
   });
@@ -133,7 +137,7 @@ example().catch(console.error);
 
 ### Authorization
 
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 
@@ -172,6 +176,8 @@ async function example() {
     apiKey: "YOUR API KEY",
     // To configure API key authorization: CookieAuth
     apiKey: "YOUR API KEY",
+    // To configure API key authorization: AppKeyAuth
+    apiKey: "YOUR API KEY",
     // To configure API key authorization: SessionTokenAuth
     apiKey: "YOUR API KEY",
   });
@@ -207,7 +213,7 @@ example().catch(console.error);
 
 ### Authorization
 
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

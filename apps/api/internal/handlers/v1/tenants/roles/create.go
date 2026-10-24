@@ -14,7 +14,6 @@ import (
 	"api/internal/database/repository"
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
 var CreateRoleError = errors.New("Failed to create role")
@@ -34,18 +33,7 @@ type CreateRoleOutput struct {
 }
 
 func (h *Handler) CreateRole(ctx context.Context, in *CreateRoleInput) (*CreateRoleOutput, error) {
-	userUuid := in.UserID
 	tenantUuid := in.TenantID
-
-	subject := permissions.SubjectSet{Namespace: "User", Object: userUuid.String()}
-	canCreateRoles, err := h.perms.Check(ctx, "Tenant", tenantUuid.String(), "create_roles", subject)
-	if err != nil {
-		logger.Logger.Error("Failed to check permissions", "error", err, "tenant_id", tenantUuid, "user_id", userUuid)
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateRoleError, err).Error())
-	}
-	if !canCreateRoles {
-		return nil, huma.Error403Forbidden("Insufficient permissions - must have `create_roles` permission")
-	}
 
 	req := in.Body
 	if slices.Contains(req.Permissions, "") {

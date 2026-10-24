@@ -12,13 +12,9 @@ import (
 
 	"api/internal/handlers"
 	"api/internal/logger"
-	"api/internal/services/permissions"
 )
 
-var (
-	DeleteTenantError     = errors.New("Failed to delete tenant")
-	DeleteTenantForbidden = errors.New("Insufficient permissions to delete tenant")
-)
+var DeleteTenantError = errors.New("Failed to delete tenant")
 
 type DeleteTenantResponse struct {
 	Message string `json:"message"`
@@ -40,22 +36,12 @@ func (h *Handler) DeleteTenant(ctx context.Context, in *DeleteTenantInput) (*Del
 		return nil, huma.Error401Unauthorized("User not authenticated")
 	}
 	tenantID := in.TenantID.String()
-	userID := in.UserID.String()
 
 	if _, err := h.repo.GetTenantByID(ctx, tenantID); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, huma.Error404NotFound("Tenant not found")
 		}
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
-	}
-
-	subject := permissions.SubjectSet{Namespace: "User", Object: userID}
-	canDelete, err := h.perms.Check(ctx, "Tenant", tenantID, "delete_tenant", subject)
-	if err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
-	}
-	if !canDelete {
-		return nil, huma.Error403Forbidden(DeleteTenantForbidden.Error())
 	}
 
 	tenantUsers, err := h.repo.ListTenantUsersByTenant(ctx, tenantID)
