@@ -9,7 +9,7 @@ export function Hosting() {
     <svg
       aria-hidden="true"
       viewBox="0 0 200 200"
-      className="mx-auto h-48 w-full max-w-50"
+      className="mx-auto h-48 w-full max-w-50 transition-transform duration-300 group-hover:-translate-y-1"
     >
       <Monitor
         x={84}

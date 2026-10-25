@@ -2,7 +2,10 @@ import { ShieldUser, UsersRound } from "lucide-react";
 
 export function Roles() {
   return (
-    <div aria-hidden="true" className="relative h-50 w-full">
+    <div
+      aria-hidden="true"
+      className="relative h-50 w-full transition-transform duration-300 group-hover:-translate-y-1"
+    >
       <div className="absolute left-4 top-4 flex gap-2">
         {/* Circle one */}
         <div className="relative flex size-40 shrink-0 items-center justify-center rounded-full border border-border">

@@ -28,7 +28,10 @@ const rows: { icon: LucideIcon; highlighted: number[] }[] = [
 
 export function Storage() {
   return (
-    <div aria-hidden="true" className="relative h-50 w-full">
+    <div
+      aria-hidden="true"
+      className="relative h-50 w-full transition-transform duration-300 group-hover:-translate-y-1 mt-5"
+    >
       <div className="absolute left-0 top-0 flex flex-col gap-2">
         {rows.map(({ icon, highlighted }) => (
           <div key={icon.displayName} className="flex items-center gap-1">

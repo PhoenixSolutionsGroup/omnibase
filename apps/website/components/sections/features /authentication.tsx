@@ -5,7 +5,7 @@ export function Authentication() {
   return (
     <div
       aria-hidden="true"
-      className="flex flex-col gap-2 pointer-events-none select-none"
+      className="flex flex-col gap-2 pointer-events-none select-none transition-transform duration-300 group-hover:-translate-y-1 pt-2"
     >
       <Input
         type="text"
