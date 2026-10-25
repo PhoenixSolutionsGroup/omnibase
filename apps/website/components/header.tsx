@@ -28,10 +28,10 @@ function Logo({ onClick }: { onClick?: () => void }) {
   return (
     <Link href="/" onClick={onClick} className="flex items-center gap-2">
       <Image
-        src="/omnibase-logo.png"
+        src="/omnibase-logo.svg"
         alt="Omnibase"
-        width={16}
-        height={16}
+        width={24}
+        height={24}
         className="rounded-lg"
         unoptimized
       />

@@ -46,8 +46,8 @@ export const metadata: Metadata = {
       "Ship your SaaS in days, not months. Multi-tenancy, RBAC, and Stripe included.",
   },
   icons: {
-    icon: "/omnibase-logo.png",
-    apple: "/omnibase-logo.png",
+    icon: "/omnibase-logo.svg",
+    apple: "/omnibase-logo.svg",
   },
 };
 

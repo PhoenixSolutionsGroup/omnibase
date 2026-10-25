@@ -100,7 +100,7 @@ export function MultiTenancy() {
 
       {/* Logo */}
       <image
-        href="/omnibase-logo.png"
+        href="/omnibase-logo.svg"
         x={80}
         y={80}
         width={40}
