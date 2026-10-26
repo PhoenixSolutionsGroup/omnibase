@@ -4,7 +4,7 @@ import { CodeBlock } from "../code-block";
 const useCases = [
   {
     key: "React",
-    logo: "/icons/react.png",
+    logo: "/icons/react.svg",
     language: "js",
     code: `import { createClient } from '@supabase/supabase-js'
 
@@ -26,7 +26,7 @@ export default function App() {
   },
   {
     key: "Next",
-    logo: "/icons/next.png",
+    logo: "/icons/next.svg",
     language: "js",
 
     code: `import { createClient } from '@supabase/supabase-js'
@@ -46,7 +46,7 @@ export default async function Page() {
   },
   {
     key: "Svelte",
-    logo: "/icons/svelte.png",
+    logo: "/icons/svelte.svg",
     language: "js",
 
     code: `<script>
@@ -68,7 +68,7 @@ export default async function Page() {
   },
   {
     key: "Vanilla",
-    logo: "/icons/js.png",
+    logo: "/icons/javascript.svg",
     language: "js",
 
     code: `import { createClient } from '@supabase/supabase-js'
@@ -91,7 +91,7 @@ export default function App() {
   },
   {
     key: "Vue",
-    logo: "/icons/vue.png",
+    logo: "/icons/vue.svg",
     language: "js",
 
     code: `<script setup>
@@ -114,7 +114,7 @@ onMounted(async () => {
   },
   {
     key: "Nuxt",
-    logo: "/icons/nuxt.png",
+    logo: "/icons/nuxt.svg",
     language: "js",
 
     code: `<script setup>
@@ -156,18 +156,22 @@ export function UseCaseSection() {
                   <TabsTrigger
                     value={item.key}
                     key={item.key}
+                    aria-label={item.key}
                     className="group cursor-pointer p-4"
                   >
-                    <img
-                      src={item.logo}
-                      alt={`${item.key} logo`}
-                      className="h-6 w-6 object-contain grayscale opacity-60 transition-all duration-200
-      group-hover:opacity-100 group-hover:brightness-50
-      group-focus-visible:opacity-100 group-focus-visible:brightness-50
-      group-data-[state=active]:opacity-100 group-data-[state=active]:brightness-50
-      dark:group-hover:brightness-200
-      dark:group-focus-visible:brightness-200
-      dark:group-data-[state=active]:brightness-200"
+                    <span
+                      aria-hidden
+                      className="block h-6 w-6 bg-current text-[#aaaaaa] dark:text-[#888888] transition-colors duration-200 group-data-[state=active]:text-foreground dark:group-data-[state=active]:text-foreground"
+                      style={{
+                        maskImage: `url(${item.logo})`,
+                        WebkitMaskImage: `url(${item.logo})`,
+                        maskRepeat: "no-repeat",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskPosition: "center",
+                        WebkitMaskPosition: "center",
+                        maskSize: "contain",
+                        WebkitMaskSize: "contain",
+                      }}
                     />
                   </TabsTrigger>
                 ))}
