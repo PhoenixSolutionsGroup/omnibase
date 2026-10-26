@@ -40,7 +40,7 @@ const plans = [
       "Usage-based pricing as you grow",
     ],
     cta: "Get Started Free",
-    ctaHref: "https://dashboard.omnibase.tech",
+    ctaHref: process.env.NEXT_PUBLIC_DASHBOARD_URL || "",
     variant: "default" as const,
     popular: true,
   },
@@ -57,7 +57,7 @@ const plans = [
       "Predictable performance",
     ],
     cta: "Get Started",
-    ctaHref: "https://dashboard.omnibase.tech",
+    ctaHref: process.env.NEXT_PUBLIC_DASHBOARD_URL || "",
     variant: "outline" as const,
   },
 ];

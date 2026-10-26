@@ -119,7 +119,7 @@ export function Header() {
             </Link>
           </Button>
           <Button asChild>
-            <Link href="https://docs.omnibase.tech/quickstart">
+            <Link href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}>
               Get Started
             </Link>
           </Button>
@@ -228,7 +228,7 @@ export function Header() {
                 </Button>
                 <Button asChild className="flex-1">
                   <Link
-                    href="https://docs.omnibase.tech/quickstart"
+                    href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}
                     onClick={() => setOpen(false)}
                   >
                     Get Started

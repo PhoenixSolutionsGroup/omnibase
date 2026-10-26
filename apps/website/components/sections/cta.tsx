@@ -17,7 +17,7 @@ export function CTASection() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <Link href="https://docs.omnibase.tech/quickstart">
+              <Link href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}>
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
