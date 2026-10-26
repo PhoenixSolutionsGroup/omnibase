@@ -161,7 +161,7 @@ export function UseCaseSection() {
                   >
                     <span
                       aria-hidden
-                      className="block h-6 w-6 bg-current text-[#aaaaaa] dark:text-[#888888] transition-colors duration-200 group-data-[state=active]:text-foreground dark:group-data-[state=active]:text-foreground"
+                      className="block h-6 w-6 bg-current text-[#aaaaaa] dark:text-[#888888] transition-colors duration-200 group-data-[state=active]:text-primary dark:group-data-[state=active]:text-primary"
                       style={{
                         maskImage: `url(${item.logo})`,
                         WebkitMaskImage: `url(${item.logo})`,
