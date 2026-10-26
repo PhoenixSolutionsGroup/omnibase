@@ -27,7 +27,10 @@ export function HeroSection() {
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Button size="lg" asChild>
-              <Link href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}>
+              <Link
+                href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}
+                target="_blank"
+              >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

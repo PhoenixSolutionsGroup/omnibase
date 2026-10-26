@@ -119,7 +119,10 @@ export function Header() {
             </Link>
           </Button>
           <Button asChild>
-            <Link href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}>
+            <Link
+              href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}
+              target="_blank"
+            >
               Get Started
             </Link>
           </Button>
@@ -229,6 +232,7 @@ export function Header() {
                 <Button asChild className="flex-1">
                   <Link
                     href={process.env.NEXT_PUBLIC_DASHBOARD_URL || ""}
+                    target="_blank"
                     onClick={() => setOpen(false)}
                   >
                     Get Started
