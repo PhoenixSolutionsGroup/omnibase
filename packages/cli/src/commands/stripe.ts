@@ -66,21 +66,27 @@ interface WebhookConfig {
  */
 function loadRawEnv(envName: string): Record<string, string> {
   const projectRoot = findOmnibaseRoot();
-  return loadSecretsMap(projectRoot);
+  return loadSecretsMap(projectRoot, envName);
 }
 
 /**
  * Expand ${VAR} patterns in a string using environment variables
  */
-function expandEnvVars(str: string, env: Record<string, string>): string {
-  return str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
+function expandEnvVars(
+  str: string,
+  env: Record<string, string>,
+): string | null {
+  let unresolved = false;
+  const expanded = str.replace(/\$\{([^}]+)\}/g, (match, varName) => {
     const value = env[varName];
-    if (value === undefined) {
+    if (value === undefined || value === "") {
+      unresolved = true;
       logger.warn(`Environment variable ${varName} is not defined`);
-      return match; // Keep original if not found
+      return match;
     }
     return value;
   });
+  return unresolved ? null : expanded;
 }
 
 /**
@@ -332,10 +338,16 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
 
   // Expand environment variables in webhook URLs before pushing
   if (config.webhooks && Array.isArray(config.webhooks)) {
-    config.webhooks = config.webhooks.map((webhook: WebhookConfig) => ({
-      ...webhook,
-      url: expandEnvVars(webhook.url, rawEnv),
-    }));
+    config.webhooks = config.webhooks.flatMap((webhook: WebhookConfig) => {
+      const url = expandEnvVars(webhook.url, rawEnv);
+      if (!url) {
+        logger.warn(
+          `Skipping webhook '${webhook.id ?? webhook.url}' because its URL has unresolved variables`,
+        );
+        return [];
+      }
+      return [{ ...webhook, url }];
+    });
   }
 
   logger.succeed("Successfully loaded config");

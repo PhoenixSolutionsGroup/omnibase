@@ -33,6 +33,10 @@ import {
   OmnibaseConfig,
 } from "../utils/config";
 
+export function unwrapManagedHostingData<T>(body: any): T {
+  return (body?.data ?? body) as T;
+}
+
 /**
  * Login to OmniBase Cloud
  */
@@ -55,7 +59,12 @@ async function login(
       }
     );
 
-    const data = response.data;
+    const data = unwrapManagedHostingData<{
+      tenant_id: string;
+      tenant_name: string;
+      key_name: string;
+      key_prefix: string;
+    }>(response.data);
     if (!data?.tenant_id) {
       throw new Error("Invalid API key");
     }
@@ -314,11 +323,14 @@ async function deployWorkers(
     targets = [selected];
   }
 
+  const failures: string[] = [];
+
   for (const dep of targets) {
     const workersDir = path.join(root, "omnibase", dep.path ?? dep.name);
 
     if (!fs.existsSync(workersDir)) {
       logger.fail(`Deployment '${dep.name}' directory not found: ${workersDir}`);
+      failures.push(dep.name);
       continue;
     }
 
@@ -332,6 +344,7 @@ async function deployWorkers(
       });
     } catch (error) {
       logger.fail(`Build failed for '${dep.name}'. Check the output above.`);
+      failures.push(dep.name);
       continue;
     }
 
@@ -341,11 +354,17 @@ async function deployWorkers(
     logger.start(`Deploying '${dep.name}'...`);
     try {
       const result = await uploadToManagedHosting(env, bundle, dep.name);
+      const deployed = unwrapManagedHostingData<{ url?: string }>(result);
       logger.succeed(`${dep.name} deployed`);
-      logger.log(`   URL: ${result.data?.url}`);
+      logger.log(`   URL: ${deployed?.url}`);
     } catch (error) {
       logger.fail(`${dep.name} deploy failed: ${formatHttpError(error)}`);
+      failures.push(dep.name);
     }
+  }
+
+  if (failures.length > 0) {
+    throw new Error(`Failed to deploy: ${failures.join(", ")}`);
   }
 }
 
@@ -499,8 +518,232 @@ async function uploadToManagedHosting(
 interface BranchSummary {
   id: string;
   name: string;
-  slug: string;
+  slug?: string;
   status: string;
+  api_url?: string;
+}
+
+interface BranchDetail extends BranchSummary {
+  project_id: string;
+  postgrest_url?: string;
+  error_message?: string;
+}
+
+type ProfileClient = ReturnType<typeof createProfileClient>;
+
+const GONE_BRANCH_STATUSES = new Set(["deleted", "deleting"]);
+
+const FAILED_BRANCH_STATUSES = new Set([
+  "failed",
+  "failed_deletion",
+  "suspended",
+  "deleted",
+]);
+
+export function isGoneBranchStatus(status: string): boolean {
+  return GONE_BRANCH_STATUSES.has(status);
+}
+
+export function findLiveBranchByName(
+  branches: BranchSummary[],
+  name: string,
+): BranchSummary | undefined {
+  return branches.find(
+    (branch) => branch.name === name && !isGoneBranchStatus(branch.status),
+  );
+}
+
+export function pickLiveBranch(
+  branches: BranchSummary[],
+  ref: string,
+): BranchSummary | undefined {
+  const matches = branches.filter(
+    (branch) =>
+      branch.id === ref || branch.name === ref || branch.slug === ref,
+  );
+  return (
+    matches.find((branch) => !isGoneBranchStatus(branch.status)) ?? matches[0]
+  );
+}
+
+function resolveProjectId(projectIdFlag?: string): string {
+  const root = findOmnibaseRoot();
+  const config = loadConfig(root);
+  const projectId = projectIdFlag ?? config.project_id;
+  if (!projectId) {
+    throw new Error(
+      "project_id is required. Provide --project-id or set it in omnibase.toml",
+    );
+  }
+  return projectId;
+}
+
+async function listProjectBranches(
+  api: ProfileClient,
+  projectId: string,
+): Promise<BranchSummary[]> {
+  const response = await api.get(`/api/v1/projects/${projectId}/branches`);
+  return Array.isArray(response.data) ? response.data : [];
+}
+
+async function getBranchDetail(
+  api: ProfileClient,
+  branchId: string,
+): Promise<BranchDetail> {
+  const response = await api.get(`/api/v1/project_branches/${branchId}`);
+  return response.data;
+}
+
+function isNotFound(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 404;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function parseSeconds(value: string | number | undefined, fallback: number): number {
+  if (value === undefined) return fallback;
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    throw new Error(`Invalid timeout: ${value}`);
+  }
+  return seconds;
+}
+
+async function checkBranchHealth(apiUrl: string): Promise<boolean> {
+  try {
+    const response = await axios.get(
+      `${apiUrl.replace(/\/+$/, "")}/health/ready`,
+      { timeout: 10_000, validateStatus: (status) => status === 200 },
+    );
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+async function waitForBranchActive(
+  api: ProfileClient,
+  branchId: string,
+  timeoutMs: number,
+  quiet: boolean,
+): Promise<BranchDetail> {
+  const deadline = Date.now() + timeoutMs;
+  let lastStatus = "";
+
+  while (Date.now() < deadline) {
+    let detail: BranchDetail | undefined;
+    try {
+      detail = await getBranchDetail(api, branchId);
+    } catch (error) {
+      if (!isNotFound(error)) throw error;
+    }
+
+    if (detail) {
+      if (detail.status !== lastStatus) {
+        lastStatus = detail.status;
+        if (!quiet) logger.info(`Branch status: ${detail.status}`);
+      }
+      if (detail.status === "active") return detail;
+      if (FAILED_BRANCH_STATUSES.has(detail.status)) {
+        const message = detail.error_message
+          ? `${detail.status}: ${detail.error_message}`
+          : detail.status;
+        throw new Error(`Branch ${detail.name} is ${message}`);
+      }
+    }
+
+    await sleep(5_000);
+  }
+
+  throw new Error(
+    `Timed out after ${Math.round(timeoutMs / 1000)}s waiting for branch ${branchId} to become active`,
+  );
+}
+
+async function waitForBranchHealthy(
+  apiUrl: string,
+  timeoutMs: number,
+  quiet: boolean,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    if (await checkBranchHealth(apiUrl)) {
+      if (!quiet) logger.succeed(`Branch is healthy at ${apiUrl}`);
+      return;
+    }
+    await sleep(5_000);
+  }
+
+  throw new Error(
+    `Timed out after ${Math.round(timeoutMs / 1000)}s waiting for ${apiUrl}/health/ready`,
+  );
+}
+
+async function getApiServiceKey(
+  api: ProfileClient,
+  branchId: string,
+): Promise<string> {
+  try {
+    const response = await api.get(
+      `/api/v1/project_branches/${branchId}/api-service-key`,
+    );
+    const keyData = response.data?.data ?? response.data;
+    const serviceKey = keyData?.api_service_key ?? keyData?.service_key;
+    if (!serviceKey) {
+      throw new Error("API service key missing from response");
+    }
+    return serviceKey;
+  } catch (error) {
+    throw new Error(`Failed to load branch API service key: ${formatHttpError(error)}`);
+  }
+}
+
+export interface BranchEnvInput {
+  apiUrl: string;
+  serviceKey: string;
+  managedHostingUrl: string;
+  postgrestUrl?: string | null;
+  workerDomain?: string;
+  cookieDomain?: string;
+  dashboardUrl?: string;
+}
+
+export function buildBranchEnv(input: BranchEnvInput): Record<string, string> {
+  const apiUrl = input.apiUrl.replace(/\/+$/, "");
+  const hostname = new URL(apiUrl).hostname;
+  const composedSlug = hostname.split(".")[0];
+  if (!composedSlug) {
+    throw new Error(`Could not derive a branch slug from ${input.apiUrl}`);
+  }
+
+  const workerDomain = (input.workerDomain ?? "workers.omnibase.tech").replace(
+    /^\.+/,
+    "",
+  );
+  const cookieDomain = input.cookieDomain ?? `.${workerDomain}`;
+  const dashboardUrl = (
+    input.dashboardUrl ?? `https://${composedSlug}-dashboard.${workerDomain}`
+  ).replace(/\/+$/, "");
+  const postgrestUrl = (
+    input.postgrestUrl ?? `${apiUrl}/rest/v1`
+  ).replace(/\/+$/, "");
+
+  return {
+    NEXT_PUBLIC_WEBSITE_URL: dashboardUrl,
+    WEBSITE_URL: dashboardUrl,
+    ALLOWED_RETURN_URLS: dashboardUrl,
+    NEXT_PUBLIC_OMNIBASE_WORKER_URL: dashboardUrl,
+    OMNIBASE_API_URL: apiUrl,
+    NEXT_PUBLIC_OMNIBASE_API_URL: apiUrl,
+    OMNIBASE_POSTGREST_URL: postgrestUrl,
+    OMNIBASE_SERVICE_KEY: input.serviceKey,
+    MANAGED_HOSTING_API_URL: input.managedHostingUrl,
+    NEXT_PUBLIC_MANAGED_HOSTING_API_URL: input.managedHostingUrl,
+    OMNIBASE_COOKIE_DOMAIN: cookieDomain,
+  };
 }
 
 /**
@@ -563,6 +806,32 @@ async function resolveBranch(
  *
  * {VAR} secrets resolve from process.env → omnibase/.env.<branch>.
  */
+export function stripUnresolvedOidcProviders(
+  payload: Record<string, unknown>,
+): string[] {
+  const auth = payload.auth as Record<string, unknown> | undefined;
+  const providers = auth?.oidc as Array<Record<string, unknown>> | undefined;
+  if (!Array.isArray(providers)) return [];
+
+  const dropped: string[] = [];
+  auth!.oidc = providers.filter((provider) => {
+    const unresolved = ["client_id", "client_secret"].some((key) => {
+      const value = provider[key];
+      return typeof value === "string" && /\{[A-Za-z_][A-Za-z0-9_]*\}/.test(value);
+    });
+    if (unresolved) {
+      dropped.push(String(provider.provider ?? "unknown"));
+      return false;
+    }
+    return true;
+  });
+
+  if ((auth!.oidc as unknown[]).length === 0) {
+    delete auth!.oidc;
+  }
+  return dropped;
+}
+
 export async function pushEnvConfig(envFlag?: string): Promise<void> {
   const root = findOmnibaseRoot();
   const env = await selectEnvironment(envFlag);
@@ -601,6 +870,12 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
     assertValidVersions(resolved.versions);
   }
   const payload = cloudConfigOf(resolved);
+  const droppedOidc = stripUnresolvedOidcProviders(payload);
+  if (droppedOidc.length > 0) {
+    logger.warn(
+      `Skipping OIDC provider(s) with unresolved credentials: ${droppedOidc.join(", ")}`,
+    );
+  }
   const sections = Object.keys(payload);
   if (sections.length === 0) {
     logger.info("Nothing to push: omnibase.toml has no cloud config sections.");
@@ -749,30 +1024,188 @@ async function branchList(projectIdFlag?: string): Promise<void> {
   }
 }
 
+async function branchEnsure(
+  branchName: string,
+  options: {
+    projectId?: string;
+    region?: string;
+    tier?: string;
+    email?: string;
+    wait?: boolean;
+    timeout?: string;
+    healthTimeout?: string;
+    json?: boolean;
+  },
+): Promise<void> {
+  const api = createProfileClient();
+  const projectId = resolveProjectId(options.projectId);
+  const quiet = Boolean(options.json);
+
+  if (!quiet) logger.start(`Resolving branch '${branchName}'...`);
+
+  const branches = await listProjectBranches(api, projectId);
+  let branch = findLiveBranchByName(branches, branchName);
+
+  if (branch) {
+    if (!quiet) logger.succeed(`Reusing branch '${branch.name}' (${branch.id})`);
+  } else {
+    if (!options.region || !options.tier || !options.email) {
+      throw new Error(
+        "--region, --tier, and --email are required when creating a branch",
+      );
+    }
+
+    if (!quiet) logger.start(`Creating branch '${branchName}'...`);
+    const response = await api.post("/api/v1/project_branches", {
+      project_id: projectId,
+      branch_name: branchName,
+      region: options.region,
+      deployment_tier: options.tier,
+      billing_email: options.email,
+    });
+    branch = {
+      id: response.data.branch_id,
+      name: branchName,
+      slug: "",
+      status: response.data.status ?? "provisioning",
+    };
+    if (!quiet) logger.succeed(`Branch '${branchName}' provisioning started`);
+  }
+
+  let detail: BranchDetail = {
+    ...branch,
+    project_id: projectId,
+  };
+
+  if (options.wait !== false) {
+    const timeoutMs = parseSeconds(options.timeout, 1800) * 1000;
+    const healthTimeoutMs = parseSeconds(options.healthTimeout, 600) * 1000;
+    detail = await waitForBranchActive(api, branch.id, timeoutMs, quiet);
+    if (!detail.api_url) {
+      throw new Error(`Branch ${detail.name} is active but has no API URL`);
+    }
+    await waitForBranchHealthy(detail.api_url, healthTimeoutMs, quiet);
+  }
+
+  if (options.json) {
+    logger.log(
+      JSON.stringify({
+        id: detail.id,
+        name: detail.name,
+        slug: detail.slug,
+        status: detail.status,
+        project_id: detail.project_id,
+        api_url: detail.api_url ?? null,
+        postgrest_url: detail.postgrest_url ?? null,
+      }),
+    );
+    return;
+  }
+
+  logger.log("");
+  logger.log(`Branch: ${detail.name} (${detail.id})`);
+  logger.log(`Status: ${detail.status}`);
+  if (detail.api_url) logger.log(`API URL: ${detail.api_url}`);
+  logger.log("");
+  logger.log(`Next steps:`);
+  logger.log(`   omnibase cloud branch env ${detail.name} --output omnibase/.env.${detail.name}`);
+  logger.log(`   omnibase sync all --env ${detail.name}`);
+  logger.log(`   omnibase cloud workers deploy --all --env ${detail.name}`);
+}
+
+async function branchEnv(
+  branchRef: string,
+  options: {
+    projectId?: string;
+    workerDomain?: string;
+    cookieDomain?: string;
+    dashboardUrl?: string;
+    output?: string;
+  },
+): Promise<void> {
+  const api = createProfileClient();
+  const projectId = resolveProjectId(options.projectId);
+
+  logger.start(`Resolving branch '${branchRef}'...`);
+  const branches = await listProjectBranches(api, projectId);
+  const branch = pickLiveBranch(branches, branchRef);
+  if (!branch || isGoneBranchStatus(branch.status)) {
+    throw new Error(`Branch '${branchRef}' not found in project ${projectId}`);
+  }
+
+  const detail = await getBranchDetail(api, branch.id);
+  if (!detail.api_url) {
+    throw new Error(`Branch '${branchRef}' has no API URL yet`);
+  }
+
+  const serviceKey = await getApiServiceKey(api, branch.id);
+  const profile = getActiveProfile();
+  const managedHostingUrl =
+    profile?.managed_hosting_url ?? process.env.MANAGED_HOSTING_API_URL;
+  if (!managedHostingUrl) {
+    throw new Error(
+      "No managed hosting URL configured. Run 'omnibase cloud login' or set MANAGED_HOSTING_API_URL.",
+    );
+  }
+
+  const env = buildBranchEnv({
+    apiUrl: detail.api_url,
+    postgrestUrl: detail.postgrest_url,
+    serviceKey,
+    managedHostingUrl,
+    workerDomain: options.workerDomain ?? process.env.OMNIBASE_WORKER_DOMAIN,
+    cookieDomain: options.cookieDomain ?? process.env.OMNIBASE_COOKIE_DOMAIN,
+    dashboardUrl: options.dashboardUrl,
+  });
+  const content =
+    Object.entries(env)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("\n") + "\n";
+
+  if (options.output) {
+    const target = path.resolve(options.output);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content, { mode: 0o600 });
+    logger.succeed(`Wrote branch environment to ${target}`);
+    return;
+  }
+
+  logger.succeed(`Resolved to ${detail.name} (${detail.id})`);
+  logger.log(content.trimEnd());
+}
+
 /**
  * Delete a branch by name or ID
  */
-async function branchDelete(branchRef: string, projectIdFlag?: string): Promise<void> {
-  const root = findOmnibaseRoot();
+async function branchDelete(
+  branchRef: string,
+  projectIdFlag?: string,
+  options: { ifExists?: boolean } = {},
+): Promise<void> {
   const api = createProfileClient();
-
-  const config = loadConfig(root);
-  const projectId = projectIdFlag ?? config.project_id;
-
-  if (!projectId) {
-    throw new Error("project_id is required. Provide --project-id or set it in omnibase.toml");
-  }
+  const projectId = resolveProjectId(projectIdFlag);
 
   logger.start(`Resolving branch '${branchRef}'...`);
 
-  const response = await api.get(`/api/v1/projects/${projectId}/branches`);
-  const branches = response.data;
-  const match = branches.find(
-    (b: any) => b.id === branchRef || b.name === branchRef || b.slug === branchRef,
-  );
+  const branches = await listProjectBranches(api, projectId);
+  const match = pickLiveBranch(branches, branchRef);
+
   if (!match) {
+    if (options.ifExists) {
+      logger.succeed(`Branch '${branchRef}' does not exist`);
+      return;
+    }
     logger.fail(`Branch '${branchRef}' not found`);
     throw new Error(`Branch '${branchRef}' not found in project ${projectId}`);
+  }
+
+  if (isGoneBranchStatus(match.status)) {
+    if (options.ifExists) {
+      logger.succeed(`Branch '${branchRef}' is already ${match.status}`);
+      return;
+    }
+    logger.fail(`Branch '${branchRef}' is already ${match.status}`);
+    throw new Error(`Branch '${branchRef}' is already ${match.status}`);
   }
 
   logger.succeed(`Resolved to ${match.name} (${match.id})`);
@@ -1381,6 +1814,64 @@ export function addCloudCommands(program: Command): void {
     });
 
   branch
+    .command("ensure <branch>")
+    .summary("Provision a branch if it does not exist and wait for it")
+    .description(
+      "Idempotently provision a branch and wait until it is active and its " +
+      "API reports ready.\n\n" +
+      "An existing live branch with the same name is reused, so this is safe " +
+      "to run on every CI job. When no branch exists, `--region`, `--tier`, " +
+      "and `--email` are required.\n\n" +
+      "With `--json`, prints a single JSON object instead of log output. Use " +
+      "`--no-wait` to return as soon as provisioning starts.\n\n" +
+      "```bash\n" +
+      "omnibase cloud branch ensure pr-123 --region syd --tier shared_starter --email ci@example.com\n" +
+      "omnibase cloud branch ensure pr-123 --region syd --tier shared_starter --email ci@example.com --json\n" +
+      "```"
+    )
+    .option("--project-id <id>", "Project ID")
+    .option("--region <region>", "Region (e.g. syd)")
+    .option("--tier <tier>", "Deployment tier (e.g. shared_starter)")
+    .option("--email <email>", "Billing email")
+    .option("--no-wait", "Return immediately after provisioning starts")
+    .option("--timeout <seconds>", "Provisioning timeout in seconds", "1800")
+    .option("--health-timeout <seconds>", "Health check timeout in seconds", "600")
+    .option("--json", "Print the resolved branch as JSON")
+    .action(async (branchName, cmdOptions) => {
+      try {
+        await branchEnsure(branchName, cmdOptions);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  branch
+    .command("env <branch>")
+    .summary("Export branch URLs and keys as environment variables")
+    .description(
+      "Resolve a branch's API URL, PostgREST URL, service key, and dashboard " +
+      "worker URL, then write them as dotenv content.\n\n" +
+      "Use `--output` to write a gitignored `omnibase/.env.<branch>` file " +
+      "before `omnibase sync` or `omnibase cloud workers deploy`.\n\n" +
+      "```bash\n" +
+      "omnibase cloud branch env pr-123 --output omnibase/.env.pr-123\n" +
+      "omnibase cloud branch env pr-123\n" +
+      "```"
+    )
+    .option("--project-id <id>", "Project ID")
+    .option("--worker-domain <domain>", "Workers domain", "workers.omnibase.tech")
+    .option("--cookie-domain <domain>", "Cookie domain")
+    .option("--dashboard-url <url>", "Override the dashboard URL")
+    .option("--output <path>", "Write dotenv output to a file")
+    .action(async (branchRef, cmdOptions) => {
+      try {
+        await branchEnv(branchRef, cmdOptions);
+      } catch (error) {
+        await handleCommandError(error);
+      }
+    });
+
+  branch
     .command("list")
     .summary("List project branches")
     .description(
@@ -1408,16 +1899,21 @@ export function addCloudCommands(program: Command): void {
       "Delete a branch by name, slug, or ID. The branch is resolved against " +
       "the project's branch list, then deprovisioning is started.\n\n" +
       "This is destructive — the branch's database, workers, and services are " +
-      "deprovisioned.\n\n" +
+      "deprovisioned. `--if-exists` makes a missing or already deleted branch " +
+      "a no-op, which is useful in cleanup jobs.\n\n" +
       "```bash\n" +
       "omnibase cloud branch rm staging\n" +
+      "omnibase cloud branch rm pr-123 --if-exists\n" +
       "omnibase cloud branch rm br_123 --project-id proj_123\n" +
       "```"
     )
     .option("--project-id <id>", "Project ID")
+    .option("--if-exists", "Do not fail if the branch is missing or deleted")
     .action(async (branchRef, cmdOptions) => {
       try {
-        await branchDelete(branchRef, cmdOptions.projectId);
+        await branchDelete(branchRef, cmdOptions.projectId, {
+          ifExists: cmdOptions.ifExists,
+        });
       } catch (error) {
         await handleCommandError(error);
       }
