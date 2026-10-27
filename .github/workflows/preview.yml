@@ -107,7 +107,7 @@ jobs:
           append_env COOKIE_SECRET "$PREVIEW_COOKIE_SECRET"
 
       - name: Sync branch data
-        run: bun packages/cli/src/index.ts --env "$BRANCH_NAME" sync permissions db stripe env
+        run: bun packages/cli/src/index.ts --env "$BRANCH_NAME" sync permissions db env
 
       - name: Deploy Next.js apps
         run: bun packages/cli/src/index.ts --env "$BRANCH_NAME" cloud workers deploy --all
