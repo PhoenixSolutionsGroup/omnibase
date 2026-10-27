@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       "./node_modules/pg-cloudflare/dist/index.js",
       "./node_modules/pg-cloudflare/dist/index.d.ts",
       "./node_modules/pg-cloudflare/esm/index.mjs",
+      "../../node_modules/pg-cloudflare/dist/index.js",
+      "../../node_modules/pg-cloudflare/dist/index.d.ts",
+      "../../node_modules/pg-cloudflare/esm/index.mjs",
     ],
   },
 };
