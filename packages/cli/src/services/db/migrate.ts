@@ -97,7 +97,9 @@ export class DatabaseMigrationService {
     ensureMigrationDir(migrationsDir);
 
     const zip = zipMigrationsDir(migrationsDir).toBuffer();
-    const blob = new Blob([zip], { type: "application/zip" });
+    const migrationsFile = new File([zip], "migrations.zip", {
+      type: "application/zip",
+    });
     const config = createConfig({
       apiKey: vEnv.omnibaseServiceKey,
       basePath: vEnv.omnibaseApiUrl,
@@ -106,7 +108,7 @@ export class DatabaseMigrationService {
     const client = new V1DatabaseApi(config);
     try {
       const response = (await client.uploadDatabaseMigrations({
-        migrations: blob,
+        migrations: migrationsFile,
       })) as { message?: string };
       logger.succeed(response.message || "Migrations applied successfully");
     } catch (error: any) {
@@ -239,11 +241,13 @@ export class DatabaseMigrationService {
     // Zip migrations and POST to down endpoint
     const zip = zipMigrationsDir(migrationsDir);
     const zipBuffer = zip.toBuffer();
-    const blob = new Blob([zipBuffer], { type: "application/zip" });
+    const migrationsFile = new File([zipBuffer], "migrations.zip", {
+      type: "application/zip",
+    });
 
     try {
       logger.start(`Rolling back ${steps} migration(s)...`);
-      const res = await client.rollbackDatabaseMigrations({ migrations: blob, steps: String(steps) })
+      const res = await client.rollbackDatabaseMigrations({ migrations: migrationsFile, steps: String(steps) })
       if (!res) throw new Error()
       logger.succeed(res.message || `Rolled back ${steps} migration(s)`);
     } catch (error) {
