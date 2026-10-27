@@ -1,0 +1,59 @@
+model project_branches {
+    id                                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    project_id                           String                @db.Uuid
+    name                                 String
+    slug                                 String
+    database_host                        String?
+    database_port                        Int?
+    database_pooler_host                 String?
+    database_name                        String?
+    database_username                    String?
+    database_password_encrypted          String?
+    database_connection_string_encrypted String?
+    database_anon_key                    String?
+    database_service_key_encrypted       String?
+    storage_bucket_name                  String?
+    ses_tenant_name                      String?
+    ses_tenant_id                        String?
+    ses_config_set                       String?
+    api_url                              String?
+    postgrest_url                        String?
+    api_service_key_encrypted            String?
+    status                               project_branch_status @default(provisioning)
+    suspension_reason                    String?
+    error_message                        String?
+    storage_access_key                   String?
+    storage_secret_key_encrypted         String?
+    storage_endpoint                     String?
+    email_deployment_id                  String?
+    deprovisioned_at                     DateTime?             @db.Timestamptz(6)
+    cluster_id                           String?               @db.Uuid
+    namespace                            String?
+    stripe_account_id                    String?
+    stripe_environment                   String?
+    // deployment_type                      String                @default("shared")
+
+    created_at       DateTime  @default(now()) @db.Timestamptz(6)
+    updated_at       DateTime  @default(now()) @db.Timestamptz(6)
+    last_activity_at DateTime? @default(now()) @db.Timestamptz(6)
+
+    project        projects         @relation(fields: [project_id], references: [id], onDelete: Cascade)
+    clusters       clusters?        @relation(fields: [cluster_id], references: [id], onDelete: Restrict)
+    branch_workers branch_workers[]
+
+    @@unique([project_id, slug])
+    @@index([status])
+    @@schema("public")
+}
+
+enum project_branch_status {
+    provisioning
+    active
+    suspended
+    failed
+    deleting
+    deleted
+    failed_deletion
+
+    @@schema("public")
+}

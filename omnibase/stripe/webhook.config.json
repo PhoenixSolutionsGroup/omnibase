@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "webhooks": [{
+        "id": "invoice-created",  
+        "connect": false,
+        "events": ["invoice.created"],
+        "url": "${STRIPE_WEBHOOK_URL}"
+  }]
+}
