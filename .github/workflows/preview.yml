@@ -1,0 +1,235 @@
+name: Preview Environment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: preview-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy preview
+    if: |
+      github.event.action != 'closed' &&
+      contains(github.event.pull_request.labels.*.name, 'preview') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: pr-${{ github.event.pull_request.number }}
+      MANAGED_HOSTING_API_URL: ${{ vars.OMNIBASE_MANAGED_HOSTING_API_URL || 'https://api.omnibase.tech' }}
+      PREVIEW_REGION: ${{ vars.OMNIBASE_PREVIEW_REGION || 'syd' }}
+      PREVIEW_TIER: ${{ vars.OMNIBASE_PREVIEW_TIER || 'shared_starter' }}
+      WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
+      COOKIE_DOMAIN: ${{ vars.OMNIBASE_COOKIE_DOMAIN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: bun install --ignore-scripts
+
+      - name: Generate docs source
+        working-directory: apps/docs
+        run: bun run postinstall
+
+      - name: Authenticate CLI
+        env:
+          OMNIBASE_API_KEY: ${{ secrets.OMNIBASE_API_KEY }}
+        run: |
+          if [ -z "$OMNIBASE_API_KEY" ]; then
+            echo "::error::OMNIBASE_API_KEY repository secret is required"
+            exit 1
+          fi
+          bun packages/cli/src/index.ts cloud login "$OMNIBASE_API_KEY" \
+            --url "$MANAGED_HOSTING_API_URL" \
+            --name ci
+
+      - name: Provision branch
+        env:
+          OMNIBASE_BILLING_EMAIL: ${{ secrets.OMNIBASE_BILLING_EMAIL }}
+        run: |
+          if [ -z "$OMNIBASE_BILLING_EMAIL" ]; then
+            echo "::error::OMNIBASE_BILLING_EMAIL repository secret is required"
+            exit 1
+          fi
+          bun packages/cli/src/index.ts cloud branch ensure "$BRANCH_NAME" \
+            --region "$PREVIEW_REGION" \
+            --tier "$PREVIEW_TIER" \
+            --email "$OMNIBASE_BILLING_EMAIL" \
+            --timeout 1800 \
+            --health-timeout 600 \
+            --json > "$RUNNER_TEMP/branch.json"
+          jq . "$RUNNER_TEMP/branch.json"
+
+      - name: Write branch environment
+        env:
+          PREVIEW_GOOGLE_CLIENT_ID: ${{ secrets.OMNIBASE_PREVIEW_GOOGLE_CLIENT_ID || secrets.GOOGLE_CLIENT_ID }}
+          PREVIEW_GOOGLE_CLIENT_SECRET: ${{ secrets.OMNIBASE_PREVIEW_GOOGLE_CLIENT_SECRET || secrets.GOOGLE_CLIENT_SECRET }}
+          PREVIEW_COOKIE_SECRET: ${{ secrets.OMNIBASE_PREVIEW_COOKIE_SECRET }}
+        run: |
+          ENV_FILE="omnibase/.env.$BRANCH_NAME"
+          COOKIE_ARGS=()
+          if [ -n "$COOKIE_DOMAIN" ]; then
+            COOKIE_ARGS=(--cookie-domain "$COOKIE_DOMAIN")
+          fi
+          bun packages/cli/src/index.ts cloud branch env "$BRANCH_NAME" \
+            --worker-domain "$WORKER_DOMAIN" \
+            "${COOKIE_ARGS[@]}" \
+            --output "$ENV_FILE"
+
+          append_env() {
+            if [ -n "$2" ]; then
+              printf '%s=%s\n' "$1" "$2" >> "$ENV_FILE"
+            fi
+          }
+
+          append_env GOOGLE_CLIENT_ID "$PREVIEW_GOOGLE_CLIENT_ID"
+          append_env GOOGLE_CLIENT_SECRET "$PREVIEW_GOOGLE_CLIENT_SECRET"
+          if [ -z "$PREVIEW_COOKIE_SECRET" ]; then
+            PREVIEW_COOKIE_SECRET="$(openssl rand -hex 32)"
+          fi
+          append_env COOKIE_SECRET "$PREVIEW_COOKIE_SECRET"
+
+      - name: Sync branch data
+        run: bun packages/cli/src/index.ts --env "$BRANCH_NAME" sync permissions db stripe env
+
+      - name: Deploy Next.js apps
+        run: bun packages/cli/src/index.ts --env "$BRANCH_NAME" cloud workers deploy --all
+
+      - name: Resolve preview URLs
+        id: preview
+        run: |
+          DASHBOARD_URL="$(grep '^NEXT_PUBLIC_WEBSITE_URL=' "omnibase/.env.$BRANCH_NAME" | cut -d= -f2-)"
+          API_URL="$(jq -r '.api_url' "$RUNNER_TEMP/branch.json")"
+          API_HOST="${API_URL#https://}"
+          COMPOSED="${API_HOST%%.*}"
+          DOCS_URL="https://${COMPOSED}-docs.${WORKER_DOMAIN}"
+          WEBSITE_URL="https://${COMPOSED}-website.${WORKER_DOMAIN}"
+          {
+            echo "dashboard_url=$DASHBOARD_URL"
+            echo "api_url=$API_URL"
+            echo "docs_url=$DOCS_URL"
+            echo "website_url=$WEBSITE_URL"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Preview summary
+        run: |
+          {
+            echo "### Preview environment"
+            echo ""
+            echo "- Branch: \`$BRANCH_NAME\`"
+            echo "- API: ${{ steps.preview.outputs.api_url }}"
+            echo "- Dashboard: ${{ steps.preview.outputs.dashboard_url }}"
+            echo "- Docs: ${{ steps.preview.outputs.docs_url }}"
+            echo "- Website: ${{ steps.preview.outputs.website_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment preview URLs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          BODY=$(cat <<EOF
+          <!-- omnibase-preview -->
+          ### Preview environment
+
+          | | |
+          |---|---|
+          | Branch | \`$BRANCH_NAME\` |
+          | Commit | \`${HEAD_SHA:0:7}\` |
+          | Dashboard | ${{ steps.preview.outputs.dashboard_url }} |
+          | Docs | ${{ steps.preview.outputs.docs_url }} |
+          | Website | ${{ steps.preview.outputs.website_url }} |
+          | API | ${{ steps.preview.outputs.api_url }} |
+          EOF
+          )
+
+          COMMENT_ID=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '.[] | select(.body | contains("<!-- omnibase-preview -->")) | .id' \
+            | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -f body="$BODY" >/dev/null
+            echo "Updated preview comment"
+          else
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
+            echo "Created preview comment"
+          fi
+
+  cleanup:
+    name: Delete preview
+    if: |
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: pr-${{ github.event.pull_request.number }}
+      MANAGED_HOSTING_API_URL: ${{ vars.OMNIBASE_MANAGED_HOSTING_API_URL || 'https://api.omnibase.tech' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          cache: true
+
+      - name: Install dependencies
+        run: bun install --ignore-scripts
+
+      - name: Authenticate CLI
+        env:
+          OMNIBASE_API_KEY: ${{ secrets.OMNIBASE_API_KEY }}
+        run: |
+          if [ -z "$OMNIBASE_API_KEY" ]; then
+            echo "::error::OMNIBASE_API_KEY repository secret is required"
+            exit 1
+          fi
+          bun packages/cli/src/index.ts cloud login "$OMNIBASE_API_KEY" \
+            --url "$MANAGED_HOSTING_API_URL" \
+            --name ci
+
+      - name: Delete branch
+        run: |
+          bun packages/cli/src/index.ts cloud branch rm "$BRANCH_NAME" --if-exists
+
+      - name: Update preview comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          COMMENT_ID=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '.[] | select(.body | contains("<!-- omnibase-preview -->")) | .id' \
+            | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            BODY=$(cat <<EOF
+          <!-- omnibase-preview -->
+          ### Preview environment
+
+          Preview deleted.
+          EOF
+          )
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -f body="$BODY" >/dev/null
+            echo "Updated preview comment"
+          fi
