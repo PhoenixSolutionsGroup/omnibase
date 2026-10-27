@@ -1,0 +1,17 @@
+model branch_workers {
+    id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    project_branch_id String   @db.Uuid
+    name             String
+    worker_url       String?
+    worker_deployment_id String?
+
+    created_at       DateTime @default(now()) @db.Timestamptz(6)
+    updated_at       DateTime @default(now()) @db.Timestamptz(6)
+
+    project_branch   project_branches @relation(fields: [project_branch_id], references: [id], onDelete: Cascade)
+    worker_domains   branch_worker_domains[]
+
+    @@unique([project_branch_id, name])
+    @@index([project_branch_id])
+    @@schema("public")
+}

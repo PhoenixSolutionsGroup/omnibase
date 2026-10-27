@@ -1,0 +1,18 @@
+model webhook_registrations {
+    id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    tenant_id    String   @db.Uuid
+    account_id   String
+    webhook_id   String
+    callback_url String
+    events       String[]
+    connect      Boolean  @default(false)
+    secret       String
+    active       Boolean  @default(true)
+    created_at   DateTime @default(now()) @db.Timestamptz(6)
+    updated_at   DateTime @default(now()) @db.Timestamptz(6)
+
+    @@unique([tenant_id, webhook_id], map: "idx_webhook_registrations_tenant_webhook")
+    @@index([account_id], map: "idx_webhook_registrations_account")
+    @@index([tenant_id], map: "idx_webhook_registrations_tenant")
+    @@schema("public")
+}

@@ -1,0 +1,17 @@
+model branch_worker_domains {
+    id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    branch_worker_id String   @db.Uuid
+    account_domain_id String  @db.Uuid
+    hostname         String   @unique
+    status           String   @default("pending")
+
+    created_at       DateTime @default(now()) @db.Timestamptz(6)
+    updated_at       DateTime @default(now()) @db.Timestamptz(6)
+
+    branch_worker  branch_workers @relation(fields: [branch_worker_id], references: [id], onDelete: Cascade)
+    account_domain account_domains @relation(fields: [account_domain_id], references: [id], onDelete: Cascade)
+
+    @@index([branch_worker_id])
+    @@index([account_domain_id])
+    @@schema("public")
+}

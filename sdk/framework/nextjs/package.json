@@ -42,7 +42,7 @@
     "tsup": "^8.5.0"
   },
   "peerDependencies": {
-    "next": "^15.5.4",
+    "next": "^15.5.4 || ^16.0.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {

@@ -108,7 +108,9 @@ export class PermissionsCommand {
       const configApi = new V1ConfigurationApi(sdkConfig);
 
       const result = await configApi.deployPermissionNamespaces({
-        namespaces: new Blob([zipBuffer], { type: "application/zip" }),
+        namespaces: new File([zipBuffer], "permissions.zip", {
+          type: "application/zip",
+        }),
       });
 
       logger.succeed("Namespaces deployed successfully");

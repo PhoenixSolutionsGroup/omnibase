@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "ses_email",
+      "name": "SES Email",
+      "description": "Transactional email delivery via AWS SES",
+      "type": "good",
+      "prices": [
+        {
+          "id": "ses_email",
+          "currency": "usd",
+          "public": false,
+          "amount": 0.24
+        }
+      ]
+    }
+  ]
+}
