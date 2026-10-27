@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../public/apps/api/internal/static/stripe-config-schema.json",
+  "version": "1.0.0",
+  "products": [
+    {
+      "id": "vks_compute",
+      "name": "VKS Compute",
+      "description": "Vultr Kubernetes Service compute tiers",
+      "type": "service",
+      "prices": [
+        {
+          "id": "shared_starter_hourly",
+          "currency": "usd",
+          "public": true,
+          "amount": 0.683561643836
+        },
+        {
+          "id": "scale_0.5c_hourly",
+          "currency": "usd",
+          "public": true,
+          "amount": 1.368493150685
+        },
+        {
+          "id": "scale_1c_hourly",
+          "currency": "usd",
+          "public": true,
+          "amount": 2.738356164384
+        },
+        {
+          "id": "scale_2c_hourly",
+          "currency": "usd",
+          "public": true,
+          "amount": 5.477260273973
+        },
+        {
+          "id": "dedicated_4c_hourly",
+          "currency": "usd",
+          "public": true,
+          "amount": 10.957534246575
+        }
+      ]
+    }
+  ]
+}
