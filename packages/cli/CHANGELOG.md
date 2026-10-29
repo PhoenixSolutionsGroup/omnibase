@@ -1,3 +1,24 @@
+# [0.12.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.11.0...cli-v0.12.0) (2026-10-29)
+
+
+### Bug Fixes
+
+* **cli:** restart permissions ([64b799e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/64b799eec257c243a0bd6e5e14757d67b47f0b09))
+* **cli:** sync auth docker image to 0.4.4 [skip ci] ([4fac94c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4fac94c95f9b771309ee6135deaee010189285b3))
+* **db:** make RLS helpers SECURITY DEFINER and narrow anon_user grants ([471ae36](https://github.com/PhoenixSolutionsGroup/omnibase/commit/471ae36a6419a7d2280fc2f6655d01ad1bbcf79d))
+* **db:** move pg_trgm to the auth schema ([5e3f0fa](https://github.com/PhoenixSolutionsGroup/omnibase/commit/5e3f0fa36222751c85a8e0955d156d4a25ed33f9))
+* **release:** stamp core-js version before packing npm packages ([bcf117e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bcf117ec838e5c5b797a0222ac75180e9aa46b1b))
+* upload database migrations as files ([78fb155](https://github.com/PhoenixSolutionsGroup/omnibase/commit/78fb1552cd9642f0d8e225d6dc4f20f3607fa32d))
+* upload permissions archive as a file ([d3dbf52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/d3dbf5274b0cc1b5765994de597524531ffa7623))
+
+
+### Features
+
+* add preview branch CLI commands ([fbd41ca](https://github.com/PhoenixSolutionsGroup/omnibase/commit/fbd41ca089656d6aa6b3f2e0ff2b2852777924dd))
+* **api:** add app-key user mode ([4f39053](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4f390532f6ecbe84b86745ed1fac690abf6a43c1))
+* **cli:** emit table GRANT/REVOKE from RLS policy codegen ([aad95ce](https://github.com/PhoenixSolutionsGroup/omnibase/commit/aad95ce790608c5ab110bc95a2d08d3460410872))
+* **cli:** sync api docker image to 0.21.0 [skip ci] ([edd306c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/edd306c043309a917d776f49243ad4a8240140cb))
+
 # [0.11.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/cli-v0.10.0...cli-v0.11.0) (2026-10-11)
 
 
