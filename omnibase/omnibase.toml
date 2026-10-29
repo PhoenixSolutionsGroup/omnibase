@@ -1,4 +1,4 @@
-project_id = "abda2b23-5862-4ff8-9c79-8f3c20b22b03"
+project_id = "ef505b1a-565a-4879-9b55-fc0ae093145e"
 
 [[deployments]]
 name = "dashboard"
