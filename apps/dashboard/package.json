@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "bun --env-file=../../omnibase/.env.local next dev --turbopack",
     "ngrok": "ngrok http --url=enhanced-enabled-poodle.ngrok-free.app 3000",
     "dev:tunnel": "npm run ngrok & npm run dev",
     "build": "next build",

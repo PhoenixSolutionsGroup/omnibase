@@ -3,6 +3,7 @@ project_id = "abda2b23-5862-4ff8-9c79-8f3c20b22b03"
 [[deployments]]
 name = "dashboard"
 path = "../apps/dashboard"
+port = 3000
 
 [[deployments]]
 name = "docs"
