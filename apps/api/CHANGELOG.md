@@ -1,3 +1,19 @@
+# [0.21.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.5...api-v0.21.0) (2026-10-29)
+
+
+### Bug Fixes
+
+* **api:** require service key for meter usage recording ([e012f4a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e012f4adf23a2944c2c5e73ef6a26a9c2b6f8ecf))
+* **api:** require service key for permission relationship writes ([e369c15](https://github.com/PhoenixSolutionsGroup/omnibase/commit/e369c155d0e6aaa5897f5d28852e8a98affc98a4))
+* **auth:** avoid a null SES tenant header ([013974b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/013974b6b2ca8c1f5c7d43e5a5a78252b35ca7f6))
+* **db:** make RLS helpers SECURITY DEFINER and narrow anon_user grants ([471ae36](https://github.com/PhoenixSolutionsGroup/omnibase/commit/471ae36a6419a7d2280fc2f6655d01ad1bbcf79d))
+
+
+### Features
+
+* **api:** add app-key user mode ([4f39053](https://github.com/PhoenixSolutionsGroup/omnibase/commit/4f390532f6ecbe84b86745ed1fac690abf6a43c1))
+* **api:** add tenant permission middleware ([7ad856c](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7ad856c26b7aa8b7be1cd85aefe8f22e7de8b3be))
+
 ## [0.20.5](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.20.4...api-v0.20.5) (2026-10-11)
 
 
