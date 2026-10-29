@@ -212,7 +212,7 @@ services:
 
   # REST API Service
   rest-api:
-    image: phoenixsolutionsgroup/omnibase-api:0.20.5
+    image: phoenixsolutionsgroup/omnibase-api:0.21.0
     ports:
       - "8080:8080"
     depends_on:
