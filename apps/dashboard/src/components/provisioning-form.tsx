@@ -53,6 +53,7 @@ type Tier = {
   object_storage_limit_gb: number;
   worker_requests_included: number;
   stripe_price_hourly_id: string;
+  regions: string[];
 };
 
 type Region = {
@@ -326,7 +327,9 @@ export function ProvisioningForm({
 
         const tiers = sortTiers(data.tiers);
         const firstTier = tiers[0];
-        const firstRegion = data.regions[0];
+        const firstRegion =
+          data.regions.find((r) => firstTier?.regions?.includes(r.id)) ??
+          data.regions[0];
         if (firstTier) {
           setFormData((prev) => ({
             ...prev,
@@ -348,9 +351,15 @@ export function ProvisioningForm({
     return options.tiers.find((t) => t.id === formData.deployment_tier) || null;
   }, [options, formData.deployment_tier]);
 
+  const availableRegions = React.useMemo(() => {
+    if (!options) return [];
+    if (!selectedTier?.regions?.length) return options.regions;
+    return options.regions.filter((r) => selectedTier.regions.includes(r.id));
+  }, [options, selectedTier]);
+
   const regionIds = React.useMemo(
-    () => (options ? options.regions.map((r) => r.id) : []),
-    [options],
+    () => availableRegions.map((r) => r.id),
+    [availableRegions],
   );
   const latencies = useRegionLatency(regionIds, "vultr");
 
@@ -531,9 +540,22 @@ export function ProvisioningForm({
                       onValueChange={(vals) => {
                         const tier = sortedTiers[vals[0]];
                         if (tier) {
+                          const allowed = options
+                            ? options.regions.filter(
+                                (r) =>
+                                  !tier.regions?.length ||
+                                  tier.regions.includes(r.id),
+                              )
+                            : [];
+                          const region = allowed.some(
+                            (r) => r.id === formData.region,
+                          )
+                            ? formData.region
+                            : (allowed[0]?.id ?? "");
                           setFormData({
                             ...formData,
                             deployment_tier: tier.id,
+                            region,
                           });
                         }
                       }}
@@ -604,7 +626,7 @@ export function ProvisioningForm({
                 <div className="space-y-2">
                   <Label>Region</Label>
                   <RegionCombobox
-                    regions={options.regions}
+                    regions={availableRegions}
                     value={formData.region}
                     autoSelectLowestLatency
                     onSelect={(id) =>
