@@ -61,7 +61,7 @@ services:
         condition: service_healthy
 
   auth-migrate:
-    image: phoenixsolutionsgroup/omnibase-auth:0.4.3
+    image: phoenixsolutionsgroup/omnibase-auth:0.4.4
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - WAIT_FOR_API_HEALTH=true
@@ -81,7 +81,7 @@ services:
       - auth-migrate
       - rest-api
       - pgbouncer
-    image: phoenixsolutionsgroup/omnibase-auth:0.4.3
+    image: phoenixsolutionsgroup/omnibase-auth:0.4.4
     restart: unless-stopped
     env_file:
       - ${OMNIBASE_ENV_FILE}
