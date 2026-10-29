@@ -1,3 +1,10 @@
+## [0.4.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.3...auth-v0.4.4) (2026-10-29)
+
+
+### Bug Fixes
+
+* **auth:** avoid a null SES tenant header ([013974b](https://github.com/PhoenixSolutionsGroup/omnibase/commit/013974b6b2ca8c1f5c7d43e5a5a78252b35ca7f6))
+
 ## [0.4.3](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.2...auth-v0.4.3) (2026-10-11)
 
 
