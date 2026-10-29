@@ -1,3 +1,10 @@
+## [0.3.7](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.6...react-v0.3.7) (2026-10-29)
+
+
+### Bug Fixes
+
+* **release:** stamp core-js version before packing npm packages ([bcf117e](https://github.com/PhoenixSolutionsGroup/omnibase/commit/bcf117ec838e5c5b797a0222ac75180e9aa46b1b))
+
 ## [0.3.6](https://github.com/PhoenixSolutionsGroup/omnibase/compare/react-v0.3.5...react-v0.3.6) (2026-01-15)
 
 
