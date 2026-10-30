@@ -78,16 +78,24 @@ export function CodeSnippetSection() {
             Developer-friendly by design
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Clean APIs that just work. Get productive in minutes, not weeks.
+            With our intuitive UI, comprehensive SDKs, and powerful APIs, you
+            can focus on growing your business while we handle the
+            infrastructure.
           </p>
         </div>
 
         <div className="mt-12 mx-auto max-w-3xl">
-          <Tabs defaultValue="tenant" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="tenant">Multi-Tenancy</TabsTrigger>
-              <TabsTrigger value="permission">Permissions</TabsTrigger>
-              <TabsTrigger value="stripe">Stripe Config</TabsTrigger>
+          <Tabs defaultValue="tenant" className="w-full ">
+            <TabsList className="grid w-full grid-cols-3 ">
+              <TabsTrigger value="tenant" className="cursor-pointer">
+                Multi-Tenancy
+              </TabsTrigger>
+              <TabsTrigger value="permission" className="cursor-pointer">
+                Permissions
+              </TabsTrigger>
+              <TabsTrigger value="stripe" className="cursor-pointer">
+                Stripe Config
+              </TabsTrigger>
             </TabsList>
             {Object.entries(codeExamples).map(([key, { language, code }]) => (
               <TabsContent key={key} value={key} className="mt-4">

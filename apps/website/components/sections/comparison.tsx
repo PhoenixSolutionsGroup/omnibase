@@ -38,7 +38,7 @@ const comparisonData = [
 
 function CellValue({ value }: { value: boolean | string }) {
   if (value === true) {
-    return <Check className="h-5 w-5 text-green-500 mx-auto" />;
+    return <Check className="h-5 w-5 text-primary mx-auto" />;
   }
   if (value === false) {
     return <X className="h-5 w-5 text-muted-foreground/50 mx-auto" />;
@@ -59,44 +59,36 @@ export function ComparisonSection() {
             already considering.
           </p>
         </div>
-
-        <div className="mt-12 rounded-lg border overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead className="w-[200px]">Feature</TableHead>
-                <TableHead className="text-center font-semibold text-foreground">
-                  Omnibase
-                </TableHead>
-                <TableHead className="text-center">Supabase</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {comparisonData.map((row) => (
-                <TableRow key={row.feature}>
-                  <TableCell className="font-medium">{row.feature}</TableCell>
-                  <TableCell className="text-center bg-primary/5">
-                    <CellValue value={row.omnibase} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <CellValue value={row.supabase} />
-                  </TableCell>
+        <div className="flex justify-center">
+          <div className="mt-12 rounded-lg border overflow-hidden w-3xl">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-50 py-5">Feature</TableHead>
+                  <TableHead className="py-5 text-center font-semibold text-foreground">
+                    Omnibase
+                  </TableHead>
+                  <TableHead className="py-5 text-center">Supabase</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            Want more details?{" "}
-            <a
-              href="/compare/supabase"
-              className="text-primary hover:underline"
-            >
-              Compare with Supabase
-            </a>
-          </p>
+              <TableBody>
+                {comparisonData.map((row) => (
+                  <TableRow key={row.feature}>
+                    <TableCell className="py-5 font-medium">
+                      {row.feature}
+                    </TableCell>
+                    <TableCell className="py-5 text-center ">
+                      <CellValue value={row.omnibase} />
+                    </TableCell>
+                    <TableCell className="py-5 text-center">
+                      <CellValue value={row.supabase} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
     </section>

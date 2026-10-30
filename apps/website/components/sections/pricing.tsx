@@ -40,7 +40,7 @@ const plans = [
       "Usage-based pricing as you grow",
     ],
     cta: "Get Started Free",
-    ctaHref: "https://dashboard.omnibase.tech",
+    ctaHref: process.env.NEXT_PUBLIC_DASHBOARD_URL || "",
     variant: "default" as const,
     popular: true,
   },
@@ -57,14 +57,14 @@ const plans = [
       "Predictable performance",
     ],
     cta: "Get Started",
-    ctaHref: "https://dashboard.omnibase.tech",
+    ctaHref: process.env.NEXT_PUBLIC_DASHBOARD_URL || "",
     variant: "outline" as const,
   },
 ];
 
 export function PricingSection() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20">
       <div className="container mx-auto max-w-6xl px-4">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -79,7 +79,7 @@ export function PricingSection() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col ${
+              className={`relative flex flex-col hover:shadow-xl duration-200 ${
                 plan.popular ? "border-primary shadow-lg" : ""
               }`}
             >
@@ -115,11 +115,7 @@ export function PricingSection() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  variant={plan.variant}
-                  className="w-full"
-                  asChild
-                >
+                <Button variant={plan.variant} className="w-full" asChild>
                   <Link
                     href={plan.ctaHref}
                     {...(plan.ctaHref.startsWith("http")

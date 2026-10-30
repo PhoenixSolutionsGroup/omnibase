@@ -8,18 +8,20 @@ interface CodeBlockProps {
 export async function CodeBlock({ code, language }: CodeBlockProps) {
   const highlighter = await getSingletonHighlighter({
     engine: createJavaScriptRegexEngine(),
-    themes: ["dark-plus"],
+    themes: ["min-light", "min-dark"],
     langs: [language],
   });
+
   const html = highlighter.codeToHtml(code, {
     lang: language,
-    theme: "dark-plus",
+    themes: { light: "min-light", dark: "min-dark" },
+    defaultColor: false,
   });
 
   return (
-    <div className="rounded-lg border bg-zinc-950 overflow-hidden">
+    <div className="h-full overflow-hidden rounded-lg border bg-white dark:bg-[#1f1f1f]">
       <div
-        className="p-4 overflow-x-auto text-sm [&_pre]:!bg-transparent [&_code]:!bg-transparent"
+        className="h-full overflow-auto p-4 text-sm [&_pre]:bg-transparent! [&_code]:bg-transparent! [&_span]:text-(--shiki-light) dark:[&_span]:text-(--shiki-dark)"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
