@@ -12,7 +12,6 @@ type Service struct {
 	encryption *services.EncryptionService
 	managed    *ManagedHostingClient
 	validator  *Validator
-	differ     *Differ
 }
 
 type Deps struct {
@@ -29,7 +28,6 @@ func New(deps Deps) *Service {
 		encryption: deps.Encryption,
 		managed:    deps.Managed,
 		validator:  NewValidator(),
-		differ:     NewDiffer(),
 	}
 }
 

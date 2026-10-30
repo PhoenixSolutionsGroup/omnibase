@@ -203,10 +203,10 @@ type PromotionCodeWithStripeID struct {
 // Response shapes returned by Sync().
 
 type ConfigResponse struct {
-	Message string         `json:"message"`
-	Changes *ConfigChanges `json:"changes,omitempty"`
+	Message string               `json:"message"`
+	Changes *ConfigChanges       `json:"changes,omitempty"`
 	Config  *StripeConfiguration `json:"config,omitempty"`
-	Errors  []string       `json:"errors,omitempty"`
+	Errors  []string             `json:"errors,omitempty"`
 }
 
 type ConfigChanges struct {
@@ -235,6 +235,7 @@ type WebhookChanges struct {
 	Created   []WebhookChange `json:"created,omitempty"`
 	Updated   []WebhookChange `json:"updated,omitempty"`
 	Unchanged []WebhookChange `json:"unchanged,omitempty"`
+	Deleted   []WebhookChange `json:"deleted,omitempty"`
 }
 
 type WebhookChange struct {
@@ -295,39 +296,4 @@ type PriceChange struct {
 	ProductID string `json:"product_id"`
 	Action    string `json:"action"`
 	StripeID  string `json:"stripe_id,omitempty"`
-}
-
-// Diff types used by Differ.
-
-type ConfigDiff struct {
-	NewProducts           []Product
-	UpdatedProducts       []ProductUpdate
-	ArchivedProducts      []string
-	NewMeters             []Meter
-	ArchivedMeters        []string
-	NewCoupons            []Coupon
-	UpdatedCoupons        []CouponUpdate
-	ArchivedCoupons       []string
-	NewPromotionCodes     []PromotionCode
-	UpdatedPromotionCodes []PromoCodeUpdate
-	DeactivatedPromoCodes []string
-}
-
-type ProductUpdate struct {
-	ID               string
-	FieldChanges     map[string]any
-	NewPrices        []Price
-	UpdatedPrices    []Price
-	ArchivedPrices   []string
-	RequiresRecreate bool
-}
-
-type CouponUpdate struct {
-	ID           string
-	FieldChanges map[string]any
-}
-
-type PromoCodeUpdate struct {
-	ID           string
-	FieldChanges map[string]any
 }

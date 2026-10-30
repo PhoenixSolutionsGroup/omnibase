@@ -5,36 +5,20 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 )
 
 var CreatePromotionCodeError = errors.New("Failed to create stripe promotion code")
 
-func (s *Service) createPromotionCode(ctx context.Context, promoConfig PromotionCode, configID uuid.UUID) (*PromotionCodeChange, error) {
+func (s *Service) createPromotionCode(ctx context.Context, promoConfig PromotionCode, couponStripeID string) (*PromotionCodeChange, error) {
 	if promoConfig.StripeID != "" {
-		existing, err := s.GetMapping(ctx, promoConfig.ID, "promotion_code")
-		if err != nil {
-			return nil, err
-		}
-		if existing != nil {
-			return &PromotionCodeChange{
-				PromoID: promoConfig.ID,
-				Code:    promoConfig.Code,
-				Action:  "skipped",
-			}, nil
-		}
 		tagParams := &stripe.PromotionCodeUpdateParams{
+			Active:   stripe.Bool(true),
 			Metadata: managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata),
 		}
 		s.stripe.ApplyAccount(tagParams)
 		if _, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, promoConfig.StripeID, tagParams); err != nil {
 			return nil, fmt.Errorf("failed to tag linked promotion code %s: %w", promoConfig.ID, err)
-		}
-		if configID != uuid.Nil {
-			if err := s.SaveMapping(ctx, configID, promoConfig.ID, promoConfig.StripeID, "promotion_code"); err != nil {
-				return nil, err
-			}
 		}
 		return &PromotionCodeChange{
 			PromoID:  promoConfig.ID,
@@ -44,21 +28,11 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig Promotion
 		}, nil
 	}
 
-	couponStripeID, err := s.GetStripeIDByConfigItemID(ctx, promoConfig.Coupon, "coupon")
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve coupon ID %s: %w", promoConfig.Coupon, err)
-	}
 	params := buildPromotionCodeCreateParams(promoConfig, couponStripeID)
-	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
 	s.stripe.ApplyAccount(params)
 	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Create(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", CreatePromotionCodeError, err)
-	}
-	if configID != uuid.Nil {
-		if err := s.SaveMapping(ctx, configID, promoConfig.ID, stripePromo.ID, "promotion_code"); err != nil {
-			return nil, err
-		}
 	}
 	return &PromotionCodeChange{
 		PromoID:  promoConfig.ID,
@@ -68,112 +42,63 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig Promotion
 	}, nil
 }
 
-func (s *Service) updatePromotionCode(ctx context.Context, update PromoCodeUpdate, desired PromotionCode) (*PromotionCodeChange, error) {
-	stripeID, err := s.GetStripeIDByConfigItemID(ctx, update.ID, "promotion_code")
-	if err != nil {
-		return nil, fmt.Errorf("failed to get Stripe ID for promotion code: %w", err)
+func (s *Service) updatePromotionCodeFromConfig(ctx context.Context, desired PromotionCode, stripeID string) (*PromotionCodeChange, error) {
+	active := true
+	if desired.Active != nil {
+		active = *desired.Active
 	}
 	params := &stripe.PromotionCodeUpdateParams{
+		Active:   stripe.Bool(active),
 		Metadata: managedMetadata("promotion_code", desired.ID, promoConfigHash(desired), desired.Metadata),
-	}
-	if active, ok := update.FieldChanges["active"].(bool); ok {
-		params.Active = stripe.Bool(active)
 	}
 	s.stripe.ApplyAccount(params)
 	if _, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, stripeID, params); err != nil {
 		return nil, fmt.Errorf("failed to update promotion code: %w", err)
 	}
-	code := ""
-	if c, ok := update.FieldChanges["code"].(string); ok {
-		code = c
-	}
 	return &PromotionCodeChange{
-		PromoID:  update.ID,
-		Code:     code,
+		PromoID:  desired.ID,
+		Code:     desired.Code,
 		Action:   "updated",
 		StripeID: stripeID,
 	}, nil
 }
 
-func (s *Service) deactivatePromotionCode(ctx context.Context, promoID string) (*PromotionCodeChange, error) {
-	stripeID, err := s.GetStripeIDByConfigItemID(ctx, promoID, "promotion_code")
-	if err != nil || stripeID == "" {
-		return &PromotionCodeChange{
-			PromoID: promoID,
-			Code:    promoID,
-			Action:  "deactivated",
-		}, nil
-	}
+func (s *Service) deactivatePromotionCodeByStripeID(ctx context.Context, stripeID, configID string) (*PromotionCodeChange, error) {
 	params := &stripe.PromotionCodeUpdateParams{Active: stripe.Bool(false)}
 	s.stripe.ApplyAccount(params)
 	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, stripeID, params)
 	if err != nil {
 		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
 			return &PromotionCodeChange{
-				PromoID: promoID,
-				Code:    promoID,
-				Action:  "deactivated",
+				PromoID:  configID,
+				Code:     configID,
+				Action:   "deactivated",
+				StripeID: stripeID,
 			}, nil
 		}
 		return nil, fmt.Errorf("failed to deactivate promotion code: %w", err)
 	}
 	return &PromotionCodeChange{
-		PromoID:  promoID,
+		PromoID:  configID,
 		Code:     stripePromo.Code,
 		Action:   "deactivated",
 		StripeID: stripeID,
 	}, nil
 }
 
-func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig PromotionCode, configID uuid.UUID) (*PromotionCodeChange, error) {
-	_, _ = s.deactivatePromotionCode(ctx, promoConfig.ID)
-
-	couponStripeID, err := s.GetStripeIDByConfigItemID(ctx, promoConfig.Coupon, "coupon")
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve coupon ID %s: %w", promoConfig.Coupon, err)
-	}
-	params := buildPromotionCodeCreateParams(promoConfig, couponStripeID)
-	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
-	if promoConfig.Active == nil {
+func (s *Service) recreatePromotionCode(ctx context.Context, desired PromotionCode, couponStripeID string) (*PromotionCodeChange, error) {
+	params := buildPromotionCodeCreateParams(desired, couponStripeID)
+	if desired.Active == nil {
 		params.Active = stripe.Bool(true)
 	}
 	s.stripe.ApplyAccount(params)
 	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Create(ctx, params)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create new Stripe promotion code: %w", err)
-	}
-	if configID != uuid.Nil {
-		if err := s.SaveMapping(ctx, configID, promoConfig.ID, stripePromo.ID, "promotion_code"); err != nil {
-			return nil, err
-		}
+		return nil, fmt.Errorf("failed to create replacement Stripe promotion code: %w", err)
 	}
 	return &PromotionCodeChange{
-		PromoID:  promoConfig.ID,
-		Code:     promoConfig.Code,
-		Action:   "recreated",
-		StripeID: stripePromo.ID,
-	}, nil
-}
-
-func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoConfig PromotionCode, newCouponStripeID string, configID uuid.UUID) (*PromotionCodeChange, error) {
-	params := buildPromotionCodeCreateParams(promoConfig, newCouponStripeID)
-	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
-	if promoConfig.Active == nil {
-		params.Active = stripe.Bool(true)
-	}
-	s.stripe.ApplyAccount(params)
-	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Create(ctx, params)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Stripe promotion code with new coupon: %w", err)
-	}
-	if configID != uuid.Nil {
-		if err := s.SaveMapping(ctx, configID, promoConfig.ID, stripePromo.ID, "promotion_code"); err != nil {
-			return nil, err
-		}
-	}
-	return &PromotionCodeChange{
-		PromoID:  promoConfig.ID,
-		Code:     promoConfig.Code,
+		PromoID:  desired.ID,
+		Code:     desired.Code,
 		Action:   "recreated",
 		StripeID: stripePromo.ID,
 	}, nil
@@ -207,11 +132,6 @@ func buildPromotionCodeCreateParams(p PromotionCode, couponStripeID string) *str
 	if p.ExpiresAt != nil {
 		params.ExpiresAt = stripe.Int64(*p.ExpiresAt)
 	}
-	if len(p.Metadata) > 0 {
-		params.Metadata = make(map[string]string)
-		for k, v := range p.Metadata {
-			params.Metadata[k] = v
-		}
-	}
+	params.Metadata = managedMetadata("promotion_code", p.ID, promoConfigHash(p), p.Metadata)
 	return params
 }

@@ -54,11 +54,19 @@ func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*StripeConfig
 	}
 
 	meterIDs := make(map[string]bool)
+	meterEventNames := make(map[string]bool)
 	for _, m := range config.Meters {
 		if meterIDs[m.ID] {
 			return nil, fmt.Errorf("duplicate meter ID: %s", m.ID)
 		}
 		meterIDs[m.ID] = true
+		if m.EventName == "" {
+			continue
+		}
+		if meterEventNames[m.EventName] {
+			return nil, fmt.Errorf("duplicate meter event_name: %s", m.EventName)
+		}
+		meterEventNames[m.EventName] = true
 	}
 	for i, m := range config.Meters {
 		if err := v.validateMeter(m); err != nil {

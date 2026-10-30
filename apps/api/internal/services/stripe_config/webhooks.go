@@ -37,110 +37,10 @@ type StripeWebhookInfo struct {
 	Metadata map[string]string
 }
 
-func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
-	if s.managed != nil {
-		return s.processWebhooksManaged(ctx, configID, webhooks)
-	}
-
-	stripeWebhooks, err := s.listStripeWebhooks(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ProcessWebhooksError, err)
-	}
-
-	desiredByURL := make(map[string]WebhookEndpointConfig)
-	for _, w := range webhooks {
-		desiredByURL[w.URL] = w
-	}
-	stripeByURL := make(map[string][]StripeWebhookInfo)
-	for _, sw := range stripeWebhooks {
-		stripeByURL[sw.URL] = append(stripeByURL[sw.URL], sw)
-	}
-
-	for url, swList := range stripeByURL {
-		desired, isDesired := desiredByURL[url]
-		if !isDesired {
-			for _, sw := range swList {
-				if err := s.deleteWebhookByStripeID(ctx, sw.ID); err != nil {
-					logger.Logger.Warn("Failed to delete orphaned Stripe webhook", "error", err, "stripeID", sw.ID)
-				}
-				_ = s.repo.DeleteStripeWebhookByStripeID(ctx, sw.ID)
-			}
-			continue
-		}
-		matchingIdx := -1
-		for i, sw := range swList {
-			if eventsEqual(sw.Events, desired.Events) && sw.Connect == desired.Connect {
-				if matchingIdx == -1 {
-					matchingIdx = i
-					continue
-				}
-			}
-			if err := s.deleteWebhookByStripeID(ctx, sw.ID); err != nil {
-				logger.Logger.Warn("Failed to delete mismatched Stripe webhook", "error", err, "stripeID", sw.ID)
-			}
-			_ = s.repo.DeleteStripeWebhookByStripeID(ctx, sw.ID)
-		}
-		if matchingIdx >= 0 {
-			stripeByURL[url] = []StripeWebhookInfo{swList[matchingIdx]}
-		} else {
-			delete(stripeByURL, url)
-		}
-	}
-
-	var results []WebhookResult
-	for _, w := range webhooks {
-		existing := stripeByURL[w.URL]
-		if len(existing) > 0 {
-			sw := existing[0]
-			if !webhookTagsMatch(sw.Metadata, w) {
-				if err := s.tagWebhook(ctx, sw.ID, w); err != nil {
-					logger.Logger.Warn("Failed to tag existing Stripe webhook", "error", err, "stripeID", sw.ID)
-				}
-			}
-			cfgID := configID
-			db, err := s.repo.GetStripeWebhookByStripeID(ctx, sw.ID)
-			var dbID string
-			if err == nil {
-				dbID = db.ID.String()
-			} else {
-				row, createErr := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
-					StripeID: sw.ID,
-					Url:      sw.URL,
-					Secret:   "",
-					Events:   sw.Events,
-					Connect:  sw.Connect,
-					ConfigID: &cfgID,
-				})
-				if createErr != nil {
-					logger.Logger.Warn("Failed to import existing webhook to database", "error", createErr)
-				} else {
-					dbID = row.ID.String()
-				}
-			}
-			results = append(results, WebhookResult{
-				ID:       dbID,
-				StripeID: sw.ID,
-				URL:      sw.URL,
-				Events:   sw.Events,
-				Connect:  sw.Connect,
-				Action:   "unchanged",
-			})
-			continue
-		}
-		result, err := s.createWebhook(ctx, configID, w)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create webhook %s: %w", w.URL, err)
-		}
-		results = append(results, *result)
-	}
-	return results, nil
-}
-
-func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
+func (s *Service) processWebhooksManaged(ctx context.Context, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
 	var results []WebhookResult
 	for _, w := range webhooks {
 		req := RegisterWebhookRequest{
-			ConfigID:  configID.String(),
 			WebhookID: w.ID,
 			URL:       w.URL,
 			Events:    w.Events,
@@ -158,14 +58,12 @@ func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID
 			}
 			secret = enc
 		}
-		cfgID := configID
 		row, err := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
 			StripeID: resp.ID,
 			Url:      w.URL,
 			Secret:   secret,
 			Events:   w.Events,
 			Connect:  w.Connect,
-			ConfigID: &cfgID,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to persist webhook: %w", ProcessWebhooksError, err)
@@ -183,7 +81,7 @@ func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID
 	return results, nil
 }
 
-func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, webhookConfig WebhookEndpointConfig) (*WebhookResult, error) {
+func (s *Service) createWebhook(ctx context.Context, webhookConfig WebhookEndpointConfig) (*WebhookResult, error) {
 	enabledEvents := make([]*string, len(webhookConfig.Events))
 	for i, ev := range webhookConfig.Events {
 		enabledEvents[i] = stripe.String(ev)
@@ -207,26 +105,20 @@ func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, webhook
 	if s.encryption != nil {
 		enc, encErr := s.encryption.Encrypt(result.Secret)
 		if encErr != nil {
-			deleteParams := &stripe.WebhookEndpointDeleteParams{}
-			s.stripe.ApplyAccount(deleteParams)
-			_, _ = s.stripe.Stripe.V1WebhookEndpoints.Delete(ctx, result.ID, deleteParams)
+			s.removeWebhookEndpoint(ctx, result.ID)
 			return nil, fmt.Errorf("failed to encrypt webhook secret: %w", encErr)
 		}
 		encryptedSecret = enc
 	}
-	cfgID := configID
 	row, err := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
 		StripeID: result.ID,
 		Url:      webhookConfig.URL,
 		Secret:   encryptedSecret,
 		Events:   webhookConfig.Events,
 		Connect:  webhookConfig.Connect,
-		ConfigID: &cfgID,
 	})
 	if err != nil {
-		deleteParams := &stripe.WebhookEndpointDeleteParams{}
-		s.stripe.ApplyAccount(deleteParams)
-		_, _ = s.stripe.Stripe.V1WebhookEndpoints.Delete(ctx, result.ID, deleteParams)
+		s.removeWebhookEndpoint(ctx, result.ID)
 		return nil, fmt.Errorf("failed to save webhook to database: %w", err)
 	}
 	return &WebhookResult{
@@ -238,6 +130,49 @@ func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, webhook
 		Secret:   result.Secret,
 		Action:   "created",
 	}, nil
+}
+
+func (s *Service) updateWebhook(ctx context.Context, webhookConfig WebhookEndpointConfig, stripeID string) (*WebhookResult, error) {
+	enabledEvents := make([]*string, len(webhookConfig.Events))
+	for i, ev := range webhookConfig.Events {
+		enabledEvents[i] = stripe.String(ev)
+	}
+	params := &stripe.WebhookEndpointUpdateParams{
+		URL:           stripe.String(webhookConfig.URL),
+		EnabledEvents: enabledEvents,
+		Metadata:      managedMetadata("webhook_endpoint", webhookConfig.ID, webhookConfigHash(webhookConfig), nil),
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1WebhookEndpoints.Update(ctx, stripeID, params); err != nil {
+		return nil, fmt.Errorf("failed to update webhook endpoint: %w", err)
+	}
+	return &WebhookResult{
+		ID:       s.ensureWebhookRow(ctx, stripeID, webhookConfig.URL, webhookConfig.Events, webhookConfig.Connect),
+		StripeID: stripeID,
+		URL:      webhookConfig.URL,
+		Events:   webhookConfig.Events,
+		Connect:  webhookConfig.Connect,
+		Action:   "updated",
+	}, nil
+}
+
+func (s *Service) ensureWebhookRow(ctx context.Context, stripeID, url string, events []string, connect bool) string {
+	row, err := s.repo.GetStripeWebhookByStripeID(ctx, stripeID)
+	if err == nil {
+		return row.ID.String()
+	}
+	created, createErr := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
+		StripeID: stripeID,
+		Url:      url,
+		Secret:   "",
+		Events:   events,
+		Connect:  connect,
+	})
+	if createErr != nil {
+		logger.Logger.Warn("Failed to persist webhook row", "error", createErr, "stripeID", stripeID)
+		return ""
+	}
+	return created.ID.String()
 }
 
 func (s *Service) listStripeWebhooks(ctx context.Context) ([]StripeWebhookInfo, error) {
@@ -263,6 +198,12 @@ func (s *Service) listStripeWebhooks(ctx context.Context) ([]StripeWebhookInfo, 
 	return out, nil
 }
 
+func (s *Service) removeWebhookEndpoint(ctx context.Context, stripeID string) {
+	params := &stripe.WebhookEndpointDeleteParams{}
+	s.stripe.ApplyAccount(params)
+	_, _ = s.stripe.Stripe.V1WebhookEndpoints.Delete(ctx, stripeID, params)
+}
+
 func (s *Service) deleteWebhookByStripeID(ctx context.Context, stripeID string) error {
 	params := &stripe.WebhookEndpointDeleteParams{}
 	s.stripe.ApplyAccount(params)
@@ -273,30 +214,6 @@ func (s *Service) deleteWebhookByStripeID(ctx context.Context, stripeID string) 
 		return fmt.Errorf("%w: %w", DeleteWebhookError, err)
 	}
 	return nil
-}
-
-func (s *Service) tagWebhook(ctx context.Context, stripeID string, webhookConfig WebhookEndpointConfig) error {
-	params := &stripe.WebhookEndpointUpdateParams{
-		Metadata: managedMetadata("webhook_endpoint", webhookConfig.ID, webhookConfigHash(webhookConfig), nil),
-	}
-	s.stripe.ApplyAccount(params)
-	if _, err := s.stripe.Stripe.V1WebhookEndpoints.Update(ctx, stripeID, params); err != nil {
-		return fmt.Errorf("failed to tag webhook endpoint %s: %w", stripeID, err)
-	}
-	return nil
-}
-
-func webhookTagsMatch(metadata map[string]string, webhookConfig WebhookEndpointConfig) bool {
-	if metadata == nil {
-		return false
-	}
-	if metadata[MetadataKeyManaged] != MetadataManagedValue {
-		return false
-	}
-	if webhookConfig.ID != "" && metadata[MetadataKeyConfigID] != webhookConfig.ID {
-		return false
-	}
-	return metadata[MetadataKeyHash] == webhookConfigHash(webhookConfig)
 }
 
 func (s *Service) DeleteWebhook(ctx context.Context, stripeID string) error {
@@ -338,20 +255,4 @@ func (s *Service) decryptSecret(secret *string) {
 	if dec, err := s.encryption.Decrypt(*secret); err == nil {
 		*secret = dec
 	}
-}
-
-func eventsEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	aMap := make(map[string]bool)
-	for _, v := range a {
-		aMap[v] = true
-	}
-	for _, v := range b {
-		if !aMap[v] {
-			return false
-		}
-	}
-	return true
 }
