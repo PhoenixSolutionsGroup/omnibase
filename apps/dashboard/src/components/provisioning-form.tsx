@@ -47,6 +47,10 @@ import {
   formatLatency,
   getLatencyColorClass,
 } from "@/lib/region-latency";
+import { Badge } from "./ui/badge";
+import formatPrice from "@/lib/currency";
+import { Checkbox } from "./ui/checkbox";
+import { CheckboxCard } from "./ui/checkbox-card";
 
 type Tier = {
   id: string;
@@ -86,6 +90,101 @@ type FormData = {
   deployment_tier: string;
   region: string;
 };
+
+type Plan = {
+  id: string;
+  name: string;
+  deployment_type: string;
+  description: string;
+  tier: string;
+  price_cents: number;
+  vcpus: number;
+  memory_gb: number;
+  database_storage_limit_gb: number;
+  most_popular?: boolean;
+};
+
+const plans: Plan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    deployment_type: "Shared",
+    description: "Perfect for small projects and prototypes.",
+    tier: "Shared Free",
+    price_cents: 199,
+    vcpus: 1,
+    memory_gb: 1,
+    database_storage_limit_gb: 1,
+    // 1 option - $3.99 billed annually, or $4.99 a month
+  },
+
+  {
+    id: "basic",
+    name: "Basic",
+    deployment_type: "Scaled",
+    description: "Perfect for medium projects.",
+    most_popular: true,
+    tier: "Scale 1 vCPU",
+    price_cents: 499,
+    vcpus: 1,
+    memory_gb: 1,
+    database_storage_limit_gb: 64,
+    // scale (4 options - 1CPU 1GB $X dollars (idk yet), 2 CPU 2GB $Y dollars, 4CPU 4GB $Z)
+  },
+
+  {
+    id: "pro",
+    name: "Pro",
+    deployment_type: "Dedicated",
+    description: "Perfect for enterprise applications.",
+    tier: "Dedicated 4 vCPU",
+    price_cents: 2999,
+    vcpus: 16,
+    memory_gb: 32,
+    database_storage_limit_gb: 156,
+    // dedicated (we’d have a fuck tonne here)
+    //       Like (btw it is CPU/RAM for the following):
+    // * 1/2
+    // * ⁠1/4
+    // * ⁠2/4
+    // * ⁠2/8
+    // * ⁠4/8
+    // * ⁠4/16
+    // * ⁠8/16
+    // * ⁠8/32
+    // * ⁠192/1536 - absolute fuck tonne of money but we can offer it haha
+  },
+];
+
+type PlanOptions = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+const planOptions: PlanOptions[] = [
+  {
+    id: "postgres",
+    title: "Postgres",
+    description: "Managed Postgres with connection pooling and backups.",
+  },
+  {
+    id: "omnibase",
+    title: "Omnibase",
+    description:
+      "Entire backend in one service. Email, storage, auth and payments  switch on the first time you use them.",
+  },
+  {
+    id: "dataAPI",
+    title: "Data API",
+    description: "Instant REST API over your public schema.",
+  },
+  {
+    id: "workers",
+    title: "Workers",
+    description: "Run function at the edge, close to your users.",
+  },
+];
 
 interface ProvisioningFormProps {
   mode: "project" | "branch";
@@ -354,6 +453,7 @@ export function ProvisioningForm({
     fetchOptions();
   }, [managed_hosting_url]);
 
+  const [selectedPlan, setSelectedPlan] = React.useState<Plan>(plans[1]);
   const selectedTier = React.useMemo(() => {
     if (!options) return null;
     return options.tiers.find((t) => t.id === formData.deployment_tier) || null;
@@ -460,35 +560,12 @@ export function ProvisioningForm({
     });
   };
 
-  const plans = [
-    {
-      name: "Starter",
-      deployment_type: "Shared",
-      description: "Perfect for small projects and prototypes.",
-      tier: "Shared Free",
-    },
+  // Like shared (1 option - $3.99 billed annually, or $4.99 a month), scale (4 options - 1CPU 1GB $X dollars (idk yet), 2 CPU 2GB $Y dollars, 4CPU 4GB $Z) then dedicated (we’d have a fuck tonne here)
 
-    {
-      name: "Basic",
-      deployment_type: "Shared",
-      description: "Perfect for medium projects.",
-      most_popular: true,
-      tier: "Scale 1 vCPU",
-    },
-
-    {
-      name: "Pro",
-      deployment_type: "Dedicated",
-      description:
-        "Perfect for enterprise projects and heavy traffic applications.",
-      tier: "Dedicated 4 vCPU",
-    },
-  ];
-
-  const mappedPlans = plans.map((plan) => ({
-    ...plan,
-    tier: sortedTiers.find((tier) => tier.name === plan.tier),
-  }));
+  // const mappedPlans = plans.map((plan) => ({
+  //   ...plan,
+  //   tier: sortedTiers.find((tier) => tier.name === plan.tier),
+  // }));
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -540,7 +617,7 @@ export function ProvisioningForm({
 
       <Separator />
 
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Server className="h-5 w-5" />
           <h3 className="text-lg font-medium">Tier</h3>
@@ -614,9 +691,9 @@ export function ProvisioningForm({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Server className="h-5 w-5" />
           <h3 className="text-lg font-medium">Tier</h3>
@@ -695,12 +772,86 @@ export function ProvisioningForm({
               ))}
           </div>
         )}
+      </div> */}
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Server className="h-5 w-5" />
+          <h3 className="text-lg font-medium">Tier</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {plans.map((plan) => (
+            <Card
+              key={plan.id}
+              className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
+                  ${plan.id === selectedPlan?.id ? "border-primary" : "border-transparent"}`}
+              onClick={() => {
+                setSelectedPlan(plan);
+              }}
+            >
+              {plan.most_popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                    Most Popular
+                  </span>
+                </div>
+              )}
+              <CardHeader>
+                <div className="flex justify-between">
+                  <span className="text-sm">{plan.name}</span>
+                  <Badge variant="outline"> {plan.deployment_type}</Badge>
+                </div>
+                <span className="text-lg">
+                  {formatPrice(plan.price_cents)} / month
+                </span>
+                <span className="text-muted-foreground">
+                  {plan.description}
+                </span>
+                <Button
+                  size="lg"
+                  className="mt-2 cursor-pointer"
+                  variant={plan.id === selectedPlan?.id ? "default" : "outline"}
+                  onClick={() => {}}
+                >
+                  Select {plan.name}
+                </Button>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2 text-sm ">
+                <span>Features</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-muted-foreground">vCPU</div>
+                  <div className="font-medium">{plan.vcpus} cores</div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-muted-foreground">Memory</div>
+                  <div className="font-medium">
+                    {plan.memory_gb >= 1
+                      ? `${plan.memory_gb} GB`
+                      : `${plan.memory_gb * 1024} MB`}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-muted-foreground">DB Storage</div>
+                  <div className="font-medium">
+                    {plan.database_storage_limit_gb} GB
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Settings2 className="h-5 w-5" />
           <h3 className="text-lg font-medium">Options</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {planOptions.map((option) => (
+            <CheckboxCard key={option.id} {...option} />
+          ))}
         </div>
       </div>
 
