@@ -10,7 +10,10 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, DeleteTemplateResponse, DeployNamespacesResponse, ListTemplatesResponse, SendRequest, SendResponse, StripeConfiguration, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
+import type { ArchiveAllInputBody, ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, DeleteTemplateResponse, DeployNamespacesResponse, ListTemplatesResponse, SendRequest, SendResponse, StripeConfiguration, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
+export interface ArchiveAllStripeConfigRequest {
+    archiveAllInputBody: ArchiveAllInputBody;
+}
 export interface CreateOrUpdateEmailTemplateRequest {
     upsertTemplateRequest: UpsertTemplateRequest;
 }
@@ -44,11 +47,11 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
     /**
      * Archive all Stripe config
      */
-    archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>>;
+    archiveAllStripeConfigRaw(requestParameters: ArchiveAllStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>>;
     /**
      * Archive all Stripe config
      */
-    archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse>;
+    archiveAllStripeConfig(requestParameters: ArchiveAllStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse>;
     /**
      * Create or update email template
      */

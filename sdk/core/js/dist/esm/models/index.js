@@ -27,6 +27,7 @@ __exportStar(require("./AppliedMigration"), exports);
 __exportStar(require("./ApplyEnterpriseCustomRequest"), exports);
 __exportStar(require("./ApplyEnterpriseTemplateRequest"), exports);
 __exportStar(require("./ApplyMigrationsResponse"), exports);
+__exportStar(require("./ArchiveAllInputBody"), exports);
 __exportStar(require("./ArchiveAllResponse"), exports);
 __exportStar(require("./AuthTenantInvite"), exports);
 __exportStar(require("./BillingStatusResponse"), exports);

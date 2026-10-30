@@ -28,6 +28,12 @@ type V1ConfigurationAPIService service
 type ApiArchiveAllStripeConfigRequest struct {
 	ctx context.Context
 	ApiService *V1ConfigurationAPIService
+	archiveAllInputBody *ArchiveAllInputBody
+}
+
+func (r ApiArchiveAllStripeConfigRequest) ArchiveAllInputBody(archiveAllInputBody ArchiveAllInputBody) ApiArchiveAllStripeConfigRequest {
+	r.archiveAllInputBody = &archiveAllInputBody
+	return r
 }
 
 func (r ApiArchiveAllStripeConfigRequest) Execute() (*ArchiveAllResponse, *http.Response, error) {
@@ -67,9 +73,12 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.archiveAllInputBody == nil {
+		return localVarReturnValue, nil, reportError("archiveAllInputBody is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -85,6 +94,8 @@ func (a *V1ConfigurationAPIService) ArchiveAllStripeConfigExecute(r ApiArchiveAl
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.archiveAllInputBody
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

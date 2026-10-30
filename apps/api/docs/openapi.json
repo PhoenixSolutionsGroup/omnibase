@@ -230,6 +230,15 @@
         ],
         "type": "object"
       },
+      "ArchiveAllInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "force": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
       "ArchiveAllResponse": {
         "additionalProperties": false,
         "properties": {
@@ -5784,6 +5793,16 @@
     "/api/v1/stripe/admin/config/archive-all": {
       "post": {
         "operationId": "archiveAllStripeConfig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveAllInputBody"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {

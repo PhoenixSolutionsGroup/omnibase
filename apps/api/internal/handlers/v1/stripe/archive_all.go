@@ -8,6 +8,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/services/stripe_config"
 )
 
 var ArchiveAllConfigError = errors.New("Failed to archive all stripe resources")
@@ -21,16 +22,22 @@ type ArchiveAllResponse struct {
 	Warning       *string  `json:"warning,omitempty"`
 }
 
+type ArchiveAllInputBody struct {
+	Force bool `json:"force,omitempty"`
+}
+
 type ArchiveAllInput struct {
 	handlers.AuthCtx
+	Body ArchiveAllInputBody
 }
 
 type ArchiveAllOutput struct {
 	Body ArchiveAllResponse
 }
 
-func (h *Handler) ArchiveAllConfig(ctx context.Context, _ *ArchiveAllInput) (*ArchiveAllOutput, error) {
-	result, err := h.stripeConfig.ArchiveAll(ctx)
+func (h *Handler) ArchiveAllConfig(ctx context.Context, in *ArchiveAllInput) (*ArchiveAllOutput, error) {
+	force := in.Body.Force
+	result, err := h.stripeConfig.ArchiveAll(ctx, stripe_config.ArchiveAllOptions{Force: force})
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", ArchiveAllConfigError, err).Error())
 	}
@@ -40,8 +47,12 @@ func (h *Handler) ArchiveAllConfig(ctx context.Context, _ *ArchiveAllInput) (*Ar
 	if result.Errors == nil {
 		result.Errors = []string{}
 	}
+	message := "Successfully archived managed Stripe resources and cleared local config"
+	if force {
+		message = "Successfully archived all Stripe resources and cleared local config"
+	}
 	resp := ArchiveAllResponse{
-		Message:       "Successfully archived all Stripe resources and cleared local config",
+		Message:       message,
 		ArchivedItems: result.Archived,
 		ArchiveErrors: result.Errors,
 		TotalArchived: len(result.Archived),

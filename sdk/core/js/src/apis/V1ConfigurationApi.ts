@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  ArchiveAllInputBody,
   ArchiveAllResponse,
   ConfigHistoryResponse,
   ConfigResponse,
@@ -29,6 +30,8 @@ import type {
   UpsertTemplateResponse,
 } from '../models/index';
 import {
+    ArchiveAllInputBodyFromJSON,
+    ArchiveAllInputBodyToJSON,
     ArchiveAllResponseFromJSON,
     ArchiveAllResponseToJSON,
     ConfigHistoryResponseFromJSON,
@@ -54,6 +57,10 @@ import {
     UpsertTemplateResponseFromJSON,
     UpsertTemplateResponseToJSON,
 } from '../models/index';
+
+export interface ArchiveAllStripeConfigRequest {
+    archiveAllInputBody: ArchiveAllInputBody;
+}
 
 export interface CreateOrUpdateEmailTemplateRequest {
     upsertTemplateRequest: UpsertTemplateRequest;
@@ -97,10 +104,19 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     /**
      * Archive all Stripe config
      */
-    async archiveAllStripeConfigRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>> {
+    async archiveAllStripeConfigRaw(requestParameters: ArchiveAllStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ArchiveAllResponse>> {
+        if (requestParameters['archiveAllInputBody'] == null) {
+            throw new runtime.RequiredError(
+                'archiveAllInputBody',
+                'Required parameter "archiveAllInputBody" was null or undefined when calling archiveAllStripeConfig().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.apiKey) {
             headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
@@ -114,6 +130,7 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: ArchiveAllInputBodyToJSON(requestParameters['archiveAllInputBody']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ArchiveAllResponseFromJSON(jsonValue));
@@ -122,8 +139,8 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
     /**
      * Archive all Stripe config
      */
-    async archiveAllStripeConfig(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse> {
-        const response = await this.archiveAllStripeConfigRaw(initOverrides);
+    async archiveAllStripeConfig(requestParameters: ArchiveAllStripeConfigRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ArchiveAllResponse> {
+        const response = await this.archiveAllStripeConfigRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

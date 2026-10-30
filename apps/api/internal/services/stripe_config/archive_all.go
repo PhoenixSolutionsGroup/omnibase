@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/stripe/stripe-go/v82"
 
@@ -13,20 +14,36 @@ import (
 
 var ArchiveAllError = errors.New("Failed to archive all stripe resources")
 
+type ArchiveAllOptions struct {
+	Force bool
+}
+
 type ArchiveAllResult struct {
 	Archived []string
 	Errors   []string
+	Force    bool
 }
 
-func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
-	result := &ArchiveAllResult{}
+func (s *Service) ArchiveAll(ctx context.Context, options ArchiveAllOptions) (*ArchiveAllResult, error) {
+	result := &ArchiveAllResult{Force: options.Force}
 
-	promoParams := &stripe.PromotionCodeListParams{}
-	promoParams.Filters.AddFilter("active", "", "true")
+	currentConfig, version := s.currentArchiveConfig(ctx)
+	meterEventNames := make(map[string]bool)
+	if currentConfig != nil {
+		for _, meter := range currentConfig.Meters {
+			meterEventNames[meter.EventName] = true
+		}
+	}
+
+	promoParams := &stripe.PromotionCodeListParams{Active: stripe.Bool(true)}
+	promoParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(promoParams)
 	for promo, err := range s.stripe.Stripe.V1PromotionCodes.List(ctx, promoParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: list promotion codes: %w", ArchiveAllError, err)
+		}
+		if !options.Force && !isManagedMetadata(promo.Metadata) {
+			continue
 		}
 		updateParams := &stripe.PromotionCodeUpdateParams{Active: stripe.Bool(false)}
 		s.stripe.ApplyAccount(updateParams)
@@ -38,10 +55,14 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 	}
 
 	couponParams := &stripe.CouponListParams{}
+	couponParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(couponParams)
 	for cpn, err := range s.stripe.Stripe.V1Coupons.List(ctx, couponParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: list coupons: %w", ArchiveAllError, err)
+		}
+		if !options.Force && !isManagedMetadata(cpn.Metadata) {
+			continue
 		}
 		deleteParams := &stripe.CouponDeleteParams{}
 		s.stripe.ApplyAccount(deleteParams)
@@ -53,10 +74,14 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 	}
 
 	meterParams := &stripe.BillingMeterListParams{Status: stripe.String("active")}
+	meterParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(meterParams)
 	for m, err := range s.stripe.Stripe.V1BillingMeters.List(ctx, meterParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: list meters: %w", ArchiveAllError, err)
+		}
+		if !options.Force && !meterEventNames[m.EventName] {
+			continue
 		}
 		params := &stripe.BillingMeterDeactivateParams{}
 		s.stripe.ApplyAccount(params)
@@ -67,28 +92,63 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 		result.Archived = append(result.Archived, fmt.Sprintf("meter: %s (%s)", m.ID, m.DisplayName))
 	}
 
-	priceListParams := &stripe.PriceListParams{}
-	priceListParams.Filters.AddFilter("active", "", "true")
+	webhookParams := &stripe.WebhookEndpointListParams{}
+	webhookParams.Limit = stripe.Int64(100)
+	s.stripe.ApplyAccount(webhookParams)
+	for endpoint, err := range s.stripe.Stripe.V1WebhookEndpoints.List(ctx, webhookParams) {
+		if err != nil {
+			return nil, fmt.Errorf("%w: list webhooks: %w", ArchiveAllError, err)
+		}
+		if !options.Force && !isManagedMetadata(endpoint.Metadata) {
+			continue
+		}
+		if err := s.DeleteWebhook(ctx, endpoint.ID); err != nil {
+			result.Errors = append(result.Errors, fmt.Sprintf("webhook %s: %v", endpoint.ID, err))
+			continue
+		}
+		result.Archived = append(result.Archived, fmt.Sprintf("webhook: %s (%s)", endpoint.ID, endpoint.URL))
+	}
+
+	priceListParams := &stripe.PriceListParams{Active: stripe.Bool(true)}
+	priceListParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(priceListParams)
 	for p, err := range s.stripe.Stripe.V1Prices.List(ctx, priceListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: list prices: %w", ArchiveAllError, err)
 		}
+		if !options.Force && !isManagedMetadata(p.Metadata) {
+			continue
+		}
 		params := &stripe.PriceUpdateParams{Active: stripe.Bool(false)}
 		s.stripe.ApplyAccount(params)
 		if _, err := s.stripe.Stripe.V1Prices.Update(ctx, p.ID, params); err != nil {
-			result.Errors = append(result.Errors, fmt.Sprintf("price %s: %v", p.ID, err))
-			continue
+			if !isDefaultPriceArchiveError(err) || p.Product == nil {
+				result.Errors = append(result.Errors, fmt.Sprintf("price %s: %v", p.ID, err))
+				continue
+			}
+			clearParams := &stripe.ProductUpdateParams{DefaultPrice: stripe.String("")}
+			s.stripe.ApplyAccount(clearParams)
+			if _, clearErr := s.stripe.Stripe.V1Products.Update(ctx, p.Product.ID, clearParams); clearErr != nil {
+				result.Errors = append(result.Errors, fmt.Sprintf("price %s: clear default price: %v", p.ID, clearErr))
+				continue
+			}
+			if _, retryErr := s.stripe.Stripe.V1Prices.Update(ctx, p.ID, params); retryErr != nil {
+				result.Errors = append(result.Errors, fmt.Sprintf("price %s: %v", p.ID, retryErr))
+				continue
+			}
 		}
 		result.Archived = append(result.Archived, fmt.Sprintf("price: %s", p.ID))
 	}
 
-	productListParams := &stripe.ProductListParams{}
-	productListParams.Filters.AddFilter("active", "", "true")
+	productListParams := &stripe.ProductListParams{Active: stripe.Bool(true)}
+	productListParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(productListParams)
 	for p, err := range s.stripe.Stripe.V1Products.List(ctx, productListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: list products: %w", ArchiveAllError, err)
+		}
+		if !options.Force && !isManagedMetadata(p.Metadata) {
+			continue
 		}
 		params := &stripe.ProductUpdateParams{Active: stripe.Bool(false)}
 		s.stripe.ApplyAccount(params)
@@ -97,16 +157,6 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 			continue
 		}
 		result.Archived = append(result.Archived, fmt.Sprintf("product: %s (%s)", p.ID, p.Name))
-	}
-
-	version := "1.0.0"
-	if latest, err := s.repo.GetLatestStripeConfig(ctx); err == nil {
-		var raw ConfigData
-		if err := json.Unmarshal(latest.Config, &raw); err == nil {
-			if parsed, err := s.validator.ParseAndValidateConfig(raw); err == nil {
-				version = parsed.Version
-			}
-		}
 	}
 
 	empty := ConfigData{
@@ -128,4 +178,26 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 	}
 	s.invalidateIdentityCache()
 	return result, nil
+}
+
+func isDefaultPriceArchiveError(err error) bool {
+	var stripeErr *stripe.Error
+	return errors.As(err, &stripeErr) && strings.Contains(strings.ToLower(stripeErr.Msg), "default price")
+}
+
+func (s *Service) currentArchiveConfig(ctx context.Context) (*StripeConfiguration, string) {
+	version := "1.0.0"
+	latest, err := s.repo.GetLatestStripeConfig(ctx)
+	if err != nil {
+		return nil, version
+	}
+	var raw ConfigData
+	if err := json.Unmarshal(latest.Config, &raw); err != nil {
+		return nil, version
+	}
+	parsed, err := s.validator.ParseAndValidateConfig(raw)
+	if err != nil {
+		return nil, version
+	}
+	return parsed, parsed.Version
 }

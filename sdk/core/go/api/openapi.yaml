@@ -1050,6 +1050,12 @@ paths:
   /api/v1/stripe/admin/config/archive-all:
     post:
       operationId: archiveAllStripeConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchiveAllInputBody"
+        required: true
       responses:
         "200":
           content:
@@ -2268,6 +2274,13 @@ components:
       required:
       - message
       - status
+    ArchiveAllInputBody:
+      additionalProperties: false
+      example:
+        force: true
+      properties:
+        force:
+          type: boolean
     ArchiveAllResponse:
       additionalProperties: false
       example:
