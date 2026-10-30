@@ -197,6 +197,9 @@ func (s *Service) archiveRemovedPromotionCodes(ctx context.Context, config *Stri
 		if _, ok := desired[configID]; ok {
 			continue
 		}
+		if !actual[configID].Active {
+			continue
+		}
 		change, err := s.deactivatePromotionCodeByStripeID(ctx, actual[configID].ID, configID)
 		if err != nil {
 			return err
@@ -670,6 +673,7 @@ func (s *Service) listManagedProducts(ctx context.Context) (map[string]*stripe.P
 func (s *Service) listManagedPrices(ctx context.Context) (map[string]*stripe.Price, error) {
 	params := &stripe.PriceListParams{Active: stripe.Bool(true)}
 	params.Limit = stripe.Int64(100)
+	params.Expand = []*string{stripe.String("data.tiers")}
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Price)
 	for price, err := range s.stripe.Stripe.V1Prices.List(ctx, params) {
@@ -686,6 +690,7 @@ func (s *Service) listManagedPrices(ctx context.Context) (map[string]*stripe.Pri
 func (s *Service) listManagedCoupons(ctx context.Context) (map[string]*stripe.Coupon, error) {
 	params := &stripe.CouponListParams{}
 	params.Limit = stripe.Int64(100)
+	params.Expand = []*string{stripe.String("data.applies_to")}
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Coupon)
 	for coupon, err := range s.stripe.Stripe.V1Coupons.List(ctx, params) {
@@ -700,7 +705,7 @@ func (s *Service) listManagedCoupons(ctx context.Context) (map[string]*stripe.Co
 }
 
 func (s *Service) listManagedPromotionCodes(ctx context.Context) (map[string]*stripe.PromotionCode, error) {
-	params := &stripe.PromotionCodeListParams{Active: stripe.Bool(true)}
+	params := &stripe.PromotionCodeListParams{}
 	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.PromotionCode)
@@ -816,37 +821,12 @@ func productNeedsRecreate(desired Product, live *stripe.Product) bool {
 }
 
 func meterNeedsRecreate(desired Meter, live *stripe.BillingMeter) bool {
-	if desired.EventName != live.EventName {
+	if live.DefaultAggregation == nil {
 		return true
 	}
-	desiredFormula := desired.DefaultAggregation.Formula
-	if live.DefaultAggregation == nil || desiredFormula != string(live.DefaultAggregation.Formula) {
-		return true
-	}
-
-	desiredKey, desiredType := "stripe_customer_id", "by_id"
-	if desired.CustomerMapping != nil {
-		desiredKey = desired.CustomerMapping.EventPayloadKey
-		desiredType = desired.CustomerMapping.Type
-	}
-	liveKey, liveType := "", ""
-	if live.CustomerMapping != nil {
-		liveKey = live.CustomerMapping.EventPayloadKey
-		liveType = string(live.CustomerMapping.Type)
-	}
-	if desiredKey != liveKey || desiredType != liveType {
-		return true
-	}
-
-	desiredValueKey := "value"
-	if desired.ValueSettings != nil {
-		desiredValueKey = desired.ValueSettings.EventPayloadKey
-	}
-	liveValueKey := ""
-	if live.ValueSettings != nil {
-		liveValueKey = live.ValueSettings.EventPayloadKey
-	}
-	return desiredValueKey != liveValueKey
+	current := convertStripeMeterToConfig(live)
+	current.DisplayName = desired.DisplayName
+	return meterFieldsChanged(desired, current)
 }
 
 func couponImmutableChanged(desired Coupon, live *stripe.Coupon, productConfigByStripeID map[string]string) bool {

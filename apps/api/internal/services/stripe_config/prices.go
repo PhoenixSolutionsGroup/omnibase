@@ -138,7 +138,24 @@ func (s *Service) archivePriceByStripeID(ctx context.Context, stripeID string) e
 		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
 			return nil
 		}
-		return fmt.Errorf("could not archive price %s: %w", stripeID, err)
+		if !isDefaultPriceArchiveError(err) {
+			return fmt.Errorf("could not archive price %s: %w", stripeID, err)
+		}
+
+		getParams := &stripe.PriceRetrieveParams{}
+		s.stripe.ApplyAccount(getParams)
+		livePrice, getErr := s.stripe.Stripe.V1Prices.Retrieve(ctx, stripeID, getParams)
+		if getErr != nil || livePrice.Product == nil {
+			return fmt.Errorf("could not archive price %s: %w", stripeID, err)
+		}
+		clearParams := &stripe.ProductUpdateParams{DefaultPrice: stripe.String("")}
+		s.stripe.ApplyAccount(clearParams)
+		if _, clearErr := s.stripe.Stripe.V1Products.Update(ctx, livePrice.Product.ID, clearParams); clearErr != nil {
+			return fmt.Errorf("could not clear default price for %s: %w", stripeID, clearErr)
+		}
+		if _, retryErr := s.stripe.Stripe.V1Prices.Update(ctx, stripeID, params); retryErr != nil {
+			return fmt.Errorf("could not archive price %s: %w", stripeID, retryErr)
+		}
 	}
 	return nil
 }

@@ -93,6 +93,7 @@ Class | Method | HTTP request | Description
 *V1ConfigurationAPI* | [**GetEmailTemplates**](docs/V1ConfigurationAPI.md#getemailtemplates) | **Get** /api/v1/email/templates | Get all email templates
 *V1ConfigurationAPI* | [**GetStripeConfigHistory**](docs/V1ConfigurationAPI.md#getstripeconfighistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationAPI* | [**GetStripeConfigSchema**](docs/V1ConfigurationAPI.md#getstripeconfigschema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
+*V1ConfigurationAPI* | [**GetStripeConfigStatus**](docs/V1ConfigurationAPI.md#getstripeconfigstatus) | **Post** /api/v1/stripe/admin/config/status | Get Stripe config status
 *V1ConfigurationAPI* | [**PullStripeConfig**](docs/V1ConfigurationAPI.md#pullstripeconfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
 *V1ConfigurationAPI* | [**SendEmail**](docs/V1ConfigurationAPI.md#sendemail) | **Post** /api/v1/email/send | Send an email
 *V1ConfigurationAPI* | [**ServeEmailTemplate**](docs/V1ConfigurationAPI.md#serveemailtemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
@@ -179,6 +180,9 @@ Class | Method | HTTP request | Description
  - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
  - [ConfigHistoryResponse](docs/ConfigHistoryResponse.md)
  - [ConfigResponse](docs/ConfigResponse.md)
+ - [ConfigStatus](docs/ConfigStatus.md)
+ - [ConfigStatusEntry](docs/ConfigStatusEntry.md)
+ - [ConfigStatusSummary](docs/ConfigStatusSummary.md)
  - [ConvertStripeIDResponse](docs/ConvertStripeIDResponse.md)
  - [Coupon](docs/Coupon.md)
  - [CouponChange](docs/CouponChange.md)

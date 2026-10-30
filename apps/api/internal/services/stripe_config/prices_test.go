@@ -145,3 +145,40 @@ func TestCreatePriceTransfersLookupKeyFromArchivedPriceOnAnotherProduct(t *testi
 	require.Equal(t, "price_new", stripeID)
 	require.Contains(t, detail, "transferred lookup key")
 }
+
+func TestArchivePriceClearsProductDefaultAndRetries(t *testing.T) {
+	archiveAttempts := 0
+	clearedDefault := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices/price_default":
+			archiveAttempts++
+			if archiveAttempts == 1 {
+				w.WriteHeader(http.StatusBadRequest)
+				writeJSON(t, w, map[string]any{"error": map[string]any{
+					"type": "invalid_request_error", "code": "invalid_request_error",
+					"message": "This price cannot be archived because it is the default price of its product.",
+				}})
+				return
+			}
+			writeJSON(t, w, map[string]any{"id": "price_default", "object": "price", "active": false})
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/prices/price_default":
+			writeJSON(t, w, map[string]any{"id": "price_default", "object": "price", "product": "prod_default"})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/products/prod_default":
+			clearedDefault = true
+			writeJSON(t, w, map[string]any{"id": "prod_default", "object": "product"})
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+			writeJSON(t, w, map[string]any{"error": map[string]string{"message": "unexpected"}})
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	service := &Service{
+		stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL}),
+	}
+	err := service.archivePriceByStripeID(context.Background(), "price_default")
+	require.NoError(t, err)
+	require.Equal(t, 2, archiveAttempts)
+	require.True(t, clearedDefault)
+}
