@@ -55,8 +55,12 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		}
 		events := make([]string, len(ep.EnabledEvents))
 		copy(events, ep.EnabledEvents)
+		webhookID := configIDFromMetadata(ep.Metadata)
+		if webhookID == "" {
+			webhookID = ep.ID
+		}
 		configWebhooks = append(configWebhooks, WebhookEndpointConfig{
-			ID:      ep.ID,
+			ID:      webhookID,
 			URL:     ep.URL,
 			Events:  events,
 			Connect: ep.Application != "",
@@ -65,44 +69,58 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 
 	couponListParams := &stripe.CouponListParams{}
 	s.stripe.ApplyAccount(couponListParams)
-	var configCoupons []Coupon
+	var stripeCoupons []*stripe.Coupon
 	for cpn, err := range s.stripe.Stripe.V1Coupons.List(ctx, couponListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: coupons: %w", PullConfigError, err)
 		}
-		cc := convertStripeCouponToConfig(cpn)
-		cc.ID = normalizeConfigID(cpn.Name)
-		if cc.ID == "" {
-			cc.ID = cpn.ID
-		}
-		cc.StripeID = cpn.ID
-		configCoupons = append(configCoupons, cc)
+		stripeCoupons = append(stripeCoupons, cpn)
 	}
 
 	promoListParams := &stripe.PromotionCodeListParams{}
 	promoListParams.Filters.AddFilter("active", "", "true")
 	s.stripe.ApplyAccount(promoListParams)
-	var configPromos []PromotionCode
+	var stripePromos []*stripe.PromotionCode
 	for promo, err := range s.stripe.Stripe.V1PromotionCodes.List(ctx, promoListParams) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: promotion codes: %w", PullConfigError, err)
 		}
+		stripePromos = append(stripePromos, promo)
+	}
+
+	meterConfigIDs := assignMeterConfigIDs(stripeMeters)
+	configMeters := make([]Meter, 0, len(stripeMeters))
+	for _, sm := range stripeMeters {
+		m := convertStripeMeterToConfig(sm)
+		m.ID = meterConfigIDs[sm.ID]
+		m.StripeID = sm.ID
+		configMeters = append(configMeters, m)
+	}
+
+	couponAllocator := newConfigIDAllocator(taggedConfigIDs(stripeCoupons, func(c *stripe.Coupon) string {
+		return configIDFromMetadata(c.Metadata)
+	}))
+	configCoupons := make([]Coupon, 0, len(stripeCoupons))
+	for _, cpn := range stripeCoupons {
+		cc := convertStripeCouponToConfig(cpn)
+		cc.ID = couponAllocator.resolve(configIDFromMetadata(cpn.Metadata), normalizeConfigID(cpn.Name), cpn.ID)
+		cc.StripeID = cpn.ID
+		configCoupons = append(configCoupons, cc)
+	}
+
+	promoAllocator := newConfigIDAllocator(taggedConfigIDs(stripePromos, func(p *stripe.PromotionCode) string {
+		return configIDFromMetadata(p.Metadata)
+	}))
+	configPromos := make([]PromotionCode, 0, len(stripePromos))
+	for _, promo := range stripePromos {
 		pp := convertStripePromoCodeToConfig(promo, configCoupons)
-		pp.ID = normalizeConfigID(promo.Code)
-		if pp.ID == "" {
-			pp.ID = promo.ID
-		}
+		pp.ID = promoAllocator.resolve(configIDFromMetadata(promo.Metadata), normalizeConfigID(promo.Code), promo.ID)
 		pp.StripeID = promo.ID
 		configPromos = append(configPromos, pp)
 	}
 
-	configMeters := make([]Meter, 0, len(stripeMeters))
-	for _, sm := range stripeMeters {
-		m := convertStripeMeterToConfig(sm)
-		m.ID = normalizeConfigID(sm.DisplayName)
-		m.StripeID = sm.ID
-		configMeters = append(configMeters, m)
-	}
+	productConfigIDs := assignProductConfigIDs(stripeProducts)
+	priceConfigIDs := assignPriceConfigIDs(stripePrices, productConfigIDs)
 
 	pricesByProduct := make(map[string][]*stripe.Price)
 	for _, sp := range stripePrices {
@@ -113,9 +131,8 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 
 	configProducts := make([]Product, 0, len(stripeProducts))
 	for _, sp := range stripeProducts {
-		normalizedID := normalizeConfigID(sp.Name)
 		cp := Product{
-			ID:          normalizedID,
+			ID:          productConfigIDs[sp.ID],
 			StripeID:    sp.ID,
 			Name:        sp.Name,
 			Description: sp.Description,
@@ -125,8 +142,8 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 			cp.Type = string(sp.Type)
 		}
 		for _, price := range pricesByProduct[sp.ID] {
-			cprice := convertStripePriceToConfig(s, ctx, price)
-			cprice.ID = generatePriceConfigID(price, normalizedID)
+			cprice := convertStripePriceToConfig(price, meterConfigIDs)
+			cprice.ID = priceConfigIDs[price.ID]
 			cprice.StripeID = price.ID
 			cp.Prices = append(cp.Prices, cprice)
 		}
@@ -186,7 +203,7 @@ func convertStripeMeterToConfig(sm *stripe.BillingMeter) Meter {
 	return cm
 }
 
-func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Price) Price {
+func convertStripePriceToConfig(sp *stripe.Price, meterConfigIDs map[string]string) Price {
 	cp := Price{
 		Amount:   float64(sp.UnitAmount),
 		Currency: string(sp.Currency),
@@ -202,8 +219,8 @@ func convertStripePriceToConfig(s *Service, ctx context.Context, sp *stripe.Pric
 			cp.UsageType = string(sp.Recurring.UsageType)
 		}
 		if sp.Recurring.Meter != "" {
-			if mapping, err := s.repo.GetMappingByStripeID(ctx, sp.Recurring.Meter); err == nil {
-				cp.Meter = mapping.ConfigItemID
+			if configID, ok := meterConfigIDs[sp.Recurring.Meter]; ok {
+				cp.Meter = configID
 			} else {
 				cp.Meter = sp.Recurring.Meter
 			}
@@ -307,6 +324,112 @@ func convertStripePromoCodeToConfig(sp *stripe.PromotionCode, coupons []Coupon) 
 		}
 	}
 	return cp
+}
+
+type configIDAllocator struct {
+	used map[string]bool
+	seen map[string]bool
+}
+
+func newConfigIDAllocator(taggedIDs []string) *configIDAllocator {
+	used := make(map[string]bool, len(taggedIDs))
+	for _, id := range taggedIDs {
+		if id != "" {
+			used[id] = true
+		}
+	}
+	return &configIDAllocator{used: used, seen: make(map[string]bool)}
+}
+
+func (a *configIDAllocator) resolve(taggedID, fallbackID, stripeID string) string {
+	if taggedID != "" {
+		if !a.seen[taggedID] {
+			a.seen[taggedID] = true
+			return taggedID
+		}
+		return uniqueConfigID(taggedID, stripeID, a.used)
+	}
+	return uniqueConfigID(normalizeConfigID(fallbackID), stripeID, a.used)
+}
+
+func uniqueConfigID(baseID, stripeID string, used map[string]bool) string {
+	candidate := baseID
+	if candidate == "" {
+		candidate = normalizeConfigID(stripeID)
+	}
+	if candidate == "" {
+		candidate = "unknown"
+	}
+	if used[candidate] {
+		suffix := normalizeConfigID(stripeID)
+		if suffix == "" {
+			suffix = "unknown"
+		}
+		candidate = candidate + "_" + suffix
+	}
+	for used[candidate] {
+		candidate = candidate + "_"
+	}
+	used[candidate] = true
+	return candidate
+}
+
+func configIDFromMetadata(metadata map[string]string) string {
+	if metadata == nil {
+		return ""
+	}
+	return metadata[MetadataKeyConfigID]
+}
+
+func priceConfigIDFromStripe(price *stripe.Price) string {
+	if price.LookupKey != "" {
+		return price.LookupKey
+	}
+	return configIDFromMetadata(price.Metadata)
+}
+
+func taggedConfigIDs[T any](items []T, id func(T) string) []string {
+	ids := make([]string, 0, len(items))
+	for _, item := range items {
+		if value := id(item); value != "" {
+			ids = append(ids, value)
+		}
+	}
+	return ids
+}
+
+func assignProductConfigIDs(products []*stripe.Product) map[string]string {
+	allocator := newConfigIDAllocator(taggedConfigIDs(products, func(p *stripe.Product) string {
+		return configIDFromMetadata(p.Metadata)
+	}))
+	ids := make(map[string]string, len(products))
+	for _, product := range products {
+		ids[product.ID] = allocator.resolve(configIDFromMetadata(product.Metadata), normalizeConfigID(product.Name), product.ID)
+	}
+	return ids
+}
+
+func assignPriceConfigIDs(prices []*stripe.Price, productConfigIDs map[string]string) map[string]string {
+	allocator := newConfigIDAllocator(taggedConfigIDs(prices, priceConfigIDFromStripe))
+	ids := make(map[string]string, len(prices))
+	for _, price := range prices {
+		productConfigID := ""
+		if price.Product != nil {
+			productConfigID = productConfigIDs[price.Product.ID]
+		}
+		fallbackID := normalizeConfigID(generatePriceConfigID(price, productConfigID))
+		ids[price.ID] = allocator.resolve(priceConfigIDFromStripe(price), fallbackID, price.ID)
+	}
+	return ids
+}
+
+func assignMeterConfigIDs(meters []*stripe.BillingMeter) map[string]string {
+	allocator := newConfigIDAllocator(nil)
+	ids := make(map[string]string, len(meters))
+	for _, meter := range meters {
+		ids[meter.ID] = allocator.resolve("", normalizeConfigID(meter.EventName), meter.ID)
+	}
+	return ids
 }
 
 func normalizeConfigID(name string) string {
