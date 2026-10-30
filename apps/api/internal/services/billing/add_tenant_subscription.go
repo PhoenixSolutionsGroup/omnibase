@@ -26,7 +26,7 @@ type AddTenantSubscriptionResult struct {
 }
 
 func (s *Service) AddTenantSubscription(ctx context.Context, args AddTenantSubscriptionArgs) (*AddTenantSubscriptionResult, error) {
-	mapping, err := s.GetMappingByConfigID(ctx, args.ConfigPriceID, "price")
+	stripePriceID, err := s.GetStripePriceID(ctx, args.ConfigPriceID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", AddTenantSubscriptionPlanNotFound, err)
 	}
@@ -39,7 +39,7 @@ func (s *Service) AddTenantSubscription(ctx context.Context, args AddTenantSubsc
 		return nil, fmt.Errorf("%w: %s", AddTenantSubscriptionDuplicate, args.ConfigPriceID)
 	}
 
-	item := &stripe.SubscriptionCreateItemParams{Price: stripe.String(mapping.StripeID)}
+	item := &stripe.SubscriptionCreateItemParams{Price: stripe.String(stripePriceID)}
 	if args.Quantity > 0 {
 		item.Quantity = stripe.Int64(args.Quantity)
 	}

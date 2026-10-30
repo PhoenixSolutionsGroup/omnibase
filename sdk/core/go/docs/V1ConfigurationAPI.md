@@ -21,7 +21,7 @@ Method | HTTP request | Description
 
 ## ArchiveAllStripeConfig
 
-> ArchiveAllResponse ArchiveAllStripeConfig(ctx).Execute()
+> ArchiveAllResponse ArchiveAllStripeConfig(ctx).ArchiveAllInputBody(archiveAllInputBody).Execute()
 
 Archive all Stripe config
 
@@ -38,10 +38,11 @@ import (
 )
 
 func main() {
+	archiveAllInputBody := *openapiclient.NewArchiveAllInputBody() // ArchiveAllInputBody | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background()).Execute()
+	resp, r, err := apiClient.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background()).ArchiveAllInputBody(archiveAllInputBody).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.ArchiveAllStripeConfig``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -53,12 +54,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **archiveAllInputBody** | [**ArchiveAllInputBody**](ArchiveAllInputBody.md) |  | 
 
 ### Return type
 
@@ -70,7 +75,7 @@ Other parameters are passed through a pointer to a apiArchiveAllStripeConfigRequ
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

@@ -166,6 +166,7 @@ Class | Method | HTTP request | Description
  - [ApplyEnterpriseCustomRequest](docs/ApplyEnterpriseCustomRequest.md)
  - [ApplyEnterpriseTemplateRequest](docs/ApplyEnterpriseTemplateRequest.md)
  - [ApplyMigrationsResponse](docs/ApplyMigrationsResponse.md)
+ - [ArchiveAllInputBody](docs/ArchiveAllInputBody.md)
  - [ArchiveAllResponse](docs/ArchiveAllResponse.md)
  - [AuthTenantInvite](docs/AuthTenantInvite.md)
  - [BillingStatusResponse](docs/BillingStatusResponse.md)

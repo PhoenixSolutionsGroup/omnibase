@@ -973,8 +973,7 @@
         "stripe_id",
         "config_id",
         "item_type",
-        "config_uuid",
-        "history_count"
+        "config_uuid"
       ],
       "properties": {
         "stripe_id": {
@@ -991,17 +990,15 @@
           "enum": [
             "product",
             "price",
-            "meter"
+            "meter",
+            "coupon",
+            "promotion_code"
           ]
         },
         "config_uuid": {
           "type": "string",
           "format": "uuid",
           "description": "Configuration UUID that this mapping belongs to"
-        },
-        "history_count": {
-          "type": "integer",
-          "description": "Number of historical Stripe IDs for this config item"
         }
       }
     },

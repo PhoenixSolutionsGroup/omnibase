@@ -8,7 +8,6 @@ Name | Type
 ------------ | -------------
 `configId` | string
 `configUuid` | string
-`historyCount` | number
 `itemType` | string
 `stripeId` | string
 
@@ -21,7 +20,6 @@ import type { ConvertStripeIDResponse } from '@omnibase/core-js'
 const example = {
   "configId": null,
   "configUuid": null,
-  "historyCount": null,
   "itemType": null,
   "stripeId": null,
 } satisfies ConvertStripeIDResponse

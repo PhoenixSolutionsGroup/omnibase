@@ -6,7 +6,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ConfigId** | **string** |  | 
 **ConfigUuid** | **string** |  | 
-**HistoryCount** | **int64** |  | 
 **ItemType** | **string** |  | 
 **StripeId** | **string** |  | 
 
@@ -14,7 +13,7 @@ Name | Type | Description | Notes
 
 ### NewConvertStripeIDResponse
 
-`func NewConvertStripeIDResponse(configId string, configUuid string, historyCount int64, itemType string, stripeId string, ) *ConvertStripeIDResponse`
+`func NewConvertStripeIDResponse(configId string, configUuid string, itemType string, stripeId string, ) *ConvertStripeIDResponse`
 
 NewConvertStripeIDResponse instantiates a new ConvertStripeIDResponse object
 This constructor will assign default values to properties that have it defined,
@@ -67,26 +66,6 @@ and a boolean to check if the value has been set.
 `func (o *ConvertStripeIDResponse) SetConfigUuid(v string)`
 
 SetConfigUuid sets ConfigUuid field to given value.
-
-
-### GetHistoryCount
-
-`func (o *ConvertStripeIDResponse) GetHistoryCount() int64`
-
-GetHistoryCount returns the HistoryCount field if non-nil, zero value otherwise.
-
-### GetHistoryCountOk
-
-`func (o *ConvertStripeIDResponse) GetHistoryCountOk() (*int64, bool)`
-
-GetHistoryCountOk returns a tuple with the HistoryCount field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetHistoryCount
-
-`func (o *ConvertStripeIDResponse) SetHistoryCount(v int64)`
-
-SetHistoryCount sets HistoryCount field to given value.
 
 
 ### GetItemType

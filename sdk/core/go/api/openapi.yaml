@@ -1050,6 +1050,12 @@ paths:
   /api/v1/stripe/admin/config/archive-all:
     post:
       operationId: archiveAllStripeConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchiveAllInputBody"
+        required: true
       responses:
         "200":
           content:
@@ -2268,6 +2274,13 @@ components:
       required:
       - message
       - status
+    ArchiveAllInputBody:
+      additionalProperties: false
+      example:
+        force: true
+      properties:
+        force:
+          type: boolean
     ArchiveAllResponse:
       additionalProperties: false
       example:
@@ -2504,6 +2517,15 @@ components:
             action: action
             stripe_id: stripe_id
         webhooks:
+          deleted:
+          - webhook_id: webhook_id
+            action: action
+            stripe_id: stripe_id
+            url: url
+          - webhook_id: webhook_id
+            action: action
+            stripe_id: stripe_id
+            url: url
           created:
           - webhook_id: webhook_id
             action: action
@@ -3609,6 +3631,15 @@ components:
               action: action
               stripe_id: stripe_id
           webhooks:
+            deleted:
+            - webhook_id: webhook_id
+              action: action
+              stripe_id: stripe_id
+              url: url
+            - webhook_id: webhook_id
+              action: action
+              stripe_id: stripe_id
+              url: url
             created:
             - webhook_id: webhook_id
               action: action
@@ -4044,7 +4075,6 @@ components:
       example:
         config_uuid: config_uuid
         config_id: config_id
-        history_count: 0
         item_type: item_type
         stripe_id: stripe_id
       properties:
@@ -4052,9 +4082,6 @@ components:
           type: string
         config_uuid:
           type: string
-        history_count:
-          format: int64
-          type: integer
         item_type:
           type: string
         stripe_id:
@@ -4062,7 +4089,6 @@ components:
       required:
       - config_id
       - config_uuid
-      - history_count
       - item_type
       - stripe_id
     Coupon:
@@ -8511,6 +8537,15 @@ components:
     WebhookChanges:
       additionalProperties: false
       example:
+        deleted:
+        - webhook_id: webhook_id
+          action: action
+          stripe_id: stripe_id
+          url: url
+        - webhook_id: webhook_id
+          action: action
+          stripe_id: stripe_id
+          url: url
         created:
         - webhook_id: webhook_id
           action: action
@@ -8540,6 +8575,11 @@ components:
           url: url
       properties:
         created:
+          items:
+            $ref: "#/components/schemas/WebhookChange"
+          nullable: true
+          type: array
+        deleted:
           items:
             $ref: "#/components/schemas/WebhookChange"
           nullable: true

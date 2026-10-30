@@ -14,17 +14,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { setSessionTokenAction } from "@/app/auth/actions";
-import {
-  V1TenantsInvitesApi,
-  V1TenantsLifecycleApi,
-} from "@omnibase/core-js";
+import { V1TenantsInvitesApi, V1TenantsLifecycleApi } from "@omnibase/core-js";
 
 const API_URL = process.env.NEXT_PUBLIC_OMNIBASE_API_URL!;
 
 // TODO - Fix type definitions
 export default function page({ params, searchParams }: any) {
   return (
-    <div className="mt-[20vh]">
+    <div>
       <FlowRouter
         flowMap={{
           login: () => {

@@ -774,22 +774,28 @@ export function addStripeCommands(program: Command): void {
 
   stripe
     .command("reset")
-    .summary("Archive all Stripe resources and clear local config")
+    .summary("Archive managed Stripe resources and clear local config")
     .description(
-      "Archive every Stripe resource for the environment and clear the local " +
-      "config.\n\n" +
+      "Archive Omnibase-managed Stripe resources for the environment and clear " +
+      "the local config. Objects without `metadata.omnibase_managed=true` are " +
+      "left untouched unless `--all` is passed.\n\n" +
       "This is destructive and cannot be undone — it requires a confirmation " +
       "prompt unless `-y, --yes` is passed. The API reports what was archived " +
       "and any errors.\n\n" +
       "```bash\n" +
       "omnibase stripe reset\n" +
       "omnibase stripe reset -y\n" +
+      "omnibase stripe reset --all -y\n" +
       "omnibase stripe reset --env dev -y\n" +
       "```"
     )
     .option("--env <environment>", "Override environment for this command")
+    .option("--all", "Also archive Stripe objects not managed by Omnibase")
     .option("-y, --yes", "Skip confirmation prompt")
     .action(async (options) => {
+      const scope = options.all
+        ? "ALL Stripe resources"
+        : "managed Stripe resources";
       try {
         if (!options.yes) {
           const readline = await import("readline");
@@ -800,7 +806,7 @@ export function addStripeCommands(program: Command): void {
 
           const answer = await new Promise<string>((resolve) => {
             rl.question(
-              "Are you sure you want to archive ALL Stripe resources and clear the local config? This action cannot be undone. (y/N): ",
+              `Are you sure you want to archive ${scope} and clear the local config? This action cannot be undone. (y/N): `,
               resolve
             );
           });
@@ -813,16 +819,16 @@ export function addStripeCommands(program: Command): void {
           }
         }
 
-        logger.start(
-          "Archiving all Stripe resources and clearing local config..."
-        );
+        logger.start(`Archiving ${scope} and clearing local config...`);
 
         const envOverride = options.env || program.opts().env;
         const envConfig = await selectEnvironment(envOverride);
         const sdkConfig = createOmnibaseSDKConfig(envConfig);
         const configApi = new V1ConfigurationApi(sdkConfig);
 
-        const response = await configApi.archiveAllStripeConfig();
+        const response = await configApi.archiveAllStripeConfig({
+          archiveAllInputBody: { force: options.all },
+        });
         const data = response;
 
         logger.succeed("Successfully completed Stripe reset!");

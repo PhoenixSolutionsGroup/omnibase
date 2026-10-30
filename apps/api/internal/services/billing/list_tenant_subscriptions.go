@@ -8,6 +8,7 @@ import (
 	"github.com/stripe/stripe-go/v82"
 
 	"api/internal/logger"
+	"api/internal/services/stripe_config"
 )
 
 var ListTenantSubscriptionsError = errors.New("Failed to list tenant subscriptions")
@@ -39,19 +40,18 @@ func (s *Service) ListTenantSubscriptions(ctx context.Context, stripeCustomerID 
 			continue
 		}
 		for _, item := range sub.Items.Data {
-			mapping, mErr := s.GetMappingByStripeID(ctx, item.Price.ID)
-			if mErr != nil {
-				logger.Logger.Warn("unmapped subscription item price",
+			configPriceID := stripe_config.PriceConfigID(item.Price)
+			if configPriceID == "" {
+				logger.Logger.Warn("subscription item price has no omnibase identity",
 					"subscription_id", sub.ID,
-					"stripe_price_id", item.Price.ID,
-					"error", mErr)
+					"stripe_price_id", item.Price.ID)
 				continue
 			}
 			out = append(out, TenantSubscription{
 				SubscriptionID:     sub.ID,
-				ConfigPriceID:      mapping.ConfigItemID,
+				ConfigPriceID:      configPriceID,
 				Status:             string(sub.Status),
-				IsLegacyPrice:      mapping.IsLegacy,
+				IsLegacyPrice:      stripe_config.IsLegacyPrice(item.Price),
 				CurrentPeriodStart: item.CurrentPeriodStart,
 				CurrentPeriodEnd:   item.CurrentPeriodEnd,
 				CancelAtPeriodEnd:  sub.CancelAtPeriodEnd,

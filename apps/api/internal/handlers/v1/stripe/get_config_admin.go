@@ -35,7 +35,7 @@ func (h *Handler) GetConfigAdmin(ctx context.Context, _ *GetConfigAdminInput) (*
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetConfigAdminError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed)
 
 	return &GetConfigAdminOutput{Body: StripeConfigResponse{
 		ID:        row.ID,

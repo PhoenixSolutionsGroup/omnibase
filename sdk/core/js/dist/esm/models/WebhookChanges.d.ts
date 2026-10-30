@@ -27,6 +27,12 @@ export interface WebhookChanges {
      * @type {Array<WebhookChange>}
      * @memberof WebhookChanges
      */
+    deleted?: Array<WebhookChange> | null;
+    /**
+     *
+     * @type {Array<WebhookChange>}
+     * @memberof WebhookChanges
+     */
     unchanged?: Array<WebhookChange> | null;
     /**
      *

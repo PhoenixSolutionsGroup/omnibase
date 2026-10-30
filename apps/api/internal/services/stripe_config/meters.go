@@ -6,27 +6,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var CreateMeterError = errors.New("Failed to create stripe meter")
 
-func (s *Service) createMeter(ctx context.Context, configID uuid.UUID, meterConfig Meter) (string, error) {
+func (s *Service) createMeter(ctx context.Context, meterConfig Meter) (string, error) {
 	if meterConfig.StripeID != "" {
-		existing, err := s.GetMapping(ctx, meterConfig.ID, "meter")
-		if err != nil {
-			return "", err
-		}
-		if existing != nil {
-			return existing.StripeID, nil
-		}
-		if configID != uuid.Nil {
-			if err := s.SaveMapping(ctx, configID, meterConfig.ID, meterConfig.StripeID, "meter"); err != nil {
-				return "", err
-			}
-		}
 		return meterConfig.StripeID, nil
 	}
 
@@ -69,48 +55,44 @@ func (s *Service) createMeter(ctx context.Context, configID uuid.UUID, meterConf
 					return "", fmt.Errorf("meter already exists but failed to find it: %w", findErr)
 				}
 				if existing != nil {
-					if configID != uuid.Nil {
-						if err := s.SaveMapping(ctx, configID, meterConfig.ID, existing.ID, "meter"); err != nil {
-							return "", err
-						}
-					}
 					return existing.ID, nil
 				}
 			}
 		}
 		return "", fmt.Errorf("%w: %w", CreateMeterError, err)
 	}
-
-	if configID != uuid.Nil {
-		if err := s.SaveMapping(ctx, configID, meterConfig.ID, result.ID, "meter"); err != nil {
-			return "", err
-		}
-	}
 	return result.ID, nil
 }
 
-func (s *Service) deactivateMeter(ctx context.Context, stripeID string) (*MeterChange, error) {
-	getParams := &stripe.BillingMeterRetrieveParams{}
-	s.stripe.ApplyAccount(getParams)
-	meterDetails, err := s.stripe.Stripe.V1BillingMeters.Retrieve(ctx, stripeID, getParams)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get meter details before deactivation: %w", err)
-	}
-
-	params := &stripe.BillingMeterDeactivateParams{}
+func (s *Service) updateMeterDisplayName(ctx context.Context, stripeID, displayName string) (*MeterChange, error) {
+	params := &stripe.BillingMeterUpdateParams{DisplayName: stripe.String(displayName)}
 	s.stripe.ApplyAccount(params)
-	if _, err := s.stripe.Stripe.V1BillingMeters.Deactivate(ctx, stripeID, params); err != nil {
-		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Msg == "meter_already_deactivated" {
-			// idempotent — fall through to return success
-		} else {
-			return nil, fmt.Errorf("failed to deactivate meter %s: %w", stripeID, err)
-		}
+	meter, err := s.stripe.Stripe.V1BillingMeters.Update(ctx, stripeID, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update meter %s: %w", stripeID, err)
 	}
 	return &MeterChange{
 		MeterID:     stripeID,
-		DisplayName: meterDetails.DisplayName,
-		Action:      "archived",
+		DisplayName: meter.DisplayName,
+		Action:      "updated",
 		StripeID:    stripeID,
+	}, nil
+}
+
+func (s *Service) deactivateMeter(ctx context.Context, meter *stripe.BillingMeter) (*MeterChange, error) {
+	params := &stripe.BillingMeterDeactivateParams{}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1BillingMeters.Deactivate(ctx, meter.ID, params); err != nil {
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Msg == "meter_already_deactivated" {
+		} else {
+			return nil, fmt.Errorf("failed to deactivate meter %s: %w", meter.ID, err)
+		}
+	}
+	return &MeterChange{
+		MeterID:     meter.ID,
+		DisplayName: meter.DisplayName,
+		Action:      "archived",
+		StripeID:    meter.ID,
 	}, nil
 }
 

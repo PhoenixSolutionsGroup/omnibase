@@ -29,7 +29,7 @@ export function ProblemSection() {
       <div className="container mx-auto max-w-6xl px-4">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Building SaaS infrastructure is painful
+            Building your infrastructure is painful
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             You&apos;ve been there. Weeks spent on plumbing instead of building

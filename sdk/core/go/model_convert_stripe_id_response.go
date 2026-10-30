@@ -24,7 +24,6 @@ var _ MappedNullable = &ConvertStripeIDResponse{}
 type ConvertStripeIDResponse struct {
 	ConfigId string `json:"config_id"`
 	ConfigUuid string `json:"config_uuid"`
-	HistoryCount int64 `json:"history_count"`
 	ItemType string `json:"item_type"`
 	StripeId string `json:"stripe_id"`
 }
@@ -35,11 +34,10 @@ type _ConvertStripeIDResponse ConvertStripeIDResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConvertStripeIDResponse(configId string, configUuid string, historyCount int64, itemType string, stripeId string) *ConvertStripeIDResponse {
+func NewConvertStripeIDResponse(configId string, configUuid string, itemType string, stripeId string) *ConvertStripeIDResponse {
 	this := ConvertStripeIDResponse{}
 	this.ConfigId = configId
 	this.ConfigUuid = configUuid
-	this.HistoryCount = historyCount
 	this.ItemType = itemType
 	this.StripeId = stripeId
 	return &this
@@ -99,30 +97,6 @@ func (o *ConvertStripeIDResponse) GetConfigUuidOk() (*string, bool) {
 // SetConfigUuid sets field value
 func (o *ConvertStripeIDResponse) SetConfigUuid(v string) {
 	o.ConfigUuid = v
-}
-
-// GetHistoryCount returns the HistoryCount field value
-func (o *ConvertStripeIDResponse) GetHistoryCount() int64 {
-	if o == nil {
-		var ret int64
-		return ret
-	}
-
-	return o.HistoryCount
-}
-
-// GetHistoryCountOk returns a tuple with the HistoryCount field value
-// and a boolean to check if the value has been set.
-func (o *ConvertStripeIDResponse) GetHistoryCountOk() (*int64, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.HistoryCount, true
-}
-
-// SetHistoryCount sets field value
-func (o *ConvertStripeIDResponse) SetHistoryCount(v int64) {
-	o.HistoryCount = v
 }
 
 // GetItemType returns the ItemType field value
@@ -185,7 +159,6 @@ func (o ConvertStripeIDResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["config_id"] = o.ConfigId
 	toSerialize["config_uuid"] = o.ConfigUuid
-	toSerialize["history_count"] = o.HistoryCount
 	toSerialize["item_type"] = o.ItemType
 	toSerialize["stripe_id"] = o.StripeId
 	return toSerialize, nil
@@ -198,7 +171,6 @@ func (o *ConvertStripeIDResponse) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"config_id",
 		"config_uuid",
-		"history_count",
 		"item_type",
 		"stripe_id",
 	}

@@ -1,6 +1,8 @@
 package stripe_config
 
 import (
+	"sync"
+
 	"api/internal/database/repository"
 	"api/internal/services"
 	"api/internal/services/stripe_client"
@@ -12,7 +14,9 @@ type Service struct {
 	encryption *services.EncryptionService
 	managed    *ManagedHostingClient
 	validator  *Validator
-	differ     *Differ
+
+	identityMu    sync.Mutex
+	identityCache *identityCache
 }
 
 type Deps struct {
@@ -29,7 +33,6 @@ func New(deps Deps) *Service {
 		encryption: deps.Encryption,
 		managed:    deps.Managed,
 		validator:  NewValidator(),
-		differ:     NewDiffer(),
 	}
 }
 

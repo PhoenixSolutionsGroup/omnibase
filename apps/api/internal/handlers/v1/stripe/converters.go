@@ -3,18 +3,21 @@ package stripe
 import (
 	"context"
 
-	"github.com/google/uuid"
-
+	"api/internal/logger"
 	"api/internal/services/stripe_config"
 )
 
-func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config.StripeConfiguration, configID uuid.UUID) stripe_config.StripeConfigurationWithIDs {
-	_ = configID
+func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config.StripeConfiguration) stripe_config.StripeConfigurationWithIDs {
+	identity, err := h.stripeConfig.LoadStripeIdentity(ctx, &config)
+	if err != nil {
+		logger.Logger.Warn("Failed to load Stripe identity for config response", "error", err)
+		identity = &stripe_config.StripeIdentity{}
+	}
 
 	meters := make([]stripe_config.MeterWithStripeID, 0, len(config.Meters))
 	for _, m := range config.Meters {
 		mWith := stripe_config.MeterWithStripeID{Meter: m}
-		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, m.ID, "meter"); err == nil && id != "" && id != m.ID {
+		if id := identity.Meters[m.ID]; id != "" {
 			mWith.StripeID = &id
 		}
 		meters = append(meters, mWith)
@@ -29,14 +32,14 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 			Type:        p.Type,
 			UI:          p.UI,
 		}
-		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, p.ID, "product"); err == nil && id != "" {
+		if id := identity.Products[p.ID]; id != "" {
 			pWith.StripeID = &id
 		}
 		prices := make([]stripe_config.PriceWithStripeID, 0, len(p.Prices))
 		for _, price := range p.Prices {
 			priceWith := stripe_config.PriceWithStripeID{Price: price}
 			if price.ID != "free" {
-				if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, price.ID, "price"); err == nil && id != "" {
+				if id := identity.Prices[price.ID]; id != "" {
 					priceWith.StripeID = &id
 				}
 			}
@@ -49,7 +52,7 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 	coupons := make([]stripe_config.CouponWithStripeID, 0, len(config.Coupons))
 	for _, c := range config.Coupons {
 		cWith := stripe_config.CouponWithStripeID{Coupon: c}
-		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, c.ID, "coupon"); err == nil && id != "" {
+		if id := identity.Coupons[c.ID]; id != "" {
 			cWith.StripeID = &id
 		}
 		coupons = append(coupons, cWith)
@@ -58,7 +61,7 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 	promos := make([]stripe_config.PromotionCodeWithStripeID, 0, len(config.PromotionCodes))
 	for _, p := range config.PromotionCodes {
 		pWith := stripe_config.PromotionCodeWithStripeID{PromotionCode: p}
-		if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, p.ID, "promotion_code"); err == nil && id != "" {
+		if id := identity.Promos[p.ID]; id != "" {
 			pWith.StripeID = &id
 		}
 		promos = append(promos, pWith)

@@ -44,7 +44,7 @@ func (h *Handler) GetPriceByID(ctx context.Context, in *GetPriceInput) (*GetPric
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetPriceError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed)
 	for _, p := range configWithIDs.Products {
 		for _, price := range p.Prices {
 			if price.ID == in.PriceID {

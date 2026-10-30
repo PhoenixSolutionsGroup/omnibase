@@ -33,12 +33,6 @@ export interface ConvertStripeIDResponse {
     configUuid: string;
     /**
      * 
-     * @type {number}
-     * @memberof ConvertStripeIDResponse
-     */
-    historyCount: number;
-    /**
-     * 
      * @type {string}
      * @memberof ConvertStripeIDResponse
      */
@@ -57,7 +51,6 @@ export interface ConvertStripeIDResponse {
 export function instanceOfConvertStripeIDResponse(value: object): value is ConvertStripeIDResponse {
     if (!('configId' in value) || value['configId'] === undefined) return false;
     if (!('configUuid' in value) || value['configUuid'] === undefined) return false;
-    if (!('historyCount' in value) || value['historyCount'] === undefined) return false;
     if (!('itemType' in value) || value['itemType'] === undefined) return false;
     if (!('stripeId' in value) || value['stripeId'] === undefined) return false;
     return true;
@@ -75,7 +68,6 @@ export function ConvertStripeIDResponseFromJSONTyped(json: any, ignoreDiscrimina
         
         'configId': json['config_id'],
         'configUuid': json['config_uuid'],
-        'historyCount': json['history_count'],
         'itemType': json['item_type'],
         'stripeId': json['stripe_id'],
     };
@@ -94,7 +86,6 @@ export function ConvertStripeIDResponseToJSONTyped(value?: ConvertStripeIDRespon
         
         'config_id': value['configId'],
         'config_uuid': value['configUuid'],
-        'history_count': value['historyCount'],
         'item_type': value['itemType'],
         'stripe_id': value['stripeId'],
     };

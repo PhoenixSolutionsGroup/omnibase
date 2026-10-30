@@ -12,6 +12,7 @@ docs/AppliedMigration.md
 docs/ApplyEnterpriseCustomRequest.md
 docs/ApplyEnterpriseTemplateRequest.md
 docs/ApplyMigrationsResponse.md
+docs/ArchiveAllInputBody.md
 docs/ArchiveAllResponse.md
 docs/AuthTenantInvite.md
 docs/BillingStatusResponse.md
@@ -178,6 +179,7 @@ src/models/AppliedMigration.ts
 src/models/ApplyEnterpriseCustomRequest.ts
 src/models/ApplyEnterpriseTemplateRequest.ts
 src/models/ApplyMigrationsResponse.ts
+src/models/ArchiveAllInputBody.ts
 src/models/ArchiveAllResponse.ts
 src/models/AuthTenantInvite.ts
 src/models/BillingStatusResponse.ts

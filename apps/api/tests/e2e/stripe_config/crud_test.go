@@ -17,7 +17,9 @@ import (
 
 func archiveAll(t *testing.T, client *sdk.APIClient) {
 	t.Helper()
-	_, resp, err := client.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background()).Execute()
+	req := client.V1ConfigurationAPI.ArchiveAllStripeConfig(context.Background())
+	req = req.ArchiveAllInputBody(sdk.ArchiveAllInputBody{Force: sdk.PtrBool(true)})
+	_, resp, err := req.Execute()
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }

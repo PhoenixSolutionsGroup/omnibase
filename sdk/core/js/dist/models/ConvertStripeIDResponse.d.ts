@@ -29,12 +29,6 @@ export interface ConvertStripeIDResponse {
     configUuid: string;
     /**
      *
-     * @type {number}
-     * @memberof ConvertStripeIDResponse
-     */
-    historyCount: number;
-    /**
-     *
      * @type {string}
      * @memberof ConvertStripeIDResponse
      */

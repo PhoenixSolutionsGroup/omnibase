@@ -39,9 +39,9 @@ type CreateCheckoutOutput struct {
 func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (*CreateCheckoutOutput, error) {
 	req := in.Body
 
-	mapping, err := h.billing.GetMappingByConfigID(ctx, req.PriceID, "price")
+	stripePriceID, err := h.billing.GetStripePriceID(ctx, req.PriceID)
 	if err != nil {
-		return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
+		return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
 	}
 
 	var promotionCode *string
@@ -50,7 +50,7 @@ func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (
 	}
 
 	session, err := h.billing.CreateCheckoutSession(ctx, billing.CreateCheckoutSessionArgs{
-		StripePriceID:       mapping.StripeID,
+		StripePriceID:       stripePriceID,
 		SuccessURL:          req.SuccessURL,
 		CancelURL:           req.CancelURL,
 		StripeCustomerID:    in.StripeCustomerID,

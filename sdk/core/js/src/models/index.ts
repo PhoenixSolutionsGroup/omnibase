@@ -11,6 +11,7 @@ export * from './AppliedMigration';
 export * from './ApplyEnterpriseCustomRequest';
 export * from './ApplyEnterpriseTemplateRequest';
 export * from './ApplyMigrationsResponse';
+export * from './ArchiveAllInputBody';
 export * from './ArchiveAllResponse';
 export * from './AuthTenantInvite';
 export * from './BillingStatusResponse';

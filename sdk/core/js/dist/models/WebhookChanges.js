@@ -34,6 +34,7 @@ function WebhookChangesFromJSONTyped(json, ignoreDiscriminator) {
     }
     return {
         'created': json['created'] == null ? undefined : (json['created'].map(WebhookChange_1.WebhookChangeFromJSON)),
+        'deleted': json['deleted'] == null ? undefined : (json['deleted'].map(WebhookChange_1.WebhookChangeFromJSON)),
         'unchanged': json['unchanged'] == null ? undefined : (json['unchanged'].map(WebhookChange_1.WebhookChangeFromJSON)),
         'updated': json['updated'] == null ? undefined : (json['updated'].map(WebhookChange_1.WebhookChangeFromJSON)),
     };
@@ -47,6 +48,7 @@ function WebhookChangesToJSONTyped(value, ignoreDiscriminator = false) {
     }
     return {
         'created': value['created'] == null ? undefined : (value['created'].map(WebhookChange_1.WebhookChangeToJSON)),
+        'deleted': value['deleted'] == null ? undefined : (value['deleted'].map(WebhookChange_1.WebhookChangeToJSON)),
         'unchanged': value['unchanged'] == null ? undefined : (value['unchanged'].map(WebhookChange_1.WebhookChangeToJSON)),
         'updated': value['updated'] == null ? undefined : (value['updated'].map(WebhookChange_1.WebhookChangeToJSON)),
     };

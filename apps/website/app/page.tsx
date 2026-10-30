@@ -1,5 +1,4 @@
 import {
-  HeroSection,
   ProblemSection,
   FeaturesSection,
   CodeSnippetSection,
@@ -7,6 +6,8 @@ import {
   PricingSection,
   OpenSourceSection,
   CTASection,
+  HeroSection,
+  UseCaseSection,
 } from "@/components/sections";
 
 export default function HomePage() {
@@ -16,8 +17,9 @@ export default function HomePage() {
       <ProblemSection />
       <FeaturesSection />
       <CodeSnippetSection />
-      <ComparisonSection />
       <PricingSection />
+      <UseCaseSection />
+      <ComparisonSection />
       <OpenSourceSection />
       <CTASection />
     </>

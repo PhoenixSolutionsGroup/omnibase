@@ -27,6 +27,7 @@ docs/AppliedMigration.md
 docs/ApplyEnterpriseCustomRequest.md
 docs/ApplyEnterpriseTemplateRequest.md
 docs/ApplyMigrationsResponse.md
+docs/ArchiveAllInputBody.md
 docs/ArchiveAllResponse.md
 docs/AuthTenantInvite.md
 docs/BillingStatusResponse.md
@@ -181,6 +182,7 @@ model_applied_migration.go
 model_apply_enterprise_custom_request.go
 model_apply_enterprise_template_request.go
 model_apply_migrations_response.go
+model_archive_all_input_body.go
 model_archive_all_response.go
 model_auth_tenant_invite.go
 model_billing_status_response.go
