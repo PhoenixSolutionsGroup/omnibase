@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/stripe/stripe-go/v82"
+
+	"api/internal/services/stripe_config"
 )
 
 var (
@@ -23,7 +25,9 @@ func (s *Service) GetStripePriceID(ctx context.Context, configPriceID string) (s
 		if err != nil {
 			return "", fmt.Errorf("%w: %w", GetStripePriceIDError, err)
 		}
-		return price.ID, nil
+		if stripe_config.PriceConfigID(price) == configPriceID {
+			return price.ID, nil
+		}
 	}
 	return "", fmt.Errorf("%w: %s", StripePriceNotFoundError, configPriceID)
 }

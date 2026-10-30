@@ -23,9 +23,10 @@ func TestGetStripePriceIDResolvesByLookupKey(t *testing.T) {
 			"object":   "list",
 			"has_more": false,
 			"data": []any{map[string]any{
-				"id":     "price_123",
-				"object": "price",
-				"active": true,
+				"id":         "price_123",
+				"object":     "price",
+				"active":     true,
+				"lookup_key": "price_a",
 			}},
 		})
 	}))
