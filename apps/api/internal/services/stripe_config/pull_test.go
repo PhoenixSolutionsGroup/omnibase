@@ -186,3 +186,19 @@ func pulledFixture() *StripeConfiguration {
 		}},
 	}
 }
+
+func TestConvertStripePriceToConfigUsesDecimalAmount(t *testing.T) {
+	decimal := convertStripePriceToConfig(&stripe.Price{
+		Currency:          "usd",
+		UnitAmount:        0,
+		UnitAmountDecimal: 2.25,
+	}, nil)
+	require.Equal(t, 2.25, decimal.Amount)
+
+	integer := convertStripePriceToConfig(&stripe.Price{
+		Currency:          "usd",
+		UnitAmount:        675,
+		UnitAmountDecimal: 675,
+	}, nil)
+	require.Equal(t, 675.0, integer.Amount)
+}

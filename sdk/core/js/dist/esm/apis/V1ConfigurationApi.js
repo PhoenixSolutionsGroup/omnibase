@@ -65,10 +65,14 @@ class V1ConfigurationApi extends runtime.BaseAPI {
     /**
      * Archive all Stripe config
      */
-    archiveAllStripeConfigRaw(initOverrides) {
+    archiveAllStripeConfigRaw(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['archiveAllInputBody'] == null) {
+                throw new runtime.RequiredError('archiveAllInputBody', 'Required parameter "archiveAllInputBody" was null or undefined when calling archiveAllStripeConfig().');
+            }
             const queryParameters = {};
             const headerParameters = {};
+            headerParameters['Content-Type'] = 'application/json';
             if (this.configuration && this.configuration.apiKey) {
                 headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
             }
@@ -78,6 +82,7 @@ class V1ConfigurationApi extends runtime.BaseAPI {
                 method: 'POST',
                 headers: headerParameters,
                 query: queryParameters,
+                body: (0, index_1.ArchiveAllInputBodyToJSON)(requestParameters['archiveAllInputBody']),
             }, initOverrides);
             return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ArchiveAllResponseFromJSON)(jsonValue));
         });
@@ -85,9 +90,9 @@ class V1ConfigurationApi extends runtime.BaseAPI {
     /**
      * Archive all Stripe config
      */
-    archiveAllStripeConfig(initOverrides) {
+    archiveAllStripeConfig(requestParameters, initOverrides) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.archiveAllStripeConfigRaw(initOverrides);
+            const response = yield this.archiveAllStripeConfigRaw(requestParameters, initOverrides);
             return yield response.value();
         });
     }

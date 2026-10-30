@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"sync"
 
 	"github.com/stripe/stripe-go/v82"
 
@@ -45,25 +46,59 @@ func (s *Service) reconcile(ctx context.Context, config *StripeConfiguration, st
 		"webhooks", len(config.Webhooks),
 	)
 
-	actualMeters, err := s.listActiveMetersByEventName(ctx)
-	if err != nil {
-		return nil, err
+	var (
+		actualMeters   map[string]*stripe.BillingMeter
+		actualProducts map[string]*stripe.Product
+		actualPrices   map[string]*stripe.Price
+		actualCoupons  map[string]*stripe.Coupon
+		actualPromos   map[string]*stripe.PromotionCode
+	)
+	var (
+		listWG  sync.WaitGroup
+		listMu  sync.Mutex
+		listErr error
+	)
+	runList := func(fn func() error) {
+		listWG.Add(1)
+		go func() {
+			defer listWG.Done()
+			if err := fn(); err != nil {
+				listMu.Lock()
+				if listErr == nil {
+					listErr = err
+				}
+				listMu.Unlock()
+			}
+		}()
 	}
-	actualProducts, err := s.listManagedProducts(ctx)
-	if err != nil {
-		return nil, err
-	}
-	actualPrices, err := s.listManagedPrices(ctx)
-	if err != nil {
-		return nil, err
-	}
-	actualCoupons, err := s.listManagedCoupons(ctx)
-	if err != nil {
-		return nil, err
-	}
-	actualPromos, err := s.listManagedPromotionCodes(ctx)
-	if err != nil {
-		return nil, err
+	runList(func() error {
+		var err error
+		actualMeters, err = s.listActiveMetersByEventName(ctx)
+		return err
+	})
+	runList(func() error {
+		var err error
+		actualProducts, err = s.listManagedProducts(ctx)
+		return err
+	})
+	runList(func() error {
+		var err error
+		actualPrices, err = s.listManagedPrices(ctx)
+		return err
+	})
+	runList(func() error {
+		var err error
+		actualCoupons, err = s.listManagedCoupons(ctx)
+		return err
+	})
+	runList(func() error {
+		var err error
+		actualPromos, err = s.listManagedPromotionCodes(ctx)
+		return err
+	})
+	listWG.Wait()
+	if listErr != nil {
+		return nil, listErr
 	}
 
 	for configID, product := range actualProducts {
@@ -162,9 +197,6 @@ func (s *Service) archiveRemovedPromotionCodes(ctx context.Context, config *Stri
 		if _, ok := desired[configID]; ok {
 			continue
 		}
-		if !actual[configID].Active {
-			continue
-		}
 		change, err := s.deactivatePromotionCodeByStripeID(ctx, actual[configID].ID, configID)
 		if err != nil {
 			return err
@@ -181,7 +213,7 @@ func (s *Service) archiveRemovedCoupons(ctx context.Context, config *StripeConfi
 		if _, ok := desired[configID]; ok {
 			continue
 		}
-		change, err := s.deleteCouponByStripeID(ctx, actual[configID].ID)
+		change, err := s.deleteCoupon(ctx, actual[configID])
 		if err != nil {
 			return err
 		}
@@ -199,9 +231,6 @@ func (s *Service) archiveRemovedPrices(ctx context.Context, desired map[string]P
 			continue
 		}
 		price := actual[configID]
-		if !price.Active {
-			continue
-		}
 		if err := s.archivePriceByStripeID(ctx, price.ID); err != nil {
 			return err
 		}
@@ -225,10 +254,7 @@ func (s *Service) archiveRemovedProducts(ctx context.Context, desired map[string
 		if _, ok := desired[configID]; ok {
 			continue
 		}
-		if !actual[configID].Active {
-			continue
-		}
-		change, err := s.archiveProductByStripeID(ctx, actual[configID].ID)
+		change, err := s.archiveProduct(ctx, actual[configID])
 		if err != nil {
 			return err
 		}
@@ -244,7 +270,7 @@ func (s *Service) archiveRemovedMeters(ctx context.Context, desired map[string]M
 		if _, ok := desired[eventName]; ok {
 			continue
 		}
-		change, err := s.deactivateMeter(ctx, actual[eventName].ID)
+		change, err := s.deactivateMeter(ctx, actual[eventName])
 		if err != nil {
 			return err
 		}
@@ -297,7 +323,7 @@ func (s *Service) reconcileMeters(ctx context.Context, config *StripeConfigurati
 		}
 
 		if meterNeedsRecreate(meter, live) {
-			if _, err := s.deactivateMeter(ctx, live.ID); err != nil {
+			if _, err := s.deactivateMeter(ctx, live); err != nil {
 				return err
 			}
 			recreateMeter := meter
@@ -349,17 +375,10 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 		state.currentDefaultPrices[product.ID] = defaultPriceID(live)
 
 		if productConfigHash(product) == live.Metadata[MetadataKeyHash] && !productNeedsRecreate(product, live) {
-			if !live.Active {
-				change, err := s.updateProductFromConfig(ctx, product, live.ID)
-				if err != nil {
-					return err
-				}
-				changes.Products.Updated = append(changes.Products.Updated, *change)
-			}
 			continue
 		}
 		if productNeedsRecreate(product, live) {
-			newStripeID, change, err := s.recreateProduct(ctx, product, live.ID)
+			newStripeID, change, err := s.recreateProduct(ctx, product, live)
 			if err != nil {
 				return err
 			}
@@ -413,17 +432,6 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 
 			state.priceStripeIDs[price.ID] = live.ID
 			if !forceRecreate && priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
-				if !live.Active {
-					if err := s.setPriceActive(ctx, live.ID, true); err != nil {
-						return err
-					}
-					changes.Prices.Updated = append(changes.Prices.Updated, PriceChange{
-						PriceID:   price.ID,
-						ProductID: product.ID,
-						Action:    "reactivated",
-						StripeID:  live.ID,
-					})
-				}
 				continue
 			}
 
@@ -468,7 +476,7 @@ func (s *Service) reconcileCoupons(ctx context.Context, config *StripeConfigurat
 			continue
 		}
 		if couponImmutableChanged(coupon, live, productConfigByStripeID) {
-			if _, err := s.deleteCouponByStripeID(ctx, live.ID); err != nil {
+			if _, err := s.deleteCoupon(ctx, live); err != nil {
 				return err
 			}
 			change, newStripeID, err := s.recreateCoupon(ctx, coupon, state.productStripeIDs)
@@ -509,13 +517,6 @@ func (s *Service) reconcilePromotionCodes(ctx context.Context, config *StripeCon
 		}
 
 		if !couponRecreated && promoConfigHash(promo) == live.Metadata[MetadataKeyHash] && !promoImmutableChanged(promo, live, couponStripeID) {
-			if live.Active != desiredPromoActive(promo) {
-				change, err := s.updatePromotionCodeFromConfig(ctx, promo, live.ID)
-				if err != nil {
-					return err
-				}
-				changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *change)
-			}
 			continue
 		}
 		if couponRecreated || promoImmutableChanged(promo, live, couponStripeID) {
@@ -638,6 +639,7 @@ func (s *Service) applyDefaultPrices(ctx context.Context, config *StripeConfigur
 
 func (s *Service) listActiveMetersByEventName(ctx context.Context) (map[string]*stripe.BillingMeter, error) {
 	params := &stripe.BillingMeterListParams{Status: stripe.String("active")}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.BillingMeter)
 	for meter, err := range s.stripe.Stripe.V1BillingMeters.List(ctx, params) {
@@ -650,47 +652,40 @@ func (s *Service) listActiveMetersByEventName(ctx context.Context) (map[string]*
 }
 
 func (s *Service) listManagedProducts(ctx context.Context) (map[string]*stripe.Product, error) {
-	params := &stripe.ProductListParams{}
+	params := &stripe.ProductListParams{Active: stripe.Bool(true)}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Product)
 	for product, err := range s.stripe.Stripe.V1Products.List(ctx, params) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to list products: %w", err)
 		}
-		id := managedConfigID(product.Metadata)
-		if id == "" {
-			continue
+		if id := managedConfigID(product.Metadata); id != "" {
+			out[id] = product
 		}
-		if existing, ok := out[id]; ok && existing.Active && !product.Active {
-			continue
-		}
-		out[id] = product
 	}
 	return out, nil
 }
 
 func (s *Service) listManagedPrices(ctx context.Context) (map[string]*stripe.Price, error) {
-	params := &stripe.PriceListParams{}
+	params := &stripe.PriceListParams{Active: stripe.Bool(true)}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Price)
 	for price, err := range s.stripe.Stripe.V1Prices.List(ctx, params) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to list prices: %w", err)
 		}
-		id := managedPriceConfigID(price)
-		if id == "" {
-			continue
+		if id := managedPriceConfigID(price); id != "" {
+			out[id] = price
 		}
-		if existing, ok := out[id]; ok && existing.Active && !price.Active {
-			continue
-		}
-		out[id] = price
 	}
 	return out, nil
 }
 
 func (s *Service) listManagedCoupons(ctx context.Context) (map[string]*stripe.Coupon, error) {
 	params := &stripe.CouponListParams{}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Coupon)
 	for coupon, err := range s.stripe.Stripe.V1Coupons.List(ctx, params) {
@@ -705,21 +700,17 @@ func (s *Service) listManagedCoupons(ctx context.Context) (map[string]*stripe.Co
 }
 
 func (s *Service) listManagedPromotionCodes(ctx context.Context) (map[string]*stripe.PromotionCode, error) {
-	params := &stripe.PromotionCodeListParams{}
+	params := &stripe.PromotionCodeListParams{Active: stripe.Bool(true)}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.PromotionCode)
 	for promo, err := range s.stripe.Stripe.V1PromotionCodes.List(ctx, params) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to list promotion codes: %w", err)
 		}
-		id := managedConfigID(promo.Metadata)
-		if id == "" {
-			continue
+		if id := managedConfigID(promo.Metadata); id != "" {
+			out[id] = promo
 		}
-		if existing, ok := out[id]; ok && existing.Active && !promo.Active {
-			continue
-		}
-		out[id] = promo
 	}
 	return out, nil
 }
@@ -813,10 +804,6 @@ func desiredWebhookKey(webhook WebhookEndpointConfig) string {
 	return webhook.URL
 }
 
-func desiredPromoActive(promo PromotionCode) bool {
-	return promo.Active == nil || *promo.Active
-}
-
 func defaultPriceID(product *stripe.Product) string {
 	if product.DefaultPrice != nil {
 		return product.DefaultPrice.ID
@@ -825,15 +812,7 @@ func defaultPriceID(product *stripe.Product) string {
 }
 
 func productNeedsRecreate(desired Product, live *stripe.Product) bool {
-	desiredType := desired.Type
-	if desiredType == "" {
-		desiredType = "service"
-	}
-	liveType := string(live.Type)
-	if liveType == "" {
-		liveType = "service"
-	}
-	return desiredType != liveType
+	return productType(desired) != productTypeOf(live)
 }
 
 func meterNeedsRecreate(desired Meter, live *stripe.BillingMeter) bool {

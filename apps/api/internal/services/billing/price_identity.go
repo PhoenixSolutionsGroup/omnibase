@@ -20,6 +20,7 @@ func (s *Service) GetStripePriceID(ctx context.Context, configPriceID string) (s
 		Active:     stripe.Bool(true),
 		LookupKeys: []*string{stripe.String(configPriceID)},
 	}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	for price, err := range s.stripe.Stripe.V1Prices.List(ctx, params) {
 		if err != nil {

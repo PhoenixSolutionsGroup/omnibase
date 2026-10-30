@@ -14,6 +14,7 @@ var PullConfigError = errors.New("Failed to pull stripe configuration")
 
 func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 	meterParams := &stripe.BillingMeterListParams{Status: stripe.String("active")}
+	meterParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(meterParams)
 	var stripeMeters []*stripe.BillingMeter
 	for m, err := range s.stripe.Stripe.V1BillingMeters.List(ctx, meterParams) {
@@ -23,8 +24,8 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		stripeMeters = append(stripeMeters, m)
 	}
 
-	productParams := &stripe.ProductListParams{}
-	productParams.Filters.AddFilter("active", "", "true")
+	productParams := &stripe.ProductListParams{Active: stripe.Bool(true)}
+	productParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(productParams)
 	var stripeProducts []*stripe.Product
 	for p, err := range s.stripe.Stripe.V1Products.List(ctx, productParams) {
@@ -34,8 +35,8 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		stripeProducts = append(stripeProducts, p)
 	}
 
-	priceParams := &stripe.PriceListParams{}
-	priceParams.Filters.AddFilter("active", "", "true")
+	priceParams := &stripe.PriceListParams{Active: stripe.Bool(true)}
+	priceParams.Limit = stripe.Int64(100)
 	priceParams.Expand = []*string{stripe.String("data.tiers")}
 	s.stripe.ApplyAccount(priceParams)
 	var stripePrices []*stripe.Price
@@ -47,6 +48,7 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 	}
 
 	webhookParams := &stripe.WebhookEndpointListParams{}
+	webhookParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(webhookParams)
 	var configWebhooks []WebhookEndpointConfig
 	for ep, err := range s.stripe.Stripe.V1WebhookEndpoints.List(ctx, webhookParams) {
@@ -68,6 +70,7 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 	}
 
 	couponListParams := &stripe.CouponListParams{}
+	couponListParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(couponListParams)
 	var stripeCoupons []*stripe.Coupon
 	for cpn, err := range s.stripe.Stripe.V1Coupons.List(ctx, couponListParams) {
@@ -77,8 +80,8 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		stripeCoupons = append(stripeCoupons, cpn)
 	}
 
-	promoListParams := &stripe.PromotionCodeListParams{}
-	promoListParams.Filters.AddFilter("active", "", "true")
+	promoListParams := &stripe.PromotionCodeListParams{Active: stripe.Bool(true)}
+	promoListParams.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(promoListParams)
 	var stripePromos []*stripe.PromotionCode
 	for promo, err := range s.stripe.Stripe.V1PromotionCodes.List(ctx, promoListParams) {
@@ -210,8 +213,12 @@ func convertStripeMeterToConfig(sm *stripe.BillingMeter) Meter {
 }
 
 func convertStripePriceToConfig(sp *stripe.Price, meterConfigIDs map[string]string) Price {
+	amount := float64(sp.UnitAmount)
+	if sp.UnitAmountDecimal != 0 {
+		amount = sp.UnitAmountDecimal
+	}
 	cp := Price{
-		Amount:   float64(sp.UnitAmount),
+		Amount:   amount,
 		Currency: string(sp.Currency),
 	}
 	switch sp.TaxBehavior {
