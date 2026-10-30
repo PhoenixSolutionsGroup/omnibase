@@ -251,6 +251,8 @@ interface MergedConfig {
   webhooks: WebhookConfig[];
   meters: any[];
   products: any[];
+  coupons: any[];
+  promotion_codes: any[];
 }
 
 function mergeConfigs(paymentsDir: string): MergedConfig {
@@ -259,6 +261,8 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
     webhooks: [],
     meters: [],
     products: [],
+    coupons: [],
+    promotion_codes: [],
   };
 
   const configFiles = findConfigFiles(paymentsDir);
@@ -294,6 +298,29 @@ function mergeConfigs(paymentsDir: string): MergedConfig {
 
     if (config.meters) {
       merged.meters.push(...config.meters);
+    }
+
+    for (const coupon of config.coupons ?? []) {
+      const existing = merged.coupons.find(
+        (item: any) => item.id === coupon.id,
+      );
+      if (existing) {
+        Object.assign(existing, coupon);
+      } else {
+        merged.coupons.push(coupon);
+      }
+    }
+
+    const promotionCodes = config.promotion_codes ?? config.promotionCodes;
+    for (const promo of promotionCodes ?? []) {
+      const existing = merged.promotion_codes.find(
+        (item: any) => item.id === promo.id,
+      );
+      if (existing) {
+        Object.assign(existing, promo);
+      } else {
+        merged.promotion_codes.push(promo);
+      }
     }
 
     if (config.products) {
