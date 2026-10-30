@@ -56,7 +56,7 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		events := make([]string, len(ep.EnabledEvents))
 		copy(events, ep.EnabledEvents)
 		webhookID := configIDFromMetadata(ep.Metadata)
-		if webhookID == "" {
+		if webhookID == "" && !isManagedMetadata(ep.Metadata) {
 			webhookID = ep.ID
 		}
 		configWebhooks = append(configWebhooks, WebhookEndpointConfig{
@@ -97,6 +97,10 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		configMeters = append(configMeters, m)
 	}
 
+	productConfigIDs := assignProductConfigIDs(stripeProducts)
+	priceConfigIDs := assignPriceConfigIDs(stripePrices, productConfigIDs)
+	productConfigByStripeID := reverseStringMap(productConfigIDs)
+
 	couponAllocator := newConfigIDAllocator(taggedConfigIDs(stripeCoupons, func(c *stripe.Coupon) string {
 		return configIDFromMetadata(c.Metadata)
 	}))
@@ -105,6 +109,11 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		cc := convertStripeCouponToConfig(cpn)
 		cc.ID = couponAllocator.resolve(configIDFromMetadata(cpn.Metadata), normalizeConfigID(cpn.Name), cpn.ID)
 		cc.StripeID = cpn.ID
+		for i, stripeProductID := range cc.AppliesTo {
+			if configProductID := productConfigByStripeID[stripeProductID]; configProductID != "" {
+				cc.AppliesTo[i] = configProductID
+			}
+		}
 		configCoupons = append(configCoupons, cc)
 	}
 
@@ -118,9 +127,6 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 		pp.StripeID = promo.ID
 		configPromos = append(configPromos, pp)
 	}
-
-	productConfigIDs := assignProductConfigIDs(stripeProducts)
-	priceConfigIDs := assignPriceConfigIDs(stripePrices, productConfigIDs)
 
 	pricesByProduct := make(map[string][]*stripe.Price)
 	for _, sp := range stripePrices {
@@ -208,9 +214,13 @@ func convertStripePriceToConfig(sp *stripe.Price, meterConfigIDs map[string]stri
 		Amount:   float64(sp.UnitAmount),
 		Currency: string(sp.Currency),
 	}
-	if sp.TaxBehavior == "inclusive" {
+	switch sp.TaxBehavior {
+	case "inclusive":
 		inclusive := true
 		cp.TaxIncludedInPrice = &inclusive
+	case "exclusive":
+		exclusive := false
+		cp.TaxIncludedInPrice = &exclusive
 	}
 	if sp.Recurring != nil {
 		cp.Interval = string(sp.Recurring.Interval)
@@ -277,7 +287,7 @@ func convertStripeCouponToConfig(sc *stripe.Coupon) Coupon {
 		cc.RedeemBy = &sc.RedeemBy
 	}
 	if sc.AppliesTo != nil && len(sc.AppliesTo.Products) > 0 {
-		cc.AppliesTo = sc.AppliesTo.Products
+		cc.AppliesTo = append([]string{}, sc.AppliesTo.Products...)
 	}
 	if len(sc.Metadata) > 0 {
 		if metadata := stripManagedMetadata(sc.Metadata); len(metadata) > 0 {

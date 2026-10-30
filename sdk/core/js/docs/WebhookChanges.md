@@ -7,6 +7,7 @@
 Name | Type
 ------------ | -------------
 `created` | [Array&lt;WebhookChange&gt;](WebhookChange.md)
+`deleted` | [Array&lt;WebhookChange&gt;](WebhookChange.md)
 `unchanged` | [Array&lt;WebhookChange&gt;](WebhookChange.md)
 `updated` | [Array&lt;WebhookChange&gt;](WebhookChange.md)
 
@@ -18,6 +19,7 @@ import type { WebhookChanges } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "created": null,
+  "deleted": null,
   "unchanged": null,
   "updated": null,
 } satisfies WebhookChanges

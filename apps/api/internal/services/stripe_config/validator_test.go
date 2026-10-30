@@ -351,6 +351,24 @@ func TestValidator(t *testing.T) {
 			wantErr: "duplicate meter ID",
 		},
 		{
+			name: "duplicate meter event names rejected",
+			cfg: ConfigData{
+				"version":  "1.0.0",
+				"products": []any{},
+				"meters": []any{
+					map[string]any{
+						"id": "m1", "display_name": "M1", "event_name": "e1",
+						"default_aggregation": map[string]any{"formula": "sum"},
+					},
+					map[string]any{
+						"id": "m2", "display_name": "M2", "event_name": "e1",
+						"default_aggregation": map[string]any{"formula": "sum"},
+					},
+				},
+			},
+			wantErr: "duplicate meter event_name",
+		},
+		{
 			name: "coupon without percent_off or amount_off rejected",
 			cfg: ConfigData{
 				"version":  "1.0.0",

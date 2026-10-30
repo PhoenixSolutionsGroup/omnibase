@@ -3862,6 +3862,15 @@
               "null"
             ]
           },
+          "deleted": {
+            "items": {
+              "$ref": "#/components/schemas/WebhookChange"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
           "unchanged": {
             "items": {
               "$ref": "#/components/schemas/WebhookChange"

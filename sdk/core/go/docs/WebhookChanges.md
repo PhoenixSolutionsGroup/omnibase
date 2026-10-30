@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Created** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
+**Deleted** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
 **Unchanged** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
 **Updated** | Pointer to [**[]WebhookChange**](WebhookChange.md) |  | [optional] 
 
@@ -62,6 +63,41 @@ HasCreated returns a boolean if a field has been set.
 `func (o *WebhookChanges) UnsetCreated()`
 
 UnsetCreated ensures that no value is present for Created, not even an explicit nil
+### GetDeleted
+
+`func (o *WebhookChanges) GetDeleted() []WebhookChange`
+
+GetDeleted returns the Deleted field if non-nil, zero value otherwise.
+
+### GetDeletedOk
+
+`func (o *WebhookChanges) GetDeletedOk() (*[]WebhookChange, bool)`
+
+GetDeletedOk returns a tuple with the Deleted field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDeleted
+
+`func (o *WebhookChanges) SetDeleted(v []WebhookChange)`
+
+SetDeleted sets Deleted field to given value.
+
+### HasDeleted
+
+`func (o *WebhookChanges) HasDeleted() bool`
+
+HasDeleted returns a boolean if a field has been set.
+
+### SetDeletedNil
+
+`func (o *WebhookChanges) SetDeletedNil(b bool)`
+
+ SetDeletedNil sets the value for Deleted to be an explicit nil
+
+### UnsetDeleted
+`func (o *WebhookChanges) UnsetDeleted()`
+
+UnsetDeleted ensures that no value is present for Deleted, not even an explicit nil
 ### GetUnchanged
 
 `func (o *WebhookChanges) GetUnchanged() []WebhookChange`

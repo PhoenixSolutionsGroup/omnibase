@@ -2504,6 +2504,15 @@ components:
             action: action
             stripe_id: stripe_id
         webhooks:
+          deleted:
+          - webhook_id: webhook_id
+            action: action
+            stripe_id: stripe_id
+            url: url
+          - webhook_id: webhook_id
+            action: action
+            stripe_id: stripe_id
+            url: url
           created:
           - webhook_id: webhook_id
             action: action
@@ -3609,6 +3618,15 @@ components:
               action: action
               stripe_id: stripe_id
           webhooks:
+            deleted:
+            - webhook_id: webhook_id
+              action: action
+              stripe_id: stripe_id
+              url: url
+            - webhook_id: webhook_id
+              action: action
+              stripe_id: stripe_id
+              url: url
             created:
             - webhook_id: webhook_id
               action: action
@@ -8511,6 +8529,15 @@ components:
     WebhookChanges:
       additionalProperties: false
       example:
+        deleted:
+        - webhook_id: webhook_id
+          action: action
+          stripe_id: stripe_id
+          url: url
+        - webhook_id: webhook_id
+          action: action
+          stripe_id: stripe_id
+          url: url
         created:
         - webhook_id: webhook_id
           action: action
@@ -8540,6 +8567,11 @@ components:
           url: url
       properties:
         created:
+          items:
+            $ref: "#/components/schemas/WebhookChange"
+          nullable: true
+          type: array
+        deleted:
           items:
             $ref: "#/components/schemas/WebhookChange"
           nullable: true

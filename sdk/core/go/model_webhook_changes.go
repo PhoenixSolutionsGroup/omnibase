@@ -21,6 +21,7 @@ var _ MappedNullable = &WebhookChanges{}
 // WebhookChanges struct for WebhookChanges
 type WebhookChanges struct {
 	Created []WebhookChange `json:"created,omitempty"`
+	Deleted []WebhookChange `json:"deleted,omitempty"`
 	Unchanged []WebhookChange `json:"unchanged,omitempty"`
 	Updated []WebhookChange `json:"updated,omitempty"`
 }
@@ -73,6 +74,39 @@ func (o *WebhookChanges) HasCreated() bool {
 // SetCreated gets a reference to the given []WebhookChange and assigns it to the Created field.
 func (o *WebhookChanges) SetCreated(v []WebhookChange) {
 	o.Created = v
+}
+
+// GetDeleted returns the Deleted field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *WebhookChanges) GetDeleted() []WebhookChange {
+	if o == nil {
+		var ret []WebhookChange
+		return ret
+	}
+	return o.Deleted
+}
+
+// GetDeletedOk returns a tuple with the Deleted field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *WebhookChanges) GetDeletedOk() ([]WebhookChange, bool) {
+	if o == nil || IsNil(o.Deleted) {
+		return nil, false
+	}
+	return o.Deleted, true
+}
+
+// HasDeleted returns a boolean if a field has been set.
+func (o *WebhookChanges) HasDeleted() bool {
+	if o != nil && !IsNil(o.Deleted) {
+		return true
+	}
+
+	return false
+}
+
+// SetDeleted gets a reference to the given []WebhookChange and assigns it to the Deleted field.
+func (o *WebhookChanges) SetDeleted(v []WebhookChange) {
+	o.Deleted = v
 }
 
 // GetUnchanged returns the Unchanged field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -153,6 +187,9 @@ func (o WebhookChanges) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Created != nil {
 		toSerialize["created"] = o.Created
+	}
+	if o.Deleted != nil {
+		toSerialize["deleted"] = o.Deleted
 	}
 	if o.Unchanged != nil {
 		toSerialize["unchanged"] = o.Unchanged

@@ -43,7 +43,10 @@ func (s *Service) SaveMapping(ctx context.Context, configID uuid.UUID, configIte
 		}
 		return nil
 	}
-	history := append(existing.StripeIDHistory, stripeID)
+	history := existing.StripeIDHistory
+	if len(history) == 0 || history[len(history)-1] != stripeID {
+		history = append(history, stripeID)
+	}
 	if err := s.repo.UpdateMappingStripeID(ctx, repository.UpdateMappingStripeIDParams{
 		ConfigItemID:    configItemID,
 		StripeID:        stripeID,

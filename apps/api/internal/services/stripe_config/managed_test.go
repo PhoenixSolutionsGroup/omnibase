@@ -71,7 +71,7 @@ func TestProductConfigHashTracksStripeFields(t *testing.T) {
 	require.NotEqual(t, productConfigHash(original), productConfigHash(descriptionChanged))
 
 	typeChanged := original
-	typeChanged.Type = "service"
+	typeChanged.Type = "good"
 	require.NotEqual(t, productConfigHash(original), productConfigHash(typeChanged))
 }
 
@@ -333,4 +333,85 @@ func boolPtr(value bool) *bool {
 
 func float64Ptr(value float64) *float64 {
 	return &value
+}
+
+func base() StripeConfiguration {
+	return StripeConfiguration{
+		Version: "1.0.0",
+		Products: []Product{{
+			ID:          "prod_a",
+			Name:        "Product A",
+			Description: "original",
+			Prices: []Price{{
+				ID:       "price_a1",
+				Amount:   1000,
+				Currency: "usd",
+				Interval: "month",
+			}},
+		}},
+	}
+}
+
+func TestConfigHashesCanonicalizeStripeDefaults(t *testing.T) {
+	t.Run("product type defaults to service", func(t *testing.T) {
+		require.Equal(t, productConfigHash(Product{ID: "prod_a", Name: "A"}), productConfigHash(Product{ID: "prod_a", Name: "A", Type: "service"}))
+	})
+
+	t.Run("price defaults match explicit stripe defaults", func(t *testing.T) {
+		implicit := Price{ID: "price_a", Amount: 1000, Currency: "usd", Interval: "month"}
+		explicit := Price{
+			ID:            "price_a",
+			Amount:        1000,
+			Currency:      "usd",
+			Interval:      "month",
+			IntervalCount: 1,
+			UsageType:     "licensed",
+			BillingScheme: "per_unit",
+		}
+
+		require.Equal(t, priceConfigHash(implicit), priceConfigHash(explicit))
+
+		exclusive := implicit
+		exclusive.TaxIncludedInPrice = boolPointer(false)
+		require.NotEqual(t, priceConfigHash(implicit), priceConfigHash(exclusive))
+	})
+
+	t.Run("coupon empty pointers match zero values", func(t *testing.T) {
+		percentOff := 10.0
+		implicit := Coupon{ID: "coupon_a", PercentOff: &percentOff, Duration: "once"}
+		explicit := Coupon{
+			ID:               "coupon_a",
+			PercentOff:       &percentOff,
+			AmountOff:        int64Pointer(0),
+			Duration:         "once",
+			DurationInMonths: int64Pointer(0),
+			MaxRedemptions:   int64Pointer(0),
+			RedeemBy:         int64Pointer(0),
+		}
+
+		require.Equal(t, couponConfigHash(implicit), couponConfigHash(explicit))
+	})
+
+	t.Run("promotion code defaults match explicit values", func(t *testing.T) {
+		implicit := PromotionCode{ID: "promo_a", Code: "SAVE", Coupon: "coupon_a"}
+		explicit := PromotionCode{
+			ID:                   "promo_a",
+			Code:                 "SAVE",
+			Coupon:               "coupon_a",
+			Active:               boolPointer(true),
+			FirstTimeTransaction: boolPointer(false),
+			MaxRedemptions:       int64Pointer(0),
+			MinimumAmount:        int64Pointer(0),
+			ExpiresAt:            int64Pointer(0),
+		}
+
+		require.Equal(t, promoConfigHash(implicit), promoConfigHash(explicit))
+	})
+
+	t.Run("webhook event order does not matter", func(t *testing.T) {
+		a := WebhookEndpointConfig{ID: "hook", URL: "https://example.com", Events: []string{"a", "b"}}
+		b := WebhookEndpointConfig{ID: "hook", URL: "https://example.com", Events: []string{"b", "a"}}
+
+		require.Equal(t, webhookConfigHash(a), webhookConfigHash(b))
+	})
 }
