@@ -33,6 +33,8 @@ const (
 	statusReasonApplyMismatch = "apply_mismatch"
 	statusReasonMissingHash   = "missing_hash"
 	statusReasonLookupKey     = "lookup_key_changed"
+	statusReasonDefaultPrice  = "default_price_changed"
+	statusReasonDisabled      = "disabled"
 )
 
 type ConfigStatusEntry struct {
@@ -85,7 +87,7 @@ func (s *Service) Status(ctx context.Context, desired *StripeConfiguration) (*Co
 
 	status := &ConfigStatus{
 		Pending:   pendingStatus(desired, applied),
-		Drift:     driftStatus(applied, live, actualWebhooks),
+		Drift:     driftStatus(applied, live, actualWebhooks, s.managed == nil),
 		Untracked: untrackedStatus(desired, applied, live, actualWebhooks),
 	}
 	sortStatusEntries(status.Pending)
@@ -160,7 +162,7 @@ func (s *Service) listLiveState(ctx context.Context) (*liveState, error) {
 		return err
 	})
 	run(func() error {
-		values, err := s.listManagedPromotionCodes(ctx)
+		values, err := s.listManagedPromotionCodesForStatus(ctx)
 		state.promos = values
 		return err
 	})
@@ -211,6 +213,9 @@ func pendingStatus(desired, applied *StripeConfiguration) []ConfigStatusEntry {
 		}
 		if productConfigHash(desiredProduct) != productConfigHash(appliedProduct) {
 			out = append(out, statusEntry(statusKindProduct, id, desiredProduct.Name, statusStateChanged, "", ""))
+		}
+		if desiredDefault := defaultPriceConfigID(desiredProduct); desiredDefault != "" && desiredDefault != defaultPriceConfigID(appliedProduct) {
+			out = mergeStatusEntry(out, statusEntry(statusKindProduct, id, desiredProduct.Name, statusStateChanged, statusReasonDefaultPrice, ""))
 		}
 	}
 	for _, id := range sortedKeys(appliedProducts) {
@@ -314,7 +319,7 @@ func pendingStatus(desired, applied *StripeConfiguration) []ConfigStatusEntry {
 			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateAdded, "", ""))
 			continue
 		}
-		if webhookConfigChanged(desiredWebhook, appliedWebhook) {
+		if webhookConfigHash(desiredWebhook) != webhookConfigHash(appliedWebhook) {
 			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateChanged, "", ""))
 		}
 	}
@@ -327,9 +332,10 @@ func pendingStatus(desired, applied *StripeConfiguration) []ConfigStatusEntry {
 	return out
 }
 
-func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks map[string]StripeWebhookInfo) []ConfigStatusEntry {
+func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks map[string]StripeWebhookInfo, checkWebhookHash bool) []ConfigStatusEntry {
 	out := make([]ConfigStatusEntry, 0)
 	meterConfigIDs := meterConfigIDsByStripeID(live, applied)
+	productConfigIDs := productConfigIDsByStripeID(live)
 
 	appliedProducts := desiredProductsByID(applied)
 	for _, id := range sortedKeys(appliedProducts) {
@@ -349,6 +355,11 @@ func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks m
 			Type:        string(liveProduct.Type),
 		}
 		reasons := driftReasons(productConfigHash(actual), liveProduct.Metadata[MetadataKeyHash], productConfigHash(product))
+		if appliedDefault := defaultPriceConfigID(product); appliedDefault != "" {
+			if liveDefaultPrice, ok := live.prices[appliedDefault]; ok && defaultPriceID(liveProduct) != liveDefaultPrice.ID {
+				reasons = joinReasons(reasons, statusReasonDefaultPrice)
+			}
+		}
 		if reasons != "" {
 			out = append(out, statusEntry(statusKindProduct, id, product.Name, statusStateModified, reasons, liveProduct.ID))
 		}
@@ -386,6 +397,11 @@ func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks m
 		}
 		actual := convertStripeCouponToConfig(liveCoupon)
 		actual.ID = id
+		for i, stripeProductID := range actual.AppliesTo {
+			if configID, ok := productConfigIDs[stripeProductID]; ok {
+				actual.AppliesTo[i] = configID
+			}
+		}
 		reasons := driftReasons(couponConfigHash(actual), liveCoupon.Metadata[MetadataKeyHash], couponConfigHash(coupon))
 		if reasons != "" {
 			out = append(out, statusEntry(statusKindCoupon, id, coupon.Name, statusStateModified, reasons, liveCoupon.ID))
@@ -436,8 +452,8 @@ func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks m
 			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateMissing, "", ""))
 			continue
 		}
-		if webhookInfoChanged(webhook, liveWebhook) {
-			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateModified, statusReasonExternalEdit, liveWebhook.ID))
+		if reasons := webhookDriftReasons(webhook, liveWebhook, checkWebhookHash); reasons != "" {
+			out = append(out, statusEntry(statusKindWebhook, url, url, statusStateModified, reasons, liveWebhook.ID))
 		}
 	}
 
@@ -594,12 +610,20 @@ func webhooksByURL(config *StripeConfiguration) map[string]WebhookEndpointConfig
 	return out
 }
 
-func webhookConfigChanged(desired, current WebhookEndpointConfig) bool {
-	return desired.URL != current.URL || desired.Connect != current.Connect || !stringSlicesEqual(desired.Events, current.Events)
-}
-
-func webhookInfoChanged(desired WebhookEndpointConfig, current StripeWebhookInfo) bool {
-	return desired.Connect != current.Connect || !stringSlicesEqual(desired.Events, current.Events)
+func webhookDriftReasons(webhook WebhookEndpointConfig, live StripeWebhookInfo, checkHash bool) string {
+	reasons := ""
+	if webhook.Connect != live.Connect || !stringSlicesEqual(webhook.Events, live.Events) {
+		reasons = joinReasons(reasons, statusReasonExternalEdit)
+	}
+	if checkHash {
+		if live.Metadata[MetadataKeyHash] != webhookConfigHash(webhook) {
+			reasons = joinReasons(reasons, statusReasonApplyMismatch)
+		}
+		if live.Status != "" && live.Status != "enabled" {
+			reasons = joinReasons(reasons, statusReasonDisabled)
+		}
+	}
+	return reasons
 }
 
 func stringSlicesEqual(left, right []string) bool {
@@ -614,6 +638,33 @@ func stringSlicesEqual(left, right []string) bool {
 		}
 	}
 	return true
+}
+
+func productConfigIDsByStripeID(live *liveState) map[string]string {
+	out := make(map[string]string, len(live.products))
+	for configID, product := range live.products {
+		out[product.ID] = configID
+	}
+	return out
+}
+
+func defaultPriceConfigID(product Product) string {
+	for _, price := range product.Prices {
+		if price.Default && price.ID != "free" {
+			return price.ID
+		}
+	}
+	return ""
+}
+
+func mergeStatusEntry(entries []ConfigStatusEntry, entry ConfigStatusEntry) []ConfigStatusEntry {
+	for i := range entries {
+		if entries[i].Kind == entry.Kind && entries[i].ID == entry.ID && entries[i].State == entry.State {
+			entries[i].Reason = joinReasons(entries[i].Reason, entry.Reason)
+			return entries
+		}
+	}
+	return append(entries, entry)
 }
 
 func meterConfigIDsByStripeID(live *liveState, applied *StripeConfiguration) map[string]string {

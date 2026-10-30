@@ -670,6 +670,7 @@ func (s *Service) listManagedProducts(ctx context.Context) (map[string]*stripe.P
 func (s *Service) listManagedPrices(ctx context.Context) (map[string]*stripe.Price, error) {
 	params := &stripe.PriceListParams{Active: stripe.Bool(true)}
 	params.Limit = stripe.Int64(100)
+	params.Expand = []*string{stripe.String("data.tiers")}
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.Price)
 	for price, err := range s.stripe.Stripe.V1Prices.List(ctx, params) {
@@ -700,7 +701,18 @@ func (s *Service) listManagedCoupons(ctx context.Context) (map[string]*stripe.Co
 }
 
 func (s *Service) listManagedPromotionCodes(ctx context.Context) (map[string]*stripe.PromotionCode, error) {
-	params := &stripe.PromotionCodeListParams{Active: stripe.Bool(true)}
+	return s.listManagedPromotionCodesFiltered(ctx, true)
+}
+
+func (s *Service) listManagedPromotionCodesForStatus(ctx context.Context) (map[string]*stripe.PromotionCode, error) {
+	return s.listManagedPromotionCodesFiltered(ctx, false)
+}
+
+func (s *Service) listManagedPromotionCodesFiltered(ctx context.Context, activeOnly bool) (map[string]*stripe.PromotionCode, error) {
+	params := &stripe.PromotionCodeListParams{}
+	if activeOnly {
+		params.Active = stripe.Bool(true)
+	}
 	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 	out := make(map[string]*stripe.PromotionCode)
