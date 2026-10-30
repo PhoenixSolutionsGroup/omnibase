@@ -1135,6 +1135,33 @@ paths:
       summary: Pull config from Stripe
       tags:
       - V1Configuration
+  /api/v1/stripe/admin/config/status:
+    post:
+      operationId: getStripeConfigStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: {}
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfigStatus"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      security:
+      - ServiceKeyAuth: []
+      summary: Get Stripe config status
+      tags:
+      - V1Configuration
   /api/v1/stripe/admin/config/validate:
     post:
       operationId: validateStripeConfig
@@ -1142,7 +1169,8 @@ paths:
         content:
           application/json:
             schema:
-              additionalProperties: {}
+              additionalProperties: false
+              type: object
         required: true
       responses:
         "200":
@@ -4070,6 +4098,121 @@ components:
           type: string
       required:
       - message
+    ConfigStatus:
+      additionalProperties: false
+      example:
+        summary:
+          pending: 6
+          untracked: 1
+          drift: 0
+        pending:
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+        untracked:
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+        drift:
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+        - reason: reason
+          kind: kind
+          name: name
+          id: id
+          state: state
+          stripe_id: stripe_id
+      properties:
+        drift:
+          items:
+            $ref: "#/components/schemas/ConfigStatusEntry"
+          nullable: true
+          type: array
+        pending:
+          items:
+            $ref: "#/components/schemas/ConfigStatusEntry"
+          nullable: true
+          type: array
+        summary:
+          $ref: "#/components/schemas/ConfigStatusSummary"
+        untracked:
+          items:
+            $ref: "#/components/schemas/ConfigStatusEntry"
+          nullable: true
+          type: array
+      required:
+      - drift
+      - pending
+      - summary
+      - untracked
+    ConfigStatusEntry:
+      additionalProperties: false
+      example:
+        reason: reason
+        kind: kind
+        name: name
+        id: id
+        state: state
+        stripe_id: stripe_id
+      properties:
+        id:
+          type: string
+        kind:
+          type: string
+        name:
+          type: string
+        reason:
+          type: string
+        state:
+          type: string
+        stripe_id:
+          type: string
+      required:
+      - id
+      - kind
+      - state
+    ConfigStatusSummary:
+      additionalProperties: false
+      example:
+        pending: 6
+        untracked: 1
+        drift: 0
+      properties:
+        drift:
+          format: int64
+          type: integer
+        pending:
+          format: int64
+          type: integer
+        untracked:
+          format: int64
+          type: integer
+      required:
+      - drift
+      - pending
+      - untracked
     ConvertStripeIDResponse:
       additionalProperties: false
       example:

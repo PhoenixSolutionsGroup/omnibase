@@ -25,6 +25,9 @@ docs/ConfigHistoryItem.md
 docs/ConfigHistoryPagination.md
 docs/ConfigHistoryResponse.md
 docs/ConfigResponse.md
+docs/ConfigStatus.md
+docs/ConfigStatusEntry.md
+docs/ConfigStatusSummary.md
 docs/ConvertStripeIDResponse.md
 docs/Coupon.md
 docs/CouponChange.md
@@ -192,6 +195,9 @@ src/models/ConfigHistoryItem.ts
 src/models/ConfigHistoryPagination.ts
 src/models/ConfigHistoryResponse.ts
 src/models/ConfigResponse.ts
+src/models/ConfigStatus.ts
+src/models/ConfigStatusEntry.ts
+src/models/ConfigStatusSummary.ts
 src/models/ConvertStripeIDResponse.ts
 src/models/Coupon.ts
 src/models/CouponChange.ts

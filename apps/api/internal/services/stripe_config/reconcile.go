@@ -816,37 +816,12 @@ func productNeedsRecreate(desired Product, live *stripe.Product) bool {
 }
 
 func meterNeedsRecreate(desired Meter, live *stripe.BillingMeter) bool {
-	if desired.EventName != live.EventName {
+	if live.DefaultAggregation == nil {
 		return true
 	}
-	desiredFormula := desired.DefaultAggregation.Formula
-	if live.DefaultAggregation == nil || desiredFormula != string(live.DefaultAggregation.Formula) {
-		return true
-	}
-
-	desiredKey, desiredType := "stripe_customer_id", "by_id"
-	if desired.CustomerMapping != nil {
-		desiredKey = desired.CustomerMapping.EventPayloadKey
-		desiredType = desired.CustomerMapping.Type
-	}
-	liveKey, liveType := "", ""
-	if live.CustomerMapping != nil {
-		liveKey = live.CustomerMapping.EventPayloadKey
-		liveType = string(live.CustomerMapping.Type)
-	}
-	if desiredKey != liveKey || desiredType != liveType {
-		return true
-	}
-
-	desiredValueKey := "value"
-	if desired.ValueSettings != nil {
-		desiredValueKey = desired.ValueSettings.EventPayloadKey
-	}
-	liveValueKey := ""
-	if live.ValueSettings != nil {
-		liveValueKey = live.ValueSettings.EventPayloadKey
-	}
-	return desiredValueKey != liveValueKey
+	current := convertStripeMeterToConfig(live)
+	current.DisplayName = desired.DisplayName
+	return meterFieldsChanged(desired, current)
 }
 
 func couponImmutableChanged(desired Coupon, live *stripe.Coupon, productConfigByStripeID map[string]string) bool {

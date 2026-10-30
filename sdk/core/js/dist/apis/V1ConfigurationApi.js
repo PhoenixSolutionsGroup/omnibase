@@ -328,6 +328,40 @@ class V1ConfigurationApi extends runtime.BaseAPI {
         });
     }
     /**
+     * Get Stripe config status
+     */
+    getStripeConfigStatusRaw(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (requestParameters['body'] == null) {
+                throw new runtime.RequiredError('body', 'Required parameter "body" was null or undefined when calling getStripeConfigStatus().');
+            }
+            const queryParameters = {};
+            const headerParameters = {};
+            headerParameters['Content-Type'] = 'application/json';
+            if (this.configuration && this.configuration.apiKey) {
+                headerParameters["X-Service-Key"] = yield this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+            }
+            let urlPath = `/api/v1/stripe/admin/config/status`;
+            const response = yield this.request({
+                path: urlPath,
+                method: 'POST',
+                headers: headerParameters,
+                query: queryParameters,
+                body: requestParameters['body'],
+            }, initOverrides);
+            return new runtime.JSONApiResponse(response, (jsonValue) => (0, index_1.ConfigStatusFromJSON)(jsonValue));
+        });
+    }
+    /**
+     * Get Stripe config status
+     */
+    getStripeConfigStatus(requestParameters, initOverrides) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this.getStripeConfigStatusRaw(requestParameters, initOverrides);
+            return yield response.value();
+        });
+    }
+    /**
      * Pull config from Stripe
      */
     pullStripeConfigRaw(initOverrides) {

@@ -40,6 +40,9 @@ docs/ConfigHistoryItem.md
 docs/ConfigHistoryPagination.md
 docs/ConfigHistoryResponse.md
 docs/ConfigResponse.md
+docs/ConfigStatus.md
+docs/ConfigStatusEntry.md
+docs/ConfigStatusSummary.md
 docs/ConvertStripeIDResponse.md
 docs/Coupon.md
 docs/CouponChange.md
@@ -195,6 +198,9 @@ model_config_history_item.go
 model_config_history_pagination.go
 model_config_history_response.go
 model_config_response.go
+model_config_status.go
+model_config_status_entry.go
+model_config_status_summary.go
 model_convert_stripe_id_response.go
 model_coupon.go
 model_coupon_change.go

@@ -19,6 +19,7 @@ import type {
   ArchiveAllResponse,
   ConfigHistoryResponse,
   ConfigResponse,
+  ConfigStatus,
   DeleteTemplateResponse,
   DeployNamespacesResponse,
   ErrorModel,
@@ -38,6 +39,8 @@ import {
     ConfigHistoryResponseToJSON,
     ConfigResponseFromJSON,
     ConfigResponseToJSON,
+    ConfigStatusFromJSON,
+    ConfigStatusToJSON,
     DeleteTemplateResponseFromJSON,
     DeleteTemplateResponseToJSON,
     DeployNamespacesResponseFromJSON,
@@ -77,6 +80,10 @@ export interface DeployPermissionNamespacesRequest {
 export interface GetStripeConfigHistoryRequest {
     limit?: number;
     offset?: number;
+}
+
+export interface GetStripeConfigStatusRequest {
+    body: object;
 }
 
 export interface SendEmailRequest {
@@ -417,6 +424,49 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      */
     async getStripeConfigSchema(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.getStripeConfigSchemaRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get Stripe config status
+     */
+    async getStripeConfigStatusRaw(requestParameters: GetStripeConfigStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConfigStatus>> {
+        if (requestParameters['body'] == null) {
+            throw new runtime.RequiredError(
+                'body',
+                'Required parameter "body" was null or undefined when calling getStripeConfigStatus().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+
+        let urlPath = `/api/v1/stripe/admin/config/status`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['body'] as any,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ConfigStatusFromJSON(jsonValue));
+    }
+
+    /**
+     * Get Stripe config status
+     */
+    async getStripeConfigStatus(requestParameters: GetStripeConfigStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConfigStatus> {
+        const response = await this.getStripeConfigStatusRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

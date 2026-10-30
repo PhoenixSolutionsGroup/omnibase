@@ -68,6 +68,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1ConfigurationApi* | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates
 *V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
+*V1ConfigurationApi* | [**getStripeConfigStatus**](docs/V1ConfigurationApi.md#getstripeconfigstatus) | **POST** /api/v1/stripe/admin/config/status | Get Stripe config status
 *V1ConfigurationApi* | [**pullStripeConfig**](docs/V1ConfigurationApi.md#pullstripeconfig) | **GET** /api/v1/stripe/admin/config/pull | Pull config from Stripe
 *V1ConfigurationApi* | [**sendEmail**](docs/V1ConfigurationApi.md#sendemail) | **POST** /api/v1/email/send | Send an email
 *V1ConfigurationApi* | [**serveEmailTemplate**](docs/V1ConfigurationApi.md#serveemailtemplate) | **GET** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
@@ -154,6 +155,9 @@ All URIs are relative to *https://api.omnibase.tech*
 - [ConfigHistoryPagination](docs/ConfigHistoryPagination.md)
 - [ConfigHistoryResponse](docs/ConfigHistoryResponse.md)
 - [ConfigResponse](docs/ConfigResponse.md)
+- [ConfigStatus](docs/ConfigStatus.md)
+- [ConfigStatusEntry](docs/ConfigStatusEntry.md)
+- [ConfigStatusSummary](docs/ConfigStatusSummary.md)
 - [ConvertStripeIDResponse](docs/ConvertStripeIDResponse.md)
 - [Coupon](docs/Coupon.md)
 - [CouponChange](docs/CouponChange.md)

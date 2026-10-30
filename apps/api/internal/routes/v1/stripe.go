@@ -152,6 +152,14 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	}, authn.AuthServiceKey, nil, stripeHandler.ValidateConfig)
 
 	register(api, d.Auth, huma.Operation{
+		OperationID: "getStripeConfigStatus",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/stripe/admin/config/status",
+		Summary:     "Get Stripe config status",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, stripeHandler.GetConfigStatus)
+
+	register(api, d.Auth, huma.Operation{
 		OperationID: "archiveAllStripeConfig",
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/config/archive-all",

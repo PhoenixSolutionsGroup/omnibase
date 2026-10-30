@@ -11,6 +11,7 @@ Method | HTTP request | Description
 [**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates) | **Get** /api/v1/email/templates | Get all email templates
 [**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 [**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
+[**GetStripeConfigStatus**](V1ConfigurationAPI.md#GetStripeConfigStatus) | **Post** /api/v1/stripe/admin/config/status | Get Stripe config status
 [**PullStripeConfig**](V1ConfigurationAPI.md#PullStripeConfig) | **Get** /api/v1/stripe/admin/config/pull | Pull config from Stripe
 [**SendEmail**](V1ConfigurationAPI.md#SendEmail) | **Post** /api/v1/email/send | Send an email
 [**ServeEmailTemplate**](V1ConfigurationAPI.md#ServeEmailTemplate) | **Get** /api/v1/email/templates/{template_name}/{type} | Serve an email template file
@@ -456,6 +457,70 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetStripeConfigStatus
+
+> ConfigStatus GetStripeConfigStatus(ctx).Body(body).Execute()
+
+Get Stripe config status
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+	body := map[string]interface{}{ ... } // map[string]interface{} | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.GetStripeConfigStatus(context.Background()).Body(body).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetStripeConfigStatus``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetStripeConfigStatus`: ConfigStatus
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetStripeConfigStatus`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetStripeConfigStatusRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **body** | **map[string]interface{}** |  | 
+
+### Return type
+
+[**ConfigStatus**](ConfigStatus.md)
+
+### Authorization
+
+[ServiceKeyAuth](../README.md#ServiceKeyAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json, application/problem+json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import * as runtime from '../runtime';
-import type { ArchiveAllInputBody, ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, DeleteTemplateResponse, DeployNamespacesResponse, ListTemplatesResponse, SendRequest, SendResponse, StripeConfiguration, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
+import type { ArchiveAllInputBody, ArchiveAllResponse, ConfigHistoryResponse, ConfigResponse, ConfigStatus, DeleteTemplateResponse, DeployNamespacesResponse, ListTemplatesResponse, SendRequest, SendResponse, StripeConfiguration, UpsertTemplateRequest, UpsertTemplateResponse } from '../models/index';
 export interface ArchiveAllStripeConfigRequest {
     archiveAllInputBody: ArchiveAllInputBody;
 }
@@ -26,6 +26,9 @@ export interface DeployPermissionNamespacesRequest {
 export interface GetStripeConfigHistoryRequest {
     limit?: number;
     offset?: number;
+}
+export interface GetStripeConfigStatusRequest {
+    body: object;
 }
 export interface SendEmailRequest {
     sendRequest: SendRequest;
@@ -100,6 +103,14 @@ export declare class V1ConfigurationApi extends runtime.BaseAPI {
      * Get Stripe config schema
      */
     getStripeConfigSchema(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
+    /**
+     * Get Stripe config status
+     */
+    getStripeConfigStatusRaw(requestParameters: GetStripeConfigStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ConfigStatus>>;
+    /**
+     * Get Stripe config status
+     */
+    getStripeConfigStatus(requestParameters: GetStripeConfigStatusRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ConfigStatus>;
     /**
      * Pull config from Stripe
      */
