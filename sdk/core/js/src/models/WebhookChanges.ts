@@ -38,6 +38,12 @@ export interface WebhookChanges {
      * @type {Array<WebhookChange>}
      * @memberof WebhookChanges
      */
+    deleted?: Array<WebhookChange> | null;
+    /**
+     * 
+     * @type {Array<WebhookChange>}
+     * @memberof WebhookChanges
+     */
     unchanged?: Array<WebhookChange> | null;
     /**
      * 
@@ -65,6 +71,7 @@ export function WebhookChangesFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'created': json['created'] == null ? undefined : ((json['created'] as Array<any>).map(WebhookChangeFromJSON)),
+        'deleted': json['deleted'] == null ? undefined : ((json['deleted'] as Array<any>).map(WebhookChangeFromJSON)),
         'unchanged': json['unchanged'] == null ? undefined : ((json['unchanged'] as Array<any>).map(WebhookChangeFromJSON)),
         'updated': json['updated'] == null ? undefined : ((json['updated'] as Array<any>).map(WebhookChangeFromJSON)),
     };
@@ -82,6 +89,7 @@ export function WebhookChangesToJSONTyped(value?: WebhookChanges | null, ignoreD
     return {
         
         'created': value['created'] == null ? undefined : ((value['created'] as Array<any>).map(WebhookChangeToJSON)),
+        'deleted': value['deleted'] == null ? undefined : ((value['deleted'] as Array<any>).map(WebhookChangeToJSON)),
         'unchanged': value['unchanged'] == null ? undefined : ((value['unchanged'] as Array<any>).map(WebhookChangeToJSON)),
         'updated': value['updated'] == null ? undefined : ((value['updated'] as Array<any>).map(WebhookChangeToJSON)),
     };
