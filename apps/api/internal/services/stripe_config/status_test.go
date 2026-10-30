@@ -276,15 +276,16 @@ func TestStatusReportsMeterFieldDrift(t *testing.T) {
 }
 
 type statusFixture struct {
-	applied         *StripeConfiguration
-	desired         *StripeConfiguration
-	products        []any
-	prices          []any
-	meters          []any
-	coupons         []any
-	promos          []any
-	webhooks        []any
-	pricesNeedTiers bool
+	applied              *StripeConfiguration
+	desired              *StripeConfiguration
+	products             []any
+	prices               []any
+	meters               []any
+	coupons              []any
+	promos               []any
+	webhooks             []any
+	pricesNeedTiers      bool
+	couponsNeedAppliesTo bool
 }
 
 func (f statusFixture) run(t *testing.T) *ConfigStatus {
@@ -313,7 +314,11 @@ func (f statusFixture) run(t *testing.T) *ConfigStatus {
 		case "/v1/billing/meters":
 			list(f.meters)
 		case "/v1/coupons":
-			list(f.coupons)
+			data := f.coupons
+			if f.couponsNeedAppliesTo && !strings.Contains(r.URL.RawQuery, "data.applies_to") {
+				data = withoutAppliesTo(f.coupons)
+			}
+			list(data)
 		case "/v1/promotion_codes":
 			list(f.promos)
 		case "/v1/webhook_endpoints":
@@ -348,6 +353,21 @@ func withoutTiers(prices []any) []any {
 		clone := make(map[string]any, len(price))
 		for key, value := range price {
 			if key != "tiers" {
+				clone[key] = value
+			}
+		}
+		out = append(out, clone)
+	}
+	return out
+}
+
+func withoutAppliesTo(coupons []any) []any {
+	out := make([]any, 0, len(coupons))
+	for _, item := range coupons {
+		coupon := item.(map[string]any)
+		clone := make(map[string]any, len(coupon))
+		for key, value := range coupon {
+			if key != "applies_to" {
 				clone[key] = value
 			}
 		}
@@ -456,6 +476,7 @@ func TestStatusMatchesCouponAppliesTo(t *testing.T) {
 				MetadataKeyHash:     couponConfigHash(cfg.Coupons[0]),
 			},
 		}},
+		couponsNeedAppliesTo: true,
 	}).run(t)
 
 	require.Equal(t, ConfigStatusSummary{}, status.Summary)
@@ -512,15 +533,26 @@ func TestStatusMatchesInactivePromotionCode(t *testing.T) {
 				MetadataKeyHash:     couponConfigHash(cfg.Coupons[0]),
 			},
 		}},
-		promos: []any{map[string]any{
-			"id": "promo_a_stripe", "object": "promotion_code", "active": false,
-			"code": "SAVE10", "coupon": map[string]any{"id": "coupon_a_stripe", "object": "coupon"},
-			"metadata": map[string]string{
-				MetadataKeyConfigID: "promo_a",
-				MetadataKeyManaged:  MetadataManagedValue,
-				MetadataKeyHash:     promoConfigHash(cfg.PromotionCodes[0]),
+		promos: []any{
+			map[string]any{
+				"id": "promo_a_stripe", "object": "promotion_code", "active": false,
+				"code": "SAVE10", "coupon": map[string]any{"id": "coupon_a_stripe", "object": "coupon"},
+				"metadata": map[string]string{
+					MetadataKeyConfigID: "promo_a",
+					MetadataKeyManaged:  MetadataManagedValue,
+					MetadataKeyHash:     promoConfigHash(cfg.PromotionCodes[0]),
+				},
 			},
-		}},
+			map[string]any{
+				"id": "promo_orphan_stripe", "object": "promotion_code", "active": false,
+				"code": "ORPHAN", "coupon": map[string]any{"id": "coupon_a_stripe", "object": "coupon"},
+				"metadata": map[string]string{
+					MetadataKeyConfigID: "orphan_promo",
+					MetadataKeyManaged:  MetadataManagedValue,
+					MetadataKeyHash:     promoConfigHash(PromotionCode{ID: "orphan_promo", Code: "ORPHAN", Coupon: "coupon_a", Active: boolPointer(false)}),
+				},
+			},
+		},
 	}).run(t)
 
 	require.Equal(t, ConfigStatusSummary{}, status.Summary)

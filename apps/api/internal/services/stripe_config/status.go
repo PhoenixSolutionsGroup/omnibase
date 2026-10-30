@@ -162,7 +162,7 @@ func (s *Service) listLiveState(ctx context.Context) (*liveState, error) {
 		return err
 	})
 	run(func() error {
-		values, err := s.listManagedPromotionCodesForStatus(ctx)
+		values, err := s.listManagedPromotionCodes(ctx)
 		state.promos = values
 		return err
 	})
@@ -517,6 +517,9 @@ func untrackedStatus(desired, applied *StripeConfiguration, live *liveState, act
 			continue
 		}
 		promo := live.promos[id]
+		if !promo.Active {
+			continue
+		}
 		out = append(out, statusEntry(statusKindPromotionCode, id, promo.Code, statusStateUntracked, "", promo.ID))
 	}
 
