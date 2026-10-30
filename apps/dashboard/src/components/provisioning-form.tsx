@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Server, Check, ChevronsUpDown } from "lucide-react";
+import {
+  Loader2,
+  Server,
+  Check,
+  ChevronsUpDown,
+  Globe,
+  GeorgianLari,
+  Settings2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +30,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -92,7 +101,8 @@ const TIER_ORDER: Record<Tier["deployment_type"], number> = {
 
 function sortTiers(tiers: Tier[]): Tier[] {
   return [...tiers].sort((a, b) => {
-    const typeDiff = TIER_ORDER[a.deployment_type] - TIER_ORDER[b.deployment_type];
+    const typeDiff =
+      TIER_ORDER[a.deployment_type] - TIER_ORDER[b.deployment_type];
     if (typeDiff !== 0) return typeDiff;
     return a.vcpus - b.vcpus;
   });
@@ -181,9 +191,7 @@ function RegionCombobox({
     }
 
     for (const [, regionList] of groups) {
-      regionList.sort(
-        (a, b) => getLatencyValue(a.id) - getLatencyValue(b.id),
-      );
+      regionList.sort((a, b) => getLatencyValue(a.id) - getLatencyValue(b.id));
     }
 
     const sortedEntries = Array.from(groups.entries()).sort(
@@ -398,9 +406,7 @@ export function ProvisioningForm({
           throw new Error(err.error || err.message || "Branch creation failed");
         }
         toast.success("Branch creation initiated!");
-        router.push(
-          `/projects/${projectId}/${formData.branch_name}/dashboard`,
-        );
+        router.push(`/projects/${projectId}/${formData.branch_name}/dashboard`);
       } else {
         const res = await fetch(managed_hosting_url + "/api/v1/projects", {
           method: "POST",
@@ -432,11 +438,57 @@ export function ProvisioningForm({
 
   if (loading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
+      <div className="flex h-100 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
+
+  const selectTier = (tier: Tier) => {
+    const allowed = options
+      ? options.regions.filter(
+          (r) => !tier.regions?.length || tier.regions.includes(r.id),
+        )
+      : [];
+    const region = allowed.some((r) => r.id === formData.region)
+      ? formData.region
+      : (allowed[0]?.id ?? "");
+    setFormData({
+      ...formData,
+      deployment_tier: tier.id,
+      region,
+    });
+  };
+
+  const plans = [
+    {
+      name: "Starter",
+      deployment_type: "Shared",
+      description: "Perfect for small projects and prototypes.",
+      tier: "Shared Free",
+    },
+
+    {
+      name: "Basic",
+      deployment_type: "Shared",
+      description: "Perfect for medium projects.",
+      most_popular: true,
+      tier: "Scale 1 vCPU",
+    },
+
+    {
+      name: "Pro",
+      deployment_type: "Dedicated",
+      description:
+        "Perfect for enterprise projects and heavy traffic applications.",
+      tier: "Dedicated 4 vCPU",
+    },
+  ];
+
+  const mappedPlans = plans.map((plan) => ({
+    ...plan,
+    tier: sortedTiers.find((tier) => tier.name === plan.tier),
+  }));
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -491,160 +543,183 @@ export function ProvisioningForm({
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Server className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Infrastructure</h3>
+          <h3 className="text-lg font-medium">Tier</h3>
         </div>
 
         {options && sortedTiers.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Deployment Tier</CardTitle>
-              <CardDescription>
-                Pick the resources for your project. All tiers include
-                PostgreSQL + object storage + edge workers.
-              </CardDescription>
-            </CardHeader>
-            {isLatenciesLoading ? (
-              <CardContent className="grid gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-24 rounded" />
-                    <Skeleton className="h-6 w-20 rounded" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {sortedTiers.map((tier) => (
+              <Card
+                key={tier.id}
+                className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
+                  ${tier.id === selectedTier?.id ? "border-primary" : "border-transparent"}`}
+                onClick={() => {
+                  selectTier(tier);
+                }}
+              >
+                {tier.id === selectedTier?.id && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                      Most Popular
+                    </span>
                   </div>
-                  <Skeleton className="h-5 w-full rounded" />
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Measuring region latencies...</span>
-                </div>
-              </CardContent>
-            ) : (
-              <CardContent className="grid gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Tier</Label>
-                  </div>
+                )}
+                <CardHeader>
+                  <span className="capitalize font-bold">
+                    {tier.deployment_type}
+                  </span>
 
-                  <div className="px-2">
-                    <Slider
-                      value={[
-                        Math.max(
-                          0,
-                          sortedTiers.findIndex(
-                            (t) => t.id === formData.deployment_tier,
-                          ),
-                        ),
-                      ]}
-                      min={0}
-                      max={sortedTiers.length - 1}
-                      step={1}
-                      onValueChange={(vals) => {
-                        const tier = sortedTiers[vals[0]];
-                        if (tier) {
-                          const allowed = options
-                            ? options.regions.filter(
-                                (r) =>
-                                  !tier.regions?.length ||
-                                  tier.regions.includes(r.id),
-                              )
-                            : [];
-                          const region = allowed.some(
-                            (r) => r.id === formData.region,
-                          )
-                            ? formData.region
-                            : (allowed[0]?.id ?? "");
-                          setFormData({
-                            ...formData,
-                            deployment_tier: tier.id,
-                            region,
-                          });
-                        }
-                      }}
-                    />
-                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                      <span>{sortedTiers[0]?.name}</span>
-                      <span>{sortedTiers[sortedTiers.length - 1]?.name}</span>
+                  <span className="text-sm">{tier.name}</span>
+                  <span className="text-muted-foreground">
+                    perfect to get started and for small prototypes.
+                  </span>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-2 text-sm">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-muted-foreground">vCPU</div>
+                    <div className="font-medium">{tier.vcpus} cores</div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-muted-foreground">Memory</div>
+                    <div className="font-medium">
+                      {tier.memory_gb >= 1
+                        ? `${tier.memory_gb} GB`
+                        : `${tier.memory_gb * 1024} MB`}
                     </div>
                   </div>
-
-                  {selectedTier && (
-                    <Card className="border-primary bg-primary/5">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">
-                            {selectedTier.name}
-                          </CardTitle>
-                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                            {selectedTier.deployment_type}
-                          </span>
-                        </div>
-                        <CardDescription>
-                          {selectedTier.pool === "dedicated"
-                            ? "Dedicated node pool — guaranteed resources"
-                            : selectedTier.zeropod_enabled
-                              ? `Auto-scales to zero after ${selectedTier.zeropod_scaledown_sec}s idle`
-                              : "Shared pool — always-on"}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <div className="text-muted-foreground">vCPU</div>
-                            <div className="font-medium">
-                              {selectedTier.vcpus} cores
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">Memory</div>
-                            <div className="font-medium">
-                              {selectedTier.memory_gb >= 1
-                                ? `${selectedTier.memory_gb} GB`
-                                : `${selectedTier.memory_gb * 1024} MB`}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              DB Storage
-                            </div>
-                            <div className="font-medium">
-                              {selectedTier.database_storage_limit_gb} GB
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              Object Storage
-                            </div>
-                            <div className="font-medium">
-                              {selectedTier.object_storage_limit_gb} GB
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Region</Label>
-                  <RegionCombobox
-                    regions={availableRegions}
-                    value={formData.region}
-                    autoSelectLowestLatency
-                    onSelect={(id) =>
-                      setFormData({ ...formData, region: id })
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-muted-foreground">DB Storage</div>
+                    <div className="font-medium">
+                      {tier.database_storage_limit_gb} GB
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="text-muted-foreground">Object Storage</div>
+                    <div className="font-medium">
+                      {tier.object_storage_limit_gb} GB
+                    </div>
+                  </div>
+                  <Button
+                    size="lg"
+                    className="mt-6"
+                    variant={
+                      tier.id === selectedTier?.id ? "default" : "outline"
                     }
-                  />
-                </div>
-              </CardContent>
-            )}
-          </Card>
+                    onClick={() => {}}
+                  >
+                    Select {tier.name}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Server className="h-5 w-5" />
+          <h3 className="text-lg font-medium">Tier</h3>
+        </div>
+
+        {options && sortedTiers.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {mappedPlans &&
+              mappedPlans.map((plan) => (
+                <Card
+                  key={plan.tier.id}
+                  className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
+                  ${plan.tier.id === selectedTier?.id ? "border-primary" : "border-transparent"}`}
+                  onClick={() => {
+                    selectTier(plan.tier);
+                  }}
+                >
+                  {plan.most_popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+                  <CardHeader>
+                    <span className="capitalize font-bold">
+                      {plan.tier.deployment_type}
+                    </span>
+
+                    <span className="text-sm">{plan.name}</span>
+                    <span className="text-muted-foreground">
+                      {plan.description}
+                    </span>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2 text-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">vCPU</div>
+                      <div className="font-medium">{plan.tier.vcpus} cores</div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">Memory</div>
+                      <div className="font-medium">
+                        {plan.tier.memory_gb >= 1
+                          ? `${plan.tier.memory_gb} GB`
+                          : `${plan.tier.memory_gb * 1024} MB`}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">DB Storage</div>
+                      <div className="font-medium">
+                        {plan.tier.database_storage_limit_gb} GB
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">
+                        Object Storage
+                      </div>
+                      <div className="font-medium">
+                        {plan.tier.object_storage_limit_gb} GB
+                      </div>
+                    </div>
+                    <Button
+                      size="lg"
+                      className="mt-6"
+                      variant={
+                        plan.tier.id === selectedTier?.id
+                          ? "default"
+                          : "outline"
+                      }
+                      onClick={() => {}}
+                    >
+                      Select {plan.tier.name}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Settings2 className="h-5 w-5" />
+          <h3 className="text-lg font-medium">Options</h3>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Globe className="h-5 w-5" />
+          <h3 className="text-lg font-medium">Region</h3>
+        </div>
+        <RegionCombobox
+          regions={availableRegions}
+          value={formData.region}
+          autoSelectLowestLatency
+          onSelect={(id) => setFormData({ ...formData, region: id })}
+        />
       </div>
 
       <Button
         type="submit"
-        disabled={
-          submitting || !formData.deployment_tier || !formData.region
-        }
+        disabled={submitting || !formData.deployment_tier || !formData.region}
         size="lg"
       >
         {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
