@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var CreateProductError = errors.New("Failed to create stripe product")
@@ -28,6 +27,13 @@ func (s *Service) createProduct(ctx context.Context, productConfig Product, conf
 						productConfig.ID, existing.StripeID),
 				},
 			}, nil
+		}
+		tagParams := &stripe.ProductUpdateParams{
+			Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
+		}
+		s.stripe.ApplyAccount(tagParams)
+		if _, err := s.stripe.Stripe.V1Products.Update(ctx, productConfig.StripeID, tagParams); err != nil {
+			return nil, fmt.Errorf("failed to tag linked product %s: %w", productConfig.ID, err)
 		}
 		if configID != uuid.Nil {
 			if err := s.SaveMapping(ctx, configID, productConfig.ID, productConfig.StripeID, "product"); err != nil {
@@ -53,8 +59,9 @@ func (s *Service) createProduct(ctx context.Context, productConfig Product, conf
 	}
 
 	params := &stripe.ProductCreateParams{
-		ID:   stripe.String(productConfig.ID),
-		Name: stripe.String(productConfig.Name),
+		ID:       stripe.String(productConfig.ID),
+		Name:     stripe.String(productConfig.Name),
+		Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
 	}
 	if productConfig.Description != "" {
 		params.Description = stripe.String(productConfig.Description)
@@ -84,7 +91,7 @@ func (s *Service) createProduct(ctx context.Context, productConfig Product, conf
 	}, nil
 }
 
-func (s *Service) updateProduct(ctx context.Context, update ProductUpdate) (*ProductChange, error) {
+func (s *Service) updateProduct(ctx context.Context, update ProductUpdate, desired Product) (*ProductChange, error) {
 	if update.ID == "free" {
 		return &ProductChange{
 			ProductID:   update.ID,
@@ -101,22 +108,38 @@ func (s *Service) updateProduct(ctx context.Context, update ProductUpdate) (*Pro
 			Details:     []string{"Product recreated due to type change"},
 		}, nil
 	}
+	if len(update.FieldChanges) == 0 {
+		return &ProductChange{
+			ProductID:   update.ID,
+			ProductName: fmt.Sprintf("Product %s", update.ID),
+			Action:      "updated",
+			Details:     []string{},
+		}, nil
+	}
+
+	stripeID, err := s.GetStripeIDByConfigItemID(ctx, update.ID, "product")
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve Stripe ID for product %s: %w", update.ID, err)
+	}
+	if stripeID == "" {
+		stripeID = update.ID
+	}
 
 	details := []string{}
-	if len(update.FieldChanges) > 0 {
-		params := &stripe.ProductUpdateParams{}
-		if name, ok := update.FieldChanges["name"].(string); ok {
-			params.Name = stripe.String(name)
-			details = append(details, fmt.Sprintf("Updated name to: %s", name))
-		}
-		if description, ok := update.FieldChanges["description"].(string); ok {
-			params.Description = stripe.String(description)
-			details = append(details, "Updated description")
-		}
-		s.stripe.ApplyAccount(params)
-		if _, err := s.stripe.Stripe.V1Products.Update(ctx, update.ID, params); err != nil {
-			return nil, fmt.Errorf("failed to update product: %w", err)
-		}
+	params := &stripe.ProductUpdateParams{
+		Metadata: managedMetadata("product", desired.ID, productConfigHash(desired), nil),
+	}
+	if name, ok := update.FieldChanges["name"].(string); ok {
+		params.Name = stripe.String(name)
+		details = append(details, fmt.Sprintf("Updated name to: %s", name))
+	}
+	if description, ok := update.FieldChanges["description"].(string); ok {
+		params.Description = stripe.String(description)
+		details = append(details, "Updated description")
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1Products.Update(ctx, stripeID, params); err != nil {
+		return nil, fmt.Errorf("failed to update product: %w", err)
 	}
 	return &ProductChange{
 		ProductID:   update.ID,
@@ -175,8 +198,9 @@ func (s *Service) unarchiveExistingProduct(ctx context.Context, productConfig Pr
 	}
 
 	params := &stripe.ProductUpdateParams{
-		Active: stripe.Bool(true),
-		Name:   stripe.String(productConfig.Name),
+		Active:   stripe.Bool(true),
+		Name:     stripe.String(productConfig.Name),
+		Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
 	}
 	if productConfig.Description != "" {
 		params.Description = stripe.String(productConfig.Description)

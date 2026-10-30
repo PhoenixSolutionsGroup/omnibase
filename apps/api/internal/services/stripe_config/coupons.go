@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var CreateCouponError = errors.New("Failed to create stripe coupon")
@@ -25,6 +24,13 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig Coupon, configI
 				Action:   "skipped",
 			}, nil
 		}
+		tagParams := &stripe.CouponUpdateParams{
+			Metadata: managedMetadata("coupon", couponConfig.ID, couponConfigHash(couponConfig), couponConfig.Metadata),
+		}
+		s.stripe.ApplyAccount(tagParams)
+		if _, err := s.stripe.Stripe.V1Coupons.Update(ctx, couponConfig.StripeID, tagParams); err != nil {
+			return nil, fmt.Errorf("failed to tag linked coupon %s: %w", couponConfig.ID, err)
+		}
 		if configID != uuid.Nil {
 			if err := s.SaveMapping(ctx, configID, couponConfig.ID, couponConfig.StripeID, "coupon"); err != nil {
 				return nil, err
@@ -39,6 +45,7 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig Coupon, configI
 	}
 
 	params := buildCouponCreateParams(couponConfig)
+	params.Metadata = managedMetadata("coupon", couponConfig.ID, couponConfigHash(couponConfig), couponConfig.Metadata)
 	s.stripe.ApplyAccount(params)
 
 	stripeCoupon, err := s.stripe.Stripe.V1Coupons.Create(ctx, params)
@@ -58,19 +65,24 @@ func (s *Service) createCoupon(ctx context.Context, couponConfig Coupon, configI
 	}, nil
 }
 
-func (s *Service) updateCoupon(ctx context.Context, update CouponUpdate) (*CouponChange, error) {
-	if len(update.FieldChanges) > 0 {
-		params := &stripe.CouponUpdateParams{}
-		if name, ok := update.FieldChanges["name"].(string); ok {
-			params.Name = stripe.String(name)
-		}
-		if metadata, ok := update.FieldChanges["metadata"].(map[string]string); ok {
-			params.Metadata = metadata
-		}
-		s.stripe.ApplyAccount(params)
-		if _, err := s.stripe.Stripe.V1Coupons.Update(ctx, update.ID, params); err != nil {
-			return nil, fmt.Errorf("failed to update coupon: %w", err)
-		}
+func (s *Service) updateCoupon(ctx context.Context, update CouponUpdate, desired Coupon) (*CouponChange, error) {
+	stripeID, err := s.GetStripeIDByConfigItemID(ctx, update.ID, "coupon")
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve Stripe ID for coupon %s: %w", update.ID, err)
+	}
+	if stripeID == "" {
+		stripeID = update.ID
+	}
+
+	params := &stripe.CouponUpdateParams{
+		Metadata: managedMetadata("coupon", desired.ID, couponConfigHash(desired), desired.Metadata),
+	}
+	if name, ok := update.FieldChanges["name"].(string); ok {
+		params.Name = stripe.String(name)
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1Coupons.Update(ctx, stripeID, params); err != nil {
+		return nil, fmt.Errorf("failed to update coupon: %w", err)
 	}
 	name := ""
 	if n, ok := update.FieldChanges["name"].(string); ok {
@@ -114,6 +126,7 @@ func (s *Service) recreateCoupon(ctx context.Context, couponConfig Coupon, confi
 	newConfig := couponConfig
 	newConfig.ID = couponConfig.ID + "_v2"
 	params := buildCouponCreateParams(newConfig)
+	params.Metadata = managedMetadata("coupon", couponConfig.ID, couponConfigHash(couponConfig), couponConfig.Metadata)
 	s.stripe.ApplyAccount(params)
 	stripeCoupon, err := s.stripe.Stripe.V1Coupons.Create(ctx, params)
 	if err != nil {

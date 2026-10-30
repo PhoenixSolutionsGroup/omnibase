@@ -221,7 +221,11 @@ func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Strip
 		changes.Products.Created = append(changes.Products.Created, *pc)
 	}
 	for _, update := range diff.UpdatedProducts {
-		pc, err := s.updateProductWithPrices(ctx, update, configID)
+		productConfig, ok := findProductConfig(config, update.ID)
+		if !ok {
+			return nil, fmt.Errorf("product config not found for update: %s", update.ID)
+		}
+		pc, err := s.updateProductWithPrices(ctx, update, productConfig, configID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update product %s: %w", update.ID, err)
 		}
@@ -229,18 +233,12 @@ func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Strip
 	}
 
 	for _, update := range diff.UpdatedCoupons {
+		couponConfig, ok := findCouponConfig(config, update.ID)
+		if !ok {
+			return nil, fmt.Errorf("coupon config not found for update: %s", update.ID)
+		}
 		if requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool); requiresRecreate {
-			var couponConfig *Coupon
-			for i := range config.Coupons {
-				if config.Coupons[i].ID == update.ID {
-					couponConfig = &config.Coupons[i]
-					break
-				}
-			}
-			if couponConfig == nil {
-				return nil, fmt.Errorf("coupon config not found for update: %s", update.ID)
-			}
-			cc, newStripeID, err := s.recreateCoupon(ctx, *couponConfig, configID)
+			cc, newStripeID, err := s.recreateCoupon(ctx, couponConfig, configID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to recreate coupon %s: %w", update.ID, err)
 			}
@@ -262,7 +260,7 @@ func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Strip
 			}
 			continue
 		}
-		cc, err := s.updateCoupon(ctx, update)
+		cc, err := s.updateCoupon(ctx, update, couponConfig)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update coupon %s: %w", update.ID, err)
 		}
@@ -277,25 +275,19 @@ func (s *Service) applyDiff(ctx context.Context, diff *ConfigDiff, config *Strip
 	}
 
 	for _, update := range diff.UpdatedPromotionCodes {
+		promoConfig, ok := findPromotionCodeConfig(config, update.ID)
+		if !ok {
+			return nil, fmt.Errorf("promotion code config not found for update: %s", update.ID)
+		}
 		if requiresRecreate, _ := update.FieldChanges["requires_recreate"].(bool); requiresRecreate {
-			var promoConfig *PromotionCode
-			for i := range config.PromotionCodes {
-				if config.PromotionCodes[i].ID == update.ID {
-					promoConfig = &config.PromotionCodes[i]
-					break
-				}
-			}
-			if promoConfig == nil {
-				return nil, fmt.Errorf("promotion code config not found for update: %s", update.ID)
-			}
-			pc, err := s.recreatePromotionCode(ctx, *promoConfig, configID)
+			pc, err := s.recreatePromotionCode(ctx, promoConfig, configID)
 			if err != nil {
 				return nil, fmt.Errorf("failed to recreate promotion code %s: %w", update.ID, err)
 			}
 			changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *pc)
 			continue
 		}
-		pc, err := s.updatePromotionCode(ctx, update)
+		pc, err := s.updatePromotionCode(ctx, update, promoConfig)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update promotion code %s: %w", update.ID, err)
 		}
@@ -340,8 +332,8 @@ func (s *Service) createProductWithPrices(ctx context.Context, product Product, 
 	return productChange, nil
 }
 
-func (s *Service) updateProductWithPrices(ctx context.Context, update ProductUpdate, configID uuid.UUID) (*ProductChange, error) {
-	productChange, err := s.updateProduct(ctx, update)
+func (s *Service) updateProductWithPrices(ctx context.Context, update ProductUpdate, desired Product, configID uuid.UUID) (*ProductChange, error) {
+	productChange, err := s.updateProduct(ctx, update, desired)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +347,8 @@ func (s *Service) updateProductWithPrices(ctx context.Context, update ProductUpd
 		}
 	}
 	for _, priceConfig := range update.NewPrices {
-		stripeID, err := s.createPrice(ctx, priceConfig, update.ID, configID)
+		transferLookupKey := containsString(update.ArchivedPrices, priceConfig.ID)
+		stripeID, err := s.createPrice(ctx, priceConfig, update.ID, configID, transferLookupKey)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create new price: %w", err)
 		}
@@ -380,6 +373,42 @@ func (s *Service) createMetersWithMapping(ctx context.Context, meters []Meter, c
 		})
 	}
 	return out, nil
+}
+
+func findProductConfig(config *StripeConfiguration, id string) (Product, bool) {
+	for _, product := range config.Products {
+		if product.ID == id {
+			return product, true
+		}
+	}
+	return Product{}, false
+}
+
+func findCouponConfig(config *StripeConfiguration, id string) (Coupon, bool) {
+	for _, coupon := range config.Coupons {
+		if coupon.ID == id {
+			return coupon, true
+		}
+	}
+	return Coupon{}, false
+}
+
+func findPromotionCodeConfig(config *StripeConfiguration, id string) (PromotionCode, bool) {
+	for _, promo := range config.PromotionCodes {
+		if promo.ID == id {
+			return promo, true
+		}
+	}
+	return PromotionCode{}, false
+}
+
+func containsString(values []string, target string) bool {
+	for _, value := range values {
+		if value == target {
+			return true
+		}
+	}
+	return false
 }
 
 func hasDiffChanges(diff *ConfigDiff) bool {

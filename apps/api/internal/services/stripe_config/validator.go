@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
 )
 
 type Validator struct{}
@@ -121,6 +120,10 @@ func (v *Validator) ParseAndValidateConfig(configData ConfigData) (*StripeConfig
 		if err := v.validatePromotionCode(p, couponIDs); err != nil {
 			return nil, fmt.Errorf("promotion code %d validation failed: %w", i, err)
 		}
+	}
+
+	if err := v.validateManagedTagging(config); err != nil {
+		return nil, fmt.Errorf("managed tagging validation failed: %w", err)
 	}
 
 	return &config, nil
@@ -399,6 +402,79 @@ func (v *Validator) validatePromotionCode(promo PromotionCode, couponIDs map[str
 		if !v.isValidCurrency(promo.MinimumAmountCurrency) {
 			return fmt.Errorf("invalid minimum_amount_currency: %s", promo.MinimumAmountCurrency)
 		}
+	}
+	return nil
+}
+
+func (v *Validator) validateManagedTagging(config StripeConfiguration) error {
+	for _, product := range config.Products {
+		if err := validateMetadataValueLength("product", product.ID); err != nil {
+			return err
+		}
+		for _, price := range product.Prices {
+			if len(price.ID) > MaxLookupKeyLength {
+				return fmt.Errorf("price ID %q exceeds the Stripe lookup_key limit of %d characters", price.ID, MaxLookupKeyLength)
+			}
+		}
+	}
+	for _, meter := range config.Meters {
+		if err := validateMetadataValueLength("meter", meter.ID); err != nil {
+			return err
+		}
+	}
+	for _, coupon := range config.Coupons {
+		if err := validateMetadataValueLength("coupon", coupon.ID); err != nil {
+			return err
+		}
+		if err := validateUserMetadata("coupon", coupon.ID, coupon.Metadata); err != nil {
+			return err
+		}
+	}
+	for _, promo := range config.PromotionCodes {
+		if err := validateMetadataValueLength("promotion_code", promo.ID); err != nil {
+			return err
+		}
+		if err := validateUserMetadata("promotion_code", promo.ID, promo.Metadata); err != nil {
+			return err
+		}
+	}
+	for _, webhook := range config.Webhooks {
+		if webhook.ID == "" {
+			continue
+		}
+		if err := validateMetadataValueLength("webhook", webhook.ID); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateMetadataValueLength(resource, id string) error {
+	if len(id) > MaxMetadataValueLength {
+		return fmt.Errorf("%s ID %q exceeds the Stripe metadata value limit of %d characters", resource, id, MaxMetadataValueLength)
+	}
+	return nil
+}
+
+func validateUserMetadata(resource, id string, metadata map[string]string) error {
+	userKeys := 0
+	for key, value := range metadata {
+		if isManagedMetadataKey(key) {
+			return fmt.Errorf("%s %q metadata uses reserved key %q", resource, id, key)
+		}
+		if key == "" {
+			return fmt.Errorf("%s %q metadata key cannot be empty", resource, id)
+		}
+		if len(key) > MaxMetadataKeyLength {
+			return fmt.Errorf("%s %q metadata key %q exceeds the Stripe metadata key limit of %d characters", resource, id, key, MaxMetadataKeyLength)
+		}
+		if len(value) > MaxMetadataValueLength {
+			return fmt.Errorf("%s %q metadata key %q exceeds the Stripe metadata value limit of %d characters", resource, id, key, MaxMetadataValueLength)
+		}
+		userKeys++
+	}
+	if userKeys+3 > MaxMetadataKeys {
+		return fmt.Errorf("%s %q defines %d metadata keys; Stripe allows at most %d including %d managed keys", resource, id, userKeys, MaxMetadataKeys, 3)
 	}
 	return nil
 }

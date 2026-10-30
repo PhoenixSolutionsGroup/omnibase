@@ -29,11 +29,12 @@ type WebhookResult struct {
 }
 
 type StripeWebhookInfo struct {
-	ID      string
-	URL     string
-	Events  []string
-	Connect bool
-	Status  string
+	ID       string
+	URL      string
+	Events   []string
+	Connect  bool
+	Status   string
+	Metadata map[string]string
 }
 
 func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
@@ -91,6 +92,11 @@ func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webho
 		existing := stripeByURL[w.URL]
 		if len(existing) > 0 {
 			sw := existing[0]
+			if !webhookTagsMatch(sw.Metadata, w) {
+				if err := s.tagWebhook(ctx, sw.ID, w); err != nil {
+					logger.Logger.Warn("Failed to tag existing Stripe webhook", "error", err, "stripeID", sw.ID)
+				}
+			}
 			cfgID := configID
 			db, err := s.repo.GetStripeWebhookByStripeID(ctx, sw.ID)
 			var dbID string
@@ -121,7 +127,7 @@ func (s *Service) processWebhooks(ctx context.Context, configID uuid.UUID, webho
 			})
 			continue
 		}
-		result, err := s.createWebhook(ctx, configID, w.URL, w.Events, w.Connect)
+		result, err := s.createWebhook(ctx, configID, w)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create webhook %s: %w", w.URL, err)
 		}
@@ -177,16 +183,17 @@ func (s *Service) processWebhooksManaged(ctx context.Context, configID uuid.UUID
 	return results, nil
 }
 
-func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, url string, events []string, connect bool) (*WebhookResult, error) {
-	enabledEvents := make([]*string, len(events))
-	for i, ev := range events {
+func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, webhookConfig WebhookEndpointConfig) (*WebhookResult, error) {
+	enabledEvents := make([]*string, len(webhookConfig.Events))
+	for i, ev := range webhookConfig.Events {
 		enabledEvents[i] = stripe.String(ev)
 	}
 	params := &stripe.WebhookEndpointCreateParams{
-		URL:           stripe.String(url),
+		URL:           stripe.String(webhookConfig.URL),
 		EnabledEvents: enabledEvents,
+		Metadata:      managedMetadata("webhook_endpoint", webhookConfig.ID, webhookConfigHash(webhookConfig), nil),
 	}
-	if connect {
+	if webhookConfig.Connect {
 		params.Connect = stripe.Bool(true)
 	}
 	s.stripe.ApplyAccount(params)
@@ -210,10 +217,10 @@ func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, url str
 	cfgID := configID
 	row, err := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
 		StripeID: result.ID,
-		Url:      url,
+		Url:      webhookConfig.URL,
 		Secret:   encryptedSecret,
-		Events:   events,
-		Connect:  connect,
+		Events:   webhookConfig.Events,
+		Connect:  webhookConfig.Connect,
 		ConfigID: &cfgID,
 	})
 	if err != nil {
@@ -225,9 +232,9 @@ func (s *Service) createWebhook(ctx context.Context, configID uuid.UUID, url str
 	return &WebhookResult{
 		ID:       row.ID.String(),
 		StripeID: result.ID,
-		URL:      url,
-		Events:   events,
-		Connect:  connect,
+		URL:      webhookConfig.URL,
+		Events:   webhookConfig.Events,
+		Connect:  webhookConfig.Connect,
 		Secret:   result.Secret,
 		Action:   "created",
 	}, nil
@@ -245,11 +252,12 @@ func (s *Service) listStripeWebhooks(ctx context.Context) ([]StripeWebhookInfo, 
 		events := make([]string, len(endpoint.EnabledEvents))
 		copy(events, endpoint.EnabledEvents)
 		out = append(out, StripeWebhookInfo{
-			ID:      endpoint.ID,
-			URL:     endpoint.URL,
-			Events:  events,
-			Connect: endpoint.Application != "",
-			Status:  string(endpoint.Status),
+			ID:       endpoint.ID,
+			URL:      endpoint.URL,
+			Events:   events,
+			Connect:  endpoint.Application != "",
+			Status:   string(endpoint.Status),
+			Metadata: endpoint.Metadata,
 		})
 	}
 	return out, nil
@@ -265,6 +273,30 @@ func (s *Service) deleteWebhookByStripeID(ctx context.Context, stripeID string) 
 		return fmt.Errorf("%w: %w", DeleteWebhookError, err)
 	}
 	return nil
+}
+
+func (s *Service) tagWebhook(ctx context.Context, stripeID string, webhookConfig WebhookEndpointConfig) error {
+	params := &stripe.WebhookEndpointUpdateParams{
+		Metadata: managedMetadata("webhook_endpoint", webhookConfig.ID, webhookConfigHash(webhookConfig), nil),
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1WebhookEndpoints.Update(ctx, stripeID, params); err != nil {
+		return fmt.Errorf("failed to tag webhook endpoint %s: %w", stripeID, err)
+	}
+	return nil
+}
+
+func webhookTagsMatch(metadata map[string]string, webhookConfig WebhookEndpointConfig) bool {
+	if metadata == nil {
+		return false
+	}
+	if metadata[MetadataKeyManaged] != MetadataManagedValue {
+		return false
+	}
+	if webhookConfig.ID != "" && metadata[MetadataKeyConfigID] != webhookConfig.ID {
+		return false
+	}
+	return metadata[MetadataKeyHash] == webhookConfigHash(webhookConfig)
 }
 
 func (s *Service) DeleteWebhook(ctx context.Context, stripeID string) error {
