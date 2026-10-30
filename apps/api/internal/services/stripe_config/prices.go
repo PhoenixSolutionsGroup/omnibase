@@ -83,18 +83,49 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 
 	stripePrice, err := s.stripe.Stripe.V1Prices.Create(ctx, params)
 	if err != nil {
+		archived, findErr := s.findArchivedPriceByLookupKey(ctx, priceConfig.ID)
+		if findErr != nil {
+			return "", "", fmt.Errorf("%w: %w", CreatePriceError, findErr)
+		}
+		if archived != nil {
+			if archived.Product != nil && archived.Product.ID == stripeProductID {
+				updateParams := &stripe.PriceUpdateParams{
+					Active:   stripe.Bool(true),
+					Metadata: managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
+				}
+				s.stripe.ApplyAccount(updateParams)
+				updated, updateErr := s.stripe.Stripe.V1Prices.Update(ctx, archived.ID, updateParams)
+				if updateErr != nil {
+					return "", "", fmt.Errorf("%w: failed to reactivate archived price %s: %w", CreatePriceError, archived.ID, updateErr)
+				}
+				return updated.ID, fmt.Sprintf("Reactivated archived price: %s (config: %s)", updated.ID, priceConfig.ID), nil
+			}
+
+			params.TransferLookupKey = stripe.Bool(true)
+			s.stripe.ApplyAccount(params)
+			stripePrice, err = s.stripe.Stripe.V1Prices.Create(ctx, params)
+			if err == nil {
+				return stripePrice.ID, fmt.Sprintf("Created price with transferred lookup key: %s (config: %s)", stripePrice.ID, priceConfig.ID), nil
+			}
+		}
 		return "", "", fmt.Errorf("%w: %w", CreatePriceError, err)
 	}
 	return stripePrice.ID, fmt.Sprintf("Created price: %s (config: %s)", stripePrice.ID, priceConfig.ID), nil
 }
 
-func (s *Service) setPriceActive(ctx context.Context, stripeID string, active bool) error {
-	params := &stripe.PriceUpdateParams{Active: stripe.Bool(active)}
+func (s *Service) findArchivedPriceByLookupKey(ctx context.Context, configPriceID string) (*stripe.Price, error) {
+	params := &stripe.PriceListParams{LookupKeys: []*string{stripe.String(configPriceID)}}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
-	if _, err := s.stripe.Stripe.V1Prices.Update(ctx, stripeID, params); err != nil {
-		return fmt.Errorf("could not set price %s active=%t: %w", stripeID, active, err)
+	for price, err := range s.stripe.Stripe.V1Prices.List(ctx, params) {
+		if err != nil {
+			return nil, fmt.Errorf("failed to find archived price %s: %w", configPriceID, err)
+		}
+		if price.Metadata[MetadataKeyConfigID] == configPriceID {
+			return price, nil
+		}
 	}
-	return nil
+	return nil, nil
 }
 
 func (s *Service) archivePriceByStripeID(ctx context.Context, stripeID string) error {

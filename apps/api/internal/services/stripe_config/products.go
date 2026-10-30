@@ -97,8 +97,8 @@ func (s *Service) updateProductFromConfig(ctx context.Context, desired Product, 
 	}, nil
 }
 
-func (s *Service) recreateProduct(ctx context.Context, desired Product, oldStripeID string) (string, *ProductChange, error) {
-	if _, err := s.archiveProductByStripeID(ctx, oldStripeID); err != nil {
+func (s *Service) recreateProduct(ctx context.Context, desired Product, live *stripe.Product) (string, *ProductChange, error) {
+	if _, err := s.archiveProduct(ctx, live); err != nil {
 		return "", nil, err
 	}
 
@@ -113,47 +113,46 @@ func (s *Service) recreateProduct(ctx context.Context, desired Product, oldStrip
 		ProductName: desired.Name,
 		Action:      "recreated",
 		StripeID:    stripeProduct.ID,
-		Details:     []string{fmt.Sprintf("Recreated product %s as %s", oldStripeID, stripeProduct.ID)},
+		Details:     []string{fmt.Sprintf("Recreated product %s as %s", live.ID, stripeProduct.ID)},
 	}, nil
 }
 
-func (s *Service) archiveProductByStripeID(ctx context.Context, stripeID string) (*ProductChange, error) {
-	if stripeID == "free" {
-		return &ProductChange{
-			ProductID:   stripeID,
-			ProductName: fmt.Sprintf("Product %s", stripeID),
-			Action:      "archived_local",
-			Details:     []string{fmt.Sprintf("Archived free product: %s (local only)", stripeID)},
-		}, nil
+func productType(product Product) string {
+	if product.Type == "" {
+		return "service"
 	}
+	return product.Type
+}
 
-	getParams := &stripe.ProductRetrieveParams{}
-	s.stripe.ApplyAccount(getParams)
-	stripeProduct, err := s.stripe.Stripe.V1Products.Retrieve(ctx, stripeID, getParams)
-	if err != nil {
-		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
-			return &ProductChange{
-				ProductID:   stripeID,
-				ProductName: fmt.Sprintf("Product %s", stripeID),
-				Action:      "archived",
-				StripeID:    stripeID,
-				Details:     []string{fmt.Sprintf("Product %s not found in Stripe (already deleted/archived)", stripeID)},
-			}, nil
-		}
-		return nil, fmt.Errorf("failed to get product for archiving: %w", err)
+func productTypeOf(product *stripe.Product) string {
+	value := string(product.Type)
+	if value == "" {
+		return "service"
 	}
+	return value
+}
 
+func (s *Service) archiveProduct(ctx context.Context, product *stripe.Product) (*ProductChange, error) {
 	archiveParams := &stripe.ProductUpdateParams{Active: stripe.Bool(false)}
 	s.stripe.ApplyAccount(archiveParams)
-	if _, err := s.stripe.Stripe.V1Products.Update(ctx, stripeID, archiveParams); err != nil {
+	if _, err := s.stripe.Stripe.V1Products.Update(ctx, product.ID, archiveParams); err != nil {
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
+			return &ProductChange{
+				ProductID:   product.ID,
+				ProductName: product.Name,
+				Action:      "archived",
+				StripeID:    product.ID,
+				Details:     []string{fmt.Sprintf("Product %s already deleted/archived", product.ID)},
+			}, nil
+		}
 		return nil, fmt.Errorf("failed to archive product: %w", err)
 	}
 	return &ProductChange{
-		ProductID:   stripeID,
-		ProductName: stripeProduct.Name,
+		ProductID:   product.ID,
+		ProductName: product.Name,
 		Action:      "archived",
-		StripeID:    stripeID,
-		Details:     []string{fmt.Sprintf("Archived product: %s", stripeID)},
+		StripeID:    product.ID,
+		Details:     []string{fmt.Sprintf("Archived product: %s", product.ID)},
 	}, nil
 }
 
@@ -165,6 +164,20 @@ func (s *Service) unarchiveExistingProduct(ctx context.Context, productConfig Pr
 			Action:      "created_local",
 			Details:     []string{fmt.Sprintf("Created free product: %s (local only)", productConfig.ID)},
 		}, nil
+	}
+
+	getParams := &stripe.ProductRetrieveParams{}
+	s.stripe.ApplyAccount(getParams)
+	existing, err := s.stripe.Stripe.V1Products.Retrieve(ctx, productConfig.ID, getParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve existing Stripe product: %w", err)
+	}
+	if productType(productConfig) != productTypeOf(existing) {
+		_, change, recreateErr := s.recreateProduct(ctx, productConfig, existing)
+		if recreateErr != nil {
+			return nil, recreateErr
+		}
+		return change, nil
 	}
 
 	params := &stripe.ProductUpdateParams{

@@ -61,31 +61,25 @@ func (s *Service) updateCouponFromConfig(ctx context.Context, desired Coupon, st
 	}, nil
 }
 
-func (s *Service) deleteCouponByStripeID(ctx context.Context, stripeID string) (*CouponChange, error) {
-	getParams := &stripe.CouponRetrieveParams{}
-	s.stripe.ApplyAccount(getParams)
-	stripeCoupon, err := s.stripe.Stripe.V1Coupons.Retrieve(ctx, stripeID, getParams)
-	if err != nil {
-		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
-			return &CouponChange{
-				CouponID: stripeID,
-				Name:     stripeID,
-				Action:   "archived",
-				StripeID: stripeID,
-			}, nil
-		}
-		return nil, fmt.Errorf("failed to get coupon for deletion: %w", err)
-	}
+func (s *Service) deleteCoupon(ctx context.Context, coupon *stripe.Coupon) (*CouponChange, error) {
 	deleteParams := &stripe.CouponDeleteParams{}
 	s.stripe.ApplyAccount(deleteParams)
-	if _, err := s.stripe.Stripe.V1Coupons.Delete(ctx, stripeID, deleteParams); err != nil {
+	if _, err := s.stripe.Stripe.V1Coupons.Delete(ctx, coupon.ID, deleteParams); err != nil {
+		if stripeErr, ok := err.(*stripe.Error); ok && stripeErr.Code == stripe.ErrorCodeResourceMissing {
+			return &CouponChange{
+				CouponID: coupon.ID,
+				Name:     coupon.Name,
+				Action:   "archived",
+				StripeID: coupon.ID,
+			}, nil
+		}
 		return nil, fmt.Errorf("failed to delete coupon: %w", err)
 	}
 	return &CouponChange{
-		CouponID: stripeID,
-		Name:     stripeCoupon.Name,
+		CouponID: coupon.ID,
+		Name:     coupon.Name,
 		Action:   "archived",
-		StripeID: stripeID,
+		StripeID: coupon.ID,
 	}, nil
 }
 

@@ -177,6 +177,7 @@ func (s *Service) ensureWebhookRow(ctx context.Context, stripeID, url string, ev
 
 func (s *Service) listStripeWebhooks(ctx context.Context) ([]StripeWebhookInfo, error) {
 	params := &stripe.WebhookEndpointListParams{}
+	params.Limit = stripe.Int64(100)
 	s.stripe.ApplyAccount(params)
 
 	var out []StripeWebhookInfo

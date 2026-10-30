@@ -171,6 +171,7 @@ func TestReconcileLeavesMatchingResourcesUntouched(t *testing.T) {
 		}
 		switch r.URL.Path {
 		case "/v1/products":
+			assertActiveListParams(t, r)
 			writeJSON(t, w, map[string]any{
 				"object":   "list",
 				"has_more": false,
@@ -184,6 +185,7 @@ func TestReconcileLeavesMatchingResourcesUntouched(t *testing.T) {
 				}},
 			})
 		case "/v1/prices":
+			assertActiveListParams(t, r)
 			writeJSON(t, w, map[string]any{
 				"object":   "list",
 				"has_more": false,
@@ -223,6 +225,17 @@ func TestReconcileLeavesMatchingResourcesUntouched(t *testing.T) {
 	require.Empty(t, changes.Prices.Archived)
 	require.Equal(t, "prod_123", state.productStripeIDs["prod_a"])
 	require.Equal(t, "price_123", state.priceStripeIDs["price_a"])
+}
+
+func assertActiveListParams(t *testing.T, r *http.Request) {
+	t.Helper()
+	query := r.URL.Query()
+	if query.Get("active") != "true" {
+		t.Errorf("expected active=true, got %q", r.URL.RawQuery)
+	}
+	if query.Get("limit") != "100" {
+		t.Errorf("expected limit=100, got %q", r.URL.RawQuery)
+	}
 }
 
 func isListPath(path string) bool {
