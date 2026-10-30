@@ -143,9 +143,6 @@ func TestReconcileCreatesMissingResources(t *testing.T) {
 	require.Len(t, changes.PromotionCodes.Created, 1)
 	require.Equal(t, "prod_123", state.productStripeIDs["prod_a"])
 	require.Equal(t, "price_123", state.priceStripeIDs["price_a"])
-
-	require.Contains(t, state.mappings, mappingIntent{configItemID: "prod_a", stripeID: "prod_123", itemType: "product"})
-	require.Contains(t, state.mappings, mappingIntent{configItemID: "price_a", stripeID: "price_123", itemType: "price"})
 }
 
 func TestReconcileLeavesMatchingResourcesUntouched(t *testing.T) {

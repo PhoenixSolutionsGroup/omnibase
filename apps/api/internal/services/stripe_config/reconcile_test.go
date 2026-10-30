@@ -129,16 +129,6 @@ func TestPromoImmutableChanged(t *testing.T) {
 	require.False(t, promoImmutableChanged(changedActive, live, couponStripeID))
 }
 
-func TestReconcileStateRecordsMappings(t *testing.T) {
-	state := newReconcileState()
-	state.addMapping("prod_a", "prod_123", "product")
-	state.addMapping("", "prod_456", "product")
-	state.addMapping("price_a", "", "price")
-
-	require.Len(t, state.mappings, 1)
-	require.Equal(t, mappingIntent{configItemID: "prod_a", stripeID: "prod_123", itemType: "product"}, state.mappings[0])
-}
-
 func TestStringSetsEqual(t *testing.T) {
 	require.True(t, stringSetsEqual([]string{"a", "b"}, []string{"b", "a"}))
 	require.False(t, stringSetsEqual([]string{"a"}, []string{"a", "b"}))

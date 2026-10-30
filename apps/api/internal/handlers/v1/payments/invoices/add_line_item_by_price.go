@@ -53,11 +53,11 @@ func (h *Handler) AddLineItemByPrice(ctx context.Context, in *AddLineItemByPrice
 
 	stripePriceID := req.StripePriceID
 	if stripePriceID == "" {
-		mapping, err := h.billing.GetMappingByConfigID(ctx, req.PriceID, "price")
+		resolved, err := h.billing.GetStripePriceID(ctx, req.PriceID)
 		if err != nil {
-			return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price mapping found for config_id: %s", req.PriceID))
+			return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
 		}
-		stripePriceID = mapping.StripeID
+		stripePriceID = resolved
 	}
 
 	item, err := h.billing.AddInvoiceLineItemByPrice(ctx, billing.AddInvoiceLineItemByPriceArgs{

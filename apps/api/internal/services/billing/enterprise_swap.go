@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/stripe/stripe-go/v82"
+
+	"api/internal/services/stripe_config"
 )
 
 var (
@@ -25,11 +27,7 @@ func (s *Service) SwapSubscriptionItemPrice(ctx context.Context, subscriptionID,
 
 	var targetItemID string
 	for _, item := range sub.Items.Data {
-		mapping, mErr := s.GetMappingByStripeID(ctx, item.Price.ID)
-		if mErr != nil {
-			continue
-		}
-		if mapping.ConfigItemID == oldConfigPriceID {
+		if stripe_config.PriceConfigID(item.Price) == oldConfigPriceID {
 			targetItemID = item.ID
 			break
 		}
@@ -75,10 +73,10 @@ type ApplyEnterprisePricingResult struct {
 }
 
 type ApplyEnterprisePricingSwap struct {
-	SubscriptionID  string
+	SubscriptionID     string
 	SubscriptionItemID string
-	OldStripePrice  string
-	NewStripePrice  string
+	OldStripePrice     string
+	NewStripePrice     string
 }
 
 // ApplyEnterprisePricing walks every active subscription for the customer and

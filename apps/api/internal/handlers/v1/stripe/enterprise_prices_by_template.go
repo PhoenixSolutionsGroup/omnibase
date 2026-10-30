@@ -8,6 +8,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 
 	"api/internal/handlers"
+	"api/internal/logger"
 	"api/internal/services/stripe_config"
 )
 
@@ -40,13 +41,18 @@ func (h *Handler) GetPricesByTemplate(ctx context.Context, in *GetPricesByTempla
 
 func (h *Handler) collectEnterprisePrices(ctx context.Context, parsed *stripe_config.StripeConfiguration, match func(p stripe_config.Price) bool) []stripe_config.PriceWithStripeID {
 	out := []stripe_config.PriceWithStripeID{}
+	identity, err := h.stripeConfig.LoadStripeIdentity(ctx, parsed)
+	if err != nil {
+		logger.Logger.Warn("Failed to load Stripe identity for enterprise prices", "error", err)
+		identity = &stripe_config.StripeIdentity{}
+	}
 	for _, product := range parsed.Products {
 		for _, price := range product.Prices {
 			if !match(price) {
 				continue
 			}
 			pwid := stripe_config.PriceWithStripeID{Price: price}
-			if id, err := h.stripeConfig.GetStripeIDByConfigItemID(ctx, price.ID, "price"); err == nil && id != "" {
+			if id := identity.Prices[price.ID]; id != "" {
 				pwid.StripeID = &id
 			}
 			out = append(out, pwid)
