@@ -326,6 +326,32 @@ function loadStripeConfig(): any {
   return mergeConfigs(configPath);
 }
 
+function expandWebhookUrls(config: any, envName: string): any {
+  if (!config.webhooks || !Array.isArray(config.webhooks)) {
+    return config;
+  }
+
+  const rawEnv = loadRawEnv(envName);
+  const unresolved: string[] = [];
+  config.webhooks = config.webhooks.map((webhook: WebhookConfig) => {
+    const url = expandEnvVars(webhook.url, rawEnv);
+    if (!url) {
+      unresolved.push(webhook.id ?? webhook.url);
+      return webhook;
+    }
+    return { ...webhook, url };
+  });
+
+  if (unresolved.length > 0) {
+    throw new Error(
+      `Cannot resolve webhook URL for ${unresolved.join(
+        ", ",
+      )}. Set the missing environment variable in omnibase/.env.local.`,
+    );
+  }
+  return config;
+}
+
 /**
  * Push Stripe configuration to API (exported for sync command)
  */
@@ -334,23 +360,9 @@ export async function pushStripeConfig(envOverride?: string): Promise<void> {
   const config = loadStripeConfig();
 
   const envConfig = await selectEnvironment(envOverride);
-  const rawEnv = loadRawEnv(envConfig.name);
+  expandWebhookUrls(config, envConfig.name);
   const sdkConfig = createOmnibaseSDKConfig(envConfig);
   const configApi = new V1ConfigurationApi(sdkConfig);
-
-  // Expand environment variables in webhook URLs before pushing
-  if (config.webhooks && Array.isArray(config.webhooks)) {
-    config.webhooks = config.webhooks.flatMap((webhook: WebhookConfig) => {
-      const url = expandEnvVars(webhook.url, rawEnv);
-      if (!url) {
-        logger.warn(
-          `Skipping webhook '${webhook.id ?? webhook.url}' because its URL has unresolved variables`,
-        );
-        return [];
-      }
-      return [{ ...webhook, url }];
-    });
-  }
 
   logger.succeed("Successfully loaded config");
   logger.start("Pushing to Stripe...");
@@ -494,23 +506,9 @@ export function addStripeCommands(program: Command): void {
 
         const envOverride = options.env || program.opts().env;
         const envConfig = await selectEnvironment(envOverride);
-        const rawEnv = loadRawEnv(envConfig.name);
+        expandWebhookUrls(config, envConfig.name);
         const sdkConfig = createOmnibaseSDKConfig(envConfig);
         const configApi = new V1ConfigurationApi(sdkConfig);
-
-        if (config.webhooks && Array.isArray(config.webhooks)) {
-          config.webhooks = config.webhooks.map((webhook: WebhookConfig) => {
-            const url = expandEnvVars(webhook.url, rawEnv);
-            if (!url) {
-              throw new Error(
-                `Cannot resolve webhook URL for '${
-                  webhook.id ?? webhook.url
-                }'. Set the missing environment variable in omnibase/.env.local.`,
-              );
-            }
-            return { ...webhook, url };
-          });
-        }
 
         if (!options.json) {
           logger.succeed("Successfully loaded config");
@@ -571,17 +569,9 @@ export function addStripeCommands(program: Command): void {
 
         const envOverride = options.env || program.opts().env;
         const envConfig = await selectEnvironment(envOverride);
-        const rawEnv = loadRawEnv(envConfig.name);
+        expandWebhookUrls(config, envConfig.name);
         const sdkConfig = createOmnibaseSDKConfig(envConfig);
         const configApi = new V1ConfigurationApi(sdkConfig);
-
-        // Expand environment variables in webhook URLs before pushing
-        if (config.webhooks && Array.isArray(config.webhooks)) {
-          config.webhooks = config.webhooks.map((webhook: WebhookConfig) => ({
-            ...webhook,
-            url: expandEnvVars(webhook.url, rawEnv),
-          }));
-        }
 
         logger.succeed("Successfully loaded config");
         logger.start("Pushing configuration to Stripe...");
