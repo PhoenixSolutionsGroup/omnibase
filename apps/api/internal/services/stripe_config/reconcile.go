@@ -10,12 +10,6 @@ import (
 	"api/internal/logger"
 )
 
-type mappingIntent struct {
-	configItemID string
-	stripeID     string
-	itemType     string
-}
-
 type reconcileState struct {
 	productStripeIDs     map[string]string
 	priceStripeIDs       map[string]string
@@ -26,7 +20,6 @@ type reconcileState struct {
 	recreatedProducts    map[string]bool
 	recreatedMeters      map[string]bool
 	recreatedCoupons     map[string]string
-	mappings             []mappingIntent
 }
 
 func newReconcileState() *reconcileState {
@@ -40,17 +33,6 @@ func newReconcileState() *reconcileState {
 		recreatedMeters:      make(map[string]bool),
 		recreatedCoupons:     make(map[string]string),
 	}
-}
-
-func (state *reconcileState) addMapping(configItemID, stripeID, itemType string) {
-	if configItemID == "" || stripeID == "" {
-		return
-	}
-	state.mappings = append(state.mappings, mappingIntent{
-		configItemID: configItemID,
-		stripeID:     stripeID,
-		itemType:     itemType,
-	})
 }
 
 func (s *Service) reconcile(ctx context.Context, config *StripeConfiguration, state *reconcileState) (*ConfigChanges, error) {
@@ -305,7 +287,6 @@ func (s *Service) reconcileMeters(ctx context.Context, config *StripeConfigurati
 				return err
 			}
 			state.meterStripeIDs[meter.ID] = stripeID
-			state.addMapping(meter.ID, stripeID, "meter")
 			changes.Meters.Created = append(changes.Meters.Created, MeterChange{
 				MeterID:     meter.ID,
 				DisplayName: meter.DisplayName,
@@ -326,7 +307,6 @@ func (s *Service) reconcileMeters(ctx context.Context, config *StripeConfigurati
 				return err
 			}
 			state.meterStripeIDs[meter.ID] = stripeID
-			state.addMapping(meter.ID, stripeID, "meter")
 			changes.Meters.Updated = append(changes.Meters.Updated, MeterChange{
 				MeterID:     meter.ID,
 				DisplayName: meter.DisplayName,
@@ -337,7 +317,6 @@ func (s *Service) reconcileMeters(ctx context.Context, config *StripeConfigurati
 		}
 
 		state.meterStripeIDs[meter.ID] = live.ID
-		state.addMapping(meter.ID, live.ID, "meter")
 		if live.DisplayName != meter.DisplayName {
 			change, err := s.updateMeterDisplayName(ctx, live.ID, meter.DisplayName)
 			if err != nil {
@@ -362,14 +341,12 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 				return err
 			}
 			state.productStripeIDs[product.ID] = change.StripeID
-			state.addMapping(product.ID, change.StripeID, "product")
 			changes.Products.Created = append(changes.Products.Created, *change)
 			continue
 		}
 
 		state.productStripeIDs[product.ID] = live.ID
 		state.currentDefaultPrices[product.ID] = defaultPriceID(live)
-		state.addMapping(product.ID, live.ID, "product")
 
 		if productConfigHash(product) == live.Metadata[MetadataKeyHash] && !productNeedsRecreate(product, live) {
 			if !live.Active {
@@ -389,7 +366,6 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 			state.productStripeIDs[product.ID] = newStripeID
 			state.currentDefaultPrices[product.ID] = ""
 			state.recreatedProducts[product.ID] = true
-			state.addMapping(product.ID, newStripeID, "product")
 			changes.Products.Updated = append(changes.Products.Updated, *change)
 			continue
 		}
@@ -426,7 +402,6 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 					return err
 				}
 				state.priceStripeIDs[price.ID] = stripeID
-				state.addMapping(price.ID, stripeID, "price")
 				changes.Prices.Created = append(changes.Prices.Created, PriceChange{
 					PriceID:   price.ID,
 					ProductID: product.ID,
@@ -437,7 +412,6 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 			}
 
 			state.priceStripeIDs[price.ID] = live.ID
-			state.addMapping(price.ID, live.ID, "price")
 			if !forceRecreate && priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
 				if !live.Active {
 					if err := s.setPriceActive(ctx, live.ID, true); err != nil {
@@ -463,7 +437,6 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 				return err
 			}
 			state.priceStripeIDs[price.ID] = stripeID
-			state.addMapping(price.ID, stripeID, "price")
 			changes.Prices.Updated = append(changes.Prices.Updated, PriceChange{
 				PriceID:   price.ID,
 				ProductID: product.ID,
@@ -485,13 +458,11 @@ func (s *Service) reconcileCoupons(ctx context.Context, config *StripeConfigurat
 				return err
 			}
 			state.couponStripeIDs[coupon.ID] = change.StripeID
-			state.addMapping(coupon.ID, change.StripeID, "coupon")
 			changes.Coupons.Created = append(changes.Coupons.Created, *change)
 			continue
 		}
 
 		state.couponStripeIDs[coupon.ID] = live.ID
-		state.addMapping(coupon.ID, live.ID, "coupon")
 
 		if couponConfigHash(coupon) == live.Metadata[MetadataKeyHash] && !couponImmutableChanged(coupon, live, productConfigByStripeID) {
 			continue
@@ -506,7 +477,6 @@ func (s *Service) reconcileCoupons(ctx context.Context, config *StripeConfigurat
 			}
 			state.couponStripeIDs[coupon.ID] = newStripeID
 			state.recreatedCoupons[coupon.ID] = newStripeID
-			state.addMapping(coupon.ID, newStripeID, "coupon")
 			changes.Coupons.Updated = append(changes.Coupons.Updated, *change)
 			continue
 		}
@@ -534,12 +504,9 @@ func (s *Service) reconcilePromotionCodes(ctx context.Context, config *StripeCon
 			if err != nil {
 				return err
 			}
-			state.addMapping(promo.ID, change.StripeID, "promotion_code")
 			changes.PromotionCodes.Created = append(changes.PromotionCodes.Created, *change)
 			continue
 		}
-
-		state.addMapping(promo.ID, live.ID, "promotion_code")
 
 		if !couponRecreated && promoConfigHash(promo) == live.Metadata[MetadataKeyHash] && !promoImmutableChanged(promo, live, couponStripeID) {
 			if live.Active != desiredPromoActive(promo) {
@@ -559,7 +526,6 @@ func (s *Service) reconcilePromotionCodes(ctx context.Context, config *StripeCon
 			if err != nil {
 				return err
 			}
-			state.addMapping(promo.ID, change.StripeID, "promotion_code")
 			changes.PromotionCodes.Updated = append(changes.PromotionCodes.Updated, *change)
 			continue
 		}

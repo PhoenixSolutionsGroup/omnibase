@@ -77,14 +77,18 @@ func (h *Handler) enterpriseCandidatesByID(ctx context.Context, enterpriseID str
 	if err != nil {
 		return nil, err
 	}
+	identity, err := h.stripeConfig.LoadStripeIdentity(ctx, parsed)
+	if err != nil {
+		return nil, err
+	}
 	var out []billing.EnterprisePriceCandidate
 	for _, product := range parsed.Products {
-		productStripeID, _ := h.stripeConfig.GetStripeIDByConfigItemID(ctx, product.ID, "product")
+		productStripeID := identity.Products[product.ID]
 		for _, price := range product.Prices {
 			if price.EnterpriseID != enterpriseID {
 				continue
 			}
-			priceStripeID, _ := h.stripeConfig.GetStripeIDByConfigItemID(ctx, price.ID, "price")
+			priceStripeID := identity.Prices[price.ID]
 			if priceStripeID == "" {
 				continue
 			}

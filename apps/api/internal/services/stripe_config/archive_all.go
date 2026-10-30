@@ -126,5 +126,6 @@ func (s *Service) ArchiveAll(ctx context.Context) (*ArchiveAllResult, error) {
 	}); err != nil {
 		return nil, fmt.Errorf("%w: persist empty config: %w", ArchiveAllError, err)
 	}
+	s.invalidateIdentityCache()
 	return result, nil
 }

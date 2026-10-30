@@ -26,8 +26,6 @@ function instanceOfConvertStripeIDResponse(value) {
         return false;
     if (!('configUuid' in value) || value['configUuid'] === undefined)
         return false;
-    if (!('historyCount' in value) || value['historyCount'] === undefined)
-        return false;
     if (!('itemType' in value) || value['itemType'] === undefined)
         return false;
     if (!('stripeId' in value) || value['stripeId'] === undefined)
@@ -44,7 +42,6 @@ function ConvertStripeIDResponseFromJSONTyped(json, ignoreDiscriminator) {
     return {
         'configId': json['config_id'],
         'configUuid': json['config_uuid'],
-        'historyCount': json['history_count'],
         'itemType': json['item_type'],
         'stripeId': json['stripe_id'],
     };
@@ -59,7 +56,6 @@ function ConvertStripeIDResponseToJSONTyped(value, ignoreDiscriminator = false) 
     return {
         'config_id': value['configId'],
         'config_uuid': value['configUuid'],
-        'history_count': value['historyCount'],
         'item_type': value['itemType'],
         'stripe_id': value['stripeId'],
     };

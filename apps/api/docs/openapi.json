@@ -586,10 +586,6 @@
           "config_uuid": {
             "type": "string"
           },
-          "history_count": {
-            "format": "int64",
-            "type": "integer"
-          },
           "item_type": {
             "type": "string"
           },
@@ -601,8 +597,7 @@
           "stripe_id",
           "config_id",
           "item_type",
-          "config_uuid",
-          "history_count"
+          "config_uuid"
         ],
         "type": "object"
       },

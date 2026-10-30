@@ -36,7 +36,7 @@ func (h *Handler) GetConfig(ctx context.Context, _ *GetConfigInput) (*GetConfigO
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetConfigError, err).Error())
 	}
 	publicConfig := filterPublicPrices(*parsed)
-	configWithIDs := h.addStripeIDsToConfig(ctx, publicConfig, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, publicConfig)
 
 	return &GetConfigOutput{Body: StripeConfigResponse{
 		ID:        row.ID,

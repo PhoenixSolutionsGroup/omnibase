@@ -43,7 +43,7 @@ func (h *Handler) GetProductByID(ctx context.Context, in *GetProductInput) (*Get
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetProductError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed)
 	for _, p := range configWithIDs.Products {
 		if p.ID == in.ProductID {
 			return &GetProductOutput{Body: GetProductResponse{Product: p}}, nil

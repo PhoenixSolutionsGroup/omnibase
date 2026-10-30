@@ -6,8 +6,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	"api/internal/database/repository"
 )
 
@@ -32,13 +30,10 @@ func (s *Service) Sync(ctx context.Context, args SyncArgs) (*ConfigResponse, err
 		return nil, fmt.Errorf("%w: %w", SyncError, err)
 	}
 
-	newConfig, err := s.saveConfig(ctx, args.Config, config.Version)
-	if err != nil {
+	if _, err := s.saveConfig(ctx, args.Config, config.Version); err != nil {
 		return nil, err
 	}
-	if err := s.flushMappings(ctx, newConfig.ID, state.mappings); err != nil {
-		return nil, err
-	}
+	s.invalidateIdentityCache()
 
 	return &ConfigResponse{
 		Message: "StripeConfiguration updated successfully",
@@ -60,13 +55,4 @@ func (s *Service) saveConfig(ctx context.Context, raw ConfigData, version string
 		return nil, fmt.Errorf("%w: failed to save config: %w", SyncError, err)
 	}
 	return &row, nil
-}
-
-func (s *Service) flushMappings(ctx context.Context, configID uuid.UUID, intents []mappingIntent) error {
-	for _, intent := range intents {
-		if err := s.SaveMapping(ctx, configID, intent.configItemID, intent.stripeID, intent.itemType); err != nil {
-			return err
-		}
-	}
-	return nil
 }

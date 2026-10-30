@@ -17,12 +17,12 @@ import (
 var GetConfigHistoryError = errors.New("Failed to get stripe configuration history")
 
 type ConfigHistoryItem struct {
-	ID         uuid.UUID                          `json:"id" required:"true"`
+	ID         uuid.UUID                                `json:"id" required:"true"`
 	Config     stripe_config.StripeConfigurationWithIDs `json:"config" required:"true"`
-	Version    string                             `json:"version" required:"true"`
-	CreatedAt  string                             `json:"created_at" required:"true"`
-	UpdatedAt  string                             `json:"updated_at" required:"true"`
-	ParseError *string                            `json:"parse_error,omitempty"`
+	Version    string                                   `json:"version" required:"true"`
+	CreatedAt  string                                   `json:"created_at" required:"true"`
+	UpdatedAt  string                                   `json:"updated_at" required:"true"`
+	ParseError *string                                  `json:"parse_error,omitempty"`
 }
 
 type ConfigHistoryPagination struct {
@@ -112,7 +112,7 @@ func (h *Handler) GetConfigHistory(ctx context.Context, in *GetConfigHistoryInpu
 		}
 		items = append(items, ConfigHistoryItem{
 			ID:        row.ID,
-			Config:    h.addStripeIDsToConfig(ctx, *parsed, row.ID),
+			Config:    h.addStripeIDsToConfig(ctx, *parsed),
 			Version:   row.Version,
 			CreatedAt: row.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 			UpdatedAt: row.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),

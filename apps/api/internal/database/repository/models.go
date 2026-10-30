@@ -106,17 +106,6 @@ type StripeStripeConfig struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type StripeStripeIDMapping struct {
-	ID              uuid.UUID `json:"id"`
-	ConfigID        uuid.UUID `json:"config_id"`
-	ConfigItemID    string    `json:"config_item_id"`
-	StripeID        string    `json:"stripe_id"`
-	ItemType        string    `json:"item_type"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
-	StripeIDHistory []string  `json:"stripe_id_history"`
-}
-
 type StripeStripeWebhook struct {
 	ID        uuid.UUID  `json:"id"`
 	StripeID  string     `json:"stripe_id"`

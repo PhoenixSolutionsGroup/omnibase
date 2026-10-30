@@ -1,6 +1,8 @@
 package stripe_config
 
 import (
+	"sync"
+
 	"api/internal/database/repository"
 	"api/internal/services"
 	"api/internal/services/stripe_client"
@@ -12,6 +14,9 @@ type Service struct {
 	encryption *services.EncryptionService
 	managed    *ManagedHostingClient
 	validator  *Validator
+
+	identityMu    sync.Mutex
+	identityCache *identityCache
 }
 
 type Deps struct {

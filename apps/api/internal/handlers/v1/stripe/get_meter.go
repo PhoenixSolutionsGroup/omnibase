@@ -43,7 +43,7 @@ func (h *Handler) GetMeterByID(ctx context.Context, in *GetMeterInput) (*GetMete
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", GetMeterError, err).Error())
 	}
-	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed, row.ID)
+	configWithIDs := h.addStripeIDsToConfig(ctx, *parsed)
 	for _, m := range configWithIDs.Meters {
 		if m.ID == in.MeterID {
 			return &GetMeterOutput{Body: GetMeterResponse{Meter: m}}, nil

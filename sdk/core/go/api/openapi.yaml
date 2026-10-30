@@ -4062,7 +4062,6 @@ components:
       example:
         config_uuid: config_uuid
         config_id: config_id
-        history_count: 0
         item_type: item_type
         stripe_id: stripe_id
       properties:
@@ -4070,9 +4069,6 @@ components:
           type: string
         config_uuid:
           type: string
-        history_count:
-          format: int64
-          type: integer
         item_type:
           type: string
         stripe_id:
@@ -4080,7 +4076,6 @@ components:
       required:
       - config_id
       - config_uuid
-      - history_count
       - item_type
       - stripe_id
     Coupon:
