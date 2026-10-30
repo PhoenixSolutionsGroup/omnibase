@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var PullConfigError = errors.New("Failed to pull stripe configuration")
@@ -264,7 +263,9 @@ func convertStripeCouponToConfig(sc *stripe.Coupon) Coupon {
 		cc.AppliesTo = sc.AppliesTo.Products
 	}
 	if len(sc.Metadata) > 0 {
-		cc.Metadata = sc.Metadata
+		if metadata := stripManagedMetadata(sc.Metadata); len(metadata) > 0 {
+			cc.Metadata = metadata
+		}
 	}
 	return cc
 }
@@ -301,7 +302,9 @@ func convertStripePromoCodeToConfig(sp *stripe.PromotionCode, coupons []Coupon) 
 		cp.ExpiresAt = &sp.ExpiresAt
 	}
 	if len(sp.Metadata) > 0 {
-		cp.Metadata = sp.Metadata
+		if metadata := stripManagedMetadata(sp.Metadata); len(metadata) > 0 {
+			cp.Metadata = metadata
+		}
 	}
 	return cp
 }

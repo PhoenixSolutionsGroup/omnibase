@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var CreatePriceError = errors.New("Failed to create stripe price")
@@ -15,7 +14,7 @@ var CreatePriceError = errors.New("Failed to create stripe price")
 func (s *Service) createPricesForProduct(ctx context.Context, productConfig Product, stripeProductID string, configID uuid.UUID) ([]string, error) {
 	var details []string
 	for _, priceConfig := range productConfig.Prices {
-		stripeID, detail, err := s.createPriceInternal(ctx, priceConfig, stripeProductID, configID)
+		stripeID, detail, err := s.createPriceInternal(ctx, priceConfig, stripeProductID, configID, false)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create price %s: %w", priceConfig.ID, err)
 		}
@@ -34,8 +33,8 @@ func (s *Service) createPricesForProduct(ctx context.Context, productConfig Prod
 	return details, nil
 }
 
-func (s *Service) createPrice(ctx context.Context, priceConfig Price, productID string, configID uuid.UUID) (string, error) {
-	stripeID, _, err := s.createPriceInternal(ctx, priceConfig, productID, configID)
+func (s *Service) createPrice(ctx context.Context, priceConfig Price, productID string, configID uuid.UUID, transferLookupKey bool) (string, error) {
+	stripeID, _, err := s.createPriceInternal(ctx, priceConfig, productID, configID, transferLookupKey)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +48,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, productID 
 	return stripeID, nil
 }
 
-func (s *Service) createPriceInternal(ctx context.Context, priceConfig Price, stripeProductID string, configID uuid.UUID) (string, string, error) {
+func (s *Service) createPriceInternal(ctx context.Context, priceConfig Price, stripeProductID string, configID uuid.UUID, transferLookupKey bool) (string, string, error) {
 	if priceConfig.StripeID != "" {
 		existing, err := s.GetMapping(ctx, priceConfig.ID, "price")
 		if err != nil {
@@ -58,6 +57,17 @@ func (s *Service) createPriceInternal(ctx context.Context, priceConfig Price, st
 		if existing != nil {
 			return existing.StripeID, fmt.Sprintf("Skipped price %s as stripe_id has already been linked to %s. Remove the stripe_id mapping to modify this resource.",
 				priceConfig.ID, existing.StripeID), nil
+		}
+		tagParams := &stripe.PriceUpdateParams{
+			LookupKey: stripe.String(priceConfig.ID),
+			Metadata:  managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
+		}
+		if transferLookupKey {
+			tagParams.TransferLookupKey = stripe.Bool(true)
+		}
+		s.stripe.ApplyAccount(tagParams)
+		if _, err := s.stripe.Stripe.V1Prices.Update(ctx, priceConfig.StripeID, tagParams); err != nil {
+			return "", "", fmt.Errorf("failed to tag linked price %s: %w", priceConfig.ID, err)
 		}
 		if configID != uuid.Nil {
 			if err := s.SaveMapping(ctx, configID, priceConfig.ID, priceConfig.StripeID, "price"); err != nil {
@@ -77,8 +87,11 @@ func (s *Service) createPriceInternal(ctx context.Context, priceConfig Price, st
 	}
 
 	params := &stripe.PriceCreateParams{
-		Product:  stripe.String(stripeProductID),
-		Currency: stripe.String(priceConfig.Currency),
+		Product:           stripe.String(stripeProductID),
+		Currency:          stripe.String(priceConfig.Currency),
+		LookupKey:         stripe.String(priceConfig.ID),
+		TransferLookupKey: stripe.Bool(transferLookupKey),
+		Metadata:          managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
 	}
 	taxBehavior := "exclusive"
 	if priceConfig.TaxIncludedInPrice != nil && *priceConfig.TaxIncludedInPrice {

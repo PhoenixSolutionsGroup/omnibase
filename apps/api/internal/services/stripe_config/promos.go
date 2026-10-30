@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
-
 )
 
 var CreatePromotionCodeError = errors.New("Failed to create stripe promotion code")
@@ -24,6 +23,13 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig Promotion
 				Code:    promoConfig.Code,
 				Action:  "skipped",
 			}, nil
+		}
+		tagParams := &stripe.PromotionCodeUpdateParams{
+			Metadata: managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata),
+		}
+		s.stripe.ApplyAccount(tagParams)
+		if _, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, promoConfig.StripeID, tagParams); err != nil {
+			return nil, fmt.Errorf("failed to tag linked promotion code %s: %w", promoConfig.ID, err)
 		}
 		if configID != uuid.Nil {
 			if err := s.SaveMapping(ctx, configID, promoConfig.ID, promoConfig.StripeID, "promotion_code"); err != nil {
@@ -43,6 +49,7 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig Promotion
 		return nil, fmt.Errorf("failed to resolve coupon ID %s: %w", promoConfig.Coupon, err)
 	}
 	params := buildPromotionCodeCreateParams(promoConfig, couponStripeID)
+	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
 	s.stripe.ApplyAccount(params)
 	stripePromo, err := s.stripe.Stripe.V1PromotionCodes.Create(ctx, params)
 	if err != nil {
@@ -61,23 +68,20 @@ func (s *Service) createPromotionCode(ctx context.Context, promoConfig Promotion
 	}, nil
 }
 
-func (s *Service) updatePromotionCode(ctx context.Context, update PromoCodeUpdate) (*PromotionCodeChange, error) {
+func (s *Service) updatePromotionCode(ctx context.Context, update PromoCodeUpdate, desired PromotionCode) (*PromotionCodeChange, error) {
 	stripeID, err := s.GetStripeIDByConfigItemID(ctx, update.ID, "promotion_code")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get Stripe ID for promotion code: %w", err)
 	}
-	if len(update.FieldChanges) > 0 {
-		params := &stripe.PromotionCodeUpdateParams{}
-		if active, ok := update.FieldChanges["active"].(bool); ok {
-			params.Active = stripe.Bool(active)
-		}
-		if metadata, ok := update.FieldChanges["metadata"].(map[string]string); ok {
-			params.Metadata = metadata
-		}
-		s.stripe.ApplyAccount(params)
-		if _, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, stripeID, params); err != nil {
-			return nil, fmt.Errorf("failed to update promotion code: %w", err)
-		}
+	params := &stripe.PromotionCodeUpdateParams{
+		Metadata: managedMetadata("promotion_code", desired.ID, promoConfigHash(desired), desired.Metadata),
+	}
+	if active, ok := update.FieldChanges["active"].(bool); ok {
+		params.Active = stripe.Bool(active)
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1PromotionCodes.Update(ctx, stripeID, params); err != nil {
+		return nil, fmt.Errorf("failed to update promotion code: %w", err)
 	}
 	code := ""
 	if c, ok := update.FieldChanges["code"].(string); ok {
@@ -129,6 +133,7 @@ func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig Promoti
 		return nil, fmt.Errorf("failed to resolve coupon ID %s: %w", promoConfig.Coupon, err)
 	}
 	params := buildPromotionCodeCreateParams(promoConfig, couponStripeID)
+	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
 	if promoConfig.Active == nil {
 		params.Active = stripe.Bool(true)
 	}
@@ -152,6 +157,7 @@ func (s *Service) recreatePromotionCode(ctx context.Context, promoConfig Promoti
 
 func (s *Service) createPromotionCodeWithNewCoupon(ctx context.Context, promoConfig PromotionCode, newCouponStripeID string, configID uuid.UUID) (*PromotionCodeChange, error) {
 	params := buildPromotionCodeCreateParams(promoConfig, newCouponStripeID)
+	params.Metadata = managedMetadata("promotion_code", promoConfig.ID, promoConfigHash(promoConfig), promoConfig.Metadata)
 	if promoConfig.Active == nil {
 		params.Active = stripe.Bool(true)
 	}
