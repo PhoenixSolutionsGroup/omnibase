@@ -394,15 +394,11 @@ Omnibase archives resources instead of deleting them because Stripe doesn't allo
 
 ## ID Mapping
 
-Omnibase maintains a mapping between your config IDs and Stripe's generated IDs:
-
-| Config ID | Stripe ID | Item Type |
-|-----------|-----------|-----------|
-| `pro_monthly` | `price_1ABC123...` | price |
-| `pro` | `prod_XYZ789...` | product |
-| `api_calls` | `mtr_DEF456...` | meter |
+Every Stripe object Omnibase manages carries its config ID. Products, coupons, promotion codes and webhooks store it in `metadata.omnibase_id`. Prices also use it as their `lookup_key`. Meters have no metadata and are matched by `event_name`.
 
 ### Convert IDs
+
+Resolve a Stripe ID (for example from a webhook payload) to its config ID. Requires the service key or an app key.
 
 ```bash
 GET /api/v1/stripe/convert/stripe-id/price_1ABC123
@@ -412,10 +408,10 @@ Returns:
 
 ```json
 {
-  "config_id": "pro_monthly",
   "stripe_id": "price_1ABC123...",
+  "config_id": "pro_monthly",
   "item_type": "price",
-  "history_count": 2
+  "config_uuid": "8f3c..."
 }
 ```
 

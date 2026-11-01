@@ -6578,6 +6578,14 @@
             "description": "Error"
           }
         },
+        "security": [
+          {
+            "ServiceKeyAuth": []
+          },
+          {
+            "AppKeyAuth": []
+          }
+        ],
         "summary": "Convert Stripe ID to config ID",
         "tags": [
           "V1Stripe"
