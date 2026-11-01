@@ -25,7 +25,7 @@ export const CheckboxCard = ({
   onCheckedChange,
 }: Props) => {
   return (
-    <FieldLabel htmlFor={id}>
+    <FieldLabel htmlFor={id} className="cursor-pointer">
       <Field orientation="horizontal">
         <Checkbox
           id={id}

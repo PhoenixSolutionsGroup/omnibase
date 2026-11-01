@@ -51,6 +51,8 @@ import { Badge } from "./ui/badge";
 import formatPrice from "@/lib/currency";
 import { Checkbox } from "./ui/checkbox";
 import { CheckboxCard } from "./ui/checkbox-card";
+import { RadioGroupChoiceCard } from "./ui/radio-group-choice-card";
+import { RadioGroup } from "./ui/radio-group";
 
 type Tier = {
   id: string;
@@ -91,100 +93,22 @@ type FormData = {
   region: string;
 };
 
+// A plan's id is the id of the tier it maps to.
+// Specs (vCPU, memory, storage) are read from that tier.
 type Plan = {
   id: string;
   name: string;
   deployment_type: string;
   description: string;
-  tier: string;
   price_cents: number;
-  vcpus: number;
-  memory_gb: number;
-  database_storage_limit_gb: number;
   most_popular?: boolean;
 };
-
-const plans: Plan[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    deployment_type: "Shared",
-    description: "Perfect for small projects and prototypes.",
-    tier: "Shared Free",
-    price_cents: 199,
-    vcpus: 1,
-    memory_gb: 1,
-    database_storage_limit_gb: 1,
-    // 1 option - $3.99 billed annually, or $4.99 a month
-  },
-
-  {
-    id: "basic",
-    name: "Basic",
-    deployment_type: "Scaled",
-    description: "Perfect for medium projects.",
-    most_popular: true,
-    tier: "Scale 1 vCPU",
-    price_cents: 499,
-    vcpus: 1,
-    memory_gb: 1,
-    database_storage_limit_gb: 64,
-    // scale (4 options - 1CPU 1GB $X dollars (idk yet), 2 CPU 2GB $Y dollars, 4CPU 4GB $Z)
-  },
-
-  {
-    id: "pro",
-    name: "Pro",
-    deployment_type: "Dedicated",
-    description: "Perfect for enterprise applications.",
-    tier: "Dedicated 4 vCPU",
-    price_cents: 2999,
-    vcpus: 16,
-    memory_gb: 32,
-    database_storage_limit_gb: 156,
-    // dedicated (we’d have a fuck tonne here)
-    //       Like (btw it is CPU/RAM for the following):
-    // * 1/2
-    // * ⁠1/4
-    // * ⁠2/4
-    // * ⁠2/8
-    // * ⁠4/8
-    // * ⁠4/16
-    // * ⁠8/16
-    // * ⁠8/32
-    // * ⁠192/1536 - absolute fuck tonne of money but we can offer it haha
-  },
-];
 
 type PlanOptions = {
   id: string;
   title: string;
   description: string;
 };
-
-const planOptions: PlanOptions[] = [
-  {
-    id: "postgres",
-    title: "Postgres",
-    description: "Managed Postgres with connection pooling and backups.",
-  },
-  {
-    id: "omnibase",
-    title: "Omnibase",
-    description:
-      "Entire backend in one service. Email, storage, auth and payments  switch on the first time you use them.",
-  },
-  {
-    id: "dataAPI",
-    title: "Data API",
-    description: "Instant REST API over your public schema.",
-  },
-  {
-    id: "workers",
-    title: "Workers",
-    description: "Run function at the edge, close to your users.",
-  },
-];
 
 interface ProvisioningFormProps {
   mode: "project" | "branch";
@@ -206,6 +130,69 @@ function sortTiers(tiers: Tier[]): Tier[] {
     return a.vcpus - b.vcpus;
   });
 }
+
+function formatMemory(memoryGb: number): string {
+  return memoryGb >= 1 ? `${memoryGb} GB` : `${Math.round(memoryGb * 1024)} MB`;
+}
+
+const planOptions: PlanOptions[] = [
+  {
+    id: "postgres",
+    title: "Postgres",
+    description: "Managed Postgres with connection pooling and backups.",
+  },
+  {
+    id: "omnibase",
+    title: "Omnibase",
+    description:
+      "Entire backend in one service. Email, storage, auth and payments  switch on the first time you use them.",
+  },
+  {
+    id: "dataAPI",
+    title: "Data API",
+    description:
+      "Instant REST API over your public schema. (Requires Postgres)",
+  },
+  {
+    id: "workers",
+    title: "Workers",
+    description: "Run function at the edge, close to your users.",
+  },
+];
+
+const DEFAULT_OPTIONS: Record<string, boolean> = {
+  postgres: true,
+  omnibase: true,
+  dataAPI: true,
+  workers: false,
+};
+
+const DEFAULT_PLAN_ID = "scale_1c";
+
+const plans: Plan[] = [
+  {
+    id: "shared_starter",
+    name: "Starter",
+    deployment_type: "Shared",
+    description: "Perfect for small projects and prototypes.",
+    price_cents: 199,
+  },
+  {
+    id: "scale_1c",
+    name: "Basic",
+    deployment_type: "Scaled",
+    description: "Perfect for medium sized projects.",
+    most_popular: true,
+    price_cents: 499,
+  },
+  {
+    id: "dedicated_4c",
+    name: "Pro",
+    deployment_type: "Dedicated",
+    description: "Perfect for enterprise applications.",
+    price_cents: 2999,
+  },
+];
 
 interface RegionComboboxProps {
   regions: Region[];
@@ -392,6 +379,37 @@ function RegionCombobox({
   );
 }
 
+function SummaryRow({
+  label,
+  value,
+  muted = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  muted?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-4">
+      <span
+        className={cn(
+          "text-sm font-medium col-span-2",
+          muted && "text-muted-foreground",
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          "text-sm font-medium text-end col-span-2",
+          muted && "text-muted-foreground",
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export function ProvisioningForm({
   mode,
   projectId,
@@ -401,6 +419,8 @@ export function ProvisioningForm({
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [options, setOptions] = React.useState<OptionsResponse | null>(null);
+  const [selectedOptions, setSelectedOptions] =
+    React.useState<Record<string, boolean>>(DEFAULT_OPTIONS);
 
   const isBranchMode = mode === "branch";
 
@@ -417,11 +437,6 @@ export function ProvisioningForm({
     throw new Error("Must set NEXT_PUBLIC_MANAGED_HOSTING_API_URL");
   }
 
-  const sortedTiers = React.useMemo(
-    () => (options ? sortTiers(options.tiers) : []),
-    [options],
-  );
-
   React.useEffect(() => {
     async function fetchOptions() {
       try {
@@ -433,7 +448,11 @@ export function ProvisioningForm({
         setOptions(data);
 
         const tiers = sortTiers(data.tiers);
-        const firstTier = tiers[0];
+        const planIds = new Set(plans.map((p) => p.id));
+        const firstTier =
+          tiers.find((t) => t.id === DEFAULT_PLAN_ID) ??
+          tiers.find((t) => planIds.has(t.id)) ??
+          tiers[0];
         const firstRegion =
           data.regions.find((r) => firstTier?.regions?.includes(r.id)) ??
           data.regions[0];
@@ -453,11 +472,23 @@ export function ProvisioningForm({
     fetchOptions();
   }, [managed_hosting_url]);
 
-  const [selectedPlan, setSelectedPlan] = React.useState<Plan>(plans[1]);
   const selectedTier = React.useMemo(() => {
     if (!options) return null;
     return options.tiers.find((t) => t.id === formData.deployment_tier) || null;
   }, [options, formData.deployment_tier]);
+
+  const selectedPlan = React.useMemo(
+    () => plans.find((p) => p.id === formData.deployment_tier) ?? null,
+    [formData.deployment_tier],
+  );
+
+  const planTiers = React.useMemo(() => {
+    if (!options) return [];
+    return plans.flatMap((plan) => {
+      const tier = options.tiers.find((t) => t.id === plan.id);
+      return tier ? [{ plan, tier }] : [];
+    });
+  }, [options]);
 
   const availableRegions = React.useMemo(() => {
     if (!options) return [];
@@ -465,19 +496,16 @@ export function ProvisioningForm({
     return options.regions.filter((r) => selectedTier.regions.includes(r.id));
   }, [options, selectedTier]);
 
-  const regionIds = React.useMemo(
-    () => availableRegions.map((r) => r.id),
-    [availableRegions],
-  );
-  const latencies = useRegionLatency(regionIds, "vultr");
+  const selectedRegion = availableRegions.find((r) => r.id === formData.region);
 
-  const isLatenciesLoading = React.useMemo(() => {
-    if (regionIds.length === 0) return false;
-    const finishedCount = Array.from(latencies.values()).filter(
-      (l) => l.status === "done" || l.status === "error",
-    ).length;
-    return finishedCount === 0;
-  }, [latencies, regionIds.length]);
+  const toggleOption = (id: string, checked: boolean) => {
+    setSelectedOptions((prev) => {
+      const next = { ...prev, [id]: checked };
+      if (id === "postgres" && !checked) next.dataAPI = false;
+      if (id === "dataAPI" && checked) next.postgres = true;
+      return next;
+    });
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -536,6 +564,21 @@ export function ProvisioningForm({
     }
   }
 
+  const selectTier = (tier: Tier) => {
+    const allowed = options
+      ? options.regions.filter(
+          (r) => !tier.regions?.length || tier.regions.includes(r.id),
+        )
+      : [];
+    setFormData((prev) => ({
+      ...prev,
+      deployment_tier: tier.id,
+      region: allowed.some((r) => r.id === prev.region)
+        ? prev.region
+        : (allowed[0]?.id ?? ""),
+    }));
+  };
+
   if (loading) {
     return (
       <div className="flex h-100 items-center justify-center">
@@ -544,97 +587,80 @@ export function ProvisioningForm({
     );
   }
 
-  const selectTier = (tier: Tier) => {
-    const allowed = options
-      ? options.regions.filter(
-          (r) => !tier.regions?.length || tier.regions.includes(r.id),
-        )
-      : [];
-    const region = allowed.some((r) => r.id === formData.region)
-      ? formData.region
-      : (allowed[0]?.id ?? "");
-    setFormData({
-      ...formData,
-      deployment_tier: tier.id,
-      region,
-    });
-  };
-
-  // Like shared (1 option - $3.99 billed annually, or $4.99 a month), scale (4 options - 1CPU 1GB $X dollars (idk yet), 2 CPU 2GB $Y dollars, 4CPU 4GB $Z) then dedicated (we’d have a fuck tonne here)
-
-  // const mappedPlans = plans.map((plan) => ({
-  //   ...plan,
-  //   tier: sortedTiers.find((tier) => tier.name === plan.tier),
-  // }));
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2">
-        {isBranchMode ? (
-          <div className="space-y-2">
-            <Label htmlFor="branch_name">Branch Name</Label>
-            <Input
-              id="branch_name"
-              placeholder="feature-branch"
-              value={formData.branch_name}
-              onChange={(e) =>
-                setFormData({ ...formData, branch_name: e.target.value })
-              }
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              Parent project: {projectName}
-            </p>
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
+      <div className="col-span-2 space-y-8">
+        <div className="space-y-2 ">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            <h3 className="text-base font-medium">Details</h3>
           </div>
-        ) : (
-          <div className="space-y-2">
-            <Label htmlFor="name">Project Name</Label>
-            <Input
-              id="name"
-              placeholder="my-awesome-app"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {isBranchMode ? (
+              <div className="space-y-2">
+                <Label htmlFor="branch_name">Branch Name</Label>
+                <Input
+                  id="branch_name"
+                  placeholder="feature-branch"
+                  value={formData.branch_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, branch_name: e.target.value })
+                  }
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Parent project: {projectName}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="name">Project Name</Label>
+                <Input
+                  id="name"
+                  placeholder="my-awesome-app"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                />
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="billing_email">Billing Email</Label>
+              <Input
+                id="billing_email"
+                type="email"
+                placeholder="billing@example.com"
+                value={formData.billing_email}
+                onChange={(e) =>
+                  setFormData({ ...formData, billing_email: e.target.value })
+                }
+                required
+              />
+            </div>
           </div>
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="billing_email">Billing Email</Label>
-          <Input
-            id="billing_email"
-            type="email"
-            placeholder="billing@example.com"
-            value={formData.billing_email}
-            onChange={(e) =>
-              setFormData({ ...formData, billing_email: e.target.value })
-            }
-            required
-          />
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Server className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Tier</h3>
         </div>
 
-        {options && sortedTiers.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Server className="h-5 w-5" />
+            <h3 className="text-base font-medium">Tier</h3>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {sortedTiers.map((tier) => (
+            {planTiers.map(({ plan, tier }) => (
               <Card
-                key={tier.id}
+                key={plan.id}
                 className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
-                  ${tier.id === selectedTier?.id ? "border-primary" : "border-transparent"}`}
-                onClick={() => {
-                  selectTier(tier);
-                }}
+                  ${plan.id === selectedPlan?.id ? "border-primary" : "border-transparent"}`}
+                onClick={() => selectTier(tier)}
               >
-                {tier.id === selectedTier?.id && (
+                {plan.most_popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                       Most Popular
@@ -642,16 +668,29 @@ export function ProvisioningForm({
                   </div>
                 )}
                 <CardHeader>
-                  <span className="capitalize font-bold">
-                    {tier.deployment_type}
+                  <div className="flex justify-between">
+                    <span className="text-sm">{plan.name}</span>
+                    <Badge variant="outline"> {plan.deployment_type}</Badge>
+                  </div>
+                  <span className="text-lg">
+                    {formatPrice(plan.price_cents)} / month
                   </span>
-
-                  <span className="text-sm">{tier.name}</span>
                   <span className="text-muted-foreground">
-                    perfect to get started and for small prototypes.
+                    {plan.description}
                   </span>
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="mt-2 cursor-pointer"
+                    variant={
+                      plan.id === selectedPlan?.id ? "default" : "outline"
+                    }
+                  >
+                    Select {plan.name}
+                  </Button>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-2 text-sm">
+                <CardContent className="flex flex-col gap-2 text-sm ">
+                  <span>Features</span>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="text-muted-foreground">vCPU</div>
                     <div className="font-medium">{tier.vcpus} cores</div>
@@ -659,9 +698,7 @@ export function ProvisioningForm({
                   <div className="grid grid-cols-2 gap-2">
                     <div className="text-muted-foreground">Memory</div>
                     <div className="font-medium">
-                      {tier.memory_gb >= 1
-                        ? `${tier.memory_gb} GB`
-                        : `${tier.memory_gb * 1024} MB`}
+                      {formatMemory(tier.memory_gb)}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -670,212 +707,154 @@ export function ProvisioningForm({
                       {tier.database_storage_limit_gb} GB
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="text-muted-foreground">Object Storage</div>
-                    <div className="font-medium">
-                      {tier.object_storage_limit_gb} GB
-                    </div>
-                  </div>
-                  <Button
-                    size="lg"
-                    className="mt-6"
-                    variant={
-                      tier.id === selectedTier?.id ? "default" : "outline"
-                    }
-                    onClick={() => {}}
-                  >
-                    Select {tier.name}
-                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
-        )}
-      </div> */}
-
-      {/* <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Server className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Tier</h3>
         </div>
 
-        {options && sortedTiers.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {mappedPlans &&
-              mappedPlans.map((plan) => (
-                <Card
-                  key={plan.tier.id}
-                  className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
-                  ${plan.tier.id === selectedTier?.id ? "border-primary" : "border-transparent"}`}
-                  onClick={() => {
-                    selectTier(plan.tier);
-                  }}
-                >
-                  {plan.most_popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardHeader>
-                    <span className="capitalize font-bold">
-                      {plan.tier.deployment_type}
-                    </span>
-
-                    <span className="text-sm">{plan.name}</span>
-                    <span className="text-muted-foreground">
-                      {plan.description}
-                    </span>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-2 text-sm">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="text-muted-foreground">vCPU</div>
-                      <div className="font-medium">{plan.tier.vcpus} cores</div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="text-muted-foreground">Memory</div>
-                      <div className="font-medium">
-                        {plan.tier.memory_gb >= 1
-                          ? `${plan.tier.memory_gb} GB`
-                          : `${plan.tier.memory_gb * 1024} MB`}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="text-muted-foreground">DB Storage</div>
-                      <div className="font-medium">
-                        {plan.tier.database_storage_limit_gb} GB
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="text-muted-foreground">
-                        Object Storage
-                      </div>
-                      <div className="font-medium">
-                        {plan.tier.object_storage_limit_gb} GB
-                      </div>
-                    </div>
-                    <Button
-                      size="lg"
-                      className="mt-6"
-                      variant={
-                        plan.tier.id === selectedTier?.id
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => {}}
-                    >
-                      Select {plan.tier.name}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Settings2 className="h-5 w-5" />
+            <h3 className="text-base font-medium">Options</h3>
           </div>
-        )}
-      </div> */}
-
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Server className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Tier</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {planOptions.map((option) => (
+              <CheckboxCard
+                key={option.id}
+                {...option}
+                checked={!!selectedOptions[option.id]}
+                onCheckedChange={(checked) =>
+                  toggleOption(option.id, checked === true)
+                }
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {plans.map((plan) => (
-            <Card
-              key={plan.id}
-              className={`relative overflow-visible cursor-pointer hover:shadow-lg duration-300 border-2
-                  ${plan.id === selectedPlan?.id ? "border-primary" : "border-transparent"}`}
-              onClick={() => {
-                setSelectedPlan(plan);
-              }}
-            >
-              {plan.most_popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-              <CardHeader>
-                <div className="flex justify-between">
-                  <span className="text-sm">{plan.name}</span>
-                  <Badge variant="outline"> {plan.deployment_type}</Badge>
-                </div>
-                <span className="text-lg">
-                  {formatPrice(plan.price_cents)} / month
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            <h3 className="text-base font-medium">Region</h3>
+          </div>
+
+          <RadioGroup
+            value={formData.region}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, region: value }))
+            }
+            className="grid grid-cols-1 md:grid-cols-3 gap-2"
+          >
+            {availableRegions.map((region) => (
+              <RadioGroupChoiceCard
+                key={region.id}
+                id={region.id}
+                title={region.name}
+                description={region.country}
+              />
+            ))}
+          </RadioGroup>
+        </div>
+      </div>
+      <div>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <div className="grid grid-cols-4">
+                <span className="text-sm font-medium col-span-2">Summary</span>
+                <span className="text-sm font-medium text-end col-span-2">
+                  {selectedPlan?.name ?? ""}
                 </span>
-                <span className="text-muted-foreground">
-                  {plan.description}
-                </span>
-                <Button
-                  size="lg"
-                  className="mt-2 cursor-pointer"
-                  variant={plan.id === selectedPlan?.id ? "default" : "outline"}
-                  onClick={() => {}}
-                >
-                  Select {plan.name}
-                </Button>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2 text-sm ">
-                <span>Features</span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-muted-foreground">vCPU</div>
-                  <div className="font-medium">{plan.vcpus} cores</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-muted-foreground">Memory</div>
-                  <div className="font-medium">
-                    {plan.memory_gb >= 1
-                      ? `${plan.memory_gb} GB`
-                      : `${plan.memory_gb * 1024} MB`}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="text-muted-foreground">DB Storage</div>
-                  <div className="font-medium">
-                    {plan.database_storage_limit_gb} GB
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="gap-4 flex flex-col">
+            <Separator />
 
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Settings2 className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Options</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {planOptions.map((option) => (
-            <CheckboxCard key={option.id} {...option} />
-          ))}
-        </div>
-      </div>
+            <div className="flex flex-col gap-2">
+              <SummaryRow label="Tier" value={selectedTier?.name ?? "-"} />
+              <SummaryRow
+                label="vCPU"
+                value={selectedTier ? `${selectedTier.vcpus} cores` : "-"}
+              />
+              <SummaryRow
+                label="Memory"
+                value={
+                  selectedTier ? formatMemory(selectedTier.memory_gb) : "-"
+                }
+              />
+              <SummaryRow
+                label="DB Storage"
+                value={
+                  selectedTier
+                    ? `${selectedTier.database_storage_limit_gb} GB`
+                    : "-"
+                }
+              />
+              <SummaryRow
+                label="Object Storage"
+                value={
+                  selectedTier
+                    ? `${selectedTier.object_storage_limit_gb} GB`
+                    : "-"
+                }
+              />
+            </div>
+            <Separator />
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Globe className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Region</h3>
-        </div>
-        <RegionCombobox
-          regions={availableRegions}
-          value={formData.region}
-          autoSelectLowestLatency
-          onSelect={(id) => setFormData({ ...formData, region: id })}
-        />
-      </div>
+            <div className="flex flex-col gap-2">
+              {planOptions.map((option) => {
+                const on = !!selectedOptions[option.id];
+                return (
+                  <SummaryRow
+                    key={option.id}
+                    label={option.title}
+                    value={on ? "On" : "Off"}
+                    muted={!on}
+                  />
+                );
+              })}
+            </div>
+            <Separator />
 
-      <Button
-        type="submit"
-        disabled={submitting || !formData.deployment_tier || !formData.region}
-        size="lg"
-      >
-        {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {isBranchMode ? "Create Branch" : "Create Project"}
-      </Button>
+            <div className="flex flex-col gap-2">
+              <SummaryRow
+                label="Region"
+                value={
+                  selectedRegion
+                    ? `${selectedRegion.name}, ${selectedRegion.country}`
+                    : "-"
+                }
+              />
+            </div>
+            <Separator />
+
+            <div className="grid grid-cols-4">
+              <span className="col-span-2 text-sm">
+                Estimated cost per month
+              </span>
+              <span className="text-sm font-medium text-end col-span-2">
+                {selectedPlan ? formatPrice(selectedPlan.price_cents) : "-"}
+              </span>
+            </div>
+            <div className="flex">
+              <Button
+                type="submit"
+                disabled={
+                  submitting || !formData.deployment_tier || !formData.region
+                }
+                size="lg"
+                className="w-full"
+              >
+                {submitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isBranchMode ? "Create Branch" : "Create Project"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </form>
   );
 }
