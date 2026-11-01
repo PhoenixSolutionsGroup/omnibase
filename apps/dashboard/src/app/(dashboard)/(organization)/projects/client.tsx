@@ -42,7 +42,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
           {/* Header Section */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
+              <h1 className="text-xl font-bold tracking-tight">Projects</h1>
               <p className="mt-2 text-muted-foreground">
                 Manage and monitor all your projects
               </p>
@@ -112,7 +112,9 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                           className="text-sm text-muted-foreground hover:text-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
-                            router.push(`/projects/${project.id}/main/dashboard`);
+                            router.push(
+                              `/projects/${project.id}/main/dashboard`,
+                            );
                           }}
                         >
                           View →

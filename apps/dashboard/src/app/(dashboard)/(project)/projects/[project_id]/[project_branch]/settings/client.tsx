@@ -55,7 +55,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
         const error = await response.json();
         throw new Error(
           error.message ||
-            (isMain ? "Failed to delete project" : "Failed to delete branch")
+            (isMain ? "Failed to delete project" : "Failed to delete branch"),
         );
       }
 
@@ -64,7 +64,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
       router.refresh();
     } catch (error) {
       setDeleteError(
-        error instanceof Error ? error.message : "An error occurred"
+        error instanceof Error ? error.message : "An error occurred",
       );
       setIsDeleting(false);
     }
@@ -77,7 +77,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
         <div className="mx-auto max-w-4xl space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-xl font-bold tracking-tight">
               Project Settings
             </h1>
             <p className="mt-2 text-muted-foreground">

@@ -28,7 +28,7 @@ export function ProjectProvisioningDashboard({
       try {
         const returnTo = encodeURIComponent(window.location.href);
         const response = await fetch(
-          `/api/project_branches/${project.id}/stripe-onboarding?return_to=${returnTo}`
+          `/api/project_branches/${project.id}/stripe-onboarding?return_to=${returnTo}`,
         );
         const data = await response.json();
 
@@ -51,7 +51,7 @@ export function ProjectProvisioningDashboard({
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-xl font-bold tracking-tight">
             Provisioning Project
           </h1>
           <p className="text-lg text-muted-foreground">
