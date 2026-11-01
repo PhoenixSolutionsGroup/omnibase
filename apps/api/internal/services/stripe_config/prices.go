@@ -88,7 +88,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 			return "", "", fmt.Errorf("%w: %w", CreatePriceError, findErr)
 		}
 		if archived != nil {
-			if archived.Product != nil && archived.Product.ID == stripeProductID {
+			if archived.Product != nil && archived.Product.ID == stripeProductID && archived.Metadata[MetadataKeyHash] == priceConfigHash(priceConfig) {
 				updateParams := &stripe.PriceUpdateParams{
 					Active:   stripe.Bool(true),
 					Metadata: managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
