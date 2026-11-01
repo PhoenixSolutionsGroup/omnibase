@@ -8,6 +8,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroupItem } from "@/components/ui/radio-group";
+import { cn } from "@/lib/utils";
 
 type Props = {
   id: string;
@@ -31,7 +32,14 @@ export function RadioChoiceCard({
   disabled,
 }: Props) {
   return (
-    <FieldLabel htmlFor={id} className={className}>
+    <FieldLabel
+      htmlFor={id}
+      className={cn(
+        "cursor-pointer",
+        disabled && "cursor-not-allowed",
+        className,
+      )}
+    >
       <Field orientation="horizontal">
         <FieldContent>
           <FieldTitle>{title}</FieldTitle>

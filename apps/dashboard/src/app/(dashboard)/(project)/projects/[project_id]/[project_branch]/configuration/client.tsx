@@ -37,6 +37,7 @@ import {
   fetchStorageCredentials,
 } from "../settings/actions";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ConfigurationClientProps {
   project: Project;
@@ -560,9 +561,9 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                   {displayValue}
                                 </p>
                               </div>
-                              <div className="flex flex-shrink-0 gap-2">
+                              <div className="flex shrink-0 gap-2">
                                 {item.sensitive && item.value && (
-                                  <button
+                                  <Button
                                     onClick={() =>
                                       toggleReveal(
                                         secretKey,
@@ -580,9 +581,9 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                     ) : (
                                       <Eye className="h-4 w-4" />
                                     )}
-                                  </button>
+                                  </Button>
                                 )}
-                                <button
+                                <Button
                                   onClick={() =>
                                     handleCopy(
                                       item.sensitive &&
@@ -597,7 +598,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                   className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   Copy
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           );
@@ -613,13 +614,13 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
           </div>
 
           {/* Sidebar Navigation */}
-          <nav className="hidden lg:block w-48 flex-shrink-0 border-l p-4">
+          <nav className="hidden lg:block w-48 shrink-0 border-l p-4">
             <div className="sticky top-0 space-y-1">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 On this page
               </p>
               {visibleSections.map((section) => (
-                <button
+                <Button
                   key={section.title}
                   onClick={() => scrollToSection(section.title)}
                   className={cn(
@@ -631,7 +632,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                 >
                   {section.icon}
                   <span className="truncate">{section.title}</span>
-                </button>
+                </Button>
               ))}
             </div>
           </nav>

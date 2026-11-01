@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface DeleteSectionProps {
   onDeleteTenant: () => Promise<void>;
@@ -39,7 +40,7 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
       router.refresh();
     } catch (error) {
       setDeleteError(
-        error instanceof Error ? error.message : "An error occurred"
+        error instanceof Error ? error.message : "An error occurred",
       );
       setIsDeleting(false);
     }
@@ -63,12 +64,12 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
                 action cannot be undone.
               </p>
             </div>
-            <button
+            <Button
               onClick={() => setIsDeleteModalOpen(true)}
               className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
             >
               Delete Organization
-            </button>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -91,20 +92,20 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
           )}
 
           <DialogFooter>
-            <button
+            <Button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={isDeleting}
               className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleDeleteTenant}
               disabled={isDeleting}
               className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50"
             >
               {isDeleting ? "Deleting..." : "Delete Organization"}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

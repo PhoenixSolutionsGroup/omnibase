@@ -10,6 +10,7 @@ import {
   Globe,
   GeorgianLari,
   Settings2,
+  BadgeIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -731,12 +732,12 @@ export function ProvisioningForm({
                 value={plan.id}
                 title={plan.deployment_type}
               >
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col">
                   <span className="text-lg font-medium">{plan.name}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs text-muted-foreground mt-1">
                     {plan.description}
                   </span>
-                  <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex flex-col gap-2 text-sm mt-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div className="text-muted-foreground">vCPU</div>
                       <div className="font-medium">{tier.vcpus} cores</div>

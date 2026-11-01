@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useSidebar } from "./sidebar-context";
 import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { Button } from "./ui/button";
 
 interface ProjectContext {
   branchId: string;
@@ -52,7 +53,13 @@ interface NavItemProps {
   isCollapsed: boolean;
 }
 
-function NavItem({ href, icon: Icon, title, isActive, isCollapsed }: NavItemProps) {
+function NavItem({
+  href,
+  icon: Icon,
+  title,
+  isActive,
+  isCollapsed,
+}: NavItemProps) {
   const linkContent = (
     <Link
       href={href}
@@ -61,7 +68,7 @@ function NavItem({ href, icon: Icon, title, isActive, isCollapsed }: NavItemProp
         isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
         isActive
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
       )}
     >
       <Icon className="h-4 w-4 shrink-0" />
@@ -85,7 +92,7 @@ function NavItem({ href, icon: Icon, title, isActive, isCollapsed }: NavItemProp
 
 const getProjectNavigationItems = (
   projectId: string,
-  projectBranch: string
+  projectBranch: string,
 ) => [
   {
     title: "Dashboard",
@@ -159,13 +166,13 @@ export function UnifiedSidebar({
   const pathname = usePathname();
   const { isCollapsed, toggle } = useSidebar();
   const [isOrgCollapsed, setIsOrgCollapsed] = React.useState(
-    allowOrgCollapse && projectContext ? true : false
+    allowOrgCollapse && projectContext ? true : false,
   );
 
   const projectNavigationItems = projectContext
     ? getProjectNavigationItems(
         projectContext.projectId,
-        projectContext.projectBranch
+        projectContext.projectBranch,
       )
     : [];
 
@@ -173,7 +180,7 @@ export function UnifiedSidebar({
     <div
       className={cn(
         "group/sidebar relative flex h-full flex-col bg-sidebar transition-all duration-200",
-        isCollapsed ? "w-14" : "w-64"
+        isCollapsed ? "w-14" : "w-64",
       )}
     >
       {/* Sidebar Content */}
@@ -237,10 +244,12 @@ export function UnifiedSidebar({
         )}
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav className={cn("flex-1 space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}>
-          {!isCollapsed && (
-            allowOrgCollapse ? (
-              <button
+        <nav
+          className={cn("flex-1 space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}
+        >
+          {!isCollapsed &&
+            (allowOrgCollapse ? (
+              <Button
                 onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
                 className="mb-2 flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -250,13 +259,12 @@ export function UnifiedSidebar({
                   <ChevronDown className="h-3 w-3" />
                 )}
                 Organization
-              </button>
+              </Button>
             ) : (
               <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Organization
               </label>
-            )
-          )}
+            ))}
           {(isCollapsed || !allowOrgCollapse || !isOrgCollapsed) && (
             <>
               {organizationNavigationItems.map((item) => {
@@ -278,11 +286,11 @@ export function UnifiedSidebar({
       </div>
 
       {/* Clickable Right Border */}
-      <button
+      <Button
         onClick={toggle}
         className={cn(
           "absolute -right-2 top-0 h-full w-4 bg-transparent transition-colors before:absolute before:right-2 before:top-0 before:h-full before:w-px before:bg-border before:transition-colors hover:before:bg-primary",
-          isCollapsed ? "cursor-e-resize" : "cursor-w-resize"
+          isCollapsed ? "cursor-e-resize" : "cursor-w-resize",
         )}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       />

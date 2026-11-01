@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Database } from "@/types/omnibase";
+import { Button } from "@/components/ui/button";
 
 type Project = Database["public"]["Tables"]["projects"]["Row"];
 interface ProjectsClientProps {
@@ -48,13 +49,13 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
               </p>
             </div>
             {projects.length > 0 && (
-              <button
+              <Button
                 onClick={() => router.push("/projects/new")}
                 className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4" />
                 Create Project
-              </button>
+              </Button>
             )}
           </div>
 
@@ -65,16 +66,17 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                 <Rocket className="h-8 w-8 text-primary" />
               </div>
               <h2 className="mt-6 text-xl font-semibold">Get Started</h2>
-              <p className="mt-2 max-w-sm text-center text-muted-foreground">
+              <p className="my-2 max-w-sm text-center text-muted-foreground">
                 Create your first project to start building with OmniBase
               </p>
-              <button
+              <Button
                 onClick={() => router.push("/projects/new")}
-                className="mt-6 flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                size="lg"
+                className="text-sm"
               >
                 <Plus className="h-4 w-4" />
                 Create Your First Project
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="rounded-lg border border-border bg-card">
@@ -108,7 +110,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                         {formatDate(project.created_at)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <button
+                        <Button
                           className="text-sm text-muted-foreground hover:text-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -118,7 +120,7 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                           }}
                         >
                           View →
-                        </button>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
