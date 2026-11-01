@@ -30,7 +30,6 @@ func NewManagedHostingClient(cfg *config.ManagedHostingConfig) *ManagedHostingCl
 }
 
 type RegisterWebhookRequest struct {
-	ConfigID  string   `json:"config_id"`
 	WebhookID string   `json:"webhook_id"`
 	URL       string   `json:"url"`
 	Events    []string `json:"events"`
