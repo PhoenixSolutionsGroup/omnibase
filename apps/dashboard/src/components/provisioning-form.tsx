@@ -51,7 +51,7 @@ import { Badge } from "./ui/badge";
 import formatPrice from "@/lib/currency";
 import { Checkbox } from "./ui/checkbox";
 import { CheckboxCard } from "./ui/checkbox-card";
-import { RadioGroupChoiceCard } from "./ui/radio-group-choice-card";
+import { RadioChoiceCard } from "./ui/radio-choice-card";
 import { RadioGroup } from "./ui/radio-group";
 
 type Tier = {
@@ -102,6 +102,7 @@ type Plan = {
   description: string;
   price_cents: number;
   most_popular?: boolean;
+  has_branches: boolean;
 };
 
 type PlanOptions = {
@@ -175,7 +176,8 @@ const plans: Plan[] = [
     name: "Starter",
     deployment_type: "Shared",
     description: "Perfect for small projects and prototypes.",
-    price_cents: 199,
+    price_cents: 499,
+    has_branches: false,
   },
   {
     id: "scale_1c",
@@ -183,14 +185,16 @@ const plans: Plan[] = [
     deployment_type: "Scaled",
     description: "Perfect for medium sized projects.",
     most_popular: true,
-    price_cents: 499,
+    price_cents: 2999,
+    has_branches: true,
   },
   {
     id: "dedicated_4c",
     name: "Pro",
     deployment_type: "Dedicated",
     description: "Perfect for enterprise applications.",
-    price_cents: 2999,
+    price_cents: 12999,
+    has_branches: true,
   },
 ];
 
@@ -652,7 +656,7 @@ export function ProvisioningForm({
             <h3 className="text-base font-medium">Tier</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {planTiers.map(({ plan, tier }) => (
               <Card
                 key={plan.id}
@@ -710,7 +714,56 @@ export function ProvisioningForm({
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
+
+          <RadioGroup
+            value={formData.deployment_tier}
+            onValueChange={(tierId) => {
+              const tier = options?.tiers.find((t) => t.id === tierId);
+              if (tier) selectTier(tier);
+            }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            {planTiers.map(({ plan, tier }) => (
+              <RadioChoiceCard
+                key={plan.id}
+                id={`plan-${plan.id}`}
+                value={plan.id}
+                title={plan.deployment_type}
+              >
+                <div className="flex flex-col gap-3">
+                  <span className="text-lg font-medium">{plan.name}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {plan.description}
+                  </span>
+                  <div className="flex flex-col gap-2 text-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">vCPU</div>
+                      <div className="font-medium">{tier.vcpus} cores</div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">Memory</div>
+                      <div className="font-medium">
+                        {formatMemory(tier.memory_gb)}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">DB Storage</div>
+                      <div className="font-medium">
+                        {tier.database_storage_limit_gb} GB
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-muted-foreground">Branches</div>
+                      <div className="font-medium">
+                        {plan.has_branches ? "Yes" : "No"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </RadioChoiceCard>
+            ))}
+          </RadioGroup>
         </div>
 
         <div className="space-y-4">
@@ -746,7 +799,7 @@ export function ProvisioningForm({
             className="grid grid-cols-1 md:grid-cols-3 gap-2"
           >
             {availableRegions.map((region) => (
-              <RadioGroupChoiceCard
+              <RadioChoiceCard
                 key={region.id}
                 id={region.id}
                 title={region.name}
@@ -756,6 +809,7 @@ export function ProvisioningForm({
           </RadioGroup>
         </div>
       </div>
+      {/* Summary */}
       <div>
         <Card>
           <CardHeader>
