@@ -713,11 +713,23 @@ func (s *Service) listManagedPromotionCodes(ctx context.Context) (map[string]*st
 		if err != nil {
 			return nil, fmt.Errorf("failed to list promotion codes: %w", err)
 		}
-		if id := managedConfigID(promo.Metadata); id != "" {
-			out[id] = promo
+		id := managedConfigID(promo.Metadata)
+		if id == "" {
+			continue
 		}
+		if existing, ok := out[id]; ok && !preferPromotionCode(promo, existing) {
+			continue
+		}
+		out[id] = promo
 	}
 	return out, nil
+}
+
+func preferPromotionCode(candidate, existing *stripe.PromotionCode) bool {
+	if candidate.Active != existing.Active {
+		return candidate.Active
+	}
+	return candidate.Created > existing.Created
 }
 
 func (s *Service) listManagedWebhooks(ctx context.Context, config *StripeConfiguration) (map[string]StripeWebhookInfo, error) {
