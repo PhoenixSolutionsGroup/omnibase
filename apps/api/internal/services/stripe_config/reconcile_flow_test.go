@@ -287,3 +287,60 @@ func TestListManagedPromotionCodesPrefersNewestInactiveTwin(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "promo_new", promos["promo_a"].ID)
 }
+
+func TestReconcileRecreatesMeteredPricesWhenMeterRecreated(t *testing.T) {
+	meter := Meter{ID: "api_calls", DisplayName: "API Calls", EventName: "api_call", DefaultAggregation: MeterDefaultAggregation{Formula: "count"}}
+	price := Price{ID: "pro_usage", Amount: 1, Currency: "usd", Interval: "month", UsageType: "metered", Meter: "api_calls"}
+	product := Product{ID: "pro", Name: "Pro", Prices: []Price{price}}
+	cfg := &StripeConfiguration{Version: "1.0.0", Meters: []Meter{meter}, Products: []Product{product}}
+
+	var createdPriceMeter string
+	archivedOldPrice := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/billing/meters":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "mtr_old", "object": "billing.meter", "event_name": "api_call", "display_name": "API Calls", "status": "active",
+				"default_aggregation": map[string]any{"formula": "sum"},
+				"customer_mapping":    map[string]any{"event_payload_key": "stripe_customer_id", "type": "by_id"},
+				"value_settings":      map[string]any{"event_payload_key": "value"},
+			}}})
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/products":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "prod_1", "object": "product", "active": true, "type": "service",
+				"metadata": map[string]string{MetadataKeyConfigID: "pro", MetadataKeyManaged: MetadataManagedValue, MetadataKeyHash: productConfigHash(product)},
+			}}})
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/prices":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "price_old", "object": "price", "active": true, "lookup_key": "pro_usage", "product": "prod_1",
+				"recurring": map[string]any{"meter": "mtr_old", "usage_type": "metered", "interval": "month"},
+				"metadata":  map[string]string{MetadataKeyConfigID: "pro_usage", MetadataKeyManaged: MetadataManagedValue, MetadataKeyHash: priceConfigHash(price)},
+			}}})
+		case r.Method == http.MethodGet && isListPath(r.URL.Path):
+			writeJSON(t, w, map[string]any{"object": "list", "data": []any{}, "has_more": false})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/billing/meters":
+			writeJSON(t, w, map[string]any{"id": "mtr_new", "object": "billing.meter"})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices":
+			if err := r.ParseForm(); err != nil {
+				t.Errorf("failed to parse price form: %v", err)
+			}
+			createdPriceMeter = r.Form.Get("recurring[meter]")
+			writeJSON(t, w, map[string]any{"id": "price_new", "object": "price"})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices/price_old":
+			archivedOldPrice = true
+			writeJSON(t, w, map[string]any{"id": "price_old", "object": "price"})
+		default:
+			writeJSON(t, w, map[string]any{"id": "ok"})
+		}
+	}))
+	defer server.Close()
+
+	svc := &Service{stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL})}
+	changes, err := svc.reconcile(context.Background(), cfg, newReconcileState())
+	require.NoError(t, err)
+
+	require.True(t, archivedOldPrice)
+	require.Equal(t, "mtr_new", createdPriceMeter)
+	require.Len(t, changes.Prices.Updated, 1)
+	require.Equal(t, "price_new", changes.Prices.Updated[0].StripeID)
+}
