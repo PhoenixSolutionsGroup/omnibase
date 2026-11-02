@@ -49,7 +49,6 @@ type Querier interface {
 	ListStripeConfigs(ctx context.Context) ([]StripeStripeConfig, error)
 	ListStripeConfigsPaginated(ctx context.Context, arg ListStripeConfigsPaginatedParams) ([]StripeStripeConfig, error)
 	ListStripeWebhooks(ctx context.Context) ([]ListStripeWebhooksRow, error)
-	ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error)
 	ListTenantUsersByTenant(ctx context.Context, tenantID string) ([]AuthTenantUser, error)
 	ListTenantUsersByUser(ctx context.Context, userID string) ([]AuthTenantUser, error)
 	ListTenantsForUser(ctx context.Context, userID string) ([]ListTenantsForUserRow, error)
