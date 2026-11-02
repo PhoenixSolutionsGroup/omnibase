@@ -42,6 +42,7 @@ func TestCreatePriceReactivatesArchivedPriceOnConflict(t *testing.T) {
 					"metadata": map[string]string{
 						MetadataKeyConfigID: "price_a",
 						MetadataKeyManaged:  MetadataManagedValue,
+						MetadataKeyHash:     priceConfigHash(Price{ID: "price_a", Amount: 1000, Currency: "usd", Interval: "month"}),
 					},
 				}},
 			})
@@ -181,4 +182,45 @@ func TestArchivePriceClearsProductDefaultAndRetries(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 2, archiveAttempts)
 	require.True(t, clearedDefault)
+}
+
+func TestCreatePriceDoesNotReactivateArchivedPriceWithDifferentConfig(t *testing.T) {
+	oldPrice := Price{ID: "price_a", Amount: 1000, Currency: "usd", Interval: "month"}
+	reactivated := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices":
+			w.WriteHeader(http.StatusBadRequest)
+			writeJSON(t, w, map[string]any{"error": map[string]any{
+				"type":    "invalid_request_error",
+				"message": "create failed",
+			}})
+		case r.Method == http.MethodGet && r.URL.Path == "/v1/prices":
+			writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{map[string]any{
+				"id": "price_old", "object": "price", "active": false, "currency": "usd",
+				"lookup_key": "price_a", "product": "prod_123",
+				"metadata": map[string]string{
+					MetadataKeyConfigID: "price_a",
+					MetadataKeyManaged:  MetadataManagedValue,
+					MetadataKeyHash:     priceConfigHash(oldPrice),
+				},
+			}}})
+		case r.Method == http.MethodPost && r.URL.Path == "/v1/prices/price_old":
+			reactivated = true
+			writeJSON(t, w, map[string]any{"id": "price_old", "object": "price"})
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+			writeJSON(t, w, map[string]any{"error": map[string]string{"message": "unexpected"}})
+		}
+	}))
+	t.Cleanup(server.Close)
+
+	service := &Service{
+		stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL}),
+	}
+	newPrice := Price{ID: "price_a", Amount: 2000, Currency: "usd", Interval: "month"}
+
+	_, _, err := service.createPrice(context.Background(), newPrice, "prod_123", "", true)
+	require.ErrorIs(t, err, CreatePriceError)
+	require.False(t, reactivated)
 }
