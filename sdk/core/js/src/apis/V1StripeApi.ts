@@ -248,6 +248,14 @@ export class V1StripeApi extends runtime.BaseAPI {
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
+        }
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
+        }
+
 
         let urlPath = `/api/v1/stripe/convert/stripe-id/{stripe_id}`;
         urlPath = urlPath.replace(`{${"stripe_id"}}`, encodeURIComponent(String(requestParameters['stripeId'])));

@@ -245,7 +245,13 @@ import type { ConvertStripeIDToConfigIDRequest } from '@omnibase/core-js';
 
 async function example() {
   console.log("🚀 Testing @omnibase/core-js SDK...");
-  const api = new V1StripeApi();
+  const config = new Configuration({ 
+    // To configure API key authorization: ServiceKeyAuth
+    apiKey: "YOUR API KEY",
+    // To configure API key authorization: AppKeyAuth
+    apiKey: "YOUR API KEY",
+  });
+  const api = new V1StripeApi(config);
 
   const body = {
     // string
@@ -277,7 +283,7 @@ example().catch(console.error);
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [AppKeyAuth](../README.md#AppKeyAuth)
 
 ### HTTP request headers
 

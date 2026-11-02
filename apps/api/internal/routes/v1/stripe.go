@@ -109,7 +109,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/stripe/convert/stripe-id/{stripe_id}",
 		Summary:     "Convert Stripe ID to config ID",
 		Tags:        []string{"V1Stripe"},
-	}, authn.AuthNone, nil, stripeHandler.ConvertStripeIDToConfigID)
+	}, authn.AuthServiceKey|authn.AuthAppKey, nil, stripeHandler.ConvertStripeIDToConfigID)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigAdmin",

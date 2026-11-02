@@ -90,7 +90,9 @@ func (h *Handler) resolveConfigID(ctx context.Context, stripeID string) (string,
 }
 
 func (h *Handler) productConfigID(ctx context.Context, stripeID string) (string, error) {
-	product, err := h.stripe.Stripe.V1Products.Retrieve(ctx, stripeID, &stripe.ProductRetrieveParams{})
+	params := &stripe.ProductRetrieveParams{}
+	h.stripe.ApplyAccount(params)
+	product, err := h.stripe.Stripe.V1Products.Retrieve(ctx, stripeID, params)
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +100,9 @@ func (h *Handler) productConfigID(ctx context.Context, stripeID string) (string,
 }
 
 func (h *Handler) priceConfigID(ctx context.Context, stripeID string) (string, error) {
-	price, err := h.stripe.Stripe.V1Prices.Retrieve(ctx, stripeID, &stripe.PriceRetrieveParams{})
+	params := &stripe.PriceRetrieveParams{}
+	h.stripe.ApplyAccount(params)
+	price, err := h.stripe.Stripe.V1Prices.Retrieve(ctx, stripeID, params)
 	if err != nil {
 		return "", err
 	}
@@ -106,7 +110,9 @@ func (h *Handler) priceConfigID(ctx context.Context, stripeID string) (string, e
 }
 
 func (h *Handler) couponConfigID(ctx context.Context, stripeID string) (string, error) {
-	coupon, err := h.stripe.Stripe.V1Coupons.Retrieve(ctx, stripeID, &stripe.CouponRetrieveParams{})
+	params := &stripe.CouponRetrieveParams{}
+	h.stripe.ApplyAccount(params)
+	coupon, err := h.stripe.Stripe.V1Coupons.Retrieve(ctx, stripeID, params)
 	if err != nil {
 		return "", err
 	}
@@ -114,7 +120,9 @@ func (h *Handler) couponConfigID(ctx context.Context, stripeID string) (string, 
 }
 
 func (h *Handler) promotionCodeConfigID(ctx context.Context, stripeID string) (string, error) {
-	promo, err := h.stripe.Stripe.V1PromotionCodes.Retrieve(ctx, stripeID, &stripe.PromotionCodeRetrieveParams{})
+	params := &stripe.PromotionCodeRetrieveParams{}
+	h.stripe.ApplyAccount(params)
+	promo, err := h.stripe.Stripe.V1PromotionCodes.Retrieve(ctx, stripeID, params)
 	if err != nil {
 		return "", err
 	}
@@ -122,7 +130,9 @@ func (h *Handler) promotionCodeConfigID(ctx context.Context, stripeID string) (s
 }
 
 func (h *Handler) meterConfigID(ctx context.Context, stripeID string) (string, error) {
-	meter, err := h.stripe.Stripe.V1BillingMeters.Retrieve(ctx, stripeID, &stripe.BillingMeterRetrieveParams{})
+	params := &stripe.BillingMeterRetrieveParams{}
+	h.stripe.ApplyAccount(params)
+	meter, err := h.stripe.Stripe.V1BillingMeters.Retrieve(ctx, stripeID, params)
 	if err != nil {
 		return "", err
 	}

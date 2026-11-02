@@ -273,7 +273,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[ServiceKeyAuth](../README.md#ServiceKeyAuth), [AppKeyAuth](../README.md#AppKeyAuth)
 
 ### HTTP request headers
 
