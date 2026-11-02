@@ -254,3 +254,36 @@ func writeJSON(t *testing.T, w http.ResponseWriter, payload any) {
 		t.Errorf("failed to write JSON response: %v", err)
 	}
 }
+
+func TestListManagedPromotionCodesPrefersActiveTwin(t *testing.T) {
+	tags := map[string]string{MetadataKeyConfigID: "promo_a", MetadataKeyManaged: MetadataManagedValue}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{
+			map[string]any{"id": "promo_old_inactive", "object": "promotion_code", "active": false, "created": 100, "metadata": tags},
+			map[string]any{"id": "promo_new_active", "object": "promotion_code", "active": true, "created": 200, "metadata": tags},
+			map[string]any{"id": "promo_older_inactive", "object": "promotion_code", "active": false, "created": 50, "metadata": tags},
+		}})
+	}))
+	defer server.Close()
+
+	svc := &Service{stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL})}
+	promos, err := svc.listManagedPromotionCodes(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "promo_new_active", promos["promo_a"].ID)
+}
+
+func TestListManagedPromotionCodesPrefersNewestInactiveTwin(t *testing.T) {
+	tags := map[string]string{MetadataKeyConfigID: "promo_a", MetadataKeyManaged: MetadataManagedValue}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(t, w, map[string]any{"object": "list", "has_more": false, "data": []any{
+			map[string]any{"id": "promo_new", "object": "promotion_code", "active": false, "created": 200, "metadata": tags},
+			map[string]any{"id": "promo_old", "object": "promotion_code", "active": false, "created": 100, "metadata": tags},
+		}})
+	}))
+	defer server.Close()
+
+	svc := &Service{stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL})}
+	promos, err := svc.listManagedPromotionCodes(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "promo_new", promos["promo_a"].ID)
+}
