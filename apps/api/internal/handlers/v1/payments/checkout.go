@@ -7,7 +7,9 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
+	"api/internal/authn"
 	"api/internal/handlers"
+	"api/internal/logger"
 	"api/internal/services/billing"
 )
 
@@ -39,9 +41,20 @@ type CreateCheckoutOutput struct {
 func (h *Handler) CreateCheckout(ctx context.Context, in *CreateCheckoutInput) (*CreateCheckoutOutput, error) {
 	req := in.Body
 
-	stripePriceID, err := h.billing.GetStripePriceID(ctx, req.PriceID)
+	stripePriceID, err := h.billing.ResolveCheckoutPrice(ctx, req.PriceID, in.TenantID, in.Method == authn.AuthServiceKey)
 	if err != nil {
-		return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
+		switch {
+		case errors.Is(err, billing.CheckoutPriceForbiddenError):
+			logger.Logger.Warn("Rejected checkout for restricted price",
+				"price_id", req.PriceID,
+				"tenant_id", in.TenantID,
+				"auth_method", in.Method)
+			return nil, huma.Error403Forbidden(fmt.Sprintf("Price is not available: %s", req.PriceID))
+		case errors.Is(err, billing.CheckoutPriceNotFoundError):
+			return nil, huma.Error404NotFound(fmt.Sprintf("No Stripe price found for config_id: %s", req.PriceID))
+		default:
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateCheckoutError, err).Error())
+		}
 	}
 
 	var promotionCode *string
