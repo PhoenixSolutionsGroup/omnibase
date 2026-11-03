@@ -336,6 +336,7 @@ func (s *Service) reconcileMeters(ctx context.Context, config *StripeConfigurati
 				return err
 			}
 			state.meterStripeIDs[meter.ID] = stripeID
+			state.recreatedMeters[meter.ID] = true
 			changes.Meters.Updated = append(changes.Meters.Updated, MeterChange{
 				MeterID:     meter.ID,
 				DisplayName: meter.DisplayName,
