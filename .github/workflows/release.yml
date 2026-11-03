@@ -2,6 +2,13 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      packages:
+        description: >-
+          What to release: "all", or a comma-separated list of
+          api, auth, permissions, react, nextjs, shadcn, cli, mcp-server
+        type: string
+        default: all
 
 concurrency:
   group: release-${{ github.ref }}
@@ -19,13 +26,59 @@ jobs:
         run: echo "Manual release dispatched, proceeding"
 
   # ============================================
+  # Select which packages this run releases
+  # ============================================
+  select:
+    name: Select packages
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.select.outputs.api }}
+      docker: ${{ steps.select.outputs.docker }}
+      npm: ${{ steps.select.outputs.npm }}
+    steps:
+      - name: Resolve selection
+        id: select
+        env:
+          PACKAGES: ${{ inputs.packages }}
+        run: |
+          SEL=$(echo "${PACKAGES:-all}" | tr -d '[:space:]')
+          [ -z "$SEL" ] && SEL=all
+
+          DOCKER='[{"path":"docker/auth","name":"auth","image":"phoenixsolutionsgroup/omnibase-auth"},{"path":"docker/permissions","name":"permissions","image":"phoenixsolutionsgroup/omnibase-permissions"}]'
+          NPM='[{"package":"sdk/framework/react","name":"react"},{"package":"sdk/framework/nextjs","name":"nextjs"},{"package":"sdk/component/shadcn","name":"shadcn"},{"package":"packages/cli","name":"cli"},{"package":"packages/mcp-server","name":"mcp-server"}]'
+          KNOWN="api auth permissions react nextjs shadcn cli mcp-server"
+
+          if [ "$SEL" != "all" ]; then
+            for name in ${SEL//,/ }; do
+              case " $KNOWN " in
+                *" $name "*) ;;
+                *) echo "::error::Unknown package '$name'. Valid: all, ${KNOWN// /, }"; exit 1 ;;
+              esac
+            done
+          fi
+
+          filter='if $sel == "all" then . else map(select(.name as $n | $sel | split(",") | index($n))) end'
+          {
+            if [ "$SEL" = "all" ] || [[ ",$SEL," == *",api,"* ]]; then
+              echo "api=true"
+            else
+              echo "api=false"
+            fi
+            echo "docker=$(jq -c --arg sel "$SEL" "$filter" <<< "$DOCKER")"
+            echo "npm=$(jq -c --arg sel "$SEL" "$filter" <<< "$NPM")"
+          } >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
+  # ============================================
   # Release API (Docker + Core SDKs)
   # ============================================
   release-api:
     name: Release API
     runs-on: ubuntu-latest
-    needs: [check-tests]
-    if: needs.check-tests.result == 'success'
+    needs: [check-tests, select]
+    if: |
+      needs.check-tests.result == 'success' &&
+      needs.select.outputs.api == 'true'
     outputs:
       core_js_version: ${{ steps.corejs.outputs.version }}
     permissions:
@@ -120,22 +173,17 @@ jobs:
   release-docker:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [check-tests, release-api]
+    needs: [check-tests, select, release-api]
     if: |
       !cancelled() &&
       needs.check-tests.result == 'success' &&
+      needs.select.outputs.docker != '[]' &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped')
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
-        include:
-          - path: docker/auth
-            name: auth
-            image: phoenixsolutionsgroup/omnibase-auth
-          - path: docker/permissions
-            name: permissions
-            image: phoenixsolutionsgroup/omnibase-permissions
+        include: ${{ fromJSON(needs.select.outputs.docker) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -209,10 +257,11 @@ jobs:
   release-npm:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [check-tests, release-api, release-docker]
+    needs: [check-tests, select, release-api, release-docker]
     if: |
       !cancelled() &&
       needs.check-tests.result == 'success' &&
+      needs.select.outputs.npm != '[]' &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped') &&
       (needs.release-docker.result == 'success' || needs.release-docker.result == 'skipped')
     permissions:
@@ -224,17 +273,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        include:
-          - package: sdk/framework/react
-            name: react
-          - package: sdk/framework/nextjs
-            name: nextjs
-          - package: sdk/component/shadcn
-            name: shadcn
-          - package: packages/cli
-            name: cli
-          - package: packages/mcp-server
-            name: mcp-server
+        include: ${{ fromJSON(needs.select.outputs.npm) }}
 
     steps:
       - uses: actions/checkout@v4
