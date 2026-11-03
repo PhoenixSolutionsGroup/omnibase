@@ -18,6 +18,11 @@ import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
 import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
+  SummaryEntry,
+  formatStartSummary,
+  waitForApiReady,
+} from "./utils/start-summary";
+import {
   getComposeFiles,
   validateComposeFiles,
   runDockerComposeCommand,
@@ -177,6 +182,9 @@ program
     "with `omnibase stop`. Each deployment " +
     "directory runs `bun run dev` on `http://localhost:<port>` (default " +
     "ports start at 8787 and increment per deployment).\n\n" +
+    "Once the API reports ready, a summary lists the URL of each service " +
+    "(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
+    "deployment dev server.\n\n" +
     "Environment variables: the dev-server processes receive the same " +
     "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
     "(and `omnibase/.env.local` for the local environment), plus the " +
@@ -237,17 +245,13 @@ program
 
       if (deployments.length === 0) {
         logger.info("No deployments configured. Add [[deployments]] to omnibase.toml");
-        if (!detached) {
-          logger.log("Press Ctrl+C to stop all services");
-        }
-        return;
+      } else {
+        logger.newline();
+        logger.log("Starting deployment dev servers:");
+        logger.log("");
       }
 
-      logger.newline();
-      logger.log("Starting deployment dev servers:");
-      logger.log("");
-
-      const table: string[] = [];
+      const started: SummaryEntry[] = [];
       for (let i = 0; i < deployments.length; i++) {
         const dep = deployments[i];
         const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
@@ -286,12 +290,19 @@ program
         });
 
         childProcesses.push(cp);
-        table.push(`  ${dep.name.padEnd(16)} http://localhost:${port}`);
+        started.push({ name: dep.name, url: `http://localhost:${port}` });
       }
 
       logger.newline();
-      logger.log("Dev servers running:");
-      table.forEach((line) => { logger.log(line); });
+      logger.info("Waiting for services to be ready...");
+      const ready = await waitForApiReady();
+      logger.newline();
+      if (ready) {
+        logger.succeed("Omnibase is running");
+      } else {
+        logger.warn("API did not report ready within 2 minutes; services may still be starting");
+      }
+      formatStartSummary(started).forEach((line) => { logger.log(line); });
       logger.newline();
       logger.log(
         detached
