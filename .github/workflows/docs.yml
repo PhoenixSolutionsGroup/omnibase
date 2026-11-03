@@ -76,7 +76,7 @@ jobs:
         run: |
           git add apps/docs/content/
           git add apps/docs/openapi.yaml
-          git add apps/api/docs/openapi.yaml
+          git add apps/api/docs/openapi.json
           if git diff --staged --quiet; then
             echo "No documentation changes to commit"
           else
