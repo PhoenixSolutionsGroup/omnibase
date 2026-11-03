@@ -37,7 +37,8 @@ func (h *Handler) DeleteTenant(ctx context.Context, in *DeleteTenantInput) (*Del
 	}
 	tenantID := in.TenantID.String()
 
-	if _, err := h.repo.GetTenantByID(ctx, tenantID); err != nil {
+	tenantRow, err := h.repo.GetTenantByID(ctx, tenantID)
+	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, huma.Error404NotFound("Tenant not found")
 		}
@@ -49,11 +50,18 @@ func (h *Handler) DeleteTenant(ctx context.Context, in *DeleteTenantInput) (*Del
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 	}
 
-	tenantRow, _ := h.repo.GetTenantByID(ctx, tenantID)
 	if tenantRow.StripeCustomerID != nil && *tenantRow.StripeCustomerID != "" {
+		cancelled, err := h.billing.CancelCustomerSubscriptions(ctx, *tenantRow.StripeCustomerID)
+		if err != nil {
+			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
+		}
 		if err := h.billing.ArchiveCustomer(ctx, *tenantRow.StripeCustomerID); err != nil {
 			return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", DeleteTenantError, err).Error())
 		}
+		logger.Logger.Info("cancelled subscriptions for deleted tenant",
+			"tenant_id", tenantID,
+			"stripe_customer_id", *tenantRow.StripeCustomerID,
+			"cancelled_count", cancelled)
 	}
 
 	if err := h.repo.DeleteTenant(ctx, tenantID); err != nil {
