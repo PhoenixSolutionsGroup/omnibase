@@ -286,6 +286,10 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         run: git pull --rebase --autostash origin main
 
+      - name: Build core-js
+        if: steps.changes.outputs.has_changes == 'true'
+        run: bun run --cwd sdk/core/js build
+
       - name: Build package
         if: steps.changes.outputs.has_changes == 'true'
         working-directory: ${{ matrix.package }}

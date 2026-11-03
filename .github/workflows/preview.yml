@@ -43,12 +43,10 @@ jobs:
       - name: Install dependencies
         env:
           HUSKY: 0
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Build workspace packages
-        run: |
-          bun run --cwd sdk/framework/nextjs build
-          bun run --cwd sdk/component/shadcn build
+        run: bun run build:packages
 
       - name: Generate docs source
         working-directory: apps/docs
@@ -201,7 +199,10 @@ jobs:
       - name: Install dependencies
         env:
           HUSKY: 0
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Build workspace packages
+        run: bun run build:packages
 
       - name: Authenticate CLI
         env:
