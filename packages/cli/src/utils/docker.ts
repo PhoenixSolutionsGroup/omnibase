@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { spawnSync, execSync } from "child_process";
+import { spawn, spawnSync, execSync, ChildProcess } from "child_process";
 import { config as dotenvConfig } from "dotenv";
 import {
   findOmnibaseRoot,
@@ -187,14 +187,21 @@ export function buildEffectiveEnvFile(envName: string): string {
   return effectivePath;
 }
 
+interface DockerComposeInvocation {
+  args: string[];
+  cwd: string;
+  env: NodeJS.ProcessEnv;
+}
+
 /**
- * Run a docker compose command with the correct compose files and environment
+ * Build the `docker compose` arguments, cwd and env for a command with the
+ * correct compose files and environment
  */
-export function runDockerComposeCommand(
+function buildDockerComposeInvocation(
   command: string,
   services: string[],
   options: DockerComposeOptions,
-): void {
+): DockerComposeInvocation {
   const projectRoot = findOmnibaseRoot();
   const projectName = getProjectName();
   const composeFiles = getComposeFiles(options.mode);
@@ -215,30 +222,63 @@ export function runDockerComposeCommand(
   const serviceArgs = services.length > 0 ? services : [];
 
   const commandParts = command.split(/\s+/);
-  const cmdArgs = [
-    "compose",
-    "--project-name",
-    projectName,
-    ...composeArgs,
-    "--env-file",
-    envPath,
-    ...commandParts,
-    ...serviceArgs,
-  ];
-
-  const result = spawnSync("docker", cmdArgs, {
-    stdio: options.stdio || "inherit",
+  return {
+    args: [
+      "compose",
+      "--project-name",
+      projectName,
+      ...composeArgs,
+      "--env-file",
+      envPath,
+      ...commandParts,
+      ...serviceArgs,
+    ],
     cwd: projectRoot,
     env: {
       ...process.env,
       OMNIBASE_PROJECT_DIR: projectRoot,
       OMNIBASE_ENV_FILE: envPath,
     },
+  };
+}
+
+/**
+ * Run a docker compose command with the correct compose files and environment
+ */
+export function runDockerComposeCommand(
+  command: string,
+  services: string[],
+  options: DockerComposeOptions,
+): void {
+  const { args, cwd, env } = buildDockerComposeInvocation(command, services, options);
+
+  const result = spawnSync("docker", args, {
+    stdio: options.stdio || "inherit",
+    cwd,
+    env,
   });
 
   if (result.status !== 0) {
-    throw new Error(`Command failed: docker ${cmdArgs.join(" ")}`);
+    throw new Error(`Command failed: docker ${args.join(" ")}`);
   }
+}
+
+/**
+ * Start a docker compose command without blocking, for attached commands like
+ * `up` that run until interrupted. The caller owns the returned process.
+ */
+export function spawnDockerComposeCommand(
+  command: string,
+  services: string[],
+  options: DockerComposeOptions,
+): ChildProcess {
+  const { args, cwd, env } = buildDockerComposeInvocation(command, services, options);
+
+  return spawn("docker", args, {
+    stdio: options.stdio || "inherit",
+    cwd,
+    env,
+  });
 }
 
 /**
