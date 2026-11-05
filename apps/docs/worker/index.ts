@@ -7,6 +7,10 @@ interface Env {
 const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname.includes('/__next.')) {
+      return new Response(null, { status: 404 });
+    }
+
     const target = resolveRedirect(url.pathname);
     if (target) {
       const location = target.endsWith('/') ? target : `${target}/`;

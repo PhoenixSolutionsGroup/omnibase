@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "next build && node scripts/prune-old-versions.mjs",
     "preview": "bun run build && wrangler dev",
     "deploy": "wrangler deploy",
     "dev": "next dev",
