@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/stripe/stripe-go/v82"
+
+	"api/internal/services/stripe_config"
 )
 
 var (
@@ -30,7 +34,35 @@ func (s *Service) RemoveTenantSubscription(ctx context.Context, args RemoveTenan
 		return nil, fmt.Errorf("%w: %s", RemoveTenantSubscriptionNotFound, args.ConfigPriceID)
 	}
 
-	canceled, err := s.stripe.Stripe.V1Subscriptions.Cancel(ctx, sub.SubscriptionID, nil)
+	retrieveParams := &stripe.SubscriptionRetrieveParams{}
+	s.stripe.ApplyAccount(retrieveParams)
+	subscription, err := s.stripe.Stripe.V1Subscriptions.Retrieve(ctx, sub.SubscriptionID, retrieveParams)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", RemoveTenantSubscriptionError, err)
+	}
+
+	if len(subscription.Items.Data) > 1 {
+		itemID := matchingSubscriptionItemID(subscription, args.ConfigPriceID)
+		if itemID == "" {
+			return nil, fmt.Errorf("%w: %s", RemoveTenantSubscriptionNotFound, args.ConfigPriceID)
+		}
+
+		deleteParams := &stripe.SubscriptionItemDeleteParams{
+			ProrationBehavior: stripe.String("none"),
+		}
+		s.stripe.ApplyAccount(deleteParams)
+		if _, err := s.stripe.Stripe.V1SubscriptionItems.Delete(ctx, itemID, deleteParams); err != nil {
+			return nil, fmt.Errorf("%w: %w", RemoveTenantSubscriptionError, err)
+		}
+		return &RemoveTenantSubscriptionResult{
+			SubscriptionID: subscription.ID,
+			Status:         string(subscription.Status),
+		}, nil
+	}
+
+	cancelParams := &stripe.SubscriptionCancelParams{}
+	s.stripe.ApplyAccount(cancelParams)
+	canceled, err := s.stripe.Stripe.V1Subscriptions.Cancel(ctx, subscription.ID, cancelParams)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", RemoveTenantSubscriptionError, err)
 	}
@@ -38,4 +70,13 @@ func (s *Service) RemoveTenantSubscription(ctx context.Context, args RemoveTenan
 		SubscriptionID: canceled.ID,
 		Status:         string(canceled.Status),
 	}, nil
+}
+
+func matchingSubscriptionItemID(subscription *stripe.Subscription, configPriceID string) string {
+	for _, item := range subscription.Items.Data {
+		if stripe_config.PriceConfigID(item.Price) == configPriceID {
+			return item.ID
+		}
+	}
+	return ""
 }
