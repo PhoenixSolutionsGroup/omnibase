@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	CreateCheckoutSessionError       = errors.New("Failed to create checkout session")
-	CreateCheckoutSessionPriceFetch  = errors.New("Failed to fetch price for checkout")
+	CreateCheckoutSessionError      = errors.New("Failed to create checkout session")
+	CreateCheckoutSessionPriceFetch = errors.New("Failed to fetch price for checkout")
 )
 
 type CreateCheckoutSessionArgs struct {
@@ -47,7 +47,7 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 
 	if args.StripeCustomerID != "" {
 		params.Customer = stripe.String(args.StripeCustomerID)
-	} else {
+	} else if mode == stripe.CheckoutSessionModePayment {
 		params.CustomerCreation = stripe.String("always")
 	}
 
