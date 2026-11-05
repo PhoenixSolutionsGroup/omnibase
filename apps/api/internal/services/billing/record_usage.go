@@ -15,6 +15,7 @@ type RecordUsageArgs struct {
 	MeterEventName   string
 	StripeCustomerID string
 	Value            string
+	IdempotencyKey   string
 }
 
 func (s *Service) RecordUsage(ctx context.Context, args RecordUsageArgs) error {
@@ -25,6 +26,9 @@ func (s *Service) RecordUsage(ctx context.Context, args RecordUsageArgs) error {
 			"value":              args.Value,
 		},
 		Timestamp: stripe.Int64(time.Now().Unix()),
+	}
+	if args.IdempotencyKey != "" {
+		params.Identifier = stripe.String(args.IdempotencyKey)
 	}
 	s.stripe.ApplyAccount(params)
 

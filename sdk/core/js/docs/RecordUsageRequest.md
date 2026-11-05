@@ -6,6 +6,7 @@
 
 Name | Type
 ------------ | -------------
+`idempotencyKey` | string
 `meterEventName` | string
 `value` | string
 
@@ -16,6 +17,7 @@ import type { RecordUsageRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "idempotencyKey": null,
   "meterEventName": null,
   "value": null,
 } satisfies RecordUsageRequest

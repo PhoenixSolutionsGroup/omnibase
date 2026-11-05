@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**IdempotencyKey** | Pointer to **string** |  | [optional] 
 **MeterEventName** | **string** |  | 
 **Value** | **string** |  | 
 
@@ -25,6 +26,31 @@ will change when the set of required properties is changed
 NewRecordUsageRequestWithDefaults instantiates a new RecordUsageRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetIdempotencyKey
+
+`func (o *RecordUsageRequest) GetIdempotencyKey() string`
+
+GetIdempotencyKey returns the IdempotencyKey field if non-nil, zero value otherwise.
+
+### GetIdempotencyKeyOk
+
+`func (o *RecordUsageRequest) GetIdempotencyKeyOk() (*string, bool)`
+
+GetIdempotencyKeyOk returns a tuple with the IdempotencyKey field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIdempotencyKey
+
+`func (o *RecordUsageRequest) SetIdempotencyKey(v string)`
+
+SetIdempotencyKey sets IdempotencyKey field to given value.
+
+### HasIdempotencyKey
+
+`func (o *RecordUsageRequest) HasIdempotencyKey() bool`
+
+HasIdempotencyKey returns a boolean if a field has been set.
 
 ### GetMeterEventName
 
