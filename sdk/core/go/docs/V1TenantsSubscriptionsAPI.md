@@ -31,7 +31,7 @@ import (
 )
 
 func main() {
-	addRequest := *openapiclient.NewAddRequest("PlanId_example") // AddRequest | 
+	addRequest := *openapiclient.NewAddRequest("IdempotencyKey_example", "PlanId_example") // AddRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)

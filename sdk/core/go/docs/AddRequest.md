@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**IdempotencyKey** | **string** |  | 
 **PlanId** | **string** |  | 
 **Quantity** | Pointer to **int64** |  | [optional] 
 **StripeCustomerId** | Pointer to **string** |  | [optional] 
@@ -12,7 +13,7 @@ Name | Type | Description | Notes
 
 ### NewAddRequest
 
-`func NewAddRequest(planId string, ) *AddRequest`
+`func NewAddRequest(idempotencyKey string, planId string, ) *AddRequest`
 
 NewAddRequest instantiates a new AddRequest object
 This constructor will assign default values to properties that have it defined,
@@ -26,6 +27,26 @@ will change when the set of required properties is changed
 NewAddRequestWithDefaults instantiates a new AddRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetIdempotencyKey
+
+`func (o *AddRequest) GetIdempotencyKey() string`
+
+GetIdempotencyKey returns the IdempotencyKey field if non-nil, zero value otherwise.
+
+### GetIdempotencyKeyOk
+
+`func (o *AddRequest) GetIdempotencyKeyOk() (*string, bool)`
+
+GetIdempotencyKeyOk returns a tuple with the IdempotencyKey field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIdempotencyKey
+
+`func (o *AddRequest) SetIdempotencyKey(v string)`
+
+SetIdempotencyKey sets IdempotencyKey field to given value.
+
 
 ### GetPlanId
 

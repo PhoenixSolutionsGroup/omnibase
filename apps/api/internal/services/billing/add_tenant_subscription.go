@@ -18,6 +18,7 @@ type AddTenantSubscriptionArgs struct {
 	StripeCustomerID string
 	ConfigPriceID    string
 	Quantity         int64
+	IdempotencyKey   string
 }
 
 type AddTenantSubscriptionResult struct {
@@ -46,6 +47,9 @@ func (s *Service) AddTenantSubscription(ctx context.Context, args AddTenantSubsc
 	params := &stripe.SubscriptionCreateParams{
 		Customer: stripe.String(args.StripeCustomerID),
 		Items:    []*stripe.SubscriptionCreateItemParams{item},
+	}
+	if args.IdempotencyKey != "" {
+		params.SetIdempotencyKey(args.IdempotencyKey)
 	}
 	s.stripe.ApplyAccount(params)
 	s.applyPlatformFeeToSubscription(params)

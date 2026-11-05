@@ -117,6 +117,11 @@
       "AddRequest": {
         "additionalProperties": false,
         "properties": {
+          "idempotency_key": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
           "plan_id": {
             "examples": [
               "price_test_basic"
@@ -140,7 +145,8 @@
           }
         },
         "required": [
-          "plan_id"
+          "plan_id",
+          "idempotency_key"
         ],
         "type": "object"
       },

@@ -36,7 +36,9 @@ func (s *Service) ListTenantSubscriptions(ctx context.Context, stripeCustomerID 
 		if err != nil {
 			return nil, fmt.Errorf("%w: %w", ListTenantSubscriptionsError, err)
 		}
-		if sub.Status != "active" && sub.Status != "trialing" && sub.Status != "past_due" {
+		switch sub.Status {
+		case "active", "trialing", "past_due", "incomplete", "unpaid":
+		default:
 			continue
 		}
 		for _, item := range sub.Items.Data {
