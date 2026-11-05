@@ -35,4 +35,12 @@ describe('resolveRedirect', () => {
     expect(resolveRedirect('/guides/quickstart')).toBeNull();
     expect(resolveRedirect('/nope')).toBeNull();
   });
+
+  test('redirects collapsed versions to the version that replaced them', () => {
+    const aliases = { nextjs: { '0.9.0': '0.9.2', '0.8.0': '0.9.2' } };
+    expect(resolveRedirect('/nextjs/0.9.0/Auth/functions', aliases)).toBe('/nextjs/0.9.2/Auth/functions');
+    expect(resolveRedirect('/nextjs/0.8.0', aliases)).toBe('/nextjs/0.9.2');
+    expect(resolveRedirect('/nextjs/0.9.2/Auth', aliases)).toBeNull();
+    expect(resolveRedirect('/cli/0.9.0/start', aliases)).toBeNull();
+  });
 });

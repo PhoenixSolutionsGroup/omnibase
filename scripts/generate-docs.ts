@@ -324,6 +324,80 @@ title: "${title}"
   await writeFile(filePath, frontmatter + content);
 }
 
+const VERSION_ALIASES = join(ROOT, "apps/docs/content/version-aliases.json");
+const VERSION_DIR = /^\d+\.\d+\.\d+/;
+
+type VersionAliases = Record<string, Record<string, string>>;
+
+async function listFiles(dir: string, prefix = ""): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) files.push(...(await listFiles(join(dir, entry.name), rel)));
+    else files.push(rel);
+  }
+  return files.sort();
+}
+
+async function sameDocsExceptVersion(
+  previousDir: string,
+  previous: string,
+  currentDir: string,
+  current: string
+): Promise<boolean> {
+  const [previousFiles, currentFiles] = await Promise.all([
+    listFiles(previousDir),
+    listFiles(currentDir),
+  ]);
+  if (previousFiles.join("\n") !== currentFiles.join("\n")) return false;
+  for (const file of currentFiles) {
+    const [before, after] = await Promise.all([
+      readFile(join(previousDir, file), "utf-8"),
+      readFile(join(currentDir, file), "utf-8"),
+    ]);
+    if (before.replaceAll(previous, current) !== after) return false;
+  }
+  return true;
+}
+
+async function readVersionAliases(): Promise<VersionAliases> {
+  if (!existsSync(VERSION_ALIASES)) return {};
+  return JSON.parse(await readFile(VERSION_ALIASES, "utf-8")) as VersionAliases;
+}
+
+/**
+ * When a release leaves a section's docs unchanged, keep one copy under the
+ * new version and redirect the previous version to it, so the release adds
+ * no files to the deployed site.
+ */
+async function collapseUnchangedVersion(section: string, current: string): Promise<void> {
+  const sectionDir = join(DOCS_CONTENT, section);
+  const previous = (await readdir(sectionDir, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && VERSION_DIR.test(entry.name))
+    .map((entry) => entry.name)
+    .filter((name) => name.localeCompare(current, undefined, { numeric: true }) < 0)
+    .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+  if (!previous) return;
+
+  const previousDir = join(sectionDir, previous);
+  const currentDir = join(sectionDir, current);
+  if (!(await sameDocsExceptVersion(previousDir, previous, currentDir, current))) return;
+
+  await rm(previousDir, { recursive: true });
+
+  const aliases = await readVersionAliases();
+  const sectionAliases = aliases[section] ?? {};
+  for (const [from, to] of Object.entries(sectionAliases)) {
+    if (to === previous) sectionAliases[from] = current;
+  }
+  sectionAliases[previous] = current;
+  aliases[section] = sectionAliases;
+  await writeFile(VERSION_ALIASES, JSON.stringify(aliases, null, 2) + "\n");
+
+  console.log(`    ↪ ${section} ${previous} is unchanged, now redirects to ${current}`);
+}
+
 async function writeVersionedSection(
   target: TypeDocTarget,
   currentVersion: string
@@ -461,6 +535,7 @@ async function generateTypeDocs(): Promise<void> {
             2
           )
         );
+        await collapseUnchangedVersion(target.outputDir, version);
         await writeVersionedSection(target, version);
       }
       console.log(`    ✓ Generated docs for ${target.name}`);
@@ -762,6 +837,8 @@ async function generateOpenAPIDocs(): Promise<void> {
       ].join("\n")
     );
 
+    await collapseUnchangedVersion("api", apiVersion);
+
     const versions = (
       await readdir(openApiOutput, { withFileTypes: true })
     )
@@ -967,6 +1044,8 @@ async function generateCliCommandDocs(): Promise<void> {
       2
     ),
   );
+
+  await collapseUnchangedVersion("cli", version);
 
   const versions = (await readdir(sectionDir, { withFileTypes: true }))
     .filter(

@@ -1,6 +1,9 @@
+import aliasManifest from '../content/version-aliases.json';
 import versions from '../content/versions.json';
 
 type Section = keyof typeof versions;
+
+const aliases: Partial<Record<string, Record<string, string>>> = aliasManifest;
 
 const exact: Record<string, string> = {
   '/': '/guides/quickstart',
@@ -27,7 +30,10 @@ function isSection(segment: string | undefined): segment is Section {
   return segment !== undefined && Object.hasOwn(versions, segment);
 }
 
-export function resolveRedirect(pathname: string): string | null {
+export function resolveRedirect(
+  pathname: string,
+  versionAliases: Partial<Record<string, Record<string, string>>> = aliases,
+): string | null {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (exact[path]) return exact[path];
 
@@ -48,6 +54,8 @@ export function resolveRedirect(pathname: string): string | null {
     segments.splice(1, 1, latest);
   } else if (!versionPattern.test(version)) {
     segments.splice(1, 0, latest);
+  } else if (versionAliases[section]?.[version]) {
+    segments.splice(1, 1, versionAliases[section][version]);
   }
 
   const target = `/${segments.join('/')}`;
