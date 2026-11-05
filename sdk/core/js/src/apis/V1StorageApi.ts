@@ -68,6 +68,7 @@ export interface UploadFileRequest {
 export class V1StorageApi extends runtime.BaseAPI {
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Delete file from storage
      */
     async deleteObjectRaw(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteObjectResponse>> {
@@ -111,6 +112,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Delete file from storage
      */
     async deleteObject(requestParameters: DeleteObjectOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteObjectResponse> {
@@ -119,6 +121,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Download file from storage
      */
     async downloadFileRaw(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DownloadResponse>> {
@@ -162,6 +165,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Download file from storage
      */
     async downloadFile(requestParameters: DownloadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DownloadResponse> {
@@ -170,6 +174,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Make a file publicly accessible
      */
     async makeFilePublicRaw(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MakePublicResponse>> {
@@ -213,6 +218,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
      * Make a file publicly accessible
      */
     async makeFilePublic(requestParameters: MakeFilePublicRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MakePublicResponse> {
@@ -221,6 +227,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
      * Upload file to storage
      */
     async uploadFileRaw(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadResponse>> {
@@ -264,6 +271,7 @@ export class V1StorageApi extends runtime.BaseAPI {
     }
 
     /**
+     * Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
      * Upload file to storage
      */
     async uploadFile(requestParameters: UploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadResponse> {

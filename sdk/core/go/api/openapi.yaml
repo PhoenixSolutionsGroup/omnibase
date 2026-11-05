@@ -1035,6 +1035,9 @@ paths:
       - V1Permissions
   /api/v1/storage/download:
     post:
+      description: "Storage object paths are unique across the entire bucket, not\
+        \ per tenant. Prefix paths with the tenant ID or another unique namespace,\
+        \ for example `tenants/<tenant_id>/avatars/me.png`."
       operationId: downloadFile
       requestBody:
         content:
@@ -1065,6 +1068,9 @@ paths:
       - V1Storage
   /api/v1/storage/make-public:
     post:
+      description: "Storage object paths are unique across the entire bucket, not\
+        \ per tenant. Prefix paths with the tenant ID or another unique namespace,\
+        \ for example `tenants/<tenant_id>/avatars/me.png`."
       operationId: makeFilePublic
       requestBody:
         content:
@@ -1095,6 +1101,9 @@ paths:
       - V1Storage
   /api/v1/storage/object:
     delete:
+      description: "Storage object paths are unique across the entire bucket, not\
+        \ per tenant. Prefix paths with the tenant ID or another unique namespace,\
+        \ for example `tenants/<tenant_id>/avatars/me.png`."
       operationId: deleteObject
       requestBody:
         content:
@@ -1125,6 +1134,10 @@ paths:
       - V1Storage
   /api/v1/storage/upload:
     post:
+      description: "Storage object paths are unique across the entire bucket, not\
+        \ per tenant. Prefix paths with the tenant ID or another unique namespace,\
+        \ for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing\
+        \ path returns 409 Conflict."
       operationId: uploadFile
       requestBody:
         content:
@@ -4882,6 +4895,8 @@ components:
         path: path
       properties:
         path:
+          description: Bucket-wide object path. Prefix with the tenant ID or another
+            unique namespace.
           type: string
       required:
       - path
@@ -4995,6 +5010,8 @@ components:
         path: path
       properties:
         path:
+          description: Bucket-wide object path. Prefix with the tenant ID or another
+            unique namespace.
           type: string
       required:
       - path
@@ -6076,6 +6093,8 @@ components:
         path: path
       properties:
         path:
+          description: Bucket-wide object path. Prefix with the tenant ID or another
+            unique namespace.
           type: string
       required:
       - path
@@ -8781,6 +8800,8 @@ components:
           additionalProperties: false
           type: object
         path:
+          description: Bucket-wide object path. Prefix with the tenant ID or another
+            unique namespace.
           type: string
       required:
       - path

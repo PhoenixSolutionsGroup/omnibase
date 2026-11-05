@@ -17,6 +17,8 @@ All URIs are relative to *https://api.omnibase.tech*
 
 Delete file from storage
 
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example &#x60;tenants/&lt;tenant_id&gt;/avatars/me.png&#x60;.
+
 ### Example
 
 ```ts
@@ -92,6 +94,8 @@ example().catch(console.error);
 > DownloadResponse downloadFile(downloadRequest)
 
 Download file from storage
+
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example &#x60;tenants/&lt;tenant_id&gt;/avatars/me.png&#x60;.
 
 ### Example
 
@@ -169,6 +173,8 @@ example().catch(console.error);
 
 Make a file publicly accessible
 
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example &#x60;tenants/&lt;tenant_id&gt;/avatars/me.png&#x60;.
+
 ### Example
 
 ```ts
@@ -244,6 +250,8 @@ example().catch(console.error);
 > UploadResponse uploadFile(uploadRequest)
 
 Upload file to storage
+
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example &#x60;tenants/&lt;tenant_id&gt;/avatars/me.png&#x60;. Uploading to an existing path returns 409 Conflict.
 
 ### Example
 

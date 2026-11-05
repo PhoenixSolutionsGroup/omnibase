@@ -20,7 +20,7 @@ import { mapValues } from '../runtime';
  */
 export interface DeleteObjectRequest {
     /**
-     * 
+     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
      * @type {string}
      * @memberof DeleteObjectRequest
      */

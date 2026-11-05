@@ -19,6 +19,10 @@ import (
 	"api/internal/services/permissions"
 )
 
+const storagePathDescription = "Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`."
+
+const uploadPathDescription = storagePathDescription + " Uploading to an existing path returns 409 Conflict."
+
 func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing storage routes")
 	cfg := d.Cfg
@@ -61,6 +65,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/upload",
 		Summary:     "Upload file to storage",
+		Description: uploadPathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.Upload)
 
@@ -69,6 +74,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/download",
 		Summary:     "Download file from storage",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.Download)
 
@@ -77,6 +83,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/storage/object",
 		Summary:     "Delete file from storage",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteObject)
 
@@ -85,6 +92,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/make-public",
 		Summary:     "Make a file publicly accessible",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.MakePublic)
 

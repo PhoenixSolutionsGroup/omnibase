@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Path** | **string** |  | 
+**Path** | **string** | Bucket-wide object path. Prefix with the tenant ID or another unique namespace. | 
 
 ## Methods
 

@@ -60,6 +60,12 @@ Files are never proxied through the API server. Clients upload and download dire
 
 ---
 
+## Path Namespaces
+
+> **Warning:** Storage paths are bucket-wide, not tenant-scoped. Two tenants cannot both own `avatars/me.png`, and the second upload receives a `409 Conflict`. Prefix every path with the tenant ID or another unique namespace, for example `tenants/${tenantId}/avatars/me.png`.
+
+---
+
 ## Uploading Files
 
 When you upload a file, OmniBase automatically creates an `owner` relation in Keto. This gives you read, delete, and make-public permissions on the file without any extra setup.
@@ -82,7 +88,7 @@ const storageApi = new V1StorageApi(config);
 
 const { data } = await storageApi.uploadFile({
   uploadRequest: {
-    path: 'documents/report-2024.pdf',
+    path: `tenants/${tenantId}/documents/report-2024.pdf`,
     metadata: {
       description: 'Annual report',
       uploaded_by: userId,
@@ -127,7 +133,7 @@ Downloads check Keto permissions. The requesting user must be the file owner or 
 ```typescript
 const { data } = await storageApi.downloadFile({
   downloadRequest: {
-    path: 'documents/report-2024.pdf',
+    path: `tenants/${tenantId}/documents/report-2024.pdf`,
   },
 });
 
@@ -154,7 +160,7 @@ Deletes check Keto permissions. The requesting user must be the file owner or ha
 ```typescript
 const { data } = await storageApi.deleteObject({
   deleteObjectRequest: {
-    path: 'documents/report-2024.pdf',
+    path: `tenants/${tenantId}/documents/report-2024.pdf`,
   },
 });
 
@@ -244,7 +250,7 @@ Public files are accessible to any authenticated user, regardless of which tenan
 ```typescript
 const { data } = await storageApi.makeFilePublic({
   makePublicRequest: {
-    path: 'assets/company-logo.png',
+    path: `tenants/${tenantId}/assets/company-logo.png`,
   },
 });
 

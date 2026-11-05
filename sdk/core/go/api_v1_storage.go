@@ -41,6 +41,8 @@ func (r ApiDeleteObjectRequest) Execute() (*DeleteObjectResponse, *http.Response
 /*
 DeleteObject Delete file from storage
 
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDeleteObjectRequest
 */
@@ -198,6 +200,8 @@ func (r ApiDownloadFileRequest) Execute() (*DownloadResponse, *http.Response, er
 
 /*
 DownloadFile Download file from storage
+
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiDownloadFileRequest
@@ -357,6 +361,8 @@ func (r ApiMakeFilePublicRequest) Execute() (*MakePublicResponse, *http.Response
 /*
 MakeFilePublic Make a file publicly accessible
 
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`.
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiMakeFilePublicRequest
 */
@@ -514,6 +520,8 @@ func (r ApiUploadFileRequest) Execute() (*UploadResponse, *http.Response, error)
 
 /*
 UploadFile Upload file to storage
+
+Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`. Uploading to an existing path returns 409 Conflict.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUploadFileRequest
