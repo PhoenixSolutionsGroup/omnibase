@@ -546,6 +546,105 @@ async function generateTypeDocs(): Promise<void> {
   }
 }
 
+interface OpenAPIParameter {
+  name?: string;
+  in?: string;
+  required?: boolean;
+  description?: string;
+  schema?: unknown;
+}
+
+interface OpenAPIRequestBody {
+  description?: string;
+  required?: boolean;
+  content?: Record<string, { schema?: unknown }>;
+}
+
+interface OpenAPIResponse {
+  description?: string;
+  content?: Record<string, { schema?: unknown }>;
+}
+
+interface OpenAPIOperation {
+  tags?: string[];
+  summary?: string;
+  description?: string;
+  operationId?: string;
+  parameters?: OpenAPIParameter[];
+  requestBody?: OpenAPIRequestBody;
+  responses?: Record<string, OpenAPIResponse>;
+}
+
+function jsonBlock(value: unknown): string {
+  if (value === undefined) return "";
+  return ["```json", JSON.stringify(value, null, 2), "```"].join("\n");
+}
+
+function renderOperationMarkdown(
+  url: string,
+  method: string,
+  path: string,
+  operation: OpenAPIOperation,
+  pathParameters: OpenAPIParameter[]
+): string {
+  const lines = [
+    `# ${operation.summary || operation.operationId} (${url})`,
+    "",
+    `\`${method.toUpperCase()} ${path}\``,
+    "",
+  ];
+
+  if (operation.description) lines.push(operation.description, "");
+
+  const seen = new Set<string>();
+  const parameters = [...pathParameters, ...(operation.parameters ?? [])].filter(
+    (parameter) => {
+      const key = `${parameter.in}:${parameter.name}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }
+  );
+
+  if (parameters.length > 0) {
+    lines.push("## Parameters", "");
+    for (const parameter of parameters) {
+      lines.push(
+        `- \`${parameter.name}\` (${parameter.in}${
+          parameter.required ? ", required" : ""
+        }): ${parameter.description ?? ""}`
+      );
+    }
+    lines.push("");
+  }
+
+  if (operation.requestBody) {
+    lines.push("## Request body", "");
+    if (operation.requestBody.description) {
+      lines.push(operation.requestBody.description, "");
+    }
+    for (const [contentType, media] of Object.entries(
+      operation.requestBody.content ?? {}
+    )) {
+      lines.push(`Content type: \`${contentType}\``, "");
+      if (media.schema) lines.push(jsonBlock(media.schema), "");
+    }
+  }
+
+  if (operation.responses) {
+    lines.push("## Responses", "");
+    for (const [status, response] of Object.entries(operation.responses)) {
+      lines.push(`### ${status}`, "");
+      if (response.description) lines.push(response.description, "");
+      for (const media of Object.values(response.content ?? {})) {
+        if (media.schema) lines.push(jsonBlock(media.schema), "");
+      }
+    }
+  }
+
+  return lines.join("\n").trim() + "\n";
+}
+
 async function generateOpenAPIDocs(): Promise<void> {
   console.log("\n📖 Generating OpenAPI documentation...\n");
 
@@ -564,7 +663,7 @@ async function generateOpenAPIDocs(): Promise<void> {
 
   const spec = JSON.parse(await readFile(openApiSource, "utf-8")) as {
     info?: { version?: string };
-    paths?: Record<string, Record<string, { tags?: string[] }>>;
+    paths?: Record<string, Record<string, unknown>>;
     tags?: { name: string }[];
   };
   const apiVersion = spec.info?.version;
@@ -691,6 +790,7 @@ async function generateOpenAPIDocs(): Promise<void> {
       description: string;
       icon: string;
     }[] = [];
+    const tagFolderByTag = new Map<string, string>();
 
     for (const tag of tags) {
       const tagName = tag.name as string;
@@ -715,6 +815,7 @@ async function generateOpenAPIDocs(): Promise<void> {
         const description =
           tagDescriptions[displayName] ?? `${displayName} endpoints`;
         const icon = tagIcons[displayName] ?? "Box";
+        tagFolderByTag.set(tagName, newFolderName);
         tagEntries.push({
           folderName: newFolderName,
           displayName,
@@ -772,6 +873,45 @@ async function generateOpenAPIDocs(): Promise<void> {
         );
       }
     }
+
+    const apiLlms: Record<string, string> = {};
+    const methods = [
+      "get",
+      "put",
+      "post",
+      "delete",
+      "patch",
+      "options",
+      "head",
+      "trace",
+    ];
+    for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
+      const pathParameters = Array.isArray(pathItem.parameters)
+        ? (pathItem.parameters as OpenAPIParameter[])
+        : [];
+
+      for (const method of methods) {
+        const operation = pathItem[method] as OpenAPIOperation | undefined;
+        if (!operation?.operationId) continue;
+
+        const tagName = operation.tags?.[0];
+        const folderName = tagName ? tagFolderByTag.get(tagName) : undefined;
+        if (!folderName) continue;
+
+        const url = `/api/${apiVersion}/${folderName}/${operation.operationId}`;
+        apiLlms[url] = renderOperationMarkdown(
+          url,
+          method,
+          path,
+          operation,
+          pathParameters
+        );
+      }
+    }
+    await writeFile(
+      join(ROOT, "apps/docs/content/api-llms.json"),
+      JSON.stringify(apiLlms, null, 2) + "\n"
+    );
 
     await rm(tempOutput, { recursive: true, force: true });
 
