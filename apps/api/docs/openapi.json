@@ -3087,6 +3087,10 @@
       "RecordUsageRequest": {
         "additionalProperties": false,
         "properties": {
+          "idempotency_key": {
+            "maxLength": 100,
+            "type": "string"
+          },
           "meter_event_name": {
             "minLength": 1,
             "type": "string"

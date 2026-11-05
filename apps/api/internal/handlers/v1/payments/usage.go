@@ -16,6 +16,7 @@ var RecordUsageError = errors.New("Failed to record usage")
 type RecordUsageRequest struct {
 	MeterEventName string `json:"meter_event_name" required:"true" minLength:"1"`
 	Value          string `json:"value" required:"true" minLength:"1"`
+	IdempotencyKey string `json:"idempotency_key,omitempty" maxLength:"100"`
 }
 
 type RecordUsageInput struct {
@@ -36,6 +37,7 @@ func (h *Handler) RecordUsage(ctx context.Context, in *RecordUsageInput) (*Recor
 		MeterEventName:   in.Body.MeterEventName,
 		StripeCustomerID: in.StripeCustomerID,
 		Value:            in.Body.Value,
+		IdempotencyKey:   in.Body.IdempotencyKey,
 	}); err != nil {
 		if mapped := handlers.StripeError(err); mapped != nil {
 			return nil, mapped

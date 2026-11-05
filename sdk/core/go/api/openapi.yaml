@@ -7139,8 +7139,12 @@ components:
       additionalProperties: false
       example:
         meter_event_name: meter_event_name
+        idempotency_key: idempotency_key
         value: value
       properties:
+        idempotency_key:
+          maxLength: 100
+          type: string
         meter_event_name:
           minLength: 1
           type: string
