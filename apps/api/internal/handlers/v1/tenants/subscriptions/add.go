@@ -19,6 +19,7 @@ type AddRequest struct {
 	PlanID           string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
 	StripeCustomerID string `json:"stripe_customer_id,omitempty" minLength:"1" example:"cus_test_123"`
 	Quantity         int64  `json:"quantity,omitempty" example:"5"`
+	IdempotencyKey   string `json:"idempotency_key" required:"true" minLength:"1" maxLength:"255"`
 }
 
 type AddResponse struct {
@@ -59,6 +60,7 @@ func (h *Handler) Add(ctx context.Context, in *AddInput) (*AddOutput, error) {
 		StripeCustomerID: customerID,
 		ConfigPriceID:    req.PlanID,
 		Quantity:         req.Quantity,
+		IdempotencyKey:   req.IdempotencyKey,
 	})
 	if err != nil {
 		switch {

@@ -6,6 +6,7 @@
 
 Name | Type
 ------------ | -------------
+`idempotencyKey` | string
 `planId` | string
 `quantity` | number
 `stripeCustomerId` | string
@@ -17,6 +18,7 @@ import type { AddRequest } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
+  "idempotencyKey": null,
   "planId": null,
   "quantity": null,
   "stripeCustomerId": null,

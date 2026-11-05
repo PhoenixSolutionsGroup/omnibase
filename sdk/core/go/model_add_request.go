@@ -22,6 +22,7 @@ var _ MappedNullable = &AddRequest{}
 
 // AddRequest struct for AddRequest
 type AddRequest struct {
+	IdempotencyKey string `json:"idempotency_key"`
 	PlanId string `json:"plan_id"`
 	Quantity *int64 `json:"quantity,omitempty"`
 	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
@@ -33,8 +34,9 @@ type _AddRequest AddRequest
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAddRequest(planId string) *AddRequest {
+func NewAddRequest(idempotencyKey string, planId string) *AddRequest {
 	this := AddRequest{}
+	this.IdempotencyKey = idempotencyKey
 	this.PlanId = planId
 	return &this
 }
@@ -45,6 +47,30 @@ func NewAddRequest(planId string) *AddRequest {
 func NewAddRequestWithDefaults() *AddRequest {
 	this := AddRequest{}
 	return &this
+}
+
+// GetIdempotencyKey returns the IdempotencyKey field value
+func (o *AddRequest) GetIdempotencyKey() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.IdempotencyKey
+}
+
+// GetIdempotencyKeyOk returns a tuple with the IdempotencyKey field value
+// and a boolean to check if the value has been set.
+func (o *AddRequest) GetIdempotencyKeyOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.IdempotencyKey, true
+}
+
+// SetIdempotencyKey sets field value
+func (o *AddRequest) SetIdempotencyKey(v string) {
+	o.IdempotencyKey = v
 }
 
 // GetPlanId returns the PlanId field value
@@ -145,6 +171,7 @@ func (o AddRequest) MarshalJSON() ([]byte, error) {
 
 func (o AddRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	toSerialize["idempotency_key"] = o.IdempotencyKey
 	toSerialize["plan_id"] = o.PlanId
 	if !IsNil(o.Quantity) {
 		toSerialize["quantity"] = o.Quantity
@@ -160,6 +187,7 @@ func (o *AddRequest) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"idempotency_key",
 		"plan_id",
 	}
 
