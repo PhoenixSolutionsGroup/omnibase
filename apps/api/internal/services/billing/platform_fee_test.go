@@ -54,7 +54,7 @@ func TestApplyPlatformFeeToCheckout_SubscriptionMode_SetsPercentOnSubscriptionDa
 		feePct: 2.7,
 	}
 	params := &stripe.CheckoutSessionCreateParams{}
-	s.applyPlatformFeeToCheckout(params, &stripe.Price{UnitAmount: 5000}, stripe.CheckoutSessionModeSubscription)
+	s.applyPlatformFeeToCheckout(params, stripe.CheckoutSessionModeSubscription, 5000)
 	if assert.NotNil(t, params.SubscriptionData) && assert.NotNil(t, params.SubscriptionData.ApplicationFeePercent) {
 		assert.InDelta(t, 2.7, *params.SubscriptionData.ApplicationFeePercent, 0.0001)
 	}
@@ -67,7 +67,7 @@ func TestApplyPlatformFeeToCheckout_PaymentMode_SetsAmountOnPaymentIntentData(t 
 		feePct: 10,
 	}
 	params := &stripe.CheckoutSessionCreateParams{}
-	s.applyPlatformFeeToCheckout(params, &stripe.Price{UnitAmount: 1000}, stripe.CheckoutSessionModePayment)
+	s.applyPlatformFeeToCheckout(params, stripe.CheckoutSessionModePayment, 1000)
 	if assert.NotNil(t, params.PaymentIntentData) && assert.NotNil(t, params.PaymentIntentData.ApplicationFeeAmount) {
 		assert.Equal(t, int64(100), *params.PaymentIntentData.ApplicationFeeAmount, "10% of 1000 cents = 100")
 	}
@@ -76,29 +76,17 @@ func TestApplyPlatformFeeToCheckout_PaymentMode_SetsAmountOnPaymentIntentData(t 
 func TestApplyPlatformFeeToCheckout_SkipsWhenFeeInactive(t *testing.T) {
 	s := &Service{stripe: &stripe_client.Client{AccountID: ""}, feePct: 2.7}
 	params := &stripe.CheckoutSessionCreateParams{}
-	s.applyPlatformFeeToCheckout(params, &stripe.Price{UnitAmount: 1000}, stripe.CheckoutSessionModeSubscription)
+	s.applyPlatformFeeToCheckout(params, stripe.CheckoutSessionModeSubscription, 1000)
 	assert.Nil(t, params.SubscriptionData)
 	assert.Nil(t, params.PaymentIntentData)
 }
 
-func TestApplyPlatformFeeToInvoice_SetsAmountFromSubtotal(t *testing.T) {
+func TestApplyPlatformFeeToCheckout_SkipsZeroPaymentAmount(t *testing.T) {
 	s := &Service{
 		stripe: &stripe_client.Client{AccountID: "acct_test"},
-		feePct: 5,
+		feePct: 10,
 	}
-	params := &stripe.InvoiceCreateParams{}
-	s.applyPlatformFeeToInvoice(params, 2000)
-	if assert.NotNil(t, params.ApplicationFeeAmount) {
-		assert.Equal(t, int64(100), *params.ApplicationFeeAmount, "5% of 2000 = 100")
-	}
-}
-
-func TestApplyPlatformFeeToInvoice_SkipsWhenSubtotalZero(t *testing.T) {
-	s := &Service{
-		stripe: &stripe_client.Client{AccountID: "acct_test"},
-		feePct: 5,
-	}
-	params := &stripe.InvoiceCreateParams{}
-	s.applyPlatformFeeToInvoice(params, 0)
-	assert.Nil(t, params.ApplicationFeeAmount)
+	params := &stripe.CheckoutSessionCreateParams{}
+	s.applyPlatformFeeToCheckout(params, stripe.CheckoutSessionModePayment, 0)
+	assert.Nil(t, params.PaymentIntentData)
 }
