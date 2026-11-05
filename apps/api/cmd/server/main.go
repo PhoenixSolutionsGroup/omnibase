@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"api/internal/config"
 	"api/internal/logger"
 	"api/internal/server"
@@ -11,6 +13,10 @@ func main() {
 
 	logger.Logger.Debug("Loading configuration")
 	cfg := config.New()
+	if err := cfg.Validate(); err != nil {
+		logger.Logger.Error("Invalid configuration", "error", err)
+		os.Exit(1)
+	}
 
 	r := server.New(cfg)
 

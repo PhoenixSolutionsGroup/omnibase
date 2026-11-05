@@ -269,6 +269,7 @@ services:
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
 
+      - ENV=${ENV:-development}
       - LOG_LEVEL=${LOG_LEVEL:-TRACE}
       - LOG_FORMAT=${LOG_FORMAT:-pretty}
 

@@ -9,8 +9,11 @@ import (
 	"time"
 )
 
+const defaultComposeSecret = "VERY_SECRET_KEY"
+
 type Config struct {
 	Port                 string
+	Environment          string
 	S3Config             S3Config
 	Database             DatabaseConfig
 	StripeConfig         StripeConfig
@@ -99,7 +102,8 @@ func New() *Config {
 	logger.Logger.Info("Loading application configuration from environment variables")
 
 	return &Config{
-		Port: getEnvOrDefault("PORT", "8080"),
+		Port:        getEnvOrDefault("PORT", "8080"),
+		Environment: getEnvOrDefault("ENV", "production"),
 		S3Config: S3Config{
 			Endpoint:       os.Getenv("S3_ENDPOINT"),
 			PublicEndpoint: getEnvOrDefault("S3_PUBLIC_ENDPOINT", os.Getenv("S3_ENDPOINT")),
@@ -159,6 +163,37 @@ func New() *Config {
 		EnablePprof:         os.Getenv("ENABLE_PPROF") == "true",
 		CORSAllowedOrigins:  parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
 	}
+}
+
+func (c *Config) Validate() error {
+	if len(c.CORSAllowedOrigins) == 0 {
+		return fmt.Errorf("CORS_ALLOWED_ORIGINS environment variable must be set")
+	}
+	serviceKey := strings.TrimSpace(c.APIServiceKey)
+	if serviceKey == "" {
+		return fmt.Errorf("API_SERVICE_KEY environment variable must be set")
+	}
+
+	if serviceKey == defaultComposeSecret {
+		if !c.isLocalEnvironment() {
+			return fmt.Errorf("API_SERVICE_KEY must not use the compose default %q outside local development", defaultComposeSecret)
+		}
+		logger.Logger.Warn("API_SERVICE_KEY is using the compose default; do not use this outside local development")
+	}
+
+	if len(c.CORSAllowedOrigins) == 1 && c.CORSAllowedOrigins[0] == "*" {
+		logger.Logger.Warn("CORS_ALLOWED_ORIGINS is '*'; any origin is allowed with credentials")
+	}
+
+	return nil
+}
+
+func (c *Config) isLocalEnvironment() bool {
+	switch strings.ToLower(c.Environment) {
+	case "local", "development", "dev", "test":
+		return true
+	}
+	return false
 }
 
 func getEnvOrDefault(key string, defaultValue string) string {
