@@ -48,6 +48,29 @@ type AuthTenantUser struct {
 	JoinedAt time.Time `json:"joined_at"`
 }
 
+type EmailHistory struct {
+	ID                uuid.UUID `json:"id"`
+	TenantID          *string   `json:"tenant_id"`
+	ToEmail           string    `json:"to_email"`
+	Subject           string    `json:"subject"`
+	HtmlBody          string    `json:"html_body"`
+	PlaintextBody     string    `json:"plaintext_body"`
+	TemplateType      *string   `json:"template_type"`
+	TemplateData      []byte    `json:"template_data"`
+	ProviderMessageID *string   `json:"provider_message_id"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
+type EmailSystemTemplate struct {
+	ID            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	Subject       string    `json:"subject"`
+	HtmlBody      string    `json:"html_body"`
+	PlaintextBody string    `json:"plaintext_body"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
 type EmailTemplate struct {
 	ID        uuid.UUID `json:"id"`
 	Type      string    `json:"type"`
@@ -55,6 +78,7 @@ type EmailTemplate struct {
 	HtmlBody  string    `json:"html_body"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	TenantID  *string   `json:"tenant_id"`
 }
 
 type PermissionsDefinition struct {

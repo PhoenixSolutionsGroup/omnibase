@@ -114,6 +114,8 @@ func StartAPIWithSandbox(t *testing.T, env *Env, sandboxKey string) string {
 			"STRIPE_WEBHOOK_SECRET": "whsec_test_integration",
 			"SMTP_CONNECTION_URI":   "smtp://" + env.MailpitSMTP + "?disable_starttls=true",
 			"SMTP_FROM_EMAIL":       "noreply@test.omnibase",
+			"EMAIL_SEND_LIMIT":      "10",
+			"EMAIL_SEND_WINDOW":     "1h",
 			"FRONTEND_URL":          "http://127.0.0.1:3000",
 			"JWT_SIGNING_KEY":       "test-jwt-signing-key-for-integration-tests",
 			"JWT_SECRET":            ServiceKey,

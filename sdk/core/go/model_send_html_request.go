@@ -17,41 +17,41 @@ import (
 	"fmt"
 )
 
-// checks if the SendRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &SendRequest{}
+// checks if the SendHTMLRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &SendHTMLRequest{}
 
-// SendRequest struct for SendRequest
-type SendRequest struct {
+// SendHTMLRequest struct for SendHTMLRequest
+type SendHTMLRequest struct {
 	Body string `json:"body"`
 	Plain *string `json:"plain,omitempty"`
 	Subject string `json:"subject"`
 	To string `json:"to"`
 }
 
-type _SendRequest SendRequest
+type _SendHTMLRequest SendHTMLRequest
 
-// NewSendRequest instantiates a new SendRequest object
+// NewSendHTMLRequest instantiates a new SendHTMLRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSendRequest(body string, subject string, to string) *SendRequest {
-	this := SendRequest{}
+func NewSendHTMLRequest(body string, subject string, to string) *SendHTMLRequest {
+	this := SendHTMLRequest{}
 	this.Body = body
 	this.Subject = subject
 	this.To = to
 	return &this
 }
 
-// NewSendRequestWithDefaults instantiates a new SendRequest object
+// NewSendHTMLRequestWithDefaults instantiates a new SendHTMLRequest object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewSendRequestWithDefaults() *SendRequest {
-	this := SendRequest{}
+func NewSendHTMLRequestWithDefaults() *SendHTMLRequest {
+	this := SendHTMLRequest{}
 	return &this
 }
 
 // GetBody returns the Body field value
-func (o *SendRequest) GetBody() string {
+func (o *SendHTMLRequest) GetBody() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -62,7 +62,7 @@ func (o *SendRequest) GetBody() string {
 
 // GetBodyOk returns a tuple with the Body field value
 // and a boolean to check if the value has been set.
-func (o *SendRequest) GetBodyOk() (*string, bool) {
+func (o *SendHTMLRequest) GetBodyOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -70,12 +70,12 @@ func (o *SendRequest) GetBodyOk() (*string, bool) {
 }
 
 // SetBody sets field value
-func (o *SendRequest) SetBody(v string) {
+func (o *SendHTMLRequest) SetBody(v string) {
 	o.Body = v
 }
 
 // GetPlain returns the Plain field value if set, zero value otherwise.
-func (o *SendRequest) GetPlain() string {
+func (o *SendHTMLRequest) GetPlain() string {
 	if o == nil || IsNil(o.Plain) {
 		var ret string
 		return ret
@@ -85,7 +85,7 @@ func (o *SendRequest) GetPlain() string {
 
 // GetPlainOk returns a tuple with the Plain field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SendRequest) GetPlainOk() (*string, bool) {
+func (o *SendHTMLRequest) GetPlainOk() (*string, bool) {
 	if o == nil || IsNil(o.Plain) {
 		return nil, false
 	}
@@ -93,7 +93,7 @@ func (o *SendRequest) GetPlainOk() (*string, bool) {
 }
 
 // HasPlain returns a boolean if a field has been set.
-func (o *SendRequest) HasPlain() bool {
+func (o *SendHTMLRequest) HasPlain() bool {
 	if o != nil && !IsNil(o.Plain) {
 		return true
 	}
@@ -102,12 +102,12 @@ func (o *SendRequest) HasPlain() bool {
 }
 
 // SetPlain gets a reference to the given string and assigns it to the Plain field.
-func (o *SendRequest) SetPlain(v string) {
+func (o *SendHTMLRequest) SetPlain(v string) {
 	o.Plain = &v
 }
 
 // GetSubject returns the Subject field value
-func (o *SendRequest) GetSubject() string {
+func (o *SendHTMLRequest) GetSubject() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -118,7 +118,7 @@ func (o *SendRequest) GetSubject() string {
 
 // GetSubjectOk returns a tuple with the Subject field value
 // and a boolean to check if the value has been set.
-func (o *SendRequest) GetSubjectOk() (*string, bool) {
+func (o *SendHTMLRequest) GetSubjectOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -126,12 +126,12 @@ func (o *SendRequest) GetSubjectOk() (*string, bool) {
 }
 
 // SetSubject sets field value
-func (o *SendRequest) SetSubject(v string) {
+func (o *SendHTMLRequest) SetSubject(v string) {
 	o.Subject = v
 }
 
 // GetTo returns the To field value
-func (o *SendRequest) GetTo() string {
+func (o *SendHTMLRequest) GetTo() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -142,7 +142,7 @@ func (o *SendRequest) GetTo() string {
 
 // GetToOk returns a tuple with the To field value
 // and a boolean to check if the value has been set.
-func (o *SendRequest) GetToOk() (*string, bool) {
+func (o *SendHTMLRequest) GetToOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -150,11 +150,11 @@ func (o *SendRequest) GetToOk() (*string, bool) {
 }
 
 // SetTo sets field value
-func (o *SendRequest) SetTo(v string) {
+func (o *SendHTMLRequest) SetTo(v string) {
 	o.To = v
 }
 
-func (o SendRequest) MarshalJSON() ([]byte, error) {
+func (o SendHTMLRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -162,7 +162,7 @@ func (o SendRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o SendRequest) ToMap() (map[string]interface{}, error) {
+func (o SendHTMLRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["body"] = o.Body
 	if !IsNil(o.Plain) {
@@ -173,7 +173,7 @@ func (o SendRequest) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *SendRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *SendHTMLRequest) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -197,53 +197,53 @@ func (o *SendRequest) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varSendRequest := _SendRequest{}
+	varSendHTMLRequest := _SendHTMLRequest{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSendRequest)
+	err = decoder.Decode(&varSendHTMLRequest)
 
 	if err != nil {
 		return err
 	}
 
-	*o = SendRequest(varSendRequest)
+	*o = SendHTMLRequest(varSendHTMLRequest)
 
 	return err
 }
 
-type NullableSendRequest struct {
-	value *SendRequest
+type NullableSendHTMLRequest struct {
+	value *SendHTMLRequest
 	isSet bool
 }
 
-func (v NullableSendRequest) Get() *SendRequest {
+func (v NullableSendHTMLRequest) Get() *SendHTMLRequest {
 	return v.value
 }
 
-func (v *NullableSendRequest) Set(val *SendRequest) {
+func (v *NullableSendHTMLRequest) Set(val *SendHTMLRequest) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableSendRequest) IsSet() bool {
+func (v NullableSendHTMLRequest) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableSendRequest) Unset() {
+func (v *NullableSendHTMLRequest) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableSendRequest(val *SendRequest) *NullableSendRequest {
-	return &NullableSendRequest{value: val, isSet: true}
+func NewNullableSendHTMLRequest(val *SendHTMLRequest) *NullableSendHTMLRequest {
+	return &NullableSendHTMLRequest{value: val, isSet: true}
 }
 
-func (v NullableSendRequest) MarshalJSON() ([]byte, error) {
+func (v NullableSendHTMLRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableSendRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableSendHTMLRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
