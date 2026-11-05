@@ -1,5 +1,6 @@
 import { docs } from 'fumadocs-mdx:collections/server';
 import { type InferPageType, loader } from 'fumadocs-core/source';
+import type * as PageTree from 'fumadocs-core/page-tree';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { openapiPlugin } from 'fumadocs-openapi/server';
 import versions from '../../content/versions.json';
@@ -46,4 +47,75 @@ export async function getLLMText(page: InferPageType<typeof source>) {
   return `# ${page.data.title}
 
 ${processed}`;
+}
+
+type TreeFolder = PageTree.Folder;
+
+function collectItems(folder: TreeFolder, out: PageTree.Item[] = []): PageTree.Item[] {
+  if (folder.index) out.push(folder.index);
+  for (const child of folder.children) {
+    if (child.type === 'page') out.push(child);
+    if (child.type === 'folder') collectItems(child, out);
+  }
+  return out;
+}
+
+function findPath(nodes: PageTree.Node[], url: string): PageTree.Node[] | undefined {
+  for (const node of nodes) {
+    if (node.type === 'page' && node.url === url) return [node];
+    if (node.type !== 'folder') continue;
+    if (node.index?.url === url) return [node, node.index];
+    const rest = findPath(node.children, url);
+    if (rest) return [node, ...rest];
+  }
+}
+
+function relativeRef(folder: TreeFolder, item: PageTree.Item): string | undefined {
+  const prefix = folder.$ref && `${folder.$ref.folder}/`;
+  if (prefix && item.$ref?.startsWith(prefix)) return item.$ref.slice(prefix.length);
+}
+
+function collapseRoot(folder: TreeFolder, projected: Set<string>): TreeFolder {
+  const items = collectItems(folder);
+  const kept = items.filter((item) => {
+    const ref = relativeRef(folder, item);
+    return item !== folder.index && ref !== undefined && projected.has(ref);
+  });
+  if (!folder.index && kept.length === 0) {
+    const first = items.find((item) => !item.external);
+    if (first) kept.push(first);
+  }
+  return { ...folder, children: kept };
+}
+
+function pruneNode(
+  node: PageTree.Node,
+  active: Set<PageTree.Node>,
+  projected: Set<string>,
+): PageTree.Node {
+  if (node.type !== 'folder') return node;
+  if (node.root && !active.has(node)) return collapseRoot(node, projected);
+  return {
+    ...node,
+    children: node.children.map((child) => pruneNode(child, active, projected)),
+  };
+}
+
+export function getPageTreeFor(page: InferPageType<typeof source>): PageTree.Root {
+  const tree = source.getPageTree();
+  const path = findPath(tree.children, page.url) ?? [];
+  const item = path.at(-1);
+  const projected = new Set<string>();
+  if (item?.type === 'page') {
+    for (const node of path) {
+      if (node.type !== 'folder' || !node.root) continue;
+      const ref = relativeRef(node, item);
+      if (ref) projected.add(ref);
+    }
+  }
+  const active = new Set(path);
+  return {
+    ...tree,
+    children: tree.children.map((child) => pruneNode(child, active, projected)),
+  };
 }

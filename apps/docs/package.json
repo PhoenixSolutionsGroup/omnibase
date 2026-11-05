@@ -4,11 +4,10 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "build:cloudflare": "opennextjs-cloudflare build",
-    "preview": "bun run build:cloudflare && opennextjs-cloudflare preview",
-    "deploy": "bun run build:cloudflare && opennextjs-cloudflare deploy",
+    "preview": "bun run build && wrangler dev",
+    "deploy": "wrangler deploy",
     "dev": "next dev",
-    "start": "next start",
+    "test": "bun test worker",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "eslint"
@@ -25,7 +24,6 @@
     "shiki": "^3.20.0"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.2",

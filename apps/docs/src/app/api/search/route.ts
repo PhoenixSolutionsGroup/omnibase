@@ -1,9 +1,14 @@
-import { source } from '@/lib/source';
+import { isLatestVersionPage, source } from '@/lib/source';
 import { createFromSource } from 'fumadocs-core/search/server';
 
 export const dynamic = 'force-static';
+export const revalidate = false;
 
-export const { GET } = createFromSource(source, {
-  // https://docs.orama.com/docs/orama-js/supported-languages
+const latestSource: typeof source = {
+  ...source,
+  getPages: (...args) => source.getPages(...args).filter(isLatestVersionPage),
+};
+
+export const { staticGET: GET } = createFromSource(latestSource, {
   language: 'english',
 });
