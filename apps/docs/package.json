@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prebuild": "cp ../../apps/api/docs/openapi.yaml ./openapi.yaml 2>/dev/null; echo '✓ Synced OpenAPI spec'",
     "build": "next build",
-    "build:cloudflare": "bun run prebuild && opennextjs-cloudflare build",
+    "build:cloudflare": "opennextjs-cloudflare build",
     "preview": "bun run build:cloudflare && opennextjs-cloudflare preview",
     "deploy": "bun run build:cloudflare && opennextjs-cloudflare deploy",
     "dev": "next dev",

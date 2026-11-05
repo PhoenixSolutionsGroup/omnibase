@@ -3,6 +3,7 @@
   "pages": [
     "auth",
     "configuration",
+    "database",
     "payments",
     "permissions",
     "storage",

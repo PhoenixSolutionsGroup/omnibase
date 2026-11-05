@@ -392,7 +392,7 @@ async function generateTypeDocs(): Promise<void> {
 async function generateOpenAPIDocs(): Promise<void> {
   console.log("\n📖 Generating OpenAPI documentation...\n");
 
-  const openApiSource = join(ROOT, "apps/api/docs/openapi.yaml");
+  const openApiSource = join(ROOT, "apps/api/docs/openapi.json");
   const openApiDest = join(ROOT, "apps/docs/openapi.yaml");
   const openApiOutput = join(DOCS_CONTENT, "reference/api");
 
@@ -405,11 +405,59 @@ async function generateOpenAPIDocs(): Promise<void> {
     return;
   }
 
-  // Copy openapi.yaml to docs directory (for fumadocs-openapi runtime access)
-  console.log("  → Copying OpenAPI spec to docs directory...");
-  const openApiContent = await readFile(openApiSource, "utf-8");
-  await writeFile(openApiDest, openApiContent);
-  console.log("    ✓ Copied openapi.yaml to apps/docs/");
+  const spec = JSON.parse(await readFile(openApiSource, "utf-8")) as {
+    paths?: Record<string, Record<string, { tags?: string[] }>>;
+    tags?: { name: string }[];
+  };
+
+  const tagMap: Record<string, string> = {
+    V1Auth: "V1 Auth",
+    V1Configuration: "V1 Configuration",
+    V1Database: "V1 Database",
+    V1Payments: "V1 Payments",
+    V1Permissions: "V1 Permissions",
+    V1Storage: "V1 Storage",
+    V1Stripe: "V1 Stripe",
+    V1TenantsLifecycle: "V1 Tenants",
+    V1TenantsSubscriptions: "V1 Tenants",
+    V1TenantsRoles: "V1 Tenants",
+    V1TenantsUsers: "V1 Tenants",
+    V1TenantsInvites: "V1 Tenants",
+  };
+  const tagOrder = [
+    "V1 Auth",
+    "V1 Configuration",
+    "V1 Database",
+    "V1 Payments",
+    "V1 Permissions",
+    "V1 Storage",
+    "V1 Stripe",
+    "V1 Tenants",
+  ];
+
+  const displayTag = (tag: string) =>
+    tagMap[tag] ?? tag.replace(/^(V\d+)\s*(.+)$/i, "$1 $2");
+
+  const tags = new Set<string>();
+  for (const operations of Object.values(spec.paths ?? {})) {
+    for (const operation of Object.values(operations)) {
+      if (!Array.isArray(operation.tags)) continue;
+      operation.tags = [...new Set(operation.tags.map(displayTag))];
+      for (const tag of operation.tags) tags.add(tag);
+    }
+  }
+
+  const tagIndex = (tag: string) => {
+    const index = tagOrder.indexOf(tag);
+    return index === -1 ? tagOrder.length : index;
+  };
+  spec.tags = [...tags]
+    .sort((a, b) => tagIndex(a) - tagIndex(b) || a.localeCompare(b))
+    .map((name) => ({ name }));
+
+  const yaml = await import("yaml");
+  await writeFile(openApiDest, yaml.stringify(spec));
+  console.log("    ✓ Wrote apps/docs/openapi.yaml");
 
   // Clean and create output directory
   await cleanOutputDir("reference/api");
@@ -420,11 +468,6 @@ async function generateOpenAPIDocs(): Promise<void> {
   try {
     const { generateFiles } = await import("fumadocs-openapi");
     const { createOpenAPI } = await import("fumadocs-openapi/server");
-    const yaml = await import("yaml");
-
-    // Load the OpenAPI spec
-    const specContent = await readFile(openApiDest, "utf-8");
-    const spec = yaml.parse(specContent);
 
     // Create an OpenAPI instance for the generator
     // Use function-based input to set the schema ID to match lib/openapi.ts
