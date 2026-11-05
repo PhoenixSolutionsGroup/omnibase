@@ -190,7 +190,7 @@ program
     "(and `omnibase/.env.local` for the local environment), plus the " +
     "deployment's wrangler " +
     "`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
-    "the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+    "the [`cloud env`](/cli/cloud/env) page.\n\n" +
     "```bash\n" +
     "omnibase start\n" +
     "omnibase start -d\n" +

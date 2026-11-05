@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "overview",
+    "guides",
+    "concepts",
+    "api",
+    "cli",
+    "shadcn",
+    "nextjs",
+    "react",
+    "roadmap",
+    "self-hosting"
+  ]
+}

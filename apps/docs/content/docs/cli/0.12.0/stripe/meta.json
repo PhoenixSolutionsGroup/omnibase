@@ -1,0 +1,13 @@
+{
+  "title": "Stripe",
+  "pages": [
+    "validate",
+    "status",
+    "push",
+    "get",
+    "history",
+    "pull",
+    "webhook",
+    "reset"
+  ]
+}

@@ -63,13 +63,21 @@ jobs:
       - name: Install dependencies
         run: bun install --ignore-scripts
 
+      - name: Resolve release version
+        id: release
+        run: echo "version=$(git describe --tags --match 'api-v*' --abbrev=0 | sed 's/^api-v//')" >> "$GITHUB_OUTPUT"
+
       - name: Generate SDK
+        env:
+          API_VERSION: ${{ steps.release.outputs.version }}
         run: bun run generate:sdk
 
       - name: Build core-js SDK
         run: cd sdk/core/js && bun run build
 
       - name: Generate documentation
+        env:
+          API_VERSION: ${{ steps.release.outputs.version }}
         run: bun run generate:docs
 
       - name: Commit generated docs

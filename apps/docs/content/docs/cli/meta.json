@@ -1,0 +1,10 @@
+{
+  "title": "CLI",
+  "description": "Command-line interface for projects and deployments",
+  "icon": "Terminal",
+  "root": true,
+  "pages": [
+    "index",
+    "0.12.0"
+  ]
+}

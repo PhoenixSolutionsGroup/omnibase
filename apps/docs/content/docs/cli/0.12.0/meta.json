@@ -1,0 +1,19 @@
+{
+  "title": "0.12.0",
+  "root": "cli",
+  "pages": [
+    "index",
+    "init",
+    "start",
+    "stop",
+    "env",
+    "permissions",
+    "auth",
+    "stripe",
+    "email",
+    "db",
+    "cloud",
+    "sync",
+    "restart"
+  ]
+}

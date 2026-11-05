@@ -1,0 +1,12 @@
+{
+  "title": "Auth",
+  "pages": [
+    "authentication",
+    "flow-retrieval",
+    "flow-routing",
+    "functions",
+    "interfaces",
+    "session-management",
+    "variables"
+  ]
+}
