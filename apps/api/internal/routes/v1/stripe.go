@@ -109,7 +109,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Path:        "/api/v1/stripe/convert/stripe-id/{stripe_id}",
 		Summary:     "Convert Stripe ID to config ID",
 		Tags:        []string{"V1Stripe"},
-	}, authn.AuthNone, nil, stripeHandler.ConvertStripeIDToConfigID)
+	}, authn.AuthServiceKey|authn.AuthAppKey, nil, stripeHandler.ConvertStripeIDToConfigID)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigAdmin",
@@ -150,6 +150,14 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 		Summary:     "Validate Stripe config",
 		Tags:        []string{"V1Configuration"},
 	}, authn.AuthServiceKey, nil, stripeHandler.ValidateConfig)
+
+	register(api, d.Auth, huma.Operation{
+		OperationID: "getStripeConfigStatus",
+		Method:      http.MethodPost,
+		Path:        "/api/v1/stripe/admin/config/status",
+		Summary:     "Get Stripe config status",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthServiceKey, nil, stripeHandler.GetConfigStatus)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "archiveAllStripeConfig",

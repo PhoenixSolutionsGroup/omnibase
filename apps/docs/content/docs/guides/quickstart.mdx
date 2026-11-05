@@ -124,7 +124,7 @@ Launch everything with a single command:
 omnibase start
 ```
 
-`omnibase start` does two things:
+`omnibase start` runs in the foreground and streams logs; press Ctrl+C to stop everything, or use `omnibase start -d` to run the containers in the background (stop them with `omnibase stop`). It does two things:
 
 1. **Starts the control plane** with Docker Compose — Postgres + PgBouncer, the REST API, Auth (Kratos), Permissions (Keto), PostgREST, Mailpit (email), RustFS (S3-compatible storage), and Adminer, then runs database migrations.
 2. **Spawns a dev server** (`bun run dev`) for every deployment in `omnibase.toml`, on ports starting at `8787`.

@@ -24,6 +24,12 @@ export interface RecordUsageRequest {
      * @type {string}
      * @memberof RecordUsageRequest
      */
+    idempotencyKey?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof RecordUsageRequest
+     */
     meterEventName: string;
     /**
      * 
@@ -52,6 +58,7 @@ export function RecordUsageRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
+        'idempotencyKey': json['idempotency_key'] == null ? undefined : json['idempotency_key'],
         'meterEventName': json['meter_event_name'],
         'value': json['value'],
     };
@@ -68,6 +75,7 @@ export function RecordUsageRequestToJSONTyped(value?: RecordUsageRequest | null,
 
     return {
         
+        'idempotency_key': value['idempotencyKey'],
         'meter_event_name': value['meterEventName'],
         'value': value['value'],
     };

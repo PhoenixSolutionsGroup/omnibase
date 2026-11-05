@@ -75,6 +75,7 @@ func (h *Handler) Create(ctx context.Context, in *CreateInput) (*CreateOutput, e
 	if err := h.email.SendWithTemplate(ctx, email.SendWithTemplateRequest{
 		To:           invite.Email,
 		TemplateType: inviteTemplateType,
+		TenantID:     in.TenantID,
 		Data: inviteEmailData{
 			TenantName: tenant.Name,
 			Role:       invite.Role,

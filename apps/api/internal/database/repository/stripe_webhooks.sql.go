@@ -159,55 +159,6 @@ func (q *Queries) ListStripeWebhooks(ctx context.Context) ([]ListStripeWebhooksR
 	return items, nil
 }
 
-const listStripeWebhooksByConfigID = `-- name: ListStripeWebhooksByConfigID :many
-SELECT id, stripe_id, url, secret, events, connect, config_id, created_at, updated_at
-FROM stripe.stripe_webhooks
-WHERE config_id = $1
-ORDER BY created_at DESC
-`
-
-type ListStripeWebhooksByConfigIDRow struct {
-	ID        uuid.UUID  `json:"id"`
-	StripeID  string     `json:"stripe_id"`
-	Url       string     `json:"url"`
-	Secret    string     `json:"secret"`
-	Events    []string   `json:"events"`
-	Connect   bool       `json:"connect"`
-	ConfigID  *uuid.UUID `json:"config_id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-}
-
-func (q *Queries) ListStripeWebhooksByConfigID(ctx context.Context, configID *uuid.UUID) ([]ListStripeWebhooksByConfigIDRow, error) {
-	rows, err := q.db.Query(ctx, listStripeWebhooksByConfigID, configID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ListStripeWebhooksByConfigIDRow
-	for rows.Next() {
-		var i ListStripeWebhooksByConfigIDRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.StripeID,
-			&i.Url,
-			&i.Secret,
-			&i.Events,
-			&i.Connect,
-			&i.ConfigID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const updateStripeWebhook = `-- name: UpdateStripeWebhook :exec
 UPDATE stripe.stripe_webhooks
 SET url = $2,

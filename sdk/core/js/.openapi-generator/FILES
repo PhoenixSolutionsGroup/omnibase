@@ -25,6 +25,9 @@ docs/ConfigHistoryItem.md
 docs/ConfigHistoryPagination.md
 docs/ConfigHistoryResponse.md
 docs/ConfigResponse.md
+docs/ConfigStatus.md
+docs/ConfigStatusEntry.md
+docs/ConfigStatusSummary.md
 docs/ConvertStripeIDResponse.md
 docs/Coupon.md
 docs/CouponChange.md
@@ -49,11 +52,13 @@ docs/DeleteObjectResponse.md
 docs/DeleteRelationshipRequest.md
 docs/DeleteRelationshipResponse.md
 docs/DeleteRequest.md
+docs/DeleteSystemTemplateResponse.md
 docs/DeleteTemplateResponse.md
 docs/DeleteTenantResponse.md
 docs/DeployNamespacesResponse.md
 docs/DownloadRequest.md
 docs/DownloadResponse.md
+docs/EmailSystemTemplate.md
 docs/EmailTemplate.md
 docs/EnterpriseApplyResponse.md
 docs/EnterprisePricesResponse.md
@@ -74,6 +79,7 @@ docs/InvoiceResponse.md
 docs/JWTResponse.md
 docs/ListRolesByTenantRow.md
 docs/ListStripeWebhooksRow.md
+docs/ListSystemTemplatesResponse.md
 docs/ListTemplatesResponse.md
 docs/ListTenantsResponse.md
 docs/ListWebhooksResponse.md
@@ -110,8 +116,9 @@ docs/RecoveryIdentityAddress.md
 docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
-docs/SendRequest.md
+docs/SendHTMLRequest.md
 docs/SendResponse.md
+docs/SendTemplateRequest.md
 docs/Session.md
 docs/SessionAuthenticationMethod.md
 docs/SessionDevice.md
@@ -132,6 +139,8 @@ docs/UpdateUserRoleRequest.md
 docs/UpdateUserRoleResponse.md
 docs/UploadRequest.md
 docs/UploadResponse.md
+docs/UpsertSystemTemplateRequest.md
+docs/UpsertSystemTemplateResponse.md
 docs/UpsertTemplateRequest.md
 docs/UpsertTemplateResponse.md
 docs/UserResponse.md
@@ -192,6 +201,9 @@ src/models/ConfigHistoryItem.ts
 src/models/ConfigHistoryPagination.ts
 src/models/ConfigHistoryResponse.ts
 src/models/ConfigResponse.ts
+src/models/ConfigStatus.ts
+src/models/ConfigStatusEntry.ts
+src/models/ConfigStatusSummary.ts
 src/models/ConvertStripeIDResponse.ts
 src/models/Coupon.ts
 src/models/CouponChange.ts
@@ -216,11 +228,13 @@ src/models/DeleteObjectResponse.ts
 src/models/DeleteRelationshipRequest.ts
 src/models/DeleteRelationshipResponse.ts
 src/models/DeleteRequest.ts
+src/models/DeleteSystemTemplateResponse.ts
 src/models/DeleteTemplateResponse.ts
 src/models/DeleteTenantResponse.ts
 src/models/DeployNamespacesResponse.ts
 src/models/DownloadRequest.ts
 src/models/DownloadResponse.ts
+src/models/EmailSystemTemplate.ts
 src/models/EmailTemplate.ts
 src/models/EnterpriseApplyResponse.ts
 src/models/EnterprisePricesResponse.ts
@@ -241,6 +255,7 @@ src/models/InvoiceResponse.ts
 src/models/JWTResponse.ts
 src/models/ListRolesByTenantRow.ts
 src/models/ListStripeWebhooksRow.ts
+src/models/ListSystemTemplatesResponse.ts
 src/models/ListTemplatesResponse.ts
 src/models/ListTenantsResponse.ts
 src/models/ListWebhooksResponse.ts
@@ -277,8 +292,9 @@ src/models/RecoveryIdentityAddress.ts
 src/models/RelationMetadataResponse.ts
 src/models/RemoveRequest.ts
 src/models/RemoveResponse.ts
-src/models/SendRequest.ts
+src/models/SendHTMLRequest.ts
 src/models/SendResponse.ts
+src/models/SendTemplateRequest.ts
 src/models/Session.ts
 src/models/SessionAuthenticationMethod.ts
 src/models/SessionDevice.ts
@@ -299,6 +315,8 @@ src/models/UpdateUserRoleRequest.ts
 src/models/UpdateUserRoleResponse.ts
 src/models/UploadRequest.ts
 src/models/UploadResponse.ts
+src/models/UpsertSystemTemplateRequest.ts
+src/models/UpsertSystemTemplateResponse.ts
 src/models/UpsertTemplateRequest.ts
 src/models/UpsertTemplateResponse.ts
 src/models/UserResponse.ts

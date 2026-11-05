@@ -71,6 +71,7 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 
 	couponListParams := &stripe.CouponListParams{}
 	couponListParams.Limit = stripe.Int64(100)
+	couponListParams.Expand = []*string{stripe.String("data.applies_to")}
 	s.stripe.ApplyAccount(couponListParams)
 	var stripeCoupons []*stripe.Coupon
 	for cpn, err := range s.stripe.Stripe.V1Coupons.List(ctx, couponListParams) {

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	CreateCheckoutSessionError       = errors.New("Failed to create checkout session")
-	CreateCheckoutSessionPriceFetch  = errors.New("Failed to fetch price for checkout")
+	CreateCheckoutSessionError      = errors.New("Failed to create checkout session")
+	CreateCheckoutSessionPriceFetch = errors.New("Failed to fetch price for checkout")
 )
 
 type CreateCheckoutSessionArgs struct {
@@ -36,9 +36,19 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 		mode = stripe.CheckoutSessionModeSubscription
 	}
 
+	const quantity int64 = 1
+	paymentAmount := checkoutLineAmount(priceObj, quantity)
+	if mode == stripe.CheckoutSessionModePayment && s.feeActive() && args.PromotionCode != nil && *args.PromotionCode != "" {
+		discount, err := s.promotionCodeDiscountAmount(ctx, priceObj, *args.PromotionCode, paymentAmount)
+		if err != nil {
+			return nil, err
+		}
+		paymentAmount -= discount
+	}
+
 	params := &stripe.CheckoutSessionCreateParams{
 		LineItems: []*stripe.CheckoutSessionCreateLineItemParams{
-			{Price: stripe.String(args.StripePriceID), Quantity: stripe.Int64(1)},
+			{Price: stripe.String(args.StripePriceID), Quantity: stripe.Int64(quantity)},
 		},
 		Mode:       stripe.String(string(mode)),
 		SuccessURL: stripe.String(args.SuccessURL),
@@ -47,7 +57,7 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 
 	if args.StripeCustomerID != "" {
 		params.Customer = stripe.String(args.StripeCustomerID)
-	} else {
+	} else if mode == stripe.CheckoutSessionModePayment {
 		params.CustomerCreation = stripe.String("always")
 	}
 
@@ -68,7 +78,7 @@ func (s *Service) CreateCheckoutSession(ctx context.Context, args CreateCheckout
 	}
 
 	s.stripe.ApplyAccount(params)
-	s.applyPlatformFeeToCheckout(params, priceObj, mode)
+	s.applyPlatformFeeToCheckout(params, mode, paymentAmount)
 
 	sess, err := s.stripe.Stripe.V1CheckoutSessions.Create(ctx, params)
 	if err != nil {

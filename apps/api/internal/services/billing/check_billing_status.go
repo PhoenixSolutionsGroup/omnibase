@@ -13,7 +13,6 @@ var CheckBillingStatusError = errors.New("Failed to check billing status")
 func (s *Service) CheckBillingStatus(ctx context.Context, stripeCustomerID string) (bool, error) {
 	params := &stripe.PaymentMethodListParams{
 		Customer: stripe.String(stripeCustomerID),
-		Type:     stripe.String("card"),
 	}
 	s.stripe.ApplyAccount(params)
 

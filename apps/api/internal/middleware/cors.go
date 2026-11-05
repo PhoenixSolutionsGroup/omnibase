@@ -10,8 +10,7 @@ import (
 // allowedOrigins must be provided. Use "*" to allow all origins (dev only).
 func CORS(allowedOrigins []string) gin.HandlerFunc {
 	if len(allowedOrigins) == 0 {
-		logger.Logger.Error("CORS_ALLOWED_ORIGINS is required but not set")
-		panic("CORS_ALLOWED_ORIGINS environment variable must be set")
+		logger.Logger.Error("CORS_ALLOWED_ORIGINS is empty; CORS requests will be blocked")
 	}
 
 	allowAll := len(allowedOrigins) == 1 && allowedOrigins[0] == "*"

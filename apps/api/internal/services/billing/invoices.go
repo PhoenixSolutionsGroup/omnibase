@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	CreateInvoiceError          = errors.New("Failed to create invoice")
-	GetInvoiceError             = errors.New("Failed to get invoice")
-	UpdateInvoiceError          = errors.New("Failed to update invoice")
-	AddInvoiceLineItemError     = errors.New("Failed to add invoice line item")
-	FinalizeInvoiceError        = errors.New("Failed to finalize invoice")
-	PreviewInvoiceError         = errors.New("Failed to preview invoice")
+	CreateInvoiceError      = errors.New("Failed to create invoice")
+	GetInvoiceError         = errors.New("Failed to get invoice")
+	UpdateInvoiceError      = errors.New("Failed to update invoice")
+	AddInvoiceLineItemError = errors.New("Failed to add invoice line item")
+	FinalizeInvoiceError    = errors.New("Failed to finalize invoice")
+	PreviewInvoiceError     = errors.New("Failed to preview invoice")
 )
 
 type CreateInvoiceArgs struct {
@@ -150,16 +150,16 @@ func (s *Service) AddInvoiceLineItemByPrice(ctx context.Context, args AddInvoice
 func (s *Service) FinalizeInvoice(ctx context.Context, invoiceID string, autoAdvance bool) (*stripe.Invoice, error) {
 	if s.feeActive() {
 		draft, err := s.GetInvoice(ctx, invoiceID)
-		if err == nil && draft.Subtotal > 0 {
-			feeAmount := int64(float64(draft.Subtotal) * (s.feePct / 100))
-			if feeAmount > 0 {
-				updateParams := &stripe.InvoiceUpdateParams{
-					ApplicationFeeAmount: stripe.Int64(feeAmount),
-				}
-				s.stripe.ApplyAccount(updateParams)
-				if _, err := s.stripe.Stripe.V1Invoices.Update(ctx, invoiceID, updateParams); err != nil {
-					return nil, fmt.Errorf("%w: failed to set application fee before finalize: %w", FinalizeInvoiceError, err)
-				}
+		if err != nil {
+			return nil, fmt.Errorf("%w: failed to fetch draft invoice before finalize: %w", FinalizeInvoiceError, err)
+		}
+		if feeAmount := percentageAmount(draft.Subtotal, s.feePct); feeAmount > 0 {
+			updateParams := &stripe.InvoiceUpdateParams{
+				ApplicationFeeAmount: stripe.Int64(feeAmount),
+			}
+			s.stripe.ApplyAccount(updateParams)
+			if _, err := s.stripe.Stripe.V1Invoices.Update(ctx, invoiceID, updateParams); err != nil {
+				return nil, fmt.Errorf("%w: failed to set application fee before finalize: %w", FinalizeInvoiceError, err)
 			}
 		}
 	}

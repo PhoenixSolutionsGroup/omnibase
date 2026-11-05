@@ -12,6 +12,8 @@ export class Tenant implements Namespace {
     can_create_roles: User[];
     can_update_roles: User[];
     can_delete_roles: User[];
+    can_send_email: User[];
+    can_manage_email_templates: User[];
     can_remove_owner_role: User[];
     can_update_user_role_to_owner: User[];
   };
@@ -40,6 +42,12 @@ export class Tenant implements Namespace {
 
     delete_roles: (ctx: Context): boolean =>
       this.related.can_delete_roles.includes(ctx.subject),
+
+    send_email: (ctx: Context): boolean =>
+      this.related.can_send_email.includes(ctx.subject),
+
+    manage_email_templates: (ctx: Context): boolean =>
+      this.related.can_manage_email_templates.includes(ctx.subject),
 
     remove_owner_role: (ctx: Context): boolean =>
       this.related.can_remove_owner_role.includes(ctx.subject),

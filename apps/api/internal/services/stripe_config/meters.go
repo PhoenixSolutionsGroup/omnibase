@@ -96,6 +96,39 @@ func (s *Service) deactivateMeter(ctx context.Context, meter *stripe.BillingMete
 	}, nil
 }
 
+func meterFieldsChanged(desired, current Meter) bool {
+	if desired.EventName != current.EventName || desired.DisplayName != current.DisplayName {
+		return true
+	}
+	if desired.DefaultAggregation.Formula != current.DefaultAggregation.Formula {
+		return true
+	}
+
+	desiredKey, desiredType := "stripe_customer_id", "by_id"
+	if desired.CustomerMapping != nil {
+		desiredKey = desired.CustomerMapping.EventPayloadKey
+		desiredType = desired.CustomerMapping.Type
+	}
+	currentKey, currentType := "stripe_customer_id", "by_id"
+	if current.CustomerMapping != nil {
+		currentKey = current.CustomerMapping.EventPayloadKey
+		currentType = current.CustomerMapping.Type
+	}
+	if desiredKey != currentKey || desiredType != currentType {
+		return true
+	}
+
+	desiredValueKey := "value"
+	if desired.ValueSettings != nil {
+		desiredValueKey = desired.ValueSettings.EventPayloadKey
+	}
+	currentValueKey := "value"
+	if current.ValueSettings != nil {
+		currentValueKey = current.ValueSettings.EventPayloadKey
+	}
+	return desiredValueKey != currentValueKey
+}
+
 func (s *Service) findMeterByEventName(ctx context.Context, eventName string) (*stripe.BillingMeter, error) {
 	params := &stripe.BillingMeterListParams{
 		Status: stripe.String("active"),

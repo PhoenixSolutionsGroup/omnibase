@@ -76,15 +76,10 @@ jobs:
         run: |
           git add apps/docs/content/
           git add apps/docs/openapi.yaml
-          git add apps/api/docs/openapi.yaml
+          git add apps/api/docs/openapi.json
           if git diff --staged --quiet; then
             echo "No documentation changes to commit"
           else
             git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
             git push origin main
           fi
-
-      - name: Deploy docs site to Vercel
-        env:
-          VERCEL_DOCS_DEPLOY_HOOK: ${{ secrets.VERCEL_DOCS_DEPLOY_HOOK }}
-        run: curl -fsS -X POST "$VERCEL_DOCS_DEPLOY_HOOK"

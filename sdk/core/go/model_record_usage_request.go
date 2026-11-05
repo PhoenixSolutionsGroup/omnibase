@@ -22,6 +22,7 @@ var _ MappedNullable = &RecordUsageRequest{}
 
 // RecordUsageRequest struct for RecordUsageRequest
 type RecordUsageRequest struct {
+	IdempotencyKey *string `json:"idempotency_key,omitempty"`
 	MeterEventName string `json:"meter_event_name"`
 	Value string `json:"value"`
 }
@@ -45,6 +46,38 @@ func NewRecordUsageRequest(meterEventName string, value string) *RecordUsageRequ
 func NewRecordUsageRequestWithDefaults() *RecordUsageRequest {
 	this := RecordUsageRequest{}
 	return &this
+}
+
+// GetIdempotencyKey returns the IdempotencyKey field value if set, zero value otherwise.
+func (o *RecordUsageRequest) GetIdempotencyKey() string {
+	if o == nil || IsNil(o.IdempotencyKey) {
+		var ret string
+		return ret
+	}
+	return *o.IdempotencyKey
+}
+
+// GetIdempotencyKeyOk returns a tuple with the IdempotencyKey field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RecordUsageRequest) GetIdempotencyKeyOk() (*string, bool) {
+	if o == nil || IsNil(o.IdempotencyKey) {
+		return nil, false
+	}
+	return o.IdempotencyKey, true
+}
+
+// HasIdempotencyKey returns a boolean if a field has been set.
+func (o *RecordUsageRequest) HasIdempotencyKey() bool {
+	if o != nil && !IsNil(o.IdempotencyKey) {
+		return true
+	}
+
+	return false
+}
+
+// SetIdempotencyKey gets a reference to the given string and assigns it to the IdempotencyKey field.
+func (o *RecordUsageRequest) SetIdempotencyKey(v string) {
+	o.IdempotencyKey = &v
 }
 
 // GetMeterEventName returns the MeterEventName field value
@@ -105,6 +138,9 @@ func (o RecordUsageRequest) MarshalJSON() ([]byte, error) {
 
 func (o RecordUsageRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.IdempotencyKey) {
+		toSerialize["idempotency_key"] = o.IdempotencyKey
+	}
 	toSerialize["meter_event_name"] = o.MeterEventName
 	toSerialize["value"] = o.Value
 	return toSerialize, nil

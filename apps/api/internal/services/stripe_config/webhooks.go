@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v82"
 
 	"api/internal/database/repository"
@@ -229,17 +228,6 @@ func (s *Service) DeleteWebhook(ctx context.Context, stripeID string) error {
 
 func (s *Service) ListWebhooks(ctx context.Context) ([]repository.ListStripeWebhooksRow, error) {
 	rows, err := s.repo.ListStripeWebhooks(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ListWebhooksError, err)
-	}
-	for i := range rows {
-		s.decryptSecret(&rows[i].Secret)
-	}
-	return rows, nil
-}
-
-func (s *Service) GetWebhooksForConfig(ctx context.Context, configID uuid.UUID) ([]repository.ListStripeWebhooksByConfigIDRow, error) {
-	rows, err := s.repo.ListStripeWebhooksByConfigID(ctx, &configID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ListWebhooksError, err)
 	}

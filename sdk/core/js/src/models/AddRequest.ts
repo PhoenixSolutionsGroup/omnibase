@@ -24,6 +24,12 @@ export interface AddRequest {
      * @type {string}
      * @memberof AddRequest
      */
+    idempotencyKey: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AddRequest
+     */
     planId: string;
     /**
      * 
@@ -43,6 +49,7 @@ export interface AddRequest {
  * Check if a given object implements the AddRequest interface.
  */
 export function instanceOfAddRequest(value: object): value is AddRequest {
+    if (!('idempotencyKey' in value) || value['idempotencyKey'] === undefined) return false;
     if (!('planId' in value) || value['planId'] === undefined) return false;
     return true;
 }
@@ -57,6 +64,7 @@ export function AddRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
+        'idempotencyKey': json['idempotency_key'],
         'planId': json['plan_id'],
         'quantity': json['quantity'] == null ? undefined : json['quantity'],
         'stripeCustomerId': json['stripe_customer_id'] == null ? undefined : json['stripe_customer_id'],
@@ -74,6 +82,7 @@ export function AddRequestToJSONTyped(value?: AddRequest | null, ignoreDiscrimin
 
     return {
         
+        'idempotency_key': value['idempotencyKey'],
         'plan_id': value['planId'],
         'quantity': value['quantity'],
         'stripe_customer_id': value['stripeCustomerId'],

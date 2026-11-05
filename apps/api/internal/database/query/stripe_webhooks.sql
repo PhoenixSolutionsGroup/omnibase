@@ -23,12 +23,6 @@ SELECT id, stripe_id, url, secret, events, connect, config_id, created_at, updat
 FROM stripe.stripe_webhooks
 ORDER BY created_at DESC;
 
--- name: ListStripeWebhooksByConfigID :many
-SELECT id, stripe_id, url, secret, events, connect, config_id, created_at, updated_at
-FROM stripe.stripe_webhooks
-WHERE config_id = $1
-ORDER BY created_at DESC;
-
 -- name: DeleteStripeWebhookByStripeID :exec
 DELETE FROM stripe.stripe_webhooks
 WHERE stripe_id = $1;

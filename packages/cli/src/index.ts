@@ -18,9 +18,15 @@ import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
 import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
+  SummaryEntry,
+  formatStartSummary,
+  waitForApiReady,
+} from "./utils/start-summary";
+import {
   getComposeFiles,
   validateComposeFiles,
   runDockerComposeCommand,
+  spawnDockerComposeCommand,
 } from "./utils/docker";
 
 export const program = new Command();
@@ -75,6 +81,25 @@ async function runDockerCompose(
   }
 }
 
+async function startDockerComposeAttached(
+  envOverride: string | undefined,
+  composeMode: string | undefined,
+  command: string,
+): Promise<ChildProcess> {
+  const envConfig = await selectEnvironment(envOverride);
+
+  logger.log(`Using environment: ${envConfig.name}`);
+  logger.log(`Using mode: ${composeMode || "local"}`);
+
+  const composeFiles = getComposeFiles(composeMode);
+  validateComposeFiles(composeFiles);
+
+  return spawnDockerComposeCommand(command, [], {
+    mode: composeMode,
+    envConfig,
+  });
+}
+
 program
   .command("init")
   .summary("Initialize a new omnibase project")
@@ -113,6 +138,7 @@ program
   });
 
 let childProcesses: ChildProcess[] = [];
+let composeProcess: ChildProcess | null = null;
 
 function cleanup(): void {
   for (const cp of childProcesses) {
@@ -121,16 +147,26 @@ function cleanup(): void {
   childProcesses = [];
 }
 
+// An attached `docker compose up` stops its containers on SIGINT; wait for it
+// to finish instead of exiting underneath it.
+function shutdown(signal: NodeJS.Signals): void {
+  cleanup();
+  const compose = composeProcess;
+  if (compose && compose.exitCode === null && compose.signalCode === null) {
+    if (signal === "SIGTERM") compose.kill("SIGTERM");
+    return;
+  }
+  process.exit(0);
+}
+
 process.on("SIGINT", () => {
   logger.newline();
   logger.info("Shutting down...");
-  cleanup();
-  process.exit(0);
+  shutdown("SIGINT");
 });
 
 process.on("SIGTERM", () => {
-  cleanup();
-  process.exit(0);
+  shutdown("SIGTERM");
 });
 
 program
@@ -140,9 +176,15 @@ program
     "Start the local control-plane services with Docker Compose, then spawn " +
     "a dev server for every deployment configured in omnibase.toml (or " +
     "`omnibase/workers/`).\n\n" +
-    "The control plane starts with `docker compose up -d`. Each deployment " +
+    "The control plane runs in the foreground with `docker compose up`, " +
+    "streaming its logs; press Ctrl+C to stop everything. Pass `-d` to start " +
+    "the containers detached (`docker compose up -d`) and stop them later " +
+    "with `omnibase stop`. Each deployment " +
     "directory runs `bun run dev` on `http://localhost:<port>` (default " +
     "ports start at 8787 and increment per deployment).\n\n" +
+    "Once the API reports ready, a summary lists the URL of each service " +
+    "(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
+    "deployment dev server.\n\n" +
     "Environment variables: the dev-server processes receive the same " +
     "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
     "(and `omnibase/.env.local` for the local environment), plus the " +
@@ -151,19 +193,45 @@ program
     "the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
     "```bash\n" +
     "omnibase start\n" +
+    "omnibase start -d\n" +
     "omnibase start --build\n" +
     "```"
   )
   .option("--build", "Build images before starting containers")
+  .option("-d, --detach", "Run containers in the background")
   .action(async (cmdOptions) => {
     try {
       const globalOptions = program.opts();
       const mode = globalOptions.mode || "local";
-      const composeCommand = cmdOptions.build ? "up -d --build" : "up -d";
+      const detached = Boolean(cmdOptions.detach);
+      const composeCommand = [
+        "up",
+        detached ? "-d" : "",
+        cmdOptions.build ? "--build" : "",
+      ].filter(Boolean).join(" ");
 
-      logger.start("Starting services...");
-      await runDockerCompose(globalOptions.env || "local", mode, composeCommand);
-      logger.succeed("Control plane services started");
+      if (detached) {
+        logger.start("Starting services...");
+        await runDockerCompose(globalOptions.env || "local", mode, composeCommand);
+        logger.succeed("Control plane services started");
+      } else {
+        logger.info("Starting services...");
+        const compose = await startDockerComposeAttached(
+          globalOptions.env || "local",
+          mode,
+          composeCommand,
+        );
+        composeProcess = compose;
+        compose.on("error", (error) => {
+          cleanup();
+          logger.fail(`Docker compose failed to start: ${error.message}`);
+          process.exit(1);
+        });
+        compose.on("exit", (code) => {
+          cleanup();
+          process.exit(code ?? 0);
+        });
+      }
 
       const root = findOmnibaseRoot();
       const config = loadConfig(root);
@@ -177,14 +245,13 @@ program
 
       if (deployments.length === 0) {
         logger.info("No deployments configured. Add [[deployments]] to omnibase.toml");
-        return;
+      } else {
+        logger.newline();
+        logger.log("Starting deployment dev servers:");
+        logger.log("");
       }
 
-      logger.newline();
-      logger.log("Starting deployment dev servers:");
-      logger.log("");
-
-      const table: string[] = [];
+      const started: SummaryEntry[] = [];
       for (let i = 0; i < deployments.length; i++) {
         const dep = deployments[i];
         const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
@@ -223,14 +290,25 @@ program
         });
 
         childProcesses.push(cp);
-        table.push(`  ${dep.name.padEnd(16)} http://localhost:${port}`);
+        started.push({ name: dep.name, url: `http://localhost:${port}` });
       }
 
       logger.newline();
-      logger.log("Dev servers running:");
-      table.forEach((line) => { logger.log(line); });
+      logger.info("Waiting for services to be ready...");
+      const ready = await waitForApiReady();
       logger.newline();
-      logger.log("Press Ctrl+C to stop all services");
+      if (ready) {
+        logger.succeed("Omnibase is running");
+      } else {
+        logger.warn("API did not report ready within 2 minutes; services may still be starting");
+      }
+      formatStartSummary(started).forEach((line) => { logger.log(line); });
+      logger.newline();
+      logger.log(
+        detached
+          ? "Press Ctrl+C to stop the dev servers (run 'omnibase stop' to stop the containers)"
+          : "Press Ctrl+C to stop all services",
+      );
     } catch (error) {
       cleanup();
       logger.fail(error instanceof Error ? error.message : String(error));

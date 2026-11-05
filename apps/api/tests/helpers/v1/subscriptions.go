@@ -25,7 +25,7 @@ func GetTenantSubscriptionRaw(t *testing.T, client *sdk.APIClient, userID, tenan
 
 func AddSubscriptionRaw(t *testing.T, client *sdk.APIClient, userID, tenantID, planID string) (*sdk.AddResponse, *http.Response, error) {
 	t.Helper()
-	req := sdk.AddRequest{PlanId: planID}
+	req := sdk.AddRequest{PlanId: planID, IdempotencyKey: helpers.UniqueID()}
 	out, resp, err := client.V1TenantsSubscriptionsAPI.AddSubscription(helpers.CtxWithUserTenant(userID, tenantID)).
 		AddRequest(req).
 		Execute()

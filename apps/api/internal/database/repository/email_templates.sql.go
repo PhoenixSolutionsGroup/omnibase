@@ -7,60 +7,133 @@ package repository
 
 import (
 	"context"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 const deleteEmailTemplateByType = `-- name: DeleteEmailTemplateByType :execrows
-DELETE FROM email.templates WHERE type = $1
+DELETE FROM email.templates
+WHERE type = $1 AND tenant_id IS NOT DISTINCT FROM $2
 `
 
-func (q *Queries) DeleteEmailTemplateByType(ctx context.Context, type_ string) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteEmailTemplateByType, type_)
+type DeleteEmailTemplateByTypeParams struct {
+	Type     string  `json:"type"`
+	TenantID *string `json:"tenant_id"`
+}
+
+func (q *Queries) DeleteEmailTemplateByType(ctx context.Context, arg DeleteEmailTemplateByTypeParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEmailTemplateByType, arg.Type, arg.TenantID)
 	if err != nil {
 		return 0, err
 	}
 	return result.RowsAffected(), nil
 }
 
-const getEmailTemplateByType = `-- name: GetEmailTemplateByType :one
-SELECT id, type, subject, html_body, created_at, updated_at
-FROM email.templates
-WHERE type = $1
+const deleteSystemEmailTemplateByName = `-- name: DeleteSystemEmailTemplateByName :execrows
+DELETE FROM email.system_templates WHERE name = $1
 `
 
-func (q *Queries) GetEmailTemplateByType(ctx context.Context, type_ string) (EmailTemplate, error) {
-	row := q.db.QueryRow(ctx, getEmailTemplateByType, type_)
-	var i EmailTemplate
+func (q *Queries) DeleteSystemEmailTemplateByName(ctx context.Context, name string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteSystemEmailTemplateByName, name)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const getEmailTemplateForTenant = `-- name: GetEmailTemplateForTenant :one
+SELECT id, type, subject, html_body, tenant_id, created_at, updated_at
+FROM email.templates
+WHERE type = $1
+  AND (tenant_id = $2 OR tenant_id IS NULL)
+ORDER BY tenant_id NULLS LAST
+LIMIT 1
+`
+
+type GetEmailTemplateForTenantParams struct {
+	Type     string  `json:"type"`
+	TenantID *string `json:"tenant_id"`
+}
+
+type GetEmailTemplateForTenantRow struct {
+	ID        uuid.UUID `json:"id"`
+	Type      string    `json:"type"`
+	Subject   string    `json:"subject"`
+	HtmlBody  string    `json:"html_body"`
+	TenantID  *string   `json:"tenant_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) GetEmailTemplateForTenant(ctx context.Context, arg GetEmailTemplateForTenantParams) (GetEmailTemplateForTenantRow, error) {
+	row := q.db.QueryRow(ctx, getEmailTemplateForTenant, arg.Type, arg.TenantID)
+	var i GetEmailTemplateForTenantRow
 	err := row.Scan(
 		&i.ID,
 		&i.Type,
 		&i.Subject,
 		&i.HtmlBody,
+		&i.TenantID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const listEmailTemplates = `-- name: ListEmailTemplates :many
-SELECT id, type, subject, html_body, created_at, updated_at
-FROM email.templates
-ORDER BY type ASC
+const getSystemEmailTemplateByName = `-- name: GetSystemEmailTemplateByName :one
+SELECT id, name, subject, html_body, plaintext_body, created_at, updated_at
+FROM email.system_templates
+WHERE name = $1
 `
 
-func (q *Queries) ListEmailTemplates(ctx context.Context) ([]EmailTemplate, error) {
-	rows, err := q.db.Query(ctx, listEmailTemplates)
+func (q *Queries) GetSystemEmailTemplateByName(ctx context.Context, name string) (EmailSystemTemplate, error) {
+	row := q.db.QueryRow(ctx, getSystemEmailTemplateByName, name)
+	var i EmailSystemTemplate
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Subject,
+		&i.HtmlBody,
+		&i.PlaintextBody,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listEmailTemplatesForTenant = `-- name: ListEmailTemplatesForTenant :many
+SELECT id, type, subject, html_body, tenant_id, created_at, updated_at
+FROM email.templates
+WHERE tenant_id = $1 OR tenant_id IS NULL
+ORDER BY tenant_id NULLS LAST, type ASC
+`
+
+type ListEmailTemplatesForTenantRow struct {
+	ID        uuid.UUID `json:"id"`
+	Type      string    `json:"type"`
+	Subject   string    `json:"subject"`
+	HtmlBody  string    `json:"html_body"`
+	TenantID  *string   `json:"tenant_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) ListEmailTemplatesForTenant(ctx context.Context, tenantID *string) ([]ListEmailTemplatesForTenantRow, error) {
+	rows, err := q.db.Query(ctx, listEmailTemplatesForTenant, tenantID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []EmailTemplate
+	var items []ListEmailTemplatesForTenantRow
 	for rows.Next() {
-		var i EmailTemplate
+		var i ListEmailTemplatesForTenantRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Type,
 			&i.Subject,
 			&i.HtmlBody,
+			&i.TenantID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -74,30 +147,160 @@ func (q *Queries) ListEmailTemplates(ctx context.Context) ([]EmailTemplate, erro
 	return items, nil
 }
 
-const upsertEmailTemplate = `-- name: UpsertEmailTemplate :one
+const listSystemEmailTemplates = `-- name: ListSystemEmailTemplates :many
+SELECT id, name, subject, html_body, plaintext_body, created_at, updated_at
+FROM email.system_templates
+ORDER BY name ASC
+`
+
+func (q *Queries) ListSystemEmailTemplates(ctx context.Context) ([]EmailSystemTemplate, error) {
+	rows, err := q.db.Query(ctx, listSystemEmailTemplates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []EmailSystemTemplate
+	for rows.Next() {
+		var i EmailSystemTemplate
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Subject,
+			&i.HtmlBody,
+			&i.PlaintextBody,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const upsertAppEmailTemplate = `-- name: UpsertAppEmailTemplate :one
 INSERT INTO email.templates (type, subject, html_body)
 VALUES ($1, $2, $3)
-ON CONFLICT (type) DO UPDATE
+ON CONFLICT (type) WHERE tenant_id IS NULL DO UPDATE
 SET subject = EXCLUDED.subject,
     html_body = EXCLUDED.html_body,
     updated_at = NOW()
-RETURNING id, type, subject, html_body, created_at, updated_at
+RETURNING id, type, subject, html_body, tenant_id, created_at, updated_at
 `
 
-type UpsertEmailTemplateParams struct {
+type UpsertAppEmailTemplateParams struct {
 	Type     string `json:"type"`
 	Subject  string `json:"subject"`
 	HtmlBody string `json:"html_body"`
 }
 
-func (q *Queries) UpsertEmailTemplate(ctx context.Context, arg UpsertEmailTemplateParams) (EmailTemplate, error) {
-	row := q.db.QueryRow(ctx, upsertEmailTemplate, arg.Type, arg.Subject, arg.HtmlBody)
-	var i EmailTemplate
+type UpsertAppEmailTemplateRow struct {
+	ID        uuid.UUID `json:"id"`
+	Type      string    `json:"type"`
+	Subject   string    `json:"subject"`
+	HtmlBody  string    `json:"html_body"`
+	TenantID  *string   `json:"tenant_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpsertAppEmailTemplate(ctx context.Context, arg UpsertAppEmailTemplateParams) (UpsertAppEmailTemplateRow, error) {
+	row := q.db.QueryRow(ctx, upsertAppEmailTemplate, arg.Type, arg.Subject, arg.HtmlBody)
+	var i UpsertAppEmailTemplateRow
 	err := row.Scan(
 		&i.ID,
 		&i.Type,
 		&i.Subject,
 		&i.HtmlBody,
+		&i.TenantID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertSystemEmailTemplate = `-- name: UpsertSystemEmailTemplate :one
+INSERT INTO email.system_templates (name, subject, html_body, plaintext_body)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (name) DO UPDATE
+SET subject = EXCLUDED.subject,
+    html_body = EXCLUDED.html_body,
+    plaintext_body = EXCLUDED.plaintext_body,
+    updated_at = NOW()
+RETURNING id, name, subject, html_body, plaintext_body, created_at, updated_at
+`
+
+type UpsertSystemEmailTemplateParams struct {
+	Name          string `json:"name"`
+	Subject       string `json:"subject"`
+	HtmlBody      string `json:"html_body"`
+	PlaintextBody string `json:"plaintext_body"`
+}
+
+func (q *Queries) UpsertSystemEmailTemplate(ctx context.Context, arg UpsertSystemEmailTemplateParams) (EmailSystemTemplate, error) {
+	row := q.db.QueryRow(ctx, upsertSystemEmailTemplate,
+		arg.Name,
+		arg.Subject,
+		arg.HtmlBody,
+		arg.PlaintextBody,
+	)
+	var i EmailSystemTemplate
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Subject,
+		&i.HtmlBody,
+		&i.PlaintextBody,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertTenantEmailTemplate = `-- name: UpsertTenantEmailTemplate :one
+INSERT INTO email.templates (type, subject, html_body, tenant_id)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (tenant_id, type) WHERE tenant_id IS NOT NULL DO UPDATE
+SET subject = EXCLUDED.subject,
+    html_body = EXCLUDED.html_body,
+    updated_at = NOW()
+RETURNING id, type, subject, html_body, tenant_id, created_at, updated_at
+`
+
+type UpsertTenantEmailTemplateParams struct {
+	Type     string  `json:"type"`
+	Subject  string  `json:"subject"`
+	HtmlBody string  `json:"html_body"`
+	TenantID *string `json:"tenant_id"`
+}
+
+type UpsertTenantEmailTemplateRow struct {
+	ID        uuid.UUID `json:"id"`
+	Type      string    `json:"type"`
+	Subject   string    `json:"subject"`
+	HtmlBody  string    `json:"html_body"`
+	TenantID  *string   `json:"tenant_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpsertTenantEmailTemplate(ctx context.Context, arg UpsertTenantEmailTemplateParams) (UpsertTenantEmailTemplateRow, error) {
+	row := q.db.QueryRow(ctx, upsertTenantEmailTemplate,
+		arg.Type,
+		arg.Subject,
+		arg.HtmlBody,
+		arg.TenantID,
+	)
+	var i UpsertTenantEmailTemplateRow
+	err := row.Scan(
+		&i.ID,
+		&i.Type,
+		&i.Subject,
+		&i.HtmlBody,
+		&i.TenantID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
