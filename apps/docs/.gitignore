@@ -3,6 +3,11 @@
 
 # generated content
 .source
+/content/docs/api/dev/
+/content/docs/cli/dev/
+/content/docs/nextjs/dev/
+/content/docs/react/dev/
+/content/docs/shadcn/dev/
 
 # test & build
 /coverage

@@ -14,6 +14,7 @@ import { spawn } from "bun";
 import { rm, mkdir, readdir, readFile, writeFile, rename } from "fs/promises";
 import { join, dirname, basename } from "path";
 import { existsSync } from "fs";
+import { execFileSync } from "node:child_process";
 import { type Command } from "commander";
 
 import { program } from "../packages/cli/src/index";
@@ -30,6 +31,8 @@ interface TypeDocTarget {
   entryPoints: string[];
   outputDir: string;
   versioned?: boolean;
+  versionEnv?: string;
+  tagPrefix?: string;
 }
 
 const TYPEDOC_TARGETS: TypeDocTarget[] = [
@@ -42,6 +45,8 @@ const TYPEDOC_TARGETS: TypeDocTarget[] = [
     entryPoints: ["src/auth/index.ts", "src/middleware/index.ts"],
     outputDir: "nextjs",
     versioned: true,
+    versionEnv: "NEXTJS_VERSION",
+    tagPrefix: "nextjs",
   },
   {
     name: "@omnibase/react",
@@ -52,6 +57,8 @@ const TYPEDOC_TARGETS: TypeDocTarget[] = [
     entryPoints: ["src/index.ts"],
     outputDir: "react",
     versioned: true,
+    versionEnv: "REACT_VERSION",
+    tagPrefix: "react",
   },
   {
     name: "@omnibase/shadcn",
@@ -62,6 +69,8 @@ const TYPEDOC_TARGETS: TypeDocTarget[] = [
     entryPoints: ["src/index.ts"],
     outputDir: "shadcn",
     versioned: true,
+    versionEnv: "SHADCN_VERSION",
+    tagPrefix: "shadcn",
   },
 ];
 
@@ -129,14 +138,25 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-async function readPackageVersion(packagePath: string): Promise<string> {
-  const packageJSON = JSON.parse(
-    await readFile(join(ROOT, packagePath, "package.json"), "utf-8")
-  ) as { version?: string };
-  if (!packageJSON.version) {
-    throw new Error(`Missing version in ${packagePath}/package.json`);
+function resolveVersion(envName: string, tagPrefix: string): string {
+  const explicit = process.env[envName];
+  if (explicit && explicit !== "0.0.0-dev") return explicit;
+
+  if (process.env.GITHUB_ACTIONS) {
+    try {
+      const tag = execFileSync(
+        "git",
+        ["describe", "--tags", "--match", `${tagPrefix}-v*`, "--abbrev=0"],
+        { cwd: ROOT, encoding: "utf-8" }
+      ).trim();
+      const match = tag.match(new RegExp(`^${tagPrefix}-v(.+)$`));
+      if (match) return match[1]!;
+    } catch {
+      return "dev";
+    }
   }
-  return packageJSON.version;
+
+  return "dev";
 }
 
 /**
@@ -372,6 +392,8 @@ async function readVersionAliases(): Promise<VersionAliases> {
  * no files to the deployed site.
  */
 async function collapseUnchangedVersion(section: string, current: string): Promise<void> {
+  if (current === "dev") return;
+
   const sectionDir = join(DOCS_CONTENT, section);
   const previous = (await readdir(sectionDir, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && VERSION_DIR.test(entry.name))
@@ -405,7 +427,9 @@ async function writeVersionedSection(
   const sectionDir = join(DOCS_CONTENT, target.outputDir);
   const versions = (await readdir(sectionDir, { withFileTypes: true }))
     .filter(
-      (entry) => entry.isDirectory() && /^\d+\.\d+\.\d+/.test(entry.name)
+      (entry) =>
+        entry.isDirectory() &&
+        (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
     )
     .map((entry) => entry.name);
   if (!versions.includes(currentVersion)) versions.push(currentVersion);
@@ -451,7 +475,7 @@ async function generateTypeDocs(): Promise<void> {
 
     const packageDir = join(ROOT, target.packagePath);
     const version = target.versioned
-      ? await readPackageVersion(target.packagePath)
+      ? resolveVersion(target.versionEnv!, target.tagPrefix!)
       : null;
     const outputDir = version
       ? join(target.outputDir, version)
@@ -666,11 +690,7 @@ async function generateOpenAPIDocs(): Promise<void> {
     paths?: Record<string, Record<string, unknown>>;
     tags?: { name: string }[];
   };
-  const apiVersion = spec.info?.version;
-  if (!apiVersion) {
-    console.error("  ✗ OpenAPI spec has no info.version");
-    return;
-  }
+  const apiVersion = resolveVersion("API_VERSION", "api");
 
   const tagMap: Record<string, string> = {
     V1Auth: "V1 Auth",
@@ -743,7 +763,11 @@ async function generateOpenAPIDocs(): Promise<void> {
   await writeFile(openApiDest, yaml.stringify(spec));
   console.log("    ✓ Wrote apps/docs/openapi.yaml");
 
-  if (apiVersion !== "0.0.0-dev") {
+  if (apiVersion !== "dev") {
+    await rm(join(openApiOutput, "dev"), {
+      recursive: true,
+      force: true,
+    });
     await rm(join(openApiOutput, "0.0.0-dev"), {
       recursive: true,
       force: true,
@@ -983,7 +1007,9 @@ async function generateOpenAPIDocs(): Promise<void> {
       await readdir(openApiOutput, { withFileTypes: true })
     )
       .filter(
-        (entry) => entry.isDirectory() && /^\d+\.\d+\.\d+/.test(entry.name)
+        (entry) =>
+          entry.isDirectory() &&
+          (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
       )
       .map((entry) => entry.name);
     if (!versions.includes(apiVersion)) versions.push(apiVersion);
@@ -1119,7 +1145,7 @@ async function generateCommandDocPage(
 async function generateCliCommandDocs(): Promise<void> {
   console.log("\n🔧 Generating CLI command documentation...\n");
 
-  const version = await readPackageVersion("packages/cli");
+  const version = resolveVersion("CLI_VERSION", "cli");
   const sectionDir = join(DOCS_CONTENT, "cli");
   const outputDir = join(sectionDir, version);
   const rootUrl = `/cli/${version}`;
@@ -1189,7 +1215,9 @@ async function generateCliCommandDocs(): Promise<void> {
 
   const versions = (await readdir(sectionDir, { withFileTypes: true }))
     .filter(
-      (entry) => entry.isDirectory() && /^\d+\.\d+\.\d+/.test(entry.name)
+      (entry) =>
+        entry.isDirectory() &&
+        (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
     )
     .map((entry) => entry.name);
   if (!versions.includes(version)) versions.push(version);
@@ -1229,15 +1257,12 @@ async function generateCliCommandDocs(): Promise<void> {
 }
 
 async function writeVersionsManifest(): Promise<void> {
-  const openApi = JSON.parse(
-    await readFile(join(ROOT, "apps/api/docs/openapi.json"), "utf-8")
-  ) as { info?: { version?: string } };
   const manifest = {
-    api: openApi.info?.version ?? "0.0.0-dev",
-    cli: await readPackageVersion("packages/cli"),
-    nextjs: await readPackageVersion("sdk/framework/nextjs"),
-    react: await readPackageVersion("sdk/framework/react"),
-    shadcn: await readPackageVersion("sdk/component/shadcn"),
+    api: resolveVersion("API_VERSION", "api"),
+    cli: resolveVersion("CLI_VERSION", "cli"),
+    nextjs: resolveVersion("NEXTJS_VERSION", "nextjs"),
+    react: resolveVersion("REACT_VERSION", "react"),
+    shadcn: resolveVersion("SHADCN_VERSION", "shadcn"),
   };
   await writeFile(
     join(ROOT, "apps/docs/content/versions.json"),
