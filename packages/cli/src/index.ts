@@ -29,6 +29,7 @@ import {
   runDockerComposeCommand,
   spawnDockerComposeCommand,
 } from "./utils/docker";
+import { writeAgentPointers } from "./utils/agent-files";
 
 export const program = new Command();
 
@@ -53,6 +54,7 @@ function createTemplateFiles(targetDir: string): void {
   }
 
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
+  writeAgentPointers(targetDir);
 }
 
 async function runDockerCompose(
