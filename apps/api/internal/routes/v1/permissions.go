@@ -52,6 +52,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "checkPermission",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/check",
 		Summary:     "Check permission",
@@ -60,6 +61,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createRelationship",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Create relationship",
@@ -68,6 +70,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRelationship",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/permissions/relationships",
 		Summary:     "Delete relationship",
@@ -76,6 +79,7 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deployPermissionNamespaces",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/permissions/namespaces",
 		Summary:     "Deploy Keto namespace configurations",

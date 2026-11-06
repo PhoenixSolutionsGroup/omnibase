@@ -386,6 +386,12 @@ async function readVersionAliases(): Promise<VersionAliases> {
   return JSON.parse(await readFile(VERSION_ALIASES, "utf-8")) as VersionAliases;
 }
 
+async function writeFileAtomic(path: string, content: string): Promise<void> {
+  const tempPath = `${path}.tmp`;
+  await writeFile(tempPath, content);
+  await rename(tempPath, path);
+}
+
 /**
  * When a release leaves a section's docs unchanged, keep one copy under the
  * new version and redirect the previous version to it, so the release adds
@@ -406,8 +412,6 @@ async function collapseUnchangedVersion(section: string, current: string): Promi
   const currentDir = join(sectionDir, current);
   if (!(await sameDocsExceptVersion(previousDir, previous, currentDir, current))) return;
 
-  await rm(previousDir, { recursive: true });
-
   const aliases = await readVersionAliases();
   const sectionAliases = aliases[section] ?? {};
   for (const [from, to] of Object.entries(sectionAliases)) {
@@ -415,7 +419,9 @@ async function collapseUnchangedVersion(section: string, current: string): Promi
   }
   sectionAliases[previous] = current;
   aliases[section] = sectionAliases;
-  await writeFile(VERSION_ALIASES, JSON.stringify(aliases, null, 2) + "\n");
+  await writeFileAtomic(VERSION_ALIASES, JSON.stringify(aliases, null, 2) + "\n");
+
+  await rm(previousDir, { recursive: true });
 
   console.log(`    ↪ ${section} ${previous} is unchanged, now redirects to ${current}`);
 }
@@ -553,6 +559,7 @@ async function generateTypeDocs(): Promise<void> {
     } catch (error) {
       console.error(`    ✗ Failed to generate docs for ${target.name}`);
       console.error(error);
+      throw error;
     }
   }
 }
@@ -573,7 +580,7 @@ interface OpenAPIRequestBody {
 
 interface OpenAPIResponse {
   description?: string;
-  content?: Record<string, { schema?: unknown }>;
+  content?: Record<string, { schema?: unknown; example?: unknown }>;
 }
 
 interface OpenAPIOperation {
@@ -591,11 +598,45 @@ function jsonBlock(value: unknown): string {
   return ["```json", JSON.stringify(value, null, 2), "```"].join("\n");
 }
 
+function dereferenceSchema(
+  value: unknown,
+  schemas: Record<string, unknown>,
+  seen: Set<string> = new Set(),
+  depth = 0
+): unknown {
+  if (depth > 8 || value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    return value.map((item) => dereferenceSchema(item, schemas, seen, depth + 1));
+  }
+
+  const object = value as Record<string, unknown>;
+  const ref = object.$ref;
+  if (typeof ref === "string") {
+    const name = ref.match(/^#\/components\/schemas\/(.+)$/)?.[1];
+    if (name) {
+      if (seen.has(name)) return { $ref: ref };
+      const schema = schemas[name];
+      if (schema !== undefined) {
+        const nextSeen = new Set(seen);
+        nextSeen.add(name);
+        return dereferenceSchema(schema, schemas, nextSeen, depth + 1);
+      }
+    }
+  }
+
+  const resolved: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(object)) {
+    resolved[key] = dereferenceSchema(child, schemas, seen, depth + 1);
+  }
+  return resolved;
+}
+
 function renderOperationMarkdown(
   url: string,
   method: string,
   path: string,
   operation: OpenAPIOperation,
+  schemas: Record<string, unknown>,
   pathParameters: OpenAPIParameter[]
 ): string {
   const lines = [
@@ -638,7 +679,9 @@ function renderOperationMarkdown(
       operation.requestBody.content ?? {}
     )) {
       lines.push(`Content type: \`${contentType}\``, "");
-      if (media.schema) lines.push(jsonBlock(media.schema), "");
+      if (media.schema) {
+        lines.push(jsonBlock(dereferenceSchema(media.schema, schemas)), "");
+      }
     }
   }
 
@@ -648,7 +691,11 @@ function renderOperationMarkdown(
       lines.push(`### ${status}`, "");
       if (response.description) lines.push(response.description, "");
       for (const media of Object.values(response.content ?? {})) {
-        if (media.schema) lines.push(jsonBlock(media.schema), "");
+        if (media.example !== undefined) {
+          lines.push(jsonBlock(media.example), "");
+        } else if (media.schema) {
+          lines.push(jsonBlock(dereferenceSchema(media.schema, schemas)), "");
+        }
       }
     }
   }
@@ -676,7 +723,9 @@ async function generateOpenAPIDocs(): Promise<void> {
     info?: { version?: string };
     paths?: Record<string, Record<string, unknown>>;
     tags?: { name: string }[];
+    components?: { schemas?: Record<string, unknown> };
   };
+  const schemas = spec.components?.schemas ?? {};
   const apiVersion = resolveVersion("API_VERSION", "api");
 
   const tagMap: Record<string, string> = {
@@ -750,20 +799,10 @@ async function generateOpenAPIDocs(): Promise<void> {
   await writeFile(openApiDest, yaml.stringify(spec));
   console.log("    ✓ Wrote apps/docs/openapi.yaml");
 
-  if (apiVersion !== "dev") {
-    await rm(join(openApiOutput, "dev"), {
-      recursive: true,
-      force: true,
-    });
-    await rm(join(openApiOutput, "0.0.0-dev"), {
-      recursive: true,
-      force: true,
-    });
-  }
-
   const versionDir = join(openApiOutput, apiVersion);
-  await rm(versionDir, { recursive: true, force: true });
-  await mkdir(versionDir, { recursive: true });
+  const stagingDir = join(openApiOutput, `.staging-${apiVersion}`);
+  await rm(stagingDir, { recursive: true, force: true });
+  await mkdir(stagingDir, { recursive: true });
 
   const tempOutput = join(ROOT, "node_modules/.cache/openapi-docs");
   await rm(tempOutput, { recursive: true, force: true });
@@ -792,6 +831,12 @@ async function generateOpenAPIDocs(): Promise<void> {
     });
     console.log("    ✓ Generated OpenAPI docs");
 
+    const { bundled } = await openapi.getSchema("./openapi.yaml");
+    await writeFile(
+      join(ROOT, "apps/docs/openapi.json"),
+      JSON.stringify(bundled) + "\n"
+    );
+
     // Generate meta.json files from OpenAPI tags
     console.log("  → Generating meta.json files from OpenAPI tags...");
     const tags = spec.tags || [];
@@ -817,7 +862,7 @@ async function generateOpenAPIDocs(): Promise<void> {
       if (existsSync(originalFolderPath)) {
         // New folder name without version prefix (e.g., "auth" instead of "v1-auth")
         const newFolderName = displayName.toLowerCase().replace(/\s+/g, "-");
-        const newFolderPath = join(versionDir, newFolderName);
+        const newFolderPath = join(stagingDir, newFolderName);
 
         if (originalFolderPath !== newFolderPath) {
           await rename(originalFolderPath, newFolderPath);
@@ -916,16 +961,12 @@ async function generateOpenAPIDocs(): Promise<void> {
             method,
             path,
             operation,
+            schemas,
             pathParameters
           );
         }
       }
     }
-    await writeFile(
-      join(ROOT, "apps/docs/content/api-llms.json"),
-      JSON.stringify(apiLlms, null, 2) + "\n"
-    );
-
     await rm(tempOutput, { recursive: true, force: true });
 
     const versionMeta = {
@@ -934,7 +975,7 @@ async function generateOpenAPIDocs(): Promise<void> {
       pages: ["index", ...tagEntries.map((entry) => entry.folderName)],
     };
     await writeFile(
-      join(versionDir, "meta.json"),
+      join(stagingDir, "meta.json"),
       JSON.stringify(versionMeta, null, 2)
     );
 
@@ -950,7 +991,7 @@ async function generateOpenAPIDocs(): Promise<void> {
       "Box",
     ];
     await writeFile(
-      join(versionDir, "index.mdx"),
+      join(stagingDir, "index.mdx"),
       [
         "---",
         "title: API Reference",
@@ -990,6 +1031,24 @@ async function generateOpenAPIDocs(): Promise<void> {
       ].join("\n")
     );
 
+    await rm(versionDir, { recursive: true, force: true });
+    await rename(stagingDir, versionDir);
+
+    if (Object.keys(apiLlms).length > 0) {
+      await writeFileAtomic(
+        join(ROOT, "apps/docs/content/api-llms.json"),
+        JSON.stringify(apiLlms, null, 2) + "\n"
+      );
+    }
+
+    if (apiVersion !== "dev") {
+      await rm(join(openApiOutput, "dev"), { recursive: true, force: true });
+      await rm(join(openApiOutput, "0.0.0-dev"), {
+        recursive: true,
+        force: true,
+      });
+    }
+
     await collapseUnchangedVersion("api", apiVersion);
 
     const apiMeta = {
@@ -1005,8 +1064,11 @@ async function generateOpenAPIDocs(): Promise<void> {
     );
     console.log("    ✓ Generated meta.json files");
   } catch (error) {
+    await rm(stagingDir, { recursive: true, force: true });
+    await rm(tempOutput, { recursive: true, force: true });
     console.error("    ✗ Failed to generate OpenAPI docs");
     console.error(error);
+    throw error;
   }
 }
 
@@ -1217,6 +1279,12 @@ async function generateCliCommandDocs(): Promise<void> {
   console.log("  ✓ Generated CLI command docs");
 }
 
+async function readVersionsManifest(): Promise<Record<string, string>> {
+  const file = join(ROOT, "apps/docs/content/versions.json");
+  if (!existsSync(file)) return {};
+  return JSON.parse(await readFile(file, "utf-8")) as Record<string, string>;
+}
+
 async function writeVersionsManifest(): Promise<void> {
   const resolved = {
     api: resolveVersion("API_VERSION", "api"),
@@ -1225,10 +1293,11 @@ async function writeVersionsManifest(): Promise<void> {
     react: resolveVersion("REACT_VERSION", "react"),
     shadcn: resolveVersion("SHADCN_VERSION", "shadcn"),
   };
-  const manifest = Object.fromEntries(
-    Object.entries(resolved).filter(([, version]) => version !== "dev")
-  );
-  await writeFile(
+  const manifest = await readVersionsManifest();
+  for (const [section, version] of Object.entries(resolved)) {
+    if (version !== "dev") manifest[section] = version;
+  }
+  await writeFileAtomic(
     join(ROOT, "apps/docs/content/versions.json"),
     JSON.stringify(manifest, null, 2) + "\n"
   );

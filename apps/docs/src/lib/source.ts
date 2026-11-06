@@ -19,7 +19,7 @@ const versionedSections = new Set(['api', 'cli', 'nextjs', 'react', 'shadcn']);
 export function isLatestVersionPage(page: InferPageType<typeof source>) {
   const [section, version] = page.slugs;
   if (!section || !versionedSections.has(section)) return true;
-  if (version === 'dev') return true;
+  if (!version || version === 'dev') return true;
   return versions[section] === version;
 }
 
@@ -180,7 +180,3 @@ export const docsLlms = llms(latestSource, {
     return `# ${page.data.title} (${page.url})\n\n${body}`;
   },
 });
-
-export async function getLLMText(page: InferPageType<typeof source>) {
-  return docsLlms.page(page);
-}

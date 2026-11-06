@@ -37,6 +37,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createCheckout",
+		Errors:      []int{400, 401, 403, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/checkout",
 		Summary:     "Create a Stripe checkout session",
@@ -45,6 +46,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "recordUsage",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/usage",
 		Summary:     "Record a Stripe meter usage event",
@@ -53,6 +55,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createCustomerPortal",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/portal",
 		Summary:     "Create a Stripe customer portal session",
@@ -61,6 +64,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvoice",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/invoices",
 		Summary:     "Create a Stripe invoice",
@@ -69,6 +73,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getInvoice",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/payments/invoices/{invoice_id}",
 		Summary:     "Get a Stripe invoice",
@@ -77,6 +82,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateInvoice",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPatch,
 		Path:        "/api/v1/payments/invoices/{invoice_id}",
 		Summary:     "Update a Stripe invoice",
@@ -85,6 +91,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "addInvoiceLineItem",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/invoices/{invoice_id}/items",
 		Summary:     "Add a line item to a Stripe invoice",
@@ -93,6 +100,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "addInvoiceLineItemWithPriceId",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/invoices/{invoice_id}/items/price",
 		Summary:     "Add a line item to a Stripe invoice using a price ID",
@@ -101,6 +109,7 @@ func SetUpPaymentRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "finalizeInvoice",
+		Errors:      []int{400, 401, 404, 409, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/payments/invoices/{invoice_id}/finalize",
 		Summary:     "Finalize a Stripe invoice",

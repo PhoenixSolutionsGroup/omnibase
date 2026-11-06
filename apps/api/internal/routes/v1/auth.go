@@ -39,6 +39,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createUser",
+		Errors:      []int{400, 401, 409},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/auth/users",
 		Summary:     "Create a new user identity",
@@ -47,6 +48,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getActiveTenant",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/auth/active-tenant",
 		Summary:     "Get the active tenant for the authenticated user",
@@ -55,6 +57,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenants",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/auth/tenants",
 		Summary:     "List tenants the authenticated user belongs to",
@@ -63,6 +66,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getSession",
+		Errors:      []int{401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/auth/session",
 		Summary:     "Get current session",
@@ -71,6 +75,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getIdentity",
+		Errors:      []int{401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/auth/identity",
 		Summary:     "Get current identity",
@@ -79,6 +84,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "logout",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/auth/logout",
 		Summary:     "Logout user",
@@ -87,6 +93,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "whoAmI",
+		Errors:      []int{401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/auth/whoami",
 		Summary:     "Get authenticated user identity",

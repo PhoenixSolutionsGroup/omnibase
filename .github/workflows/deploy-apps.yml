@@ -133,14 +133,27 @@ jobs:
 
       - name: Commit generated docs
         if: matrix.app == 'docs' && github.event_name == 'workflow_run'
+        continue-on-error: true
         run: |
-          git add apps/docs/content apps/docs/openapi.yaml apps/api/docs/openapi.json
+          git add apps/docs/content apps/docs/openapi.yaml apps/docs/openapi.json apps/api/docs/openapi.json
           if git diff --staged --quiet; then
             echo "No documentation changes to commit"
-          else
-            git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
-            git push origin HEAD:main
+            exit 0
           fi
+          git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::warning::Could not rebase generated docs onto main"
+              exit 0
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::warning::Could not push generated docs to main; continuing without persisting them"
 
       - name: Authenticate CLI
         env:

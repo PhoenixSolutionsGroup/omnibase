@@ -4270,15 +4270,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4315,15 +4350,35 @@
             },
             "description": "OK"
           },
-          "default": {
+          "401": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4363,15 +4418,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4402,15 +4513,35 @@
             },
             "description": "OK"
           },
-          "default": {
+          "401": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4441,15 +4572,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4496,15 +4662,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4532,15 +4769,35 @@
             },
             "description": "OK"
           },
-          "default": {
+          "401": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4596,15 +4853,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4664,15 +4977,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4706,15 +5075,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4774,15 +5178,71 @@
               }
             }
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4820,15 +5280,101 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4875,15 +5421,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4920,15 +5537,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -4964,15 +5616,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5010,15 +5718,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5077,15 +5856,86 @@
               }
             }
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5113,15 +5963,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5166,15 +6051,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5242,15 +6183,86 @@
               }
             }
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5297,15 +6309,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5352,15 +6435,131 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Insufficient permissions."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5407,15 +6606,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5453,15 +6753,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5507,15 +6908,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5563,15 +7065,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5619,15 +7222,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5675,15 +7379,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5721,15 +7526,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5774,15 +7635,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5820,15 +7782,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5890,15 +7908,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5936,15 +8010,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -5980,15 +8125,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6027,15 +8243,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6083,15 +8370,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6139,15 +8497,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6195,15 +8624,101 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6240,15 +8755,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6285,15 +8835,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6331,15 +8937,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6389,15 +9051,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6425,15 +9143,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6472,15 +9225,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6519,15 +9328,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6565,15 +9430,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6611,15 +9547,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6657,15 +9664,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6703,15 +9766,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6739,15 +9858,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -6775,15 +9929,20 @@
             },
             "description": "OK"
           },
-          "default": {
+          "500": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Internal Server Error"
           }
         },
         "summary": "Get public Stripe config",
@@ -6816,15 +9975,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "summary": "Get meter by ID",
@@ -6857,15 +10072,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "summary": "Get price by ID",
@@ -6908,15 +10179,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "summary": "Calculate cost for a price",
@@ -6949,15 +10276,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "summary": "Get product by ID",
@@ -6990,15 +10373,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7037,15 +10491,20 @@
               }
             }
           },
-          "default": {
+          "500": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Internal Server Error"
           }
         },
         "summary": "Get Stripe config schema",
@@ -7068,15 +10527,80 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7121,15 +10645,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7166,15 +10791,65 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7221,15 +10896,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7267,15 +11013,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7313,15 +11130,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7368,15 +11256,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Insufficient permissions."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7413,15 +11372,65 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Insufficient permissions."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7464,15 +11473,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7517,15 +11561,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7578,15 +11693,71 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7631,15 +11802,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7694,15 +11936,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7749,15 +12062,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7798,15 +12212,65 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7851,15 +12315,116 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Conflict",
+                  "status": 409,
+                  "detail": "The resource already exists."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Too Many Requests",
+                  "status": 429,
+                  "detail": "Rate limit exceeded."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7906,15 +12471,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -7961,15 +12597,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -8014,15 +12721,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -8063,15 +12841,50 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [
@@ -8116,15 +12929,86 @@
             },
             "description": "OK"
           },
-          "default": {
+          "400": {
             "content": {
               "application/problem+json": {
+                "example": {
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "The request could not be processed."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorModel"
                 }
               }
             },
-            "description": "Error"
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unauthorized",
+                  "status": 401,
+                  "detail": "Authentication required."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "The requested resource was not found."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Unprocessable Entity",
+                  "status": 422,
+                  "detail": "Validation failed.",
+                  "errors": [
+                    {
+                      "message": "expected required property path to be present",
+                      "location": "body.path"
+                    }
+                  ]
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
           }
         },
         "security": [

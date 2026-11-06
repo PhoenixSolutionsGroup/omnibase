@@ -24,6 +24,7 @@ func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "uploadDatabaseMigrations",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/database/migrations",
 		Summary:     "Apply database migrations",
@@ -32,6 +33,7 @@ func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getDatabaseMigrationStatus",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/database/migrations/status",
 		Summary:     "Get the status of applied migrations",
@@ -40,6 +42,7 @@ func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "rollbackDatabaseMigrations",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/database/migrations/down",
 		Summary:     "Roll back database migrations",
@@ -48,6 +51,7 @@ func SetUpDBRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "generateDatabaseTypes",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/database/typegen",
 		Summary:     "Generate type definitions for the database schema",

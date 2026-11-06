@@ -62,6 +62,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "uploadFile",
+		Errors:      []int{400, 401, 404, 409},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/upload",
 		Summary:     "Upload file to storage",
@@ -71,6 +72,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "downloadFile",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/download",
 		Summary:     "Download file from storage",
@@ -80,6 +82,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteObject",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/storage/object",
 		Summary:     "Delete file from storage",
@@ -89,6 +92,7 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "makeFilePublic",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/make-public",
 		Summary:     "Make a file publicly accessible",
