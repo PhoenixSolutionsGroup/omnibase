@@ -1,7 +1,9 @@
 import aliasManifest from '../content/version-aliases.json';
-import versions from '../content/versions.json';
+import versionData from '../content/versions.json';
 
-type Section = keyof typeof versions;
+type Section = 'api' | 'cli' | 'nextjs' | 'react' | 'shadcn';
+
+const versions = versionData as Partial<Record<Section, string>>;
 
 const aliases: Partial<Record<string, Record<string, string>>> = aliasManifest;
 
@@ -24,15 +26,17 @@ const prefixes: [string, string][] = [
   ['/components', '/shadcn'],
 ];
 
-const versionPattern = /^\d+\.\d+\.\d+/;
+const versionPattern = /^(?:dev|\d+\.\d+\.\d+)/;
+const sections = new Set(['api', 'cli', 'nextjs', 'react', 'shadcn']);
 
 function isSection(segment: string | undefined): segment is Section {
-  return segment !== undefined && Object.hasOwn(versions, segment);
+  return segment !== undefined && sections.has(segment);
 }
 
 export function resolveRedirect(
   pathname: string,
   versionAliases: Partial<Record<string, Record<string, string>>> = aliases,
+  latestVersions: Partial<Record<Section, string>> = versions,
 ): string | null {
   const path = pathname.replace(/\/+$/, '') || '/';
   if (exact[path]) return exact[path];
@@ -49,7 +53,7 @@ export function resolveRedirect(
   const [section, version] = segments;
   if (!isSection(section)) return rewritten === path ? null : rewritten;
 
-  const latest = versions[section];
+  const latest = latestVersions[section] ?? 'dev';
   if (version === undefined || version === 'latest') {
     segments.splice(1, 1, latest);
   } else if (!versionPattern.test(version)) {

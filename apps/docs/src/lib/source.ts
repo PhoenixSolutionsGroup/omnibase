@@ -3,7 +3,7 @@ import { type InferPageType, loader, llms } from 'fumadocs-core/source';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { openapiPlugin } from 'fumadocs-openapi/server';
-import versions from '../../content/versions.json';
+import versionData from '../../content/versions.json';
 import apiLlms from '../../content/api-llms.json';
 
 // See https://fumadocs.dev/docs/headless/source-api for more info
@@ -13,25 +13,30 @@ export const source = loader({
   plugins: [lucideIconsPlugin(), openapiPlugin()],
 });
 
+const versions = versionData as Partial<Record<string, string>>;
 const versionedSections = new Set(['api', 'cli', 'nextjs', 'react', 'shadcn']);
 
 export function isLatestVersionPage(page: InferPageType<typeof source>) {
   const [section, version] = page.slugs;
   if (!section || !versionedSections.has(section)) return true;
-  return versions[section as keyof typeof versions] === version;
+  if (version === 'dev') return true;
+  return versions[section] === version;
 }
 
 export function getPageImage(page: InferPageType<typeof source>) {
   const slugs = [...page.slugs];
   const [section, version] = slugs;
 
+  const latest = section ? versions[section] : undefined;
   if (
     section &&
     version &&
+    latest &&
+    version !== 'dev' &&
     versionedSections.has(section) &&
-    versions[section as keyof typeof versions] !== version
+    latest !== version
   ) {
-    slugs[1] = versions[section as keyof typeof versions];
+    slugs[1] = latest;
   }
 
   const segments = [...slugs, 'image.png'];
@@ -133,7 +138,8 @@ function pruneLatestFolder(folder: TreeFolder): TreeFolder {
       section &&
       versionedSections.has(section) &&
       typeof child.root === 'string' &&
-      child.name !== versions[section as keyof typeof versions]
+      child.name !== 'dev' &&
+      child.name !== versions[section]
     ) {
       return [];
     }

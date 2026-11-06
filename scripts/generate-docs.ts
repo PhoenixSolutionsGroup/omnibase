@@ -422,20 +422,9 @@ async function collapseUnchangedVersion(section: string, current: string): Promi
 
 async function writeVersionedSection(
   target: TypeDocTarget,
-  currentVersion: string
+  _currentVersion: string
 ): Promise<void> {
   const sectionDir = join(DOCS_CONTENT, target.outputDir);
-  const versions = (await readdir(sectionDir, { withFileTypes: true }))
-    .filter(
-      (entry) =>
-        entry.isDirectory() &&
-        (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
-    )
-    .map((entry) => entry.name);
-  if (!versions.includes(currentVersion)) versions.push(currentVersion);
-  versions.sort((a, b) =>
-    b.localeCompare(a, undefined, { numeric: true })
-  );
 
   await writeFile(
     join(sectionDir, "meta.json"),
@@ -445,7 +434,7 @@ async function writeVersionedSection(
         description: target.description,
         icon: target.icon,
         root: true,
-        pages: ["index", ...versions],
+        pages: ["index", "..."],
       },
       null,
       2
@@ -459,9 +448,7 @@ async function writeVersionedSection(
       `description: ${target.description}`,
       "---",
       "",
-      "## Versions",
-      "",
-      ...versions.map((version) => `- [${version}](/${target.outputDir}/${version})`),
+      "Select a version from the version selector.",
       "",
     ].join("\n")
   );
@@ -909,27 +896,29 @@ async function generateOpenAPIDocs(): Promise<void> {
       "head",
       "trace",
     ];
-    for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
-      const pathParameters = Array.isArray(pathItem.parameters)
-        ? (pathItem.parameters as OpenAPIParameter[])
-        : [];
+    if (apiVersion !== "dev") {
+      for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
+        const pathParameters = Array.isArray(pathItem.parameters)
+          ? (pathItem.parameters as OpenAPIParameter[])
+          : [];
 
-      for (const method of methods) {
-        const operation = pathItem[method] as OpenAPIOperation | undefined;
-        if (!operation?.operationId) continue;
+        for (const method of methods) {
+          const operation = pathItem[method] as OpenAPIOperation | undefined;
+          if (!operation?.operationId) continue;
 
-        const tagName = operation.tags?.[0];
-        const folderName = tagName ? tagFolderByTag.get(tagName) : undefined;
-        if (!folderName) continue;
+          const tagName = operation.tags?.[0];
+          const folderName = tagName ? tagFolderByTag.get(tagName) : undefined;
+          if (!folderName) continue;
 
-        const url = `/api/${apiVersion}/${folderName}/${operation.operationId}`;
-        apiLlms[url] = renderOperationMarkdown(
-          url,
-          method,
-          path,
-          operation,
-          pathParameters
-        );
+          const url = `/api/${apiVersion}/${folderName}/${operation.operationId}`;
+          apiLlms[url] = renderOperationMarkdown(
+            url,
+            method,
+            path,
+            operation,
+            pathParameters
+          );
+        }
       }
     }
     await writeFile(
@@ -1003,26 +992,12 @@ async function generateOpenAPIDocs(): Promise<void> {
 
     await collapseUnchangedVersion("api", apiVersion);
 
-    const versions = (
-      await readdir(openApiOutput, { withFileTypes: true })
-    )
-      .filter(
-        (entry) =>
-          entry.isDirectory() &&
-          (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
-      )
-      .map((entry) => entry.name);
-    if (!versions.includes(apiVersion)) versions.push(apiVersion);
-    versions.sort((a, b) =>
-      b.localeCompare(a, undefined, { numeric: true })
-    );
-
     const apiMeta = {
       title: "API",
       description: "REST API endpoints, schemas, and generated SDKs",
       icon: "Server",
       root: true,
-      pages: ["index", ...versions],
+      pages: ["index", "..."],
     };
     await writeFile(
       join(openApiOutput, "meta.json"),
@@ -1213,18 +1188,6 @@ async function generateCliCommandDocs(): Promise<void> {
 
   await collapseUnchangedVersion("cli", version);
 
-  const versions = (await readdir(sectionDir, { withFileTypes: true }))
-    .filter(
-      (entry) =>
-        entry.isDirectory() &&
-        (entry.name === "dev" || /^\d+\.\d+\.\d+/.test(entry.name))
-    )
-    .map((entry) => entry.name);
-  if (!versions.includes(version)) versions.push(version);
-  versions.sort((a, b) =>
-    b.localeCompare(a, undefined, { numeric: true })
-  );
-
   await writeFile(
     join(sectionDir, "meta.json"),
     JSON.stringify(
@@ -1233,7 +1196,7 @@ async function generateCliCommandDocs(): Promise<void> {
         description: "Command-line interface for projects and deployments",
         icon: "Terminal",
         root: true,
-        pages: ["index", ...versions],
+        pages: ["index", "..."],
       },
       null,
       2
@@ -1246,9 +1209,7 @@ async function generateCliCommandDocs(): Promise<void> {
       'title: "CLI"',
       "---",
       "",
-      "## Versions",
-      "",
-      ...versions.map((entry) => `- [${entry}](/cli/${entry})`),
+      "Select a version from the version selector.",
       "",
     ].join("\n")
   );
@@ -1257,13 +1218,16 @@ async function generateCliCommandDocs(): Promise<void> {
 }
 
 async function writeVersionsManifest(): Promise<void> {
-  const manifest = {
+  const resolved = {
     api: resolveVersion("API_VERSION", "api"),
     cli: resolveVersion("CLI_VERSION", "cli"),
     nextjs: resolveVersion("NEXTJS_VERSION", "nextjs"),
     react: resolveVersion("REACT_VERSION", "react"),
     shadcn: resolveVersion("SHADCN_VERSION", "shadcn"),
   };
+  const manifest = Object.fromEntries(
+    Object.entries(resolved).filter(([, version]) => version !== "dev")
+  );
   await writeFile(
     join(ROOT, "apps/docs/content/versions.json"),
     JSON.stringify(manifest, null, 2) + "\n"

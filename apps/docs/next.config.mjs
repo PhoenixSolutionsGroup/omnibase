@@ -27,27 +27,27 @@ const config = {
             },
             {
               source: '/api',
-              destination: `/api/${versions.api}`,
+              destination: '/api/dev',
               permanent: false,
             },
             {
               source: '/cli',
-              destination: `/cli/${versions.cli}`,
+              destination: '/cli/dev',
               permanent: false,
             },
             {
               source: '/nextjs',
-              destination: `/nextjs/${versions.nextjs}`,
+              destination: '/nextjs/dev',
               permanent: false,
             },
             {
               source: '/react',
-              destination: `/react/${versions.react}`,
+              destination: '/react/dev',
               permanent: false,
             },
             {
               source: '/shadcn',
-              destination: `/shadcn/${versions.shadcn}`,
+              destination: '/shadcn/dev',
               permanent: false,
             },
           ];
