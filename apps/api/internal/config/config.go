@@ -18,6 +18,7 @@ type Config struct {
 	Database             DatabaseConfig
 	StripeConfig         StripeConfig
 	AuthConfig           AuthConfig
+	SessionCacheConfig   SessionCacheConfig
 	SMTPConfig           SMTPConfig
 	PermissionsConfig    PermissionsConfig
 	ManagedHostingConfig ManagedHostingConfig
@@ -89,6 +90,12 @@ type AuthConfig struct {
 	AuthAdminURL string
 }
 
+type SessionCacheConfig struct {
+	TTL        time.Duration
+	MaxEntries int
+	ListenDSN  string
+}
+
 type SMTPConfig struct {
 	ConnectionURI string
 	FromEmail     string
@@ -136,6 +143,11 @@ func New() *Config {
 		AuthConfig: AuthConfig{
 			AuthURL:      os.Getenv("AUTH_URL"),
 			AuthAdminURL: os.Getenv("AUTH_ADMIN_URL"),
+		},
+		SessionCacheConfig: SessionCacheConfig{
+			TTL:        getDurationEnv("SESSION_CACHE_TTL", 30*time.Second),
+			MaxEntries: getIntEnv("SESSION_CACHE_MAX_ENTRIES", 100000),
+			ListenDSN:  os.Getenv("SESSION_CACHE_LISTEN_DSN"),
 		},
 		SMTPConfig: SMTPConfig{
 			ConnectionURI: os.Getenv("SMTP_CONNECTION_URI"),

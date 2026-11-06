@@ -5,10 +5,13 @@ import (
 	"api/internal/config"
 	"api/internal/handlers"
 	"api/internal/logger"
+	"api/internal/services/sessioncache"
 	"context"
 	"crypto/subtle"
 	"fmt"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,9 +24,18 @@ type AuthMiddleware struct {
 	db            *gorm.DB
 	APIServiceKey string
 	tenantMember  func(context.Context, uuid.UUID, uuid.UUID) (bool, error)
+	activeTenant  func(context.Context, uuid.UUID) (activeTenant, error)
+	sessionCache  *sessioncache.Cache
 }
 
-func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
+const kratosSessionCookie = "ory_kratos_session"
+
+type activeTenant struct {
+	TenantID string
+	Role     string
+}
+
+func NewAuthMiddleware(cfg *config.Config, db *gorm.DB, cache *sessioncache.Cache) *AuthMiddleware {
 	publicConfig := kratos.NewConfiguration()
 	publicConfig.Servers = []kratos.ServerConfiguration{
 		{
@@ -35,8 +47,10 @@ func NewAuthMiddleware(cfg *config.Config, db *gorm.DB) *AuthMiddleware {
 		kratosClient:  kratos.NewAPIClient(publicConfig),
 		db:            db,
 		APIServiceKey: cfg.APIServiceKey,
+		sessionCache:  cache,
 	}
 	middleware.tenantMember = middleware.isTenantMember
+	middleware.activeTenant = middleware.lookupActiveTenant
 	return middleware
 }
 
@@ -91,35 +105,54 @@ func (m *AuthMiddleware) validateSessionWithCookie(ctx context.Context, cookieHe
 
 func (m *AuthMiddleware) RequireAuth(allowed authn.AuthMethod) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if allowed&authn.AuthServiceKey != 0 {
-			if serviceKey := c.GetHeader("X-Service-Key"); serviceKey != "" {
-				m.authenticateServiceKey(c, serviceKey)
-				return
-			}
-		}
-
-		if allowed&authn.AuthAppKey != 0 {
-			if appKey := c.GetHeader("X-App-Key"); appKey != "" {
-				m.authenticateAppKey(c, appKey)
-				return
-			}
-		}
-
-		if allowed&authn.AuthSession != 0 {
-			cookieHeader := c.GetHeader("Cookie")
-			sessionHeader := strings.TrimSpace(c.GetHeader("X-Session-Token"))
-			if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
-				sessionHeader = sessionHeader[:len(sessionHeader)-1]
-			}
-			if cookieHeader != "" || sessionHeader != "" {
-				m.authenticateSession(c, cookieHeader, sessionHeader)
-				return
-			}
-		}
-
-		handlers.NewUnauthorizedResponse(c, "Authentication required")
-		c.Abort()
+		m.authenticate(c, allowed, false)
 	}
+}
+
+func (m *AuthMiddleware) OptionalAuth(allowed authn.AuthMethod) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		m.authenticate(c, allowed, true)
+	}
+}
+
+func (m *AuthMiddleware) authenticate(c *gin.Context, allowed authn.AuthMethod, optional bool) {
+	if allowed&authn.AuthServiceKey != 0 {
+		if serviceKey := c.GetHeader("X-Service-Key"); serviceKey != "" {
+			m.authenticateServiceKey(c, serviceKey)
+			return
+		}
+	}
+
+	if allowed&authn.AuthAppKey != 0 {
+		if appKey := c.GetHeader("X-App-Key"); appKey != "" {
+			m.authenticateAppKey(c, appKey)
+			return
+		}
+	}
+
+	if allowed&authn.AuthSession != 0 {
+		cookieHeader := c.GetHeader("Cookie")
+		sessionHeader := strings.TrimSpace(c.GetHeader("X-Session-Token"))
+		if len(sessionHeader) > 0 && sessionHeader[len(sessionHeader)-1] == '=' {
+			sessionHeader = sessionHeader[:len(sessionHeader)-1]
+		}
+		hasSession := sessionHeader != "" || hasKratosCookie(c.Request)
+		if !optional {
+			hasSession = hasSession || cookieHeader != ""
+		}
+		if hasSession {
+			m.authenticateSession(c, cookieHeader, sessionHeader)
+			return
+		}
+	}
+
+	if optional {
+		c.Next()
+		return
+	}
+
+	handlers.NewUnauthorizedResponse(c, "Authentication required")
+	c.Abort()
 }
 
 func (m *AuthMiddleware) authenticateServiceKey(c *gin.Context, serviceKey string) {
@@ -228,20 +261,64 @@ func (m *AuthMiddleware) isTenantMember(ctx context.Context, userID, tenantID uu
 	return count > 0, err
 }
 
-func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessionHeader string) {
+func hasKratosCookie(r *http.Request) bool {
+	_, err := r.Cookie(kratosSessionCookie)
+	return err == nil
+}
+
+func sessionCredential(r *http.Request, cookieHeader, sessionHeader string) string {
+	if sessionHeader != "" {
+		return "token:" + sessionHeader
+	}
+	if ck, err := r.Cookie(kratosSessionCookie); err == nil {
+		return "cookie:" + ck.Value
+	}
+	return "header:" + cookieHeader
+}
+
+func (m *AuthMiddleware) resolveSession(ctx context.Context, r *http.Request, cookieHeader, sessionHeader string) (*kratos.Session, error) {
+	key := sessioncache.Key(sessionCredential(r, cookieHeader, sessionHeader))
+	if entry, ok := m.sessionCache.Get(key); ok {
+		return entry.Session, nil
+	}
+
 	var (
 		session *kratos.Session
 		err     error
 	)
-
 	if sessionHeader != "" {
 		logger.Logger.Debug("Session header received", "length", len(sessionHeader))
-		session, err = m.validateSessionWithToken(c.Request.Context(), sessionHeader)
+		session, err = m.validateSessionWithToken(ctx, sessionHeader)
 	} else {
 		logger.Logger.Debug("Using cookie session validation")
-		session, err = m.validateSessionWithCookie(c.Request.Context(), cookieHeader)
+		session, err = m.validateSessionWithCookie(ctx, cookieHeader)
+	}
+	if err != nil {
+		return nil, err
 	}
 
+	if userID, parseErr := uuid.Parse(session.Identity.GetId()); parseErr == nil {
+		var expiresAt time.Time
+		if session.ExpiresAt != nil {
+			expiresAt = *session.ExpiresAt
+		}
+		m.sessionCache.Set(key, sessioncache.Entry{UserID: userID, Session: session, ExpiresAt: expiresAt})
+	}
+	return session, nil
+}
+
+func (m *AuthMiddleware) lookupActiveTenant(ctx context.Context, userID uuid.UUID) (activeTenant, error) {
+	var t activeTenant
+	err := m.db.WithContext(ctx).Table("auth.tenant_users").
+		Select("tenant_id, role").
+		Where("user_id = ? AND is_active = true", userID).
+		Limit(1).
+		Scan(&t).Error
+	return t, err
+}
+
+func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessionHeader string) {
+	session, err := m.resolveSession(c.Request.Context(), c.Request, cookieHeader, sessionHeader)
 	if err != nil {
 		logger.Logger.Error("Session validation failed", "error", err)
 		handlers.NewUnauthorizedResponse(c, "Invalid or expired session")
@@ -270,13 +347,16 @@ func (m *AuthMiddleware) authenticateSession(c *gin.Context, cookieHeader, sessi
 		Identity: session.Identity,
 	}
 
-	var tenantID string
-	err = m.db.Table("auth.tenant_users").
-		Select("tenant_id").
-		Where("user_id = ? AND is_active = true", userID).
-		Scan(&tenantID).Error
-	if err == nil && tenantID != "" {
-		principal.TenantID, _ = uuid.Parse(tenantID)
+	tenant, err := m.activeTenant(c.Request.Context(), userID)
+	if err != nil {
+		logger.Logger.Error("Failed to load active tenant", "user_id", userID, "error", err)
+		handlers.NewInternalServerErrorResponse(c, fmt.Errorf("failed to load active tenant: %w", err))
+		c.Abort()
+		return
+	}
+	if tenant.TenantID != "" {
+		principal.TenantID, _ = uuid.Parse(tenant.TenantID)
+		principal.TenantRole = tenant.Role
 	}
 
 	authn.Set(c, principal)

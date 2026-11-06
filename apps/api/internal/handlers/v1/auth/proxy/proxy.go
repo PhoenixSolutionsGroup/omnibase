@@ -12,20 +12,23 @@ import (
 )
 
 func (h *Handler) ProxyPublic(c *gin.Context) {
-	h.doProxy(c, h.publicURL, c.Param("path"))
+	path := c.Param("path")
+	h.doProxy(c, h.publicURL, path, planPublicRevocation(c.Request, path))
 }
 
 func (h *Handler) ProxyAdmin(c *gin.Context) {
-	h.doProxy(c, h.adminURL, c.Param("path"))
+	path := c.Param("path")
+	h.doProxy(c, h.adminURL, path, planAdminRevocation(c.Request, path))
 }
 
 func (h *Handler) ProxyPublicWithPrefix(prefix string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		h.doProxy(c, h.publicURL, prefix+c.Param("path"))
+		path := prefix + c.Param("path")
+		h.doProxy(c, h.publicURL, path, planPublicRevocation(c.Request, path))
 	}
 }
 
-func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string) {
+func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string, rv revocation) {
 	logger.Logger.Debug("Proxying auth request",
 		"target", targetURL.String(),
 		"path", path,
@@ -67,6 +70,8 @@ func (h *Handler) doProxy(c *gin.Context, targetURL *url.URL, path string) {
 		return
 	}
 	defer resp.Body.Close()
+
+	h.applyRevocation(c.Request.Context(), rv, resp.StatusCode)
 
 	for key, values := range resp.Header {
 		for _, value := range values {

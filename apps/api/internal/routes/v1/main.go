@@ -12,7 +12,9 @@ import (
 func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing v1 API routes")
 
-	d.Auth = middleware.NewAuthMiddleware(d.Cfg, d.DB)
+	if d.Auth == nil {
+		d.Auth = middleware.NewAuthMiddleware(d.Cfg, d.DB, nil)
+	}
 	d.RBAC = middleware.NewRBACMiddleware(permissions.New(d.Cfg.PermissionsConfig.ReadURL, d.Cfg.PermissionsConfig.WriteURL))
 
 	logger.Logger.Debug("Setting up auth routes at /auth")
@@ -26,6 +28,9 @@ func InitRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	logger.Logger.Debug("Setting up database routes at /database")
 	SetUpDBRoutes(group.Group("/database"), api, d)
+
+	logger.Logger.Debug("Setting up PostgREST proxy routes at /rest")
+	SetUpRestRoutes(group.Group("/rest"), d)
 
 	logger.Logger.Debug("Setting up tenant routes at /tenants")
 	SetUpTenantRoutes(group.Group("/tenants"), api, d)

@@ -11,11 +11,13 @@ type Handler struct {
 	publicURL *url.URL
 	adminURL  *url.URL
 	client    *http.Client
+	revoker   Revoker
 }
 
 type Deps struct {
 	PublicURL string
 	AdminURL  string
+	Revoker   Revoker
 }
 
 func New(deps Deps) *Handler {
@@ -41,5 +43,6 @@ func New(deps Deps) *Handler {
 		publicURL: publicURL,
 		adminURL:  adminURL,
 		client:    client,
+		revoker:   deps.Revoker,
 	}
 }

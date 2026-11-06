@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"api/internal/logger"
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
+	"api/internal/services/sessioncache"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
@@ -84,12 +86,31 @@ func New(cfg *config.Config) *gin.Engine {
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
-	BuildAPI(r, v1_routes.Deps{Cfg: cfg, Pool: pool, DB: db})
+	sessionCache := sessioncache.New(sessioncache.Deps{
+		TTL:        cfg.SessionCacheConfig.TTL,
+		MaxEntries: cfg.SessionCacheConfig.MaxEntries,
+	})
+	if sessionCache != nil {
+		if cfg.SessionCacheConfig.ListenDSN == "" {
+			logger.Logger.Warn("SESSION_CACHE_LISTEN_DSN not set; session revocations reach other replicas only after the cache TTL", "ttl", cfg.SessionCacheConfig.TTL.String())
+		}
+		go sessionCache.Listen(context.Background(), sessioncache.ListenArgs{DSN: cfg.SessionCacheConfig.ListenDSN})
+	}
+	revoker := sessioncache.NewInvalidator(sessioncache.InvalidatorDeps{Cache: sessionCache, Pool: pool})
+
+	BuildAPI(r, v1_routes.Deps{
+		Cfg:     cfg,
+		Pool:    pool,
+		DB:      db,
+		Auth:    middleware.NewAuthMiddleware(cfg, db, sessionCache),
+		Revoker: revoker,
+	})
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
 	authProxyHandler := proxy.New(proxy.Deps{
 		PublicURL: cfg.AuthConfig.AuthURL,
 		AdminURL:  cfg.AuthConfig.AuthAdminURL,
+		Revoker:   revoker,
 	})
 	r.Any("/self-service/*path", authProxyHandler.ProxyPublicWithPrefix("/self-service"))
 

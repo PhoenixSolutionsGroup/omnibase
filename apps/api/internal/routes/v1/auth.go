@@ -29,6 +29,7 @@ func SetUpAuthRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	proxyHandler := proxy.New(proxy.Deps{
 		PublicURL: cfg.AuthConfig.AuthURL,
 		AdminURL:  cfg.AuthConfig.AuthAdminURL,
+		Revoker:   d.Revoker,
 	})
 
 	router.Any("/proxy/*path", proxyHandler.ProxyPublic)

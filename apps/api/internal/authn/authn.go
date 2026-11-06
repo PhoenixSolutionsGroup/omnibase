@@ -19,11 +19,12 @@ const (
 )
 
 type Principal struct {
-	Method   AuthMethod
-	UserID   uuid.UUID
-	TenantID uuid.UUID
-	Session  *kratos.Session
-	Identity *kratos.Identity
+	Method     AuthMethod
+	UserID     uuid.UUID
+	TenantID   uuid.UUID
+	TenantRole string
+	Session    *kratos.Session
+	Identity   *kratos.Identity
 }
 
 const principalKey = "omnibase_principal"
