@@ -26,12 +26,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ActiveTenantResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -50,12 +74,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/Identity"
           description: OK
-        default:
+        "401":
           content:
             application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -80,12 +118,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/LogoutResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -102,12 +177,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/SessionResponse"
           description: OK
-        default:
+        "401":
           content:
             application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -124,12 +213,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListTenantsResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -154,12 +267,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/Identity"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Create a new user identity
@@ -175,12 +335,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/WhoAmIBody"
           description: OK
-        default:
+        "401":
           content:
             application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -206,12 +380,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApplyMigrationsResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Apply database migrations
@@ -239,12 +450,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/MigrationsDownResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Roll back database migrations
@@ -263,12 +511,36 @@ paths:
                 nullable: true
                 type: array
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get the status of applied migrations
@@ -310,12 +582,49 @@ paths:
               schema:
                 type: string
               style: simple
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Generate type definitions for the database schema
@@ -337,12 +646,69 @@ paths:
               schema:
                 $ref: "#/components/schemas/SendResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -367,12 +733,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/SendResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -391,12 +804,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListSystemTemplatesResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get all system email templates
@@ -417,12 +854,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpsertSystemTemplateResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Create or update a system email template
@@ -446,12 +920,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteSystemTemplateResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Delete a system email template
@@ -493,12 +1014,59 @@ paths:
               schema:
                 type: string
               style: simple
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Serve a system email template file
@@ -514,12 +1082,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListTemplatesResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -543,12 +1135,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpsertTemplateResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -593,12 +1222,59 @@ paths:
               schema:
                 type: string
               style: simple
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -625,12 +1301,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteTemplateResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -655,12 +1378,89 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateCheckoutResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "403":
+          content:
+            application/problem+json:
+              example:
+                title: Forbidden
+                status: 403
+                detail: Insufficient permissions.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Forbidden
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -685,12 +1485,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Create a Stripe invoice
@@ -714,12 +1581,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get a Stripe invoice
@@ -748,12 +1682,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Update a Stripe invoice
@@ -783,12 +1784,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Finalize a Stripe invoice
@@ -818,12 +1886,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceLineItemResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Add a line item to a Stripe invoice
@@ -853,12 +1988,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceLineItemResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Add a line item to a Stripe invoice using a price ID
@@ -880,12 +2082,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreatePortalResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -909,12 +2148,79 @@ paths:
             application/json:
               schema: {}
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Record a Stripe meter usage event
@@ -936,12 +2242,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/CheckResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -969,12 +2312,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeployNamespacesResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Deploy Keto namespace configurations
@@ -996,12 +2376,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteRelationshipResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Delete relationship
@@ -1022,12 +2449,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateRelationshipResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Create relationship
@@ -1052,12 +2526,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/DownloadResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1085,12 +2606,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/MakePublicResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1118,12 +2686,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteObjectResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1152,12 +2767,69 @@ paths:
               schema:
                 $ref: "#/components/schemas/UploadResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1176,12 +2848,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/StripeConfigResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get full Stripe config (admin)
@@ -1202,12 +2898,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConfigResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Update Stripe config
@@ -1229,12 +2962,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ArchiveAllResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Archive all Stripe config
@@ -1269,12 +3039,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConfigHistoryResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get config history
@@ -1290,12 +3097,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/StripeConfiguration"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Pull config from Stripe
@@ -1317,12 +3148,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConfigStatus"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get Stripe config status
@@ -1345,12 +3213,49 @@ paths:
               schema:
                 type: string
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Validate Stripe config
@@ -1372,12 +3277,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/EnterpriseApplyResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Apply custom enterprise pricing
@@ -1399,12 +3351,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/EnterpriseApplyResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Apply enterprise template pricing
@@ -1428,12 +3427,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/EnterprisePricesResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get enterprise prices by ID
@@ -1457,12 +3493,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/EnterprisePricesResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get enterprise prices by template
@@ -1478,12 +3551,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListWebhooksResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: List all webhooks
@@ -1499,12 +3596,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/StripeConfigResponse"
           description: OK
-        default:
+        "500":
           content:
             application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Internal Server Error
       summary: Get public Stripe config
       tags:
       - V1Stripe
@@ -1526,12 +3627,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetMeterResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       summary: Get meter by ID
       tags:
       - V1Stripe
@@ -1553,12 +3691,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetPriceResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       summary: Get price by ID
       tags:
       - V1Stripe
@@ -1586,12 +3761,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/CalculatePriceCostResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       summary: Calculate cost for a price
       tags:
       - V1Stripe
@@ -1613,12 +3825,49 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetProductResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       summary: Get product by ID
       tags:
       - V1Stripe
@@ -1640,12 +3889,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/ConvertStripeIDResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       - AppKeyAuth: []
@@ -1668,12 +3964,16 @@ paths:
               schema:
                 type: string
               style: simple
-        default:
+        "500":
           content:
             application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Internal Server Error
       summary: Get Stripe config schema
       tags:
       - V1Configuration
@@ -1687,12 +3987,56 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteTenantResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1716,12 +4060,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateTenantResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1740,12 +4151,46 @@ paths:
               schema:
                 $ref: "#/components/schemas/BillingStatusResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1772,12 +4217,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetTenantByIDRow"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get tenant by ID
@@ -1801,12 +4293,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/GetTenantByStripeCustomerIDRow"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - ServiceKeyAuth: []
       summary: Get tenant by Stripe customer ID
@@ -1828,12 +4367,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1858,12 +4444,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/AcceptResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "403":
+          content:
+            application/problem+json:
+              example:
+                title: Forbidden
+                status: 403
+                detail: Insufficient permissions.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Forbidden
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1882,12 +4515,46 @@ paths:
               schema:
                 $ref: "#/components/schemas/JWTResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "403":
+          content:
+            application/problem+json:
+              example:
+                title: Forbidden
+                status: 403
+                detail: Insufficient permissions.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Forbidden
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1909,12 +4576,36 @@ paths:
                 nullable: true
                 type: array
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1938,12 +4629,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreateRoleRow"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -1973,12 +4711,49 @@ paths:
                 nullable: true
                 type: array
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2004,12 +4779,59 @@ paths:
             application/json:
               schema: {}
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2041,12 +4863,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateRolePermissionsRow"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2071,12 +4940,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/RemoveResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2097,12 +5033,46 @@ paths:
                 nullable: true
                 type: array
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2126,12 +5096,79 @@ paths:
               schema:
                 $ref: "#/components/schemas/AddResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "409":
+          content:
+            application/problem+json:
+              example:
+                title: Conflict
+                status: 409
+                detail: The resource already exists.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Conflict
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "429":
+          content:
+            application/problem+json:
+              example:
+                title: Too Many Requests
+                status: 429
+                detail: Rate limit exceeded.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Too Many Requests
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2158,12 +5195,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/SubscriptionResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2188,12 +5272,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/SwitchActiveResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2217,12 +5348,59 @@ paths:
             application/json:
               schema: {}
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2243,12 +5421,36 @@ paths:
                 nullable: true
                 type: array
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
@@ -2272,12 +5474,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateUserRoleResponse"
           description: OK
-        default:
+        "400":
           content:
             application/problem+json:
+              example:
+                title: Bad Request
+                status: 400
+                detail: The request could not be processed.
               schema:
                 $ref: "#/components/schemas/ErrorModel"
-          description: Error
+          description: Bad Request
+        "401":
+          content:
+            application/problem+json:
+              example:
+                title: Unauthorized
+                status: 401
+                detail: Authentication required.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unauthorized
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: Not Found
+                status: 404
+                detail: The requested resource was not found.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Not Found
+        "422":
+          content:
+            application/problem+json:
+              example:
+                title: Unprocessable Entity
+                status: 422
+                detail: Validation failed.
+                errors:
+                - message: expected required property path to be present
+                  location: body.path
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Unprocessable Entity
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
       security:
       - SessionTokenAuth: []
       - CookieAuth: []
