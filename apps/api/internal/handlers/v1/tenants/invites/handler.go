@@ -10,30 +10,33 @@ import (
 )
 
 type Handler struct {
-	repo    repository.Querier
-	perms   *permissions.Service
-	auth    *auth.Service
-	rbac    *rbac.Service
-	tenants *tenants.Service
-	email   *email.Service
+	repo                 repository.Querier
+	perms                *permissions.Service
+	auth                 *auth.Service
+	rbac                 *rbac.Service
+	tenants              *tenants.Service
+	email                *email.Service
+	allowedInviteOrigins []string
 }
 
 type Deps struct {
-	Repo    repository.Querier
-	Perms   *permissions.Service
-	Auth    *auth.Service
-	RBAC    *rbac.Service
-	Tenants *tenants.Service
-	Email   *email.Service
+	Repo                 repository.Querier
+	Perms                *permissions.Service
+	Auth                 *auth.Service
+	RBAC                 *rbac.Service
+	Tenants              *tenants.Service
+	Email                *email.Service
+	AllowedInviteOrigins []string
 }
 
 func New(deps Deps) *Handler {
 	return &Handler{
-		repo:    deps.Repo,
-		perms:   deps.Perms,
-		auth:    deps.Auth,
-		rbac:    deps.RBAC,
-		tenants: deps.Tenants,
-		email:   deps.Email,
+		repo:                 deps.Repo,
+		perms:                deps.Perms,
+		auth:                 deps.Auth,
+		rbac:                 deps.RBAC,
+		tenants:              deps.Tenants,
+		email:                deps.Email,
+		allowedInviteOrigins: deps.AllowedInviteOrigins,
 	}
 }

@@ -32,7 +32,7 @@ func CreateInvite(t *testing.T, client *sdk.APIClient, ownerID, tenantID, email,
 	req := sdk.CreateRequest{
 		Email:     email,
 		Role:      role,
-		InviteUrl: "http://localhost:3000/accept-invite",
+		InviteUrl: "http://127.0.0.1:3000/accept-invite",
 	}
 	out, resp, err := client.V1TenantsInvitesAPI.CreateInvite(helpers.CtxWithUserTenant(ownerID, tenantID)).
 		CreateRequest(req).
@@ -48,7 +48,7 @@ func CreateInviteRaw(t *testing.T, client *sdk.APIClient, callerUserID, tenantID
 	req := sdk.CreateRequest{
 		Email:     email,
 		Role:      role,
-		InviteUrl: "http://localhost:3000/accept-invite",
+		InviteUrl: "http://127.0.0.1:3000/accept-invite",
 	}
 	_, resp, err := client.V1TenantsInvitesAPI.CreateInvite(helpers.CtxWithUserTenant(callerUserID, tenantID)).
 		CreateRequest(req).

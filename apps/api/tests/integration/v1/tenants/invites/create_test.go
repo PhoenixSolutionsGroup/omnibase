@@ -47,6 +47,30 @@ func TestInvitesCreate(t *testing.T) {
 		assert.Equal(t, "admin", invite.Role)
 	})
 
+	t.Run("owner creates owner invite", func(t *testing.T) {
+		ownerInviteEmail := fmt.Sprintf("owner-invitee-%s@example.com", id)
+		invite := h.CreateInvite(t, client, ownerID, tenant.Id, ownerInviteEmail, "owner")
+		assert.Equal(t, "owner", invite.Role)
+	})
+
+	t.Run("unknown role gets 400", func(t *testing.T) {
+		resp, _ := h.CreateInviteRaw(t, client, ownerID, tenant.Id, invitedEmail, "superadmin")
+		require.NotNil(t, resp)
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("admin cannot invite owner", func(t *testing.T) {
+		adminEmail := fmt.Sprintf("admin-owner-%s@example.com", id)
+		adminID := h.CreateUser(t, client, adminEmail, pw)
+
+		joinInvite := h.CreateInvite(t, client, ownerID, tenant.Id, adminEmail, "admin")
+		h.AcceptInvite(t, client, adminID, joinInvite.Token)
+
+		resp, _ := h.CreateInviteRaw(t, client, adminID, tenant.Id, invitedEmail, "owner")
+		require.NotNil(t, resp)
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
 	t.Run("member without invite_user permission gets 403", func(t *testing.T) {
 		memberEmail := fmt.Sprintf("member-noinv-%s@example.com", id)
 		memberID := h.CreateUser(t, client, memberEmail, pw)

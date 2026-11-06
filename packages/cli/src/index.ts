@@ -54,6 +54,13 @@ function createTemplateFiles(targetDir: string): void {
   }
 
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
+
+  const envExample = path.join(omnibaseDir, ".env.example");
+  const envLocal = path.join(omnibaseDir, ".env.local");
+  if (fs.existsSync(envExample) && !fs.existsSync(envLocal)) {
+    fs.copyFileSync(envExample, envLocal);
+  }
+
   writeAgentPointers(targetDir);
 }
 

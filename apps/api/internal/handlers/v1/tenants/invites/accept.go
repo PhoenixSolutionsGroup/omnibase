@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/google/uuid"
@@ -58,17 +59,13 @@ func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, e
 	if !ok || caller.Email == "" {
 		return nil, huma.Error400BadRequest("Email not found for caller identity")
 	}
-	if caller.Email != invite.Email {
+	if !strings.EqualFold(strings.TrimSpace(caller.Email), strings.TrimSpace(invite.Email)) {
 		return nil, huma.Error403Forbidden(EmailMismatchError.Error())
 	}
 
 	tenantUuid, err := uuid.Parse(invite.TenantID)
 	if err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: invalid tenant_id on invite", AcceptError).Error())
-	}
-
-	if err := h.repo.MarkInviteUsed(ctx, invite.ID); err != nil {
-		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
 	if _, err := h.repo.CreateTenantUser(ctx, repository.CreateTenantUserParams{
@@ -78,6 +75,10 @@ func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, e
 		Role:     invite.Role,
 		IsActive: true,
 	}); err != nil {
+		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
+	}
+
+	if err := h.repo.MarkInviteUsed(ctx, invite.ID); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
