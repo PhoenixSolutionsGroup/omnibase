@@ -21,7 +21,7 @@ on:
         default: all
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: deploy-apps-${{ github.event_name == 'workflow_run' && 'main' || github.event_name == 'push' && 'dev' || inputs.env }}
@@ -74,11 +74,12 @@ jobs:
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
       COOKIE_DOMAIN: ${{ vars.OMNIBASE_COOKIE_DOMAIN }}
     steps:
-      # After a Release, build from the latest main so regenerated docs
-      # committed by the docs workflow are included.
+      # After a Release, build from the latest main so the release commits are included.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+          token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
 
       - uses: oven-sh/setup-bun@v1
         with:
@@ -87,6 +88,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - uses: actions/setup-go@v5
+        if: matrix.app == 'docs'
+        with:
+          go-version: "1.25"
+          cache-dependency-path: apps/api/go.sum
 
       - name: Install dependencies
         env:
@@ -105,7 +112,7 @@ jobs:
         id: release
         run: |
           VERSION=$(git describe --tags --match 'api-v*' --abbrev=0 2>/dev/null | sed 's/^api-v//' || true)
-          echo "version=${VERSION:-0.0.0-dev}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION:-dev}" >> "$GITHUB_OUTPUT"
 
       - name: Generate docs
         if: matrix.app == 'docs'
@@ -117,6 +124,23 @@ jobs:
         if: matrix.app == 'docs'
         working-directory: apps/docs
         run: bun run postinstall
+
+      - name: Configure git
+        if: matrix.app == 'docs' && github.event_name == 'workflow_run'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit generated docs
+        if: matrix.app == 'docs' && github.event_name == 'workflow_run'
+        run: |
+          git add apps/docs/content apps/docs/openapi.yaml apps/api/docs/openapi.json
+          if git diff --staged --quiet; then
+            echo "No documentation changes to commit"
+          else
+            git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
+            git push origin HEAD:main
+          fi
 
       - name: Authenticate CLI
         env:
