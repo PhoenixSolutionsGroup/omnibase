@@ -114,7 +114,9 @@ export function getPageTreeFor(page: InferPageType<typeof source>): PageTree.Roo
   const active = new Set(path);
   return {
     ...tree,
-    children: tree.children.map((child) => pruneNode(child, active, projected)),
+    children: tree.children.map((child) =>
+      renameApiOperation(pruneNode(child, active, projected))
+    ),
   };
 }
 
@@ -126,6 +128,23 @@ function firstPageUrl(nodes: PageTree.Node[]): string | undefined {
       if (url) return url;
     }
   }
+}
+
+function operationName(url: string): string | undefined {
+  const segments = url.split('/').filter(Boolean);
+  if (segments[0] !== 'api' || segments.length < 4) return undefined;
+  return segments.at(-1);
+}
+
+function renameApiOperation(node: PageTree.Node): PageTree.Node {
+  if (node.type === 'page') {
+    const name = operationName(node.url);
+    return name && name !== node.name ? { ...node, name } : node;
+  }
+  if (node.type === 'folder') {
+    return { ...node, children: node.children.map(renameApiOperation) };
+  }
+  return node;
 }
 
 function pruneLatestFolder(folder: TreeFolder): TreeFolder {
