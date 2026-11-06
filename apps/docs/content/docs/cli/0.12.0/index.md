@@ -32,3 +32,4 @@ omnibase [command] [options]
 - [`cloud`](/cli/0.12.0/cloud) — Manage OmniBase Cloud
 - [`sync`](/cli/0.12.0/sync) — Sync local configuration to a remote environment
 - [`restart`](/cli/0.12.0/restart) — Restart one or more services
+- [`docs`](/cli/0.12.0/docs) — Search and read the Omnibase documentation

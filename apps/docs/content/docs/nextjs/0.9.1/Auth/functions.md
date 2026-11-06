@@ -10,7 +10,7 @@ title: "Functions"
 function clearSessionToken(): Promise<void>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:40](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L40)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:40](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L40)
 
 #### Returns
 
@@ -24,7 +24,7 @@ Defined in: [sdk/framework/nextjs/src/auth/session.ts:40](https://github.com/Pho
 function createSessionTokenExchangeHandler(__namedParameters): (req) => Promise<Response>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:114](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L114)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:114](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L114)
 
 Route handler for the social sign-in callback. Mount it at the path passed
 to `LoginForm`'s `return_to` (default `/auth/callback`). It exchanges the
@@ -65,7 +65,7 @@ the resulting session token in the first-party cookie.
 function exchangeSessionToken(initCode, returnToCode): Promise<string | null>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:81](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L81)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:81](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L81)
 
 Exchanges the two session token exchange codes (one from the flow
 initialization, one from the `return_to` redirect) for a session token.
@@ -89,7 +89,7 @@ initialization, one from the `return_to` redirect) for a session token.
 function getSessionConfiguration(): Promise<Configuration>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L50)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:50](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L50)
 
 Configuration that authenticates API calls with the session token
 (`X-Session-Token`), falling back to cookies when no token is present.
@@ -106,7 +106,7 @@ Configuration that authenticates API calls with the session token
 function getSessionToken(): Promise<string | undefined>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:24](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L24)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:24](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L24)
 
 #### Returns
 
@@ -120,7 +120,7 @@ Defined in: [sdk/framework/nextjs/src/auth/session.ts:24](https://github.com/Pho
 function getTokenSession(): Promise<Session | null>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:64](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L64)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:64](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L64)
 
 Validates the session token against the OmniBase API and returns the
 underlying Kratos session, or null when there is no token or it is invalid.
@@ -137,7 +137,7 @@ underlying Kratos session, or null when there is no token or it is invalid.
 function setSessionToken(token, cookieDomain?): Promise<void>;
 ```
 
-Defined in: [sdk/framework/nextjs/src/auth/session.ts:29](https://github.com/PhoenixSolutionsGroup/omnibase/blob/ab3607ba10c8e6f2dd22feba09f4f791507702fb/sdk/framework/nextjs/src/auth/session.ts#L29)
+Defined in: [sdk/framework/nextjs/src/auth/session.ts:29](https://github.com/PhoenixSolutionsGroup/omnibase/blob/f1549e15f0a8f8a079339c9821697272dc51101c/sdk/framework/nextjs/src/auth/session.ts#L29)
 
 #### Parameters
 
