@@ -17,6 +17,8 @@ Method | HTTP request | Description
 
 Delete file from storage
 
+
+
 ### Example
 
 ```go
@@ -80,6 +82,8 @@ Name | Type | Description  | Notes
 > DownloadResponse DownloadFile(ctx).DownloadRequest(downloadRequest).Execute()
 
 Download file from storage
+
+
 
 ### Example
 
@@ -145,6 +149,8 @@ Name | Type | Description  | Notes
 
 Make a file publicly accessible
 
+
+
 ### Example
 
 ```go
@@ -208,6 +214,8 @@ Name | Type | Description  | Notes
 > UploadResponse UploadFile(ctx).UploadRequest(uploadRequest).Execute()
 
 Upload file to storage
+
+
 
 ### Example
 

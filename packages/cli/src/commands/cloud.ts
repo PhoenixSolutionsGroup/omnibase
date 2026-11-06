@@ -1589,7 +1589,7 @@ export function addCloudCommands(program: Command): void {
       "deploying to `local` is not supported.\n\n" +
       "Environment variables: `{VAR}` references in the wrangler `[vars]` " +
       "resolve from the branch env file. See the env resolution model on the " +
-      "[`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+      "[`cloud env`](/cli/cloud/env) page.\n\n" +
       "Caveats: values in `[vars]` are visible in the deployed worker — put " +
       "secrets in `wrangler secret` or the managed-hosting secrets API, not in " +
       "`[vars]`. Unresolved `{VAR}` values are left literal and the CLI warns.\n\n" +
@@ -1961,7 +1961,7 @@ export function addCloudCommands(program: Command): void {
       "not supported.\n\n" +
       "After: the branch reports which sections were applied and which were " +
       "ignored. Unresolved `{VAR}` values are warned about and left literal.\n\n" +
-      "See the env resolution model on the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+      "See the env resolution model on the [`cloud env`](/cli/cloud/env) page.\n\n" +
       "```bash\n" +
       "omnibase cloud env push --env dev\n" +
       "omnibase cloud env push --env staging\n" +

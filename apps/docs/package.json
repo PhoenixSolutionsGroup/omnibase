@@ -3,22 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prebuild": "cp ../../apps/api/docs/openapi.yaml ./openapi.yaml 2>/dev/null; echo '✓ Synced OpenAPI spec'",
-    "build": "next build",
-    "build:cloudflare": "bun run prebuild && opennextjs-cloudflare build",
-    "preview": "bun run build:cloudflare && opennextjs-cloudflare preview",
-    "deploy": "bun run build:cloudflare && opennextjs-cloudflare deploy",
+    "build": "next build && node scripts/prune-old-versions.mjs",
+    "preview": "bun run build && wrangler dev",
+    "deploy": "wrangler deploy",
     "dev": "next dev",
-    "start": "next start",
+    "test": "bun test worker",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx",
     "lint": "eslint"
   },
   "dependencies": {
-    "fumadocs-core": "16.9.3",
-    "fumadocs-mdx": "14.2.4",
-    "fumadocs-openapi": "10.9.1",
-    "fumadocs-ui": "16.9.3",
+    "fumadocs-core": "^16.17.10",
+    "fumadocs-mdx": "^15.4.10",
+    "fumadocs-openapi": "^12.5.8",
+    "fumadocs-ui": "^16.17.10",
     "lucide-react": "^0.562.0",
     "next": "16.2.10",
     "react": "^19.2.3",
@@ -26,7 +24,6 @@
     "shiki": "^3.20.0"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.20.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.2",

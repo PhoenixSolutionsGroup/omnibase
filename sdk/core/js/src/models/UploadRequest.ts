@@ -26,7 +26,7 @@ export interface UploadRequest {
      */
     metadata?: object;
     /**
-     * 
+     * Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
      * @type {string}
      * @memberof UploadRequest
      */

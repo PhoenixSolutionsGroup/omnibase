@@ -22,6 +22,7 @@ var _ MappedNullable = &UploadRequest{}
 // UploadRequest struct for UploadRequest
 type UploadRequest struct {
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	// Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
 	Path string `json:"path"`
 	AdditionalProperties map[string]interface{}
 }

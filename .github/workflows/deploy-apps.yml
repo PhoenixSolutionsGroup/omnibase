@@ -21,7 +21,7 @@ on:
         default: all
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: deploy-apps-${{ github.event_name == 'workflow_run' && 'main' || github.event_name == 'push' && 'dev' || inputs.env }}
@@ -74,11 +74,12 @@ jobs:
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
       COOKIE_DOMAIN: ${{ vars.OMNIBASE_COOKIE_DOMAIN }}
     steps:
-      # After a Release, build from the latest main so regenerated docs
-      # committed by the docs workflow are included.
+      # After a Release, build from the latest main so the release commits are included.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+          token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
 
       - uses: oven-sh/setup-bun@v1
         with:
@@ -88,6 +89,12 @@ jobs:
         with:
           node-version: 22
 
+      - uses: actions/setup-go@v5
+        if: matrix.app == 'docs'
+        with:
+          go-version: "1.25"
+          cache-dependency-path: apps/api/go.sum
+
       - name: Install dependencies
         env:
           HUSKY: 0
@@ -96,14 +103,57 @@ jobs:
       - name: Build workspace packages
         run: bun run build:packages
 
+      - name: Fetch release tags
+        if: matrix.app == 'docs'
+        run: git fetch --unshallow --tags --force 2>/dev/null || git fetch --tags --force
+
+      - name: Resolve release version
+        if: matrix.app == 'docs'
+        id: release
+        run: |
+          VERSION=$(git describe --tags --match 'api-v*' --abbrev=0 2>/dev/null | sed 's/^api-v//' || true)
+          echo "version=${VERSION:-dev}" >> "$GITHUB_OUTPUT"
+
       - name: Generate docs
         if: matrix.app == 'docs'
+        env:
+          API_VERSION: ${{ steps.release.outputs.version }}
         run: bun run generate:docs
 
       - name: Generate docs source
         if: matrix.app == 'docs'
         working-directory: apps/docs
         run: bun run postinstall
+
+      - name: Configure git
+        if: matrix.app == 'docs' && github.event_name == 'workflow_run'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit generated docs
+        if: matrix.app == 'docs' && github.event_name == 'workflow_run'
+        continue-on-error: true
+        run: |
+          git add apps/docs/content apps/docs/openapi.yaml apps/docs/openapi.json apps/api/docs/openapi.json
+          if git diff --staged --quiet; then
+            echo "No documentation changes to commit"
+            exit 0
+          fi
+          git commit -m "docs: auto-generate API and SDK documentation [skip ci]"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "::warning::Could not rebase generated docs onto main"
+              exit 0
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::warning::Could not push generated docs to main; continuing without persisting them"
 
       - name: Authenticate CLI
         env:

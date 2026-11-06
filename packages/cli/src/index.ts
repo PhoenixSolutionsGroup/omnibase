@@ -14,6 +14,7 @@ import { addAuthCommands } from "./commands/auth";
 import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
+import { addDocsCommands } from "./commands/docs";
 import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
 import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
@@ -190,7 +191,7 @@ program
     "(and `omnibase/.env.local` for the local environment), plus the " +
     "deployment's wrangler " +
     "`[vars]` after `{VAR}` interpolation. See the env resolution model on " +
-    "the [`cloud env`](/reference/cli/cloud/env) page.\n\n" +
+    "the [`cloud env`](/cli/cloud/env) page.\n\n" +
     "```bash\n" +
     "omnibase start\n" +
     "omnibase start -d\n" +
@@ -366,6 +367,9 @@ addSyncCommands(program);
 
 // Add restart commands
 addRestartCommands(program);
+
+// Add docs commands
+addDocsCommands(program);
 
 if (require.main === module) {
   program.parse();

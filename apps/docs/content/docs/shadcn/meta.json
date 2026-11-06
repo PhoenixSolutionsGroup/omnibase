@@ -1,0 +1,10 @@
+{
+  "title": "Shadcn",
+  "description": "Pre-built UI components for authentication and tenant management",
+  "icon": "Component",
+  "root": true,
+  "pages": [
+    "index",
+    "..."
+  ]
+}

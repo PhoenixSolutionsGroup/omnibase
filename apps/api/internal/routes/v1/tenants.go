@@ -92,106 +92,127 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantByID", Method: http.MethodGet, Path: "/api/v1/tenants/by-id/{tenant_id}",
+		Errors:  []int{400, 401, 404},
 		Summary: "Get tenant by ID", Tags: lifecycleTag,
 	}, authn.AuthServiceKey, nil, tenantHandler.GetTenantByID)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantByStripeCustomerID", Method: http.MethodGet, Path: "/api/v1/tenants/by-stripe-customer/{stripe_customer_id}",
+		Errors:  []int{400, 401, 404},
 		Summary: "Get tenant by Stripe customer ID", Tags: lifecycleTag,
 	}, authn.AuthServiceKey, nil, tenantHandler.GetTenantByStripeCustomerID)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createTenant", Method: http.MethodPost, Path: "/api/v1/tenants",
+		Errors:  []int{400, 401, 404, 409, 429},
 		Summary: "Create a tenant", Tags: lifecycleTag,
 	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.CreateTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteTenant", Method: http.MethodDelete, Path: "/api/v1/tenants",
+		Errors:  []int{400, 401, 404, 409},
 		Summary: "Delete the current tenant", Tags: lifecycleTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_tenant"), lifecycleHandler.DeleteTenant)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
+		Errors:  []int{400, 401, 403},
 		Summary: "Get JWT for the current tenant", Tags: lifecycleTag,
 	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.GetJWT)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",
+		Errors:  []int{400, 401, 404},
 		Summary: "Switch the active tenant", Tags: lifecycleTag,
 	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.SwitchActive)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createInvite", Method: http.MethodPost, Path: "/api/v1/tenants/invites",
+		Errors:  []int{400, 401, 404},
 		Summary: "Create a tenant invite", Tags: invitesTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("invite_user"), invitesHandler.Create)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "acceptInvite", Method: http.MethodPut, Path: "/api/v1/tenants/invites/accept",
+		Errors:  []int{400, 401, 403},
 		Summary: "Accept a tenant invite", Tags: invitesTag,
 	}, authn.AuthSessionOrBackendKey, nil, invitesHandler.Accept)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoles", Method: http.MethodGet, Path: "/api/v1/tenants/roles",
+		Errors:  []int{400, 401},
 		Summary: "List roles for the tenant", Tags: rolesTag,
 	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListRoles)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listRoleDefinitions", Method: http.MethodGet, Path: "/api/v1/tenants/roles/definitions",
+		Errors:  []int{400, 401},
 		Summary: "List role definitions", Tags: rolesTag,
 	}, authn.AuthSessionOrBackendKey, nil, rolesHandler.ListDefinitions)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createRole", Method: http.MethodPost, Path: "/api/v1/tenants/roles",
+		Errors:  []int{400, 401, 409},
 		Summary: "Create a role", Tags: rolesTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("create_roles"), rolesHandler.CreateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateRole", Method: http.MethodPut, Path: "/api/v1/tenants/roles/{role_id}",
+		Errors:  []int{400, 401, 404},
 		Summary: "Update a role", Tags: rolesTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("update_roles"), rolesHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteRole", Method: http.MethodDelete, Path: "/api/v1/tenants/roles/{role_id}",
+		Errors:  []int{400, 401, 404},
 		Summary: "Delete a role", Tags: rolesTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_roles"), rolesHandler.DeleteRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantUsers", Method: http.MethodGet, Path: "/api/v1/tenants/users",
+		Errors:  []int{400, 401},
 		Summary: "List users in the tenant", Tags: usersTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("view_users"), usersHandler.List)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateTenantUserRole", Method: http.MethodPut, Path: "/api/v1/tenants/users",
+		Errors:  []int{400, 401, 404},
 		Summary: "Update a tenant user's role", Tags: usersTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("update_user_role"), usersHandler.UpdateRole)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeTenantUser", Method: http.MethodDelete, Path: "/api/v1/tenants/users",
+		Errors:  []int{400, 401, 404},
 		Summary: "Remove a user from the tenant", Tags: usersTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("remove_user"), usersHandler.Delete)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listTenantSubscriptions", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions",
+		Errors:  []int{400, 401, 404},
 		Summary: "List subscriptions for the tenant", Tags: subsTag,
 	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.List)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantSubscription", Method: http.MethodGet, Path: "/api/v1/tenants/subscriptions/{config_price_id}",
+		Errors:  []int{400, 401, 404},
 		Summary: "Get a single tenant subscription", Tags: subsTag,
 	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Get)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
+		Errors:  []int{400, 401, 404, 409, 429},
 		Summary: "Add a subscription to the tenant", Tags: subsTag,
 	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Add)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
+		Errors:  []int{400, 401, 404, 409, 429},
 		Summary: "Remove a subscription from the tenant", Tags: subsTag,
 	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Remove)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",
+		Errors:  []int{400, 401, 404},
 		Summary: "Get tenant billing status", Tags: subsTag,
 	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.BillingStatus)
 }

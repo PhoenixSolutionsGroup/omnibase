@@ -57,6 +57,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigSchema",
+		Errors:      []int{500},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/schema",
 		Summary:     "Get Stripe config schema",
@@ -65,6 +66,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfig",
+		Errors:      []int{500},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/config",
 		Summary:     "Get public Stripe config",
@@ -73,6 +75,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getPriceByID",
+		Errors:      []int{400, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/config/prices/{price_id}",
 		Summary:     "Get price by ID",
@@ -81,6 +84,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "calculatePriceCost",
+		Errors:      []int{400, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/config/prices/{price_id}/calculate",
 		Summary:     "Calculate cost for a price",
@@ -89,6 +93,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getProductByID",
+		Errors:      []int{400, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/config/products/{product_id}",
 		Summary:     "Get product by ID",
@@ -97,6 +102,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getMeterByID",
+		Errors:      []int{400, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/config/meters/{meter_id}",
 		Summary:     "Get meter by ID",
@@ -105,6 +111,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "convertStripeIDToConfigID",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/convert/stripe-id/{stripe_id}",
 		Summary:     "Convert Stripe ID to config ID",
@@ -113,6 +120,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigAdmin",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/config",
 		Summary:     "Get full Stripe config (admin)",
@@ -121,6 +129,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigHistory",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/config/history",
 		Summary:     "Get config history",
@@ -129,6 +138,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "pullStripeConfig",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/config/pull",
 		Summary:     "Pull config from Stripe",
@@ -137,6 +147,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "updateStripeConfig",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/config",
 		Summary:     "Update Stripe config",
@@ -145,6 +156,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "validateStripeConfig",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/config/validate",
 		Summary:     "Validate Stripe config",
@@ -153,6 +165,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getStripeConfigStatus",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/config/status",
 		Summary:     "Get Stripe config status",
@@ -161,6 +174,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "archiveAllStripeConfig",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/config/archive-all",
 		Summary:     "Archive all Stripe config",
@@ -169,6 +183,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "listWebhooks",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/webhooks",
 		Summary:     "List all webhooks",
@@ -177,6 +192,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "applyEnterpriseTemplate",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/enterprise/apply-template",
 		Summary:     "Apply enterprise template pricing",
@@ -185,6 +201,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "applyEnterpriseCustom",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/stripe/admin/enterprise/apply-custom",
 		Summary:     "Apply custom enterprise pricing",
@@ -193,6 +210,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getEnterprisePricesByTemplate",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/enterprise/prices/by-template/{template}",
 		Summary:     "Get enterprise prices by template",
@@ -201,6 +219,7 @@ func SetUpStripeRoutes(group *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getEnterprisePricesByID",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/stripe/admin/enterprise/prices/by-id/{enterprise_id}",
 		Summary:     "Get enterprise prices by ID",
