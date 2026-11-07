@@ -6,7 +6,42 @@ export type AuthCtx = {
 
 export type Operation = "insert" | "select" | "update" | "delete";
 
-export type Pred<T> = T | boolean;
+const CAN = "__omnibase_can";
+
+type NamespaceClass = abstract new (...args: never[]) => object;
+
+type MemberNames<T, F extends string> = T extends { [P in F]?: infer X }
+  ? X extends object
+    ? Extract<keyof X, string>
+    : never
+  : never;
+
+export type PermitOf<C extends NamespaceClass> = MemberNames<InstanceType<C>, "permits">;
+export type RelationOf<C extends NamespaceClass> = MemberNames<InstanceType<C>, "related">;
+
+export type CanPred = {
+  readonly [CAN]: true;
+  readonly namespace: string;
+  readonly permit: string;
+};
+
+export function can<C extends NamespaceClass>(
+  namespace: C,
+  permit: PermitOf<C> | RelationOf<C>,
+): CanPred {
+  if (typeof namespace !== "function" || !namespace.name) {
+    throw new Error("can() expects a permission namespace class, e.g. can(Document, \"view\")");
+  }
+  return { [CAN]: true, namespace: namespace.name, permit };
+}
+
+export function isCanPred(v: unknown): v is CanPred {
+  return !!v && typeof v === "object" && (v as Record<string, unknown>)[CAN] === true;
+}
+
+type Where<T> = T | { [K in keyof T]?: T[K] | CanPred };
+
+export type Pred<T> = Where<T> | boolean;
 
 type AnonPred<T> = Pred<T>;
 type AuthPred<T> = Pred<T> | ((auth: AuthCtx) => Pred<T>);

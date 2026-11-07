@@ -1,7 +1,7 @@
 import { getRegistry } from "../policies";
 import type { Operation, Clause, CompiledOp } from "../policies";
 import { resolveTableName } from "./schema";
-import { objToSql, resolveAuth, authGuard } from "./compile";
+import { objToSql, resolveAuth, authGuard, withClause } from "./compile";
 
 function buildCreateSQL(
   table: string,
@@ -75,7 +75,7 @@ export function generateRlsSql(modelName: string): {
       let usingSQL: string | null = null;
       let checkSQL: string | null = null;
       for (const cl of clauses) {
-        const sql = resolve(cl, opDef);
+        const sql = withClause(cl, () => resolve(cl, opDef));
         if (sql === null) continue;
         if (cl === "using") usingSQL = sql;
         else checkSQL = sql;

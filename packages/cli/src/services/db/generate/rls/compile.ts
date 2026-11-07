@@ -1,4 +1,4 @@
-import type { AuthCtx } from "../policies";
+import { isCanPred, type AuthCtx, type CanPred, type Clause } from "../policies";
 import {
   lookupField,
   resolveParentFk,
@@ -29,6 +29,47 @@ function valToSql(val: unknown): string {
 }
 
 const isAuthExpr = (sql: string) => sql.startsWith("auth.");
+
+let currentClause: Clause = "using";
+
+export function withClause<T>(clause: Clause, fn: () => T): T {
+  const prev = currentClause;
+  currentClause = clause;
+  try {
+    return fn();
+  } finally {
+    currentClause = prev;
+  }
+}
+
+const sqlString = (s: string) => `'${s.replace(/'/g, "''")}'`;
+
+function idCast(model: string, k: string): string | null {
+  try {
+    const field = lookupField(model, k);
+    const native = (field as { nativeType?: [string, unknown] | null }).nativeType?.[0];
+    if (field.type === "String" && native === "Uuid") return "::uuid";
+    if (field.type === "String") return "";
+    if (field.type === "Int") return "::int";
+    if (field.type === "BigInt") return "::bigint";
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function canPred(k: string, v: CanPred, alias: string, model: string): string {
+  const ns = sqlString(v.namespace);
+  const permit = sqlString(v.permit);
+  if (currentClause === "check") {
+    return `auth.can(${ns}, ${alias}.${k}::text, ${permit})`;
+  }
+  const cast = idCast(model, k);
+  if (cast === null) {
+    return `${alias}.${k}::text = ANY (ARRAY(SELECT auth.allowed_ids(${ns}, ${permit})))`;
+  }
+  return `${alias}.${k} = ANY (ARRAY(SELECT auth.allowed_ids(${ns}, ${permit})${cast}))`;
+}
 
 function col(alias: string, k: string, rhs: string): string {
   return isAuthExpr(rhs) ? `${alias}.${k}::text` : `${alias}.${k}`;
@@ -197,6 +238,7 @@ function fieldPred(
   alias: string,
   model: string,
 ): string {
+  if (isCanPred(v)) return canPred(k, v, alias, model);
   if (v === null || v === undefined) {
     try {
       const field = lookupField(model, k);
