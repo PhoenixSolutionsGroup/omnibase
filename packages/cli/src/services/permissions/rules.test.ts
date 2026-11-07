@@ -1,7 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import fs from "fs";
 import path from "path";
-import { extractPermitRules, permitRulesToSql, UnsupportedPermitError } from "./rules";
+import {
+  buildPermitModel,
+  extractPermitRules,
+  parsePermissionFile,
+  permitModelToSql,
+  UnsupportedPermitError,
+} from "./rules";
 
 const ns = (body: string) => `class Thing implements Namespace {\n  permits = {\n    ${body}\n  };\n}`;
 
@@ -64,13 +70,78 @@ describe("extractPermitRules", () => {
   });
 });
 
-describe("permitRulesToSql", () => {
-  test("replaces all rules in one transaction and escapes quotes", () => {
-    const sql = permitRulesToSql([
-      { namespace: "Doc", permit: "it's", kind: "traverse", source: "folder", viaPermit: "view" },
+const BENCH = `
+class User implements Namespace {}
+class Group implements Namespace {
+  related: { members: User[] };
+}
+class Folder implements Namespace {
+  related: {
+    member: (User | SubjectSet<Group, "members">)[];
+    parent: Folder[];
+  };
+  permits = {
+    view: (ctx: Context): boolean =>
+      this.related.member.includes(ctx.subject) ||
+      this.related.parent.traverse((p) => p.permits.view(ctx)),
+  };
+}
+`;
+
+const DOCS = `
+class Document implements Namespace {
+  related: {
+    owner: User[];
+    viewer: Array<User | SubjectSet<Group, "members">>;
+    folder: Folder[];
+  };
+  permits = {
+    view: (ctx: Context): boolean =>
+      this.related.owner.includes(ctx.subject) ||
+      this.related.viewer.includes(ctx.subject) ||
+      this.related.folder.traverse((f) => f.permits.view(ctx)),
+    edit: (ctx: Context): boolean => this.related.owner.includes(ctx.subject),
+  };
+}
+`;
+
+describe("buildPermitModel", () => {
+  test("expands rule sources, traverse targets and declared subject sets only", () => {
+    const model = buildPermitModel([parsePermissionFile(BENCH), parsePermissionFile(DOCS)]);
+    const keys = model.expandable.map((e) => `${e.namespace}#${e.relation}`).sort();
+    expect(keys).toEqual([
+      "Document#owner",
+      "Document#viewer",
+      "Folder#member",
+      "Folder#view",
+      "Group#members",
     ]);
-    expect(sql).toContain("DELETE FROM auth.permit_rules;");
-    expect(sql).toContain("('Doc', 'it''s', 'traverse', 'folder', 'view')");
+  });
+
+  test("traverse targets resolve across files", () => {
+    const model = buildPermitModel([parsePermissionFile(DOCS), parsePermissionFile(BENCH)]);
+    expect(model.expandable).toContainEqual({ namespace: "Folder", relation: "view" });
+  });
+
+  test("traversing a relation without a namespace type is rejected", () => {
+    const src = `class Doc implements Namespace {
+      related: { folder: any };
+      permits = { view: (ctx) => this.related.folder.traverse((f) => f.permits.view(ctx)) };
+    }`;
+    expect(() => buildPermitModel([parsePermissionFile(src)])).toThrow(UnsupportedPermitError);
+  });
+});
+
+describe("permitModelToSql", () => {
+  test("replaces rules and expandable rows in one transaction and escapes quotes", () => {
+    const sql = permitModelToSql({
+      rules: [{ namespace: "Doc", permit: "it's", kind: "traverse", source: "folder", viaPermit: "view" }],
+      expandable: [{ namespace: "Folder", relation: "view" }],
+    });
     expect(sql.startsWith("BEGIN;")).toBe(true);
+    expect(sql).toContain("DELETE FROM permissions.permit_rules;");
+    expect(sql).toContain("DELETE FROM permissions.permit_expandable;");
+    expect(sql).toContain("('Doc', 'it''s', 'traverse', 'folder', 'view')");
+    expect(sql).toContain("('Folder', 'view')");
   });
 });

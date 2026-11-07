@@ -62,13 +62,13 @@ function canPred(k: string, v: CanPred, alias: string, model: string): string {
   const ns = sqlString(v.namespace);
   const permit = sqlString(v.permit);
   if (currentClause === "check") {
-    return `auth.can(${ns}, ${alias}.${k}::text, ${permit})`;
+    return `permissions.can(${ns}, ${alias}.${k}::text, ${permit})`;
   }
   const cast = idCast(model, k);
   if (cast === null) {
-    return `${alias}.${k}::text = ANY (ARRAY(SELECT auth.allowed_ids(${ns}, ${permit})))`;
+    return `${alias}.${k}::text = ANY (ARRAY(SELECT permissions.allowed_ids(${ns}, ${permit})))`;
   }
-  return `${alias}.${k} = ANY (ARRAY(SELECT auth.allowed_ids(${ns}, ${permit})${cast}))`;
+  return `${alias}.${k} = ANY (ARRAY(SELECT permissions.allowed_ids(${ns}, ${permit})${cast}))`;
 }
 
 function col(alias: string, k: string, rhs: string): string {

@@ -65,6 +65,8 @@ CREATE POLICY storage_objects_delete ON storage.objects
         AND auth.has_any_relation('StorageObject', id::text, ARRAY['owner', 'can_delete'])
     );
 
-DROP FUNCTION IF EXISTS auth.can(text, text, text);
-DROP FUNCTION IF EXISTS auth.allowed_ids(text, text);
-DROP TABLE IF EXISTS auth.permit_rules;
+DROP FUNCTION IF EXISTS permissions.can(text, text, text);
+DROP FUNCTION IF EXISTS permissions.allowed_ids(text, text);
+DROP TABLE IF EXISTS permissions.permit_expandable;
+DROP TABLE IF EXISTS permissions.permit_rules;
+REVOKE USAGE ON SCHEMA permissions FROM anon_user;

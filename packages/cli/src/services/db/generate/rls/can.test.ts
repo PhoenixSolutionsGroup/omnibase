@@ -49,7 +49,7 @@ describe("can() in policies", () => {
     });
     const { upSQL } = generateRlsSql("documents");
     expect(upSQL).toContain(
-      "documents.id = ANY (ARRAY(SELECT auth.allowed_ids('Document', 'view')::uuid))",
+      "documents.id = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'view')::uuid))",
     );
   });
 
@@ -61,8 +61,8 @@ describe("can() in policies", () => {
       },
     });
     const { upSQL } = generateRlsSql("documents");
-    expect(upSQL).toContain("USING ((auth.user_id() IS NOT NULL AND documents.id = ANY (ARRAY(SELECT auth.allowed_ids('Document', 'edit')::uuid))))");
-    expect(upSQL).toContain("auth.can('Document', documents.id::text, 'edit')");
+    expect(upSQL).toContain("USING ((auth.user_id() IS NOT NULL AND documents.id = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'edit')::uuid))))");
+    expect(upSQL).toContain("permissions.can('Document', documents.id::text, 'edit')");
   });
 
   test("text and int columns get matching casts", () => {
@@ -73,8 +73,8 @@ describe("can() in policies", () => {
       },
     });
     const { upSQL } = generateRlsSql("documents");
-    expect(upSQL).toContain("documents.slug = ANY (ARRAY(SELECT auth.allowed_ids('Document', 'owner')))");
-    expect(upSQL).toContain("documents.num = ANY (ARRAY(SELECT auth.allowed_ids('Document', 'view')::int))");
+    expect(upSQL).toContain("documents.slug = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'owner')))");
+    expect(upSQL).toContain("documents.num = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'view')::int))");
   });
 
   test("combines with other filters", () => {
@@ -86,7 +86,7 @@ describe("can() in policies", () => {
     });
     const { upSQL } = generateRlsSql("documents");
     expect(upSQL).toContain("documents.tenant_id::text = auth.active_tenant_id()");
-    expect(upSQL).toContain("auth.allowed_ids('Document', 'view')");
+    expect(upSQL).toContain("permissions.allowed_ids('Document', 'view')");
   });
 
   test("permit and relation names are type-checked", () => {

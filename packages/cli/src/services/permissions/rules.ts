@@ -22,9 +22,63 @@ export class UnsupportedPermitError extends Error {
   }
 }
 
+export type Expandable = { namespace: string; relation: string };
+
+export type ParsedPermissionFile = {
+  rules: PermitRule[];
+  relationTargets: Record<string, Record<string, string[]>>;
+  subjectSets: Expandable[];
+};
+
+export type PermitModel = {
+  rules: PermitRule[];
+  expandable: Expandable[];
+};
+
 export function extractPermitRules(source: string, fileName = "permissions.ts"): PermitRule[] {
+  return parsePermissionFile(source, fileName).rules;
+}
+
+export function buildPermitModel(files: ParsedPermissionFile[]): PermitModel {
+  const rules = dedupe(files.flatMap((f) => f.rules));
+  const targets: Record<string, Record<string, string[]>> = {};
+  for (const f of files) {
+    for (const [ns, rels] of Object.entries(f.relationTargets)) {
+      targets[ns] = { ...(targets[ns] ?? {}), ...rels };
+    }
+  }
+
+  const expandable = new Map<string, Expandable>();
+  const add = (namespace: string, relation: string) =>
+    expandable.set(`${namespace}#${relation}`, { namespace, relation });
+
+  for (const r of rules) {
+    if (r.kind !== "traverse") {
+      add(r.namespace, r.source);
+      continue;
+    }
+    const linked = targets[r.namespace]?.[r.source];
+    if (!linked || linked.length === 0) {
+      throw new UnsupportedPermitError(
+        r.namespace,
+        r.permit,
+        `relation "${r.source}" is traversed but has no namespace type in \`related\``,
+      );
+    }
+    for (const target of linked) add(target, r.viaPermit);
+  }
+  for (const f of files) {
+    for (const s of f.subjectSets) add(s.namespace, s.relation);
+  }
+
+  return { rules, expandable: [...expandable.values()] };
+}
+
+export function parsePermissionFile(source: string, fileName = "permissions.ts"): ParsedPermissionFile {
   const file = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true);
   const rules: PermitRule[] = [];
+  const relationTargets: Record<string, Record<string, string[]>> = {};
+  const subjectSets: Expandable[] = [];
 
   for (const stmt of file.statements) {
     if (!ts.isClassDeclaration(stmt) || !stmt.name) continue;
@@ -32,6 +86,19 @@ export function extractPermitRules(source: string, fileName = "permissions.ts"):
 
     for (const member of stmt.members) {
       if (!ts.isPropertyDeclaration(member) || !ts.isIdentifier(member.name)) continue;
+      if (member.name.text === "related") {
+        if (member.type && ts.isTypeLiteralNode(member.type)) {
+          for (const rel of member.type.members) {
+            if (!ts.isPropertySignature(rel) || !rel.name || !rel.type) continue;
+            const relName = ts.isIdentifier(rel.name) || ts.isStringLiteral(rel.name) ? rel.name.text : undefined;
+            if (!relName) continue;
+            const found = { names: [] as string[], subjectSets };
+            collectTypeRefs(rel.type, found);
+            (relationTargets[namespace] ??= {})[relName] = found.names;
+          }
+        }
+        continue;
+      }
       if (member.name.text !== "permits") continue;
       if (!member.initializer || !ts.isObjectLiteralExpression(member.initializer)) {
         throw new UnsupportedPermitError(namespace, "*", "permits must be an object literal");
@@ -48,7 +115,32 @@ export function extractPermitRules(source: string, fileName = "permissions.ts"):
     }
   }
 
-  return dedupe(rules);
+  return { rules: dedupe(rules), relationTargets, subjectSets };
+}
+
+function collectTypeRefs(node: ts.TypeNode, out: { names: string[]; subjectSets: Expandable[] }): void {
+  if (ts.isArrayTypeNode(node)) return collectTypeRefs(node.elementType, out);
+  if (ts.isParenthesizedTypeNode(node)) return collectTypeRefs(node.type, out);
+  if (ts.isUnionTypeNode(node)) {
+    for (const t of node.types) collectTypeRefs(t, out);
+    return;
+  }
+  if (!ts.isTypeReferenceNode(node) || !ts.isIdentifier(node.typeName)) return;
+  const name = node.typeName.text;
+  const args = node.typeArguments ?? [];
+  if (name === "Array" && args[0]) return collectTypeRefs(args[0], out);
+  if (name === "SubjectSet") {
+    const [ns, rel] = args;
+    if (
+      ns && rel &&
+      ts.isTypeReferenceNode(ns) && ts.isIdentifier(ns.typeName) &&
+      ts.isLiteralTypeNode(rel) && ts.isStringLiteral(rel.literal)
+    ) {
+      out.subjectSets.push({ namespace: ns.typeName.text, relation: rel.literal.text });
+    }
+    return;
+  }
+  out.names.push(name);
 }
 
 function permitBody(namespace: string, permit: string, node: ts.Expression): ts.Expression {
@@ -185,14 +277,24 @@ function dedupe(rules: PermitRule[]): PermitRule[] {
 
 const quote = (s: string) => `'${s.replace(/'/g, "''")}'`;
 
-export function permitRulesToSql(rules: PermitRule[]): string {
-  const rows = rules.map((r) =>
+export function permitModelToSql(model: PermitModel): string {
+  const rules = model.rules.map((r) =>
     `(${quote(r.namespace)}, ${quote(r.permit)}, ${quote(r.kind)}, ${quote(r.source)}, ${
       r.kind === "traverse" ? quote(r.viaPermit) : "NULL"
     })`,
   );
-  const insert = rows.length
-    ? `INSERT INTO auth.permit_rules (namespace, permit, kind, source, via_permit) VALUES\n  ${rows.join(",\n  ")};\n`
-    : "";
-  return `BEGIN;\nDELETE FROM auth.permit_rules;\n${insert}COMMIT;\n`;
+  const expandable = model.expandable.map((e) => `(${quote(e.namespace)}, ${quote(e.relation)})`);
+  return [
+    "BEGIN;",
+    "DELETE FROM permissions.permit_rules;",
+    "DELETE FROM permissions.permit_expandable;",
+    ...(rules.length
+      ? [`INSERT INTO permissions.permit_rules (namespace, permit, kind, source, via_permit) VALUES\n  ${rules.join(",\n  ")};`]
+      : []),
+    ...(expandable.length
+      ? [`INSERT INTO permissions.permit_expandable (namespace, relation) VALUES\n  ${expandable.join(",\n  ")};`]
+      : []),
+    "COMMIT;",
+    "",
+  ].join("\n");
 }

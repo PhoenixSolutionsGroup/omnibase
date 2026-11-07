@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS auth.permit_rules (
+CREATE TABLE IF NOT EXISTS permissions.permit_rules (
     namespace  text NOT NULL,
     permit     text NOT NULL,
     kind       text NOT NULL CHECK (kind IN ('relation', 'permit', 'traverse')),
@@ -8,12 +8,18 @@ CREATE TABLE IF NOT EXISTS auth.permit_rules (
     CHECK ((kind = 'traverse') = (via_permit IS NOT NULL))
 );
 
-CREATE INDEX IF NOT EXISTS permit_rules_source_idx ON auth.permit_rules (namespace, source) WHERE kind <> 'traverse';
-CREATE INDEX IF NOT EXISTS permit_rules_traverse_idx ON auth.permit_rules (via_permit) WHERE kind = 'traverse';
+CREATE INDEX IF NOT EXISTS permit_rules_source_idx ON permissions.permit_rules (namespace, source) WHERE kind <> 'traverse';
+CREATE INDEX IF NOT EXISTS permit_rules_traverse_idx ON permissions.permit_rules (via_permit) WHERE kind = 'traverse';
 
-GRANT SELECT ON auth.permit_rules TO rls_definer;
+CREATE TABLE IF NOT EXISTS permissions.permit_expandable (
+    namespace text NOT NULL,
+    relation  text NOT NULL,
+    PRIMARY KEY (namespace, relation)
+);
 
-INSERT INTO auth.permit_rules (namespace, permit, kind, source, via_permit) VALUES
+GRANT SELECT ON permissions.permit_rules, permissions.permit_expandable TO rls_definer;
+
+INSERT INTO permissions.permit_rules (namespace, permit, kind, source, via_permit) VALUES
     ('StorageObject', 'read',        'relation', 'owner',           NULL),
     ('StorageObject', 'read',        'relation', 'can_read',        NULL),
     ('StorageObject', 'delete',      'relation', 'owner',           NULL),
@@ -22,7 +28,14 @@ INSERT INTO auth.permit_rules (namespace, permit, kind, source, via_permit) VALU
     ('StorageObject', 'make_public', 'relation', 'can_make_public', NULL)
 ON CONFLICT DO NOTHING;
 
-CREATE OR REPLACE FUNCTION auth.allowed_ids(check_namespace text, check_permit text)
+INSERT INTO permissions.permit_expandable (namespace, relation) VALUES
+    ('StorageObject', 'owner'),
+    ('StorageObject', 'can_read'),
+    ('StorageObject', 'can_delete'),
+    ('StorageObject', 'can_make_public')
+ON CONFLICT DO NOTHING;
+
+CREATE OR REPLACE FUNCTION permissions.allowed_ids(check_namespace text, check_permit text)
 RETURNS SETOF text AS $$
 DECLARE
     net uuid;
@@ -59,13 +72,13 @@ BEGIN
               AND t.subject_set_relation = p.rel
             UNION ALL
             SELECT p.ns, p.obj, r.permit
-            FROM auth.permit_rules r
+            FROM permissions.permit_rules r
             WHERE r.namespace = p.ns
               AND r.source = p.rel
               AND r.kind <> 'traverse'
             UNION ALL
             SELECT t.namespace::text, t.object, r.permit
-            FROM auth.permit_rules r
+            FROM permissions.permit_rules r
             JOIN permissions.keto_relation_tuples t
               ON t.nid = net
              AND t.subject_id IS NULL
@@ -77,6 +90,10 @@ BEGIN
             WHERE r.kind = 'traverse'
               AND r.via_permit = p.rel
         ) x
+        WHERE EXISTS (
+            SELECT 1 FROM permissions.permit_expandable e
+            WHERE e.namespace = p.ns AND e.relation = p.rel
+        )
     )
     SELECT m.string_representation
     FROM reach
@@ -86,7 +103,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '';
 
-CREATE OR REPLACE FUNCTION auth.can(check_namespace text, check_object text, check_permit text)
+CREATE OR REPLACE FUNCTION permissions.can(check_namespace text, check_object text, check_permit text)
 RETURNS boolean AS $$
 DECLARE
     net uuid;
@@ -109,13 +126,13 @@ BEGIN
             FROM need n
             CROSS JOIN LATERAL (
                 SELECT n.ns AS ns, n.obj AS obj, r.source AS rel
-                FROM auth.permit_rules r
+                FROM permissions.permit_rules r
                 WHERE r.namespace = n.ns
                   AND r.permit = n.rel
                   AND r.kind <> 'traverse'
                 UNION ALL
                 SELECT t.subject_set_namespace::text, t.subject_set_object, r.via_permit
-                FROM auth.permit_rules r
+                FROM permissions.permit_rules r
                 JOIN permissions.keto_relation_tuples t
                   ON t.nid = net
                  AND t.namespace = n.ns
@@ -152,19 +169,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '';
 
-ALTER FUNCTION auth.allowed_ids(text, text) OWNER TO rls_definer;
-ALTER FUNCTION auth.can(text, text, text) OWNER TO rls_definer;
-REVOKE EXECUTE ON FUNCTION auth.allowed_ids(text, text) FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION auth.can(text, text, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION auth.allowed_ids(text, text) TO anon_user;
-GRANT EXECUTE ON FUNCTION auth.can(text, text, text) TO anon_user;
+ALTER FUNCTION permissions.allowed_ids(text, text) OWNER TO rls_definer;
+ALTER FUNCTION permissions.can(text, text, text) OWNER TO rls_definer;
+REVOKE EXECUTE ON FUNCTION permissions.allowed_ids(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION permissions.can(text, text, text) FROM PUBLIC;
+GRANT USAGE ON SCHEMA permissions TO anon_user;
+GRANT EXECUTE ON FUNCTION permissions.allowed_ids(text, text) TO anon_user;
+GRANT EXECUTE ON FUNCTION permissions.can(text, text, text) TO anon_user;
 
 DROP POLICY IF EXISTS storage_objects_read ON storage.objects;
 CREATE POLICY storage_objects_read ON storage.objects
     FOR SELECT TO anon_user
     USING (
         tenant_id::text = auth.active_tenant_id()
-        AND id::text IN (SELECT auth.allowed_ids('StorageObject', 'read'))
+        AND id = ANY (ARRAY(SELECT permissions.allowed_ids('StorageObject', 'read')::uuid))
     );
 
 DROP POLICY IF EXISTS storage_objects_delete ON storage.objects;
@@ -172,7 +190,7 @@ CREATE POLICY storage_objects_delete ON storage.objects
     FOR DELETE TO anon_user
     USING (
         tenant_id::text = auth.active_tenant_id()
-        AND id::text IN (SELECT auth.allowed_ids('StorageObject', 'delete'))
+        AND id = ANY (ARRAY(SELECT permissions.allowed_ids('StorageObject', 'delete')::uuid))
     );
 
 DROP FUNCTION IF EXISTS auth.has_relation(text, text, text);
