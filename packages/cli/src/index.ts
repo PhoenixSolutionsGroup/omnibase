@@ -30,6 +30,11 @@ import {
   spawnDockerComposeCommand,
 } from "./utils/docker";
 import { writeAgentPointers } from "./utils/agent-files";
+import {
+  VERSION_REPOS,
+  fetchLatestVersions,
+  pinVersionsInToml,
+} from "./utils/versions";
 
 export const program = new Command();
 
@@ -55,6 +60,20 @@ function createTemplateFiles(targetDir: string): void {
 
   fs.cpSync(templateDir, omnibaseDir, { recursive: true });
   writeAgentPointers(targetDir);
+}
+
+async function pinTemplateVersions(targetDir: string): Promise<void> {
+  const tomlPath = path.join(targetDir, "omnibase", "omnibase.toml");
+  const versions = await fetchLatestVersions();
+  const missing = Object.keys(VERSION_REPOS).filter((k) => !versions[k]);
+  if (missing.length > 0) {
+    logger.warn(
+      `Could not resolve the latest ${missing.join(", ")} version(s) from Docker Hub; [versions] left unpinned`,
+    );
+    return;
+  }
+  const toml = fs.readFileSync(tomlPath, "utf-8");
+  fs.writeFileSync(tomlPath, pinVersionsInToml(toml, versions));
 }
 
 async function runDockerCompose(
@@ -111,13 +130,18 @@ program
     "Creates `omnibase/omnibase.toml`, `omnibase/.env.local`, a Stripe " +
     "config, and the default `omnibase/db/` layout. If an `omnibase/` " +
     "directory already exists the command exits without changing anything.\n\n" +
+    "The generated `omnibase.toml` has a `[versions]` block pinning `auth`, " +
+    "`api`, and `perm` to the latest versions published on Docker Hub, so " +
+    "new projects don't pick up breaking images without a config change. " +
+    "If Docker Hub can't be reached, the block stays commented out and " +
+    "`omnibase start` runs `latest`.\n\n" +
     "```bash\n" +
     "omnibase init\n" +
     "```\n\n" +
     "After: edit `omnibase/omnibase.toml`, add secrets to " +
     "`omnibase/.env.local`, then run `omnibase start`."
   )
-  .action(() => {
+  .action(async () => {
     const currentDir = process.cwd();
     const omnibaseDir = path.join(currentDir, "omnibase");
 
@@ -131,6 +155,7 @@ program
 
     logger.start("Initializing omnibase project...");
     createTemplateFiles(currentDir);
+    await pinTemplateVersions(currentDir);
     logger.succeed("Project initialized successfully");
     logger.newline();
     logger.log("Next steps:");
@@ -188,6 +213,8 @@ program
     "Once the API reports ready, a summary lists the URL of each service " +
     "(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
     "deployment dev server.\n\n" +
+    "Image versions: `auth`, `api`, and `perm` run the tags pinned under " +
+    "`[versions]` in omnibase.toml. Services not listed there run `latest`.\n\n" +
     "Environment variables: the dev-server processes receive the same " +
     "resolved env as a cloud deploy — `process.env` → `omnibase/.env.<branch>` " +
     "(and `omnibase/.env.local` for the local environment), plus the " +

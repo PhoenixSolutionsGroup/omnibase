@@ -96,6 +96,8 @@ Extra `KEY=VALUE` pairs applied to the local control-plane containers (merged in
 
 Pins the Docker image tags for the control plane. Valid keys are `auth`, `api`, and `perm`. Values must be exact published tags (checked against Docker Hub before applying); omitted services use `latest`.
 
+`omnibase init` writes this block with the latest published versions, so a new project stays on those versions until you change them. The CLI version does not decide which service versions run: upgrade a service by editing its tag here, or remove the key to follow `latest`.
+
 ## Environment Files
 
 Secrets and per-environment values live in gitignored files next to the config:
