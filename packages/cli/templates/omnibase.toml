@@ -28,6 +28,7 @@ path = "workers"
 
 # Pin the version of an OmniBase-built service. Omitted services use "latest".
 # Must be an exact published tag; checked against Docker Hub before applying.
+# `omnibase init` pins the versions published at init time.
 # [versions]
 # auth = "0.4.1"
 # api = "0.20.3"

@@ -16,12 +16,7 @@ import {
   assertValidVersions,
   OmnibaseConfig,
 } from "./config";
-
-const VERSION_REPOS: Record<string, string> = {
-  auth: "phoenixsolutionsgroup/omnibase-auth",
-  api: "phoenixsolutionsgroup/omnibase-api",
-  perm: "phoenixsolutionsgroup/omnibase-permissions",
-};
+import { VERSION_REPOS } from "./versions";
 
 const VERSION_COMPOSE_SERVICES: Record<string, string[]> = {
   auth: ["auth", "auth-migrate"],
