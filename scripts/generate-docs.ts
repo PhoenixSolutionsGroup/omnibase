@@ -18,6 +18,7 @@ import { execFileSync } from "node:child_process";
 import { type Command } from "commander";
 
 import { program } from "../packages/cli/src/index";
+import { generateChangelogs } from "./generate-changelogs";
 
 const ROOT = dirname(dirname(import.meta.path));
 const DOCS_CONTENT = join(ROOT, "apps/docs/content/docs");
@@ -445,18 +446,6 @@ async function writeVersionedSection(
       null,
       2
     )
-  );
-  await writeFile(
-    join(sectionDir, "index.mdx"),
-    [
-      "---",
-      `title: ${target.title}`,
-      `description: ${target.description}`,
-      "---",
-      "",
-      "Select a version from the version selector.",
-      "",
-    ].join("\n")
   );
 }
 
@@ -1264,18 +1253,6 @@ async function generateCliCommandDocs(): Promise<void> {
       2
     )
   );
-  await writeFile(
-    join(sectionDir, "index.md"),
-    [
-      "---",
-      'title: "CLI"',
-      "---",
-      "",
-      "Select a version from the version selector.",
-      "",
-    ].join("\n")
-  );
-
   console.log("  ✓ Generated CLI command docs");
 }
 
@@ -1328,6 +1305,9 @@ async function main(): Promise<void> {
     }
 
     await writeVersionsManifest();
+
+    console.log("\n📝 Generating changelog pages...\n");
+    await generateChangelogs(ROOT);
 
     console.log("\n✅ Documentation generation complete!\n");
   } catch (error) {
