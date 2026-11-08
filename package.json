@@ -7,6 +7,7 @@
     "generate:openapi": "./scripts/bundle-openapi.sh",
     "generate:sdk": "./scripts/generate-sdk.sh",
     "generate:docs": "bun ./scripts/generate-docs.ts",
+    "generate:changelogs": "bun ./scripts/generate-changelogs.ts",
     "generate:docs:typedoc": "bun ./scripts/generate-docs.ts --typedoc",
     "generate:docs:openapi": "bun ./scripts/generate-docs.ts --openapi",
     "build:packages": "bun run --cwd sdk/core/js build && bun run --cwd sdk/framework/react build && bun run --cwd sdk/framework/nextjs build && bun run --cwd sdk/component/shadcn build && bun run --cwd packages/cli build && bun run --cwd packages/mcp-server build",

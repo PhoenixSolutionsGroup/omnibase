@@ -2,3 +2,16 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 @import 'fumadocs-openapi/css/preset.css';
+
+.prose a[href*='/commit/'] {
+  font-family: var(--default-mono-font-family, ui-monospace, monospace);
+  font-size: 0.75em;
+  font-weight: 400;
+  color: var(--color-fd-muted-foreground);
+  text-decoration: none;
+}
+
+.prose a[href*='/commit/']:hover {
+  color: var(--color-fd-foreground);
+  text-decoration: underline;
+}

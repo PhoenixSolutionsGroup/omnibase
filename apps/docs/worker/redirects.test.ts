@@ -21,8 +21,12 @@ describe('resolveRedirect', () => {
     expect(resolve('/concepts')).toBe('/concepts/tenants');
   });
 
+  test('serves section landing pages without redirecting', () => {
+    expect(resolve('/cli')).toBeNull();
+    expect(resolve('/api/')).toBeNull();
+  });
+
   test('pins unversioned section paths to the latest version', () => {
-    expect(resolve('/cli')).toBe(`/cli/${versions.cli}`);
     expect(resolve('/cli/db/migrate')).toBe(`/cli/${versions.cli}/db/migrate`);
     expect(resolve('/api/storage/uploadFile/')).toBe(`/api/${versions.api}/storage/uploadFile`);
   });

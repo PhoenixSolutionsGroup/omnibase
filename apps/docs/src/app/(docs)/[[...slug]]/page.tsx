@@ -1,5 +1,5 @@
 import { getPageImage, getPageTreeFor, source } from '@/lib/source';
-import { baseOptions } from '@/lib/layout.shared';
+import { baseOptions, layoutTabs } from '@/lib/layout.shared';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { openapi } from '@/lib/openapi';
 import { OpenAPIPage } from '@/components/api-page';
@@ -15,9 +15,10 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const tree = getPageTreeFor(page);
 
   return (
-    <DocsLayout tree={getPageTreeFor(page)} {...baseOptions()}>
+    <DocsLayout tree={tree} tabs={layoutTabs(tree)} {...baseOptions()}>
       <DocsPage toc={page.data.toc} full={page.data.full}>
         <DocsTitle>{page.data.title}</DocsTitle>
         <DocsDescription>{page.data.description}</DocsDescription>

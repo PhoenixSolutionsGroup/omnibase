@@ -54,7 +54,9 @@ export function resolveRedirect(
   if (!isSection(section)) return rewritten === path ? null : rewritten;
 
   const latest = latestVersions[section] ?? 'dev';
-  if (version === undefined || version === 'latest') {
+  if (version === undefined && rewritten === path) {
+    return null;
+  } else if (version === undefined || version === 'latest') {
     segments.splice(1, 1, latest);
   } else if (!versionPattern.test(version)) {
     segments.splice(1, 0, latest);
