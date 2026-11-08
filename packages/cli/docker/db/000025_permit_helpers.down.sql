@@ -67,6 +67,9 @@ CREATE POLICY storage_objects_delete ON storage.objects
 
 DROP FUNCTION IF EXISTS permissions.can(text, text, text);
 DROP FUNCTION IF EXISTS permissions.allowed_ids(text, text);
+DROP FUNCTION IF EXISTS permissions.allowed_objects(text, text);
+DROP FUNCTION IF EXISTS permissions.ensure_keto_uuid();
+DROP FUNCTION IF EXISTS permissions.keto_uuid(text);
 DROP TABLE IF EXISTS permissions.permit_expandable;
 DROP TABLE IF EXISTS permissions.permit_rules;
 REVOKE USAGE ON SCHEMA permissions FROM anon_user;

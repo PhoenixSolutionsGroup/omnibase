@@ -110,3 +110,33 @@ describe("generateRlsDiffFromMigrations", () => {
     expect(downSQL).toContain("GRANT INSERT ON projects TO anon_user;");
   });
 });
+
+describe("generateRlsDiffFromMigrations with can()", () => {
+  class Document {
+    permits = { view: (): boolean => true };
+  }
+
+  test("a new can() policy brings its Keto UUID index along", async () => {
+    const { can } = await import("../policies");
+    clearRegistry();
+    definePolicy<any>("projects", {
+      select: { anon: { using: false }, auth: { using: { id: can(Document, "view") } } },
+    });
+    const { upSQL } = generateRlsDiffFromMigrations(dir, ["projects"]);
+    const ensure = upSQL.indexOf("SELECT permissions.ensure_keto_uuid();");
+    const index = upSQL.indexOf("CREATE INDEX IF NOT EXISTS projects_id_keto_idx ON projects (permissions.keto_uuid(id::text));");
+    expect(ensure).toBeGreaterThan(-1);
+    expect(index).toBeGreaterThan(ensure);
+    expect(upSQL.indexOf('CREATE POLICY "projects_select_auth"')).toBeGreaterThan(index);
+  });
+
+  test("an unchanged can() policy produces no diff", async () => {
+    const { can } = await import("../policies");
+    clearRegistry();
+    definePolicy<any>("projects", {
+      select: { anon: { using: false }, auth: { using: { id: can(Document, "view") } } },
+    });
+    migration("100_init", generateRlsSql("projects").upSQL);
+    expect(generateRlsDiffFromMigrations(dir, ["projects"])).toEqual({ upSQL: "", downSQL: "" });
+  });
+});

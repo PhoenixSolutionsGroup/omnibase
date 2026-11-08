@@ -44,18 +44,22 @@ export function withClause<T>(clause: Clause, fn: () => T): T {
 
 const sqlString = (s: string) => `'${s.replace(/'/g, "''")}'`;
 
-function idCast(model: string, k: string): string | null {
+export type KetoIndex = { table: string; column: string };
+
+const ketoIndexes = new Map<string, KetoIndex>();
+
+export function takeKetoIndexes(): KetoIndex[] {
+  const out = [...ketoIndexes.values()];
+  ketoIndexes.clear();
+  return out;
+}
+
+function tableFor(model: string, alias: string): string {
   try {
-    const field = lookupField(model, k);
-    const native = (field as { nativeType?: [string, unknown] | null }).nativeType?.[0];
-    if (field.type === "String" && native === "Uuid") return "::uuid";
-    if (field.type === "String") return "";
-    if (field.type === "Int") return "::int";
-    if (field.type === "BigInt") return "::bigint";
+    return resolveTableName(model);
   } catch {
-    return null;
+    return alias;
   }
-  return null;
 }
 
 function canPred(k: string, v: CanPred, alias: string, model: string): string {
@@ -64,11 +68,9 @@ function canPred(k: string, v: CanPred, alias: string, model: string): string {
   if (currentClause === "check") {
     return `permissions.can(${ns}, ${alias}.${k}::text, ${permit})`;
   }
-  const cast = idCast(model, k);
-  if (cast === null) {
-    return `${alias}.${k}::text = ANY (ARRAY(SELECT permissions.allowed_ids(${ns}, ${permit})))`;
-  }
-  return `${alias}.${k} = ANY (ARRAY(SELECT permissions.allowed_ids(${ns}, ${permit})${cast}))`;
+  const table = tableFor(model, alias);
+  ketoIndexes.set(`${table}.${k}`, { table, column: k });
+  return `permissions.keto_uuid(${alias}.${k}::text) = ANY (ARRAY(SELECT permissions.allowed_objects(${ns}, ${permit})))`;
 }
 
 function col(alias: string, k: string, rhs: string): string {

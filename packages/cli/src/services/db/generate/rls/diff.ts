@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { generateRlsSql, PRIVILEGE_ORDER } from "./emit";
+import { generateRlsSql, ketoIndexUpSql, PRIVILEGE_ORDER } from "./emit";
 
 function parsePolicies(sql: string): Map<string, string> {
   const map = new Map<string, string>();
@@ -105,6 +105,10 @@ export function generateRlsDiffFromMigrations(
       downEntry.push(`DROP POLICY IF EXISTS "${name}" ON ${table};`);
       if (oldSQL) downEntry.push(oldSQL);
       downParts.push(downEntry.join("\n"));
+    }
+
+    if (tableUp.length > 0 && desired.ketoIndexes) {
+      tableUp.unshift(...ketoIndexUpSql(desired.ketoIndexes));
     }
 
     const grantChanged =

@@ -43,13 +43,13 @@ beforeEach(() => {
 });
 
 describe("can() in policies", () => {
-  test("using compiles to allowed_ids with the column's type", () => {
+  test("using matches rows on the Keto UUID index", () => {
     definePolicy<Doc>("documents", {
       select: { anon: { using: false }, auth: { using: { id: can(Document, "view") } } },
     });
     const { upSQL } = generateRlsSql("documents");
     expect(upSQL).toContain(
-      "documents.id = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'view')::uuid))",
+      "permissions.keto_uuid(documents.id::text) = ANY (ARRAY(SELECT permissions.allowed_objects('Document', 'view')))",
     );
   });
 
@@ -61,20 +61,43 @@ describe("can() in policies", () => {
       },
     });
     const { upSQL } = generateRlsSql("documents");
-    expect(upSQL).toContain("USING ((auth.user_id() IS NOT NULL AND documents.id = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'edit')::uuid))))");
+    expect(upSQL).toContain("permissions.allowed_objects('Document', 'edit')");
     expect(upSQL).toContain("permissions.can('Document', documents.id::text, 'edit')");
   });
 
-  test("text and int columns get matching casts", () => {
+  test("emits one Keto UUID index per column, created before the policies", () => {
     definePolicy<Doc>("documents", {
-      select: {
+      select: { anon: { using: false }, auth: { using: { id: can(Document, "view") } } },
+      update: {
         anon: { using: false },
-        auth: { using: { slug: can(Document, "owner"), num: can(Document, "view") } },
+        auth: { using: { id: can(Document, "edit"), slug: can(Document, "owner") } },
       },
     });
-    const { upSQL } = generateRlsSql("documents");
-    expect(upSQL).toContain("documents.slug = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'owner')))");
-    expect(upSQL).toContain("documents.num = ANY (ARRAY(SELECT permissions.allowed_ids('Document', 'view')::int))");
+    const { upSQL, downSQL, ketoIndexes } = generateRlsSql("documents");
+    expect(ketoIndexes).toEqual([
+      { table: "documents", column: "id" },
+      { table: "documents", column: "slug" },
+    ]);
+    const ensure = upSQL.indexOf("SELECT permissions.ensure_keto_uuid();");
+    const index = upSQL.indexOf(
+      "CREATE INDEX IF NOT EXISTS documents_id_keto_idx ON documents (permissions.keto_uuid(id::text));",
+    );
+    const policy = upSQL.indexOf("CREATE POLICY");
+    expect(ensure).toBeGreaterThan(-1);
+    expect(ensure).toBeLessThan(index);
+    expect(index).toBeLessThan(policy);
+    expect(upSQL.match(/documents_id_keto_idx/g)?.length).toBe(1);
+    expect(downSQL).toContain("DROP INDEX IF EXISTS documents_id_keto_idx;");
+    expect(downSQL).toContain("DROP INDEX IF EXISTS documents_slug_keto_idx;");
+  });
+
+  test("check-only policies need no index", () => {
+    definePolicy<Doc>("documents", {
+      insert: { anon: { check: false }, auth: { check: { id: can(Document, "edit") } } },
+    });
+    const out = generateRlsSql("documents");
+    expect(out.ketoIndexes).toBeUndefined();
+    expect(out.upSQL).not.toContain("ensure_keto_uuid");
   });
 
   test("combines with other filters", () => {
@@ -86,7 +109,7 @@ describe("can() in policies", () => {
     });
     const { upSQL } = generateRlsSql("documents");
     expect(upSQL).toContain("documents.tenant_id::text = auth.active_tenant_id()");
-    expect(upSQL).toContain("permissions.allowed_ids('Document', 'view')");
+    expect(upSQL).toContain("permissions.allowed_objects('Document', 'view')");
   });
 
   test("permit and relation names are type-checked", () => {

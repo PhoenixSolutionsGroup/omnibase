@@ -1,7 +1,29 @@
 import { getRegistry } from "../policies";
 import type { Operation, Clause, CompiledOp } from "../policies";
 import { resolveTableName } from "./schema";
-import { objToSql, resolveAuth, authGuard, withClause } from "./compile";
+import { objToSql, resolveAuth, authGuard, withClause, takeKetoIndexes } from "./compile";
+import type { KetoIndex } from "./compile";
+
+export type { KetoIndex };
+
+function ketoIndexName(idx: KetoIndex): string {
+  return `${idx.table}_${idx.column}_keto_idx`.replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+export function ketoIndexUpSql(indexes: KetoIndex[]): string[] {
+  if (indexes.length === 0) return [];
+  return [
+    "SELECT permissions.ensure_keto_uuid();",
+    ...indexes.map(
+      (idx) =>
+        `CREATE INDEX IF NOT EXISTS ${ketoIndexName(idx)} ON ${idx.table} (permissions.keto_uuid(${idx.column}::text));`,
+    ),
+  ];
+}
+
+function ketoIndexDownSql(indexes: KetoIndex[]): string[] {
+  return indexes.map((idx) => `DROP INDEX IF EXISTS ${ketoIndexName(idx)};`);
+}
 
 function buildCreateSQL(
   table: string,
@@ -43,11 +65,13 @@ type ClauseResolver = (cl: Clause, opDef: CompiledOp) => string | null;
 export function generateRlsSql(modelName: string): {
   upSQL: string;
   downSQL: string;
+  ketoIndexes?: KetoIndex[];
 } {
   const entry = getRegistry().get(modelName);
   if (!entry) return { upSQL: "", downSQL: "" };
 
   const table = resolveTableName(modelName);
+  takeKetoIndexes();
 
   const upParts: string[] = [];
   const downParts: string[] = [];
@@ -89,6 +113,7 @@ export function generateRlsSql(modelName: string): {
     }
   }
 
+  const indexes = takeKetoIndexes();
   if (upParts.length === 0) return { upSQL: "", downSQL: "" };
 
   const privileges = PRIVILEGE_ORDER.filter((p) => grantedPrivileges.has(p));
@@ -104,13 +129,16 @@ export function generateRlsSql(modelName: string): {
   return {
     upSQL: [
       `ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY;`,
+      ...ketoIndexUpSql(indexes),
       ...upParts,
       ...(grantSQL ? [grantSQL] : []),
     ].join("\n\n"),
     downSQL: [
       ...downParts,
+      ...ketoIndexDownSql(indexes),
       ...(revokeSQL ? [revokeSQL] : []),
       `ALTER TABLE ${table} DISABLE ROW LEVEL SECURITY;`,
     ].join("\n"),
+    ...(indexes.length > 0 ? { ketoIndexes: indexes } : {}),
   };
 }

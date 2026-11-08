@@ -35,8 +35,8 @@ INSERT INTO permissions.permit_expandable (namespace, relation) VALUES
     ('StorageObject', 'can_make_public')
 ON CONFLICT DO NOTHING;
 
-CREATE OR REPLACE FUNCTION permissions.allowed_ids(check_namespace text, check_permit text)
-RETURNS SETOF text AS $$
+CREATE OR REPLACE FUNCTION permissions.allowed_objects(check_namespace text, check_permit text)
+RETURNS SETOF uuid AS $$
 DECLARE
     net uuid;
     subject uuid;
@@ -95,13 +95,37 @@ BEGIN
             WHERE e.namespace = p.ns AND e.relation = p.rel
         )
     )
-    SELECT m.string_representation
+    SELECT reach.obj
     FROM reach
-    JOIN permissions.keto_uuid_mappings m ON m.id = reach.obj
     WHERE reach.ns = check_namespace
       AND reach.rel = check_permit;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '';
+
+CREATE OR REPLACE FUNCTION permissions.allowed_ids(check_namespace text, check_permit text)
+RETURNS SETOF text AS $$
+    SELECT m.string_representation
+    FROM permissions.allowed_objects(check_namespace, check_permit) o
+    JOIN permissions.keto_uuid_mappings m ON m.id = o;
+$$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '';
+
+CREATE OR REPLACE FUNCTION permissions.ensure_keto_uuid()
+RETURNS void AS $$
+DECLARE
+    net uuid;
+BEGIN
+    SELECT id INTO net FROM permissions.networks ORDER BY created_at LIMIT 1;
+    IF net IS NULL THEN
+        RAISE EXCEPTION 'Keto has not created its network yet; run the permissions migrations before policies that use can()';
+    END IF;
+    EXECUTE format(
+        'CREATE OR REPLACE FUNCTION permissions.keto_uuid(object text) RETURNS uuid '
+        'LANGUAGE sql IMMUTABLE PARALLEL SAFE AS %L',
+        format('SELECT public.uuid_generate_v5(%L::uuid, object)', net)
+    );
+    GRANT EXECUTE ON FUNCTION permissions.keto_uuid(text) TO anon_user;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION permissions.can(check_namespace text, check_object text, check_permit text)
 RETURNS boolean AS $$
@@ -169,11 +193,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '';
 
+ALTER FUNCTION permissions.allowed_objects(text, text) OWNER TO rls_definer;
 ALTER FUNCTION permissions.allowed_ids(text, text) OWNER TO rls_definer;
 ALTER FUNCTION permissions.can(text, text, text) OWNER TO rls_definer;
+REVOKE EXECUTE ON FUNCTION permissions.allowed_objects(text, text) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION permissions.allowed_ids(text, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION permissions.ensure_keto_uuid() FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION permissions.can(text, text, text) FROM PUBLIC;
 GRANT USAGE ON SCHEMA permissions TO anon_user;
+GRANT EXECUTE ON FUNCTION permissions.allowed_objects(text, text) TO anon_user;
 GRANT EXECUTE ON FUNCTION permissions.allowed_ids(text, text) TO anon_user;
 GRANT EXECUTE ON FUNCTION permissions.can(text, text, text) TO anon_user;
 
