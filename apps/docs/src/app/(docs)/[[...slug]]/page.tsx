@@ -1,4 +1,8 @@
-import { getPageImage, source } from '@/lib/source';
+import { getPageImage, getPageTreeFor, source } from '@/lib/source';
+import { baseOptions, layoutTabs } from '@/lib/layout.shared';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { openapi } from '@/lib/openapi';
+import { OpenAPIPage } from '@/components/api-page';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/mdx-components';
@@ -11,20 +15,26 @@ export default async function Page(props: PageProps<'/[[...slug]]'>) {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const tree = getPageTreeFor(page);
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <DocsBody>
-        <MDX
-          components={getMDXComponents({
-            // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page),
-          })}
-        />
-      </DocsBody>
-    </DocsPage>
+    <DocsLayout tree={tree} tabs={layoutTabs(tree)} {...baseOptions()}>
+      <DocsPage toc={page.data.toc} full={page.data.full}>
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsDescription>{page.data.description}</DocsDescription>
+        <DocsBody>
+          <MDX
+            components={getMDXComponents({
+              // this allows you to link to other pages with relative file paths
+              a: createRelativeLink(source, page),
+              OpenAPIPage: async (componentProps) => (
+                <OpenAPIPage {...await openapi.preloadOpenAPIPage(page)} {...componentProps} />
+              ),
+            })}
+          />
+        </DocsBody>
+      </DocsPage>
+    </DocsLayout>
   );
 }
 

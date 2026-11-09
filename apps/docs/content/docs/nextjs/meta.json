@@ -1,0 +1,10 @@
+{
+  "title": "Next.js",
+  "description": "Authentication, session, and middleware helpers for Next.js",
+  "icon": "Layers",
+  "root": true,
+  "pages": [
+    "index",
+    "..."
+  ]
+}

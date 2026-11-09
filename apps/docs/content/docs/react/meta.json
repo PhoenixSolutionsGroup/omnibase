@@ -1,0 +1,10 @@
+{
+  "title": "React",
+  "description": "Hooks and components for authenticated React interfaces",
+  "icon": "Atom",
+  "root": true,
+  "pages": [
+    "index",
+    "..."
+  ]
+}

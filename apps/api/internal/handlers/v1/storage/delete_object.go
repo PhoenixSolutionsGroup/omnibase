@@ -21,7 +21,7 @@ import (
 var DeleteObjectError = errors.New("Failed to delete file")
 
 type DeleteObjectRequest struct {
-	Path string `json:"path" required:"true" example:"test/avatars/user-123.png"`
+	Path string `json:"path" required:"true" doc:"Bucket-wide object path. Prefix with the tenant ID or another unique namespace." example:"tenants/00000000-0000-4000-8000-000000000000/avatars/me.png"`
 }
 
 type DeleteObjectResponse struct {

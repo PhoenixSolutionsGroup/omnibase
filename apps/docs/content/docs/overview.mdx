@@ -1,0 +1,46 @@
+---
+title: Overview
+description: Platform documentation overview
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Overview
+
+Complete documentation for the Omnibase platform. Each product has its own versioned reference alongside the shared guides and concepts.
+
+<Callout type="info">
+API references are generated from the OpenAPI spec. SDK and component references are generated from their source packages.
+</Callout>
+
+## Products
+
+<Cards>
+  <Card href="/api" title="REST API">
+    Endpoints, request schemas, and generated JS and Go SDKs
+  </Card>
+  <Card href="/cli" title="CLI">
+    Project management, deployments, and administrative commands
+  </Card>
+  <Card href="/nextjs" title="Next.js">
+    Authentication, session management, and middleware helpers
+  </Card>
+  <Card href="/react" title="React">
+    Hooks and components for authenticated interfaces
+  </Card>
+  <Card href="/shadcn" title="Shadcn">
+    Pre-built UI components for authentication and tenant management
+  </Card>
+</Cards>
+
+## Learn
+
+<Cards>
+  <Card href="/guides/quickstart" title="Guides">
+    Getting started, configuration, and deployment tutorials
+  </Card>
+  <Card href="/concepts/tenants" title="Concepts">
+    Tenancy, permissions, billing, and platform architecture
+  </Card>
+</Cards>

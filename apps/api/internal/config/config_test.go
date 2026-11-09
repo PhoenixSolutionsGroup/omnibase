@@ -74,3 +74,41 @@ func TestValidateAllowsWildcardCORS(t *testing.T) {
 
 	require.NoError(t, cfg.Validate())
 }
+
+func TestInviteAllowedOrigins(t *testing.T) {
+	t.Run("explicit origins take precedence", func(t *testing.T) {
+		t.Setenv("INVITE_ALLOWED_ORIGINS", "https://invites.example.com, https://other.example.com")
+		t.Setenv("FRONTEND_URL", "https://app.example.com")
+		t.Setenv("WEBSITE_URL", "https://website.example.com")
+		t.Setenv("CORS_ALLOWED_ORIGINS", "https://cors.example.com")
+
+		require.Equal(t, []string{"https://invites.example.com", "https://other.example.com"}, inviteAllowedOrigins())
+	})
+
+	t.Run("falls back to frontend url", func(t *testing.T) {
+		t.Setenv("INVITE_ALLOWED_ORIGINS", "")
+		t.Setenv("FRONTEND_URL", "https://app.example.com")
+		t.Setenv("WEBSITE_URL", "https://website.example.com")
+		t.Setenv("CORS_ALLOWED_ORIGINS", "https://cors.example.com")
+
+		require.Equal(t, []string{"https://app.example.com"}, inviteAllowedOrigins())
+	})
+
+	t.Run("falls back to website url", func(t *testing.T) {
+		t.Setenv("INVITE_ALLOWED_ORIGINS", "")
+		t.Setenv("FRONTEND_URL", "")
+		t.Setenv("WEBSITE_URL", "https://website.example.com")
+		t.Setenv("CORS_ALLOWED_ORIGINS", "https://cors.example.com")
+
+		require.Equal(t, []string{"https://website.example.com"}, inviteAllowedOrigins())
+	})
+
+	t.Run("falls back to specific cors origins without wildcard", func(t *testing.T) {
+		t.Setenv("INVITE_ALLOWED_ORIGINS", "")
+		t.Setenv("FRONTEND_URL", "")
+		t.Setenv("WEBSITE_URL", "")
+		t.Setenv("CORS_ALLOWED_ORIGINS", "*, https://cors.example.com")
+
+		require.Equal(t, []string{"https://cors.example.com"}, inviteAllowedOrigins())
+	})
+}

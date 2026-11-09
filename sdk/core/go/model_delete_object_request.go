@@ -22,6 +22,7 @@ var _ MappedNullable = &DeleteObjectRequest{}
 
 // DeleteObjectRequest struct for DeleteObjectRequest
 type DeleteObjectRequest struct {
+	// Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
 	Path string `json:"path"`
 }
 

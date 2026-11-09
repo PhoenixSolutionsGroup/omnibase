@@ -3,6 +3,7 @@ package invites_test
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -77,6 +78,30 @@ func TestInvitesAccept(t *testing.T) {
 		require.NotNil(t, resp)
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
+}
+
+func TestInvitesAccept_EmailCaseInsensitive(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in -short")
+	}
+
+	env := testenv.Start(t)
+	testenv.StartAPI(t, env)
+	client := testenv.NewSDKClient(t)
+
+	id := helpers.UniqueID()
+	ownerEmail := fmt.Sprintf("owner-case-%s@example.com", id)
+	invitedEmail := fmt.Sprintf("invited-case-%s@example.com", id)
+	pw := fmt.Sprintf("pwd-%s-aZ09!", id)
+
+	ownerID := h.CreateUser(t, client, ownerEmail, pw)
+	tenant := h.CreateTenant(t, client, ownerID, "Invites Case "+id, ownerEmail).Tenant
+	invitedID := h.CreateUser(t, client, invitedEmail, pw)
+
+	invite := h.CreateInvite(t, client, ownerID, tenant.Id, strings.ToUpper(invitedEmail), "member")
+	acceptResp := h.AcceptInvite(t, client, invitedID, invite.Token)
+
+	assert.Equal(t, tenant.Id, acceptResp.TenantId)
 }
 
 func TestInvitesAccept_InvalidToken(t *testing.T) {

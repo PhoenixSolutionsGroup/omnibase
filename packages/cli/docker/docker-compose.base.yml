@@ -61,7 +61,7 @@ services:
         condition: service_healthy
 
   auth-migrate:
-    image: phoenixsolutionsgroup/omnibase-auth:0.4.4
+    image: phoenixsolutionsgroup/omnibase-auth:latest
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=auth
       - WAIT_FOR_API_HEALTH=true
@@ -81,7 +81,7 @@ services:
       - auth-migrate
       - rest-api
       - pgbouncer
-    image: phoenixsolutionsgroup/omnibase-auth:0.4.4
+    image: phoenixsolutionsgroup/omnibase-auth:latest
     restart: unless-stopped
     env_file:
       - ${OMNIBASE_ENV_FILE}
@@ -212,7 +212,7 @@ services:
 
   # REST API Service
   rest-api:
-    image: phoenixsolutionsgroup/omnibase-api:0.21.0
+    image: phoenixsolutionsgroup/omnibase-api:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -251,7 +251,9 @@ services:
       - SMTP_FROM_EMAIL=noreply@yourapp.com
       - EMAIL_SEND_LIMIT=${EMAIL_SEND_LIMIT:-100}
       - EMAIL_SEND_WINDOW=${EMAIL_SEND_WINDOW:-1h}
-      - FRONTEND_URL=http://localhost:3000
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - WEBSITE_URL=${WEBSITE_URL:-http://localhost:3000}
+      - INVITE_ALLOWED_ORIGINS=${INVITE_ALLOWED_ORIGINS:-}
 
       # JWT Configuration
       - JWT_SIGNING_KEY=${JWT_SIGNING_KEY:-your-secret-jwt-signing-key-change-this-in-production}
@@ -276,7 +278,7 @@ services:
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-*}
 
   permissions-migrate:
-    image: phoenixsolutionsgroup/omnibase-permissions:0.4.0
+    image: phoenixsolutionsgroup/omnibase-permissions:latest
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
     command: migrate up -c /etc/config/permissions/permissions.yml --yes
@@ -294,7 +296,7 @@ services:
     depends_on:
       - permissions-migrate
       - pgbouncer
-    image: phoenixsolutionsgroup/omnibase-permissions:0.4.0
+    image: phoenixsolutionsgroup/omnibase-permissions:latest
     restart: unless-stopped
     environment:
       - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4

@@ -14,44 +14,64 @@ import { spawn } from "bun";
 import { rm, mkdir, readdir, readFile, writeFile, rename } from "fs/promises";
 import { join, dirname, basename } from "path";
 import { existsSync } from "fs";
+import { execFileSync } from "node:child_process";
 import { type Command } from "commander";
 
 import { program } from "../packages/cli/src/index";
+import { generateChangelogs } from "./generate-changelogs";
 
 const ROOT = dirname(dirname(import.meta.path));
 const DOCS_CONTENT = join(ROOT, "apps/docs/content/docs");
 
 interface TypeDocTarget {
   name: string;
+  title: string;
+  description: string;
+  icon: string;
   packagePath: string;
   entryPoints: string[];
   outputDir: string;
+  versioned?: boolean;
+  versionEnv?: string;
+  tagPrefix?: string;
 }
 
 const TYPEDOC_TARGETS: TypeDocTarget[] = [
   {
     name: "@omnibase/nextjs",
+    title: "Next.js",
+    description: "Authentication, session, and middleware helpers for Next.js",
+    icon: "Layers",
     packagePath: "sdk/framework/nextjs",
     entryPoints: ["src/auth/index.ts", "src/middleware/index.ts"],
-    outputDir: "reference/sdk/nextjs",
+    outputDir: "nextjs",
+    versioned: true,
+    versionEnv: "NEXTJS_VERSION",
+    tagPrefix: "nextjs",
   },
   {
     name: "@omnibase/react",
+    title: "React",
+    description: "Hooks and components for authenticated React interfaces",
+    icon: "Atom",
     packagePath: "sdk/framework/react",
     entryPoints: ["src/index.ts"],
-    outputDir: "reference/sdk/react",
+    outputDir: "react",
+    versioned: true,
+    versionEnv: "REACT_VERSION",
+    tagPrefix: "react",
   },
   {
     name: "@omnibase/shadcn",
+    title: "Shadcn",
+    description: "Pre-built UI components for authentication and tenant management",
+    icon: "Component",
     packagePath: "sdk/component/shadcn",
     entryPoints: ["src/index.ts"],
-    outputDir: "reference/sdk/shadcn",
-  },
-  {
-    name: "@omnibase/cli",
-    packagePath: "packages/cli",
-    entryPoints: ["src/index.ts"],
-    outputDir: "reference/cli",
+    outputDir: "shadcn",
+    versioned: true,
+    versionEnv: "SHADCN_VERSION",
+    tagPrefix: "shadcn",
   },
 ];
 
@@ -117,6 +137,27 @@ function slugify(text: string): string {
 
 function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function resolveVersion(envName: string, tagPrefix: string): string {
+  const explicit = process.env[envName];
+  if (explicit && explicit !== "0.0.0-dev") return explicit;
+
+  if (process.env.GITHUB_ACTIONS) {
+    try {
+      const tag = execFileSync(
+        "git",
+        ["describe", "--tags", "--match", `${tagPrefix}-v*`, "--abbrev=0"],
+        { cwd: ROOT, encoding: "utf-8" }
+      ).trim();
+      const match = tag.match(new RegExp(`^${tagPrefix}-v(.+)$`));
+      if (match) return match[1]!;
+    } catch {
+      return "dev";
+    }
+  }
+
+  return "dev";
 }
 
 /**
@@ -304,6 +345,110 @@ title: "${title}"
   await writeFile(filePath, frontmatter + content);
 }
 
+const VERSION_ALIASES = join(ROOT, "apps/docs/content/version-aliases.json");
+const VERSION_DIR = /^\d+\.\d+\.\d+/;
+
+type VersionAliases = Record<string, Record<string, string>>;
+
+async function listFiles(dir: string, prefix = ""): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) files.push(...(await listFiles(join(dir, entry.name), rel)));
+    else files.push(rel);
+  }
+  return files.sort();
+}
+
+async function sameDocsExceptVersion(
+  previousDir: string,
+  previous: string,
+  currentDir: string,
+  current: string
+): Promise<boolean> {
+  const [previousFiles, currentFiles] = await Promise.all([
+    listFiles(previousDir),
+    listFiles(currentDir),
+  ]);
+  if (previousFiles.join("\n") !== currentFiles.join("\n")) return false;
+  for (const file of currentFiles) {
+    const [before, after] = await Promise.all([
+      readFile(join(previousDir, file), "utf-8"),
+      readFile(join(currentDir, file), "utf-8"),
+    ]);
+    if (before.replaceAll(previous, current) !== after) return false;
+  }
+  return true;
+}
+
+async function readVersionAliases(): Promise<VersionAliases> {
+  if (!existsSync(VERSION_ALIASES)) return {};
+  return JSON.parse(await readFile(VERSION_ALIASES, "utf-8")) as VersionAliases;
+}
+
+async function writeFileAtomic(path: string, content: string): Promise<void> {
+  const tempPath = `${path}.tmp`;
+  await writeFile(tempPath, content);
+  await rename(tempPath, path);
+}
+
+/**
+ * When a release leaves a section's docs unchanged, keep one copy under the
+ * new version and redirect the previous version to it, so the release adds
+ * no files to the deployed site.
+ */
+async function collapseUnchangedVersion(section: string, current: string): Promise<void> {
+  if (current === "dev") return;
+
+  const sectionDir = join(DOCS_CONTENT, section);
+  const previous = (await readdir(sectionDir, { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory() && VERSION_DIR.test(entry.name))
+    .map((entry) => entry.name)
+    .filter((name) => name.localeCompare(current, undefined, { numeric: true }) < 0)
+    .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+  if (!previous) return;
+
+  const previousDir = join(sectionDir, previous);
+  const currentDir = join(sectionDir, current);
+  if (!(await sameDocsExceptVersion(previousDir, previous, currentDir, current))) return;
+
+  const aliases = await readVersionAliases();
+  const sectionAliases = aliases[section] ?? {};
+  for (const [from, to] of Object.entries(sectionAliases)) {
+    if (to === previous) sectionAliases[from] = current;
+  }
+  sectionAliases[previous] = current;
+  aliases[section] = sectionAliases;
+  await writeFileAtomic(VERSION_ALIASES, JSON.stringify(aliases, null, 2) + "\n");
+
+  await rm(previousDir, { recursive: true });
+
+  console.log(`    ↪ ${section} ${previous} is unchanged, now redirects to ${current}`);
+}
+
+async function writeVersionedSection(
+  target: TypeDocTarget,
+  _currentVersion: string
+): Promise<void> {
+  const sectionDir = join(DOCS_CONTENT, target.outputDir);
+
+  await writeFile(
+    join(sectionDir, "meta.json"),
+    JSON.stringify(
+      {
+        title: target.title,
+        description: target.description,
+        icon: target.icon,
+        root: true,
+        pages: ["index", "..."],
+      },
+      null,
+      2
+    )
+  );
+}
+
 async function generateTypeDocs(): Promise<void> {
   console.log("\n📚 Generating TypeDoc documentation...\n");
 
@@ -311,11 +456,17 @@ async function generateTypeDocs(): Promise<void> {
     console.log(`  → ${target.name}`);
 
     const packageDir = join(ROOT, target.packagePath);
-    const outputPath = join(DOCS_CONTENT, target.outputDir);
+    const version = target.versioned
+      ? resolveVersion(target.versionEnv!, target.tagPrefix!)
+      : null;
+    const outputDir = version
+      ? join(target.outputDir, version)
+      : target.outputDir;
+    const outputPath = join(DOCS_CONTENT, outputDir);
     const tsconfigPath = join(packageDir, "tsconfig.json");
 
     // Clean and create output directory
-    await cleanOutputDir(target.outputDir);
+    await cleanOutputDir(outputDir);
 
     // Build TypeDoc command
     const entryPointsArgs = target.entryPoints.flatMap((ep) => [
@@ -381,20 +532,172 @@ async function generateTypeDocs(): Promise<void> {
       await splitByH2Headings(outputPath);
       // Add frontmatter to generated files
       await addFrontmatterToDir(outputPath);
+      if (version) {
+        await writeFile(
+          join(outputPath, "meta.json"),
+          JSON.stringify(
+            { title: version, root: basename(target.outputDir) },
+            null,
+            2
+          )
+        );
+        await collapseUnchangedVersion(target.outputDir, version);
+        await writeVersionedSection(target, version);
+      }
       console.log(`    ✓ Generated docs for ${target.name}`);
     } catch (error) {
       console.error(`    ✗ Failed to generate docs for ${target.name}`);
       console.error(error);
+      throw error;
     }
   }
+}
+
+interface OpenAPIParameter {
+  name?: string;
+  in?: string;
+  required?: boolean;
+  description?: string;
+  schema?: unknown;
+}
+
+interface OpenAPIRequestBody {
+  description?: string;
+  required?: boolean;
+  content?: Record<string, { schema?: unknown }>;
+}
+
+interface OpenAPIResponse {
+  description?: string;
+  content?: Record<string, { schema?: unknown; example?: unknown }>;
+}
+
+interface OpenAPIOperation {
+  tags?: string[];
+  summary?: string;
+  description?: string;
+  operationId?: string;
+  parameters?: OpenAPIParameter[];
+  requestBody?: OpenAPIRequestBody;
+  responses?: Record<string, OpenAPIResponse>;
+}
+
+function jsonBlock(value: unknown): string {
+  if (value === undefined) return "";
+  return ["```json", JSON.stringify(value, null, 2), "```"].join("\n");
+}
+
+function dereferenceSchema(
+  value: unknown,
+  schemas: Record<string, unknown>,
+  seen: Set<string> = new Set(),
+  depth = 0
+): unknown {
+  if (depth > 8 || value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    return value.map((item) => dereferenceSchema(item, schemas, seen, depth + 1));
+  }
+
+  const object = value as Record<string, unknown>;
+  const ref = object.$ref;
+  if (typeof ref === "string") {
+    const name = ref.match(/^#\/components\/schemas\/(.+)$/)?.[1];
+    if (name) {
+      if (seen.has(name)) return { $ref: ref };
+      const schema = schemas[name];
+      if (schema !== undefined) {
+        const nextSeen = new Set(seen);
+        nextSeen.add(name);
+        return dereferenceSchema(schema, schemas, nextSeen, depth + 1);
+      }
+    }
+  }
+
+  const resolved: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(object)) {
+    resolved[key] = dereferenceSchema(child, schemas, seen, depth + 1);
+  }
+  return resolved;
+}
+
+function renderOperationMarkdown(
+  url: string,
+  method: string,
+  path: string,
+  operation: OpenAPIOperation,
+  schemas: Record<string, unknown>,
+  pathParameters: OpenAPIParameter[]
+): string {
+  const lines = [
+    `# ${operation.summary || operation.operationId} (${url})`,
+    "",
+    `\`${method.toUpperCase()} ${path}\``,
+    "",
+  ];
+
+  if (operation.description) lines.push(operation.description, "");
+
+  const seen = new Set<string>();
+  const parameters = [...pathParameters, ...(operation.parameters ?? [])].filter(
+    (parameter) => {
+      const key = `${parameter.in}:${parameter.name}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }
+  );
+
+  if (parameters.length > 0) {
+    lines.push("## Parameters", "");
+    for (const parameter of parameters) {
+      lines.push(
+        `- \`${parameter.name}\` (${parameter.in}${
+          parameter.required ? ", required" : ""
+        }): ${parameter.description ?? ""}`
+      );
+    }
+    lines.push("");
+  }
+
+  if (operation.requestBody) {
+    lines.push("## Request body", "");
+    if (operation.requestBody.description) {
+      lines.push(operation.requestBody.description, "");
+    }
+    for (const [contentType, media] of Object.entries(
+      operation.requestBody.content ?? {}
+    )) {
+      lines.push(`Content type: \`${contentType}\``, "");
+      if (media.schema) {
+        lines.push(jsonBlock(dereferenceSchema(media.schema, schemas)), "");
+      }
+    }
+  }
+
+  if (operation.responses) {
+    lines.push("## Responses", "");
+    for (const [status, response] of Object.entries(operation.responses)) {
+      lines.push(`### ${status}`, "");
+      if (response.description) lines.push(response.description, "");
+      for (const media of Object.values(response.content ?? {})) {
+        if (media.example !== undefined) {
+          lines.push(jsonBlock(media.example), "");
+        } else if (media.schema) {
+          lines.push(jsonBlock(dereferenceSchema(media.schema, schemas)), "");
+        }
+      }
+    }
+  }
+
+  return lines.join("\n").trim() + "\n";
 }
 
 async function generateOpenAPIDocs(): Promise<void> {
   console.log("\n📖 Generating OpenAPI documentation...\n");
 
-  const openApiSource = join(ROOT, "apps/api/docs/openapi.yaml");
+  const openApiSource = join(ROOT, "apps/api/docs/openapi.json");
   const openApiDest = join(ROOT, "apps/docs/openapi.yaml");
-  const openApiOutput = join(DOCS_CONTENT, "reference/api");
+  const openApiOutput = join(DOCS_CONTENT, "api");
 
   // Run existing bundle-openapi.sh script
   console.log("  → Bundling OpenAPI spec (using bundle-openapi.sh)...");
@@ -405,14 +708,94 @@ async function generateOpenAPIDocs(): Promise<void> {
     return;
   }
 
-  // Copy openapi.yaml to docs directory (for fumadocs-openapi runtime access)
-  console.log("  → Copying OpenAPI spec to docs directory...");
-  const openApiContent = await readFile(openApiSource, "utf-8");
-  await writeFile(openApiDest, openApiContent);
-  console.log("    ✓ Copied openapi.yaml to apps/docs/");
+  const spec = JSON.parse(await readFile(openApiSource, "utf-8")) as {
+    info?: { version?: string };
+    paths?: Record<string, Record<string, unknown>>;
+    tags?: { name: string }[];
+    components?: { schemas?: Record<string, unknown> };
+  };
+  const schemas = spec.components?.schemas ?? {};
+  const apiVersion = resolveVersion("API_VERSION", "api");
 
-  // Clean and create output directory
-  await cleanOutputDir("reference/api");
+  const tagMap: Record<string, string> = {
+    V1Auth: "V1 Auth",
+    V1Configuration: "V1 Configuration",
+    V1Database: "V1 Database",
+    V1Payments: "V1 Payments",
+    V1Permissions: "V1 Permissions",
+    V1Storage: "V1 Storage",
+    V1Stripe: "V1 Stripe",
+    V1TenantsLifecycle: "V1 Tenants",
+    V1TenantsSubscriptions: "V1 Tenants",
+    V1TenantsRoles: "V1 Tenants",
+    V1TenantsUsers: "V1 Tenants",
+    V1TenantsInvites: "V1 Tenants",
+  };
+  const tagOrder = [
+    "V1 Auth",
+    "V1 Configuration",
+    "V1 Database",
+    "V1 Payments",
+    "V1 Permissions",
+    "V1 Storage",
+    "V1 Stripe",
+    "V1 Tenants",
+  ];
+
+  const tagDescriptions: Record<string, string> = {
+    Auth: "Sessions, identities, and tenant switching",
+    Configuration: "Database migrations, email templates, and Stripe config",
+    Database: "Migration status and database type generation",
+    Payments: "Checkout, invoices, metered usage, and customer portals",
+    Permissions: "Relationship-based access control checks",
+    Storage: "File uploads, downloads, and object visibility",
+    Stripe: "Products, prices, meters, and webhook configuration",
+    Tenants: "Tenants, roles, subscriptions, and invitations",
+  };
+
+  const tagIcons: Record<string, string> = {
+    Auth: "KeyRound",
+    Configuration: "Settings",
+    Database: "Database",
+    Payments: "CreditCard",
+    Permissions: "Shield",
+    Storage: "HardDrive",
+    Stripe: "Layers",
+    Tenants: "Users",
+  };
+
+  const displayTag = (tag: string) =>
+    tagMap[tag] ?? tag.replace(/^(V\d+)\s*(.+)$/i, "$1 $2");
+
+  const tags = new Set<string>();
+  for (const operations of Object.values(spec.paths ?? {})) {
+    for (const operation of Object.values(operations)) {
+      if (!Array.isArray(operation.tags)) continue;
+      operation.tags = [...new Set(operation.tags.map(displayTag))];
+      for (const tag of operation.tags) tags.add(tag);
+    }
+  }
+
+  const tagIndex = (tag: string) => {
+    const index = tagOrder.indexOf(tag);
+    return index === -1 ? tagOrder.length : index;
+  };
+  spec.tags = [...tags]
+    .sort((a, b) => tagIndex(a) - tagIndex(b) || a.localeCompare(b))
+    .map((name) => ({ name }));
+
+  const yaml = await import("yaml");
+  await writeFile(openApiDest, yaml.stringify(spec));
+  console.log("    ✓ Wrote apps/docs/openapi.yaml");
+
+  const versionDir = join(openApiOutput, apiVersion);
+  const stagingDir = join(openApiOutput, `.staging-${apiVersion}`);
+  await rm(stagingDir, { recursive: true, force: true });
+  await mkdir(stagingDir, { recursive: true });
+
+  const tempOutput = join(ROOT, "node_modules/.cache/openapi-docs");
+  await rm(tempOutput, { recursive: true, force: true });
+  await mkdir(tempOutput, { recursive: true });
 
   // Generate MDX files using fumadocs-openapi programmatic API
   console.log("  → Generating API reference pages...");
@@ -420,23 +803,16 @@ async function generateOpenAPIDocs(): Promise<void> {
   try {
     const { generateFiles } = await import("fumadocs-openapi");
     const { createOpenAPI } = await import("fumadocs-openapi/server");
-    const yaml = await import("yaml");
-
-    // Load the OpenAPI spec
-    const specContent = await readFile(openApiDest, "utf-8");
-    const spec = yaml.parse(specContent);
 
     // Create an OpenAPI instance for the generator
-    // Use function-based input to set the schema ID to match lib/openapi.ts
+    // Use the same schema ID as lib/openapi.ts
     const openapi = createOpenAPI({
-      input: () => ({
-        "./openapi.yaml": spec,
-      }),
+      input: { "./openapi.yaml": spec },
     });
 
     await generateFiles({
       input: openapi,
-      output: openApiOutput,
+      output: tempOutput,
       per: "operation",
       groupBy: "tag",
       includeDescription: true,
@@ -444,84 +820,232 @@ async function generateOpenAPIDocs(): Promise<void> {
     });
     console.log("    ✓ Generated OpenAPI docs");
 
-    // Generate meta.json files from OpenAPI tags, grouped by version
+    const { bundled } = await openapi.getSchema("./openapi.yaml");
+    await writeFile(
+      join(ROOT, "apps/docs/openapi.json"),
+      JSON.stringify(bundled) + "\n"
+    );
+
+    // Generate meta.json files from OpenAPI tags
     console.log("  → Generating meta.json files from OpenAPI tags...");
     const tags = spec.tags || [];
-
-    // Group tags by version (e.g., "V1 Auth" -> { version: "v1", name: "Auth" })
-    const versionGroups: Record<
-      string,
-      { folderName: string; displayName: string }[]
-    > = {};
+    const tagEntries: {
+      folderName: string;
+      displayName: string;
+      description: string;
+      icon: string;
+    }[] = [];
+    const tagFolderByTag = new Map<string, string>();
 
     for (const tag of tags) {
       const tagName = tag.name as string;
-      // Parse version from tag name (e.g., "V1 Auth" -> version: "v1", name: "Auth")
-      const versionMatch = tagName.match(/^(V\d+)\s+(.+)$/i);
-
-      let version = "v1"; // Default version if no prefix
-      let displayName =
-        (tag as { "x-displayName"?: string })["x-displayName"] || tagName;
-
-      if (versionMatch) {
-        version = versionMatch[1]!.toLowerCase();
-        displayName =
-          (tag as { "x-displayName"?: string })["x-displayName"] ||
-          versionMatch[2]!;
-      }
+      const displayName =
+        (tag as { "x-displayName"?: string })["x-displayName"] ||
+        tagName.replace(/^V\d+\s+/i, "");
 
       // Convert tag name to folder name (same format as fumadocs-openapi uses)
       const originalFolderName = tagName.toLowerCase().replace(/\s+/g, "-");
-      const originalFolderPath = join(openApiOutput, originalFolderName);
+      const originalFolderPath = join(tempOutput, originalFolderName);
 
       // Only process if the folder exists (has endpoints)
       if (existsSync(originalFolderPath)) {
-        if (!versionGroups[version]) {
-          versionGroups[version] = [];
-        }
-
         // New folder name without version prefix (e.g., "auth" instead of "v1-auth")
         const newFolderName = displayName.toLowerCase().replace(/\s+/g, "-");
-        versionGroups[version]!.push({ folderName: newFolderName, displayName });
+        const newFolderPath = join(stagingDir, newFolderName);
 
-        // Move folder to version subdirectory
-        const versionDir = join(openApiOutput, version);
-        const newFolderPath = join(versionDir, newFolderName);
-
-        await mkdir(versionDir, { recursive: true });
-
-        // Rename/move the folder
         if (originalFolderPath !== newFolderPath) {
           await rename(originalFolderPath, newFolderPath);
         }
 
-        // Create meta.json for the tag folder
-        const tagMeta = { title: capitalize(displayName) };
+        const description =
+          tagDescriptions[displayName] ?? `${displayName} endpoints`;
+        const icon = tagIcons[displayName] ?? "Box";
+        tagFolderByTag.set(tagName, newFolderName);
+        tagEntries.push({
+          folderName: newFolderName,
+          displayName,
+          description,
+          icon,
+        });
+
+        const operationEntries = (
+          await readdir(newFolderPath, { withFileTypes: true })
+        ).filter(
+          (entry) =>
+            entry.isFile() &&
+            entry.name.endsWith(".mdx") &&
+            entry.name !== "index.mdx"
+        );
+        const operations: { slug: string; title: string }[] = [];
+        for (const entry of operationEntries) {
+          const content = await readFile(
+            join(newFolderPath, entry.name),
+            "utf-8"
+          );
+          const title =
+            content.match(/^title:\s*(.+)$/m)?.[1]?.trim().replace(/^"|"$/g, "") ??
+            basename(entry.name, ".mdx");
+          operations.push({
+            slug: basename(entry.name, ".mdx"),
+            title,
+          });
+        }
+        operations.sort((a, b) => a.title.localeCompare(b.title));
+
         await writeFile(
           join(newFolderPath, "meta.json"),
-          JSON.stringify(tagMeta, null, 2)
+          JSON.stringify(
+            { title: capitalize(displayName), description },
+            null,
+            2
+          )
+        );
+        await writeFile(
+          join(newFolderPath, "index.mdx"),
+          [
+            "---",
+            `title: ${JSON.stringify(capitalize(displayName))}`,
+            `description: ${JSON.stringify(description)}`,
+            "---",
+            "",
+            `## ${capitalize(displayName)} endpoints`,
+            "",
+            ...operations.map(
+              (operation) => `- [${operation.title}](./${operation.slug})`
+            ),
+            "",
+          ].join("\n")
         );
       }
     }
 
-    // Create meta.json for each version folder
-    const versionFolders: string[] = [];
-    for (const [version, tagInfos] of Object.entries(versionGroups).sort()) {
-      versionFolders.push(version);
-      const versionMeta = {
-        title: version.toUpperCase(),
-        pages: tagInfos.map((t) => t.folderName),
-      };
-      await writeFile(
-        join(openApiOutput, version, "meta.json"),
-        JSON.stringify(versionMeta, null, 2)
+    const apiLlms: Record<string, string> = {};
+    const methods = [
+      "get",
+      "put",
+      "post",
+      "delete",
+      "patch",
+      "options",
+      "head",
+      "trace",
+    ];
+    if (apiVersion !== "dev") {
+      for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
+        const pathParameters = Array.isArray(pathItem.parameters)
+          ? (pathItem.parameters as OpenAPIParameter[])
+          : [];
+
+        for (const method of methods) {
+          const operation = pathItem[method] as OpenAPIOperation | undefined;
+          if (!operation?.operationId) continue;
+
+          const tagName = operation.tags?.[0];
+          const folderName = tagName ? tagFolderByTag.get(tagName) : undefined;
+          if (!folderName) continue;
+
+          const url = `/api/${apiVersion}/${folderName}/${operation.operationId}`;
+          apiLlms[url] = renderOperationMarkdown(
+            url,
+            method,
+            path,
+            operation,
+            schemas,
+            pathParameters
+          );
+        }
+      }
+    }
+    await rm(tempOutput, { recursive: true, force: true });
+
+    const versionMeta = {
+      title: apiVersion,
+      root: "api",
+      pages: ["index", ...tagEntries.map((entry) => entry.folderName)],
+    };
+    await writeFile(
+      join(stagingDir, "meta.json"),
+      JSON.stringify(versionMeta, null, 2)
+    );
+
+    const icons = [
+      "KeyRound",
+      "Settings",
+      "Database",
+      "CreditCard",
+      "Shield",
+      "HardDrive",
+      "Layers",
+      "Users",
+      "Box",
+    ];
+    await writeFile(
+      join(stagingDir, "index.mdx"),
+      [
+        "---",
+        "title: API Reference",
+        `description: HTTP API reference for version ${apiVersion}.`,
+        "---",
+        "",
+        "import { Callout } from 'fumadocs-ui/components/callout';",
+        "import { Card, Cards } from 'fumadocs-ui/components/card';",
+        `import { ${icons.join(", ")} } from 'lucide-react';`,
+        "",
+        `<Callout type="info" title="Version ${apiVersion}">`,
+        "This reference is generated from the OpenAPI spec. Endpoints and schemas on this page match this version.",
+        "</Callout>",
+        "",
+        "## Base URL",
+        "",
+        "All endpoints are rooted at `/api/v1`.",
+        "",
+        "```bash",
+        'curl "$OMNIBASE_URL/api/v1/tenants" \\',
+        '  -H "Authorization: Bearer $OMNIBASE_TOKEN"',
+        "```",
+        "",
+        "Authenticated requests use `Authorization: Bearer <token>`. Tenant-scoped requests can use the tenant JWT returned when a tenant is created.",
+        "",
+        "## Resources",
+        "",
+        "<Cards>",
+        ...tagEntries.map(
+          (entry) =>
+            `  <Card href="./${entry.folderName}" title=${JSON.stringify(
+              capitalize(entry.displayName)
+            )} icon={<${entry.icon} />}>\n    ${entry.description}\n  </Card>`
+        ),
+        "</Cards>",
+        "",
+      ].join("\n")
+    );
+
+    await rm(versionDir, { recursive: true, force: true });
+    await rename(stagingDir, versionDir);
+
+    if (Object.keys(apiLlms).length > 0) {
+      await writeFileAtomic(
+        join(ROOT, "apps/docs/content/api-llms.json"),
+        JSON.stringify(apiLlms, null, 2) + "\n"
       );
     }
 
-    // Create main API meta.json with version folders
+    if (apiVersion !== "dev") {
+      await rm(join(openApiOutput, "dev"), { recursive: true, force: true });
+      await rm(join(openApiOutput, "0.0.0-dev"), {
+        recursive: true,
+        force: true,
+      });
+    }
+
+    await collapseUnchangedVersion("api", apiVersion);
+
     const apiMeta = {
       title: "API",
-      pages: versionFolders,
+      description: "REST API endpoints, schemas, and generated SDKs",
+      icon: "Server",
+      root: true,
+      pages: ["index", "..."],
     };
     await writeFile(
       join(openApiOutput, "meta.json"),
@@ -529,50 +1053,11 @@ async function generateOpenAPIDocs(): Promise<void> {
     );
     console.log("    ✓ Generated meta.json files");
   } catch (error) {
+    await rm(stagingDir, { recursive: true, force: true });
+    await rm(tempOutput, { recursive: true, force: true });
     console.error("    ✗ Failed to generate OpenAPI docs");
     console.error(error);
-  }
-}
-
-async function createMetaFiles(): Promise<void> {
-  console.log("\n📁 Creating meta.json files...\n");
-
-  // Only create meta files for generated subdirectories
-  // Don't overwrite root-level meta.json (reference/meta.json) as it may have custom config
-  const metaConfigs = [
-    {
-      path: join(DOCS_CONTENT, "reference/sdk/meta.json"),
-      content: {
-        title: "SDKs",
-        pages: ["nextjs", "react", "shadcn"],
-      },
-    },
-    {
-      path: join(DOCS_CONTENT, "reference/api/meta.json"),
-      content: {
-        title: "API Reference",
-      },
-    },
-    {
-      path: join(DOCS_CONTENT, "reference/cli/meta.json"),
-      content: {
-        title: "CLI",
-      },
-    },
-  ];
-
-  for (const { path, content } of metaConfigs) {
-    const dir = dirname(path);
-    if (!existsSync(dir)) {
-      await mkdir(dir, { recursive: true });
-    }
-    // Only create if doesn't exist (don't overwrite user customizations)
-    if (!existsSync(path)) {
-      await Bun.write(path, JSON.stringify(content, null, 2));
-      console.log(`  ✓ Created ${path.replace(ROOT, "")}`);
-    } else {
-      console.log(`  → Skipped ${path.replace(ROOT, "")} (already exists)`);
-    }
+    throw error;
   }
 }
 
@@ -590,7 +1075,7 @@ async function generateCommandDocPage(
   const fullUrl = urlPrefix + "/" + slug;
 
   // Display name like "db migrate generate"
-  const baseRe = /^\/reference\/cli\/?/;
+  const baseRe = /^\/cli\/[^/]+\/?/;
   const cmdPath = urlPrefix.replace(baseRe, "").replace(/^\//, "").replace(/\//g, " ");
   const displayName = cmdPath ? cmdPath + " " + slug : slug;
 
@@ -686,9 +1171,11 @@ async function generateCommandDocPage(
 async function generateCliCommandDocs(): Promise<void> {
   console.log("\n🔧 Generating CLI command documentation...\n");
 
-  const outputDir = join(DOCS_CONTENT, "reference/cli");
-  const rootUrl = "/reference/cli";
-  await cleanOutputDir("reference/cli");
+  const version = resolveVersion("CLI_VERSION", "cli");
+  const sectionDir = join(DOCS_CONTENT, "cli");
+  const outputDir = join(sectionDir, version);
+  const rootUrl = `/cli/${version}`;
+  await cleanOutputDir(join("cli", version));
 
   const pages: string[] = [];
 
@@ -743,10 +1230,54 @@ async function generateCliCommandDocs(): Promise<void> {
 
   await writeFile(
     join(outputDir, "meta.json"),
-    JSON.stringify({ title: "CLI Reference", pages }, null, 2),
+    JSON.stringify(
+      { title: version, root: "cli", pages: ["index", ...pages] },
+      null,
+      2
+    ),
   );
 
+  await collapseUnchangedVersion("cli", version);
+
+  await writeFile(
+    join(sectionDir, "meta.json"),
+    JSON.stringify(
+      {
+        title: "CLI",
+        description: "Command-line interface for projects and deployments",
+        icon: "Terminal",
+        root: true,
+        pages: ["index", "..."],
+      },
+      null,
+      2
+    )
+  );
   console.log("  ✓ Generated CLI command docs");
+}
+
+async function readVersionsManifest(): Promise<Record<string, string>> {
+  const file = join(ROOT, "apps/docs/content/versions.json");
+  if (!existsSync(file)) return {};
+  return JSON.parse(await readFile(file, "utf-8")) as Record<string, string>;
+}
+
+async function writeVersionsManifest(): Promise<void> {
+  const resolved = {
+    api: resolveVersion("API_VERSION", "api"),
+    cli: resolveVersion("CLI_VERSION", "cli"),
+    nextjs: resolveVersion("NEXTJS_VERSION", "nextjs"),
+    react: resolveVersion("REACT_VERSION", "react"),
+    shadcn: resolveVersion("SHADCN_VERSION", "shadcn"),
+  };
+  const manifest = await readVersionsManifest();
+  for (const [section, version] of Object.entries(resolved)) {
+    if (version !== "dev") manifest[section] = version;
+  }
+  await writeFileAtomic(
+    join(ROOT, "apps/docs/content/versions.json"),
+    JSON.stringify(manifest, null, 2) + "\n"
+  );
 }
 
 async function main(): Promise<void> {
@@ -773,7 +1304,10 @@ async function main(): Promise<void> {
       await generateCliCommandDocs();
     }
 
-    await createMetaFiles();
+    await writeVersionsManifest();
+
+    console.log("\n📝 Generating changelog pages...\n");
+    await generateChangelogs(ROOT);
 
     console.log("\n✅ Documentation generation complete!\n");
   } catch (error) {

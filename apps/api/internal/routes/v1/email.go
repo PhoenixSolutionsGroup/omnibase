@@ -43,6 +43,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createOrUpdateEmailTemplate",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/templates",
 		Summary:     "Create or update email template",
@@ -51,6 +52,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getEmailTemplates",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/templates",
 		Summary:     "Get all email templates",
@@ -59,6 +61,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteEmailTemplate",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/email/templates/{type}",
 		Summary:     "Delete email template",
@@ -67,6 +70,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "sendEmail",
+		Errors:      []int{400, 401, 404, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/send",
 		Summary:     "Send an email using an app template",
@@ -75,6 +79,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "sendEmailHTML",
+		Errors:      []int{400, 401, 429},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/send/html",
 		Summary:     "Send a raw HTML email",
@@ -83,6 +88,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "serveEmailTemplate",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/templates/{template_name}/{type}",
 		Summary:     "Serve an email template file",
@@ -91,6 +97,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "createOrUpdateSystemEmailTemplate",
+		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/email/system-templates",
 		Summary:     "Create or update a system email template",
@@ -99,6 +106,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getSystemEmailTemplates",
+		Errors:      []int{400, 401},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/system-templates",
 		Summary:     "Get all system email templates",
@@ -107,6 +115,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteSystemEmailTemplate",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/email/system-templates/{name}",
 		Summary:     "Delete a system email template",
@@ -115,6 +124,7 @@ func SetUpEmailRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "serveSystemEmailTemplate",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodGet,
 		Path:        "/api/v1/email/system-templates/{name}/{type}",
 		Summary:     "Serve a system email template file",

@@ -19,6 +19,10 @@ import (
 	"api/internal/services/permissions"
 )
 
+const storagePathDescription = "Storage object paths are unique across the entire bucket, not per tenant. Prefix paths with the tenant ID or another unique namespace, for example `tenants/<tenant_id>/avatars/me.png`."
+
+const uploadPathDescription = storagePathDescription + " Uploading to an existing path returns 409 Conflict."
+
 func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	logger.Logger.Info("Initializing storage routes")
 	cfg := d.Cfg
@@ -58,33 +62,41 @@ func SetUpStorageRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "uploadFile",
+		Errors:      []int{400, 401, 404, 409},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/upload",
 		Summary:     "Upload file to storage",
+		Description: uploadPathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.Upload)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "downloadFile",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/download",
 		Summary:     "Download file from storage",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.Download)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "deleteObject",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodDelete,
 		Path:        "/api/v1/storage/object",
 		Summary:     "Delete file from storage",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.DeleteObject)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "makeFilePublic",
+		Errors:      []int{400, 401, 404},
 		Method:      http.MethodPost,
 		Path:        "/api/v1/storage/make-public",
 		Summary:     "Make a file publicly accessible",
+		Description: storagePathDescription,
 		Tags:        []string{"V1Storage"},
 	}, authn.AuthSessionOrBackendKey, nil, handler.MakePublic)
 

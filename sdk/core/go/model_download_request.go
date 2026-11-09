@@ -22,6 +22,7 @@ var _ MappedNullable = &DownloadRequest{}
 
 // DownloadRequest struct for DownloadRequest
 type DownloadRequest struct {
+	// Bucket-wide object path. Prefix with the tenant ID or another unique namespace.
 	Path string `json:"path"`
 }
 

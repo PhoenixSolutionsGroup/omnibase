@@ -6,8 +6,9 @@ import (
 	"os"
 
 	"api/internal/config"
-	"api/internal/server"
+	openapiexamples "api/internal/openapi"
 	v1_routes "api/internal/routes/v1"
+	"api/internal/server"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,7 +29,10 @@ func main() {
 	r := gin.New()
 	api := server.BuildAPI(r, v1_routes.Deps{Cfg: config.New(), Pool: nil})
 
-	spec, err := json.MarshalIndent(api.OpenAPI(), "", "  ")
+	doc := api.OpenAPI()
+	openapiexamples.AddErrorExamples(doc)
+
+	spec, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "marshal openapi: %v\n", err)
 		os.Exit(1)

@@ -1,0 +1,10 @@
+{
+  "title": "API",
+  "description": "REST API endpoints, schemas, and generated SDKs",
+  "icon": "Server",
+  "root": true,
+  "pages": [
+    "index",
+    "..."
+  ]
+}
