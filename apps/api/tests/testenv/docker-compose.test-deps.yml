@@ -109,8 +109,7 @@ services:
     environment:
       - DSN=postgres://postgres:postgres@postgres:5432/db?sslmode=disable&max_conns=20&max_idle_conns=4&search_path=permissions
     volumes:
-      - ../../permissions/tenants.ts:/etc/config/permissions/namespaces/tenants.ts:z
-      - ../../permissions/storage.ts:/etc/config/permissions/namespaces/storage.ts:z
+      - ../fixtures/keto-namespaces:/etc/config/permissions/namespaces:z
       - ../fixtures/permissions.yml:/etc/config/permissions/permissions.yml:z
     command: migrate up -c /etc/config/permissions/permissions.yml --yes
     entrypoint: ["/bin/sh", "/entrypoint.sh"]
@@ -130,8 +129,7 @@ services:
       - DSN=postgres://permissions:permissions@pgbouncer:6432/db?sslmode=disable&max_conns=20&max_idle_conns=4
       - LOG_LEVEL=warn
     volumes:
-      - ../../permissions/tenants.ts:/etc/config/permissions/namespaces/tenants.ts:z
-      - ../../permissions/storage.ts:/etc/config/permissions/namespaces/storage.ts:z
+      - ../fixtures/keto-namespaces:/etc/config/permissions/namespaces:z
       - ../fixtures/permissions.yml:/etc/config/permissions/permissions.yml:z
     command: serve -c /etc/config/permissions/permissions.yml
     entrypoint: ["/bin/sh", "/entrypoint.sh"]

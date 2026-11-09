@@ -7,8 +7,14 @@ RUN apk add --no-cache aws-cli unzip
 
 # Build from the repo root so the API-owned namespace files are the only copy.
 COPY docker/permissions/permissions.yml /etc/config/permissions/permissions.yml
-COPY apps/api/permissions/*.ts /etc/config/permissions/namespaces/
-RUN rm -f /etc/config/permissions/namespaces/types.ts
+COPY apps/api/permissions/*.ts /tmp/namespaces/
+RUN mkdir -p /etc/config/permissions/namespaces && \
+    for f in /tmp/namespaces/*.ts; do \
+      [ "$(basename "$f")" = "types.ts" ] && continue; \
+      sed -e '/^import type .* from .*$/d' -e '/^import .* from .*$/d' -e 's/^export class /class /' "$f" >> /etc/config/permissions/namespaces/permissions.ts; \
+      printf '\n\n' >> /etc/config/permissions/namespaces/permissions.ts; \
+    done && \
+    rm -rf /tmp/namespaces
 
 # Copy entrypoint script
 COPY docker/permissions/entrypoint.sh /entrypoint.sh

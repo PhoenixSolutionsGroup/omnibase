@@ -34,7 +34,7 @@ jobs:
             file: docker/auth/Dockerfile
           - name: permissions
             image: phoenixsolutionsgroup/omnibase-permissions
-            context: docker/permissions
+            context: .
             file: docker/permissions/Dockerfile
 
     steps:
