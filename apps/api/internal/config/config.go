@@ -28,6 +28,7 @@ type Config struct {
 	EncryptionMasterKey  string
 	EnablePprof          bool
 	CORSAllowedOrigins   []string
+	InviteAllowedOrigins []string
 }
 
 type ManagedHostingConfig struct {
@@ -155,14 +156,35 @@ func New() *Config {
 			InternalServiceToken: os.Getenv("INTERNAL_SERVICE_TOKEN"),
 			TenantID:             getEnvOrDefault("MANAGED_TENANT_ID", "local"),
 		},
-		PostgRESTURL:        getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
-		TypegenURL:          getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
-		JWTSecret:           os.Getenv("JWT_SECRET"),
-		APIServiceKey:       os.Getenv("API_SERVICE_KEY"),
-		EncryptionMasterKey: os.Getenv("ENCRYPTION_MASTER_KEY"),
-		EnablePprof:         os.Getenv("ENABLE_PPROF") == "true",
-		CORSAllowedOrigins:  parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
+		PostgRESTURL:         getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
+		TypegenURL:           getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
+		JWTSecret:            os.Getenv("JWT_SECRET"),
+		APIServiceKey:        os.Getenv("API_SERVICE_KEY"),
+		EncryptionMasterKey:  os.Getenv("ENCRYPTION_MASTER_KEY"),
+		EnablePprof:          os.Getenv("ENABLE_PPROF") == "true",
+		CORSAllowedOrigins:   parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS")),
+		InviteAllowedOrigins: inviteAllowedOrigins(),
 	}
+}
+
+func inviteAllowedOrigins() []string {
+	if origins := parseCommaSeparated(os.Getenv("INVITE_ALLOWED_ORIGINS")); len(origins) > 0 {
+		return origins
+	}
+	if frontend := strings.TrimSpace(os.Getenv("FRONTEND_URL")); frontend != "" {
+		return []string{frontend}
+	}
+	if website := strings.TrimSpace(os.Getenv("WEBSITE_URL")); website != "" {
+		return []string{website}
+	}
+	cors := parseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGINS"))
+	origins := make([]string, 0, len(cors))
+	for _, origin := range cors {
+		if origin != "*" {
+			origins = append(origins, origin)
+		}
+	}
+	return origins
 }
 
 func (c *Config) Validate() error {
@@ -183,6 +205,10 @@ func (c *Config) Validate() error {
 
 	if len(c.CORSAllowedOrigins) == 1 && c.CORSAllowedOrigins[0] == "*" {
 		logger.Logger.Warn("CORS_ALLOWED_ORIGINS is '*'; any origin is allowed with credentials")
+	}
+
+	if len(c.InviteAllowedOrigins) == 0 {
+		logger.Logger.Warn("INVITE_ALLOWED_ORIGINS is empty; tenant invites will be rejected")
 	}
 
 	return nil

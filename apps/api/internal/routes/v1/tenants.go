@@ -54,12 +54,13 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Tenants: tenantsSvc,
 	})
 	invitesHandler := invites.New(invites.Deps{
-		Repo:    repo,
-		Perms:   perms,
-		Auth:    authSvc,
-		RBAC:    rbacSvc,
-		Tenants: tenantsSvc,
-		Email:   emailSvc,
+		Repo:                 repo,
+		Perms:                perms,
+		Auth:                 authSvc,
+		RBAC:                 rbacSvc,
+		Tenants:              tenantsSvc,
+		Email:                emailSvc,
+		AllowedInviteOrigins: cfg.InviteAllowedOrigins,
 	})
 	stripeClient := stripe_client.New(cfg.StripeConfig)
 	billingSvc := billing.New(billing.Deps{
