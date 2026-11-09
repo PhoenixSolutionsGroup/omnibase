@@ -43,7 +43,7 @@ TEST_ENV := GIN_MODE=release LOG_LEVEL=$(LOG_LEVEL) LOG_FORMAT=pretty
 test: test-unit test-integration test-e2e
 
 test-unit:
-	$(TEST_ENV) go test ./internal/... $(GO_TEST_FLAGS)
+	$(TEST_ENV) go test ./internal/... ./permissions/... $(GO_TEST_FLAGS)
 
 test-integration: sdk-if-changed
 	$(TEST_ENV) KEEP_STACK=1 go test ./tests/integration/... $(GO_TEST_FLAGS) -p 1

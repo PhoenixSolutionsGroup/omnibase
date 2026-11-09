@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **ManagedMode** | **bool** |  | 
 **Message** | **string** |  | 
 **Path** | **string** |  | 
+**RolesBackfilled** | Pointer to **int64** |  | [optional] 
 **RolesSynced** | Pointer to **int64** |  | [optional] 
 **TenantId** | **string** |  | 
 
@@ -88,6 +89,31 @@ and a boolean to check if the value has been set.
 
 SetPath sets Path field to given value.
 
+
+### GetRolesBackfilled
+
+`func (o *DeployNamespacesResponse) GetRolesBackfilled() int64`
+
+GetRolesBackfilled returns the RolesBackfilled field if non-nil, zero value otherwise.
+
+### GetRolesBackfilledOk
+
+`func (o *DeployNamespacesResponse) GetRolesBackfilledOk() (*int64, bool)`
+
+GetRolesBackfilledOk returns a tuple with the RolesBackfilled field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRolesBackfilled
+
+`func (o *DeployNamespacesResponse) SetRolesBackfilled(v int64)`
+
+SetRolesBackfilled sets RolesBackfilled field to given value.
+
+### HasRolesBackfilled
+
+`func (o *DeployNamespacesResponse) HasRolesBackfilled() bool`
+
+HasRolesBackfilled returns a boolean if a field has been set.
 
 ### GetRolesSynced
 

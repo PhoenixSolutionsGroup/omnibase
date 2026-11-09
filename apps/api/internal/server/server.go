@@ -13,6 +13,7 @@ import (
 	"api/internal/logger"
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
+	namespaces "api/permissions"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humagin"
@@ -21,6 +22,13 @@ import (
 )
 
 func New(cfg *config.Config) *gin.Engine {
+	requirements, err := namespaces.Load()
+	if err != nil {
+		logger.Logger.Error("Failed to load permission namespace requirements", "error", err)
+		panic(err)
+	}
+	logger.Logger.Info("Loaded permission namespace requirements", "files", len(requirements.Files), "namespaces", len(requirements.Namespaces))
+
 	logger.Logger.Debug("Initializing Gin router")
 	r := gin.New()
 	r.RedirectTrailingSlash = false

@@ -51,6 +51,17 @@ SELECT id, role_name, permissions, description, created_at, updated_at
 FROM permissions.role_templates
 ORDER BY role_name;
 
+-- name: GetRoleTemplateByName :one
+SELECT id, role_name, permissions, description, created_at, updated_at
+FROM permissions.role_templates
+WHERE role_name = $1;
+
+-- name: ListRolesByTemplateID :many
+SELECT id, tenant_id, role_name, permissions, template_id, user_ids, created_at, updated_at
+FROM permissions.roles
+WHERE template_id = $1
+ORDER BY tenant_id, role_name;
+
 -- name: UpsertNamespaceDefinition :exec
 INSERT INTO permissions.definitions (namespace, relations, relations_metadata, subject_relations)
 VALUES ($1, $2, $3, $4)

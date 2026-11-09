@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,17 +33,42 @@ func cleanupNamespaceFixtures(t *testing.T, env *testenv.Env) {
 	require.NoError(t, err)
 }
 
-func buildNamespaceZip(t *testing.T) []byte {
+func buildNamespaceZip(t *testing.T, exclude ...string) []byte {
 	t.Helper()
-	src, err := os.ReadFile(filepath.Join("..", "..", "..", "fixtures", "namespaces", "doc.ts"))
+
+	excluded := map[string]struct{}{}
+	for _, name := range exclude {
+		excluded[name] = struct{}{}
+	}
+
+	entries := map[string][]byte{}
+	namespacesDir := filepath.Join("..", "..", "..", "..", "permissions")
+	files, err := os.ReadDir(namespacesDir)
 	require.NoError(t, err)
+	for _, file := range files {
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".ts") {
+			continue
+		}
+		if _, skip := excluded[file.Name()]; skip {
+			continue
+		}
+		content, err := os.ReadFile(filepath.Join(namespacesDir, file.Name()))
+		require.NoError(t, err)
+		entries[file.Name()] = content
+	}
+
+	doc, err := os.ReadFile(filepath.Join("..", "..", "..", "fixtures", "namespaces", "doc.ts"))
+	require.NoError(t, err)
+	entries["doc.ts"] = doc
 
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
-	f, err := zw.Create("doc.ts")
-	require.NoError(t, err)
-	_, err = f.Write(src)
-	require.NoError(t, err)
+	for name, content := range entries {
+		f, err := zw.Create(name)
+		require.NoError(t, err)
+		_, err = f.Write(content)
+		require.NoError(t, err)
+	}
 	require.NoError(t, zw.Close())
 	return buf.Bytes()
 }
@@ -96,6 +122,18 @@ func TestDeployNamespaces(t *testing.T) {
 		assert.Equal(t, "internal/permissions.zip", out.Path)
 		require.NotNil(t, out.RolesSynced, "roles_synced set when @role annotations present")
 		assert.GreaterOrEqual(t, *out.RolesSynced, 2, "owner + admin synced")
+	})
+
+	t.Run("missing required namespace returns 400 naming it", func(t *testing.T) {
+		zipBytes := buildNamespaceZip(t, "storage.ts")
+		resp := postMultipart(t, "/api/v1/permissions/namespaces", "namespaces", "namespaces.zip", zipBytes)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		assert.Contains(t, string(body), "StorageObject")
+		assert.Contains(t, string(body), "namespace missing")
 	})
 
 	t.Run("missing file returns 422", func(t *testing.T) {

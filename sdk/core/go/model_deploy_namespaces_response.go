@@ -25,6 +25,7 @@ type DeployNamespacesResponse struct {
 	ManagedMode bool `json:"managed_mode"`
 	Message string `json:"message"`
 	Path string `json:"path"`
+	RolesBackfilled *int64 `json:"roles_backfilled,omitempty"`
 	RolesSynced *int64 `json:"roles_synced,omitempty"`
 	TenantId string `json:"tenant_id"`
 }
@@ -124,6 +125,38 @@ func (o *DeployNamespacesResponse) SetPath(v string) {
 	o.Path = v
 }
 
+// GetRolesBackfilled returns the RolesBackfilled field value if set, zero value otherwise.
+func (o *DeployNamespacesResponse) GetRolesBackfilled() int64 {
+	if o == nil || IsNil(o.RolesBackfilled) {
+		var ret int64
+		return ret
+	}
+	return *o.RolesBackfilled
+}
+
+// GetRolesBackfilledOk returns a tuple with the RolesBackfilled field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *DeployNamespacesResponse) GetRolesBackfilledOk() (*int64, bool) {
+	if o == nil || IsNil(o.RolesBackfilled) {
+		return nil, false
+	}
+	return o.RolesBackfilled, true
+}
+
+// HasRolesBackfilled returns a boolean if a field has been set.
+func (o *DeployNamespacesResponse) HasRolesBackfilled() bool {
+	if o != nil && !IsNil(o.RolesBackfilled) {
+		return true
+	}
+
+	return false
+}
+
+// SetRolesBackfilled gets a reference to the given int64 and assigns it to the RolesBackfilled field.
+func (o *DeployNamespacesResponse) SetRolesBackfilled(v int64) {
+	o.RolesBackfilled = &v
+}
+
 // GetRolesSynced returns the RolesSynced field value if set, zero value otherwise.
 func (o *DeployNamespacesResponse) GetRolesSynced() int64 {
 	if o == nil || IsNil(o.RolesSynced) {
@@ -193,6 +226,9 @@ func (o DeployNamespacesResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize["managed_mode"] = o.ManagedMode
 	toSerialize["message"] = o.Message
 	toSerialize["path"] = o.Path
+	if !IsNil(o.RolesBackfilled) {
+		toSerialize["roles_backfilled"] = o.RolesBackfilled
+	}
 	if !IsNil(o.RolesSynced) {
 		toSerialize["roles_synced"] = o.RolesSynced
 	}

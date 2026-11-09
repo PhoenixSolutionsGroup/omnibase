@@ -1,7 +1,7 @@
-import type { Tenant, User } from "./permissions";
+import type { Tenant, User } from "./tenants";
 import { Context, Namespace } from "./types";
 
-class StorageObject implements Namespace {
+export class StorageObject implements Namespace {
   related: {
     /**
      * @group Storage Objects

@@ -93,6 +93,7 @@ Class | Method | HTTP request | Description
 *V1ConfigurationAPI* | [**DeleteSystemEmailTemplate**](docs/V1ConfigurationAPI.md#deletesystememailtemplate) | **Delete** /api/v1/email/system-templates/{name} | Delete a system email template
 *V1ConfigurationAPI* | [**DeployPermissionNamespaces**](docs/V1ConfigurationAPI.md#deploypermissionnamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 *V1ConfigurationAPI* | [**GetEmailTemplates**](docs/V1ConfigurationAPI.md#getemailtemplates) | **Get** /api/v1/email/templates | Get all email templates
+*V1ConfigurationAPI* | [**GetPermissionRequirements**](docs/V1ConfigurationAPI.md#getpermissionrequirements) | **Get** /api/v1/permissions/requirements | Get required permission namespaces
 *V1ConfigurationAPI* | [**GetStripeConfigHistory**](docs/V1ConfigurationAPI.md#getstripeconfighistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationAPI* | [**GetStripeConfigSchema**](docs/V1ConfigurationAPI.md#getstripeconfigschema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
 *V1ConfigurationAPI* | [**GetStripeConfigStatus**](docs/V1ConfigurationAPI.md#getstripeconfigstatus) | **Post** /api/v1/stripe/admin/config/status | Get Stripe config status
@@ -224,6 +225,7 @@ Class | Method | HTTP request | Description
  - [EnterprisePricesResponse](docs/EnterprisePricesResponse.md)
  - [ErrorDetail](docs/ErrorDetail.md)
  - [ErrorModel](docs/ErrorModel.md)
+ - [File](docs/File.md)
  - [FinalizeRequest](docs/FinalizeRequest.md)
  - [FormFile](docs/FormFile.md)
  - [GetMeterResponse](docs/GetMeterResponse.md)
@@ -255,6 +257,7 @@ Class | Method | HTTP request | Description
  - [MeterWithStripeID](docs/MeterWithStripeID.md)
  - [MigrationsDownResponse](docs/MigrationsDownResponse.md)
  - [NamespaceDefinitionResponse](docs/NamespaceDefinitionResponse.md)
+ - [ParsedNamespaceDefinition](docs/ParsedNamespaceDefinition.md)
  - [Price](docs/Price.md)
  - [PriceChange](docs/PriceChange.md)
  - [PriceChanges](docs/PriceChanges.md)
@@ -273,9 +276,11 @@ Class | Method | HTTP request | Description
  - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
  - [RecordUsageRequest](docs/RecordUsageRequest.md)
  - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
+ - [RelationMetadata](docs/RelationMetadata.md)
  - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
  - [RemoveRequest](docs/RemoveRequest.md)
  - [RemoveResponse](docs/RemoveResponse.md)
+ - [Requirements](docs/Requirements.md)
  - [SendHTMLRequest](docs/SendHTMLRequest.md)
  - [SendResponse](docs/SendResponse.md)
  - [SendTemplateRequest](docs/SendTemplateRequest.md)
