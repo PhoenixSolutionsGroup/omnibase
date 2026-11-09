@@ -11,6 +11,7 @@ Method | HTTP request | Description
 [**DeleteSystemEmailTemplate**](V1ConfigurationAPI.md#DeleteSystemEmailTemplate) | **Delete** /api/v1/email/system-templates/{name} | Delete a system email template
 [**DeployPermissionNamespaces**](V1ConfigurationAPI.md#DeployPermissionNamespaces) | **Post** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 [**GetEmailTemplates**](V1ConfigurationAPI.md#GetEmailTemplates) | **Get** /api/v1/email/templates | Get all email templates
+[**GetPermissionRequirements**](V1ConfigurationAPI.md#GetPermissionRequirements) | **Get** /api/v1/permissions/requirements | Get required permission namespaces
 [**GetStripeConfigHistory**](V1ConfigurationAPI.md#GetStripeConfigHistory) | **Get** /api/v1/stripe/admin/config/history | Get config history
 [**GetStripeConfigSchema**](V1ConfigurationAPI.md#GetStripeConfigSchema) | **Get** /api/v1/stripe/schema | Get Stripe config schema
 [**GetStripeConfigStatus**](V1ConfigurationAPI.md#GetStripeConfigStatus) | **Post** /api/v1/stripe/admin/config/status | Get Stripe config status
@@ -465,6 +466,65 @@ Other parameters are passed through a pointer to a apiGetEmailTemplatesRequest s
 ### Authorization
 
 [ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json, application/problem+json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetPermissionRequirements
+
+> Requirements GetPermissionRequirements(ctx).Execute()
+
+Get required permission namespaces
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
+)
+
+func main() {
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.V1ConfigurationAPI.GetPermissionRequirements(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V1ConfigurationAPI.GetPermissionRequirements``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetPermissionRequirements`: Requirements
+	fmt.Fprintf(os.Stdout, "Response from `V1ConfigurationAPI.GetPermissionRequirements`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetPermissionRequirementsRequest struct via the builder pattern
+
+
+### Return type
+
+[**Requirements**](Requirements.md)
+
+### Authorization
+
+No authorization required
 
 ### HTTP request headers
 

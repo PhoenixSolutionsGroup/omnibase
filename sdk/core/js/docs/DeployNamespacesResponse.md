@@ -9,6 +9,7 @@ Name | Type
 `managedMode` | boolean
 `message` | string
 `path` | string
+`rolesBackfilled` | number
 `rolesSynced` | number
 `tenantId` | string
 
@@ -22,6 +23,7 @@ const example = {
   "managedMode": null,
   "message": null,
   "path": null,
+  "rolesBackfilled": null,
   "rolesSynced": null,
   "tenantId": null,
 } satisfies DeployNamespacesResponse

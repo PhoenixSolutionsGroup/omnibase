@@ -42,6 +42,12 @@ export interface DeployNamespacesResponse {
      * @type {number}
      * @memberof DeployNamespacesResponse
      */
+    rolesBackfilled?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof DeployNamespacesResponse
+     */
     rolesSynced?: number;
     /**
      * 
@@ -75,6 +81,7 @@ export function DeployNamespacesResponseFromJSONTyped(json: any, ignoreDiscrimin
         'managedMode': json['managed_mode'],
         'message': json['message'],
         'path': json['path'],
+        'rolesBackfilled': json['roles_backfilled'] == null ? undefined : json['roles_backfilled'],
         'rolesSynced': json['roles_synced'] == null ? undefined : json['roles_synced'],
         'tenantId': json['tenant_id'],
     };
@@ -94,6 +101,7 @@ export function DeployNamespacesResponseToJSONTyped(value?: DeployNamespacesResp
         'managed_mode': value['managedMode'],
         'message': value['message'],
         'path': value['path'],
+        'roles_backfilled': value['rolesBackfilled'],
         'roles_synced': value['rolesSynced'],
         'tenant_id': value['tenantId'],
     };

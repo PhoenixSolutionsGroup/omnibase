@@ -200,7 +200,11 @@ jobs:
             echo "No previous release found for ${{ matrix.name }}, will release"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
-            CHANGES=$(git diff --name-only $LAST_TAG HEAD -- ${{ matrix.path }}/ | wc -l)
+            PATHS="${{ matrix.path }}/"
+            if [ "${{ matrix.name }}" = "permissions" ]; then
+              PATHS="docker/permissions/ apps/api/permissions/"
+            fi
+            CHANGES=$(git diff --name-only $LAST_TAG HEAD -- $PATHS | wc -l)
             if [ "$CHANGES" -gt 0 ]; then
               echo "${{ matrix.name }} has $CHANGES changed files since $LAST_TAG"
               echo "has_changes=true" >> $GITHUB_OUTPUT

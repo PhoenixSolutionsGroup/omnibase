@@ -5,12 +5,13 @@ USER root
 # Install AWS CLI for S3-compatible storage (R2) and unzip
 RUN apk add --no-cache aws-cli unzip
 
-# Copy base config and default namespaces
-COPY permissions.yml /etc/config/permissions/permissions.yml
-COPY namespaces/ /etc/config/permissions/namespaces/
+# Build from the repo root so the API-owned namespace files are the only copy.
+COPY docker/permissions/permissions.yml /etc/config/permissions/permissions.yml
+COPY apps/api/permissions/*.ts /etc/config/permissions/namespaces/
+RUN rm -f /etc/config/permissions/namespaces/types.ts
 
 # Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
+COPY docker/permissions/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 RUN chown -R ory:ory /etc/config/permissions

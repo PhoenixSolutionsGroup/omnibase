@@ -3,7 +3,7 @@ module.exports = {
   tagFormat: 'permissions-v${version}',
   plugins: [
     ['semantic-release-commit-filter', {
-      filterPaths: ['docker/permissions']
+      filterPaths: ['docker/permissions', 'apps/api/permissions']
     }],
     ['@semantic-release/commit-analyzer', {
       preset: 'angular',
@@ -18,7 +18,7 @@ module.exports = {
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/exec', {
-      publishCmd: '../../scripts/release-docker.sh ${nextRelease.version}'
+      publishCmd: 'DOCKER_CONTEXT=../.. DOCKERFILE=docker/permissions/Dockerfile ../../scripts/release-docker.sh ${nextRelease.version}'
     }],
     ['@semantic-release/git', {
       assets: ['CHANGELOG.md'],

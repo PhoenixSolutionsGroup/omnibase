@@ -1397,6 +1397,10 @@
           "path": {
             "type": "string"
           },
+          "roles_backfilled": {
+            "format": "int64",
+            "type": "integer"
+          },
           "roles_synced": {
             "format": "int64",
             "type": "integer"
@@ -1643,6 +1647,22 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "File": {
+        "additionalProperties": false,
+        "properties": {
+          "contents": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "contents"
+        ],
         "type": "object"
       },
       "FinalizeRequest": {
@@ -2501,6 +2521,64 @@
         "additionalProperties": false,
         "type": "object"
       },
+      "ParsedNamespaceDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "permits": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "relations": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "relations_metadata": {
+            "items": {
+              "$ref": "#/components/schemas/RelationMetadata"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "subject_relations": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "type": "object"
+          }
+        },
+        "required": [
+          "namespace",
+          "file",
+          "relations",
+          "permits",
+          "subject_relations"
+        ],
+        "type": "object"
+      },
       "Price": {
         "additionalProperties": false,
         "properties": {
@@ -3147,6 +3225,56 @@
         ],
         "type": "object"
       },
+      "RelationMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "sub_group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "subjects": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "display_name",
+          "group",
+          "sub_group",
+          "roles",
+          "subjects"
+        ],
+        "type": "object"
+      },
       "RelationMetadataResponse": {
         "additionalProperties": false,
         "properties": {
@@ -3217,6 +3345,34 @@
           "subscription_id",
           "status",
           "message"
+        ],
+        "type": "object"
+      },
+      "Requirements": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/File"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "namespaces": {
+            "items": {
+              "$ref": "#/components/schemas/ParsedNamespaceDefinition"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "files",
+          "namespaces"
         ],
         "type": "object"
       },
@@ -8215,6 +8371,42 @@
         "summary": "Create relationship",
         "tags": [
           "V1Permissions"
+        ]
+      }
+    },
+    "/api/v1/permissions/requirements": {
+      "get": {
+        "operationId": "getPermissionRequirements",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Requirements"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Internal Server Error",
+                  "status": 500,
+                  "detail": "Internal server error."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get required permission namespaces",
+        "tags": [
+          "V1Configuration"
         ]
       }
     },

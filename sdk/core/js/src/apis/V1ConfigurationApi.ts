@@ -26,6 +26,7 @@ import type {
   ErrorModel,
   ListSystemTemplatesResponse,
   ListTemplatesResponse,
+  Requirements,
   SendHTMLRequest,
   SendResponse,
   SendTemplateRequest,
@@ -58,6 +59,8 @@ import {
     ListSystemTemplatesResponseToJSON,
     ListTemplatesResponseFromJSON,
     ListTemplatesResponseToJSON,
+    RequirementsFromJSON,
+    RequirementsToJSON,
     SendHTMLRequestFromJSON,
     SendHTMLRequestToJSON,
     SendResponseFromJSON,
@@ -466,6 +469,35 @@ export class V1ConfigurationApi extends runtime.BaseAPI {
      */
     async getEmailTemplates(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ListTemplatesResponse> {
         const response = await this.getEmailTemplatesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get required permission namespaces
+     */
+    async getPermissionRequirementsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Requirements>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/v1/permissions/requirements`;
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => RequirementsFromJSON(jsonValue));
+    }
+
+    /**
+     * Get required permission namespaces
+     */
+    async getPermissionRequirements(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Requirements> {
+        const response = await this.getPermissionRequirementsRaw(initOverrides);
         return await response.value();
     }
 

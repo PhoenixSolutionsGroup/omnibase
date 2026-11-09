@@ -78,6 +78,15 @@ func SetUpPermissionRoutes(router *gin.RouterGroup, api huma.API, d Deps) {
 	}, authn.AuthServiceKey, nil, handler.DeleteRelationship)
 
 	register(api, d.Auth, huma.Operation{
+		OperationID: "getPermissionRequirements",
+		Errors:      []int{500},
+		Method:      http.MethodGet,
+		Path:        "/api/v1/permissions/requirements",
+		Summary:     "Get required permission namespaces",
+		Tags:        []string{"V1Configuration"},
+	}, authn.AuthNone, nil, handler.Requirements)
+
+	register(api, d.Auth, huma.Operation{
 		OperationID: "deployPermissionNamespaces",
 		Errors:      []int{400, 401},
 		Method:      http.MethodPost,
