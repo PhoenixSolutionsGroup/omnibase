@@ -455,7 +455,7 @@ export function ProvisioningForm({
         const data: OptionsResponse = await res.json();
         setOptions(data);
 
-        // console.log("data: ", data);
+        console.log("data: ", data);
 
         const tiers = sortTiers(data.tiers);
         const planIds = new Set(plans.map((p) => p.id));
