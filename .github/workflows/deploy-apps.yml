@@ -63,6 +63,7 @@ jobs:
   deploy:
     name: Deploy ${{ matrix.app }} (${{ needs.plan.outputs.env }})
     needs: [plan]
+    environment: ${{ needs.plan.outputs.env == 'main' && 'Production' || 'Development' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
