@@ -71,7 +71,7 @@ jobs:
         app: ${{ fromJSON(needs.plan.outputs.apps) }}
     env:
       DEPLOY_ENV: ${{ needs.plan.outputs.env }}
-      MANAGED_HOSTING_API_URL: ${{ secrets.MANAGED_HOSTING_API_URL }}
+      MANAGED_HOSTING_API_URL: https://api.omnibase.tech
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
       COOKIE_DOMAIN: ${{ secrets.OMNIBASE_COOKIE_DOMAIN }}
     steps:
