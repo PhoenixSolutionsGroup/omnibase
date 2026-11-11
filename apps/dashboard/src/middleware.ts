@@ -7,3 +7,7 @@ export const middleware = createOmniBaseMiddleware(OMNIBASE_API_URL, {
   tenant_check_paths: ["/"],
   tenant_check_redirect_url: "/auth/onboarding",
 });
+
+export const config = {
+  matcher: ["/((?!_next/|favicon.ico).*)"],
+};
