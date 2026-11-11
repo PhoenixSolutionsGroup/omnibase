@@ -15,6 +15,7 @@ type ManagedHostingClient struct {
 	baseURL      string
 	serviceToken string
 	tenantID     string
+	branchID     string
 	httpClient   *http.Client
 }
 
@@ -23,6 +24,7 @@ func NewManagedHostingClient(cfg *config.ManagedHostingConfig) *ManagedHostingCl
 		baseURL:      cfg.ManagedHostingAPIURL,
 		serviceToken: cfg.InternalServiceToken,
 		tenantID:     cfg.TenantID,
+		branchID:     cfg.BranchID,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
@@ -56,6 +58,7 @@ func (c *ManagedHostingClient) RegisterWebhook(ctx context.Context, req Register
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("X-API-Key", c.serviceToken)
 	httpReq.Header.Set("X-Tenant-ID", c.tenantID)
+	httpReq.Header.Set("X-Branch-ID", c.branchID)
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
@@ -81,6 +84,7 @@ func (c *ManagedHostingClient) DeleteWebhook(ctx context.Context, webhookID stri
 	}
 	httpReq.Header.Set("X-API-Key", c.serviceToken)
 	httpReq.Header.Set("X-Tenant-ID", c.tenantID)
+	httpReq.Header.Set("X-Branch-ID", c.branchID)
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
