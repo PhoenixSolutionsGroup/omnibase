@@ -36,6 +36,7 @@ type ManagedHostingConfig struct {
 	ManagedHostingAPIURL string
 	InternalServiceToken string
 	TenantID             string
+	BranchID             string
 }
 
 type PermissionsConfig struct {
@@ -155,6 +156,7 @@ func New() *Config {
 			ManagedHostingAPIURL: os.Getenv("MANAGED_HOSTING_API_URL"),
 			InternalServiceToken: os.Getenv("INTERNAL_SERVICE_TOKEN"),
 			TenantID:             getEnvOrDefault("MANAGED_TENANT_ID", "local"),
+			BranchID:             os.Getenv("MANAGED_BRANCH_ID"),
 		},
 		PostgRESTURL:         getEnvOrDefault("POSTGREST_URL", "http://localhost:3000"),
 		TypegenURL:           getEnvOrDefault("TYPEGEN_URL", "http://postgres-type-gen:8080"),
