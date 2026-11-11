@@ -71,7 +71,6 @@ jobs:
         app: ${{ fromJSON(needs.plan.outputs.apps) }}
     env:
       DEPLOY_ENV: ${{ needs.plan.outputs.env }}
-      MANAGED_HOSTING_API_URL: https://api.omnibase.tech
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
       COOKIE_DOMAIN: ${{ secrets.OMNIBASE_COOKIE_DOMAIN }}
     steps:
@@ -165,14 +164,13 @@ jobs:
             exit 1
           fi
           bun packages/cli/src/index.ts cloud login "$OMNIBASE_API_KEY" \
-            --url "$MANAGED_HOSTING_API_URL" \
+            --url https://api.omnibase.tech \
             --name ci
 
       - name: Write branch environment
         env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          COOKIE_SECRET: ${{ secrets.OMNIBASE_COOKIE_SECRET }}
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+          ENV_KEYS: "ALLOWED_RETURN_URLS GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET MANAGED_HOSTING_API_URL NEXT_PUBLIC_DASHBOARD_URL NEXT_PUBLIC_MANAGED_HOSTING_API_URL NEXT_PUBLIC_OMNIBASE_ANON_KEY NEXT_PUBLIC_OMNIBASE_API_URL NEXT_PUBLIC_OMNIBASE_WORKER_URL NEXT_PUBLIC_WEBSITE_URL OMNIBASE_ANON_KEY OMNIBASE_API_URL OMNIBASE_COOKIE_DOMAIN OMNIBASE_POSTGREST_URL OMNIBASE_SERVICE_KEY WEBSITE_URL"
         run: |
           ENV_FILE="omnibase/.env.$DEPLOY_ENV"
           COOKIE_ARGS=()
@@ -184,15 +182,13 @@ jobs:
             "${COOKIE_ARGS[@]}" \
             --output "$ENV_FILE"
 
-          append_env() {
-            if [ -n "$2" ]; then
-              printf '%s=%s\n' "$1" "$2" >> "$ENV_FILE"
-            fi
-          }
-
-          append_env GOOGLE_CLIENT_ID "$GOOGLE_CLIENT_ID"
-          append_env GOOGLE_CLIENT_SECRET "$GOOGLE_CLIENT_SECRET"
-          append_env COOKIE_SECRET "$COOKIE_SECRET"
+          echo "$SECRETS_JSON" | jq -r --arg keys "$ENV_KEYS" '
+            ($keys | split(" ")) as $allow
+            | to_entries[]
+            | select(.key as $k | $allow | index($k))
+            | select(.value != null and .value != "")
+            | "\(.key)=\(.value)"
+          ' >> "$ENV_FILE"
 
       - name: Deploy ${{ matrix.app }}
         run: bun packages/cli/src/index.ts --env "$DEPLOY_ENV" cloud workers deploy --name "${{ matrix.app }}"
