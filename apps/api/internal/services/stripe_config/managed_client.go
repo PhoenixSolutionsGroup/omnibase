@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -45,13 +46,22 @@ type RegisterWebhookResponse struct {
 	Action    string `json:"action"`
 }
 
-func (c *ManagedHostingClient) RegisterWebhook(ctx context.Context, req RegisterWebhookRequest) (*RegisterWebhookResponse, error) {
-	body, err := json.Marshal(req)
+type ReplaceWebhooksRequest struct {
+	Webhooks []RegisterWebhookRequest `json:"webhooks"`
+}
+
+type ReplaceWebhooksResponse struct {
+	Webhooks []RegisterWebhookResponse `json:"webhooks"`
+	Deleted  int64                     `json:"deleted"`
+}
+
+func (c *ManagedHostingClient) ReplaceWebhooks(ctx context.Context, webhooks []RegisterWebhookRequest) (*ReplaceWebhooksResponse, error) {
+	body, err := json.Marshal(ReplaceWebhooksRequest{Webhooks: webhooks})
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
-	httpReq, err := http.NewRequestWithContext(ctx, "POST",
-		c.baseURL+"/api/v1/stripe/webhooks/register", bytes.NewReader(body))
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPut,
+		c.baseURL+"/api/v1/stripe/webhooks", bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -67,9 +77,10 @@ func (c *ManagedHostingClient) RegisterWebhook(ctx context.Context, req Register
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("managed hosting API returned status %d", resp.StatusCode)
+		message, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
+		return nil, fmt.Errorf("managed hosting API returned status %d: %s", resp.StatusCode, bytes.TrimSpace(message))
 	}
-	var result RegisterWebhookResponse
+	var result ReplaceWebhooksResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
