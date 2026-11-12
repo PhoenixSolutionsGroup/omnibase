@@ -37,46 +37,64 @@ type StripeWebhookInfo struct {
 }
 
 func (s *Service) processWebhooksManaged(ctx context.Context, webhooks []WebhookEndpointConfig) ([]WebhookResult, error) {
-	var results []WebhookResult
-	for _, w := range webhooks {
-		req := RegisterWebhookRequest{
-			WebhookID: w.ID,
-			URL:       w.URL,
-			Events:    w.Events,
-			Connect:   w.Connect,
+	requests := make([]RegisterWebhookRequest, len(webhooks))
+	desired := make(map[string]WebhookEndpointConfig, len(webhooks))
+	for i, webhook := range webhooks {
+		requests[i] = RegisterWebhookRequest{
+			WebhookID: webhook.ID,
+			URL:       webhook.URL,
+			Events:    webhook.Events,
+			Connect:   webhook.Connect,
 		}
-		resp, err := s.managed.RegisterWebhook(ctx, req)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %w", ProcessWebhooksError, err)
+		desired[webhook.ID] = webhook
+	}
+
+	response, err := s.managed.ReplaceWebhooks(ctx, requests)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ProcessWebhooksError, err)
+	}
+
+	results := make([]WebhookResult, 0, len(response.Webhooks))
+	keep := make([]string, 0, len(response.Webhooks))
+	for _, registered := range response.Webhooks {
+		webhook, ok := desired[registered.WebhookID]
+		if !ok {
+			return nil, fmt.Errorf("%w: managed hosting returned unknown webhook %q", ProcessWebhooksError, registered.WebhookID)
 		}
-		secret := resp.Secret
+		secret := registered.Secret
 		if s.encryption != nil {
-			enc, encErr := s.encryption.Encrypt(resp.Secret)
+			enc, encErr := s.encryption.Encrypt(registered.Secret)
 			if encErr != nil {
 				return nil, fmt.Errorf("%w: failed to encrypt webhook secret: %w", ProcessWebhooksError, encErr)
 			}
 			secret = enc
 		}
-		row, err := s.repo.CreateStripeWebhook(ctx, repository.CreateStripeWebhookParams{
-			StripeID: resp.ID,
-			Url:      w.URL,
+		row, err := s.repo.UpsertStripeWebhook(ctx, repository.UpsertStripeWebhookParams{
+			StripeID: registered.ID,
+			Url:      webhook.URL,
 			Secret:   secret,
-			Events:   w.Events,
-			Connect:  w.Connect,
+			Events:   webhook.Events,
+			Connect:  webhook.Connect,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("%w: failed to persist webhook: %w", ProcessWebhooksError, err)
 		}
+		keep = append(keep, registered.ID)
 		results = append(results, WebhookResult{
 			ID:       row.ID.String(),
-			StripeID: resp.ID,
-			URL:      w.URL,
-			Events:   w.Events,
-			Connect:  w.Connect,
-			Secret:   resp.Secret,
-			Action:   resp.Action,
+			StripeID: registered.ID,
+			URL:      webhook.URL,
+			Events:   webhook.Events,
+			Connect:  webhook.Connect,
+			Secret:   registered.Secret,
+			Action:   registered.Action,
 		})
 	}
+
+	if _, err := s.repo.DeleteStaleStripeWebhooks(ctx, keep); err != nil {
+		return nil, fmt.Errorf("%w: failed to prune stale webhook rows: %w", ProcessWebhooksError, err)
+	}
+
 	return results, nil
 }
 

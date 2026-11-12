@@ -171,6 +171,26 @@ func (q *Queries) GetRoleByNameAndTenant(ctx context.Context, arg GetRoleByNameA
 	return i, err
 }
 
+const getRoleTemplateByName = `-- name: GetRoleTemplateByName :one
+SELECT id, role_name, permissions, description, created_at, updated_at
+FROM permissions.role_templates
+WHERE role_name = $1
+`
+
+func (q *Queries) GetRoleTemplateByName(ctx context.Context, roleName string) (PermissionsRoleTemplate, error) {
+	row := q.db.QueryRow(ctx, getRoleTemplateByName, roleName)
+	var i PermissionsRoleTemplate
+	err := row.Scan(
+		&i.ID,
+		&i.RoleName,
+		&i.Permissions,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listNamespaceDefinitions = `-- name: ListNamespaceDefinitions :many
 SELECT id, namespace, relations, relations_metadata, subject_relations, updated_at
 FROM permissions.definitions
@@ -233,6 +253,53 @@ func (q *Queries) ListRoleTemplates(ctx context.Context) ([]PermissionsRoleTempl
 			&i.RoleName,
 			&i.Permissions,
 			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRolesByTemplateID = `-- name: ListRolesByTemplateID :many
+SELECT id, tenant_id, role_name, permissions, template_id, user_ids, created_at, updated_at
+FROM permissions.roles
+WHERE template_id = $1
+ORDER BY tenant_id, role_name
+`
+
+type ListRolesByTemplateIDRow struct {
+	ID          uuid.UUID   `json:"id"`
+	TenantID    uuid.UUID   `json:"tenant_id"`
+	RoleName    string      `json:"role_name"`
+	Permissions []string    `json:"permissions"`
+	TemplateID  *uuid.UUID  `json:"template_id"`
+	UserIds     []uuid.UUID `json:"user_ids"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) ListRolesByTemplateID(ctx context.Context, templateID *uuid.UUID) ([]ListRolesByTemplateIDRow, error) {
+	rows, err := q.db.Query(ctx, listRolesByTemplateID, templateID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListRolesByTemplateIDRow
+	for rows.Next() {
+		var i ListRolesByTemplateIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.TenantID,
+			&i.RoleName,
+			&i.Permissions,
+			&i.TemplateID,
+			&i.UserIds,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

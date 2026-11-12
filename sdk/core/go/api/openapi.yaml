@@ -2507,6 +2507,29 @@ paths:
       summary: Create relationship
       tags:
       - V1Permissions
+  /api/v1/permissions/requirements:
+    get:
+      operationId: getPermissionRequirements
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Requirements"
+          description: OK
+        "500":
+          content:
+            application/problem+json:
+              example:
+                title: Internal Server Error
+                status: 500
+                detail: Internal server error.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Internal Server Error
+      summary: Get required permission namespaces
+      tags:
+      - V1Configuration
   /api/v1/storage/download:
     post:
       description: "Storage object paths are unique across the entire bucket, not\
@@ -8233,9 +8256,10 @@ components:
       example:
         tenant_id: tenant_id
         path: path
+        roles_backfilled: 0
         managed_mode: true
         message: message
-        roles_synced: 0
+        roles_synced: 6
       properties:
         managed_mode:
           type: boolean
@@ -8243,6 +8267,9 @@ components:
           type: string
         path:
           type: string
+        roles_backfilled:
+          format: int64
+          type: integer
         roles_synced:
           format: int64
           type: integer
@@ -8506,6 +8533,19 @@ components:
           description: A URI reference to human-readable documentation for the error.
           format: uri
           type: string
+    File:
+      additionalProperties: false
+      example:
+        contents: contents
+        name: name
+      properties:
+        contents:
+          type: string
+        name:
+          type: string
+      required:
+      - contents
+      - name
     FinalizeRequest:
       additionalProperties: false
       example:
@@ -9589,6 +9629,73 @@ components:
     NullableString:
       additionalProperties: false
       type: object
+    ParsedNamespaceDefinition:
+      additionalProperties: false
+      example:
+        file: file
+        permits:
+        - permits
+        - permits
+        relations_metadata:
+        - roles:
+          - roles
+          - roles
+          sub_group: sub_group
+          subjects:
+          - subjects
+          - subjects
+          name: name
+          display_name: display_name
+          group: group
+        - roles:
+          - roles
+          - roles
+          sub_group: sub_group
+          subjects:
+          - subjects
+          - subjects
+          name: name
+          display_name: display_name
+          group: group
+        namespace: namespace
+        subject_relations:
+          key:
+          - subject_relations
+          - subject_relations
+        relations:
+        - relations
+        - relations
+      properties:
+        file:
+          type: string
+        namespace:
+          type: string
+        permits:
+          items:
+            type: string
+          nullable: true
+          type: array
+        relations:
+          items:
+            type: string
+          nullable: true
+          type: array
+        relations_metadata:
+          items:
+            $ref: "#/components/schemas/RelationMetadata"
+          nullable: true
+          type: array
+        subject_relations:
+          additionalProperties:
+            items:
+              type: string
+            nullable: true
+      required:
+      - file
+      - namespace
+      - permits
+      - relations
+      - subject_relations
     Price:
       additionalProperties: false
       example:
@@ -10457,6 +10564,47 @@ components:
       - id
       - value
       - via
+    RelationMetadata:
+      additionalProperties: false
+      example:
+        roles:
+        - roles
+        - roles
+        sub_group: sub_group
+        subjects:
+        - subjects
+        - subjects
+        name: name
+        display_name: display_name
+        group: group
+      properties:
+        display_name:
+          type: string
+        group:
+          nullable: true
+          type: string
+        name:
+          type: string
+        roles:
+          items:
+            type: string
+          nullable: true
+          type: array
+        sub_group:
+          nullable: true
+          type: string
+        subjects:
+          items:
+            type: string
+          nullable: true
+          type: array
+      required:
+      - display_name
+      - group
+      - name
+      - roles
+      - sub_group
+      - subjects
     RelationMetadataResponse:
       additionalProperties: false
       example:
@@ -10511,6 +10659,95 @@ components:
       - message
       - status
       - subscription_id
+    Requirements:
+      additionalProperties: false
+      example:
+        files:
+        - contents: contents
+          name: name
+        - contents: contents
+          name: name
+        namespaces:
+        - file: file
+          permits:
+          - permits
+          - permits
+          relations_metadata:
+          - roles:
+            - roles
+            - roles
+            sub_group: sub_group
+            subjects:
+            - subjects
+            - subjects
+            name: name
+            display_name: display_name
+            group: group
+          - roles:
+            - roles
+            - roles
+            sub_group: sub_group
+            subjects:
+            - subjects
+            - subjects
+            name: name
+            display_name: display_name
+            group: group
+          namespace: namespace
+          subject_relations:
+            key:
+            - subject_relations
+            - subject_relations
+          relations:
+          - relations
+          - relations
+        - file: file
+          permits:
+          - permits
+          - permits
+          relations_metadata:
+          - roles:
+            - roles
+            - roles
+            sub_group: sub_group
+            subjects:
+            - subjects
+            - subjects
+            name: name
+            display_name: display_name
+            group: group
+          - roles:
+            - roles
+            - roles
+            sub_group: sub_group
+            subjects:
+            - subjects
+            - subjects
+            name: name
+            display_name: display_name
+            group: group
+          namespace: namespace
+          subject_relations:
+            key:
+            - subject_relations
+            - subject_relations
+          relations:
+          - relations
+          - relations
+      properties:
+        files:
+          items:
+            $ref: "#/components/schemas/File"
+          nullable: true
+          type: array
+        namespaces:
+          items:
+            $ref: "#/components/schemas/ParsedNamespaceDefinition"
+          nullable: true
+          type: array
+      required:
+      - files
+      - namespaces
     SendHTMLRequest:
       additionalProperties: false
       example:

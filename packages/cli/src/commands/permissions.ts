@@ -21,6 +21,11 @@ import { logger } from "../utils/logger";
 import { extractApiError, formatHttpError } from "../utils/errors";
 import { getCommandContextWithEnv } from "../utils/context";
 import { runDockerComposeCommand } from "../utils/docker";
+import { findOmnibaseRoot } from "../utils/environment";
+import {
+  applyNamespaceFix,
+  fetchPermissionRequirements,
+} from "../utils/permission-namespaces";
 
 export class PermissionsCommand {
   private relationshipApi: RelationshipApi;
@@ -354,6 +359,54 @@ export function addPermissionsCommands(program: Command): void {
         logger.info(`Using environment: ${ctx.env.name}`);
         const isValid = await permissionsCmd.validate();
         process.exit(isValid ? 0 : 1);
+      } catch (error) {
+        logger.fail(error instanceof Error ? error.message : String(error));
+        process.exit(1);
+      }
+    });
+
+  permissions
+    .command("fix")
+    .summary("Add missing required relations and permits")
+    .description(
+      "Fetch the namespaces the running API requires from " +
+      "`/api/v1/permissions/requirements` and add any missing `related` " +
+      "relations and `permits` to the classes in `omnibase/permissions/`.\n\n" +
+      "Members are inserted with the TypeScript compiler API using the bodies " +
+      "and JSDoc metadata from the API's own namespace files. Existing " +
+      "members are never removed or rewritten. Namespace files that do not " +
+      "exist yet are written in full.\n\n" +
+      "```bash\n" +
+      "omnibase permissions fix\n" +
+      "omnibase permissions fix --env dev\n" +
+      "```"
+    )
+    .action(async () => {
+      try {
+        const ctx = await getCommandContextWithEnv(program);
+        const root = findOmnibaseRoot();
+
+        logger.info(`Using environment: ${ctx.env.name}`);
+        const requirements = await fetchPermissionRequirements(
+          ctx.env.omnibaseApiUrl,
+        );
+
+        if (!requirements) {
+          logger.fail(
+            "The API does not expose /api/v1/permissions/requirements; upgrade `api` in [versions]",
+          );
+          process.exit(1);
+        }
+
+        const result = applyNamespaceFix(root, requirements);
+        if (result.written.length > 0) {
+          logger.log(`  Wrote ${result.written.join(", ")}`);
+        }
+        if (result.fixed.length > 0) {
+          logger.succeed(`Added missing entries to ${result.fixed.join(", ")}`);
+        } else {
+          logger.succeed("No missing relations or permits found");
+        }
       } catch (error) {
         logger.fail(error instanceof Error ? error.message : String(error));
         process.exit(1);

@@ -19,10 +19,11 @@ jobs:
       github.event.action != 'closed' &&
       contains(github.event.pull_request.labels.*.name, 'preview') &&
       github.event.pull_request.head.repo.full_name == github.repository
+    environment: Development
     runs-on: ubuntu-latest
     env:
       BRANCH_NAME: pr-${{ github.event.pull_request.number }}
-      MANAGED_HOSTING_API_URL: ${{ vars.OMNIBASE_MANAGED_HOSTING_API_URL || 'https://api.omnibase.tech' }}
+      MANAGED_HOSTING_API_URL: https://api.omnibase.tech
       PREVIEW_REGION: ${{ vars.OMNIBASE_PREVIEW_REGION || 'syd' }}
       PREVIEW_TIER: ${{ vars.OMNIBASE_PREVIEW_TIER || 'shared_starter' }}
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
@@ -183,10 +184,11 @@ jobs:
     if: |
       github.event.action == 'closed' &&
       github.event.pull_request.head.repo.full_name == github.repository
+    environment: Development
     runs-on: ubuntu-latest
     env:
       BRANCH_NAME: pr-${{ github.event.pull_request.number }}
-      MANAGED_HOSTING_API_URL: ${{ vars.OMNIBASE_MANAGED_HOSTING_API_URL || 'https://api.omnibase.tech' }}
+      MANAGED_HOSTING_API_URL: https://api.omnibase.tech
     steps:
       - uses: actions/checkout@v4
         with:

@@ -15,7 +15,7 @@ import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
 import { addDocsCommands } from "./commands/docs";
-import { selectEnvironment, findOmnibaseRoot } from "./utils/environment";
+import { selectEnvironment, findOmnibaseRoot, loadLocalEnvironment } from "./utils/environment";
 import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
@@ -35,6 +35,12 @@ import {
   fetchLatestVersions,
   pinVersionsInToml,
 } from "./utils/versions";
+import {
+  compareNamespaceFiles,
+  fetchNamespaceFilesFromGithub,
+  fetchPermissionRequirements,
+  writeNamespaceFiles,
+} from "./utils/permission-namespaces";
 
 export const program = new Command();
 
@@ -69,7 +75,9 @@ function createTemplateFiles(targetDir: string): void {
   writeAgentPointers(targetDir);
 }
 
-async function pinTemplateVersions(targetDir: string): Promise<void> {
+async function pinTemplateVersions(
+  targetDir: string,
+): Promise<Record<string, string> | null> {
   const tomlPath = path.join(targetDir, "omnibase", "omnibase.toml");
   const versions = await fetchLatestVersions();
   const missing = Object.keys(VERSION_REPOS).filter((k) => !versions[k]);
@@ -77,10 +85,92 @@ async function pinTemplateVersions(targetDir: string): Promise<void> {
     logger.warn(
       `Could not resolve the latest ${missing.join(", ")} version(s) from Docker Hub; [versions] left unpinned`,
     );
-    return;
+    return null;
   }
   const toml = fs.readFileSync(tomlPath, "utf-8");
   fs.writeFileSync(tomlPath, pinVersionsInToml(toml, versions));
+  return versions;
+}
+
+async function seedPermissionNamespaces(
+  targetDir: string,
+  versions: Record<string, string> | null,
+): Promise<void> {
+  const apiVersion = versions?.api;
+  if (!apiVersion) {
+    logger.info(
+      "Skipping permission namespace download (api version not pinned); 'omnibase start' will write them",
+    );
+    return;
+  }
+
+  try {
+    const files = await fetchNamespaceFilesFromGithub(apiVersion);
+    const written = writeNamespaceFiles(targetDir, files);
+    if (written.length > 0) {
+      logger.log(`  Permission namespaces: ${written.join(", ")}`);
+    }
+  } catch (error) {
+    logger.warn(
+      `Could not fetch permission namespaces for api ${apiVersion} from GitHub: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    logger.log("  'omnibase start' will write them once the API is running");
+  }
+}
+
+async function syncPermissionNamespaces(root: string): Promise<void> {
+  const env = loadLocalEnvironment(root);
+
+  let requirements;
+  try {
+    requirements = await fetchPermissionRequirements(env.omnibaseApiUrl);
+  } catch (error) {
+    logger.warn(
+      `Could not check permission namespaces: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    return;
+  }
+
+  if (!requirements) {
+    logger.warn(
+      "The running API does not expose /api/v1/permissions/requirements; upgrade `api` in [versions]",
+    );
+    return;
+  }
+
+  const written = writeNamespaceFiles(root, requirements.files);
+  if (written.length > 0) {
+    logger.info(`Wrote missing permission namespaces: ${written.join(", ")}`);
+  }
+
+  const issues = compareNamespaceFiles(root, requirements).filter(
+    (issue) =>
+      issue.missingClass ||
+      issue.missingRelations.length > 0 ||
+      issue.missingPermits.length > 0,
+  );
+
+  for (const issue of issues) {
+    const details: string[] = [];
+    if (issue.missingClass) details.push("missing class");
+    if (issue.missingRelations.length > 0) {
+      details.push(`missing relations: ${issue.missingRelations.join(", ")}`);
+    }
+    if (issue.missingPermits.length > 0) {
+      details.push(`missing permits: ${issue.missingPermits.join(", ")}`);
+    }
+    logger.warn(
+      `omnibase/permissions/${issue.file}: ${issue.namespace} ${details.join("; ")}`,
+    );
+  }
+
+  if (issues.length > 0) {
+    logger.log("  Run 'omnibase permissions fix' to add the missing entries");
+  }
 }
 
 async function runDockerCompose(
@@ -162,7 +252,8 @@ program
 
     logger.start("Initializing omnibase project...");
     createTemplateFiles(currentDir);
-    await pinTemplateVersions(currentDir);
+    const versions = await pinTemplateVersions(currentDir);
+    await seedPermissionNamespaces(currentDir, versions);
     logger.succeed("Project initialized successfully");
     logger.newline();
     logger.log("Next steps:");
@@ -336,6 +427,7 @@ program
       logger.newline();
       if (ready) {
         logger.succeed("Omnibase is running");
+        await syncPermissionNamespaces(root);
       } else {
         logger.warn("API did not report ready within 2 minutes; services may still be starting");
       }

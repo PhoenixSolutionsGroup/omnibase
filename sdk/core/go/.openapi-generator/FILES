@@ -79,6 +79,7 @@ docs/EnterpriseApplyResponse.md
 docs/EnterprisePricesResponse.md
 docs/ErrorDetail.md
 docs/ErrorModel.md
+docs/File.md
 docs/FinalizeRequest.md
 docs/FormFile.md
 docs/GetMeterResponse.md
@@ -110,6 +111,7 @@ docs/MeterValueSettings.md
 docs/MeterWithStripeID.md
 docs/MigrationsDownResponse.md
 docs/NamespaceDefinitionResponse.md
+docs/ParsedNamespaceDefinition.md
 docs/Price.md
 docs/PriceChange.md
 docs/PriceChanges.md
@@ -128,9 +130,11 @@ docs/PromotionCodeChanges.md
 docs/PromotionCodeWithStripeID.md
 docs/RecordUsageRequest.md
 docs/RecoveryIdentityAddress.md
+docs/RelationMetadata.md
 docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
+docs/Requirements.md
 docs/SendHTMLRequest.md
 docs/SendResponse.md
 docs/SendTemplateRequest.md
@@ -243,6 +247,7 @@ model_enterprise_apply_response.go
 model_enterprise_prices_response.go
 model_error_detail.go
 model_error_model.go
+model_file.go
 model_finalize_request.go
 model_form_file.go
 model_get_meter_response.go
@@ -274,6 +279,7 @@ model_meter_value_settings.go
 model_meter_with_stripe_id.go
 model_migrations_down_response.go
 model_namespace_definition_response.go
+model_parsed_namespace_definition.go
 model_price.go
 model_price_change.go
 model_price_changes.go
@@ -292,9 +298,11 @@ model_promotion_code_changes.go
 model_promotion_code_with_stripe_id.go
 model_record_usage_request.go
 model_recovery_identity_address.go
+model_relation_metadata.go
 model_relation_metadata_response.go
 model_remove_request.go
 model_remove_response.go
+model_requirements.go
 model_send_html_request.go
 model_send_response.go
 model_send_template_request.go

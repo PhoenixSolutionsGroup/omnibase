@@ -68,6 +68,7 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1ConfigurationApi* | [**deleteSystemEmailTemplate**](docs/V1ConfigurationApi.md#deletesystememailtemplate) | **DELETE** /api/v1/email/system-templates/{name} | Delete a system email template
 *V1ConfigurationApi* | [**deployPermissionNamespaces**](docs/V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations
 *V1ConfigurationApi* | [**getEmailTemplates**](docs/V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates
+*V1ConfigurationApi* | [**getPermissionRequirements**](docs/V1ConfigurationApi.md#getpermissionrequirements) | **GET** /api/v1/permissions/requirements | Get required permission namespaces
 *V1ConfigurationApi* | [**getStripeConfigHistory**](docs/V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history
 *V1ConfigurationApi* | [**getStripeConfigSchema**](docs/V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema
 *V1ConfigurationApi* | [**getStripeConfigStatus**](docs/V1ConfigurationApi.md#getstripeconfigstatus) | **POST** /api/v1/stripe/admin/config/status | Get Stripe config status
@@ -229,7 +230,9 @@ All URIs are relative to *https://api.omnibase.tech*
 - [MeterValueSettings](docs/MeterValueSettings.md)
 - [MeterWithStripeID](docs/MeterWithStripeID.md)
 - [MigrationsDownResponse](docs/MigrationsDownResponse.md)
+- [ModelFile](docs/ModelFile.md)
 - [NamespaceDefinitionResponse](docs/NamespaceDefinitionResponse.md)
+- [ParsedNamespaceDefinition](docs/ParsedNamespaceDefinition.md)
 - [Price](docs/Price.md)
 - [PriceChange](docs/PriceChange.md)
 - [PriceChanges](docs/PriceChanges.md)
@@ -248,9 +251,11 @@ All URIs are relative to *https://api.omnibase.tech*
 - [PromotionCodeWithStripeID](docs/PromotionCodeWithStripeID.md)
 - [RecordUsageRequest](docs/RecordUsageRequest.md)
 - [RecoveryIdentityAddress](docs/RecoveryIdentityAddress.md)
+- [RelationMetadata](docs/RelationMetadata.md)
 - [RelationMetadataResponse](docs/RelationMetadataResponse.md)
 - [RemoveRequest](docs/RemoveRequest.md)
 - [RemoveResponse](docs/RemoveResponse.md)
+- [Requirements](docs/Requirements.md)
 - [SendHTMLRequest](docs/SendHTMLRequest.md)
 - [SendResponse](docs/SendResponse.md)
 - [SendTemplateRequest](docs/SendTemplateRequest.md)

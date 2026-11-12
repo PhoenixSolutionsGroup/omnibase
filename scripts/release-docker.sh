@@ -20,9 +20,10 @@ echo "========================================"
 # Build Docker image
 echo "Building Docker image..."
 docker build \
+  --file "${DOCKERFILE:-Dockerfile}" \
   -t "$DOCKER_IMAGE:$VERSION" \
   -t "$DOCKER_IMAGE:latest" \
-  .
+  "${DOCKER_CONTEXT:-.}"
 
 # Push Docker image
 echo "Pushing Docker image..."

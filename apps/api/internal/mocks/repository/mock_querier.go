@@ -1044,6 +1044,72 @@ func (_c *MockQuerier_DeleteRoleByIDAndTenant_Call) RunAndReturn(run func(ctx co
 	return _c
 }
 
+// DeleteStaleStripeWebhooks provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteStaleStripeWebhooks(ctx context.Context, keepStripeIds []string) (int64, error) {
+	ret := _mock.Called(ctx, keepStripeIds)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteStaleStripeWebhooks")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []string) (int64, error)); ok {
+		return returnFunc(ctx, keepStripeIds)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []string) int64); ok {
+		r0 = returnFunc(ctx, keepStripeIds)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, []string) error); ok {
+		r1 = returnFunc(ctx, keepStripeIds)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_DeleteStaleStripeWebhooks_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteStaleStripeWebhooks'
+type MockQuerier_DeleteStaleStripeWebhooks_Call struct {
+	*mock.Call
+}
+
+// DeleteStaleStripeWebhooks is a helper method to define mock.On call
+//   - ctx context.Context
+//   - keepStripeIds []string
+func (_e *MockQuerier_Expecter) DeleteStaleStripeWebhooks(ctx any, keepStripeIds any) *MockQuerier_DeleteStaleStripeWebhooks_Call {
+	return &MockQuerier_DeleteStaleStripeWebhooks_Call{Call: _e.mock.On("DeleteStaleStripeWebhooks", ctx, keepStripeIds)}
+}
+
+func (_c *MockQuerier_DeleteStaleStripeWebhooks_Call) Run(run func(ctx context.Context, keepStripeIds []string)) *MockQuerier_DeleteStaleStripeWebhooks_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []string
+		if args[1] != nil {
+			arg1 = args[1].([]string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStaleStripeWebhooks_Call) Return(n int64, err error) *MockQuerier_DeleteStaleStripeWebhooks_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockQuerier_DeleteStaleStripeWebhooks_Call) RunAndReturn(run func(ctx context.Context, keepStripeIds []string) (int64, error)) *MockQuerier_DeleteStaleStripeWebhooks_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteStorageObjectByID provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) DeleteStorageObjectByID(ctx context.Context, id uuid.UUID) error {
 	ret := _mock.Called(ctx, id)
@@ -1794,6 +1860,72 @@ func (_c *MockQuerier_GetRoleByNameAndTenant_Call) RunAndReturn(run func(ctx con
 	return _c
 }
 
+// GetRoleTemplateByName provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetRoleTemplateByName(ctx context.Context, roleName string) (repository.PermissionsRoleTemplate, error) {
+	ret := _mock.Called(ctx, roleName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRoleTemplateByName")
+	}
+
+	var r0 repository.PermissionsRoleTemplate
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.PermissionsRoleTemplate, error)); ok {
+		return returnFunc(ctx, roleName)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.PermissionsRoleTemplate); ok {
+		r0 = returnFunc(ctx, roleName)
+	} else {
+		r0 = ret.Get(0).(repository.PermissionsRoleTemplate)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, roleName)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetRoleTemplateByName_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetRoleTemplateByName'
+type MockQuerier_GetRoleTemplateByName_Call struct {
+	*mock.Call
+}
+
+// GetRoleTemplateByName is a helper method to define mock.On call
+//   - ctx context.Context
+//   - roleName string
+func (_e *MockQuerier_Expecter) GetRoleTemplateByName(ctx any, roleName any) *MockQuerier_GetRoleTemplateByName_Call {
+	return &MockQuerier_GetRoleTemplateByName_Call{Call: _e.mock.On("GetRoleTemplateByName", ctx, roleName)}
+}
+
+func (_c *MockQuerier_GetRoleTemplateByName_Call) Run(run func(ctx context.Context, roleName string)) *MockQuerier_GetRoleTemplateByName_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetRoleTemplateByName_Call) Return(permissionsRoleTemplate repository.PermissionsRoleTemplate, err error) *MockQuerier_GetRoleTemplateByName_Call {
+	_c.Call.Return(permissionsRoleTemplate, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetRoleTemplateByName_Call) RunAndReturn(run func(ctx context.Context, roleName string) (repository.PermissionsRoleTemplate, error)) *MockQuerier_GetRoleTemplateByName_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetStorageObjectByPath provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) GetStorageObjectByPath(ctx context.Context, arg repository.GetStorageObjectByPathParams) (repository.GetStorageObjectByPathRow, error) {
 	ret := _mock.Called(ctx, arg)
@@ -2378,6 +2510,74 @@ func (_c *MockQuerier_ListRoleTemplates_Call) Return(permissionsRoleTemplates []
 }
 
 func (_c *MockQuerier_ListRoleTemplates_Call) RunAndReturn(run func(ctx context.Context) ([]repository.PermissionsRoleTemplate, error)) *MockQuerier_ListRoleTemplates_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListRolesByTemplateID provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) ListRolesByTemplateID(ctx context.Context, templateID *uuid.UUID) ([]repository.ListRolesByTemplateIDRow, error) {
+	ret := _mock.Called(ctx, templateID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListRolesByTemplateID")
+	}
+
+	var r0 []repository.ListRolesByTemplateIDRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) ([]repository.ListRolesByTemplateIDRow, error)); ok {
+		return returnFunc(ctx, templateID)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) []repository.ListRolesByTemplateIDRow); ok {
+		r0 = returnFunc(ctx, templateID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.ListRolesByTemplateIDRow)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *uuid.UUID) error); ok {
+		r1 = returnFunc(ctx, templateID)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_ListRolesByTemplateID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListRolesByTemplateID'
+type MockQuerier_ListRolesByTemplateID_Call struct {
+	*mock.Call
+}
+
+// ListRolesByTemplateID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - templateID *uuid.UUID
+func (_e *MockQuerier_Expecter) ListRolesByTemplateID(ctx any, templateID any) *MockQuerier_ListRolesByTemplateID_Call {
+	return &MockQuerier_ListRolesByTemplateID_Call{Call: _e.mock.On("ListRolesByTemplateID", ctx, templateID)}
+}
+
+func (_c *MockQuerier_ListRolesByTemplateID_Call) Run(run func(ctx context.Context, templateID *uuid.UUID)) *MockQuerier_ListRolesByTemplateID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(*uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_ListRolesByTemplateID_Call) Return(listRolesByTemplateIDRows []repository.ListRolesByTemplateIDRow, err error) *MockQuerier_ListRolesByTemplateID_Call {
+	_c.Call.Return(listRolesByTemplateIDRows, err)
+	return _c
+}
+
+func (_c *MockQuerier_ListRolesByTemplateID_Call) RunAndReturn(run func(ctx context.Context, templateID *uuid.UUID) ([]repository.ListRolesByTemplateIDRow, error)) *MockQuerier_ListRolesByTemplateID_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -3615,6 +3815,72 @@ func (_c *MockQuerier_UpsertRoleTemplate_Call) Return(err error) *MockQuerier_Up
 }
 
 func (_c *MockQuerier_UpsertRoleTemplate_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpsertRoleTemplateParams) error) *MockQuerier_UpsertRoleTemplate_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpsertStripeWebhook provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpsertStripeWebhook(ctx context.Context, arg repository.UpsertStripeWebhookParams) (repository.UpsertStripeWebhookRow, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpsertStripeWebhook")
+	}
+
+	var r0 repository.UpsertStripeWebhookRow
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertStripeWebhookParams) (repository.UpsertStripeWebhookRow, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpsertStripeWebhookParams) repository.UpsertStripeWebhookRow); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.UpsertStripeWebhookRow)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.UpsertStripeWebhookParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_UpsertStripeWebhook_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpsertStripeWebhook'
+type MockQuerier_UpsertStripeWebhook_Call struct {
+	*mock.Call
+}
+
+// UpsertStripeWebhook is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.UpsertStripeWebhookParams
+func (_e *MockQuerier_Expecter) UpsertStripeWebhook(ctx any, arg any) *MockQuerier_UpsertStripeWebhook_Call {
+	return &MockQuerier_UpsertStripeWebhook_Call{Call: _e.mock.On("UpsertStripeWebhook", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpsertStripeWebhook_Call) Run(run func(ctx context.Context, arg repository.UpsertStripeWebhookParams)) *MockQuerier_UpsertStripeWebhook_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.UpsertStripeWebhookParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.UpsertStripeWebhookParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpsertStripeWebhook_Call) Return(upsertStripeWebhookRow repository.UpsertStripeWebhookRow, err error) *MockQuerier_UpsertStripeWebhook_Call {
+	_c.Call.Return(upsertStripeWebhookRow, err)
+	return _c
+}
+
+func (_c *MockQuerier_UpsertStripeWebhook_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpsertStripeWebhookParams) (repository.UpsertStripeWebhookRow, error)) *MockQuerier_UpsertStripeWebhook_Call {
 	_c.Call.Return(run)
 	return _c
 }

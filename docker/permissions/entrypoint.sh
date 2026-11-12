@@ -25,5 +25,7 @@ if [ -n "$NAMESPACE_BUCKET" ]; then
 fi
 
 
+rm -f /etc/config/permissions/namespaces/types.ts
+
 # Execute the command (either migrate or serve)
 exec keto "$@"

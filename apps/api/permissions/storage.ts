@@ -1,4 +1,4 @@
-import { Tenant, User } from "./tenants";
+import type { Tenant, User } from "./tenants";
 import { Context, Namespace } from "./types";
 
 export class StorageObject implements Namespace {

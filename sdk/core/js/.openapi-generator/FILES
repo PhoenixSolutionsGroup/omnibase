@@ -94,7 +94,9 @@ docs/MeterDefaultAggregation.md
 docs/MeterValueSettings.md
 docs/MeterWithStripeID.md
 docs/MigrationsDownResponse.md
+docs/ModelFile.md
 docs/NamespaceDefinitionResponse.md
+docs/ParsedNamespaceDefinition.md
 docs/Price.md
 docs/PriceChange.md
 docs/PriceChanges.md
@@ -113,9 +115,11 @@ docs/PromotionCodeChanges.md
 docs/PromotionCodeWithStripeID.md
 docs/RecordUsageRequest.md
 docs/RecoveryIdentityAddress.md
+docs/RelationMetadata.md
 docs/RelationMetadataResponse.md
 docs/RemoveRequest.md
 docs/RemoveResponse.md
+docs/Requirements.md
 docs/SendHTMLRequest.md
 docs/SendResponse.md
 docs/SendTemplateRequest.md
@@ -270,7 +274,9 @@ src/models/MeterDefaultAggregation.ts
 src/models/MeterValueSettings.ts
 src/models/MeterWithStripeID.ts
 src/models/MigrationsDownResponse.ts
+src/models/ModelFile.ts
 src/models/NamespaceDefinitionResponse.ts
+src/models/ParsedNamespaceDefinition.ts
 src/models/Price.ts
 src/models/PriceChange.ts
 src/models/PriceChanges.ts
@@ -289,9 +295,11 @@ src/models/PromotionCodeChanges.ts
 src/models/PromotionCodeWithStripeID.ts
 src/models/RecordUsageRequest.ts
 src/models/RecoveryIdentityAddress.ts
+src/models/RelationMetadata.ts
 src/models/RelationMetadataResponse.ts
 src/models/RemoveRequest.ts
 src/models/RemoveResponse.ts
+src/models/Requirements.ts
 src/models/SendHTMLRequest.ts
 src/models/SendResponse.ts
 src/models/SendTemplateRequest.ts

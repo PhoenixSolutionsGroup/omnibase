@@ -11,6 +11,7 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**deleteSystemEmailTemplate**](V1ConfigurationApi.md#deletesystememailtemplate) | **DELETE** /api/v1/email/system-templates/{name} | Delete a system email template |
 | [**deployPermissionNamespaces**](V1ConfigurationApi.md#deploypermissionnamespaces) | **POST** /api/v1/permissions/namespaces | Deploy Keto namespace configurations |
 | [**getEmailTemplates**](V1ConfigurationApi.md#getemailtemplates) | **GET** /api/v1/email/templates | Get all email templates |
+| [**getPermissionRequirements**](V1ConfigurationApi.md#getpermissionrequirements) | **GET** /api/v1/permissions/requirements | Get required permission namespaces |
 | [**getStripeConfigHistory**](V1ConfigurationApi.md#getstripeconfighistory) | **GET** /api/v1/stripe/admin/config/history | Get config history |
 | [**getStripeConfigSchema**](V1ConfigurationApi.md#getstripeconfigschema) | **GET** /api/v1/stripe/schema | Get Stripe config schema |
 | [**getStripeConfigStatus**](V1ConfigurationApi.md#getstripeconfigstatus) | **POST** /api/v1/stripe/admin/config/status | Get Stripe config status |
@@ -542,6 +543,64 @@ This endpoint does not need any parameter.
 | **200** | OK |  -  |
 | **400** | Bad Request |  -  |
 | **401** | Unauthorized |  -  |
+| **500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
+## getPermissionRequirements
+
+> Requirements getPermissionRequirements()
+
+Get required permission namespaces
+
+### Example
+
+```ts
+import {
+  Configuration,
+  V1ConfigurationApi,
+} from '@omnibase/core-js';
+import type { GetPermissionRequirementsRequest } from '@omnibase/core-js';
+
+async function example() {
+  console.log("🚀 Testing @omnibase/core-js SDK...");
+  const api = new V1ConfigurationApi();
+
+  try {
+    const data = await api.getPermissionRequirements();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**Requirements**](Requirements.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`, `application/problem+json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | OK |  -  |
 | **500** | Internal Server Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

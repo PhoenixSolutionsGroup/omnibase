@@ -1,17 +1,16 @@
 
 # RelationMetadata
 
-Enriched metadata for a single relation including JSDoc annotations
 
 ## Properties
 
 Name | Type
 ------------ | -------------
-`name` | string
 `displayName` | string
 `group` | string
-`subGroup` | string
+`name` | string
 `roles` | Array&lt;string&gt;
+`subGroup` | string
 `subjects` | Array&lt;string&gt;
 
 ## Example
@@ -21,12 +20,12 @@ import type { RelationMetadata } from '@omnibase/core-js'
 
 // TODO: Update the object below with actual values
 const example = {
-  "name": can_view_db_secret_key,
-  "displayName": View Db Secret Key,
-  "group": Secrets,
-  "subGroup": Database,
-  "roles": [owner, admin],
-  "subjects": [User, ApiKey],
+  "displayName": null,
+  "group": null,
+  "name": null,
+  "roles": null,
+  "subGroup": null,
+  "subjects": null,
 } satisfies RelationMetadata
 
 console.log(example)

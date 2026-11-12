@@ -13,6 +13,24 @@ SET url = $2,
     secret = $4
 WHERE stripe_id = $1;
 
+-- name: UpsertStripeWebhook :one
+INSERT INTO stripe.stripe_webhooks (
+    stripe_id, url, secret, events, connect
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+ON CONFLICT (stripe_id) DO UPDATE
+SET url = EXCLUDED.url,
+    secret = EXCLUDED.secret,
+    events = EXCLUDED.events,
+    connect = EXCLUDED.connect,
+    updated_at = NOW()
+RETURNING id, stripe_id, url, secret, events, connect, config_id, created_at, updated_at;
+
+-- name: DeleteStaleStripeWebhooks :execrows
+DELETE FROM stripe.stripe_webhooks
+WHERE stripe_id <> ALL(sqlc.arg(keep_stripe_ids)::text[]);
+
 -- name: GetStripeWebhookByStripeID :one
 SELECT id, stripe_id, url, secret, events, connect, config_id, created_at, updated_at
 FROM stripe.stripe_webhooks

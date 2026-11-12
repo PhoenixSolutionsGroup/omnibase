@@ -21,9 +21,25 @@ omnibase/
 └── permissions/
     ├── types.ts             # Type definitions
     ├── tenants.ts           # Tenant namespace (required)
+    ├── storage.ts           # Storage namespace (required)
     ├── projects.ts          # Project namespace (example)
     └── ...                  # Your custom namespaces
 ```
+
+## Required Namespaces
+
+The API owns the canonical namespace files in `apps/api/permissions/`. Every project's namespace class must contain **at least** every relation and permit the API checks or writes — extra relations, permits, and custom classes are fine. Missing entries make API requests fail permission checks with no obvious cause.
+
+Each API release carries the namespaces it needs, and the CLI keeps projects in sync:
+
+- **`omnibase init`** fetches the namespace files for the pinned `api` version from GitHub and writes them to `omnibase/permissions/`.
+- **`omnibase start`** calls the running API's `GET /api/v1/permissions/requirements` endpoint, writes any missing namespace files, and warns about missing relations or permits.
+- **`omnibase permissions fix`** adds missing relations and permits using the API's own definitions. It only inserts members; existing members are never removed or rewritten.
+- **`omnibase permissions push`** and cloud deploys reject namespace uploads that are missing required entries and name exactly what is missing.
+
+<Callout type="warn">
+  If the API does not expose `/api/v1/permissions/requirements`, the image is too old. Set the `api` version under `[versions]` in `omnibase.toml` to a release that includes it, then run `omnibase start` again.
+</Callout>
 
 ---
 

@@ -42,14 +42,14 @@ services:
   permissions-migrate:
     image: ""
     build:
-      context: ../../../docker/permissions
-      dockerfile: Dockerfile
+      context: ../../..
+      dockerfile: docker/permissions/Dockerfile
 
   permissions:
     image: ""
     build:
-      context: ../../../docker/permissions
-      dockerfile: Dockerfile
+      context: ../../..
+      dockerfile: docker/permissions/Dockerfile
 
 volumes:
   postgres_data:
