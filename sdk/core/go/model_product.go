@@ -24,6 +24,7 @@ var _ MappedNullable = &Product{}
 type Product struct {
 	Description *string `json:"description,omitempty"`
 	Id string `json:"id"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	Name string `json:"name"`
 	Prices []Price `json:"prices"`
 	StripeId *string `json:"stripe_id,omitempty"`
@@ -107,6 +108,38 @@ func (o *Product) GetIdOk() (*string, bool) {
 // SetId sets field value
 func (o *Product) SetId(v string) {
 	o.Id = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Product) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Product) GetMetadataOk() (map[string]string, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]string{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *Product) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Product) SetMetadata(v map[string]string) {
+	o.Metadata = v
 }
 
 // GetName returns the Name field value
@@ -269,6 +302,9 @@ func (o Product) ToMap() (map[string]interface{}, error) {
 		toSerialize["description"] = o.Description
 	}
 	toSerialize["id"] = o.Id
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
 	toSerialize["name"] = o.Name
 	if o.Prices != nil {
 		toSerialize["prices"] = o.Prices

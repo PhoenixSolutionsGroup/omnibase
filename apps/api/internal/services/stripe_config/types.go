@@ -45,33 +45,35 @@ type WebhookEndpointConfig struct {
 }
 
 type Product struct {
-	ID          string     `json:"id" validate:"required"`
-	StripeID    string     `json:"stripe_id,omitempty"`
-	Name        string     `json:"name" validate:"required"`
-	Description string     `json:"description,omitempty"`
-	Type        string     `json:"type,omitempty"`
-	Prices      []Price    `json:"prices" validate:"required,dive"`
-	UI          *ProductUI `json:"ui,omitempty"`
+	ID          string            `json:"id" validate:"required"`
+	StripeID    string            `json:"stripe_id,omitempty"`
+	Name        string            `json:"name" validate:"required"`
+	Description string            `json:"description,omitempty"`
+	Type        string            `json:"type,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
+	Prices      []Price           `json:"prices" validate:"required,dive"`
+	UI          *ProductUI        `json:"ui,omitempty"`
 }
 
 type Price struct {
-	ID                 string   `json:"id" validate:"required"`
-	StripeID           string   `json:"stripe_id,omitempty"`
-	Public             *bool    `json:"public,omitempty"`
-	TaxIncludedInPrice *bool    `json:"tax_included_in_price,omitempty"`
-	Amount             float64  `json:"amount,omitempty" validate:"min=0"`
-	Currency           string   `json:"currency" validate:"required,len=3"`
-	Interval           string   `json:"interval,omitempty"`
-	IntervalCount      int      `json:"interval_count,omitempty"`
-	UsageType          string   `json:"usage_type,omitempty"`
-	Meter              string   `json:"meter,omitempty"`
-	BillingScheme      string   `json:"billing_scheme,omitempty"`
-	TiersMode          string   `json:"tiers_mode,omitempty"`
-	Tiers              []Tier   `json:"tiers,omitempty"`
-	Default            bool     `json:"default,omitempty"`
-	EnterpriseTemplate string   `json:"enterprise_template,omitempty"`
-	EnterpriseID       string   `json:"enterprise_id,omitempty"`
-	UI                 *PriceUI `json:"ui,omitempty"`
+	ID                 string            `json:"id" validate:"required"`
+	StripeID           string            `json:"stripe_id,omitempty"`
+	Public             *bool             `json:"public,omitempty"`
+	TaxIncludedInPrice *bool             `json:"tax_included_in_price,omitempty"`
+	Amount             float64           `json:"amount,omitempty" validate:"min=0"`
+	Currency           string            `json:"currency" validate:"required,len=3"`
+	Interval           string            `json:"interval,omitempty"`
+	IntervalCount      int               `json:"interval_count,omitempty"`
+	UsageType          string            `json:"usage_type,omitempty"`
+	Meter              string            `json:"meter,omitempty"`
+	BillingScheme      string            `json:"billing_scheme,omitempty"`
+	TiersMode          string            `json:"tiers_mode,omitempty"`
+	Tiers              []Tier            `json:"tiers,omitempty"`
+	Default            bool              `json:"default,omitempty"`
+	EnterpriseTemplate string            `json:"enterprise_template,omitempty"`
+	EnterpriseID       string            `json:"enterprise_id,omitempty"`
+	Metadata           map[string]string `json:"metadata,omitempty"`
+	UI                 *PriceUI          `json:"ui,omitempty"`
 }
 
 type PriceWithStripeID struct {
@@ -84,6 +86,7 @@ type ProductWithStripeIDs struct {
 	Name        string              `json:"name" validate:"required"`
 	Description string              `json:"description,omitempty"`
 	Type        string              `json:"type,omitempty"`
+	Metadata    map[string]string   `json:"metadata,omitempty"`
 	Prices      []PriceWithStripeID `json:"prices" validate:"required,dive"`
 	UI          *ProductUI          `json:"ui,omitempty"`
 	StripeID    *string             `json:"stripe_id,omitempty"`

@@ -6232,7 +6232,9 @@ components:
             display_name: display_name
             stripe_id: stripe_id
           products:
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -6248,6 +6250,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -6287,6 +6291,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -6326,7 +6332,9 @@ components:
               stripe_id: stripe_id
             type: type
             stripe_id: stripe_id
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -6342,6 +6350,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -6381,6 +6391,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -6563,7 +6575,9 @@ components:
               display_name: display_name
               stripe_id: stripe_id
             products:
-            - ui:
+            - metadata:
+                key: metadata
+              ui:
                 badge: badge
                 features:
                 - features
@@ -6579,6 +6593,8 @@ components:
               prices:
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6618,6 +6634,8 @@ components:
                 stripe_id: stripe_id
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6657,7 +6675,9 @@ components:
                 stripe_id: stripe_id
               type: type
               stripe_id: stripe_id
-            - ui:
+            - metadata:
+                key: metadata
+              ui:
                 badge: badge
                 features:
                 - features
@@ -6673,6 +6693,8 @@ components:
               prices:
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6712,6 +6734,8 @@ components:
                 stripe_id: stripe_id
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6838,7 +6862,9 @@ components:
               display_name: display_name
               stripe_id: stripe_id
             products:
-            - ui:
+            - metadata:
+                key: metadata
+              ui:
                 badge: badge
                 features:
                 - features
@@ -6854,6 +6880,8 @@ components:
               prices:
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6893,6 +6921,8 @@ components:
                 stripe_id: stripe_id
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6932,7 +6962,9 @@ components:
                 stripe_id: stripe_id
               type: type
               stripe_id: stripe_id
-            - ui:
+            - metadata:
+                key: metadata
+              ui:
                 badge: badge
                 features:
                 - features
@@ -6948,6 +6980,8 @@ components:
               prices:
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -6987,6 +7021,8 @@ components:
                 stripe_id: stripe_id
               - interval_count: 7
                 amount: 2.3021358869347655
+                metadata:
+                  key: metadata
                 tiers:
                 - flat_amount: 9
                   up_to: ""
@@ -7340,7 +7376,9 @@ components:
             display_name: display_name
             stripe_id: stripe_id
           products:
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -7356,6 +7394,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -7395,6 +7435,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -7434,7 +7476,9 @@ components:
               stripe_id: stripe_id
             type: type
             stripe_id: stripe_id
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -7450,6 +7494,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -7489,6 +7535,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -8404,6 +8452,8 @@ components:
         prices:
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -8443,6 +8493,8 @@ components:
           stripe_id: stripe_id
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -8594,6 +8646,8 @@ components:
       additionalProperties: false
       example:
         product:
+          metadata:
+            key: metadata
           ui:
             badge: badge
             features:
@@ -8610,6 +8664,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -8649,6 +8705,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -8691,6 +8749,8 @@ components:
         price:
           interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -8740,6 +8800,8 @@ components:
       additionalProperties: false
       example:
         product:
+          metadata:
+            key: metadata
           ui:
             badge: badge
             features:
@@ -8756,6 +8818,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -8795,6 +8859,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -9701,6 +9767,8 @@ components:
       example:
         interval_count: 7
         amount: 2.3021358869347655
+        metadata:
+          key: metadata
         tiers:
         - flat_amount: 9
           up_to: ""
@@ -9759,6 +9827,9 @@ components:
         interval_count:
           format: int64
           type: integer
+        metadata:
+          additionalProperties:
+            type: string
         meter:
           type: string
         public:
@@ -9917,6 +9988,8 @@ components:
       example:
         interval_count: 7
         amount: 2.3021358869347655
+        metadata:
+          key: metadata
         tiers:
         - flat_amount: 9
           up_to: ""
@@ -9975,6 +10048,9 @@ components:
         interval_count:
           format: int64
           type: integer
+        metadata:
+          additionalProperties:
+            type: string
         meter:
           type: string
         public:
@@ -10000,6 +10076,8 @@ components:
     Product:
       additionalProperties: false
       example:
+        metadata:
+          key: metadata
         ui:
           badge: badge
           features:
@@ -10016,6 +10094,8 @@ components:
         prices:
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -10055,6 +10135,8 @@ components:
           stripe_id: stripe_id
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -10099,6 +10181,9 @@ components:
           type: string
         id:
           type: string
+        metadata:
+          additionalProperties:
+            type: string
         name:
           type: string
         prices:
@@ -10242,6 +10327,8 @@ components:
     ProductWithStripeIDs:
       additionalProperties: false
       example:
+        metadata:
+          key: metadata
         ui:
           badge: badge
           features:
@@ -10258,6 +10345,8 @@ components:
         prices:
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -10297,6 +10386,8 @@ components:
           stripe_id: stripe_id
         - interval_count: 7
           amount: 2.3021358869347655
+          metadata:
+            key: metadata
           tiers:
           - flat_amount: 9
             up_to: ""
@@ -10341,6 +10432,9 @@ components:
           type: string
         id:
           type: string
+        metadata:
+          additionalProperties:
+            type: string
         name:
           type: string
         prices:
@@ -11221,7 +11315,9 @@ components:
             display_name: display_name
             stripe_id: stripe_id
           products:
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -11237,6 +11333,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -11276,6 +11374,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -11315,7 +11415,9 @@ components:
               stripe_id: stripe_id
             type: type
             stripe_id: stripe_id
-          - ui:
+          - metadata:
+              key: metadata
+            ui:
               badge: badge
               features:
               - features
@@ -11331,6 +11433,8 @@ components:
             prices:
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -11370,6 +11474,8 @@ components:
               stripe_id: stripe_id
             - interval_count: 7
               amount: 2.3021358869347655
+              metadata:
+                key: metadata
               tiers:
               - flat_amount: 9
                 up_to: ""
@@ -11524,7 +11630,9 @@ components:
           display_name: display_name
           stripe_id: stripe_id
         products:
-        - ui:
+        - metadata:
+            key: metadata
+          ui:
             badge: badge
             features:
             - features
@@ -11540,6 +11648,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11579,6 +11689,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11618,7 +11730,9 @@ components:
             stripe_id: stripe_id
           type: type
           stripe_id: stripe_id
-        - ui:
+        - metadata:
+            key: metadata
+          ui:
             badge: badge
             features:
             - features
@@ -11634,6 +11748,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11673,6 +11789,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11827,7 +11945,9 @@ components:
           display_name: display_name
           stripe_id: stripe_id
         products:
-        - ui:
+        - metadata:
+            key: metadata
+          ui:
             badge: badge
             features:
             - features
@@ -11843,6 +11963,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11882,6 +12004,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11921,7 +12045,9 @@ components:
             stripe_id: stripe_id
           type: type
           stripe_id: stripe_id
-        - ui:
+        - metadata:
+            key: metadata
+          ui:
             badge: badge
             features:
             - features
@@ -11937,6 +12063,8 @@ components:
           prices:
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""
@@ -11976,6 +12104,8 @@ components:
             stripe_id: stripe_id
           - interval_count: 7
             amount: 2.3021358869347655
+            metadata:
+              key: metadata
             tiers:
             - flat_amount: 9
               up_to: ""

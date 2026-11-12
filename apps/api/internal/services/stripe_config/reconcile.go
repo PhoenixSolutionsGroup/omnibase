@@ -393,7 +393,7 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 			continue
 		}
 
-		change, err := s.updateProductFromConfig(ctx, product, live.ID)
+		change, err := s.updateProductFromConfig(ctx, product, live)
 		if err != nil {
 			return err
 		}
@@ -435,8 +435,25 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 			}
 
 			state.priceStripeIDs[price.ID] = live.ID
-			if !forceRecreate && priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
-				continue
+			if !forceRecreate {
+				if priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
+					continue
+				}
+
+				probe := price
+				probe.Metadata = stripManagedMetadata(live.Metadata)
+				if priceConfigHash(probe) == live.Metadata[MetadataKeyHash] {
+					if err := s.updatePriceMetadata(ctx, live, price); err != nil {
+						return err
+					}
+					changes.Prices.Updated = append(changes.Prices.Updated, PriceChange{
+						PriceID:   price.ID,
+						ProductID: product.ID,
+						Action:    "updated",
+						StripeID:  live.ID,
+					})
+					continue
+				}
 			}
 
 			if err := s.archivePriceByStripeID(ctx, live.ID); err != nil {

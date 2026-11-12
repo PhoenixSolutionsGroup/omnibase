@@ -21,6 +21,7 @@ Products represent what you sell, and prices define how much customers pay. Omni
   "name": "Professional Plan",
   "description": "For growing businesses",
   "type": "service",
+  "metadata": { "tier": "pro" },
   "stripe_id": "prod_xxx",
   "prices": [],
   "ui": {}
@@ -33,6 +34,7 @@ Products represent what you sell, and prices define how much customers pay. Omni
 | `name` | `string` | Yes | Product name displayed in Stripe and your UI |
 | `description` | `string` | No | Product description |
 | `type` | `string` | No | `service` (subscriptions) or `good` (one-time) |
+| `metadata` | `object` | No | String metadata synced to the Stripe product |
 | `stripe_id` | `string` | No | Existing Stripe product ID (for migrations) |
 | `prices` | `array` | Yes | Array of price definitions (minimum 1) |
 | `ui` | `object` | No | UI display configuration |
@@ -61,6 +63,7 @@ The simplest pricing model charges a fixed amount:
   "billing_scheme": "per_unit",
   "public": true,
   "default": true,
+  "metadata": { "billing": "monthly" },
   "stripe_id": "price_xxx",
   "ui": {}
 }
@@ -78,6 +81,7 @@ The simplest pricing model charges a fixed amount:
 | `public` | `boolean` | No | Visible in public API (`true`/`null` = public) |
 | `default` | `boolean` | No | Default price for the product |
 | `tax_included_in_price` | `boolean` | No | Whether tax is included |
+| `metadata` | `object` | No | String metadata synced to the Stripe price |
 | `stripe_id` | `string` | No | Existing Stripe price ID (for migrations) |
 | `ui` | `object` | No | UI display configuration |
 
@@ -108,6 +112,33 @@ For volume-based or graduated pricing:
 | `billing_scheme` | `string` | Yes | Must be `tiered` |
 | `tiers_mode` | `string` | Yes | `graduated` or `volume` |
 | `tiers` | `array` | Yes | Array of tier definitions |
+| `metadata` | `object` | No | String metadata synced to the Stripe price |
+
+### Metadata
+
+Products and prices accept an optional `metadata` object. Values must be strings; numbers and booleans are rejected rather than coerced.
+
+```json
+{
+  "id": "pg_scale_large_monthly",
+  "amount": 3500,
+  "currency": "usd",
+  "interval": "month",
+  "metadata": {
+    "size": "large",
+    "postgres_cpu": "2",
+    "postgres_ram_gb": "8"
+  }
+}
+```
+
+Rules:
+
+- Metadata is optional on products, prices, or both.
+- A metadata-only change updates the existing Stripe product or price in place; it never recreates a price.
+- Removing a key from the config removes it from Stripe on the next sync.
+- Values are limited to 500 characters and keys to 40. Stripe allows 50 keys per object; Omnibase reserves 3, leaving 47 user keys.
+- `omnibase_id`, `omnibase_managed` and `omnibase_hash` are reserved.
 
 ### Tier Modes
 

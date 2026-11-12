@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **Id** | **string** |  | 
 **Interval** | Pointer to **string** |  | [optional] 
 **IntervalCount** | Pointer to **int64** |  | [optional] 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Meter** | Pointer to **string** |  | [optional] 
 **Public** | Pointer to **bool** |  | [optional] 
 **StripeId** | Pointer to **string** |  | [optional] 
@@ -255,6 +256,31 @@ SetIntervalCount sets IntervalCount field to given value.
 `func (o *PriceWithStripeID) HasIntervalCount() bool`
 
 HasIntervalCount returns a boolean if a field has been set.
+
+### GetMetadata
+
+`func (o *PriceWithStripeID) GetMetadata() map[string]string`
+
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+
+### GetMetadataOk
+
+`func (o *PriceWithStripeID) GetMetadataOk() (*map[string]string, bool)`
+
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMetadata
+
+`func (o *PriceWithStripeID) SetMetadata(v map[string]string)`
+
+SetMetadata sets Metadata field to given value.
+
+### HasMetadata
+
+`func (o *PriceWithStripeID) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetMeter
 

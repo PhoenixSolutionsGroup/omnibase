@@ -396,6 +396,8 @@ Omnibase archives resources instead of deleting them because Stripe doesn't allo
 
 Every Stripe object Omnibase manages carries its config ID. Products, coupons, promotion codes and webhooks store it in `metadata.omnibase_id`. Prices also use it as their `lookup_key`. Meters have no metadata and are matched by `event_name`.
 
+Products and prices can also carry user metadata. It is synced to Stripe, and removing a key from the config removes it from Stripe. See [Products & Prices](/guides/stripe/products-prices#metadata) for limits and reserved keys.
+
 ### Convert IDs
 
 Resolve a Stripe ID (for example from a webhook payload) to its config ID. Requires the service key or an app key.

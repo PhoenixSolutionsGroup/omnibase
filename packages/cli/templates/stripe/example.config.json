@@ -20,13 +20,19 @@
       "name": "Test Basic Plan",
       "description": "Basic test product",
       "type": "service",
+      "metadata": {
+        "tier": "basic"
+      },
       "prices": [
         {
           "id": "price_test_basic_monthly",
           "amount": 999,
           "currency": "usd",
           "interval": "month",
-          "interval_count": 1
+          "interval_count": 1,
+          "metadata": {
+            "billing": "monthly"
+          }
         }
       ]
     }

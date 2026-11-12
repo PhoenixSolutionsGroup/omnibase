@@ -2611,6 +2611,12 @@
             "format": "int64",
             "type": "integer"
           },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
           "meter": {
             "type": "string"
           },
@@ -2803,6 +2809,12 @@
             "format": "int64",
             "type": "integer"
           },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
           "meter": {
             "type": "string"
           },
@@ -2848,6 +2860,12 @@
           },
           "id": {
             "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
           },
           "name": {
             "type": "string"
@@ -2985,6 +3003,12 @@
           },
           "id": {
             "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
           },
           "name": {
             "type": "string"

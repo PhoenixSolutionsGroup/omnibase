@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Description** | Pointer to **string** |  | [optional] 
 **Id** | **string** |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Name** | **string** |  | 
 **Prices** | [**[]PriceWithStripeID**](PriceWithStripeID.md) |  | 
 **StripeId** | Pointer to **string** |  | [optional] 
@@ -75,6 +76,31 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
+
+### GetMetadata
+
+`func (o *ProductWithStripeIDs) GetMetadata() map[string]string`
+
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+
+### GetMetadataOk
+
+`func (o *ProductWithStripeIDs) GetMetadataOk() (*map[string]string, bool)`
+
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMetadata
+
+`func (o *ProductWithStripeIDs) SetMetadata(v map[string]string)`
+
+SetMetadata sets Metadata field to given value.
+
+### HasMetadata
+
+`func (o *ProductWithStripeIDs) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetName
 
