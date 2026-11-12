@@ -403,7 +403,6 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 }
 
 func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfiguration, actual map[string]*stripe.Price, state *reconcileState, changes *ConfigChanges) error {
-	meterConfigIDs := reverseStringMap(state.meterStripeIDs)
 	for _, product := range config.Products {
 		if product.ID == "free" {
 			continue
@@ -441,9 +440,9 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 					continue
 				}
 
-				actual := convertStripePriceToConfig(live, meterConfigIDs)
-				actual.ID = price.ID
-				if priceConfigHashWithoutMetadata(price) == priceConfigHashWithoutMetadata(actual) {
+				probe := price
+				probe.Metadata = stripManagedMetadata(live.Metadata)
+				if priceConfigHash(probe) == live.Metadata[MetadataKeyHash] {
 					if err := s.updatePriceMetadata(ctx, live, price); err != nil {
 						return err
 					}

@@ -83,12 +83,6 @@ func productConfigHash(product Product) string {
 	return stableHash(sanitized)
 }
 
-func productConfigHashWithoutMetadata(product Product) string {
-	sanitized := sanitizeProductConfig(product)
-	sanitized.Metadata = nil
-	return stableHash(sanitized)
-}
-
 func sanitizeProductConfig(product Product) Product {
 	sanitized := product
 	sanitized.StripeID = ""
@@ -103,12 +97,6 @@ func sanitizeProductConfig(product Product) Product {
 func priceConfigHash(price Price) string {
 	sanitized := sanitizePriceConfig(price)
 	sanitized.Metadata = stripManagedMetadata(price.Metadata)
-	return stableHash(sanitized)
-}
-
-func priceConfigHashWithoutMetadata(price Price) string {
-	sanitized := sanitizePriceConfig(price)
-	sanitized.Metadata = nil
 	return stableHash(sanitized)
 }
 

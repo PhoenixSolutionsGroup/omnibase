@@ -137,7 +137,10 @@ func TestProductHashTracksMetadata(t *testing.T) {
 	changed.Metadata = map[string]string{"branches": "5"}
 
 	require.NotEqual(t, productConfigHash(product), productConfigHash(changed))
-	require.Equal(t, productConfigHashWithoutMetadata(product), productConfigHashWithoutMetadata(changed))
+
+	probe := changed
+	probe.Metadata = product.Metadata
+	require.Equal(t, productConfigHash(product), productConfigHash(probe))
 
 	managed := product
 	managed.Metadata = map[string]string{"branches": "3", MetadataKeyManaged: "true"}
@@ -150,7 +153,10 @@ func TestPriceHashTracksMetadata(t *testing.T) {
 	changed.Metadata = map[string]string{"billing": "yearly"}
 
 	require.NotEqual(t, priceConfigHash(price), priceConfigHash(changed))
-	require.Equal(t, priceConfigHashWithoutMetadata(price), priceConfigHashWithoutMetadata(changed))
+
+	probe := changed
+	probe.Metadata = price.Metadata
+	require.Equal(t, priceConfigHash(price), priceConfigHash(probe))
 }
 
 func TestCreatePriceSendsUserMetadata(t *testing.T) {
@@ -221,7 +227,7 @@ func TestReconcilePricesUpdatesMetadataInPlace(t *testing.T) {
 	t.Cleanup(server.Close)
 
 	service := &Service{stripe: stripe_client.New(config.StripeConfig{SecretKey: "sk_test", APIBaseURL: server.URL})}
-	oldPrice := Price{ID: "price_a", Amount: 1000, Currency: "usd", Interval: "month"}
+	oldPrice := Price{ID: "price_a", Amount: 1000, Currency: "usd", Interval: "month", Metadata: map[string]string{"billing": "old"}}
 	live := &stripe.Price{
 		ID:            "price_a",
 		Currency:      "usd",
