@@ -8,7 +8,8 @@ import {
   Check,
   ChevronsUpDown,
   Globe,
-  Settings2,
+  Database,
+  ShieldCheck,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,6 @@ import {
   getLatencyColorClass,
 } from "@/lib/region-latency";
 import formatPrice from "@/lib/currency";
-import { CheckboxCard } from "./ui/checkbox-card";
 import { RadioChoiceCard } from "./ui/radio-choice-card";
 import { RadioGroup } from "./ui/radio-group";
 import { ButtonGroup } from "./ui/button-group";
@@ -64,14 +64,24 @@ type Region = {
   active: boolean;
 };
 
+// Mirrors the Go `Postgres` and `Availability` structs (identical shape).
+type PlanOption = {
+  name: string;
+  description: string;
+  included: boolean;
+  prices: Price[];
+};
+
 // Mirrors the Go `Tier` struct returned by /api/v1/projects/plans.
-// NOTE: `regions` must be added to the Go struct for regions to arrive.
 type Plan = {
   id: string;
   name: string;
   display_name: string;
   description: string;
   features: Feature[];
+  features_summary: string;
+  postgres: PlanOption[];
+  availability: PlanOption[];
   prices: Price[];
   provider: string;
   regions: Region[];
@@ -89,51 +99,17 @@ type FormData = {
   billing_email: string;
   plan_id: string;
   region: string;
+  postgres: string; // option name, "" = none selected
+  availability: string; // option name, "" = none selected
 };
 
-type PlanOptions = {
-  id: string;
-  title: string;
-  description: string;
-};
+const NO_AVAILABILITY = "none";
 
 interface ProvisioningFormProps {
   mode: "project" | "branch";
   projectId?: string;
   projectName?: string;
 }
-
-const planOptions: PlanOptions[] = [
-  {
-    id: "postgres",
-    title: "Postgres",
-    description: "Managed Postgres with connection pooling and backups.",
-  },
-  {
-    id: "omnibase",
-    title: "Omnibase",
-    description:
-      "Entire backend in one service. Email, storage, auth and payments  switch on the first time you use them.",
-  },
-  {
-    id: "dataAPI",
-    title: "Data API",
-    description:
-      "Instant REST API over your public schema. (Requires Postgres)",
-  },
-  {
-    id: "workers",
-    title: "Workers",
-    description: "Run function at the edge, close to your users.",
-  },
-];
-
-const DEFAULT_OPTIONS: Record<string, boolean> = {
-  postgres: true,
-  omnibase: true,
-  dataAPI: true,
-  workers: false,
-};
 
 interface RegionComboboxProps {
   regions: Region[];
@@ -351,6 +327,94 @@ function SummaryRow({
   );
 }
 
+function priceFor(
+  option: PlanOption | undefined,
+  interval: PaymentInterval,
+): Price | undefined {
+  return option?.prices.find((p) => p.interval === interval);
+}
+
+function OptionPriceLabel({
+  option,
+  interval,
+}: {
+  option: PlanOption;
+  interval: PaymentInterval;
+}) {
+  if (option.included) {
+    return <span className="text-sm">Included</span>;
+  }
+  const price = priceFor(option, interval);
+  if (!price) return null;
+  return (
+    <span className="text-sm">
+      +{formatPrice(price.amount)} / {price.interval}
+    </span>
+  );
+}
+
+interface OptionGroupProps {
+  idPrefix: string;
+  options: PlanOption[];
+  value: string;
+  onChange: (name: string) => void;
+  interval: PaymentInterval;
+  noneLabel?: string; // when set, adds a "no option" card
+  noneDescription?: string;
+}
+
+function OptionGroup({
+  idPrefix,
+  options,
+  value,
+  onChange,
+  interval,
+  noneLabel,
+  noneDescription,
+}: OptionGroupProps) {
+  return (
+    <RadioGroup
+      value={value}
+      onValueChange={onChange}
+      className="flex flex-col gap-2"
+    >
+      {noneLabel && (
+        <RadioChoiceCard
+          id={`${idPrefix}-${NO_AVAILABILITY}`}
+          value={NO_AVAILABILITY}
+          title={noneLabel}
+          description={noneDescription}
+        />
+      )}
+      {options.map((option) => (
+        <RadioChoiceCard
+          key={option.name}
+          id={`${idPrefix}-${option.name}`}
+          value={option.name}
+          title={
+            <div className="flex justify-between w-full">
+              <span className="text-sm">{option.name}</span>
+              <OptionPriceLabel option={option} interval={interval} />
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">
+              {option.description}
+            </span>
+          </div>
+        </RadioChoiceCard>
+      ))}
+    </RadioGroup>
+  );
+}
+
+function defaultPostgres(plan: Plan): string {
+  return (
+    plan.postgres.find((o) => o.included)?.name ?? plan.postgres[0]?.name ?? ""
+  );
+}
+
 export function ProvisioningForm({
   mode,
   projectId,
@@ -365,9 +429,6 @@ export function ProvisioningForm({
   const [paymentInterval, setPaymentInterval] =
     React.useState<PaymentInterval>("month");
 
-  const [selectedOptions, setSelectedOptions] =
-    React.useState<Record<string, boolean>>(DEFAULT_OPTIONS);
-
   const isBranchMode = mode === "branch";
 
   const [formData, setFormData] = React.useState<FormData>({
@@ -376,6 +437,8 @@ export function ProvisioningForm({
     billing_email: "",
     plan_id: "",
     region: "",
+    postgres: "",
+    availability: "",
   });
 
   const managed_hosting_url = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
@@ -392,7 +455,15 @@ export function ProvisioningForm({
         );
         if (!res.ok) throw new Error("Failed to fetch plans");
         const data: PlansResponse = await res.json();
-        const tiers = data.tiers ?? [];
+
+        // Go serializes nil slices as null, so normalize them here.
+        const tiers = (data.tiers ?? []).map((t) => ({
+          ...t,
+          features: t.features ?? [],
+          postgres: t.postgres ?? [],
+          availability: t.availability ?? [],
+          regions: t.regions ?? [],
+        }));
         setPlans(tiers);
 
         const firstPlan = tiers[0];
@@ -400,7 +471,9 @@ export function ProvisioningForm({
           setFormData((prev) => ({
             ...prev,
             plan_id: firstPlan.id,
-            region: firstPlan.regions?.[0]?.id ?? "",
+            region: firstPlan.regions[0]?.id ?? "",
+            postgres: defaultPostgres(firstPlan),
+            availability: "",
           }));
         }
       } catch (e) {
@@ -425,36 +498,51 @@ export function ProvisioningForm({
     [selectedPlan, paymentInterval],
   );
 
-  const monthlyPrice = React.useMemo(
-    () => selectedPlan?.prices.find((p) => p.interval === "month") ?? null,
-    [selectedPlan],
-  );
-
   const availableRegions = React.useMemo(
     () => selectedPlan?.regions ?? [],
     [selectedPlan],
   );
 
+  const postgresOptions = selectedPlan?.postgres ?? [];
+  const availabilityOptions = selectedPlan?.availability ?? [];
+
+  const selectedPostgres = postgresOptions.find(
+    (o) => o.name === formData.postgres,
+  );
+  const selectedAvailability = availabilityOptions.find(
+    (o) => o.name === formData.availability,
+  );
+
   const selectedRegion = availableRegions.find((r) => r.id === formData.region);
 
+  // Plan price + selected add-ons, for a given interval.
+  const totalFor = React.useCallback(
+    (interval: PaymentInterval): number | null => {
+      const base = selectedPlan?.prices.find((p) => p.interval === interval);
+      if (!base) return null;
+      return (
+        base.amount +
+        (priceFor(selectedPostgres, interval)?.amount ?? 0) +
+        (priceFor(selectedAvailability, interval)?.amount ?? 0)
+      );
+    },
+    [selectedPlan, selectedPostgres, selectedAvailability],
+  );
+
+  const totalPrice = totalFor(paymentInterval);
+  const monthlyTotal = totalFor("month");
+
   const selectPlan = (plan: Plan) => {
-    const allowed = plan.regions ?? [];
     setFormData((prev) => ({
       ...prev,
       plan_id: plan.id,
-      region: allowed.some((r) => r.id === prev.region)
+      region: plan.regions.some((r) => r.id === prev.region)
         ? prev.region
-        : (allowed[0]?.id ?? ""),
+        : (plan.regions[0]?.id ?? ""),
+      // Options belong to a tier, so reset them when the tier changes.
+      postgres: defaultPostgres(plan),
+      availability: "",
     }));
-  };
-
-  const toggleOption = (id: string, checked: boolean) => {
-    setSelectedOptions((prev) => {
-      const next = { ...prev, [id]: checked };
-      if (id === "postgres" && !checked) next.dataAPI = false;
-      if (id === "dataAPI" && checked) next.postgres = true;
-      return next;
-    });
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -478,6 +566,8 @@ export function ProvisioningForm({
               region: formData.region,
               deployment_tier: selectedPlan.id,
               billing_email: formData.billing_email,
+              postgres: formData.postgres,
+              availability: formData.availability,
             }),
             credentials: "include",
           },
@@ -497,6 +587,8 @@ export function ProvisioningForm({
             region: formData.region,
             deployment_tier: selectedPlan.id,
             billing_email: formData.billing_email,
+            postgres: formData.postgres,
+            availability: formData.availability,
           }),
           credentials: "include",
         });
@@ -596,7 +688,7 @@ export function ProvisioningForm({
               const plan = plans.find((p) => p.id === planId);
               if (plan) selectPlan(plan);
             }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
           >
             {plans.map((plan) => {
               const price = plan.prices.find(
@@ -607,22 +699,26 @@ export function ProvisioningForm({
                   key={plan.id}
                   id={`plan-${plan.id}`}
                   value={plan.id}
-                  title={plan.name}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <span className="text-sm">{plan.display_name} </span>
+                      {price && (
+                        <span className="text-sm">
+                          {formatPrice(price.amount)} / {price.interval}
+                        </span>
+                      )}
+                    </div>
+                  }
                 >
                   <div className="flex flex-col">
-                    <span className="text-lg font-medium">
-                      {plan.display_name}
-                    </span>
-                    {price && (
-                      <span className="text-sm">
-                        {formatPrice(price.amount)} / {price.interval}
-                      </span>
-                    )}
-                    <span className="text-xs text-muted-foreground mt-1">
+                    {/* <span className="text-xs text-muted-foreground mt-1">
                       {plan.description}
+                    </span> */}
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {plan.features_summary}
                     </span>
 
-                    <div className="flex flex-col gap-2 text-sm mt-3">
+                    {/* <div className="flex flex-col gap-2 text-sm mt-3">
                       {plan.features.map((feature) => (
                         <div
                           key={feature.feature_name}
@@ -634,31 +730,12 @@ export function ProvisioningForm({
                           <span className="font-medium">{feature.value}</span>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </RadioChoiceCard>
               );
             })}
           </RadioGroup>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Settings2 className="h-5 w-5" />
-            <h3 className="text-base font-medium">Options</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {planOptions.map((option) => (
-              <CheckboxCard
-                key={option.id}
-                {...option}
-                checked={!!selectedOptions[option.id]}
-                onCheckedChange={(checked) =>
-                  toggleOption(option.id, checked === true)
-                }
-              />
-            ))}
-          </div>
         </div>
 
         <div className="space-y-2">
@@ -684,6 +761,49 @@ export function ProvisioningForm({
             ))}
           </RadioGroup>
         </div>
+
+        {postgresOptions.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              <h3 className="text-base font-medium">Postgres</h3>
+            </div>
+
+            <OptionGroup
+              idPrefix="postgres"
+              options={postgresOptions}
+              value={formData.postgres}
+              onChange={(name) =>
+                setFormData((prev) => ({ ...prev, postgres: name }))
+              }
+              interval={paymentInterval}
+            />
+          </div>
+        )}
+
+        {availabilityOptions.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5" />
+              <h3 className="text-base font-medium">Availability</h3>
+            </div>
+
+            <OptionGroup
+              idPrefix="availability"
+              options={availabilityOptions}
+              value={formData.availability || NO_AVAILABILITY}
+              onChange={(name) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  availability: name === NO_AVAILABILITY ? "" : name,
+                }))
+              }
+              interval={paymentInterval}
+              noneLabel="None"
+              noneDescription="No standby"
+            />
+          </div>
+        )}
       </div>
       {/* Summary */}
       <div>
@@ -692,9 +812,6 @@ export function ProvisioningForm({
             <CardTitle>
               <div className="grid grid-cols-4">
                 <span className="text-sm font-medium col-span-2">Summary</span>
-                <span className="text-sm font-medium text-end col-span-2">
-                  {selectedPlan?.display_name ?? ""}
-                </span>
               </div>
             </CardTitle>
           </CardHeader>
@@ -702,33 +819,11 @@ export function ProvisioningForm({
             <Separator />
 
             <div className="flex flex-col gap-2">
-              <SummaryRow label="Tier" value={selectedPlan?.name ?? "-"} />
-              {selectedPlan?.features.map((feature) => (
-                <SummaryRow
-                  key={feature.feature_name}
-                  label={feature.feature_name}
-                  value={feature.value || "-"}
-                />
-              ))}
-            </div>
-            <Separator />
+              <SummaryRow
+                label="Tier"
+                value={selectedPlan?.display_name ?? "-"}
+              />
 
-            <div className="flex flex-col gap-2">
-              {planOptions.map((option) => {
-                const on = !!selectedOptions[option.id];
-                return (
-                  <SummaryRow
-                    key={option.id}
-                    label={option.title}
-                    value={on ? "On" : "Off"}
-                    muted={!on}
-                  />
-                );
-              })}
-            </div>
-            <Separator />
-
-            <div className="flex flex-col gap-2">
               <SummaryRow
                 label="Region"
                 value={
@@ -737,19 +832,31 @@ export function ProvisioningForm({
                     : "-"
                 }
               />
+              {postgresOptions.length > 0 && (
+                <SummaryRow
+                  label="Postgres"
+                  value={selectedPostgres?.name ?? "-"}
+                />
+              )}
+              {availabilityOptions.length > 0 && (
+                <SummaryRow
+                  label="Availability"
+                  value={selectedAvailability?.name ?? "None"}
+                />
+              )}
             </div>
             <Separator />
 
             <div className="grid grid-cols-4">
               <span className="col-span-2 text-sm">Estimated cost</span>
               <div className="col-span-2 flex justify-end gap-2">
-                {paymentInterval === "year" && monthlyPrice && (
+                {paymentInterval === "year" && monthlyTotal !== null && (
                   <span className="text-sm line-through text-muted-foreground">
-                    {selectedPlan ? formatPrice(monthlyPrice.amount * 12) : "-"}
+                    {formatPrice(monthlyTotal * 12)}
                   </span>
                 )}
                 <span className="text-sm font-medium text-end ">
-                  {selectedPrice ? formatPrice(selectedPrice.amount) : "-"}
+                  {totalPrice !== null ? formatPrice(totalPrice) : "-"}
                 </span>
               </div>
             </div>

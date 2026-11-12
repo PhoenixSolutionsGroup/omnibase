@@ -41,12 +41,12 @@ export function RadioChoiceCard({
       )}
     >
       <Field orientation="horizontal">
+        <RadioGroupItem value={value ?? id} id={id} disabled={disabled} />
         <FieldContent>
-          <FieldTitle>{title}</FieldTitle>
+          <FieldTitle className="w-full">{title}</FieldTitle>
           {description && <FieldDescription>{description}</FieldDescription>}
           {children}
         </FieldContent>
-        <RadioGroupItem value={value ?? id} id={id} disabled={disabled} />
       </Field>
     </FieldLabel>
   );
