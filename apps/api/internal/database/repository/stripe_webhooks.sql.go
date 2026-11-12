@@ -66,6 +66,19 @@ func (q *Queries) CreateStripeWebhook(ctx context.Context, arg CreateStripeWebho
 	return i, err
 }
 
+const deleteStaleStripeWebhooks = `-- name: DeleteStaleStripeWebhooks :execrows
+DELETE FROM stripe.stripe_webhooks
+WHERE stripe_id <> ALL($1::text[])
+`
+
+func (q *Queries) DeleteStaleStripeWebhooks(ctx context.Context, keepStripeIds []string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteStaleStripeWebhooks, keepStripeIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const deleteStripeWebhookByStripeID = `-- name: DeleteStripeWebhookByStripeID :exec
 DELETE FROM stripe.stripe_webhooks
 WHERE stripe_id = $1
@@ -182,4 +195,62 @@ func (q *Queries) UpdateStripeWebhook(ctx context.Context, arg UpdateStripeWebho
 		arg.Secret,
 	)
 	return err
+}
+
+const upsertStripeWebhook = `-- name: UpsertStripeWebhook :one
+INSERT INTO stripe.stripe_webhooks (
+    stripe_id, url, secret, events, connect
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+ON CONFLICT (stripe_id) DO UPDATE
+SET url = EXCLUDED.url,
+    secret = EXCLUDED.secret,
+    events = EXCLUDED.events,
+    connect = EXCLUDED.connect,
+    updated_at = NOW()
+RETURNING id, stripe_id, url, secret, events, connect, config_id, created_at, updated_at
+`
+
+type UpsertStripeWebhookParams struct {
+	StripeID string   `json:"stripe_id"`
+	Url      string   `json:"url"`
+	Secret   string   `json:"secret"`
+	Events   []string `json:"events"`
+	Connect  bool     `json:"connect"`
+}
+
+type UpsertStripeWebhookRow struct {
+	ID        uuid.UUID  `json:"id"`
+	StripeID  string     `json:"stripe_id"`
+	Url       string     `json:"url"`
+	Secret    string     `json:"secret"`
+	Events    []string   `json:"events"`
+	Connect   bool       `json:"connect"`
+	ConfigID  *uuid.UUID `json:"config_id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+func (q *Queries) UpsertStripeWebhook(ctx context.Context, arg UpsertStripeWebhookParams) (UpsertStripeWebhookRow, error) {
+	row := q.db.QueryRow(ctx, upsertStripeWebhook,
+		arg.StripeID,
+		arg.Url,
+		arg.Secret,
+		arg.Events,
+		arg.Connect,
+	)
+	var i UpsertStripeWebhookRow
+	err := row.Scan(
+		&i.ID,
+		&i.StripeID,
+		&i.Url,
+		&i.Secret,
+		&i.Events,
+		&i.Connect,
+		&i.ConfigID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

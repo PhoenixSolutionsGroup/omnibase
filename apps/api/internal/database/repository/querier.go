@@ -27,6 +27,7 @@ type Querier interface {
 	DeactivateAllUserTenants(ctx context.Context, userID string) error
 	DeleteEmailTemplateByType(ctx context.Context, arg DeleteEmailTemplateByTypeParams) (int64, error)
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
+	DeleteStaleStripeWebhooks(ctx context.Context, keepStripeIds []string) (int64, error)
 	DeleteStorageObjectByID(ctx context.Context, id uuid.UUID) error
 	DeleteStripeWebhookByStripeID(ctx context.Context, stripeID string) error
 	DeleteSystemEmailTemplateByName(ctx context.Context, name string) (int64, error)
@@ -70,6 +71,7 @@ type Querier interface {
 	UpsertAppEmailTemplate(ctx context.Context, arg UpsertAppEmailTemplateParams) (UpsertAppEmailTemplateRow, error)
 	UpsertNamespaceDefinition(ctx context.Context, arg UpsertNamespaceDefinitionParams) error
 	UpsertRoleTemplate(ctx context.Context, arg UpsertRoleTemplateParams) error
+	UpsertStripeWebhook(ctx context.Context, arg UpsertStripeWebhookParams) (UpsertStripeWebhookRow, error)
 	UpsertSystemEmailTemplate(ctx context.Context, arg UpsertSystemEmailTemplateParams) (EmailSystemTemplate, error)
 	UpsertTenantEmailTemplate(ctx context.Context, arg UpsertTenantEmailTemplateParams) (UpsertTenantEmailTemplateRow, error)
 }
