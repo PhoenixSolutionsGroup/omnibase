@@ -353,6 +353,7 @@ func driftStatus(applied *StripeConfiguration, live *liveState, actualWebhooks m
 			Name:        liveProduct.Name,
 			Description: liveProduct.Description,
 			Type:        string(liveProduct.Type),
+			Metadata:    stripManagedMetadata(liveProduct.Metadata),
 		}
 		reasons := driftReasons(productConfigHash(actual), liveProduct.Metadata[MetadataKeyHash], productConfigHash(product))
 		if appliedDefault := defaultPriceConfigID(product); appliedDefault != "" {

@@ -30,6 +30,7 @@ func (h *Handler) addStripeIDsToConfig(ctx context.Context, config stripe_config
 			Name:        p.Name,
 			Description: p.Description,
 			Type:        p.Type,
+			Metadata:    p.Metadata,
 			UI:          p.UI,
 		}
 		if id := identity.Products[p.ID]; id != "" {

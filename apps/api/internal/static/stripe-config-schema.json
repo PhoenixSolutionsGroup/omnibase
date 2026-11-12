@@ -205,6 +205,13 @@
             "good"
           ]
         },
+        "metadata": {
+          "type": "object",
+          "description": "Optional string metadata to set on the Stripe object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "prices": {
           "type": "array",
           "minItems": 1,
@@ -247,6 +254,13 @@
             "service",
             "good"
           ]
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional string metadata to set on the Stripe object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "prices": {
           "type": "array",
@@ -356,6 +370,13 @@
           "type": "string",
           "description": "Enterprise pricing group ID for tenant-specific pricing"
         },
+        "metadata": {
+          "type": "object",
+          "description": "Optional string metadata to set on the Stripe object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "ui": {
           "$ref": "#/definitions/PriceUI"
         }
@@ -464,6 +485,13 @@
           "type": "string",
           "description": "Enterprise pricing group ID for tenant-specific pricing"
         },
+        "metadata": {
+          "type": "object",
+          "description": "Optional string metadata to set on the Stripe object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "ui": {
           "$ref": "#/definitions/PriceUI"
         }
@@ -558,6 +586,13 @@
         "enterprise_id": {
           "type": "string",
           "description": "Enterprise pricing group ID for tenant-specific pricing"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional string metadata to set on the Stripe object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "ui": {
           "$ref": "#/definitions/PriceUI"

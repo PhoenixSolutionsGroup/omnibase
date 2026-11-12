@@ -8,6 +8,7 @@ Name | Type
 ------------ | -------------
 `description` | string
 `id` | string
+`metadata` | { [key: string]: string; }
 `name` | string
 `prices` | [Array&lt;Price&gt;](Price.md)
 `stripeId` | string
@@ -23,6 +24,7 @@ import type { Product } from '@omnibase/core-js'
 const example = {
   "description": null,
   "id": null,
+  "metadata": null,
   "name": null,
   "prices": null,
   "stripeId": null,

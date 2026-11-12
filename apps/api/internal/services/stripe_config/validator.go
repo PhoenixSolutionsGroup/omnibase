@@ -419,9 +419,15 @@ func (v *Validator) validateManagedTagging(config StripeConfiguration) error {
 		if err := validateMetadataValueLength("product", product.ID); err != nil {
 			return err
 		}
+		if err := validateUserMetadata("product", product.ID, product.Metadata); err != nil {
+			return err
+		}
 		for _, price := range product.Prices {
 			if len(price.ID) > MaxLookupKeyLength {
 				return fmt.Errorf("price ID %q exceeds the Stripe lookup_key limit of %d characters", price.ID, MaxLookupKeyLength)
+			}
+			if err := validateUserMetadata("price", price.ID, price.Metadata); err != nil {
+				return err
 			}
 		}
 	}

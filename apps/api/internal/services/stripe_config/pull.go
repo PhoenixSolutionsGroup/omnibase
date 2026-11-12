@@ -141,16 +141,7 @@ func (s *Service) Pull(ctx context.Context) (*StripeConfiguration, error) {
 
 	configProducts := make([]Product, 0, len(stripeProducts))
 	for _, sp := range stripeProducts {
-		cp := Product{
-			ID:          productConfigIDs[sp.ID],
-			StripeID:    sp.ID,
-			Name:        sp.Name,
-			Description: sp.Description,
-			Type:        "service",
-		}
-		if sp.Type != "" {
-			cp.Type = string(sp.Type)
-		}
+		cp := convertStripeProductToConfig(sp, productConfigIDs[sp.ID])
 		for _, price := range pricesByProduct[sp.ID] {
 			cprice := convertStripePriceToConfig(price, meterConfigIDs)
 			cprice.ID = priceConfigIDs[price.ID]
@@ -213,6 +204,21 @@ func convertStripeMeterToConfig(sm *stripe.BillingMeter) Meter {
 	return cm
 }
 
+func convertStripeProductToConfig(sp *stripe.Product, configID string) Product {
+	cp := Product{
+		ID:          configID,
+		StripeID:    sp.ID,
+		Name:        sp.Name,
+		Description: sp.Description,
+		Type:        "service",
+		Metadata:    stripManagedMetadata(sp.Metadata),
+	}
+	if sp.Type != "" {
+		cp.Type = string(sp.Type)
+	}
+	return cp
+}
+
 func convertStripePriceToConfig(sp *stripe.Price, meterConfigIDs map[string]string) Price {
 	amount := float64(sp.UnitAmount)
 	if sp.UnitAmountDecimal != 0 {
@@ -221,6 +227,7 @@ func convertStripePriceToConfig(sp *stripe.Price, meterConfigIDs map[string]stri
 	cp := Price{
 		Amount:   amount,
 		Currency: string(sp.Currency),
+		Metadata: stripManagedMetadata(sp.Metadata),
 	}
 	switch sp.TaxBehavior {
 	case "inclusive":

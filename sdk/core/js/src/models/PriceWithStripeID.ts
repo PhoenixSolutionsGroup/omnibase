@@ -90,6 +90,12 @@ export interface PriceWithStripeID {
     intervalCount?: number;
     /**
      * 
+     * @type {{ [key: string]: string; }}
+     * @memberof PriceWithStripeID
+     */
+    metadata?: { [key: string]: string; };
+    /**
+     * 
      * @type {string}
      * @memberof PriceWithStripeID
      */
@@ -166,6 +172,7 @@ export function PriceWithStripeIDFromJSONTyped(json: any, ignoreDiscriminator: b
         'id': json['id'],
         'interval': json['interval'] == null ? undefined : json['interval'],
         'intervalCount': json['interval_count'] == null ? undefined : json['interval_count'],
+        'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'meter': json['meter'] == null ? undefined : json['meter'],
         '_public': json['public'] == null ? undefined : json['public'],
         'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
@@ -197,6 +204,7 @@ export function PriceWithStripeIDToJSONTyped(value?: PriceWithStripeID | null, i
         'id': value['id'],
         'interval': value['interval'],
         'interval_count': value['intervalCount'],
+        'metadata': value['metadata'],
         'meter': value['meter'],
         'public': value['_public'],
         'stripe_id': value['stripeId'],

@@ -58,10 +58,38 @@ func stripManagedMetadata(metadata map[string]string) map[string]string {
 		}
 		out[k] = v
 	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
+}
+
+func managedMetadataUpdate(kind, configID, hash string, existing, desired map[string]string) map[string]string {
+	out := managedMetadata(kind, configID, hash, desired)
+	for key := range existing {
+		if isManagedMetadataKey(key) {
+			continue
+		}
+		if _, ok := desired[key]; !ok {
+			out[key] = ""
+		}
+	}
 	return out
 }
 
 func productConfigHash(product Product) string {
+	sanitized := sanitizeProductConfig(product)
+	sanitized.Metadata = stripManagedMetadata(product.Metadata)
+	return stableHash(sanitized)
+}
+
+func productConfigHashWithoutMetadata(product Product) string {
+	sanitized := sanitizeProductConfig(product)
+	sanitized.Metadata = nil
+	return stableHash(sanitized)
+}
+
+func sanitizeProductConfig(product Product) Product {
 	sanitized := product
 	sanitized.StripeID = ""
 	sanitized.UI = nil
@@ -69,10 +97,22 @@ func productConfigHash(product Product) string {
 	if sanitized.Type == "" {
 		sanitized.Type = "service"
 	}
-	return stableHash(sanitized)
+	return sanitized
 }
 
 func priceConfigHash(price Price) string {
+	sanitized := sanitizePriceConfig(price)
+	sanitized.Metadata = stripManagedMetadata(price.Metadata)
+	return stableHash(sanitized)
+}
+
+func priceConfigHashWithoutMetadata(price Price) string {
+	sanitized := sanitizePriceConfig(price)
+	sanitized.Metadata = nil
+	return stableHash(sanitized)
+}
+
+func sanitizePriceConfig(price Price) Price {
 	sanitized := price
 	sanitized.StripeID = ""
 	sanitized.UI = nil
@@ -103,7 +143,7 @@ func priceConfigHash(price Price) string {
 			sanitized.UsageType = "licensed"
 		}
 	}
-	return stableHash(sanitized)
+	return sanitized
 }
 
 func couponConfigHash(coupon Coupon) string {

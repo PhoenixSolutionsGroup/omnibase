@@ -14,7 +14,7 @@ func (s *Service) createProduct(ctx context.Context, productConfig Product) (*Pr
 	if productConfig.StripeID != "" {
 		tagParams := &stripe.ProductUpdateParams{
 			Active:   stripe.Bool(true),
-			Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
+			Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), productConfig.Metadata),
 		}
 		s.stripe.ApplyAccount(tagParams)
 		if _, err := s.stripe.Stripe.V1Products.Update(ctx, productConfig.StripeID, tagParams); err != nil {
@@ -62,7 +62,7 @@ func (s *Service) createProduct(ctx context.Context, productConfig Product) (*Pr
 func buildProductCreateParams(productConfig Product, includeCustomID bool) *stripe.ProductCreateParams {
 	params := &stripe.ProductCreateParams{
 		Name:     stripe.String(productConfig.Name),
-		Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
+		Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), productConfig.Metadata),
 	}
 	if includeCustomID {
 		params.ID = stripe.String(productConfig.ID)
@@ -76,24 +76,24 @@ func buildProductCreateParams(productConfig Product, includeCustomID bool) *stri
 	return params
 }
 
-func (s *Service) updateProductFromConfig(ctx context.Context, desired Product, stripeID string) (*ProductChange, error) {
+func (s *Service) updateProductFromConfig(ctx context.Context, desired Product, live *stripe.Product) (*ProductChange, error) {
 	params := &stripe.ProductUpdateParams{
 		Name:     stripe.String(desired.Name),
 		Active:   stripe.Bool(true),
-		Metadata: managedMetadata("product", desired.ID, productConfigHash(desired), nil),
+		Metadata: managedMetadataUpdate("product", desired.ID, productConfigHash(desired), live.Metadata, desired.Metadata),
 	}
 	params.Description = stripe.String(desired.Description)
 
 	s.stripe.ApplyAccount(params)
-	if _, err := s.stripe.Stripe.V1Products.Update(ctx, stripeID, params); err != nil {
+	if _, err := s.stripe.Stripe.V1Products.Update(ctx, live.ID, params); err != nil {
 		return nil, fmt.Errorf("failed to update product: %w", err)
 	}
 	return &ProductChange{
 		ProductID:   desired.ID,
 		ProductName: desired.Name,
 		Action:      "updated",
-		StripeID:    stripeID,
-		Details:     []string{fmt.Sprintf("Updated product: %s", stripeID)},
+		StripeID:    live.ID,
+		Details:     []string{fmt.Sprintf("Updated product: %s", live.ID)},
 	}, nil
 }
 
@@ -183,7 +183,7 @@ func (s *Service) unarchiveExistingProduct(ctx context.Context, productConfig Pr
 	params := &stripe.ProductUpdateParams{
 		Active:   stripe.Bool(true),
 		Name:     stripe.String(productConfig.Name),
-		Metadata: managedMetadata("product", productConfig.ID, productConfigHash(productConfig), nil),
+		Metadata: managedMetadataUpdate("product", productConfig.ID, productConfigHash(productConfig), existing.Metadata, productConfig.Metadata),
 	}
 	if productConfig.Description != "" {
 		params.Description = stripe.String(productConfig.Description)

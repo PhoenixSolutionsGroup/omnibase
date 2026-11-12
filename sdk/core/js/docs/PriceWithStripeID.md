@@ -15,6 +15,7 @@ Name | Type
 `id` | string
 `interval` | string
 `intervalCount` | number
+`metadata` | { [key: string]: string; }
 `meter` | string
 `_public` | boolean
 `stripeId` | string
@@ -40,6 +41,7 @@ const example = {
   "id": null,
   "interval": null,
   "intervalCount": null,
+  "metadata": null,
   "meter": null,
   "_public": null,
   "stripeId": null,

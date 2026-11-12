@@ -48,6 +48,12 @@ export interface Product {
     id: string;
     /**
      * 
+     * @type {{ [key: string]: string; }}
+     * @memberof Product
+     */
+    metadata?: { [key: string]: string; };
+    /**
+     * 
      * @type {string}
      * @memberof Product
      */
@@ -100,6 +106,7 @@ export function ProductFromJSONTyped(json: any, ignoreDiscriminator: boolean): P
         
         'description': json['description'] == null ? undefined : json['description'],
         'id': json['id'],
+        'metadata': json['metadata'] == null ? undefined : json['metadata'],
         'name': json['name'],
         'prices': (json['prices'] == null ? null : (json['prices'] as Array<any>).map(PriceFromJSON)),
         'stripeId': json['stripe_id'] == null ? undefined : json['stripe_id'],
@@ -121,6 +128,7 @@ export function ProductToJSONTyped(value?: Product | null, ignoreDiscriminator: 
         
         'description': value['description'],
         'id': value['id'],
+        'metadata': value['metadata'],
         'name': value['name'],
         'prices': (value['prices'] == null ? null : (value['prices'] as Array<any>).map(PriceToJSON)),
         'stripe_id': value['stripeId'],

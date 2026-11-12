@@ -393,7 +393,7 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 			continue
 		}
 
-		change, err := s.updateProductFromConfig(ctx, product, live.ID)
+		change, err := s.updateProductFromConfig(ctx, product, live)
 		if err != nil {
 			return err
 		}
@@ -403,6 +403,7 @@ func (s *Service) reconcileProducts(ctx context.Context, config *StripeConfigura
 }
 
 func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfiguration, actual map[string]*stripe.Price, state *reconcileState, changes *ConfigChanges) error {
+	meterConfigIDs := reverseStringMap(state.meterStripeIDs)
 	for _, product := range config.Products {
 		if product.ID == "free" {
 			continue
@@ -435,8 +436,25 @@ func (s *Service) reconcilePrices(ctx context.Context, config *StripeConfigurati
 			}
 
 			state.priceStripeIDs[price.ID] = live.ID
-			if !forceRecreate && priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
-				continue
+			if !forceRecreate {
+				if priceConfigHash(price) == live.Metadata[MetadataKeyHash] {
+					continue
+				}
+
+				actual := convertStripePriceToConfig(live, meterConfigIDs)
+				actual.ID = price.ID
+				if priceConfigHashWithoutMetadata(price) == priceConfigHashWithoutMetadata(actual) {
+					if err := s.updatePriceMetadata(ctx, live, price); err != nil {
+						return err
+					}
+					changes.Prices.Updated = append(changes.Prices.Updated, PriceChange{
+						PriceID:   price.ID,
+						ProductID: product.ID,
+						Action:    "updated",
+						StripeID:  live.ID,
+					})
+					continue
+				}
 			}
 
 			if err := s.archivePriceByStripeID(ctx, live.ID); err != nil {

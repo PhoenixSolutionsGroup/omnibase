@@ -31,6 +31,7 @@ type Price struct {
 	Id string `json:"id"`
 	Interval *string `json:"interval,omitempty"`
 	IntervalCount *int64 `json:"interval_count,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 	Meter *string `json:"meter,omitempty"`
 	Public *bool `json:"public,omitempty"`
 	StripeId *string `json:"stripe_id,omitempty"`
@@ -334,6 +335,38 @@ func (o *Price) SetIntervalCount(v int64) {
 	o.IntervalCount = &v
 }
 
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Price) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
+		return ret
+	}
+	return o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Price) GetMetadataOk() (map[string]string, bool) {
+	if o == nil || IsNil(o.Metadata) {
+		return map[string]string{}, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *Price) HasMetadata() bool {
+	if o != nil && !IsNil(o.Metadata) {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Price) SetMetadata(v map[string]string) {
+	o.Metadata = v
+}
+
 // GetMeter returns the Meter field value if set, zero value otherwise.
 func (o *Price) GetMeter() string {
 	if o == nil || IsNil(o.Meter) {
@@ -623,6 +656,9 @@ func (o Price) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.IntervalCount) {
 		toSerialize["interval_count"] = o.IntervalCount
+	}
+	if !IsNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if !IsNil(o.Meter) {
 		toSerialize["meter"] = o.Meter

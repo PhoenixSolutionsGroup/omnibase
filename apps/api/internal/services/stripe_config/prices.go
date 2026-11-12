@@ -15,7 +15,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 		tagParams := &stripe.PriceUpdateParams{
 			Active:    stripe.Bool(true),
 			LookupKey: stripe.String(priceConfig.ID),
-			Metadata:  managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
+			Metadata:  managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), priceConfig.Metadata),
 		}
 		if transferLookupKey {
 			tagParams.TransferLookupKey = stripe.Bool(true)
@@ -36,7 +36,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 		Currency:          stripe.String(priceConfig.Currency),
 		LookupKey:         stripe.String(priceConfig.ID),
 		TransferLookupKey: stripe.Bool(transferLookupKey),
-		Metadata:          managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
+		Metadata:          managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), priceConfig.Metadata),
 	}
 	if priceConfig.TaxIncludedInPrice != nil {
 		if *priceConfig.TaxIncludedInPrice {
@@ -91,7 +91,7 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 			if archived.Product != nil && archived.Product.ID == stripeProductID && archived.Metadata[MetadataKeyHash] == priceConfigHash(priceConfig) {
 				updateParams := &stripe.PriceUpdateParams{
 					Active:   stripe.Bool(true),
-					Metadata: managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), nil),
+					Metadata: managedMetadata("price", priceConfig.ID, priceConfigHash(priceConfig), priceConfig.Metadata),
 				}
 				s.stripe.ApplyAccount(updateParams)
 				updated, updateErr := s.stripe.Stripe.V1Prices.Update(ctx, archived.ID, updateParams)
@@ -111,6 +111,17 @@ func (s *Service) createPrice(ctx context.Context, priceConfig Price, stripeProd
 		return "", "", fmt.Errorf("%w: %w", CreatePriceError, err)
 	}
 	return stripePrice.ID, fmt.Sprintf("Created price: %s (config: %s)", stripePrice.ID, priceConfig.ID), nil
+}
+
+func (s *Service) updatePriceMetadata(ctx context.Context, live *stripe.Price, desired Price) error {
+	params := &stripe.PriceUpdateParams{
+		Metadata: managedMetadataUpdate("price", desired.ID, priceConfigHash(desired), live.Metadata, desired.Metadata),
+	}
+	s.stripe.ApplyAccount(params)
+	if _, err := s.stripe.Stripe.V1Prices.Update(ctx, live.ID, params); err != nil {
+		return fmt.Errorf("failed to update price metadata %s: %w", desired.ID, err)
+	}
+	return nil
 }
 
 func (s *Service) findArchivedPriceByLookupKey(ctx context.Context, configPriceID string) (*stripe.Price, error) {
