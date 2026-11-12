@@ -79,7 +79,7 @@ function PricingCard({
     <div
       className={cn(
         "flex flex-col h-full pb-6",
-        isHighlighted ? "relative" : "",
+        isHighlighted ? "relative" : ""
       )}
     >
       <div className="h-4 flex-shrink-0 relative">
@@ -96,7 +96,7 @@ function PricingCard({
         className={cn(
           "flex flex-col flex-1 w-full transition-all duration-200 hover:shadow-lg",
           isHighlighted && "border-primary shadow-lg",
-          isSelected && "ring-2 ring-primary",
+          isSelected && "ring-2 ring-primary"
         )}
       >
         <CardHeader className="text-center">
@@ -150,7 +150,7 @@ function PricingCard({
                             <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-0" />
                             <span className="text-sm">{feature}</span>
                           </li>
-                        ),
+                        )
                       )}
                     </ul>
                   </div>
@@ -210,24 +210,22 @@ export function PricingTable({
   const sortedProducts = React.useMemo(
     () =>
       [...products].sort(
-        (a, b) => (a.ui?.sortOrder ?? 999) - (b.ui?.sortOrder ?? 999),
+        (a, b) => (a.ui?.sortOrder ?? 999) - (b.ui?.sortOrder ?? 999)
       ),
-    [products],
+    [products]
   );
 
   const hasMultipleIntervals = React.useMemo(
     () =>
       products.some(
-        (p) =>
-          new Set((p.prices ?? []).map((price) => price.interval)).size > 1,
+        (p) => new Set((p.prices ?? []).map((price) => price.interval)).size > 1
       ),
-    [products],
+    [products]
   );
 
   const getDisplayedPrice = (product: Product) =>
-    (product.prices ?? []).find(
-      (price) => price.interval === selectedInterval,
-    ) || (product.prices ?? [])[0];
+    (product.prices ?? []).find((price) => price.interval === selectedInterval) ||
+    (product.prices ?? [])[0];
 
   const renderCard = (product: Product) => {
     const displayedPrice = getDisplayedPrice(product);
@@ -280,7 +278,7 @@ export function PricingTable({
         className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 bg-white shadow-lg border hover:bg-gray-50 disabled:opacity-50"
         onClick={() =>
           setCarouselIndex(
-            Math.min(sortedProducts.length - 3, carouselIndex + 1),
+            Math.min(sortedProducts.length - 3, carouselIndex + 1)
           )
         }
         disabled={carouselIndex >= sortedProducts.length - 3}
@@ -296,11 +294,11 @@ export function PricingTable({
               onClick={() => setCarouselIndex(i)}
               className={cn(
                 "w-2 h-2 rounded-full transition-colors",
-                i === carouselIndex ? "bg-primary" : "bg-gray-300",
+                i === carouselIndex ? "bg-primary" : "bg-gray-300"
               )}
               aria-label={`Go to slide ${i + 1}`}
             />
-          ),
+          )
         )}
       </div>
     </div>
@@ -388,7 +386,7 @@ export function PricingTable({
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-10 bg-white shadow-lg border hover:bg-gray-50 disabled:opacity-50"
               onClick={() =>
                 setCarouselIndex((prev) =>
-                  Math.min(sortedProducts.length - 1, prev + 1),
+                  Math.min(sortedProducts.length - 1, prev + 1)
                 )
               }
               disabled={carouselIndex >= sortedProducts.length - 1}
@@ -402,7 +400,7 @@ export function PricingTable({
                   onClick={() => setCarouselIndex(i)}
                   className={cn(
                     "w-2 h-2 rounded-full transition-colors",
-                    i === carouselIndex ? "bg-primary" : "bg-gray-300",
+                    i === carouselIndex ? "bg-primary" : "bg-gray-300"
                   )}
                   aria-label={`Go to slide ${i + 1}`}
                 />
