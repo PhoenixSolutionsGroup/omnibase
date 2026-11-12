@@ -629,7 +629,7 @@ export function ProvisioningForm({
             <h3 className="text-base font-medium">Details</h3>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-2 md:grid-cols-2">
             {isBranchMode ? (
               <div className="space-y-2">
                 <Label htmlFor="branch_name">Branch Name</Label>
@@ -688,7 +688,7 @@ export function ProvisioningForm({
               const plan = plans.find((p) => p.id === planId);
               if (plan) selectPlan(plan);
             }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            className="grid grid-cols-1 md:grid-cols-2 gap-2"
           >
             {plans.map((plan) => {
               const price = plan.prices.find(
@@ -738,6 +738,7 @@ export function ProvisioningForm({
           </RadioGroup>
         </div>
 
+        {/* REGION */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
@@ -749,7 +750,7 @@ export function ProvisioningForm({
             onValueChange={(value) =>
               setFormData((prev) => ({ ...prev, region: value }))
             }
-            className="grid grid-cols-1 md:grid-cols-3 gap-2"
+            className="grid grid-cols-1 md:grid-cols-2 gap-2"
           >
             {availableRegions.map((region) => (
               <RadioChoiceCard
@@ -762,6 +763,7 @@ export function ProvisioningForm({
           </RadioGroup>
         </div>
 
+        {/* POSTGRES */}
         {postgresOptions.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -781,6 +783,7 @@ export function ProvisioningForm({
           </div>
         )}
 
+        {/* AVAILABILITY */}
         {availabilityOptions.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -806,7 +809,7 @@ export function ProvisioningForm({
         )}
       </div>
       {/* Summary */}
-      <div>
+      <div className="md:sticky md:top-4 md:self-start">
         <Card>
           <CardHeader>
             <CardTitle>
