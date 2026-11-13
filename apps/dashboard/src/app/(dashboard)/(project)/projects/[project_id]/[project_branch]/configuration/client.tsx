@@ -325,7 +325,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "API Endpoints",
       description: "Core API service URLs",
-      icon: <Globe className="h-5 w-5 text-primary" />,
+      icon: <Globe className="h-5 w-5" />,
       // TODO: Possibly add `provider` here that shows deployment type/name
       items: [
         { label: "API URL", value: project.api_url },
@@ -340,7 +340,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "Database",
       description: "Database connection information",
-      icon: <Database className="h-5 w-5 text-primary" />,
+      icon: <Database className="h-5 w-5" />,
       // TODO: Possibly add 'provider' here that shows database provider
       items: [
         { label: "PostgREST URL", value: project.postgrest_url },
@@ -372,7 +372,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "Storage",
       description: "Object storage configuration",
-      icon: <Cloud className="h-5 w-5 text-primary" />,
+      icon: <Cloud className="h-5 w-5" />,
       // TODO: Possibly add 'provider' here that shows storage provider
       items: [
         { label: "Storage Bucket Name", value: project.storage_bucket_name },
@@ -389,7 +389,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "Email",
       description: "Email service configuration",
-      icon: <Mail className="h-5 w-5 text-primary" />,
+      icon: <Mail className="h-5 w-5" />,
       items: [
         { label: "SES Tenant Name", value: project.ses_tenant_name },
         { label: "SES Config Set", value: project.ses_config_set },
@@ -571,7 +571,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                       )
                                     }
                                     disabled={isLoading}
-                                    className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     title={isRevealed ? "Hide" : "Reveal"}
                                   >
                                     {isLoading ? (
@@ -595,7 +594,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                                     )
                                   }
                                   disabled={item.sensitive && !isRevealed}
-                                  className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   Copy
                                 </Button>
@@ -623,12 +621,10 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                 <Button
                   key={section.title}
                   onClick={() => scrollToSection(section.title)}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors text-left",
-                    activeSection === section.title
-                      ? "bg-muted font-medium text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                  )}
+                  variant={
+                    activeSection === section.title ? "default" : "outline"
+                  }
+                  className={cn("w-full text-left")}
                 >
                   {section.icon}
                   <span className="truncate">{section.title}</span>
