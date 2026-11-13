@@ -40,6 +40,7 @@ import {
 } from "@/lib/region-latency";
 import formatPrice from "@/lib/currency";
 import { RadioChoiceCard } from "./ui/radio-choice-card";
+import { CheckboxCard } from "./ui/checkbox-card";
 import { RadioGroup } from "./ui/radio-group";
 import { ButtonGroup } from "./ui/button-group";
 import { V1PaymentsApi } from "@omnibase/core-js";
@@ -64,12 +65,17 @@ type Region = {
   active: boolean;
 };
 
-// Mirrors the Go `Postgres` and `Availability` structs (identical shape).
+// Mirrors the Go `Postgres` struct.
 type PlanOption = {
   name: string;
   description: string;
   included: boolean;
   prices: Price[];
+};
+
+// Postgres size this standby option (and its price) belongs to.
+type AvailabilityOption = PlanOption & {
+  postgres: string;
 };
 
 // Mirrors the Go `Tier` struct returned by /api/v1/projects/plans.
@@ -81,7 +87,7 @@ type Plan = {
   features: Feature[];
   features_summary: string;
   postgres: PlanOption[];
-  availability: PlanOption[];
+  availability: AvailabilityOption[];
   prices: Price[];
   provider: string;
   regions: Region[];
@@ -102,8 +108,6 @@ type FormData = {
   postgres: string; // option name, "" = none selected
   availability: string; // option name, "" = none selected
 };
-
-const NO_AVAILABILITY = "none";
 
 interface ProvisioningFormProps {
   mode: "project" | "branch";
@@ -359,8 +363,6 @@ interface OptionGroupProps {
   value: string;
   onChange: (name: string) => void;
   interval: PaymentInterval;
-  noneLabel?: string; // when set, adds a "no option" card
-  noneDescription?: string;
 }
 
 function OptionGroup({
@@ -369,8 +371,6 @@ function OptionGroup({
   value,
   onChange,
   interval,
-  noneLabel,
-  noneDescription,
 }: OptionGroupProps) {
   return (
     <RadioGroup
@@ -378,14 +378,6 @@ function OptionGroup({
       onValueChange={onChange}
       className="flex flex-col gap-2"
     >
-      {noneLabel && (
-        <RadioChoiceCard
-          id={`${idPrefix}-${NO_AVAILABILITY}`}
-          value={NO_AVAILABILITY}
-          title={noneLabel}
-          description={noneDescription}
-        />
-      )}
       {options.map((option) => (
         <RadioChoiceCard
           key={option.name}
@@ -504,7 +496,15 @@ export function ProvisioningForm({
   );
 
   const postgresOptions = selectedPlan?.postgres ?? [];
-  const availabilityOptions = selectedPlan?.availability ?? [];
+
+  // Only the availability option(s) that belong to the selected Postgres size.
+  const availabilityOptions = React.useMemo(
+    () =>
+      (selectedPlan?.availability ?? []).filter(
+        (o) => o.postgres === formData.postgres,
+      ),
+    [selectedPlan, formData.postgres],
+  );
 
   const selectedPostgres = postgresOptions.find(
     (o) => o.name === formData.postgres,
@@ -552,6 +552,8 @@ export function ProvisioningForm({
 
     // TODO: client.createCheckout({createCheckoutRequest: {priceId: "shared_starter_monthly" }})
 
+    const availability = selectedAvailability?.name ?? "";
+
     try {
       if (isBranchMode) {
         if (!projectId) throw new Error("Missing project id");
@@ -567,7 +569,7 @@ export function ProvisioningForm({
               deployment_tier: selectedPlan.id,
               billing_email: formData.billing_email,
               postgres: formData.postgres,
-              availability: formData.availability,
+              availability,
             }),
             credentials: "include",
           },
@@ -588,7 +590,7 @@ export function ProvisioningForm({
             deployment_tier: selectedPlan.id,
             billing_email: formData.billing_email,
             postgres: formData.postgres,
-            availability: formData.availability,
+            availability,
           }),
           credentials: "include",
         });
@@ -783,7 +785,7 @@ export function ProvisioningForm({
           </div>
         )}
 
-        {/* AVAILABILITY */}
+        {/* AVAILABILITY (only the option matching the selected Postgres) */}
         {availabilityOptions.length > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -791,20 +793,34 @@ export function ProvisioningForm({
               <h3 className="text-base font-medium">Availability</h3>
             </div>
 
-            <OptionGroup
-              idPrefix="availability"
-              options={availabilityOptions}
-              value={formData.availability || NO_AVAILABILITY}
-              onChange={(name) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  availability: name === NO_AVAILABILITY ? "" : name,
-                }))
-              }
-              interval={paymentInterval}
-              noneLabel="None"
-              noneDescription="No standby"
-            />
+            {availabilityOptions.map((option) => {
+              const price = priceFor(option, paymentInterval);
+              return (
+                <CheckboxCard
+                  key={option.name}
+                  id={`availability-${option.name}`}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <span className="text-sm">{option.name}</span>
+                      {price ? (
+                        <OptionPriceLabel
+                          option={option}
+                          interval={price.interval}
+                        />
+                      ) : null}
+                    </div>
+                  }
+                  description={option.description}
+                  checked={selectedAvailability?.name === option.name}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      availability: checked ? option.name : "",
+                    }))
+                  }
+                />
+              );
+            })}
           </div>
         )}
       </div>
