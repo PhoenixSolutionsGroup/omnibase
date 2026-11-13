@@ -173,7 +173,7 @@ export function LogViewer({
         credentials: "include",
       });
       if (response.ok) {
-        const data = await response.json();
+        const { data } = await response.json();
         console.log("Load more response:", data);
         if (data.logs && data.logs.length > 0) {
           // Sort and append older logs
@@ -218,7 +218,7 @@ export function LogViewer({
         credentials: "include",
       });
       if (response.ok) {
-        const data = await response.json();
+        const { data } = await response.json();
         if (data.logs && data.logs.length > 0) {
           const sortedNewLogs = [...data.logs].sort(
             (a, b) =>

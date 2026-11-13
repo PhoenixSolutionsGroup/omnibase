@@ -110,7 +110,7 @@ export function LogsClient({
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const { data } = await response.json();
           console.log(data, url.toString());
           setLogsData(data);
           setLastFetch(Date.now());

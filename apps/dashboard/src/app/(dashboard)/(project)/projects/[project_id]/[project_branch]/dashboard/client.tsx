@@ -162,7 +162,7 @@ export function ProjectDashboardClient({
           const url = new URL(
             `${MANAGED_HOSTING_API_URL}/api/v1/logs/${project.id}`,
           );
-          url.searchParams.set("service_type", serviceType);
+          url.searchParams.set("service_name", serviceType);
           url.searchParams.set("severity", "WARNING");
           url.searchParams.set("limit", "100");
           url.searchParams.set("start_time", startTime.toISOString());
@@ -180,7 +180,7 @@ export function ProjectDashboardClient({
             return { serviceType, logs: [] };
           }
 
-          const data = await response.json();
+          const { data } = await response.json();
           console.log(data);
           return { serviceType, logs: data.logs || [] };
         } catch (error) {
