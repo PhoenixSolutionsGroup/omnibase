@@ -55,7 +55,7 @@ function CopyValue({ value, label }: { value: string; label: string }) {
   };
 
   return (
-    <button
+    <Button
       type="button"
       onClick={handleCopy}
       className="group flex items-center gap-2 rounded bg-background px-3 py-1.5 font-mono text-xs text-foreground ring-1 ring-border transition-colors hover:ring-ring"
@@ -67,7 +67,7 @@ function CopyValue({ value, label }: { value: string; label: string }) {
         <Copy className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
       )}
       <span className="sr-only">Copy {label}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -114,9 +114,7 @@ function DomainCard({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-medium">{domain.hostname}</span>
-              {domain.is_wildcard && (
-                <Badge variant="outline">Wildcard</Badge>
-              )}
+              {domain.is_wildcard && <Badge variant="outline">Wildcard</Badge>}
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Point your DNS at{" "}
@@ -145,7 +143,11 @@ function DomainCard({
                 <span>Value</span>
                 <span />
               </div>
-              <DnsRow type="CNAME" name={domain.hostname} value={domain.cname_target} />
+              <DnsRow
+                type="CNAME"
+                name={domain.hostname}
+                value={domain.cname_target}
+              />
               {domain.dcv_record_name && domain.dcv_record_value && (
                 <DnsRow
                   type="TXT"
@@ -177,8 +179,8 @@ function DomainCard({
         {domain.status === "active" && (
           <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
             <Check className="h-3.5 w-3.5 text-emerald-500" />
-            DNS verified and certificate issued — attach this domain to a
-            worker from the project's Configuration page.
+            DNS verified and certificate issued — attach this domain to a worker
+            from the project's Configuration page.
           </div>
         )}
       </CardContent>
@@ -223,13 +225,13 @@ export default function DomainsPage() {
               return d;
             }
             return d;
-          })
+          }),
       );
       setDomains((prev) =>
         prev.map((d) => {
           const match = refreshed.find((r) => r?.id === d.id);
           return match ? { ...d, ...match } : d;
-        })
+        }),
       );
     }, 10000);
 

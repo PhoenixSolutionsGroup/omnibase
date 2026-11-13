@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "bun --env-file=../../omnibase/.env.local next dev --turbopack",
     "ngrok": "ngrok http --url=enhanced-enabled-poodle.ngrok-free.app 3000",
     "dev:tunnel": "npm run ngrok & npm run dev",
     "build": "next build",
@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cn": "^0.5.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.556.0",
     "next": "16.2.10",

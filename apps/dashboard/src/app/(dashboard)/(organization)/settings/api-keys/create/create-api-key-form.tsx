@@ -40,7 +40,8 @@ function parsePermissionString(perm: string): {
   const relation = perm.substring(hashIndex + 1);
   const colonIndex = beforeHash.indexOf(":");
 
-  if (colonIndex === -1) return { namespace: beforeHash, relation, objectId: "" };
+  if (colonIndex === -1)
+    return { namespace: beforeHash, relation, objectId: "" };
   return {
     namespace: beforeHash.substring(0, colonIndex),
     relation,
@@ -70,7 +71,8 @@ export function CreateAPIKeyForm({
   // case-sensitive namespace matching works.
   const originalNamespace = useMemo(() => {
     const map = new Map<string, string>();
-    for (const d of definitions) map.set(d.namespace.toLowerCase(), d.namespace);
+    for (const d of definitions)
+      map.set(d.namespace.toLowerCase(), d.namespace);
     return map;
   }, [definitions]);
 
@@ -107,7 +109,7 @@ export function CreateAPIKeyForm({
       toast.success("API key created successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create API key"
+        error instanceof Error ? error.message : "Failed to create API key",
       );
     } finally {
       setIsCreating(false);
@@ -202,14 +204,16 @@ export function CreateAPIKeyForm({
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
-          <Link
-            href="/settings"
-            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 ${
-              isCreating ? "pointer-events-none opacity-50" : ""
-            }`}
-          >
-            Cancel
-          </Link>
+          <Button variant="outline">
+            <Link
+              href="/settings"
+              className={`${
+                isCreating ? "pointer-events-none opacity-50" : ""
+              }`}
+            >
+              Cancel
+            </Link>
+          </Button>
           <Button onClick={handleSubmit} disabled={isCreating}>
             {isCreating ? "Creating..." : "Create API Key"}
           </Button>

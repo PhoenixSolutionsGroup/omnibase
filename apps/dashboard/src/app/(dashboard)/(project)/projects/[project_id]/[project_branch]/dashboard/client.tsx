@@ -62,7 +62,9 @@ export function ProjectDashboardClient({
   const [serviceStatuses, setServiceStatuses] = useState<ServiceStatus[]>([]);
   const [serviceLogs, setServiceLogs] = useState<ServiceLogs>({});
   const [logsLoading, setLogsLoading] = useState(true);
-  const [deployments, setDeployments] = useState<{ name: string; worker_url?: string }[]>([]);
+  const [deployments, setDeployments] = useState<
+    { name: string; worker_url?: string }[]
+  >([]);
 
   // Define services to check (with service type mapping)
   // Note: Auth and Permissions are now proxied through the API, so we only need to check
@@ -82,13 +84,13 @@ export function ProjectDashboardClient({
     },
   ].filter(
     (
-      service
+      service,
     ): service is {
       name: string;
       url: string;
       health_url: string;
       serviceType: string;
-    } => service.url !== null
+    } => service.url !== null,
   );
 
   // Health check function using edge worker to avoid CORS issues
@@ -98,7 +100,7 @@ export function ProjectDashboardClient({
       url: string;
       health_url: string;
       serviceType: string;
-    }[]
+    }[],
   ): Promise<ServiceStatus[]> => {
     try {
       // Call the edge function health check endpoint
@@ -158,7 +160,7 @@ export function ProjectDashboardClient({
       const logPromises = serviceTypes.map(async (serviceType) => {
         try {
           const url = new URL(
-            `${MANAGED_HOSTING_API_URL}/api/v1/logs/${project.id}`
+            `${MANAGED_HOSTING_API_URL}/api/v1/logs/${project.id}`,
           );
           url.searchParams.set("service_type", serviceType);
           url.searchParams.set("severity", "WARNING");
@@ -173,7 +175,7 @@ export function ProjectDashboardClient({
 
           if (!response.ok) {
             console.error(
-              `Failed to fetch logs for ${serviceType}: ${response.status}`
+              `Failed to fetch logs for ${serviceType}: ${response.status}`,
             );
             return { serviceType, logs: [] };
           }
@@ -226,7 +228,7 @@ export function ProjectDashboardClient({
         url: s.url,
         status: "checking",
         serviceType: s.serviceType,
-      }))
+      })),
     );
 
     const statuses = await checkServiceHealth(services);
@@ -308,9 +310,7 @@ export function ProjectDashboardClient({
         <div className="mx-auto max-w-7xl space-y-6">
           {/* Welcome Header */}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {project.name}
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight">{project.name}</h1>
             <p className="mt-2 text-muted-foreground">
               {region} • Created{" "}
               {new Date(project.created_at).toLocaleDateString()}
@@ -406,12 +406,17 @@ export function ProjectDashboardClient({
             <Card>
               <CardHeader>
                 <CardTitle>Deployments</CardTitle>
-                <CardDescription>Worker deployments for this branch</CardDescription>
+                <CardDescription>
+                  Worker deployments for this branch
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {deployments.map((dep) => (
-                    <div key={dep.name} className="flex items-center justify-between rounded-lg border p-3">
+                    <div
+                      key={dep.name}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div>
                         <p className="font-medium">{dep.name}</p>
                         {dep.worker_url && (

@@ -23,7 +23,7 @@ export default async function NewBranchPage({ params }: NewBranchPageProps) {
   return (
     <div className="container mx-auto max-w-5xl py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Create New Branch</h1>
+        <h1 className="text-xl font-bold tracking-tight">Create New Branch</h1>
         <p className="text-muted-foreground">
           Create a new branch for {project.name}. The branch will inherit the
           parent project's configuration.

@@ -24,7 +24,7 @@ jobs:
     env:
       BRANCH_NAME: pr-${{ github.event.pull_request.number }}
       MANAGED_HOSTING_API_URL: https://api.omnibase.tech
-      PREVIEW_REGION: ${{ vars.OMNIBASE_PREVIEW_REGION || 'syd' }}
+      PREVIEW_REGION: ${{ vars.OMNIBASE_PREVIEW_REGION || 'eu' }}
       PREVIEW_TIER: ${{ vars.OMNIBASE_PREVIEW_TIER || 'shared_starter' }}
       WORKER_DOMAIN: ${{ vars.OMNIBASE_WORKER_DOMAIN || 'workers.omnibase.tech' }}
       COOKIE_DOMAIN: ${{ vars.OMNIBASE_COOKIE_DOMAIN }}

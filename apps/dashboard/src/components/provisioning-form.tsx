@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Server, Check, ChevronsUpDown } from "lucide-react";
+import {
+  Loader2,
+  Server,
+  Check,
+  ChevronsUpDown,
+  Globe,
+  Database,
+  ShieldCheck,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,17 +27,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Slider } from "@/components/ui/slider";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -38,22 +38,22 @@ import {
   formatLatency,
   getLatencyColorClass,
 } from "@/lib/region-latency";
+import formatPrice from "@/lib/currency";
+import { RadioChoiceCard } from "./ui/radio-choice-card";
+import { RadioGroup } from "./ui/radio-group";
+import { ButtonGroup } from "./ui/button-group";
+import { V1PaymentsApi } from "@omnibase/core-js";
 
-type Tier = {
+type Feature = {
+  feature_name: string;
+  value: string;
+};
+
+type Price = {
   id: string;
-  name: string;
-  vcpus: number;
-  memory_gb: number;
-  deployment_type: "shared" | "scale" | "dedicated";
-  pool: "shared" | "dedicated";
-  zeropod_enabled: boolean;
-  zeropod_scaledown_sec: number;
-  cnpg_instances: number;
-  database_storage_limit_gb: number;
-  object_storage_limit_gb: number;
-  worker_requests_included: number;
-  stripe_price_hourly_id: string;
-  regions: string[];
+  amount: number;
+  currency: string;
+  interval: "month" | "year";
 };
 
 type Region = {
@@ -64,38 +64,51 @@ type Region = {
   active: boolean;
 };
 
-type OptionsResponse = {
-  cluster_provider: string;
-  tiers: Tier[];
+// Mirrors the Go `Postgres` and `Availability` structs (identical shape).
+type PlanOption = {
+  name: string;
+  description: string;
+  included: boolean;
+  prices: Price[];
+};
+
+// Mirrors the Go `Tier` struct returned by /api/v1/projects/plans.
+type Plan = {
+  id: string;
+  name: string;
+  display_name: string;
+  description: string;
+  features: Feature[];
+  features_summary: string;
+  postgres: PlanOption[];
+  availability: PlanOption[];
+  prices: Price[];
+  provider: string;
   regions: Region[];
 };
+
+type PlansResponse = {
+  tiers: Plan[];
+};
+
+type PaymentInterval = Price["interval"];
 
 type FormData = {
   name: string;
   branch_name: string;
   billing_email: string;
-  deployment_tier: string;
+  plan_id: string;
   region: string;
+  postgres: string; // option name, "" = none selected
+  availability: string; // option name, "" = none selected
 };
+
+const NO_AVAILABILITY = "none";
 
 interface ProvisioningFormProps {
   mode: "project" | "branch";
   projectId?: string;
   projectName?: string;
-}
-
-const TIER_ORDER: Record<Tier["deployment_type"], number> = {
-  shared: 0,
-  scale: 1,
-  dedicated: 2,
-};
-
-function sortTiers(tiers: Tier[]): Tier[] {
-  return [...tiers].sort((a, b) => {
-    const typeDiff = TIER_ORDER[a.deployment_type] - TIER_ORDER[b.deployment_type];
-    if (typeDiff !== 0) return typeDiff;
-    return a.vcpus - b.vcpus;
-  });
 }
 
 interface RegionComboboxProps {
@@ -181,9 +194,7 @@ function RegionCombobox({
     }
 
     for (const [, regionList] of groups) {
-      regionList.sort(
-        (a, b) => getLatencyValue(a.id) - getLatencyValue(b.id),
-      );
+      regionList.sort((a, b) => getLatencyValue(a.id) - getLatencyValue(b.id));
     }
 
     const sortedEntries = Array.from(groups.entries()).sort(
@@ -285,15 +296,138 @@ function RegionCombobox({
   );
 }
 
+function SummaryRow({
+  label,
+  value,
+  muted = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  muted?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-4">
+      <span
+        className={cn(
+          "text-sm font-medium col-span-2",
+          muted && "text-muted-foreground",
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          "text-sm font-medium text-end col-span-2",
+          muted && "text-muted-foreground",
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function priceFor(
+  option: PlanOption | undefined,
+  interval: PaymentInterval,
+): Price | undefined {
+  return option?.prices.find((p) => p.interval === interval);
+}
+
+function OptionPriceLabel({
+  option,
+  interval,
+}: {
+  option: PlanOption;
+  interval: PaymentInterval;
+}) {
+  if (option.included) {
+    return <span className="text-sm">Included</span>;
+  }
+  const price = priceFor(option, interval);
+  if (!price) return null;
+  return (
+    <span className="text-sm">
+      +{formatPrice(price.amount)} / {price.interval}
+    </span>
+  );
+}
+
+interface OptionGroupProps {
+  idPrefix: string;
+  options: PlanOption[];
+  value: string;
+  onChange: (name: string) => void;
+  interval: PaymentInterval;
+  noneLabel?: string; // when set, adds a "no option" card
+  noneDescription?: string;
+}
+
+function OptionGroup({
+  idPrefix,
+  options,
+  value,
+  onChange,
+  interval,
+  noneLabel,
+  noneDescription,
+}: OptionGroupProps) {
+  return (
+    <RadioGroup
+      value={value}
+      onValueChange={onChange}
+      className="flex flex-col gap-2"
+    >
+      {noneLabel && (
+        <RadioChoiceCard
+          id={`${idPrefix}-${NO_AVAILABILITY}`}
+          value={NO_AVAILABILITY}
+          title={noneLabel}
+          description={noneDescription}
+        />
+      )}
+      {options.map((option) => (
+        <RadioChoiceCard
+          key={option.name}
+          id={`${idPrefix}-${option.name}`}
+          value={option.name}
+          title={
+            <div className="flex justify-between w-full">
+              <span className="text-sm">{option.name}</span>
+              <OptionPriceLabel option={option} interval={interval} />
+            </div>
+          }
+        >
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">
+              {option.description}
+            </span>
+          </div>
+        </RadioChoiceCard>
+      ))}
+    </RadioGroup>
+  );
+}
+
+function defaultPostgres(plan: Plan): string {
+  return (
+    plan.postgres.find((o) => o.included)?.name ?? plan.postgres[0]?.name ?? ""
+  );
+}
+
 export function ProvisioningForm({
   mode,
   projectId,
   projectName,
 }: ProvisioningFormProps) {
+  const client = new V1PaymentsApi(); // TODO: add cookie
+
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
-  const [options, setOptions] = React.useState<OptionsResponse | null>(null);
+  const [plans, setPlans] = React.useState<Plan[]>([]);
+  const [paymentInterval, setPaymentInterval] =
+    React.useState<PaymentInterval>("month");
 
   const isBranchMode = mode === "branch";
 
@@ -301,8 +435,10 @@ export function ProvisioningForm({
     name: isBranchMode ? projectName || "" : "",
     branch_name: "",
     billing_email: "",
-    deployment_tier: "",
+    plan_id: "",
     region: "",
+    postgres: "",
+    availability: "",
   });
 
   const managed_hosting_url = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
@@ -310,70 +446,111 @@ export function ProvisioningForm({
     throw new Error("Must set NEXT_PUBLIC_MANAGED_HOSTING_API_URL");
   }
 
-  const sortedTiers = React.useMemo(
-    () => (options ? sortTiers(options.tiers) : []),
-    [options],
-  );
-
   React.useEffect(() => {
-    async function fetchOptions() {
+    async function fetchPlans() {
       try {
-        const res = await fetch(managed_hosting_url + "/api/v1/options", {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to fetch options");
-        const data: OptionsResponse = await res.json();
-        setOptions(data);
+        const res = await fetch(
+          managed_hosting_url + "/api/v1/projects/plans",
+          { credentials: "include" },
+        );
+        if (!res.ok) throw new Error("Failed to fetch plans");
+        const data: PlansResponse = await res.json();
 
-        const tiers = sortTiers(data.tiers);
-        const firstTier = tiers[0];
-        const firstRegion =
-          data.regions.find((r) => firstTier?.regions?.includes(r.id)) ??
-          data.regions[0];
-        if (firstTier) {
+        // Go serializes nil slices as null, so normalize them here.
+        const tiers = (data.tiers ?? []).map((t) => ({
+          ...t,
+          features: t.features ?? [],
+          postgres: t.postgres ?? [],
+          availability: t.availability ?? [],
+          regions: t.regions ?? [],
+        }));
+        setPlans(tiers);
+
+        const firstPlan = tiers[0];
+        if (firstPlan) {
           setFormData((prev) => ({
             ...prev,
-            deployment_tier: firstTier.id,
-            region: firstRegion?.id || "",
+            plan_id: firstPlan.id,
+            region: firstPlan.regions[0]?.id ?? "",
+            postgres: defaultPostgres(firstPlan),
+            availability: "",
           }));
         }
-      } catch {
-        toast.error("Failed to load deployment options");
+      } catch (e) {
+        toast.error(
+          "Failed to load plans" + (e instanceof Error ? `: ${e.message}` : ""),
+        );
       } finally {
         setLoading(false);
       }
     }
-    fetchOptions();
+    fetchPlans();
   }, [managed_hosting_url]);
 
-  const selectedTier = React.useMemo(() => {
-    if (!options) return null;
-    return options.tiers.find((t) => t.id === formData.deployment_tier) || null;
-  }, [options, formData.deployment_tier]);
-
-  const availableRegions = React.useMemo(() => {
-    if (!options) return [];
-    if (!selectedTier?.regions?.length) return options.regions;
-    return options.regions.filter((r) => selectedTier.regions.includes(r.id));
-  }, [options, selectedTier]);
-
-  const regionIds = React.useMemo(
-    () => availableRegions.map((r) => r.id),
-    [availableRegions],
+  const selectedPlan = React.useMemo(
+    () => plans.find((p) => p.id === formData.plan_id) ?? null,
+    [plans, formData.plan_id],
   );
-  const latencies = useRegionLatency(regionIds, "vultr");
 
-  const isLatenciesLoading = React.useMemo(() => {
-    if (regionIds.length === 0) return false;
-    const finishedCount = Array.from(latencies.values()).filter(
-      (l) => l.status === "done" || l.status === "error",
-    ).length;
-    return finishedCount === 0;
-  }, [latencies, regionIds.length]);
+  const selectedPrice = React.useMemo(
+    () =>
+      selectedPlan?.prices.find((p) => p.interval === paymentInterval) ?? null,
+    [selectedPlan, paymentInterval],
+  );
+
+  const availableRegions = React.useMemo(
+    () => selectedPlan?.regions ?? [],
+    [selectedPlan],
+  );
+
+  const postgresOptions = selectedPlan?.postgres ?? [];
+  const availabilityOptions = selectedPlan?.availability ?? [];
+
+  const selectedPostgres = postgresOptions.find(
+    (o) => o.name === formData.postgres,
+  );
+  const selectedAvailability = availabilityOptions.find(
+    (o) => o.name === formData.availability,
+  );
+
+  const selectedRegion = availableRegions.find((r) => r.id === formData.region);
+
+  // Plan price + selected add-ons, for a given interval.
+  const totalFor = React.useCallback(
+    (interval: PaymentInterval): number | null => {
+      const base = selectedPlan?.prices.find((p) => p.interval === interval);
+      if (!base) return null;
+      return (
+        base.amount +
+        (priceFor(selectedPostgres, interval)?.amount ?? 0) +
+        (priceFor(selectedAvailability, interval)?.amount ?? 0)
+      );
+    },
+    [selectedPlan, selectedPostgres, selectedAvailability],
+  );
+
+  const totalPrice = totalFor(paymentInterval);
+  const monthlyTotal = totalFor("month");
+
+  const selectPlan = (plan: Plan) => {
+    setFormData((prev) => ({
+      ...prev,
+      plan_id: plan.id,
+      region: plan.regions.some((r) => r.id === prev.region)
+        ? prev.region
+        : (plan.regions[0]?.id ?? ""),
+      // Options belong to a tier, so reset them when the tier changes.
+      postgres: defaultPostgres(plan),
+      availability: "",
+    }));
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!selectedPlan) return;
     setSubmitting(true);
+
+    // TODO: client.createCheckout({createCheckoutRequest: {priceId: "shared_starter_monthly" }})
 
     try {
       if (isBranchMode) {
@@ -387,8 +564,10 @@ export function ProvisioningForm({
               project_id: projectId,
               branch_name: formData.branch_name,
               region: formData.region,
-              deployment_tier: formData.deployment_tier,
+              deployment_tier: selectedPlan.id,
               billing_email: formData.billing_email,
+              postgres: formData.postgres,
+              availability: formData.availability,
             }),
             credentials: "include",
           },
@@ -398,9 +577,7 @@ export function ProvisioningForm({
           throw new Error(err.error || err.message || "Branch creation failed");
         }
         toast.success("Branch creation initiated!");
-        router.push(
-          `/projects/${projectId}/${formData.branch_name}/dashboard`,
-        );
+        router.push(`/projects/${projectId}/${formData.branch_name}/dashboard`);
       } else {
         const res = await fetch(managed_hosting_url + "/api/v1/projects", {
           method: "POST",
@@ -408,8 +585,10 @@ export function ProvisioningForm({
           body: JSON.stringify({
             name: formData.name,
             region: formData.region,
-            deployment_tier: formData.deployment_tier,
+            deployment_tier: selectedPlan.id,
             billing_email: formData.billing_email,
+            postgres: formData.postgres,
+            availability: formData.availability,
           }),
           credentials: "include",
         });
@@ -432,224 +611,294 @@ export function ProvisioningForm({
 
   if (loading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
+      <div className="flex h-100 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2">
-        {isBranchMode ? (
-          <div className="space-y-2">
-            <Label htmlFor="branch_name">Branch Name</Label>
-            <Input
-              id="branch_name"
-              placeholder="feature-branch"
-              value={formData.branch_name}
-              onChange={(e) =>
-                setFormData({ ...formData, branch_name: e.target.value })
-              }
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              Parent project: {projectName}
-            </p>
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
+      <div className="col-span-2 space-y-8">
+        <div className="space-y-2 ">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            <h3 className="text-base font-medium">Details</h3>
           </div>
-        ) : (
-          <div className="space-y-2">
-            <Label htmlFor="name">Project Name</Label>
-            <Input
-              id="name"
-              placeholder="my-awesome-app"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
-          </div>
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="billing_email">Billing Email</Label>
-          <Input
-            id="billing_email"
-            type="email"
-            placeholder="billing@example.com"
-            value={formData.billing_email}
-            onChange={(e) =>
-              setFormData({ ...formData, billing_email: e.target.value })
-            }
-            required
-          />
-        </div>
-      </div>
 
-      <Separator />
-
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Server className="h-5 w-5" />
-          <h3 className="text-lg font-medium">Infrastructure</h3>
-        </div>
-
-        {options && sortedTiers.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Deployment Tier</CardTitle>
-              <CardDescription>
-                Pick the resources for your project. All tiers include
-                PostgreSQL + object storage + edge workers.
-              </CardDescription>
-            </CardHeader>
-            {isLatenciesLoading ? (
-              <CardContent className="grid gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-24 rounded" />
-                    <Skeleton className="h-6 w-20 rounded" />
-                  </div>
-                  <Skeleton className="h-5 w-full rounded" />
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Measuring region latencies...</span>
-                </div>
-              </CardContent>
+          <div className="grid gap-2 md:grid-cols-2">
+            {isBranchMode ? (
+              <div className="space-y-2">
+                <Label htmlFor="branch_name">Branch Name</Label>
+                <Input
+                  id="branch_name"
+                  placeholder="feature-branch"
+                  value={formData.branch_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, branch_name: e.target.value })
+                  }
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Parent project: {projectName}
+                </p>
+              </div>
             ) : (
-              <CardContent className="grid gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Tier</Label>
-                  </div>
-
-                  <div className="px-2">
-                    <Slider
-                      value={[
-                        Math.max(
-                          0,
-                          sortedTiers.findIndex(
-                            (t) => t.id === formData.deployment_tier,
-                          ),
-                        ),
-                      ]}
-                      min={0}
-                      max={sortedTiers.length - 1}
-                      step={1}
-                      onValueChange={(vals) => {
-                        const tier = sortedTiers[vals[0]];
-                        if (tier) {
-                          const allowed = options
-                            ? options.regions.filter(
-                                (r) =>
-                                  !tier.regions?.length ||
-                                  tier.regions.includes(r.id),
-                              )
-                            : [];
-                          const region = allowed.some(
-                            (r) => r.id === formData.region,
-                          )
-                            ? formData.region
-                            : (allowed[0]?.id ?? "");
-                          setFormData({
-                            ...formData,
-                            deployment_tier: tier.id,
-                            region,
-                          });
-                        }
-                      }}
-                    />
-                    <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                      <span>{sortedTiers[0]?.name}</span>
-                      <span>{sortedTiers[sortedTiers.length - 1]?.name}</span>
-                    </div>
-                  </div>
-
-                  {selectedTier && (
-                    <Card className="border-primary bg-primary/5">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">
-                            {selectedTier.name}
-                          </CardTitle>
-                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                            {selectedTier.deployment_type}
-                          </span>
-                        </div>
-                        <CardDescription>
-                          {selectedTier.pool === "dedicated"
-                            ? "Dedicated node pool — guaranteed resources"
-                            : selectedTier.zeropod_enabled
-                              ? `Auto-scales to zero after ${selectedTier.zeropod_scaledown_sec}s idle`
-                              : "Shared pool — always-on"}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <div className="text-muted-foreground">vCPU</div>
-                            <div className="font-medium">
-                              {selectedTier.vcpus} cores
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">Memory</div>
-                            <div className="font-medium">
-                              {selectedTier.memory_gb >= 1
-                                ? `${selectedTier.memory_gb} GB`
-                                : `${selectedTier.memory_gb * 1024} MB`}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              DB Storage
-                            </div>
-                            <div className="font-medium">
-                              {selectedTier.database_storage_limit_gb} GB
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-muted-foreground">
-                              Object Storage
-                            </div>
-                            <div className="font-medium">
-                              {selectedTier.object_storage_limit_gb} GB
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Region</Label>
-                  <RegionCombobox
-                    regions={availableRegions}
-                    value={formData.region}
-                    autoSelectLowestLatency
-                    onSelect={(id) =>
-                      setFormData({ ...formData, region: id })
-                    }
-                  />
-                </div>
-              </CardContent>
+              <div className="space-y-2">
+                <Label htmlFor="name">Project Name</Label>
+                <Input
+                  id="name"
+                  placeholder="my-awesome-app"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                />
+              </div>
             )}
-          </Card>
+            <div className="space-y-2">
+              <Label htmlFor="billing_email">Billing Email</Label>
+              <Input
+                id="billing_email"
+                type="email"
+                placeholder="billing@example.com"
+                value={formData.billing_email}
+                onChange={(e) =>
+                  setFormData({ ...formData, billing_email: e.target.value })
+                }
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Server className="h-5 w-5" />
+            <h3 className="text-base font-medium">Tier</h3>
+          </div>
+
+          <RadioGroup
+            value={formData.plan_id}
+            onValueChange={(planId) => {
+              const plan = plans.find((p) => p.id === planId);
+              if (plan) selectPlan(plan);
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-2"
+          >
+            {plans.map((plan) => {
+              const price = plan.prices.find(
+                (p) => p.interval === paymentInterval,
+              );
+              return (
+                <RadioChoiceCard
+                  key={plan.id}
+                  id={`plan-${plan.id}`}
+                  value={plan.id}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <span className="text-sm">{plan.display_name} </span>
+                      {price && (
+                        <span className="text-sm">
+                          {formatPrice(price.amount)} / {price.interval}
+                        </span>
+                      )}
+                    </div>
+                  }
+                >
+                  <div className="flex flex-col">
+                    {/* <span className="text-xs text-muted-foreground mt-1">
+                      {plan.description}
+                    </span> */}
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {plan.features_summary}
+                    </span>
+
+                    {/* <div className="flex flex-col gap-2 text-sm mt-3">
+                      {plan.features.map((feature) => (
+                        <div
+                          key={feature.feature_name}
+                          className="flex justify-between gap-2"
+                        >
+                          <span className="text-muted-foreground">
+                            {feature.feature_name}
+                          </span>
+                          <span className="font-medium">{feature.value}</span>
+                        </div>
+                      ))}
+                    </div> */}
+                  </div>
+                </RadioChoiceCard>
+              );
+            })}
+          </RadioGroup>
+        </div>
+
+        {/* REGION */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            <h3 className="text-base font-medium">Region</h3>
+          </div>
+
+          <RadioGroup
+            value={formData.region}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, region: value }))
+            }
+            className="grid grid-cols-1 md:grid-cols-2 gap-2"
+          >
+            {availableRegions.map((region) => (
+              <RadioChoiceCard
+                key={region.id}
+                id={region.id}
+                title={region.name}
+                description={region.country}
+              />
+            ))}
+          </RadioGroup>
+        </div>
+
+        {/* POSTGRES */}
+        {postgresOptions.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              <h3 className="text-base font-medium">Postgres</h3>
+            </div>
+
+            <OptionGroup
+              idPrefix="postgres"
+              options={postgresOptions}
+              value={formData.postgres}
+              onChange={(name) =>
+                setFormData((prev) => ({ ...prev, postgres: name }))
+              }
+              interval={paymentInterval}
+            />
+          </div>
+        )}
+
+        {/* AVAILABILITY */}
+        {availabilityOptions.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5" />
+              <h3 className="text-base font-medium">Availability</h3>
+            </div>
+
+            <OptionGroup
+              idPrefix="availability"
+              options={availabilityOptions}
+              value={formData.availability || NO_AVAILABILITY}
+              onChange={(name) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  availability: name === NO_AVAILABILITY ? "" : name,
+                }))
+              }
+              interval={paymentInterval}
+              noneLabel="None"
+              noneDescription="No standby"
+            />
+          </div>
         )}
       </div>
+      {/* Summary */}
+      <div className="md:sticky md:top-4 md:self-start">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <div className="grid grid-cols-4">
+                <span className="text-sm font-medium col-span-2">Summary</span>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="gap-4 flex flex-col">
+            <Separator />
 
-      <Button
-        type="submit"
-        disabled={
-          submitting || !formData.deployment_tier || !formData.region
-        }
-        size="lg"
-      >
-        {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {isBranchMode ? "Create Branch" : "Create Project"}
-      </Button>
+            <div className="flex flex-col gap-2">
+              <SummaryRow
+                label="Tier"
+                value={selectedPlan?.display_name ?? "-"}
+              />
+
+              <SummaryRow
+                label="Region"
+                value={
+                  selectedRegion
+                    ? `${selectedRegion.name}, ${selectedRegion.country}`
+                    : "-"
+                }
+              />
+              {postgresOptions.length > 0 && (
+                <SummaryRow
+                  label="Postgres"
+                  value={selectedPostgres?.name ?? "-"}
+                />
+              )}
+              {availabilityOptions.length > 0 && (
+                <SummaryRow
+                  label="Availability"
+                  value={selectedAvailability?.name ?? "None"}
+                />
+              )}
+            </div>
+            <Separator />
+
+            <div className="grid grid-cols-4">
+              <span className="col-span-2 text-sm">Estimated cost</span>
+              <div className="col-span-2 flex justify-end gap-2">
+                {paymentInterval === "year" && monthlyTotal !== null && (
+                  <span className="text-sm line-through text-muted-foreground">
+                    {formatPrice(monthlyTotal * 12)}
+                  </span>
+                )}
+                <span className="text-sm font-medium text-end ">
+                  {totalPrice !== null ? formatPrice(totalPrice) : "-"}
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <ButtonGroup>
+                <Button
+                  type="button"
+                  variant={paymentInterval === "month" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setPaymentInterval("month")}
+                >
+                  Monthly
+                </Button>
+                <Button
+                  type="button"
+                  variant={paymentInterval === "year" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setPaymentInterval("year")}
+                >
+                  Yearly
+                </Button>
+              </ButtonGroup>
+            </div>
+            <div className="flex">
+              <Button
+                type="submit"
+                disabled={submitting || !formData.plan_id || !formData.region}
+                size="lg"
+                className="w-full"
+              >
+                {submitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isBranchMode ? "Create Branch" : "Create Project"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </form>
   );
 }

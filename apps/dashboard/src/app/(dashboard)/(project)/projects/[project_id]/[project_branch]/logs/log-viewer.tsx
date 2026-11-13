@@ -22,9 +22,18 @@ if (!MANAGED_HOSTING_API_URL)
 const SERVICE_CONFIG: Record<string, { label: string; className: string }> = {
   all: { label: "ALL", className: "bg-gray-100 text-gray-700 border-gray-200" },
   api: { label: "API", className: "bg-blue-50 text-blue-700 border-blue-200" },
-  auth: { label: "AUTH", className: "bg-green-50 text-green-700 border-green-200" },
-  perm: { label: "PERM", className: "bg-purple-50 text-purple-700 border-purple-200" },
-  postgrest: { label: "POSTGREST", className: "bg-orange-50 text-orange-700 border-orange-200" },
+  auth: {
+    label: "AUTH",
+    className: "bg-green-50 text-green-700 border-green-200",
+  },
+  perm: {
+    label: "PERM",
+    className: "bg-purple-50 text-purple-700 border-purple-200",
+  },
+  postgrest: {
+    label: "POSTGREST",
+    className: "bg-orange-50 text-orange-700 border-orange-200",
+  },
 };
 
 const getServiceNameBadge = (serviceName?: string) => {
@@ -119,8 +128,8 @@ export function LogViewer({
   const [logs, setLogs] = useState<Log[]>(
     [...initialLogs].sort(
       (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    )
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    ),
   );
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -151,7 +160,7 @@ export function LogViewer({
 
       const url = new URL(
         `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
-        window.location.origin
+        window.location.origin,
       );
       url.searchParams.set("service_name", serviceType);
       url.searchParams.set("limit", limit.toString());
@@ -170,7 +179,7 @@ export function LogViewer({
           // Sort and append older logs
           const sortedOlderLogs = [...data.logs].sort(
             (a, b) =>
-              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
           );
           setLogs((prev) => [...prev, ...sortedOlderLogs]);
           setHasMore(data.logs.length >= limit);
@@ -198,7 +207,7 @@ export function LogViewer({
 
       const url = new URL(
         `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
-        window.location.origin
+        window.location.origin,
       );
       url.searchParams.set("service_name", serviceType);
       url.searchParams.set("limit", "20");
@@ -213,7 +222,7 @@ export function LogViewer({
         if (data.logs && data.logs.length > 0) {
           const sortedNewLogs = [...data.logs].sort(
             (a, b) =>
-              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
           );
           setLogs((prev) => [...sortedNewLogs, ...prev]);
         }
@@ -278,7 +287,7 @@ export function LogViewer({
               <>
                 <tr key={index} className="hover:bg-muted/50 transition-colors">
                   <td className="px-4 py-2 w-8">
-                    <button
+                    <Button
                       onClick={() => toggleRow(index)}
                       className="text-muted-foreground hover:text-foreground"
                     >
@@ -287,7 +296,7 @@ export function LogViewer({
                       ) : (
                         <ChevronRight className="h-4 w-4" />
                       )}
-                    </button>
+                    </Button>
                   </td>
                   <td className="px-0 py-2">
                     {getSeverityBadge(log.severity)}
@@ -310,7 +319,10 @@ export function LogViewer({
                 </tr>
                 {expandedRows.has(index) && (
                   <tr key={`${index}-expanded`}>
-                    <td colSpan={serviceType === "all" ? 5 : 4} className="px-4 pb-3 bg-muted/30">
+                    <td
+                      colSpan={serviceType === "all" ? 5 : 4}
+                      className="px-4 pb-3 bg-muted/30"
+                    >
                       {/* Raw Log Line */}
                       {log.metadata?.raw_line && (
                         <div className="mb-3">
@@ -324,7 +336,7 @@ export function LogViewer({
                                     return JSON.stringify(
                                       JSON.parse(log.metadata.raw_line),
                                       null,
-                                      2
+                                      2,
                                     );
                                   } catch {
                                     return log.metadata.raw_line;

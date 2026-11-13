@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ApiKeysCard } from "./api-keys-card";
 import { Project } from "../dashboard/project-provisioning-dashboard";
+import { Button } from "@/components/ui/button";
 
 interface SettingsClientProps {
   project: Project;
@@ -55,7 +56,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
         const error = await response.json();
         throw new Error(
           error.message ||
-            (isMain ? "Failed to delete project" : "Failed to delete branch")
+            (isMain ? "Failed to delete project" : "Failed to delete branch"),
         );
       }
 
@@ -64,7 +65,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
       router.refresh();
     } catch (error) {
       setDeleteError(
-        error instanceof Error ? error.message : "An error occurred"
+        error instanceof Error ? error.message : "An error occurred",
       );
       setIsDeleting(false);
     }
@@ -77,7 +78,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
         <div className="mx-auto max-w-4xl space-y-8">
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-xl font-bold tracking-tight">
               Project Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
@@ -108,12 +109,12 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
                       : `Permanently delete the ${branchName} branch and all of its data. This action cannot be undone.`}
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={() => setIsDeleteModalOpen(true)}
                   className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
                 >
                   {isMain ? "Delete Project" : `Delete ${branchName} branch`}
-                </button>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -152,14 +153,14 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
           )}
 
           <DialogFooter>
-            <button
+            <Button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={isDeleting}
               className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleDeleteProject}
               disabled={isDeleting}
               className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50"
@@ -169,7 +170,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
                 : isMain
                   ? "Delete Project"
                   : `Delete ${branchName} branch`}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

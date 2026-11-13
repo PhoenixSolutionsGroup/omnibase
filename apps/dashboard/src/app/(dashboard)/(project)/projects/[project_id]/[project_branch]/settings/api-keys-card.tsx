@@ -21,6 +21,7 @@ import { Eye, EyeOff, Loader2, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { fetchProjectSecretKey, fetchAPIServiceKey } from "../settings/actions";
 import { Project } from "../dashboard/project-provisioning-dashboard";
+import { Button } from "@/components/ui/button";
 
 interface ApiKeysCardProps {
   project: Project;
@@ -40,10 +41,10 @@ interface KeyItem {
 
 export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
   const [revealedSecrets, setRevealedSecrets] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [decryptedValues, setDecryptedValues] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
   const [loadingSecrets, setLoadingSecrets] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
@@ -105,7 +106,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
           result = await fetchProjectSecretKey(project.id);
           if (result?.success && result.serviceKey) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.serviceKey!)
+              new Map(prev).set(key, result!.serviceKey!),
             );
           }
           break;
@@ -113,7 +114,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
           result = await fetchAPIServiceKey(project.id);
           if (result?.success && result.apiServiceKey) {
             setDecryptedValues((prev) =>
-              new Map(prev).set(key, result!.apiServiceKey!)
+              new Map(prev).set(key, result!.apiServiceKey!),
             );
           }
           break;
@@ -194,13 +195,13 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                 Manage and rotate your project's API keys
               </CardDescription>
             </div>
-            <button
+            <Button
               onClick={() => setIsRotateModalOpen(true)}
               className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors"
             >
               <RotateCw className="h-4 w-4" />
               Rotate Keys
-            </button>
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -243,9 +244,9 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                       {displayValue || "Not yet provisioned"}
                     </p>
                   </div>
-                  <div className="flex flex-shrink-0 gap-2">
+                  <div className="flex shrink-0 gap-2">
                     {item.sensitive && item.value && (
-                      <button
+                      <Button
                         onClick={() =>
                           toggleReveal(secretKey, item.encryptedField)
                         }
@@ -260,22 +261,22 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                         ) : (
                           <Eye className="h-4 w-4" />
                         )}
-                      </button>
+                      </Button>
                     )}
-                    <button
+                    <Button
                       onClick={() =>
                         handleCopy(
                           item.sensitive && isRevealed && decryptedValue
                             ? decryptedValue
                             : item.value || "",
-                          item.label
+                          item.label,
                         )
                       }
                       disabled={item.sensitive && !isRevealed}
                       className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Copy
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -303,20 +304,20 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
           )}
 
           <DialogFooter>
-            <button
+            <Button
               onClick={() => setIsRotateModalOpen(false)}
               disabled={isRotating}
               className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleRotateKeys}
               disabled={isRotating}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {isRotating ? "Rotating..." : "Rotate Keys"}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
