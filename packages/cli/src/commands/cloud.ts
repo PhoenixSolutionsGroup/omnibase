@@ -719,7 +719,7 @@ export function buildBranchEnv(input: BranchEnvInput): Record<string, string> {
     throw new Error(`Could not derive a branch slug from ${input.apiUrl}`);
   }
 
-  const workerDomain = (input.workerDomain ?? "workers.omnibase.tech").replace(
+  const workerDomain = (input.workerDomain ?? "omnibase-workers.app").replace(
     /^\.+/,
     "",
   );
@@ -1859,7 +1859,7 @@ export function addCloudCommands(program: Command): void {
       "```"
     )
     .option("--project-id <id>", "Project ID")
-    .option("--worker-domain <domain>", "Workers domain", "workers.omnibase.tech")
+    .option("--worker-domain <domain>", "Workers domain", "omnibase-workers.app")
     .option("--cookie-domain <domain>", "Cookie domain")
     .option("--dashboard-url <url>", "Override the dashboard URL")
     .option("--output <path>", "Write dotenv output to a file")

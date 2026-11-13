@@ -31,7 +31,7 @@ omnibase cloud branch env pr-123
 
 - **`--project-id <id>`**
   Project ID
-- **`--worker-domain <domain>`** (default: `workers.omnibase.tech`)
+- **`--worker-domain <domain>`** (default: `omnibase-workers.app`)
   Workers domain
 - **`--cookie-domain <domain>`**
   Cookie domain

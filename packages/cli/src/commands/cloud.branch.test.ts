@@ -77,7 +77,7 @@ describe("buildBranchEnv", () => {
       postgrestUrl: "https://my-project-abc.omnibase-projects.app/rest/v1",
       serviceKey: "svc_key",
       managedHostingUrl: "https://api.omnibase.tech",
-      workerDomain: "workers.omnibase.tech",
+      workerDomain: "omnibase-workers.app",
       cookieDomain: ".omnibase.tech",
     });
 
@@ -91,7 +91,7 @@ describe("buildBranchEnv", () => {
       "https://my-project-abc.omnibase-projects.app/rest/v1",
     );
     expect(env.NEXT_PUBLIC_WEBSITE_URL).toBe(
-      "https://my-project-abc-dashboard.workers.omnibase.tech",
+      "https://my-project-abc-dashboard.omnibase-workers.app",
     );
     expect(env.OMNIBASE_SERVICE_KEY).toBe("svc_key");
     expect(env.OMNIBASE_COOKIE_DOMAIN).toBe(".omnibase.tech");
@@ -104,7 +104,7 @@ describe("buildBranchEnv", () => {
       managedHostingUrl: "https://api.omnibase.tech",
     });
 
-    expect(env.OMNIBASE_COOKIE_DOMAIN).toBe(".workers.omnibase.tech");
+    expect(env.OMNIBASE_COOKIE_DOMAIN).toBe(".omnibase-workers.app");
   });
 
   test("an explicit dashboard URL overrides the derived worker URL", () => {
