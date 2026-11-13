@@ -111,7 +111,6 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
-                          className="text-sm text-muted-foreground hover:text-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
                             router.push(

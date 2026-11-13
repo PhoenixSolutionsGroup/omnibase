@@ -247,24 +247,20 @@ export function UnifiedSidebar({
         <nav
           className={cn("flex-1 space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}
         >
-          {!isCollapsed &&
-            (allowOrgCollapse ? (
-              <Button
-                onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
-                className="mb-2 flex w-full items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {isOrgCollapsed ? (
-                  <ChevronRight className="h-3 w-3" />
-                ) : (
-                  <ChevronDown className="h-3 w-3" />
-                )}
-                Organization
-              </Button>
-            ) : (
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Organization
-              </label>
-            ))}
+          {!isCollapsed && (
+            <Button
+              onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
+              className="mb-2 flex w-full"
+              disabled={!allowOrgCollapse}
+            >
+              {isOrgCollapsed ? (
+                <ChevronRight className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+              Organization
+            </Button>
+          )}
           {(isCollapsed || !allowOrgCollapse || !isOrgCollapsed) && (
             <>
               {organizationNavigationItems.map((item) => {

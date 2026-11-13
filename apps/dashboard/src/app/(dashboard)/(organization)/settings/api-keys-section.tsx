@@ -28,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface APIKey {
   id: string;
@@ -67,7 +68,7 @@ export function APIKeysSection({
       toast.success("API key revoked successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to revoke API key"
+        error instanceof Error ? error.message : "Failed to revoke API key",
       );
     }
   };
@@ -115,13 +116,15 @@ export function APIKeysSection({
               Create an API key to authenticate your requests to the platform
               programmatically.
             </p>
-            <Link
-              href="/settings/api-keys/create"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create API Key
-            </Link>
+            <Button>
+              <Link
+                href="/settings/api-keys/create"
+                className="flex items-center"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create API Key
+              </Link>
+            </Button>
           </div>
         ) : (
           <Table className="overflow-visible">

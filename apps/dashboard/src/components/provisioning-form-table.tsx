@@ -377,7 +377,7 @@ function PlanTable({
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg border">
+    <div className="overflow-x-auto rounded-sm border">
       <table
         className="w-full border-collapse text-sm"
         onMouseLeave={() => setHoveredId(null)}

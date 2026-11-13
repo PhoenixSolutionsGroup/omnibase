@@ -66,7 +66,7 @@ export function DeleteSection({ onDeleteTenant }: DeleteSectionProps) {
             </div>
             <Button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+              variant="destructive"
             >
               Delete Organization
             </Button>
