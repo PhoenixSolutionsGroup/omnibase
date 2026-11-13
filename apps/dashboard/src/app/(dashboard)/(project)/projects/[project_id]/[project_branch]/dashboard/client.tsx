@@ -457,7 +457,7 @@ export function ProjectDashboardClient({
                   return (
                     <div
                       key={service.name}
-                      className="rounded-lg border p-3 space-y-2"
+                      className="rounded-sm border p-3 space-y-2"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
