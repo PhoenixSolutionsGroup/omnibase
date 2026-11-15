@@ -26,26 +26,38 @@ export const getProjectBranch = cache(
   },
 );
 
-export const getProjectBranches = cache(async (projectId: string) => {
-  const db = await createServerClient();
-  const { data, error } = await db
-    .from("project_branches")
-    .select("*, project:projects!inner(name, tenant_id)")
-    .eq("project_id", projectId)
-    .order("name");
+export const getProjectBranches = cache(
+  async (projectId: string, currentBranchName?: string) => {
+    const db = await createServerClient();
+    let query = db
+      .from("project_branches")
+      .select("*, project:projects!inner(name, tenant_id)")
+      .eq("project_id", projectId);
 
-  if (error) {
-    console.warn(error);
-    return null;
-  }
+    if (currentBranchName) {
+      const quoted: string = currentBranchName
+        .replace(/\\/g, "\\\\")
+        .replace(/"/g, '\\"');
+      query = query.or(`status.eq.active,name.eq."${quoted}"`);
+    } else {
+      query = query.eq("status", "active");
+    }
 
-  return data.map(({ project, name, ...branch }) => ({
-    ...branch,
-    name: project.name,
-    tenant_id: project.tenant_id,
-    branch_name: name,
-  }));
-});
+    const { data, error } = await query.order("name");
+
+    if (error) {
+      console.warn(error);
+      return null;
+    }
+
+    return data.map(({ project, name, ...branch }) => ({
+      ...branch,
+      name: project.name,
+      tenant_id: project.tenant_id,
+      branch_name: name,
+    }));
+  },
+);
 
 export const getAllProjectBranches = cache(async () => {
   const db = await createServerClient();
