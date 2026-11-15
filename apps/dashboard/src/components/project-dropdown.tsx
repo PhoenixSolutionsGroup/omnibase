@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/select";
 import { projectHasActiveBranch } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/new-branch/actions";
 
-interface ProjectOption {
+export interface ProjectOption {
   id: string;
   name: string;
+  tenant_id?: string;
 }
 
 interface ProjectDropdownProps {

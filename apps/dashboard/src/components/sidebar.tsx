@@ -18,7 +18,7 @@ import {
   Wrench,
   Globe,
 } from "lucide-react";
-import { ProjectDropdown } from "./project-dropdown";
+import { ProjectDropdown, ProjectOption } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -36,7 +36,7 @@ interface ProjectContext {
   projectBranch: string;
   projectName: string;
   branches: string[];
-  projects?: Project[];
+  projects?: ProjectOption[];
   onCreateProject?: () => void;
 }
 

@@ -5,8 +5,8 @@ import { TopNavbar } from "@/components/top-navbar";
 import { UnifiedSidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
 import { useRouter } from "next/navigation";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import { ProjectOption } from "./project-dropdown";
 
 interface ProjectData {
   branchId: string;
@@ -21,7 +21,7 @@ interface UnifiedLayoutClientProps {
   tenants: Tenant[];
   currentTenantId: string;
   projectData?: ProjectData;
-  projects?: Project[];
+  projects?: ProjectOption[];
 }
 
 export function UnifiedLayoutClient({
