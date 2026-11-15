@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { redirect } from "next/navigation";
 import {
-  getAllProjectBranches,
+  getAllProjects,
   getProjectBranch,
   getProjectBranches,
 } from "@/utils/get-project";
@@ -33,7 +33,7 @@ export default async function ProjectLayout({
   const branches = await getProjectBranches(project_id);
   const branchNames = branches?.map((b) => b.branch_name) || ["main"];
 
-  const projects = await getAllProjectBranches();
+  const projects = await getAllProjects();
 
   const config = await getOmnibaseConfiguration();
   const authApi = new V1AuthApi(config);

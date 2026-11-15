@@ -67,3 +67,28 @@ export const getAllProjectBranches = cache(async () => {
     branch_name: name,
   }));
 });
+
+export const getAllProjects = cache(async () => {
+  const db = await createServerClient();
+  const { data, error } = await db
+    .from("projects")
+    .select("id, name, tenant_id, project_branches!inner(status)")
+    .in("project_branches.status", ["active", "provisioning"])
+    .order("name");
+
+  if (error) {
+    console.warn(error);
+    return null;
+  }
+
+  const seen = new Set<string>();
+  const projects: { id: string; name: string; tenant_id: string }[] = [];
+
+  for (const { id, name, tenant_id } of data) {
+    if (seen.has(id)) continue;
+    seen.add(id);
+    projects.push({ id, name, tenant_id });
+  }
+
+  return projects;
+});
