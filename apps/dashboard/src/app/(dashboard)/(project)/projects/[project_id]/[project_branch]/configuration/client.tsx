@@ -432,23 +432,39 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     if (!container) return;
 
     const handleScroll = () => {
-      const containerRect = container.getBoundingClientRect();
+      if (visibleSections.length === 0) return;
+
+      // At the bottom: the last section can never reach the top threshold,
+      // so force it active.
+      const atBottom =
+        container.scrollTop + container.clientHeight >=
+        container.scrollHeight - 2;
+
+      if (atBottom) {
+        const last = visibleSections[visibleSections.length - 1].title;
+        setActiveSection((prev) => (prev === last ? prev : last));
+        return;
+      }
+
+      // Otherwise: the active section is the last one whose top has
+      // scrolled past the threshold.
+      const containerTop = container.getBoundingClientRect().top;
+      let current = visibleSections[0].title;
 
       for (const section of visibleSections) {
         const element = document.getElementById(getSectionId(section.title));
-        if (element) {
-          const elementRect = element.getBoundingClientRect();
-          const relativeTop = elementRect.top - containerRect.top;
-
-          if (relativeTop <= 100 && relativeTop > -elementRect.height + 100) {
-            setActiveSection(section.title);
-            break;
-          }
+        if (!element) continue;
+        const relativeTop = element.getBoundingClientRect().top - containerTop;
+        if (relativeTop <= 100) {
+          current = section.title;
         }
       }
+
+      setActiveSection((prev) => (prev === current ? prev : current));
     };
 
-    container.addEventListener("scroll", handleScroll);
+    handleScroll();
+    container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
   }, [visibleSections]);
 
@@ -471,7 +487,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-xs font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                     disabled={copyingEnv}
                   >
                     {copyingEnv ? (
