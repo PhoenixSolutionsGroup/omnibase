@@ -15,9 +15,10 @@ export default async function StripeSettingsPage({
   const { project_id, project_branch } = await params;
 
   // Get the project to check if Stripe is set up
-  const project = (await getProjectBranch(project_id, project_branch)) as
-    | Project
-    | null;
+  const project = (await getProjectBranch(
+    project_id,
+    project_branch,
+  )) as Project | null;
 
   if (!project) {
     return (
@@ -52,18 +53,19 @@ export default async function StripeSettingsPage({
           Cookie: cookieHeader,
         },
         cache: "no-store",
-      }
+      },
     );
     const data = await response.json();
     onboardingRequired = data.onboarding_required === true;
     onboardingUrl = data.url;
-  } catch {
-  }
+  } catch {}
 
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Stripe Account Settings</h1>
+        <h1 className="text-xl font-bold tracking-tight">
+          Stripe Account Settings
+        </h1>
         <p className="text-muted-foreground">
           Manage your branding, custom domains, and customer email settings.
         </p>

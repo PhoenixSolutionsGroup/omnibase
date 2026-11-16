@@ -20,6 +20,7 @@ import {
 import { Project } from "./project-provisioning-dashboard";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { title } from "process";
 
 interface ProjectDashboardClientProps {
   project: Project;
@@ -304,6 +305,27 @@ export function ProjectDashboardClient({
     }
   };
 
+  const QUICK_ACTIONS = [
+    {
+      icon: <Wrench className="h-3 w-3" />,
+      title: "Configuration",
+      subtitle: " View all service URLs",
+      link: `/projects/${project.project_id}/${project.branch_name}/configuration`,
+    },
+    {
+      icon: <ScrollText className="h-3 w-3" />,
+      title: "Logs",
+      subtitle: " View application logs",
+      link: `/projects/${project.project_id}/${project.branch_name}/logs`,
+    },
+    {
+      icon: <BarChart3 className="h-3 w-3" />,
+      title: "Usage",
+      subtitle: " View resource usage",
+      link: `/projects/${project.project_id}/${project.branch_name}/usage`,
+    },
+  ];
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto p-6">
@@ -311,7 +333,7 @@ export function ProjectDashboardClient({
           {/* Welcome Header */}
           <div>
             <h1 className="text-xl font-bold tracking-tight">{project.name}</h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="text-muted-foreground">
               {region} • Created{" "}
               {new Date(project.created_at).toLocaleDateString()}
             </p>
@@ -319,53 +341,23 @@ export function ProjectDashboardClient({
 
           {/* Quick Actions */}
           <div className="grid gap-4 md:grid-cols-3">
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/configuration`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <Wrench className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Configuration</h3>
-                    <p className="text-sm text-muted-foreground">
-                      View all service URLs
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/logs`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <ScrollText className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Logs</h3>
-                    <p className="text-sm text-muted-foreground">
-                      View application logs
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/usage`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <BarChart3 className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Usage</h3>
-                    <p className="text-sm text-muted-foreground">
-                      View resource usage
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            {QUICK_ACTIONS.map((action) => (
+              <Link key={action.title} href={action.link}>
+                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
+                  <CardContent className="flex items-center gap-4">
+                    <div>
+                      <div className="flex gap-2 items-center">
+                        {action.icon}
+                        <h3 className="font-semibold">{action.title}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {action.subtitle}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
           </div>
 
           {/* Project Information */}

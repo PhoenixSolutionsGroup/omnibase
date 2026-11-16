@@ -481,7 +481,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                   <h1 className="text-xl font-bold tracking-tight">
                     Configuration
                   </h1>
-                  <p className="mt-2 text-muted-foreground">
+                  <p className="text-muted-foreground">
                     View and copy your project configuration and service URLs
                   </p>
                 </div>

@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface StripeSettingsClientProps {
   stripeAccountId: string;
@@ -43,12 +45,11 @@ export function StripeSettingsClient({
           <p className="text-sm text-muted-foreground mb-4">
             Please complete Stripe onboarding to access these settings.
           </p>
-          <a
-            href={onboardingUrl}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-          >
-            Finish Stripe Onboarding
-          </a>
+          <div className="flex">
+            <Button className="">
+              <Link href={onboardingUrl}>Finish Stripe Onboarding</Link>
+            </Button>
+          </div>
         </Card>
       )}
 

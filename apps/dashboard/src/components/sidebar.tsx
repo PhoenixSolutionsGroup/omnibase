@@ -125,7 +125,7 @@ const getProjectNavigationItems = (
     icon: Wrench,
   },
   {
-    title: "Settings",
+    title: "Project Settings",
     href: `/projects/${projectId}/${projectBranch}/settings`,
     icon: Settings,
   },

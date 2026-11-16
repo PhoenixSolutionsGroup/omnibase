@@ -81,7 +81,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
             <h1 className="text-xl font-bold tracking-tight">
               Project Settings
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="text-muted-foreground">
               Manage your project configuration and preferences
             </p>
           </div>
