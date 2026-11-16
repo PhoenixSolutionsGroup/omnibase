@@ -64,7 +64,7 @@ function NavItem({
     <Link
       href={href}
       className={cn(
-        "flex items-center rounded-md text-sm font-medium transition-colors",
+        "flex items-center rounded-md text-xs font-medium transition-colors",
         isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
         isActive
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
@@ -261,37 +261,19 @@ export function UnifiedSidebar({
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
         <nav className={cn("space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}>
-          {!isCollapsed && (
-            <Button
-              onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
-              className="mb-2 flex w-full"
-              disabled={!allowOrgCollapse}
-            >
-              {isOrgCollapsed ? (
-                <ChevronRight className="h-3 w-3" />
-              ) : (
-                <ChevronDown className="h-3 w-3" />
-              )}
-              Organization
-            </Button>
-          )}
-          {(isCollapsed || !allowOrgCollapse || !isOrgCollapsed) && (
-            <>
-              {organizationNavigationItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <NavItem
-                    key={item.href}
-                    href={item.href}
-                    icon={item.icon}
-                    title={item.title}
-                    isActive={isActive}
-                    isCollapsed={isCollapsed}
-                  />
-                );
-              })}
-            </>
-          )}
+          {organizationNavigationItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <NavItem
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                title={item.title}
+                isActive={isActive}
+                isCollapsed={isCollapsed}
+              />
+            );
+          })}
         </nav>
       </div>
 

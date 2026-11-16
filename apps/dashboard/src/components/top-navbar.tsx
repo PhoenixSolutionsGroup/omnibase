@@ -2,14 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookOpen, User, Settings, LogOut } from "lucide-react";
+import { BookOpen, User, LogOut, CircleDot } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -22,8 +25,20 @@ interface TopNavbarProps {
   currentTenantId: string;
 }
 
+const THEME_OPTIONS = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "System" },
+] as const;
+
 export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  const activeTheme = mounted ? theme : undefined;
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", {
@@ -69,7 +84,7 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
         </Link>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+          <DropdownMenuTrigger className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-shadow hover:ring-2 hover:ring-ring/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none data-[state=open]:ring-2 data-[state=open]:ring-ring/50">
             <Avatar className="h-8 w-8">
               <AvatarFallback>
                 <User className="h-4 w-4" />
@@ -83,9 +98,26 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
               }
               className="cursor-pointer"
             >
-              <Settings className="mr-2 h-4 w-4" />
+              <User className="mr-2 h-4 w-4" />
               Account Settings
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Theme</DropdownMenuLabel>
+              {THEME_OPTIONS.map(({ value, label }) => (
+                <DropdownMenuItem
+                  key={value}
+                  onSelect={() => setTheme(value)}
+                  className="cursor-pointer"
+                >
+                  <span className="mr-2 flex h-4 w-4 items-center justify-center">
+                    {activeTheme === value ? <CircleDot /> : null}
+                  </span>
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
