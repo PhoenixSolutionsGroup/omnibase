@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Wrench,
   Globe,
+  PanelLeft,
 } from "lucide-react";
 import { ProjectDropdown, ProjectOption } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
@@ -27,7 +28,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSidebar } from "./sidebar-context";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import { Button } from "./ui/button";
 
 interface ProjectContext {
@@ -176,15 +176,31 @@ export function UnifiedSidebar({
       )
     : [];
 
+  const toggleLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
+
+  const toggleButton = (
+    <Button
+      variant="ghost"
+      onClick={toggle}
+      aria-label={toggleLabel}
+      className={cn(
+        "flex w-full items-center rounded-md text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        isCollapsed ? "justify-center p-2" : "justify-start gap-3 px-3 py-2",
+      )}
+    >
+      <PanelLeft className="h-4 w-4 shrink-0" />
+    </Button>
+  );
+
   return (
     <div
       className={cn(
-        "group/sidebar relative flex h-full flex-col bg-sidebar transition-all duration-200",
+        "group/sidebar relative flex h-full flex-col bg-sidebar transition-all duration-200 border-r",
         isCollapsed ? "w-14" : "w-64",
       )}
     >
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         {/* PROJECT CONTEXT SECTION - Only visible when in a project */}
         {projectContext && (
           <>
@@ -244,9 +260,7 @@ export function UnifiedSidebar({
         )}
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav
-          className={cn("flex-1 space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}
-        >
+        <nav className={cn("space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}>
           {!isCollapsed && (
             <Button
               onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
@@ -281,15 +295,19 @@ export function UnifiedSidebar({
         </nav>
       </div>
 
-      {/* Clickable Right Border */}
-      <Button
-        onClick={toggle}
-        className={cn(
-          "absolute -right-2 top-0 h-full w-4 bg-transparent transition-colors before:absolute before:right-2 before:top-0 before:h-full before:w-px before:bg-border before:transition-colors hover:before:bg-primary",
-          isCollapsed ? "cursor-e-resize" : "cursor-w-resize",
+      {/* SIDEBAR TOGGLE - pinned to bottom */}
+      <div className={cn("py-2", isCollapsed ? "px-2" : "px-3")}>
+        {isCollapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>{toggleButton}</TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              {toggleLabel}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          toggleButton
         )}
-        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      />
+      </div>
     </div>
   );
 }

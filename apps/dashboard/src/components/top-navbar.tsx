@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BookOpen, User, Settings, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +37,14 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
 
   return (
     <div className="flex h-18 w-full items-center border-b border-border bg-background px-6">
+      <Image
+        src="/omnibase-logo.svg"
+        alt="Omnibase"
+        width={24}
+        height={24}
+        className="rounded-lg"
+        unoptimized
+      />
       {/* Tenant Switcher */}
       <OrganizationDropdown
         tenants={tenants}
