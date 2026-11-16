@@ -245,20 +245,14 @@ async function listProfiles(): Promise<void> {
 }
 
 /**
- * Get deployments from config or fall back to legacy single-worker dir
+ * Get deployments from config
  */
 function getDeployments(root: string): DeploymentConfig[] {
   const config = loadConfig(root);
   if (config.deployments.length > 0) return config.deployments;
 
-  const legacyWorkersDir = path.join(root, "omnibase", "workers");
-  if (fs.existsSync(legacyWorkersDir)) {
-    return [{ name: "default", path: "workers" }];
-  }
-
   throw new Error(
-    "No deployments found. Add [[deployments]] to omnibase/omnibase.toml\n" +
-      "  or create omnibase/workers/ for the default deployment.",
+    "No deployments found. Add [[deployments]] to omnibase/omnibase.toml."
   );
 }
 
@@ -487,7 +481,7 @@ async function addDirToZip(
 async function uploadToManagedHosting(
   env: EnvironmentConfig,
   bundle: Buffer,
-  deploymentName: string = "default",
+  deploymentName: string,
 ) {
   const api = createManagedHostingClient(env);
   const form = new FormData();
@@ -1554,10 +1548,9 @@ export function addCloudCommands(program: Command): void {
     .command("workers")
     .summary("Manage Cloudflare Workers deployments")
     .description(
-      "Deploy and inspect the Workers deployments defined in omnibase.toml " +
-      "or `omnibase/workers/`.\n\n" +
-      "Each deployment maps to a directory (default `omnibase/workers/`) " +
-      "containing a `wrangler.toml`, `wrangler.jsonc`, or `wrangler.json`. " +
+      "Deploy and inspect the Workers deployments defined in omnibase.toml.\n\n" +
+      "Each deployment maps to a directory containing a `wrangler.toml`, " +
+      "`wrangler.jsonc`, or `wrangler.json`. " +
       "`deploy` ships a deployment to the managed hosting cloud; `list` shows " +
       "what is currently deployed for a branch."
     );
@@ -1580,12 +1573,12 @@ export function addCloudCommands(program: Command): void {
       "   package time.\n" +
       "5. Upload the bundle to managed hosting, which runs " +
       "   `wrangler deploy --dispatch-namespace` and returns the live URL.\n\n" +
-      "By default a single-deployment project deploys it directly; with " +
+      "When a project has a single deployment it deploys directly; with " +
       "multiple deployments you are prompted to select one. `--name` picks a " +
       "specific deployment by name and `--all` deploys every deployment.\n\n" +
       "Before: the branch must be provisioned (has a branch ID) and a profile " +
       "must be configured (`omnibase cloud login`). Deployments must exist in " +
-      "omnibase.toml or `omnibase/workers/`. Cloud environments are required — " +
+      "omnibase.toml. Cloud environments are required — " +
       "deploying to `local` is not supported.\n\n" +
       "Environment variables: `{VAR}` references in the wrangler `[vars]` " +
       "resolve from the branch env file. See the env resolution model on the " +
