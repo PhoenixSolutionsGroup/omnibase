@@ -11,12 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
+import { projectHasActiveBranch } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/new-branch/actions";
+
+export interface ProjectOption {
+  id: string;
+  name: string;
+  tenant_id?: string;
+}
 
 interface ProjectDropdownProps {
   projectId: string;
   currentProject: string;
-  projects?: Project[];
+  projects?: ProjectOption[];
   onCreateProject?: () => void;
   currentBranch: string;
 }
@@ -31,25 +37,34 @@ export function ProjectDropdown({
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleProjectChange = (newProjectGroupId: string) => {
-    if (newProjectGroupId === "__create_new__") {
+  const handleProjectChange = async (newProjectId: string): Promise<void> => {
+    if (newProjectId === "__create_new__") {
       onCreateProject?.();
       return;
     }
 
-    // Navigate to the same page but for the new project
-    const pathSegments = pathname.split("/");
-    const projectGroupIndex = pathSegments.findIndex(
-      (segment) => segment === projectId
-    );
+    if (newProjectId === projectId) return;
 
-    if (projectGroupIndex !== -1) {
-      pathSegments[projectGroupIndex] = newProjectGroupId;
-      const newPath = pathSegments.join("/");
-      router.push(newPath);
+    // Keep the current branch only if the target project has an active branch with the same name; otherwise fall back to main.
+    const keepBranch: boolean =
+      currentBranch === "main" ||
+      (await projectHasActiveBranch(newProjectId, currentBranch));
+    const targetBranch: string = keepBranch ? currentBranch : "main";
+
+    const pathSegments: string[] = pathname.split("/");
+    const projectIndex: number = pathSegments.indexOf(projectId);
+
+    if (projectIndex !== -1) {
+      pathSegments[projectIndex] = newProjectId;
+      if (pathSegments[projectIndex + 1] !== undefined) {
+        pathSegments[projectIndex + 1] = targetBranch;
+      } else {
+        pathSegments.push(targetBranch, "dashboard");
+      }
+      router.push(pathSegments.join("/"));
     } else {
       // Fallback: navigate to dashboard of new project
-      router.push(`/projects/${newProjectGroupId}/${currentBranch}/dashboard`);
+      router.push(`/projects/${newProjectId}/${targetBranch}/dashboard`);
     }
   };
 
@@ -58,7 +73,7 @@ export function ProjectDropdown({
       <SelectTrigger
         className={cn(
           "h-auto w-full border-0 bg-transparent px-3 py-2 text-sm font-medium shadow-none",
-          "hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0"
+          "hover:bg-accent hover:text-accent-foreground focus:ring-0 focus:ring-offset-0",
         )}
       >
         <div className="flex items-center gap-2 w-full">
@@ -69,10 +84,7 @@ export function ProjectDropdown({
       <SelectContent>
         {projects.length > 0 ? (
           projects.map((project) => (
-            <SelectItem
-              key={project.project_id}
-              value={project.project_id}
-            >
+            <SelectItem key={project.id} value={project.id}>
               <div className="flex items-center gap-2">
                 <FolderGit2 className="h-4 w-4" />
                 <span>{project.name}</span>

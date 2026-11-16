@@ -111,7 +111,7 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
                 </div>
                 <Button
                   onClick={() => setIsDeleteModalOpen(true)}
-                  className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                  variant="destructive"
                 >
                   {isMain ? "Delete Project" : `Delete ${branchName} branch`}
                 </Button>
@@ -156,14 +156,14 @@ export function SettingsClient({ project, onRotateKeys }: SettingsClientProps) {
             <Button
               onClick={() => setIsDeleteModalOpen(false)}
               disabled={isDeleting}
-              className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
               onClick={handleDeleteProject}
               disabled={isDeleting}
-              className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors disabled:opacity-50"
+              variant="destructive"
             >
               {isDeleting
                 ? "Deleting..."
