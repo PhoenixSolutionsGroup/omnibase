@@ -99,6 +99,13 @@ class Tenant implements Namespace {
      * @role admin
      */
     can_manage_email_templates: User[];
+
+    /**
+     * @group Billing
+     * @displayName Manage Billing
+     * @role owner
+     */
+    can_manage_billing: User[];
   };
 
   permits = {
@@ -137,6 +144,9 @@ class Tenant implements Namespace {
 
     manage_email_templates: (ctx: Context): boolean =>
       this.related.can_manage_email_templates.includes(ctx.subject),
+
+    manage_billing: (ctx: Context): boolean =>
+      this.related.can_manage_billing.includes(ctx.subject),
   };
 }
 
