@@ -15,7 +15,7 @@ import { addCloudCommands } from "./commands/cloud";
 import { addSyncCommands } from "./commands/sync";
 import { addRestartCommands } from "./commands/restart";
 import { addDocsCommands } from "./commands/docs";
-import { selectEnvironment, findOmnibaseRoot, loadLocalEnvironment } from "./utils/environment";
+import { findOmnibaseRoot, loadLocalEnvironment } from "./utils/environment";
 import { loadConfig, loadWranglerConfigFile, resolveStartEnv } from "./utils/config";
 import { logger } from "./utils/logger";
 import {
@@ -180,7 +180,7 @@ async function runDockerCompose(
   services: string[] = [],
 ): Promise<void> {
   try {
-    const envConfig = await selectEnvironment(envOverride);
+    const envConfig = loadLocalEnvironment();
 
     logger.log(`Using environment: ${envConfig.name}`);
     logger.log(`Using mode: ${composeMode || "local"}`);
@@ -205,7 +205,7 @@ async function startDockerComposeAttached(
   composeMode: string | undefined,
   command: string,
 ): Promise<ChildProcess> {
-  const envConfig = await selectEnvironment(envOverride);
+  const envConfig = loadLocalEnvironment();
 
   logger.log(`Using environment: ${envConfig.name}`);
   logger.log(`Using mode: ${composeMode || "local"}`);

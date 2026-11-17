@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import axios from "axios";
-import { selectEnvironment } from "../utils/environment";
+import { loadLocalEnvironment, selectEnvironment } from "../utils/environment";
 import { getLocalServiceName } from "../config/services";
 import { logger } from "../utils/logger";
 import { handleCommandError } from "../utils/errors";
@@ -37,7 +37,7 @@ async function resetLocalService(mode?: string): Promise<void> {
   logger.update(`Restarting Docker service: ${dockerService}...`);
 
   try {
-    const envConfig = await selectEnvironment("local");
+    const envConfig = loadLocalEnvironment();
     await restartDockerService(dockerService, { mode, envConfig });
     logger.succeed(`Docker service ${dockerService} restarted`);
   } catch (error) {

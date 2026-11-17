@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { checkbox } from "@inquirer/prompts";
-import { EnvironmentConfig } from "../utils/environment";
-import { getCommandContextWithEnv } from "../utils/context";
+import { EnvironmentConfig, resolveEnvironment } from "../utils/environment";
+import { ComposeMode } from "../utils/context";
 import { createManagedHostingClient } from "../utils/api-client";
 import { logger } from "../utils/logger";
 import { formatHttpError, handleCommandError } from "../utils/errors";
@@ -199,7 +199,11 @@ export function addRestartCommands(program: Command): void {
     .option("--all", "Restart all services")
     .action(async (services: string[], options) => {
       try {
-        const ctx = await getCommandContextWithEnv(program);
+        const opts = program.opts();
+        const ctx = {
+          env: await resolveEnvironment(opts.env),
+          mode: (opts.mode || "default") as ComposeMode,
+        };
         const isLocal = ctx.env.name === "local";
 
         logger.info(`Using environment: ${ctx.env.name}`);

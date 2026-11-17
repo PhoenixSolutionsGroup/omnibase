@@ -9,6 +9,7 @@ import {
   PostCheckPermissionBody,
 } from "@ory/client";
 import {
+  loadLocalEnvironment,
   selectEnvironment,
   EnvironmentConfig,
 } from "../utils/environment";
@@ -147,7 +148,7 @@ export class PermissionsCommand {
       } else {
         logger.log("   Restarting permissions service...");
         try {
-          const localEnvConfig = await selectEnvironment("local");
+          const localEnvConfig = loadLocalEnvironment();
           runDockerComposeCommand("restart", ["permissions"], {
             mode,
             envConfig: localEnvConfig,
@@ -353,10 +354,10 @@ export function addPermissionsCommands(program: Command): void {
     )
     .action(async () => {
       try {
-        const ctx = await getCommandContextWithEnv(program);
-        const permissionsCmd = new PermissionsCommand(ctx.env.omnibaseApiUrl);
+        const envConfig = loadLocalEnvironment();
+        const permissionsCmd = new PermissionsCommand(envConfig.omnibaseApiUrl);
 
-        logger.info(`Using environment: ${ctx.env.name}`);
+        logger.info(`Using environment: ${envConfig.name}`);
         const isValid = await permissionsCmd.validate();
         process.exit(isValid ? 0 : 1);
       } catch (error) {
