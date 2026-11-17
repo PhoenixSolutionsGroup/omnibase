@@ -157,7 +157,37 @@ async function loadBranchEnvironment(
   };
 }
 
+export function localNotRunningError(): Error {
+  return new Error(
+    "The local OmniBase project isn't running.\n  Run `omnibase start` to interact with the local project.",
+  );
+}
+
+export async function localApiIsReady(
+  apiUrl: string,
+  timeoutMs = 1_500,
+): Promise<boolean> {
+  try {
+    const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/health/ready`, {
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function selectEnvironment(
+  envFlag?: string,
+): Promise<EnvironmentConfig> {
+  const env = await resolveEnvironment(envFlag);
+  if (env.name === "local" && !(await localApiIsReady(env.omnibaseApiUrl))) {
+    throw localNotRunningError();
+  }
+  return env;
+}
+
+export async function resolveEnvironment(
   envFlag?: string,
 ): Promise<EnvironmentConfig> {
   const root = findOmnibaseRoot();

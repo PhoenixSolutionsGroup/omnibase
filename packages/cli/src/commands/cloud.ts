@@ -11,7 +11,7 @@ import * as path from "path";
 import {
   EnvironmentConfig,
   findOmnibaseRoot,
-  selectEnvironment,
+  resolveEnvironment,
 } from "../utils/environment";
 import {
   loadCredentials,
@@ -266,7 +266,7 @@ async function deployWorkers(
 ): Promise<void> {
   const root = findOmnibaseRoot();
 
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
 
   if (env.name === "local") {
     logger.warn("Workers deployment is not available for local environment.");
@@ -828,7 +828,7 @@ export function stripUnresolvedOidcProviders(
 
 export async function pushEnvConfig(envFlag?: string): Promise<void> {
   const root = findOmnibaseRoot();
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
 
   if (env.name === "local") {
     logger.warn("Environment push is not available for the local environment.");
@@ -1218,7 +1218,7 @@ async function branchDelete(
  * List workers for a branch
  */
 async function listWorkers(envFlag?: string): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
 
   const api = createManagedHostingClient(env);
   const branchId = env.branchId;
@@ -1253,7 +1253,7 @@ async function domainAdd(
   envFlag: string | undefined,
   domain: string
 ): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
 
   logger.start(`Adding domain ${domain}...`);
@@ -1281,7 +1281,7 @@ async function domainAdd(
  * List account-level domains
  */
 async function domainList(envFlag: string | undefined): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
 
   logger.start("Fetching domains...");
@@ -1310,7 +1310,7 @@ async function domainRemove(
   envFlag: string | undefined,
   domainId: string
 ): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
 
   logger.start("Removing domain...");
@@ -1332,7 +1332,7 @@ async function domainStatus(
   domainId: string,
   pollSeconds: number
 ): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
 
   const deadline = Date.now() + pollSeconds * 1000;
@@ -1374,7 +1374,7 @@ async function domainAttach(
   workerName: string,
   hostname?: string
 ): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
   const branchId = env.branchId;
 
@@ -1408,7 +1408,7 @@ async function domainDetach(
   envFlag: string | undefined,
   domainId: string
 ): Promise<void> {
-  const env = await selectEnvironment(envFlag);
+  const env = await resolveEnvironment(envFlag);
   const api = createManagedHostingClient(env);
   const branchId = env.branchId;
 
