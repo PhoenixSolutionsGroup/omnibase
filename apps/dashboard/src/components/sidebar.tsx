@@ -58,7 +58,7 @@ function NavItem({
   isCollapsed,
 }: NavItemProps) {
   const linkContent = (
-    <Link href={href} className={cn("flex items-center px-1")}>
+    <Link href={href} className={cn("flex items-center px-2")}>
       <div
         className={cn(
           "flex items-center rounded-md text-xs font-medium transition-colors gap-3 w-full",
@@ -204,7 +204,7 @@ export function UnifiedSidebar({
         {projectContext && (
           <>
             {/* Branch Navigation Items */}
-            <nav className={cn("space-y-1 mt-4")}>
+            <nav className={cn("space-y-1 mt-2")}>
               {projectNavigationItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -220,12 +220,12 @@ export function UnifiedSidebar({
               })}
             </nav>
 
-            <Separator className="my-2" />
+            <Separator className="my-4" />
           </>
         )}
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav className={cn("space-y-1 py-4", isCollapsed ? "px-2" : "")}>
+        <nav className={cn("space-y-1 pb-4", isCollapsed ? "px-2" : "")}>
           {organizationNavigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
