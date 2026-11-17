@@ -333,9 +333,9 @@ export default function DomainsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <div className="my-8 mx-16">
-        <div className="mb-8 flex items-center justify-between">
+    <div className="max-w-5xl  my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">Domains</h1>
             <p className="text-muted-foreground">

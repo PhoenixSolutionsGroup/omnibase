@@ -57,21 +57,36 @@ export default async function Page() {
   const projects = await getAllProjects();
 
   return (
-    <div className="flex h-full w-full flex-col items-center my-8 gap-y-8">
-      <UserInvite roles={roles.map((r) => r.roleName)} onInvite={inviteUser} />
-      <RoleCreator
-        definitions={definitions}
-        roles={roles}
-        onRoleCreate={createRole}
-        onRoleUpdate={updateRole}
-        namespaceMap={{
-          project:
-            projects?.map((p) => ({
-              id: p.id,
-              label: p.name,
-            })) || [],
-        }}
-      />
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">People</h1>
+            <p className="text-muted-foreground">
+              Manage and monitor your team members roles
+            </p>
+          </div>
+        </div>
+
+        <UserInvite
+          roles={roles.map((r) => r.roleName)}
+          onInvite={inviteUser}
+        />
+        <RoleCreator
+          definitions={definitions}
+          roles={roles}
+          onRoleCreate={createRole}
+          onRoleUpdate={updateRole}
+          namespaceMap={{
+            project:
+              projects?.map((p) => ({
+                id: p.id,
+                label: p.name,
+              })) || [],
+          }}
+        />
+      </div>
     </div>
   );
 }

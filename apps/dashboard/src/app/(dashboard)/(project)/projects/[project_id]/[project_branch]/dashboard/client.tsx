@@ -329,7 +329,7 @@ export function ProjectDashboardClient({
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto p-6">
-        <div className="mx-auto max-w-7xl space-y-6">
+        <div className="mx-auto max-w-5xl space-y-6">
           {/* Welcome Header */}
           <div>
             <h1 className="text-xl font-bold tracking-tight">{project.name}</h1>
