@@ -28,7 +28,7 @@ import {
 import { Project } from "../dashboard/project-provisioning-dashboard";
 import { WorkerDomains } from "./worker-domains";
 import { toast } from "sonner";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   fetchProjectSecretKey,
   fetchPostgrestServiceKey,
@@ -405,69 +405,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     }))
     .filter((section) => section.items.length > 0);
 
-  const [activeSection, setActiveSection] = useState<string>(
-    visibleSections[0]?.title || "",
-  );
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const getSectionId = (title: string) =>
-    title.toLowerCase().replace(/\s+/g, "-");
-
-  const scrollToSection = (title: string) => {
-    const sectionId = getSectionId(title);
-    const element = document.getElementById(sectionId);
-    if (element && contentRef.current) {
-      const containerTop = contentRef.current.getBoundingClientRect().top;
-      const elementTop = element.getBoundingClientRect().top;
-      const offset = elementTop - containerTop + contentRef.current.scrollTop;
-      contentRef.current.scrollTo({
-        top: offset - 24,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  useEffect(() => {
-    const container = contentRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      if (visibleSections.length === 0) return;
-
-      // At the bottom: the last section can never reach the top threshold,
-      // so force it active.
-      const atBottom =
-        container.scrollTop + container.clientHeight >=
-        container.scrollHeight - 2;
-
-      if (atBottom) {
-        const last = visibleSections[visibleSections.length - 1].title;
-        setActiveSection((prev) => (prev === last ? prev : last));
-        return;
-      }
-
-      // Otherwise: the active section is the last one whose top has
-      // scrolled past the threshold.
-      const containerTop = container.getBoundingClientRect().top;
-      let current = visibleSections[0].title;
-
-      for (const section of visibleSections) {
-        const element = document.getElementById(getSectionId(section.title));
-        if (!element) continue;
-        const relativeTop = element.getBoundingClientRect().top - containerTop;
-        if (relativeTop <= 100) {
-          current = section.title;
-        }
-      }
-
-      setActiveSection((prev) => (prev === current ? prev : current));
-    };
-
-    handleScroll();
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [visibleSections]);
-
   return (
     <div className="max-w-5xl my-8 mx-auto">
       <div className="mx-16 space-y-4">
@@ -512,7 +449,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
         {/* Configuration Sections */}
         <div className="space-y-6">
           {visibleSections.map((section) => (
-            <Card key={section.title} id={getSectionId(section.title)}>
+            <Card key={section.title}>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
