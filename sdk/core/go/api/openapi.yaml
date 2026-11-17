@@ -4983,6 +4983,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
           description: Unauthorized
+        "403":
+          content:
+            application/problem+json:
+              example:
+                title: Forbidden
+                status: 403
+                detail: Insufficient permissions.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Forbidden
         "404":
           content:
             application/problem+json:
@@ -5139,6 +5149,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorModel"
           description: Unauthorized
+        "403":
+          content:
+            application/problem+json:
+              example:
+                title: Forbidden
+                status: 403
+                detail: Insufficient permissions.
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Forbidden
         "404":
           content:
             application/problem+json:
@@ -5657,7 +5677,6 @@ components:
     AddRequest:
       additionalProperties: false
       example:
-        stripe_customer_id: stripe_customer_id
         quantity: 0
         idempotency_key: idempotency_key
         plan_id: plan_id
@@ -5672,9 +5691,6 @@ components:
         quantity:
           format: int64
           type: integer
-        stripe_customer_id:
-          minLength: 1
-          type: string
       required:
       - idempotency_key
       - plan_id
@@ -10725,13 +10741,9 @@ components:
     RemoveRequest:
       additionalProperties: false
       example:
-        stripe_customer_id: stripe_customer_id
         plan_id: plan_id
       properties:
         plan_id:
-          minLength: 1
-          type: string
-        stripe_customer_id:
           minLength: 1
           type: string
       required:

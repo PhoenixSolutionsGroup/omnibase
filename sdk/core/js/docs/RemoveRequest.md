@@ -7,7 +7,6 @@
 Name | Type
 ------------ | -------------
 `planId` | string
-`stripeCustomerId` | string
 
 ## Example
 
@@ -17,7 +16,6 @@ import type { RemoveRequest } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "planId": null,
-  "stripeCustomerId": null,
 } satisfies RemoveRequest
 
 console.log(example)

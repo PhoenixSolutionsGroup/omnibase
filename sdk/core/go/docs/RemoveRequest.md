@@ -5,7 +5,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **PlanId** | **string** |  | 
-**StripeCustomerId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -45,31 +44,6 @@ and a boolean to check if the value has been set.
 
 SetPlanId sets PlanId field to given value.
 
-
-### GetStripeCustomerId
-
-`func (o *RemoveRequest) GetStripeCustomerId() string`
-
-GetStripeCustomerId returns the StripeCustomerId field if non-nil, zero value otherwise.
-
-### GetStripeCustomerIdOk
-
-`func (o *RemoveRequest) GetStripeCustomerIdOk() (*string, bool)`
-
-GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetStripeCustomerId
-
-`func (o *RemoveRequest) SetStripeCustomerId(v string)`
-
-SetStripeCustomerId sets StripeCustomerId field to given value.
-
-### HasStripeCustomerId
-
-`func (o *RemoveRequest) HasStripeCustomerId() bool`
-
-HasStripeCustomerId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

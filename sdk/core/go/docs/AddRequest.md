@@ -7,7 +7,6 @@ Name | Type | Description | Notes
 **IdempotencyKey** | **string** |  | 
 **PlanId** | **string** |  | 
 **Quantity** | Pointer to **int64** |  | [optional] 
-**StripeCustomerId** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -92,31 +91,6 @@ SetQuantity sets Quantity field to given value.
 `func (o *AddRequest) HasQuantity() bool`
 
 HasQuantity returns a boolean if a field has been set.
-
-### GetStripeCustomerId
-
-`func (o *AddRequest) GetStripeCustomerId() string`
-
-GetStripeCustomerId returns the StripeCustomerId field if non-nil, zero value otherwise.
-
-### GetStripeCustomerIdOk
-
-`func (o *AddRequest) GetStripeCustomerIdOk() (*string, bool)`
-
-GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetStripeCustomerId
-
-`func (o *AddRequest) SetStripeCustomerId(v string)`
-
-SetStripeCustomerId sets StripeCustomerId field to given value.
-
-### HasStripeCustomerId
-
-`func (o *AddRequest) HasStripeCustomerId() bool`
-
-HasStripeCustomerId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

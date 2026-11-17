@@ -25,7 +25,6 @@ type AddRequest struct {
 	IdempotencyKey string `json:"idempotency_key"`
 	PlanId string `json:"plan_id"`
 	Quantity *int64 `json:"quantity,omitempty"`
-	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
 }
 
 type _AddRequest AddRequest
@@ -129,38 +128,6 @@ func (o *AddRequest) SetQuantity(v int64) {
 	o.Quantity = &v
 }
 
-// GetStripeCustomerId returns the StripeCustomerId field value if set, zero value otherwise.
-func (o *AddRequest) GetStripeCustomerId() string {
-	if o == nil || IsNil(o.StripeCustomerId) {
-		var ret string
-		return ret
-	}
-	return *o.StripeCustomerId
-}
-
-// GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *AddRequest) GetStripeCustomerIdOk() (*string, bool) {
-	if o == nil || IsNil(o.StripeCustomerId) {
-		return nil, false
-	}
-	return o.StripeCustomerId, true
-}
-
-// HasStripeCustomerId returns a boolean if a field has been set.
-func (o *AddRequest) HasStripeCustomerId() bool {
-	if o != nil && !IsNil(o.StripeCustomerId) {
-		return true
-	}
-
-	return false
-}
-
-// SetStripeCustomerId gets a reference to the given string and assigns it to the StripeCustomerId field.
-func (o *AddRequest) SetStripeCustomerId(v string) {
-	o.StripeCustomerId = &v
-}
-
 func (o AddRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -175,9 +142,6 @@ func (o AddRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize["plan_id"] = o.PlanId
 	if !IsNil(o.Quantity) {
 		toSerialize["quantity"] = o.Quantity
-	}
-	if !IsNil(o.StripeCustomerId) {
-		toSerialize["stripe_customer_id"] = o.StripeCustomerId
 	}
 	return toSerialize, nil
 }
