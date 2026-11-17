@@ -196,10 +196,7 @@ export function TopNavbar({
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={handleLogout}
-              className="cursor-pointer text-destructive focus:text-destructive"
-            >
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </DropdownMenuItem>
