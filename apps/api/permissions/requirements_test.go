@@ -5,10 +5,13 @@ import (
 	"go/parser"
 	"go/token"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
+
+	permsvc "api/internal/services/permissions"
 
 	"github.com/stretchr/testify/require"
 )
@@ -162,4 +165,56 @@ func stringLiteral(expr ast.Expr) (string, bool) {
 		return "", false
 	}
 	return value, true
+}
+
+func TestKetoTestFixtureMatchesEmbeddedNamespaces(t *testing.T) {
+	fixturePath := filepath.Join("..", "tests", "fixtures", "keto-namespaces", "permissions.ts")
+	content, err := os.ReadFile(fixturePath)
+	require.NoError(t, err)
+
+	embedded, err := Load()
+	require.NoError(t, err)
+
+	fixture := permsvc.ParseNamespaceFiles(map[string]string{"permissions.ts": string(content)})
+
+	byNamespace := func(definitions []permsvc.ParsedNamespaceDefinition) map[string]permsvc.ParsedNamespaceDefinition {
+		out := make(map[string]permsvc.ParsedNamespaceDefinition, len(definitions))
+		for _, def := range definitions {
+			out[def.Namespace] = def
+		}
+		return out
+	}
+
+	required := byNamespace(embedded.Namespaces)
+	supplied := byNamespace(fixture)
+
+	require.Len(t, supplied, len(required), "test fixture namespaces differ from the embedded files")
+	for namespace, requiredDef := range required {
+		suppliedDef, ok := supplied[namespace]
+		require.Truef(t, ok, "test fixture is missing namespace %s", namespace)
+
+		require.ElementsMatchf(t, requiredDef.Relations, suppliedDef.Relations, "namespace %s relations differ", namespace)
+		require.ElementsMatchf(t, requiredDef.Permits, suppliedDef.Permits, "namespace %s permits differ", namespace)
+
+		requiredMeta := metadataByName(requiredDef.RelationsMetadata)
+		suppliedMeta := metadataByName(suppliedDef.RelationsMetadata)
+		require.Len(t, suppliedMeta, len(requiredMeta), "namespace %s relation metadata differs", namespace)
+		for name, requiredRelation := range requiredMeta {
+			suppliedRelation, ok := suppliedMeta[name]
+			require.Truef(t, ok, "test fixture is missing relation metadata for %s#%s", namespace, name)
+			require.Equalf(t, requiredRelation.DisplayName, suppliedRelation.DisplayName, "namespace %s relation %s display name differs", namespace, name)
+			require.Equalf(t, requiredRelation.Group, suppliedRelation.Group, "namespace %s relation %s group differs", namespace, name)
+			require.Equalf(t, requiredRelation.SubGroup, suppliedRelation.SubGroup, "namespace %s relation %s subgroup differs", namespace, name)
+			require.ElementsMatchf(t, requiredRelation.Roles, suppliedRelation.Roles, "namespace %s relation %s roles differ", namespace, name)
+			require.ElementsMatchf(t, requiredRelation.Subjects, suppliedRelation.Subjects, "namespace %s relation %s subjects differ", namespace, name)
+		}
+	}
+}
+
+func metadataByName(metadata []permsvc.RelationMetadata) map[string]permsvc.RelationMetadata {
+	out := make(map[string]permsvc.RelationMetadata, len(metadata))
+	for _, relation := range metadata {
+		out[relation.Name] = relation
+	}
+	return out
 }
