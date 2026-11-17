@@ -225,7 +225,7 @@ export function UnifiedSidebar({
         )}
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav className={cn("space-y-1 pb-4", isCollapsed ? "px-2" : "")}>
+        <nav className={cn("space-y-1 pb-4 mt-2", isCollapsed ? "px-2" : "")}>
           {organizationNavigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
