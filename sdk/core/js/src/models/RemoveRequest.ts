@@ -25,12 +25,6 @@ export interface RemoveRequest {
      * @memberof RemoveRequest
      */
     planId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RemoveRequest
-     */
-    stripeCustomerId?: string;
 }
 
 /**
@@ -52,7 +46,6 @@ export function RemoveRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'planId': json['plan_id'],
-        'stripeCustomerId': json['stripe_customer_id'] == null ? undefined : json['stripe_customer_id'],
     };
 }
 
@@ -68,7 +61,6 @@ export function RemoveRequestToJSONTyped(value?: RemoveRequest | null, ignoreDis
     return {
         
         'plan_id': value['planId'],
-        'stripe_customer_id': value['stripeCustomerId'],
     };
 }
 

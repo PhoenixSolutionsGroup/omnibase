@@ -33,10 +33,12 @@ func TestEmbeddedNamespaceKeys(t *testing.T) {
 
 	tenant, ok := byNamespace["Tenant"]
 	require.True(t, ok)
-	require.Len(t, tenant.relations, 12)
-	require.Len(t, tenant.permits, 12)
+	require.Len(t, tenant.relations, 13)
+	require.Len(t, tenant.permits, 13)
 	require.Contains(t, tenant.relations, "can_manage_email_templates")
 	require.Contains(t, tenant.permits, "manage_email_templates")
+	require.Contains(t, tenant.relations, "can_manage_billing")
+	require.Contains(t, tenant.permits, "manage_billing")
 
 	storage, ok := byNamespace["StorageObject"]
 	require.True(t, ok)

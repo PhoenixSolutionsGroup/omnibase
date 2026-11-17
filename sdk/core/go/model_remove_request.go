@@ -23,7 +23,6 @@ var _ MappedNullable = &RemoveRequest{}
 // RemoveRequest struct for RemoveRequest
 type RemoveRequest struct {
 	PlanId string `json:"plan_id"`
-	StripeCustomerId *string `json:"stripe_customer_id,omitempty"`
 }
 
 type _RemoveRequest RemoveRequest
@@ -70,38 +69,6 @@ func (o *RemoveRequest) SetPlanId(v string) {
 	o.PlanId = v
 }
 
-// GetStripeCustomerId returns the StripeCustomerId field value if set, zero value otherwise.
-func (o *RemoveRequest) GetStripeCustomerId() string {
-	if o == nil || IsNil(o.StripeCustomerId) {
-		var ret string
-		return ret
-	}
-	return *o.StripeCustomerId
-}
-
-// GetStripeCustomerIdOk returns a tuple with the StripeCustomerId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *RemoveRequest) GetStripeCustomerIdOk() (*string, bool) {
-	if o == nil || IsNil(o.StripeCustomerId) {
-		return nil, false
-	}
-	return o.StripeCustomerId, true
-}
-
-// HasStripeCustomerId returns a boolean if a field has been set.
-func (o *RemoveRequest) HasStripeCustomerId() bool {
-	if o != nil && !IsNil(o.StripeCustomerId) {
-		return true
-	}
-
-	return false
-}
-
-// SetStripeCustomerId gets a reference to the given string and assigns it to the StripeCustomerId field.
-func (o *RemoveRequest) SetStripeCustomerId(v string) {
-	o.StripeCustomerId = &v
-}
-
 func (o RemoveRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -113,9 +80,6 @@ func (o RemoveRequest) MarshalJSON() ([]byte, error) {
 func (o RemoveRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["plan_id"] = o.PlanId
-	if !IsNil(o.StripeCustomerId) {
-		toSerialize["stripe_customer_id"] = o.StripeCustomerId
-	}
 	return toSerialize, nil
 }
 

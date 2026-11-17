@@ -16,8 +16,7 @@ import (
 var RemoveSubscriptionError = errors.New("Failed to remove tenant subscription")
 
 type RemoveRequest struct {
-	PlanID           string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
-	StripeCustomerID string `json:"stripe_customer_id,omitempty" minLength:"1" example:"cus_test_123"`
+	PlanID string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
 }
 
 type RemoveResponse struct {
@@ -27,7 +26,7 @@ type RemoveResponse struct {
 }
 
 type RemoveInput struct {
-	handlers.AuthCtx
+	Ctx
 	Body RemoveRequest
 }
 
@@ -42,16 +41,9 @@ func (h *Handler) Remove(ctx context.Context, in *RemoveInput) (*RemoveOutput, e
 
 	req := in.Body
 
-	customerID := req.StripeCustomerID
+	customerID := in.StripeCustomerID
 	if customerID == "" {
-		row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("Tenant not found: %w", err).Error())
-		}
-		if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-			return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
-		}
-		customerID = *row.StripeCustomerID
+		return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
 	}
 
 	result, err := h.billing.RemoveTenantSubscription(ctx, billing.RemoveTenantSubscriptionArgs{

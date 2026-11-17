@@ -16,10 +16,9 @@ import (
 var AddSubscriptionError = errors.New("Failed to add tenant subscription")
 
 type AddRequest struct {
-	PlanID           string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
-	StripeCustomerID string `json:"stripe_customer_id,omitempty" minLength:"1" example:"cus_test_123"`
-	Quantity         int64  `json:"quantity,omitempty" example:"5"`
-	IdempotencyKey   string `json:"idempotency_key" required:"true" minLength:"1" maxLength:"255"`
+	PlanID         string `json:"plan_id" required:"true" minLength:"1" example:"price_test_basic"`
+	Quantity       int64  `json:"quantity,omitempty" example:"5"`
+	IdempotencyKey string `json:"idempotency_key" required:"true" minLength:"1" maxLength:"255"`
 }
 
 type AddResponse struct {
@@ -29,7 +28,7 @@ type AddResponse struct {
 }
 
 type AddInput struct {
-	handlers.AuthCtx
+	Ctx
 	Body AddRequest
 }
 
@@ -44,16 +43,9 @@ func (h *Handler) Add(ctx context.Context, in *AddInput) (*AddOutput, error) {
 
 	req := in.Body
 
-	customerID := req.StripeCustomerID
+	customerID := in.StripeCustomerID
 	if customerID == "" {
-		row, err := h.repo.GetTenantByID(ctx, in.TenantID.String())
-		if err != nil {
-			return nil, huma.Error500InternalServerError(fmt.Errorf("Tenant not found: %w", err).Error())
-		}
-		if row.StripeCustomerID == nil || *row.StripeCustomerID == "" {
-			return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
-		}
-		customerID = *row.StripeCustomerID
+		return nil, huma.Error400BadRequest("Tenant does not have a Stripe customer ID")
 	}
 
 	result, err := h.billing.AddTenantSubscription(ctx, billing.AddTenantSubscriptionArgs{

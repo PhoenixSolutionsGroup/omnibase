@@ -9,7 +9,6 @@ Name | Type
 `idempotencyKey` | string
 `planId` | string
 `quantity` | number
-`stripeCustomerId` | string
 
 ## Example
 
@@ -21,7 +20,6 @@ const example = {
   "idempotencyKey": null,
   "planId": null,
   "quantity": null,
-  "stripeCustomerId": null,
 } satisfies AddRequest
 
 console.log(example)

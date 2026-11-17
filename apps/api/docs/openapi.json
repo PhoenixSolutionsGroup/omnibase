@@ -135,13 +135,6 @@
             ],
             "format": "int64",
             "type": "integer"
-          },
-          "stripe_customer_id": {
-            "examples": [
-              "cus_test_123"
-            ],
-            "minLength": 1,
-            "type": "string"
           }
         },
         "required": [
@@ -3335,13 +3328,6 @@
           "plan_id": {
             "examples": [
               "price_test_basic"
-            ],
-            "minLength": 1,
-            "type": "string"
-          },
-          "stripe_customer_id": {
-            "examples": [
-              "cus_test_123"
             ],
             "minLength": 1,
             "type": "string"
@@ -12308,6 +12294,21 @@
             },
             "description": "Unauthorized"
           },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Insufficient permissions."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
           "404": {
             "content": {
               "application/problem+json": {
@@ -12560,6 +12561,21 @@
               }
             },
             "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "title": "Forbidden",
+                  "status": 403,
+                  "detail": "Insufficient permissions."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Forbidden"
           },
           "404": {
             "content": {

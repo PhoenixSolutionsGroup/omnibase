@@ -29,6 +29,21 @@ func TestAddSubscription(t *testing.T) {
 	userID := h.CreateUser(t, client, email, pw)
 	tenant := h.CreateTenant(t, client, userID, "Sub Add "+id, email).Tenant
 
+	memberEmail := fmt.Sprintf("sub-add-member-%s@example.com", id)
+	memberID := h.CreateUser(t, client, memberEmail, pw)
+	invite := h.CreateInvite(t, client, userID, tenant.Id, memberEmail, "member")
+	h.AcceptInvite(t, client, memberID, invite.Token)
+
+	t.Run("owner can manage billing", func(t *testing.T) {
+		assert.True(t, h.CheckTenantPermission(t, client, tenant.Id, "manage_billing", userID))
+	})
+
+	t.Run("member without manage_billing is forbidden", func(t *testing.T) {
+		_, resp, _ := h.AddSubscriptionRaw(t, client, memberID, tenant.Id, "any_plan")
+		require.NotNil(t, resp)
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
 	t.Run("unmapped plan_id returns 404", func(t *testing.T) {
 		_, resp, _ := h.AddSubscriptionRaw(t, client, userID, tenant.Id, "unknown_plan_"+id)
 		require.NotNil(t, resp)

@@ -80,6 +80,11 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Repo:    repo,
 		Billing: billingSvc,
 	})
+	paymentsMiddleware := middleware.NewPaymentsMiddleware(d.DB)
+	manageBilling := huma.Middlewares{
+		middleware.GinToHuma(d.RBAC.CheckTenantPermission("manage_billing")),
+		middleware.GinToHuma(paymentsMiddleware.ResolveStripeCustomer()),
+	}
 
 	lifecycleTag := []string{"V1TenantsLifecycle"}
 	invitesTag := []string{"V1TenantsInvites"}
@@ -201,15 +206,15 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "addSubscription", Method: http.MethodPost, Path: "/api/v1/tenants/subscriptions",
-		Errors:  []int{400, 401, 404, 409, 429},
+		Errors:  []int{400, 401, 403, 404, 409, 429},
 		Summary: "Add a subscription to the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Add)
+	}, authn.AuthSessionOrBackendKey, manageBilling, subscriptionsHandler.Add)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "removeSubscription", Method: http.MethodDelete, Path: "/api/v1/tenants/subscriptions",
-		Errors:  []int{400, 401, 404, 409, 429},
+		Errors:  []int{400, 401, 403, 404, 409, 429},
 		Summary: "Remove a subscription from the tenant", Tags: subsTag,
-	}, authn.AuthSessionOrBackendKey, nil, subscriptionsHandler.Remove)
+	}, authn.AuthSessionOrBackendKey, manageBilling, subscriptionsHandler.Remove)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "getTenantBillingStatus", Method: http.MethodGet, Path: "/api/v1/tenants/billing-status",

@@ -37,12 +37,6 @@ export interface AddRequest {
      * @memberof AddRequest
      */
     quantity?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof AddRequest
-     */
-    stripeCustomerId?: string;
 }
 
 /**
@@ -67,7 +61,6 @@ export function AddRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'idempotencyKey': json['idempotency_key'],
         'planId': json['plan_id'],
         'quantity': json['quantity'] == null ? undefined : json['quantity'],
-        'stripeCustomerId': json['stripe_customer_id'] == null ? undefined : json['stripe_customer_id'],
     };
 }
 
@@ -85,7 +78,6 @@ export function AddRequestToJSONTyped(value?: AddRequest | null, ignoreDiscrimin
         'idempotency_key': value['idempotencyKey'],
         'plan_id': value['planId'],
         'quantity': value['quantity'],
-        'stripe_customer_id': value['stripeCustomerId'],
     };
 }
 
