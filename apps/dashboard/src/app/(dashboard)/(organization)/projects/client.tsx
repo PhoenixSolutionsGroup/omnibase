@@ -41,10 +41,10 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
       <div className="flex-1 overflow-y-auto p-6">
         <div className="mx-auto max-w-7xl space-y-6">
           {/* Header Section */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-3">
             <div>
               <h1 className="text-xl font-bold tracking-tight">Projects</h1>
-              <p className="mt-2 text-muted-foreground">
+              <p className="text-muted-foreground">
                 Manage and monitor all your projects
               </p>
             </div>
