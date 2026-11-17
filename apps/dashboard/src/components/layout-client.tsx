@@ -35,7 +35,23 @@ export function UnifiedLayoutClient({
   return (
     <SidebarProvider>
       <div className="flex h-screen flex-col overflow-hidden bg-background">
-        <TopNavbar tenants={tenants} currentTenantId={currentTenantId} />
+        <TopNavbar
+          tenants={tenants}
+          currentTenantId={currentTenantId}
+          projectContext={
+            projectData
+              ? {
+                  branchId: projectData.branchId,
+                  projectId: projectData.projectId,
+                  projectBranch: projectData.projectBranch,
+                  projectName: projectData.projectName,
+                  branches: projectData.branches,
+                  onCreateProject: () => router.push("/projects/new"),
+                  projects: projects,
+                }
+              : undefined
+          }
+        />
         <div className="flex flex-1 overflow-hidden">
           <UnifiedSidebar
             projectContext={

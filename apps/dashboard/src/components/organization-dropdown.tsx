@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { SwitchActiveTenant } from "@omnibase/shadcn";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 

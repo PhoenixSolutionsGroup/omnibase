@@ -19,10 +19,23 @@ import {
 import { OrganizationDropdown } from "./organization-dropdown";
 import { switchTenant } from "@/app/(dashboard)/(organization)/actions";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
+import { ProjectDropdown, ProjectOption } from "./project-dropdown";
+import { BranchDropdown } from "./branch-dropdown";
+
+interface ProjectContext {
+  branchId: string;
+  projectId: string;
+  projectBranch: string;
+  projectName: string;
+  branches: string[];
+  projects?: ProjectOption[];
+  onCreateProject?: () => void;
+}
 
 interface TopNavbarProps {
   tenants: Tenant[];
   currentTenantId: string;
+  projectContext?: ProjectContext;
 }
 
 const THEME_OPTIONS = [
@@ -31,7 +44,11 @@ const THEME_OPTIONS = [
   { value: "system", label: "System" },
 ] as const;
 
-export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
+export function TopNavbar({
+  tenants,
+  currentTenantId,
+  projectContext,
+}: TopNavbarProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
@@ -70,7 +87,30 @@ export function TopNavbar({ tenants, currentTenantId }: TopNavbarProps) {
         createTenantLabel="Create Tenant"
         onCreateTenant={() => router.push("/onboarding/create-tenant")}
       />
-
+      {projectContext && (
+        <>
+          <span className="text-muted-foreground">/</span>
+          {/* PROJECT SECTION */}
+          <div className="py-3 px-3">
+            <ProjectDropdown
+              projectId={projectContext.projectId}
+              currentProject={projectContext.projectName}
+              currentBranch={projectContext.projectBranch}
+              projects={projectContext.projects}
+              onCreateProject={projectContext.onCreateProject}
+            />
+          </div>
+          <span className="text-muted-foreground">/</span>
+          {/* Branch Navigation Items */}
+          <div className="py-3 px-3">
+            <BranchDropdown
+              currentBranch={projectContext.projectBranch}
+              branches={projectContext.branches}
+              projectId={projectContext.projectId}
+            />
+          </div>
+        </>
+      )}
       <div className="flex-1" />
 
       {/* Right Section - Docs and Profile */}

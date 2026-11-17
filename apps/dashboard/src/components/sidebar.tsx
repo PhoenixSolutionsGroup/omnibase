@@ -7,20 +7,17 @@ import { cn } from "@/lib/utils";
 import {
   BarChart3,
   Database,
-  LayoutDashboard,
   Settings,
   ScrollText,
   CreditCard,
   FolderKanban,
   Users,
-  ChevronDown,
-  ChevronRight,
   Wrench,
   Globe,
   PanelLeft,
+  House,
 } from "lucide-react";
-import { ProjectDropdown, ProjectOption } from "./project-dropdown";
-import { BranchDropdown } from "./branch-dropdown";
+import { ProjectOption } from "./project-dropdown";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -61,18 +58,20 @@ function NavItem({
   isCollapsed,
 }: NavItemProps) {
   const linkContent = (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center rounded-md text-xs font-medium transition-colors",
-        isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
-        isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-      )}
-    >
-      <Icon className="h-4 w-4 shrink-0" />
-      {!isCollapsed && title}
+    <Link href={href} className={cn("flex items-center px-1")}>
+      <div
+        className={cn(
+          "flex items-center rounded-md text-xs font-medium transition-colors gap-3 w-full",
+          isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
+
+          isActive
+            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+            : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        )}
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        {!isCollapsed && title}
+      </div>
     </Link>
   );
 
@@ -95,12 +94,12 @@ const getProjectNavigationItems = (
   projectBranch: string,
 ) => [
   {
-    title: "Dashboard",
+    title: "Project Overview",
     href: `/projects/${projectId}/${projectBranch}/dashboard`,
-    icon: LayoutDashboard,
+    icon: House,
   },
   {
-    title: "Studio",
+    title: "Table Editor",
     href: `/projects/${projectId}/${projectBranch}/studio`,
     icon: Database,
   },
@@ -204,63 +203,29 @@ export function UnifiedSidebar({
         {/* PROJECT CONTEXT SECTION - Only visible when in a project */}
         {projectContext && (
           <>
-            <div className="flex flex-col">
-              {/* PROJECT SECTION */}
-              {!isCollapsed && (
-                <div className="border-b border-border px-3 py-3">
-                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Project
-                  </label>
-                  <ProjectDropdown
-                    projectId={projectContext.projectId}
-                    currentProject={projectContext.projectName}
-                    currentBranch={projectContext.projectBranch}
-                    projects={projectContext.projects}
-                    onCreateProject={projectContext.onCreateProject}
+            {/* Branch Navigation Items */}
+            <nav className={cn("space-y-1 mt-4")}>
+              {projectNavigationItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    icon={item.icon}
+                    title={item.title}
+                    isActive={isActive}
+                    isCollapsed={isCollapsed}
                   />
-                </div>
-              )}
-
-              {/* BRANCH SECTION WITH NAVIGATION */}
-              <div className={cn("py-3", isCollapsed ? "px-2" : "px-3")}>
-                {!isCollapsed && (
-                  <>
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Branch
-                    </label>
-                    <BranchDropdown
-                      currentBranch={projectContext.projectBranch}
-                      branches={projectContext.branches}
-                      projectId={projectContext.projectId}
-                    />
-                  </>
-                )}
-
-                {/* Branch Navigation Items */}
-                <nav className={cn("space-y-1", !isCollapsed && "mt-4")}>
-                  {projectNavigationItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <NavItem
-                        key={item.href}
-                        href={item.href}
-                        icon={item.icon}
-                        title={item.title}
-                        isActive={isActive}
-                        isCollapsed={isCollapsed}
-                      />
-                    );
-                  })}
-                </nav>
-              </div>
-            </div>
+                );
+              })}
+            </nav>
 
             <Separator className="my-2" />
           </>
         )}
 
         {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav className={cn("space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}>
+        <nav className={cn("space-y-1 py-4", isCollapsed ? "px-2" : "")}>
           {organizationNavigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
