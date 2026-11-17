@@ -469,186 +469,146 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
   }, [visibleSections]);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-hidden">
-        <div className="mx-auto flex h-full max-w-7xl">
-          {/* Main Content */}
-          <div ref={contentRef} className="flex-1 overflow-y-auto p-6">
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="flex items-start justify-between">
-                <div>
-                  <h1 className="text-xl font-bold tracking-tight">
-                    Configuration
-                  </h1>
-                  <p className="text-muted-foreground">
-                    View and copy your project configuration and service URLs
-                  </p>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-xs font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-                    disabled={copyingEnv}
-                  >
-                    {copyingEnv ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Copy className="mr-2 h-4 w-4" />
-                    )}
-                    Copy Env
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={copyingEnv ? undefined : copyOmnibaseEnv}
-                      className={
-                        copyingEnv ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    >
-                      Copy OmniBase Env
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={copyingEnv ? undefined : copyAllEnv}
-                      className={
-                        copyingEnv ? "opacity-50 cursor-not-allowed" : ""
-                      }
-                    >
-                      Copy All Env Variables
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* Configuration Sections */}
-              <div className="space-y-6">
-                {visibleSections.map((section) => (
-                  <Card key={section.title} id={getSectionId(section.title)}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-2">
-                          {section.icon}
-                          {section.title}
-                        </CardTitle>
-                        {section.provider && (
-                          <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                            {section.provider}
-                          </span>
-                        )}
-                      </div>
-                      <CardDescription>{section.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {section.items.map((item) => {
-                          const secretKey = `${section.title}-${item.label}`;
-                          const isRevealed = revealedSecrets.has(secretKey);
-                          const isLoading = loadingSecrets.has(secretKey);
-                          const error = errors.get(secretKey);
-                          const decryptedValue = decryptedValues.get(secretKey);
-
-                          // Determine what value to display
-                          let displayValue = item.value;
-                          if (item.sensitive && item.value) {
-                            if (isLoading) {
-                              displayValue = "Decrypting...";
-                            } else if (error) {
-                              displayValue = `Error: ${error}`;
-                            } else if (isRevealed && decryptedValue) {
-                              displayValue = decryptedValue;
-                            } else if (!isRevealed) {
-                              displayValue = "••••••••••••••••";
-                            }
-                          }
-
-                          return (
-                            <div
-                              key={item.label}
-                              className="flex items-start justify-between gap-4 rounded-lg border p-3"
-                            >
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                  {item.label}
-                                </p>
-                                <p
-                                  className={`mt-1 font-mono text-sm break-all ${
-                                    error ? "text-destructive" : ""
-                                  }`}
-                                >
-                                  {displayValue}
-                                </p>
-                              </div>
-                              <div className="flex shrink-0 gap-2">
-                                {item.sensitive && item.value && (
-                                  <Button
-                                    onClick={() =>
-                                      toggleReveal(
-                                        secretKey,
-                                        item.encryptedField,
-                                      )
-                                    }
-                                    disabled={isLoading}
-                                    title={isRevealed ? "Hide" : "Reveal"}
-                                  >
-                                    {isLoading ? (
-                                      <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : isRevealed ? (
-                                      <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                      <Eye className="h-4 w-4" />
-                                    )}
-                                  </Button>
-                                )}
-                                <Button
-                                  onClick={() =>
-                                    handleCopy(
-                                      item.sensitive &&
-                                        isRevealed &&
-                                        decryptedValue
-                                        ? decryptedValue
-                                        : item.value || "",
-                                      item.label,
-                                    )
-                                  }
-                                  disabled={item.sensitive && !isRevealed}
-                                >
-                                  Copy
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <WorkerDomains branchId={project.id} />
-            </div>
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Configuration</h1>
+            <p className="text-muted-foreground">
+              View and copy your project configuration and service URLs
+            </p>
           </div>
-
-          {/* Sidebar Navigation */}
-          <nav className="hidden lg:block w-48 shrink-0 border-l p-4">
-            <div className="sticky top-0 space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                On this page
-              </p>
-              {visibleSections.map((section) => (
-                <Button
-                  key={section.title}
-                  onClick={() => scrollToSection(section.title)}
-                  variant={
-                    activeSection === section.title ? "default" : "outline"
-                  }
-                  className={cn("w-full text-left")}
-                >
-                  {section.icon}
-                  <span className="truncate">{section.title}</span>
-                </Button>
-              ))}
-            </div>
-          </nav>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-xs font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              disabled={copyingEnv}
+            >
+              {copyingEnv ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Copy className="mr-2 h-4 w-4" />
+              )}
+              Copy Env
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={copyingEnv ? undefined : copyOmnibaseEnv}
+                className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+              >
+                Copy OmniBase Env
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={copyingEnv ? undefined : copyAllEnv}
+                className={copyingEnv ? "opacity-50 cursor-not-allowed" : ""}
+              >
+                Copy All Env Variables
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+
+        {/* Configuration Sections */}
+        <div className="space-y-6">
+          {visibleSections.map((section) => (
+            <Card key={section.title} id={getSectionId(section.title)}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    {section.icon}
+                    {section.title}
+                  </CardTitle>
+                  {section.provider && (
+                    <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                      {section.provider}
+                    </span>
+                  )}
+                </div>
+                <CardDescription>{section.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {section.items.map((item) => {
+                    const secretKey = `${section.title}-${item.label}`;
+                    const isRevealed = revealedSecrets.has(secretKey);
+                    const isLoading = loadingSecrets.has(secretKey);
+                    const error = errors.get(secretKey);
+                    const decryptedValue = decryptedValues.get(secretKey);
+
+                    // Determine what value to display
+                    let displayValue = item.value;
+                    if (item.sensitive && item.value) {
+                      if (isLoading) {
+                        displayValue = "Decrypting...";
+                      } else if (error) {
+                        displayValue = `Error: ${error}`;
+                      } else if (isRevealed && decryptedValue) {
+                        displayValue = decryptedValue;
+                      } else if (!isRevealed) {
+                        displayValue = "••••••••••••••••";
+                      }
+                    }
+
+                    return (
+                      <div
+                        key={item.label}
+                        className="flex items-start justify-between gap-4 rounded-lg border p-3"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-muted-foreground">
+                            {item.label}
+                          </p>
+                          <p
+                            className={`mt-1 font-mono text-sm break-all ${
+                              error ? "text-destructive" : ""
+                            }`}
+                          >
+                            {displayValue}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 gap-2">
+                          {item.sensitive && item.value && (
+                            <Button
+                              onClick={() =>
+                                toggleReveal(secretKey, item.encryptedField)
+                              }
+                              disabled={isLoading}
+                              title={isRevealed ? "Hide" : "Reveal"}
+                            >
+                              {isLoading ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : isRevealed ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          )}
+                          <Button
+                            onClick={() =>
+                              handleCopy(
+                                item.sensitive && isRevealed && decryptedValue
+                                  ? decryptedValue
+                                  : item.value || "",
+                                item.label,
+                              )
+                            }
+                            disabled={item.sensitive && !isRevealed}
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <WorkerDomains branchId={project.id} />
       </div>
     </div>
   );

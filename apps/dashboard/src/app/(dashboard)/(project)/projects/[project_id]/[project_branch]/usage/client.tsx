@@ -96,64 +96,67 @@ export function UsageClient({ branchId, branchCreatedAt }: UsageClientProps) {
   }, [branchId, selectedMonth]);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Usage</h1>
-          <p className="text-muted-foreground">
-            Monitor your branch&apos;s usage metrics
-          </p>
-        </div>
-        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select month" />
-          </SelectTrigger>
-          <SelectContent>
-            {monthOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {loading && (
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-4 w-64 mt-2" />
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[...Array(3)].map((_, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col space-y-2 p-4 border rounded-lg"
-                >
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-8 w-24" />
-                  <Skeleton className="h-3 w-32" />
-                </div>
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Usage</h1>
+            <p className="text-muted-foreground">
+              Monitor your branch&apos;s usage metrics
+            </p>
+          </div>
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="Select month" />
+            </SelectTrigger>
+            <SelectContent>
+              {monthOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {error && (
-        <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">{error}</p>
+            </SelectContent>
+          </Select>
         </div>
-      )}
 
-      {!loading && !error && usageData && <UsageChart data={usageData} />}
+        {loading && (
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-64 mt-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col space-y-2 p-4 border rounded-lg"
+                  >
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      {!loading && !error && !usageData && (
-        <div className="flex items-center justify-center p-8">
-          <p className="text-muted-foreground">No usage data available</p>
-        </div>
-      )}
+        {error && (
+          <div className="flex items-center justify-center p-8">
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && usageData && <UsageChart data={usageData} />}
+
+        {!loading && !error && !usageData && (
+          <div className="flex items-center justify-center p-8">
+            <p className="text-muted-foreground">No usage data available</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

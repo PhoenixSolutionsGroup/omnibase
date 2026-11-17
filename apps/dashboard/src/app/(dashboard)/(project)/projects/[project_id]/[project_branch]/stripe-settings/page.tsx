@@ -61,22 +61,27 @@ export default async function StripeSettingsPage({
   } catch {}
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold tracking-tight">
-          Stripe Account Settings
-        </h1>
-        <p className="text-muted-foreground">
-          Manage your branding, custom domains, and customer email settings.
-        </p>
-      </div>
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">
+              Stripe Account Settings
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your branding, custom domains, and customer email settings.
+            </p>
+          </div>
+        </div>
 
-      <StripeSettingsClient
-        stripeAccountId={project.stripe_account_id || ""}
-        stripeEnvironment={project.stripe_environment}
-        isOnboarded={!onboardingRequired}
-        onboardingUrl={onboardingUrl}
-      />
+        <StripeSettingsClient
+          stripeAccountId={project.stripe_account_id || ""}
+          stripeEnvironment={project.stripe_environment}
+          isOnboarded={!onboardingRequired}
+          onboardingUrl={onboardingUrl}
+        />
+      </div>
     </div>
   );
 }
