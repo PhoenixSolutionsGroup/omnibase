@@ -365,11 +365,7 @@ program
       const config = loadConfig(root);
       const envName = globalOptions.env || "local";
 
-      const deployments = config.deployments.length > 0
-        ? config.deployments
-        : fs.existsSync(path.join(root, "omnibase", "workers"))
-          ? [{ name: "default", path: "workers" }]
-          : [];
+      const deployments = config.deployments;
 
       if (deployments.length === 0) {
         logger.info("No deployments configured. Add [[deployments]] to omnibase.toml");
