@@ -4,6 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
@@ -55,16 +64,12 @@ function CopyValue({ value, label }: { value: string; label: string }) {
   };
 
   return (
-    <Button
-      type="button"
-      onClick={handleCopy}
-      className="group flex items-center gap-2 rounded bg-background px-3 py-1.5 font-mono text-xs text-foreground ring-1 ring-border transition-colors hover:ring-ring"
-    >
+    <Button onClick={handleCopy} variant="outline" className="group">
       <span className="truncate">{value}</span>
       {copied ? (
-        <Check className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+        <Check className="h-2 w-2 shrink-0 text-emerald-500" />
       ) : (
-        <Copy className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+        <Copy className="opacity-0 transition-opacity group-hover:opacity-100" />
       )}
       <span className="sr-only">Copy {label}</span>
     </Button>
@@ -193,6 +198,7 @@ export default function DomainsPage() {
   const [hostname, setHostname] = useState("");
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const loadDomains = useCallback(async () => {
     try {
@@ -238,6 +244,12 @@ export default function DomainsPage() {
     return () => clearInterval(interval);
   }, [domains]);
 
+  const handleDialogOpenChange = (open: boolean) => {
+    if (adding) return;
+    setDialogOpen(open);
+    if (!open) setHostname("");
+  };
+
   const handleAdd = async () => {
     if (!hostname.trim()) return;
     setAdding(true);
@@ -254,6 +266,7 @@ export default function DomainsPage() {
       }
       toast.success("Domain added — set up the DNS records below");
       setHostname("");
+      setDialogOpen(false);
       loadDomains();
     } catch (error) {
       toast.error("Failed to add domain");
@@ -303,70 +316,103 @@ export default function DomainsPage() {
   };
 
   return (
-    <div className="my-8 mx-16">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Domains</h1>
-          <p className="mt-1 text-muted-foreground">
-            Add a domain once, verify it, then attach it to any worker.
-          </p>
-        </div>
-      </div>
-
-      <Card className="mb-6">
-        <CardContent className="flex items-end gap-3 p-4">
-          <div className="space-y-1">
-            <label htmlFor="domain-input" className="text-sm font-medium">
-              Domain
-            </label>
-            <Input
-              id="domain-input"
-              value={hostname}
-              onChange={(e) => setHostname(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-              placeholder="example.com or *.example.com"
-              className="w-80"
-            />
-            <p className="text-xs text-muted-foreground">
-              Use <span className="font-mono">*.example.com</span> to cover all
-              subdomains with one certificate.
+    <div className="mx-auto max-w-7xl space-y-6">
+      <div className="my-8 mx-16">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold">Domains</h1>
+            <p className="text-muted-foreground">
+              Add a domain once, verify it, then attach it to any worker.
             </p>
           </div>
-          <Button onClick={handleAdd} disabled={adding || !hostname.trim()}>
-            {adding ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Plus className="mr-2 h-4 w-4" />
-            )}
-            Add Domain
-          </Button>
-        </CardContent>
-      </Card>
 
-      {loading ? (
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading domains...
+          <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Domain
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAdd();
+                }}
+                className="grid gap-4"
+              >
+                <DialogHeader>
+                  <DialogTitle>Add domain</DialogTitle>
+                  <DialogDescription>
+                    Enter the domain you want to verify. You'll get the DNS
+                    records to set up right after.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-1">
+                  <label htmlFor="domain-input" className="text-sm font-medium">
+                    Domain
+                  </label>
+                  <Input
+                    id="domain-input"
+                    value={hostname}
+                    onChange={(e) => setHostname(e.target.value)}
+                    placeholder="example.com or *.example.com"
+                    autoComplete="off"
+                    autoFocus
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Use <span className="font-mono">*.example.com</span> to
+                    cover all subdomains with one certificate.
+                  </p>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleDialogOpenChange(false)}
+                    disabled={adding}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={adding || !hostname.trim()}>
+                    {adding && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Add Domain
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
-      ) : domains.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-16 text-center">
-          <Globe className="h-8 w-8 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            No domains yet. Add one above to get started.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {domains.map((d) => (
-            <DomainCard
-              key={d.id}
-              domain={d}
-              onStatus={handleStatus}
-              onRetry={handleRetry}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+
+        {loading ? (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading domains...
+          </div>
+        ) : domains.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 rounded-md border border-dashed py-16 text-center">
+            <Globe className="h-8 w-8 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              No domains yet. Use "Add Domain" to get started.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {domains.map((d) => (
+              <DomainCard
+                key={d.id}
+                domain={d}
+                onStatus={handleStatus}
+                onRetry={handleRetry}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
