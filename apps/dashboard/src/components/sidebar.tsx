@@ -89,7 +89,7 @@ function NavItem({
   return linkContent;
 }
 
-const getProjectNavigationItems = (
+export const getProjectNavigationItems = (
   projectId: string,
   projectBranch: string,
 ) => [
@@ -130,7 +130,7 @@ const getProjectNavigationItems = (
   },
 ];
 
-const organizationNavigationItems = [
+export const organizationNavigationItems = [
   {
     title: "Projects",
     href: "/projects",
@@ -194,7 +194,7 @@ export function UnifiedSidebar({
   return (
     <div
       className={cn(
-        "group/sidebar relative flex h-full flex-col bg-sidebar transition-all duration-200 border-r",
+        "group/sidebar relative hidden md:flex h-full flex-col bg-sidebar transition-all duration-200 border-r",
         isCollapsed ? "w-14" : "w-64",
       )}
     >

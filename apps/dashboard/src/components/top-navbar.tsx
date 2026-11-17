@@ -2,8 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookOpen, User, LogOut, CircleDot } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  BookOpen,
+  User,
+  LogOut,
+  CircleDot,
+  Menu,
+  GitBranch,
+} from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
@@ -21,6 +28,7 @@ import { switchTenant } from "@/app/(dashboard)/(organization)/actions";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 import { ProjectDropdown, ProjectOption } from "./project-dropdown";
 import { BranchDropdown } from "./branch-dropdown";
+import { MobileMenuOverlay, MobileProjectOverlay } from "./mobile-nav";
 
 interface ProjectContext {
   branchId: string;
@@ -44,17 +52,36 @@ const THEME_OPTIONS = [
   { value: "system", label: "System" },
 ] as const;
 
+const ICON_BUTTON_CLASS =
+  "flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground";
+
 export function TopNavbar({
   tenants,
   currentTenantId,
   projectContext,
 }: TopNavbarProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   const activeTheme = mounted ? theme : undefined;
+
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [projectOverlayOpen, setProjectOverlayOpen] = React.useState(false);
+
+  // Close both overlays whenever the route changes.
+  React.useEffect(() => {
+    setMenuOpen(false);
+    setProjectOverlayOpen(false);
+  }, [pathname]);
+
+  const closeMenu = React.useCallback(() => setMenuOpen(false), []);
+  const closeProjectOverlay = React.useCallback(
+    () => setProjectOverlayOpen(false),
+    [],
+  );
 
   const handleLogout = async () => {
     try {
@@ -68,58 +95,68 @@ export function TopNavbar({
   };
 
   return (
-    <div className="flex h-18 w-full items-center border-b border-border bg-background px-6">
+    <div className="flex h-18 w-full items-center border-b border-border bg-background px-4 md:px-6">
       <Image
         src="/omnibase-logo.svg"
         alt="Omnibase"
         width={24}
         height={24}
-        className="rounded-lg"
+        className="shrink-0 rounded-lg"
         unoptimized
       />
       {/* Tenant Switcher */}
-      <OrganizationDropdown
-        tenants={tenants}
-        currentTenantId={currentTenantId}
-        formAction={async (formData) => {
-          await switchTenant(formData);
-        }}
-        createTenantLabel="Create Tenant"
-        onCreateTenant={() => router.push("/onboarding/create-tenant")}
-      />
+      <div className="min-w-0 shrink">
+        <OrganizationDropdown
+          tenants={tenants}
+          currentTenantId={currentTenantId}
+          formAction={async (formData) => {
+            await switchTenant(formData);
+          }}
+          createTenantLabel="Create Tenant"
+          onCreateTenant={() => router.push("/onboarding/create-tenant")}
+        />
+      </div>
+
       {projectContext && (
         <>
-          <span className="text-muted-foreground">/</span>
-          {/* PROJECT SECTION */}
-          <div className="py-3 px-3">
-            <ProjectDropdown
-              projectId={projectContext.projectId}
-              currentProject={projectContext.projectName}
-              currentBranch={projectContext.projectBranch}
-              projects={projectContext.projects}
-              onCreateProject={projectContext.onCreateProject}
-            />
-          </div>
-          <span className="text-muted-foreground">/</span>
-          {/* Branch Navigation Items */}
-          <div className="py-3 px-3">
-            <BranchDropdown
-              currentBranch={projectContext.projectBranch}
-              branches={projectContext.branches}
-              projectId={projectContext.projectId}
-            />
+          {/* Mobile: git-branch icon opens the project/branch overlay */}
+          <button
+            type="button"
+            onClick={() => setProjectOverlayOpen(true)}
+            aria-label="Switch project and branch"
+            className={`${ICON_BUTTON_CLASS} md:hidden`}
+          >
+            <GitBranch className="h-4 w-4" />
+          </button>
+
+          {/* Desktop: inline project and branch dropdowns */}
+          <div className="hidden items-center md:flex">
+            <span className="text-muted-foreground">/</span>
+            <div className="py-3 px-3">
+              <ProjectDropdown
+                projectId={projectContext.projectId}
+                currentProject={projectContext.projectName}
+                currentBranch={projectContext.projectBranch}
+                projects={projectContext.projects}
+                onCreateProject={projectContext.onCreateProject}
+              />
+            </div>
+            <span className="text-muted-foreground">/</span>
+            <div className="py-3 px-3">
+              <BranchDropdown
+                currentBranch={projectContext.projectBranch}
+                branches={projectContext.branches}
+                projectId={projectContext.projectId}
+              />
+            </div>
           </div>
         </>
       )}
       <div className="flex-1" />
 
-      {/* Right Section - Docs and Profile */}
+      {/* Right Section - Docs, Profile, Mobile menu */}
       <div className="flex h-full items-center gap-2">
-        <Link
-          href="/docs"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-          title="Documentation"
-        >
+        <Link href="/docs" className={ICON_BUTTON_CLASS} title="Documentation">
           <BookOpen className="h-4 w-4" />
         </Link>
 
@@ -168,7 +205,30 @@ export function TopNavbar({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Mobile: three-line menu button next to the user button */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label="Open menu"
+          className={`${ICON_BUTTON_CLASS} md:hidden`}
+        >
+          <Menu className="h-4 w-4" />
+        </button>
       </div>
+
+      <MobileMenuOverlay
+        open={menuOpen}
+        onClose={closeMenu}
+        projectContext={projectContext}
+      />
+      {projectContext && (
+        <MobileProjectOverlay
+          open={projectOverlayOpen}
+          onClose={closeProjectOverlay}
+          projectContext={projectContext}
+        />
+      )}
     </div>
   );
 }
