@@ -106,12 +106,8 @@ function DomainCard({
   domain: Domain;
   onStatus: (d: Domain) => Promise<void>;
   onRetry: (d: Domain) => Promise<void>;
-  onDelete: (d: Domain) => Promise<void>;
+  onDelete: (d: Domain) => void;
 }) {
-  const baseHostname = domain.is_wildcard
-    ? domain.hostname.replace("*.", "")
-    : domain.hostname;
-
   return (
     <Card>
       <CardContent className="p-4">
@@ -135,6 +131,7 @@ function DomainCard({
               onClick={() => onDelete(domain)}
             >
               <Trash2 className="h-3.5 w-3.5" />
+              <span className="sr-only">Remove {domain.hostname}</span>
             </Button>
           </div>
         </div>
@@ -199,6 +196,10 @@ export default function DomainsPage() {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<Domain | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadDomains = useCallback(async () => {
     try {
@@ -301,17 +302,33 @@ export default function DomainsPage() {
     }
   };
 
-  const handleDelete = async (d: Domain) => {
+  const requestDelete = (d: Domain) => {
+    setDeleteTarget(d);
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteOpenChange = (open: boolean) => {
+    if (deleting) return;
+    setDeleteOpen(open);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const d = deleteTarget;
+    setDeleting(true);
     try {
       const res = await fetch(`/api/domains/${d.id}`, { method: "DELETE" });
       if (res.ok) {
         toast.success(`${d.hostname} removed`);
+        setDeleteOpen(false);
         loadDomains();
       } else {
         toast.error("Failed to remove domain");
       }
     } catch (error) {
       toast.error("Failed to remove domain");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -407,11 +424,46 @@ export default function DomainsPage() {
                 domain={d}
                 onStatus={handleStatus}
                 onRetry={handleRetry}
-                onDelete={handleDelete}
+                onDelete={requestDelete}
               />
             ))}
           </div>
         )}
+
+        {/* Delete confirmation */}
+        <Dialog open={deleteOpen} onOpenChange={handleDeleteOpenChange}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Remove domain</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to remove{" "}
+                <span className="font-mono font-medium text-foreground">
+                  {deleteTarget?.hostname}
+                </span>
+                ? Any worker using it will stop being reachable on this domain.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleDeleteOpenChange(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={confirmDelete}
+                disabled={deleting}
+              >
+                {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Remove
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
