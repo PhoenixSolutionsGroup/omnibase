@@ -178,6 +178,7 @@ async function runDockerCompose(
   composeMode?: string,
   command?: string,
   services: string[] = [],
+  stdio: "inherit" | "pipe" | "ignore" = "inherit",
 ): Promise<void> {
   try {
     const envConfig = loadLocalEnvironment();
@@ -191,6 +192,7 @@ async function runDockerCompose(
     runDockerComposeCommand(command || "up", services, {
       mode: composeMode,
       envConfig,
+      stdio,
     });
   } catch (error) {
     if (error instanceof Error) {
@@ -216,6 +218,7 @@ async function startDockerComposeAttached(
   return spawnDockerComposeCommand(command, [], {
     mode: composeMode,
     envConfig,
+    stdio: ["ignore", "pipe", "pipe"],
   });
 }
 
@@ -265,6 +268,7 @@ program
 
 let childProcesses: ChildProcess[] = [];
 let composeProcess: ChildProcess | null = null;
+let shuttingDown = false;
 
 function cleanup(): void {
   for (const cp of childProcesses) {
@@ -276,6 +280,7 @@ function cleanup(): void {
 // An attached `docker compose up` stops its containers on SIGINT; wait for it
 // to finish instead of exiting underneath it.
 function shutdown(signal: NodeJS.Signals): void {
+  shuttingDown = true;
   cleanup();
   const compose = composeProcess;
   if (compose && compose.exitCode === null && compose.signalCode === null) {
@@ -302,15 +307,20 @@ program
     "Start the local control-plane services with Docker Compose, then spawn " +
     "a dev server for every deployment configured in omnibase.toml (or " +
     "`omnibase/workers/`).\n\n" +
-    "The control plane runs in the foreground with `docker compose up`, " +
-    "streaming its logs; press Ctrl+C to stop everything. Pass `-d` to start " +
+    "The control plane runs in the foreground with `docker compose up`; " +
+    "container and dev-server logs are held back until the API reports ready, " +
+    "then stream normally. Press Ctrl+C to stop everything. Pass `-d` to start " +
     "the containers detached (`docker compose up -d`) and stop them later " +
-    "with `omnibase stop`. Each deployment " +
+    "with `omnibase stop`. Use `--verbose` to stream logs from the start. " +
+    "Each deployment " +
     "directory runs `bun run dev` on `http://localhost:<port>` (default " +
     "ports start at 8787 and increment per deployment).\n\n" +
-    "Once the API reports ready, a summary lists the URL of each service " +
+    "Readiness is determined by the API's `/health/ready` endpoint (2 minute " +
+    "timeout). Once the API reports ready, a summary lists the URL of each " +
+    "service " +
     "(API, data API, auth, Postgres, Adminer, Mailpit, storage) and each " +
-    "deployment dev server.\n\n" +
+    "deployment dev server. If startup fails or times out, the buffered logs " +
+    "are printed.\n\n" +
     "Image versions: `auth`, `api`, and `perm` run the tags pinned under " +
     "`[versions]` in omnibase.toml. Services not listed there run `latest`.\n\n" +
     "Environment variables: the dev-server processes receive the same " +
@@ -323,11 +333,50 @@ program
     "omnibase start\n" +
     "omnibase start -d\n" +
     "omnibase start --build\n" +
+    "omnibase start --verbose\n" +
     "```"
   )
   .option("--build", "Build images before starting containers")
   .option("-d, --detach", "Run containers in the background")
+  .option("--verbose", "Stream container and dev-server logs from the start")
   .action(async (cmdOptions) => {
+    const startupLogs: string[] = [];
+    let streamLogs = Boolean(cmdOptions.verbose);
+    let startupComplete = false;
+
+    const bufferLog = (line: string) => {
+      if (streamLogs) {
+        logger.log(line);
+        return;
+      }
+      startupLogs.push(line);
+    };
+
+    const dumpStartupLogs = () => {
+      if (startupLogs.length === 0) return;
+      logger.newline();
+      logger.log("Startup logs:");
+      for (const line of startupLogs) logger.log(line);
+      startupLogs.length = 0;
+    };
+
+    const startStreamingLogs = () => {
+      streamLogs = true;
+      for (const line of startupLogs) logger.log(line);
+      startupLogs.length = 0;
+    };
+
+    const failStartup = (message: string): never => {
+      dumpStartupLogs();
+      cleanup();
+      if (composeProcess) {
+        composeProcess.kill("SIGTERM");
+        composeProcess = null;
+      }
+      logger.fail(message);
+      process.exit(1);
+    };
+
     try {
       const globalOptions = program.opts();
       const mode = globalOptions.mode || "local";
@@ -338,24 +387,45 @@ program
         cmdOptions.build ? "--build" : "",
       ].filter(Boolean).join(" ");
 
+      logger.start("Starting services...");
+
       if (detached) {
-        logger.start("Starting services...");
-        await runDockerCompose(globalOptions.env || "local", mode, composeCommand);
-        logger.succeed("Control plane services started");
+        await runDockerCompose(
+          globalOptions.env || "local",
+          mode,
+          composeCommand,
+          [],
+          "pipe",
+        );
       } else {
-        logger.info("Starting services...");
         const compose = await startDockerComposeAttached(
           globalOptions.env || "local",
           mode,
           composeCommand,
         );
         composeProcess = compose;
-        compose.on("error", (error) => {
-          cleanup();
-          logger.fail(`Docker compose failed to start: ${error.message}`);
-          process.exit(1);
+        compose.stdout?.on("data", (data: Buffer) => {
+          for (const line of data.toString().split("\n").filter(Boolean)) {
+            bufferLog(line);
+          }
         });
-        compose.on("exit", (code) => {
+        compose.stderr?.on("data", (data: Buffer) => {
+          for (const line of data.toString().split("\n").filter(Boolean)) {
+            bufferLog(line);
+          }
+        });
+        compose.on("error", (error) => {
+          failStartup(`Docker compose failed to start: ${error.message}`);
+        });
+        compose.on("exit", (code, signal) => {
+          if (!startupComplete && !shuttingDown) {
+            failStartup(
+              `Docker compose exited before services became ready (${
+                signal ?? `code ${code}`
+              })`,
+            );
+            return;
+          }
           cleanup();
           process.exit(code ?? 0);
         });
@@ -366,23 +436,19 @@ program
       const envName = globalOptions.env || "local";
 
       const deployments = config.deployments;
+      const started: SummaryEntry[] = [];
 
       if (deployments.length === 0) {
-        logger.info("No deployments configured. Add [[deployments]] to omnibase.toml");
-      } else {
-        logger.newline();
-        logger.log("Starting deployment dev servers:");
-        logger.log("");
+        bufferLog("No deployments configured; starting control plane only");
       }
 
-      const started: SummaryEntry[] = [];
       for (let i = 0; i < deployments.length; i++) {
         const dep = deployments[i];
         const depPath = path.join(root, "omnibase", dep.path ?? dep.name);
         const port = dep.port ?? 8787 + i;
 
         if (!fs.existsSync(depPath)) {
-          logger.warn(`  ${dep.name}: directory not found at ${depPath}`);
+          bufferLog(`! ${dep.name}: directory not found at ${depPath}`);
           continue;
         }
 
@@ -397,18 +463,24 @@ program
 
         cp.stdout?.on("data", (data: Buffer) => {
           for (const line of data.toString().split("\n").filter(Boolean)) {
-            logger.log(`[${dep.name}] ${line}`);
+            bufferLog(`[${dep.name}] ${line}`);
           }
         });
 
         cp.stderr?.on("data", (data: Buffer) => {
           for (const line of data.toString().split("\n").filter(Boolean)) {
-            logger.log(`[${dep.name}] ${line}`);
+            bufferLog(`[${dep.name}] ${line}`);
           }
         });
 
         cp.on("exit", (code) => {
           if (code !== null && code !== 0) {
+            if (!startupComplete && !shuttingDown) {
+              failStartup(
+                `[${dep.name}] exited with code ${code} before services became ready`,
+              );
+              return;
+            }
             logger.warn(`[${dep.name}] exited with code ${code}`);
           }
         });
@@ -417,27 +489,29 @@ program
         started.push({ name: dep.name, url: `http://localhost:${port}` });
       }
 
-      logger.newline();
-      logger.info("Waiting for services to be ready...");
+      logger.update("Waiting for services to be ready...");
       const ready = await waitForApiReady();
-      logger.newline();
-      if (ready) {
-        logger.succeed("Omnibase is running");
-        await syncPermissionNamespaces(root);
-      } else {
-        logger.warn("API did not report ready within 2 minutes; services may still be starting");
+      if (!ready) {
+        failStartup(
+          "API did not report ready within 2 minutes; services may still be starting",
+        );
       }
-      formatStartSummary(started).forEach((line) => { logger.log(line); });
+
+      startupComplete = true;
+      logger.succeed("Omnibase is running");
+      await syncPermissionNamespaces(root);
+      formatStartSummary(started).forEach((line) => {
+        logger.log(line);
+      });
       logger.newline();
       logger.log(
         detached
           ? "Press Ctrl+C to stop the dev servers (run 'omnibase stop' to stop the containers)"
           : "Press Ctrl+C to stop all services",
       );
+      startStreamingLogs();
     } catch (error) {
-      cleanup();
-      logger.fail(error instanceof Error ? error.message : String(error));
-      process.exit(1);
+      failStartup(error instanceof Error ? error.message : String(error));
     }
   });
 

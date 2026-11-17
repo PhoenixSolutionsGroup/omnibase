@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { spawn, spawnSync, execSync, ChildProcess } from "child_process";
+import { spawn, spawnSync, execSync, ChildProcess, StdioOptions } from "child_process";
 import { config as dotenvConfig } from "dotenv";
 import {
   findOmnibaseRoot,
@@ -124,7 +124,7 @@ export function validateComposeFiles(files: string[]): void {
 export interface DockerComposeOptions {
   mode?: string;
   envConfig: EnvironmentConfig;
-  stdio?: "inherit" | "ignore" | "pipe";
+  stdio?: StdioOptions;
 }
 
 /**
@@ -254,7 +254,12 @@ export function runDockerComposeCommand(
   });
 
   if (result.status !== 0) {
-    throw new Error(`Command failed: docker ${args.join(" ")}`);
+    const stderr = result.stderr?.toString().trim();
+    throw new Error(
+      stderr
+        ? `Command failed: docker ${args.join(" ")}\n${stderr}`
+        : `Command failed: docker ${args.join(" ")}`,
+    );
   }
 }
 
