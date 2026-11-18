@@ -62,20 +62,24 @@ type Region = {
   name: string;
   country: string;
   continent: string;
-  active: boolean;
+  vultr?: { active: boolean; orderable: boolean };
+  contabo?: { active: boolean; orderable: boolean };
 };
 
 // Mirrors the Go `Postgres` struct.
 type PlanOption = {
+  id: string;
   name: string;
   description: string;
   included: boolean;
   prices: Price[];
 };
 
-// Postgres size this standby option (and its price) belongs to.
-type AvailabilityOption = PlanOption & {
-  postgres: string;
+type AvailabilityOption = {
+  name: string;
+  description: string;
+  included: boolean;
+  prices: Price[];
 };
 
 // Mirrors the Go `Tier` struct returned by /api/v1/projects/plans.
@@ -102,11 +106,9 @@ type PaymentInterval = Price["interval"];
 type FormData = {
   name: string;
   branch_name: string;
-  billing_email: string;
   plan_id: string;
   region: string;
-  postgres: string; // option name, "" = none selected
-  availability: string; // option name, "" = none selected
+  postgres_id: string; // option id, "" = none selected
 };
 
 interface ProvisioningFormProps {
@@ -361,7 +363,7 @@ interface OptionGroupProps {
   idPrefix: string;
   options: PlanOption[];
   value: string;
-  onChange: (name: string) => void;
+  onChange: (id: string) => void;
   interval: PaymentInterval;
 }
 
@@ -380,9 +382,9 @@ function OptionGroup({
     >
       {options.map((option) => (
         <RadioChoiceCard
-          key={option.name}
-          id={`${idPrefix}-${option.name}`}
-          value={option.name}
+          key={option.id}
+          id={`${idPrefix}-${option.id}`}
+          value={option.id}
           title={
             <div className="flex justify-between w-full">
               <span className="text-sm">{option.name}</span>
@@ -403,7 +405,7 @@ function OptionGroup({
 
 function defaultPostgres(plan: Plan): string {
   return (
-    plan.postgres.find((o) => o.included)?.name ?? plan.postgres[0]?.name ?? ""
+    plan.postgres.find((o) => o.included)?.id ?? plan.postgres[0]?.id ?? ""
   );
 }
 
@@ -426,11 +428,9 @@ export function ProvisioningForm({
   const [formData, setFormData] = React.useState<FormData>({
     name: isBranchMode ? projectName || "" : "",
     branch_name: "",
-    billing_email: "",
     plan_id: "",
     region: "",
-    postgres: "",
-    availability: "",
+    postgres_id: "",
   });
 
   const managed_hosting_url = process.env.NEXT_PUBLIC_MANAGED_HOSTING_API_URL;
@@ -464,8 +464,7 @@ export function ProvisioningForm({
             ...prev,
             plan_id: firstPlan.id,
             region: firstPlan.regions[0]?.id ?? "",
-            postgres: defaultPostgres(firstPlan),
-            availability: "",
+            postgres_id: defaultPostgres(firstPlan),
           }));
         }
       } catch (e) {
@@ -497,20 +496,8 @@ export function ProvisioningForm({
 
   const postgresOptions = selectedPlan?.postgres ?? [];
 
-  // Only the availability option(s) that belong to the selected Postgres size.
-  const availabilityOptions = React.useMemo(
-    () =>
-      (selectedPlan?.availability ?? []).filter(
-        (o) => o.postgres === formData.postgres,
-      ),
-    [selectedPlan, formData.postgres],
-  );
-
   const selectedPostgres = postgresOptions.find(
-    (o) => o.name === formData.postgres,
-  );
-  const selectedAvailability = availabilityOptions.find(
-    (o) => o.name === formData.availability,
+    (o) => o.id === formData.postgres_id,
   );
 
   const selectedRegion = availableRegions.find((r) => r.id === formData.region);
@@ -521,12 +508,10 @@ export function ProvisioningForm({
       const base = selectedPlan?.prices.find((p) => p.interval === interval);
       if (!base) return null;
       return (
-        base.amount +
-        (priceFor(selectedPostgres, interval)?.amount ?? 0) +
-        (priceFor(selectedAvailability, interval)?.amount ?? 0)
+        base.amount + (priceFor(selectedPostgres, interval)?.amount ?? 0)
       );
     },
-    [selectedPlan, selectedPostgres, selectedAvailability],
+    [selectedPlan, selectedPostgres],
   );
 
   const totalPrice = totalFor(paymentInterval);
@@ -540,8 +525,7 @@ export function ProvisioningForm({
         ? prev.region
         : (plan.regions[0]?.id ?? ""),
       // Options belong to a tier, so reset them when the tier changes.
-      postgres: defaultPostgres(plan),
-      availability: "",
+      postgres_id: defaultPostgres(plan),
     }));
   };
 
@@ -551,8 +535,6 @@ export function ProvisioningForm({
     setSubmitting(true);
 
     // TODO: client.createCheckout({createCheckoutRequest: {priceId: "shared_starter_monthly" }})
-
-    const availability = selectedAvailability?.name ?? "";
 
     try {
       if (isBranchMode) {
@@ -566,10 +548,8 @@ export function ProvisioningForm({
               project_id: projectId,
               branch_name: formData.branch_name,
               region: formData.region,
-              deployment_tier: selectedPlan.id,
-              billing_email: formData.billing_email,
-              postgres: formData.postgres,
-              availability,
+              plan_id: selectedPlan.id,
+              postgres_id: formData.postgres_id,
             }),
             credentials: "include",
           },
@@ -587,10 +567,8 @@ export function ProvisioningForm({
           body: JSON.stringify({
             name: formData.name,
             region: formData.region,
-            deployment_tier: selectedPlan.id,
-            billing_email: formData.billing_email,
-            postgres: formData.postgres,
-            availability,
+            plan_id: selectedPlan.id,
+            postgres_id: formData.postgres_id,
           }),
           credentials: "include",
         });
@@ -662,19 +640,6 @@ export function ProvisioningForm({
                 />
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="billing_email">Billing Email</Label>
-              <Input
-                id="billing_email"
-                type="email"
-                placeholder="billing@example.com"
-                value={formData.billing_email}
-                onChange={(e) =>
-                  setFormData({ ...formData, billing_email: e.target.value })
-                }
-                required
-              />
-            </div>
           </div>
         </div>
 
@@ -776,51 +741,37 @@ export function ProvisioningForm({
             <OptionGroup
               idPrefix="postgres"
               options={postgresOptions}
-              value={formData.postgres}
-              onChange={(name) =>
-                setFormData((prev) => ({ ...prev, postgres: name }))
+              value={formData.postgres_id}
+              onChange={(id) =>
+                setFormData((prev) => ({ ...prev, postgres_id: id }))
               }
               interval={paymentInterval}
             />
           </div>
         )}
 
-        {/* AVAILABILITY (only the option matching the selected Postgres) */}
-        {availabilityOptions.length > 0 && (
+        {/* AVAILABILITY */}
+        {(selectedPlan?.availability?.length ?? 0) > 0 && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5" />
               <h3 className="text-base font-medium">Availability</h3>
             </div>
 
-            {availabilityOptions.map((option) => {
-              const price = priceFor(option, paymentInterval);
-              return (
-                <CheckboxCard
-                  key={option.name}
-                  id={`availability-${option.name}`}
-                  title={
-                    <div className="flex justify-between w-full">
-                      <span className="text-sm">{option.name}</span>
-                      {price ? (
-                        <OptionPriceLabel
-                          option={option}
-                          interval={price.interval}
-                        />
-                      ) : null}
-                    </div>
-                  }
-                  description={option.description}
-                  checked={selectedAvailability?.name === option.name}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      availability: checked ? option.name : "",
-                    }))
-                  }
-                />
-              );
-            })}
+            <CheckboxCard
+              id="availability-coming-soon"
+              title={
+                <div className="flex justify-between w-full">
+                  <span className="text-sm">High availability</span>
+                  <span className="text-xs text-muted-foreground">
+                    Coming soon
+                  </span>
+                </div>
+              }
+              description="Managed failover and automatic recovery are not available yet."
+              checked={false}
+              disabled
+            />
           </div>
         )}
       </div>
@@ -855,12 +806,6 @@ export function ProvisioningForm({
                 <SummaryRow
                   label="Postgres"
                   value={selectedPostgres?.name ?? "-"}
-                />
-              )}
-              {availabilityOptions.length > 0 && (
-                <SummaryRow
-                  label="Availability"
-                  value={selectedAvailability?.name ?? "None"}
                 />
               )}
             </div>
@@ -902,7 +847,12 @@ export function ProvisioningForm({
             <div className="flex">
               <Button
                 type="submit"
-                disabled={submitting || !formData.plan_id || !formData.region}
+                disabled={
+                  submitting ||
+                  !formData.plan_id ||
+                  !formData.postgres_id ||
+                  !formData.region
+                }
                 size="lg"
                 className="w-full"
               >
