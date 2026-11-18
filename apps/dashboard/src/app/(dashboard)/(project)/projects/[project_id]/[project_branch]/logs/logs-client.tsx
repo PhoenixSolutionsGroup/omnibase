@@ -135,80 +135,84 @@ export function LogsClient({
   }, [projectId, activeService, limit, timeRange]);
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">Logs</h1>
-        <p className="text-muted-foreground">
-          View logs for your project services
-        </p>
-      </div>
-
-      {/* Service Selector */}
-      <div className="flex gap-2 flex-wrap items-center">
-        {services.map((service) => (
-          <Link
-            key={service.key}
-            href={`/projects/${projectId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
-            className={`px-4 py-2 rounded border text-xs ${
-              activeService === service.key
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background hover:bg-muted border-border"
-            }`}
-          >
-            {service.label}
-          </Link>
-        ))}
-
-        <TimeRangeSelector
-          project_branch={projectBranch}
-          project_id={projectId}
-          activeService={activeService}
-          limit={limit}
-          currentRange={timeRange}
-        />
-
-        <LimitSelector
-          project_branch={projectBranch}
-          project_id={projectId}
-          activeService={activeService}
-          currentLimit={limit}
-        />
-      </div>
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="border rounded-lg p-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <p>Loading logs...</p>
+    <div className="max-w-5xl  my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Logs</h1>
+            <p className="text-muted-foreground">
+              View logs for your project services
+            </p>
+          </div>
         </div>
-      )}
 
-      {/* Error State */}
-      {!isLoading && logsError && (
-        <div className="border rounded-lg p-4 bg-destructive/10 text-destructive">
-          Error: {logsError}
+        {/* Service Selector */}
+        <div className="flex gap-2 flex-wrap items-center">
+          {services.map((service) => (
+            <Link
+              key={service.key}
+              href={`/projects/${projectId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
+              className={`px-4 py-2 rounded border text-xs ${
+                activeService === service.key
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-muted border-border"
+              }`}
+            >
+              {service.label}
+            </Link>
+          ))}
+
+          <TimeRangeSelector
+            project_branch={projectBranch}
+            project_id={projectId}
+            activeService={activeService}
+            limit={limit}
+            currentRange={timeRange}
+          />
+
+          <LimitSelector
+            project_branch={projectBranch}
+            project_id={projectId}
+            activeService={activeService}
+            currentLimit={limit}
+          />
         </div>
-      )}
 
-      {/* Logs Display */}
-      {!isLoading && logsData && logsData.logs && (
-        <LogViewer
-          initialLogs={logsData.logs}
-          projectId={projectId}
-          serviceType={activeService}
-          totalCount={logsData.count}
-          limit={limit}
-        />
-      )}
-
-      {/* No Logs State */}
-      {!isLoading &&
-        logsData &&
-        (!logsData.logs || logsData.logs.length === 0) && (
-          <div className="border rounded-lg p-8 text-center text-muted-foreground">
-            No logs found for this service
+        {/* Loading State */}
+        {isLoading && (
+          <div className="border rounded-lg p-8 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <p>Loading logs...</p>
           </div>
         )}
+
+        {/* Error State */}
+        {!isLoading && logsError && (
+          <div className="border rounded-lg p-4 bg-destructive/10 text-destructive">
+            Error: {logsError}
+          </div>
+        )}
+
+        {/* Logs Display */}
+        {!isLoading && logsData && logsData.logs && (
+          <LogViewer
+            initialLogs={logsData.logs}
+            projectId={projectId}
+            serviceType={activeService}
+            totalCount={logsData.count}
+            limit={limit}
+          />
+        )}
+
+        {/* No Logs State */}
+        {!isLoading &&
+          logsData &&
+          (!logsData.logs || logsData.logs.length === 0) && (
+            <div className="border rounded-lg p-8 text-center text-muted-foreground">
+              No logs found for this service
+            </div>
+          )}
+      </div>
     </div>
   );
 }
