@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
   buildBranchEnv,
+  findPlanById,
+  findPostgresById,
   findLiveBranchByName,
   isGoneBranchStatus,
   pickLiveBranch,
@@ -122,5 +124,38 @@ describe("buildBranchEnv", () => {
     expect(env.ALLOWED_RETURN_URLS).toBe(
       "https://dashboard.preview.example.com",
     );
+  });
+});
+
+describe("branch plan resolution", () => {
+  const plans = [
+    {
+      id: "shared_tier",
+      display_name: "Shared",
+      postgres: [{ id: "postgres_shared", name: "Shared" }],
+      regions: [{ id: "eu", name: "European Union" }],
+    },
+    {
+      id: "scaled_tier",
+      display_name: "Scaled",
+      postgres: [
+        { id: "scaled_postgres_starter", name: "Starter" },
+        { id: "scaled_postgres_xl", name: "XL" },
+      ],
+      regions: [{ id: "eu", name: "European Union" }],
+    },
+  ];
+
+  test("finds a plan by id", () => {
+    expect(findPlanById(plans, "scaled_tier")?.id).toBe("scaled_tier");
+    expect(findPlanById(plans, "missing")).toBeUndefined();
+  });
+
+  test("finds a postgres option within the plan", () => {
+    const plan = findPlanById(plans, "scaled_tier")!;
+    expect(findPostgresById(plan, "scaled_postgres_xl")?.id).toBe(
+      "scaled_postgres_xl",
+    );
+    expect(findPostgresById(plan, "postgres_shared")).toBeUndefined();
   });
 });

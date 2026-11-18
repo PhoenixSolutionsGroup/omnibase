@@ -913,15 +913,131 @@ export async function pushEnvConfig(envFlag?: string): Promise<void> {
   }
 }
 
-/**
- * Create a new branch
- */
+type ManagedPlanPostgres = {
+  id: string;
+  name: string;
+  description?: string;
+  included?: boolean;
+};
+
+type ManagedPlanRegion = {
+  id: string;
+  name: string;
+};
+
+type ManagedPlan = {
+  id: string;
+  name?: string;
+  display_name?: string;
+  postgres?: ManagedPlanPostgres[];
+  regions?: ManagedPlanRegion[];
+};
+
+export function findPlanById(
+  plans: ManagedPlan[],
+  planId: string,
+): ManagedPlan | undefined {
+  return plans.find((plan) => plan.id === planId);
+}
+
+export function findPostgresById(
+  plan: ManagedPlan,
+  postgresId: string,
+): ManagedPlanPostgres | undefined {
+  return (plan.postgres ?? []).find((postgres) => postgres.id === postgresId);
+}
+
+async function fetchManagedPlans(api: ReturnType<typeof createProfileClient>): Promise<ManagedPlan[]> {
+  const response = await api.get("/api/v1/projects/plans");
+  return response.data?.tiers ?? [];
+}
+
+async function resolveBranchTarget(
+  api: ReturnType<typeof createProfileClient>,
+  options: { plan?: string; postgres?: string; region?: string },
+): Promise<{ planId: string; postgresId: string; region: string }> {
+  const needsPlans = !options.plan || !options.postgres || !options.region;
+  let plans: ManagedPlan[] = [];
+
+  if (needsPlans) {
+    try {
+      plans = await fetchManagedPlans(api);
+    } catch {
+      plans = [];
+    }
+  }
+
+  let plan: ManagedPlan | undefined;
+  if (options.plan && plans.length > 0) {
+    plan = findPlanById(plans, options.plan);
+    if (!plan) {
+      throw new Error(
+        `Unknown plan '${options.plan}'. Available plans: ${plans.map((p) => p.id).join(", ")}`,
+      );
+    }
+  } else if (options.plan) {
+    plan = { id: options.plan };
+  } else if (plans.length > 0) {
+    plan = await select({
+      message: "Plan:",
+      choices: plans.map((p) => ({
+        name: `${p.display_name ?? p.name ?? p.id} (${p.id})`,
+        value: p,
+      })),
+    });
+  } else {
+    return {
+      planId: await input({ message: "Plan ID:", default: "shared_tier" }),
+      postgresId: options.postgres ?? (await input({ message: "Postgres ID:", default: "postgres_shared" })),
+      region: options.region ?? (await input({ message: "Region:", default: "eu" })),
+    };
+  }
+
+  let postgresId = options.postgres;
+  if (postgresId) {
+    if ((plan.postgres ?? []).length > 0 && !findPostgresById(plan, postgresId)) {
+      throw new Error(
+        `Postgres '${postgresId}' is not available for plan '${plan.id}'. Available: ${(plan.postgres ?? []).map((p) => p.id).join(", ")}`,
+      );
+    }
+  } else if ((plan.postgres ?? []).length > 0) {
+    const postgres = await select({
+      message: "Postgres:",
+      choices: (plan.postgres ?? []).map((p) => ({
+        name: `${p.name} (${p.id})`,
+        value: p.id,
+      })),
+    });
+    postgresId = postgres;
+  } else {
+    postgresId = await input({ message: "Postgres ID:", default: "postgres_shared" });
+  }
+
+  let region = options.region;
+  if (region) {
+    if ((plan.regions ?? []).length > 0 && !plan.regions!.some((r) => r.id === region)) {
+      throw new Error(
+        `Region '${region}' is not available for plan '${plan.id}'. Available: ${plan.regions!.map((r) => r.id).join(", ")}`,
+      );
+    }
+  } else if ((plan.regions ?? []).length > 0) {
+    region = await select({
+      message: "Region:",
+      choices: plan.regions!.map((r) => ({ name: `${r.name} (${r.id})`, value: r.id })),
+    });
+  } else {
+    region = await input({ message: "Region:", default: "eu" });
+  }
+
+  return { planId: plan.id, postgresId, region };
+}
+
 async function branchNew(options: {
   projectId?: string;
   name?: string;
   region?: string;
-  tier?: string;
-  email?: string;
+  plan?: string;
+  postgres?: string;
 }): Promise<void> {
   const root = findOmnibaseRoot();
   const config = loadConfig(root);
@@ -929,34 +1045,7 @@ async function branchNew(options: {
 
   const projectId = options.projectId ?? config.project_id ?? (await input({ message: "Project ID:" }));
   const branchName = options.name ?? (await input({ message: "Branch name:", default: "dev" }));
-  const email = options.email ?? (await input({ message: "Billing email:" }));
-
-  let region = options.region;
-  let tier = options.tier;
-
-  if (!region || !tier) {
-    try {
-      const optsRes = await api.get("/api/v1/options");
-      const opts = optsRes.data;
-
-      if (!region && opts.regions?.length) {
-        region = await select({
-          message: "Region:",
-          choices: opts.regions.map((r: any) => ({ name: `${r.name} (${r.id})`, value: r.id })),
-        });
-      }
-
-      if (!tier && opts.tiers?.length) {
-        tier = await select({
-          message: "Deployment tier:",
-          choices: opts.tiers.map((t: any) => ({ name: `${t.name}`, value: t.id })),
-        });
-      }
-    } catch {
-      if (!region) region = await input({ message: "Region:", default: "syd" });
-      if (!tier) tier = await input({ message: "Deployment tier:", default: "shared" });
-    }
-  }
+  const target = await resolveBranchTarget(api, options);
 
   logger.start(`Creating branch '${branchName}'...`);
 
@@ -964,9 +1053,9 @@ async function branchNew(options: {
     const response = await api.post("/api/v1/project_branches", {
       project_id: projectId,
       branch_name: branchName,
-      region,
-      deployment_tier: tier,
-      billing_email: email,
+      region: target.region,
+      plan_id: target.planId,
+      postgres_id: target.postgresId,
     });
 
     const data = response.data;
@@ -1023,8 +1112,8 @@ async function branchEnsure(
   options: {
     projectId?: string;
     region?: string;
-    tier?: string;
-    email?: string;
+    plan?: string;
+    postgres?: string;
     wait?: boolean;
     timeout?: string;
     healthTimeout?: string;
@@ -1043,9 +1132,9 @@ async function branchEnsure(
   if (branch) {
     if (!quiet) logger.succeed(`Reusing branch '${branch.name}' (${branch.id})`);
   } else {
-    if (!options.region || !options.tier || !options.email) {
+    if (!options.region || !options.plan || !options.postgres) {
       throw new Error(
-        "--region, --tier, and --email are required when creating a branch",
+        "--region, --plan, and --postgres are required when creating a branch",
       );
     }
 
@@ -1054,8 +1143,8 @@ async function branchEnsure(
       project_id: projectId,
       branch_name: branchName,
       region: options.region,
-      deployment_tier: options.tier,
-      billing_email: options.email,
+      plan_id: options.plan,
+      postgres_id: options.postgres,
     });
     branch = {
       id: response.data.branch_id,
@@ -1782,22 +1871,21 @@ export function addCloudCommands(program: Command): void {
     .description(
       "Provision a new branch (environment) for the project.\n\n" +
       "The project ID comes from `--project-id` or the `project_id` in " +
-      "omnibase.toml, and is prompted for if neither is set. Region and tier " +
-      "default to a picker fed by the managed hosting options endpoint " +
-      "(falling back to `syd` / `shared` prompts). A billing email is " +
-      "required.\n\n" +
+      "omnibase.toml, and is prompted for if neither is set. Plan, Postgres, " +
+      "and region default to pickers fed by the managed hosting plans " +
+      "endpoint.\n\n" +
       "After: provisioning starts asynchronously. Once complete, use the " +
       "branch with `--env <branch>` on other commands.\n\n" +
       "```bash\n" +
       "omnibase cloud branch new --name staging\n" +
-      "omnibase cloud branch new --project-id proj_123 --name dev --region syd --tier shared\n" +
+      "omnibase cloud branch new --project-id proj_123 --name dev --region eu --plan shared_tier --postgres postgres_shared\n" +
       "```"
     )
     .option("--project-id <id>", "Project ID")
     .option("--name <name>", "Branch name")
-    .option("--region <region>", "Region (e.g. syd)")
-    .option("--tier <tier>", "Deployment tier (e.g. shared)")
-    .option("--email <email>", "Billing email")
+    .option("--region <region>", "Region ID (e.g. eu, syd)")
+    .option("--plan <id>", "Plan ID (e.g. shared_tier)")
+    .option("--postgres <id>", "Postgres ID (e.g. postgres_shared)")
     .action(async (cmdOptions) => {
       try {
         await branchNew(cmdOptions);
@@ -1813,19 +1901,19 @@ export function addCloudCommands(program: Command): void {
       "Idempotently provision a branch and wait until it is active and its " +
       "API reports ready.\n\n" +
       "An existing live branch with the same name is reused, so this is safe " +
-      "to run on every CI job. When no branch exists, `--region`, `--tier`, " +
-      "and `--email` are required.\n\n" +
+      "to run on every CI job. When no branch exists, `--region`, `--plan`, " +
+      "and `--postgres` are required.\n\n" +
       "With `--json`, prints a single JSON object instead of log output. Use " +
       "`--no-wait` to return as soon as provisioning starts.\n\n" +
       "```bash\n" +
-      "omnibase cloud branch ensure pr-123 --region syd --tier shared_starter --email ci@example.com\n" +
-      "omnibase cloud branch ensure pr-123 --region syd --tier shared_starter --email ci@example.com --json\n" +
+      "omnibase cloud branch ensure pr-123 --region eu --plan shared_tier --postgres postgres_shared\n" +
+      "omnibase cloud branch ensure pr-123 --region eu --plan shared_tier --postgres postgres_shared --json\n" +
       "```"
     )
     .option("--project-id <id>", "Project ID")
-    .option("--region <region>", "Region (e.g. syd)")
-    .option("--tier <tier>", "Deployment tier (e.g. shared_starter)")
-    .option("--email <email>", "Billing email")
+    .option("--region <region>", "Region ID (e.g. eu, syd)")
+    .option("--plan <id>", "Plan ID (e.g. shared_tier)")
+    .option("--postgres <id>", "Postgres ID (e.g. postgres_shared)")
     .option("--no-wait", "Return immediately after provisioning starts")
     .option("--timeout <seconds>", "Provisioning timeout in seconds", "1800")
     .option("--health-timeout <seconds>", "Health check timeout in seconds", "600")
