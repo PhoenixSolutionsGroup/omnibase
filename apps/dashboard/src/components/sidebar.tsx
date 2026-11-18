@@ -7,19 +7,17 @@ import { cn } from "@/lib/utils";
 import {
   BarChart3,
   Database,
-  LayoutDashboard,
   Settings,
   ScrollText,
   CreditCard,
   FolderKanban,
   Users,
-  ChevronDown,
-  ChevronRight,
   Wrench,
   Globe,
+  PanelLeft,
+  House,
 } from "lucide-react";
-import { ProjectDropdown, ProjectOption } from "./project-dropdown";
-import { BranchDropdown } from "./branch-dropdown";
+import { ProjectOption } from "./project-dropdown";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -27,7 +25,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSidebar } from "./sidebar-context";
-import { Project } from "@/app/(dashboard)/(project)/projects/[project_id]/[project_branch]/dashboard/project-provisioning-dashboard";
 import { Button } from "./ui/button";
 
 interface ProjectContext {
@@ -61,18 +58,20 @@ function NavItem({
   isCollapsed,
 }: NavItemProps) {
   const linkContent = (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center rounded-md text-sm font-medium transition-colors",
-        isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
-        isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-      )}
-    >
-      <Icon className="h-4 w-4 shrink-0" />
-      {!isCollapsed && title}
+    <Link href={href} className={cn("flex items-center px-2")}>
+      <div
+        className={cn(
+          "flex items-center rounded-md text-xs font-medium transition-colors gap-3 w-full",
+          isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
+
+          isActive
+            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+            : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        )}
+      >
+        <Icon className="h-4 w-4 shrink-0" />
+        {!isCollapsed && title}
+      </div>
     </Link>
   );
 
@@ -90,17 +89,17 @@ function NavItem({
   return linkContent;
 }
 
-const getProjectNavigationItems = (
+export const getProjectNavigationItems = (
   projectId: string,
   projectBranch: string,
 ) => [
   {
-    title: "Dashboard",
+    title: "Project Overview",
     href: `/projects/${projectId}/${projectBranch}/dashboard`,
-    icon: LayoutDashboard,
+    icon: House,
   },
   {
-    title: "Studio",
+    title: "Table Editor",
     href: `/projects/${projectId}/${projectBranch}/studio`,
     icon: Database,
   },
@@ -125,13 +124,13 @@ const getProjectNavigationItems = (
     icon: Wrench,
   },
   {
-    title: "Settings",
+    title: "Project Settings",
     href: `/projects/${projectId}/${projectBranch}/settings`,
     icon: Settings,
   },
 ];
 
-const organizationNavigationItems = [
+export const organizationNavigationItems = [
   {
     title: "Projects",
     href: "/projects",
@@ -176,94 +175,37 @@ export function UnifiedSidebar({
       )
     : [];
 
+  const toggleLabel = isCollapsed ? "Expand sidebar" : "Collapse sidebar";
+
+  const toggleButton = (
+    <Button
+      variant="ghost"
+      onClick={toggle}
+      aria-label={toggleLabel}
+      className={cn(
+        "flex w-full items-center rounded-md text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        isCollapsed ? "justify-center p-2" : "justify-start gap-3 px-3 py-2",
+      )}
+    >
+      <PanelLeft className="h-4 w-4 shrink-0" />
+    </Button>
+  );
+
   return (
     <div
       className={cn(
-        "group/sidebar relative flex h-full flex-col bg-sidebar transition-all duration-200",
+        "group/sidebar relative hidden md:flex h-full flex-col bg-sidebar transition-all duration-200 border-r",
         isCollapsed ? "w-14" : "w-64",
       )}
     >
       {/* Sidebar Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         {/* PROJECT CONTEXT SECTION - Only visible when in a project */}
         {projectContext && (
           <>
-            <div className="flex flex-col">
-              {/* PROJECT SECTION */}
-              {!isCollapsed && (
-                <div className="border-b border-border px-3 py-3">
-                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Project
-                  </label>
-                  <ProjectDropdown
-                    projectId={projectContext.projectId}
-                    currentProject={projectContext.projectName}
-                    currentBranch={projectContext.projectBranch}
-                    projects={projectContext.projects}
-                    onCreateProject={projectContext.onCreateProject}
-                  />
-                </div>
-              )}
-
-              {/* BRANCH SECTION WITH NAVIGATION */}
-              <div className={cn("py-3", isCollapsed ? "px-2" : "px-3")}>
-                {!isCollapsed && (
-                  <>
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Branch
-                    </label>
-                    <BranchDropdown
-                      currentBranch={projectContext.projectBranch}
-                      branches={projectContext.branches}
-                      projectId={projectContext.projectId}
-                    />
-                  </>
-                )}
-
-                {/* Branch Navigation Items */}
-                <nav className={cn("space-y-1", !isCollapsed && "mt-4")}>
-                  {projectNavigationItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <NavItem
-                        key={item.href}
-                        href={item.href}
-                        icon={item.icon}
-                        title={item.title}
-                        isActive={isActive}
-                        isCollapsed={isCollapsed}
-                      />
-                    );
-                  })}
-                </nav>
-              </div>
-            </div>
-
-            <Separator className="my-2" />
-          </>
-        )}
-
-        {/* ORGANIZATION NAVIGATION - Always visible */}
-        <nav
-          className={cn("flex-1 space-y-1 py-4", isCollapsed ? "px-2" : "px-3")}
-        >
-          {!isCollapsed && (
-            <Button
-              onClick={() => setIsOrgCollapsed(!isOrgCollapsed)}
-              className="mb-2 flex w-full"
-              disabled={!allowOrgCollapse}
-            >
-              {isOrgCollapsed ? (
-                <ChevronRight className="h-3 w-3" />
-              ) : (
-                <ChevronDown className="h-3 w-3" />
-              )}
-              Organization
-            </Button>
-          )}
-          {(isCollapsed || !allowOrgCollapse || !isOrgCollapsed) && (
-            <>
-              {organizationNavigationItems.map((item) => {
+            {/* Branch Navigation Items */}
+            <nav className={cn("space-y-1 mt-2")}>
+              {projectNavigationItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
                   <NavItem
@@ -276,20 +218,43 @@ export function UnifiedSidebar({
                   />
                 );
               })}
-            </>
-          )}
+            </nav>
+
+            <Separator className="my-4" />
+          </>
+        )}
+
+        {/* ORGANIZATION NAVIGATION - Always visible */}
+        <nav className={cn("space-y-1 pb-4 mt-2", isCollapsed ? "px-2" : "")}>
+          {organizationNavigationItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <NavItem
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                title={item.title}
+                isActive={isActive}
+                isCollapsed={isCollapsed}
+              />
+            );
+          })}
         </nav>
       </div>
 
-      {/* Clickable Right Border */}
-      <Button
-        onClick={toggle}
-        className={cn(
-          "absolute -right-2 top-0 h-full w-4 bg-transparent transition-colors before:absolute before:right-2 before:top-0 before:h-full before:w-px before:bg-border before:transition-colors hover:before:bg-primary",
-          isCollapsed ? "cursor-e-resize" : "cursor-w-resize",
+      {/* SIDEBAR TOGGLE - pinned to bottom */}
+      <div className={cn("py-2", isCollapsed ? "px-2" : "px-3")}>
+        {isCollapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>{toggleButton}</TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              {toggleLabel}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          toggleButton
         )}
-        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      />
+      </div>
     </div>
   );
 }

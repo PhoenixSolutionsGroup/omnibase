@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 // @ts-ignore
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
 
 const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -31,12 +32,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={publicSans.variable}>
+    <html lang="en" className={publicSans.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

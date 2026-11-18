@@ -20,6 +20,7 @@ import {
 import { Project } from "./project-provisioning-dashboard";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { title } from "process";
 
 interface ProjectDashboardClientProps {
   project: Project;
@@ -304,228 +305,217 @@ export function ProjectDashboardClient({
     }
   };
 
+  const QUICK_ACTIONS = [
+    {
+      icon: <Wrench className="h-3 w-3" />,
+      title: "Configuration",
+      subtitle: " View all service URLs",
+      link: `/projects/${project.project_id}/${project.branch_name}/configuration`,
+    },
+    {
+      icon: <ScrollText className="h-3 w-3" />,
+      title: "Logs",
+      subtitle: " View application logs",
+      link: `/projects/${project.project_id}/${project.branch_name}/logs`,
+    },
+    {
+      icon: <BarChart3 className="h-3 w-3" />,
+      title: "Usage",
+      subtitle: " View resource usage",
+      link: `/projects/${project.project_id}/${project.branch_name}/usage`,
+    },
+  ];
+
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="mx-auto max-w-7xl space-y-6">
-          {/* Welcome Header */}
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold tracking-tight">{project.name}</h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="text-muted-foreground">
               {region} • Created{" "}
               {new Date(project.created_at).toLocaleDateString()}
             </p>
           </div>
+        </div>
 
-          {/* Quick Actions */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/configuration`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <Wrench className="h-8 w-8 text-primary flex-shrink-0" />
+        {/* Quick Actions */}
+        <div className="grid gap-4 md:grid-cols-3">
+          {QUICK_ACTIONS.map((action) => (
+            <Link key={action.title} href={action.link}>
+              <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
+                <CardContent className="flex items-center gap-4">
                   <div>
-                    <h3 className="font-semibold">Configuration</h3>
+                    <div className="flex gap-2 items-center">
+                      {action.icon}
+                      <h3 className="font-semibold">{action.title}</h3>
+                    </div>
                     <p className="text-sm text-muted-foreground">
-                      View all service URLs
+                      {action.subtitle}
                     </p>
                   </div>
                 </CardContent>
               </Card>
             </Link>
+          ))}
+        </div>
 
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/logs`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <ScrollText className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Logs</h3>
-                    <p className="text-sm text-muted-foreground">
-                      View application logs
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+        {/* Project Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Project Information</CardTitle>
+            <CardDescription>
+              Infrastructure and deployment details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Status
+                </p>
+                <p className="mt-1 font-medium capitalize">{project.status}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Region
+                </p>
+                <p className="mt-1 font-medium">{region}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Branch
+                </p>
+                <p className="mt-1 font-medium">{project.branch_name}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-            <Link
-              href={`/projects/${project.project_id}/${project.branch_name}/usage`}
-            >
-              <Card className="h-full transition-colors hover:bg-muted/50 cursor-pointer">
-                <CardContent className="flex items-center gap-4 p-6 pt-6">
-                  <BarChart3 className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Usage</h3>
-                    <p className="text-sm text-muted-foreground">
-                      View resource usage
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          </div>
-
-          {/* Project Information */}
+        {deployments.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Project Information</CardTitle>
+              <CardTitle>Deployments</CardTitle>
               <CardDescription>
-                Infrastructure and deployment details
+                Worker deployments for this branch
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Status
-                  </p>
-                  <p className="mt-1 font-medium capitalize">
-                    {project.status}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Region
-                  </p>
-                  <p className="mt-1 font-medium">{region}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Branch
-                  </p>
-                  <p className="mt-1 font-medium">{project.branch_name}</p>
-                </div>
+              <div className="space-y-2">
+                {deployments.map((dep) => (
+                  <div
+                    key={dep.name}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div>
+                      <p className="font-medium">{dep.name}</p>
+                      {dep.worker_url && (
+                        <a
+                          href={dep.worker_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {dep.worker_url}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {deployments.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Deployments</CardTitle>
-                <CardDescription>
-                  Worker deployments for this branch
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {deployments.map((dep) => (
-                    <div
-                      key={dep.name}
-                      className="flex items-center justify-between rounded-lg border p-3"
-                    >
-                      <div>
-                        <p className="font-medium">{dep.name}</p>
-                        {dep.worker_url && (
-                          <a
-                            href={dep.worker_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
+        {/* Service Health & Errors */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Service Health</CardTitle>
+            <CardDescription>
+              Real-time status and errors & warnings from the past 24 hours
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {serviceStatuses.map((service) => {
+                const logs = serviceLogs[service.serviceType] || [];
+                const errorCount = logs.length;
+                const firstLog = logs[0];
+                const startTime = new Date();
+                startTime.setHours(startTime.getHours() - 24);
+
+                return (
+                  <div
+                    key={service.name}
+                    className="rounded-sm border p-3 space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {service.status === "checking" && (
+                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        )}
+                        {service.status === "healthy" && (
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        )}
+                        {service.status === "unhealthy" && (
+                          <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                        )}
+                        {service.status === "error" && (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{service.name}</p>
+                            {logsLoading && (
+                              <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {service.url}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {!logsLoading && errorCount > 0 && (
+                          <Link
+                            href={`/projects/${project.project_id}/${
+                              project.branch_name
+                            }/logs?service_type=${
+                              service.serviceType
+                            }&severity=WARNING&start_time=${startTime.toISOString()}`}
                             className="text-sm text-primary hover:underline"
                           >
-                            {dep.worker_url}
-                          </a>
+                            View logs →
+                          </Link>
+                        )}
+                        {service.responseTime !== undefined && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            {service.responseTime}ms
+                          </div>
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
-          {/* Service Health & Errors */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Service Health</CardTitle>
-              <CardDescription>
-                Real-time status and errors & warnings from the past 24 hours
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {serviceStatuses.map((service) => {
-                  const logs = serviceLogs[service.serviceType] || [];
-                  const errorCount = logs.length;
-                  const firstLog = logs[0];
-                  const startTime = new Date();
-                  startTime.setHours(startTime.getHours() - 24);
-
-                  return (
-                    <div
-                      key={service.name}
-                      className="rounded-sm border p-3 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {service.status === "checking" && (
-                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                          )}
-                          {service.status === "healthy" && (
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-                          )}
-                          {service.status === "unhealthy" && (
-                            <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                          )}
-                          {service.status === "error" && (
-                            <XCircle className="h-5 w-5 text-red-500" />
-                          )}
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-medium">{service.name}</p>
-                              {logsLoading && (
-                                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {service.url}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {!logsLoading && errorCount > 0 && (
-                            <Link
-                              href={`/projects/${project.project_id}/${
-                                project.branch_name
-                              }/logs?service_type=${
-                                service.serviceType
-                              }&severity=WARNING&start_time=${startTime.toISOString()}`}
-                              className="text-sm text-primary hover:underline"
-                            >
-                              View logs →
-                            </Link>
-                          )}
-                          {service.responseTime !== undefined && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4" />
-                              {service.responseTime}ms
-                            </div>
-                          )}
-                        </div>
+                    {/* Show first error/warning */}
+                    {!logsLoading && firstLog && (
+                      <div className="pl-8 flex items-start gap-2 text-sm">
+                        {getSeverityBadge(firstLog.severity)}
+                        <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+                          {formatTimestamp(firstLog.timestamp)}
+                        </span>
+                        <span className="text-sm font-mono text-muted-foreground truncate flex-1">
+                          {firstLog.message}
+                        </span>
                       </div>
-
-                      {/* Show first error/warning */}
-                      {!logsLoading && firstLog && (
-                        <div className="pl-8 flex items-start gap-2 text-sm">
-                          {getSeverityBadge(firstLog.severity)}
-                          <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">
-                            {formatTimestamp(firstLog.timestamp)}
-                          </span>
-                          <span className="text-sm font-mono text-muted-foreground truncate flex-1">
-                            {firstLog.message}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,8 +1,52 @@
 "use client";
 
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Database } from "@/types/omnibase";
+import Image from "next/image";
+
+const MESSAGES = [
+  "fetching some super important data...",
+  "doing some magic in the backend...",
+  "making up some cool unique url for you...",
+  "making sure postgres knows its place...",
+  "preparing a slick project for you...",
+  "provisioning some very sophisticated setup...",
+];
+
+const VISIBLE_MS = 2200;
+const FADE_MS = 500;
+
+function RotatingText() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const hideTimer = setTimeout(() => setVisible(false), VISIBLE_MS);
+    return () => clearTimeout(hideTimer);
+  }, [index]);
+
+  useEffect(() => {
+    if (visible) return;
+    const swapTimer = setTimeout(() => {
+      setIndex((i) => (i + 1) % MESSAGES.length);
+      setVisible(true);
+    }, FADE_MS);
+    return () => clearTimeout(swapTimer);
+  }, [visible]);
+
+  return (
+    <p
+      className="text-sm text-muted-foreground transition-opacity ease-in-out"
+      style={{
+        opacity: visible ? 1 : 0,
+        transitionDuration: `${FADE_MS}ms`,
+      }}
+      aria-live="polite"
+    >
+      {MESSAGES[index]}
+    </p>
+  );
+}
 
 export type Project = Omit<
   Database["public"]["Tables"]["project_branches"]["Row"],
@@ -46,18 +90,24 @@ export function ProjectProvisioningDashboard({
   return (
     <div className="flex h-full flex-col items-center justify-center p-6">
       <div className="mx-auto w-full max-w-2xl space-y-6 text-center">
-        <div className="flex justify-center">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <div className="flex justify-center relative">
+          <Image
+            src="/omnibase-logo-loading.svg"
+            alt="Omnibase"
+            width={64}
+            height={64}
+            className="shrink-0 rounded-lg absolute -mt-12"
+            unoptimized
+          />
         </div>
 
         <div className="space-y-2">
           <h1 className="text-xl font-bold tracking-tight">
             Provisioning Project
           </h1>
-          <p className="text-lg text-muted-foreground">
-            You will be redirected to Stripe shortly for onboarding (if not done
-            already)
-          </p>
+          <div className="flex h-5 items-center justify-center">
+            <RotatingText />
+          </div>
         </div>
       </div>
     </div>

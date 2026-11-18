@@ -5,6 +5,7 @@ import { LogViewer } from "./log-viewer";
 import { LimitSelector } from "./limit-selector";
 import { TimeRangeSelector } from "./time-range-selector";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 interface Log {
   timestamp: string;
@@ -98,7 +99,7 @@ export function LogsClient({
       try {
         const url = new URL(
           `${MANAGED_HOSTING_API_URL}/api/v1/logs/${projectId}`,
-          window.location.origin
+          window.location.origin,
         );
         url.searchParams.set("service_name", activeService);
         url.searchParams.set("limit", limit.toString());
@@ -116,7 +117,7 @@ export function LogsClient({
           setLastFetch(Date.now());
         } else {
           setLogsError(
-            `Failed to fetch logs: ${response.status} ${response.statusText}`
+            `Failed to fetch logs: ${response.status} ${response.statusText}`,
           );
           console.error("Failed to fetch logs:", response.status);
         }
@@ -136,7 +137,7 @@ export function LogsClient({
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Logs - {projectName}</h1>
+        <h1 className="text-xl font-bold tracking-tight">Logs</h1>
         <p className="text-muted-foreground">
           View logs for your project services
         </p>
@@ -145,17 +146,17 @@ export function LogsClient({
       {/* Service Selector */}
       <div className="flex gap-2 flex-wrap items-center">
         {services.map((service) => (
-          <a
+          <Link
             key={service.key}
             href={`/projects/${projectId}/${projectBranch}/logs?service_name=${service.key}&limit=${limit}`}
-            className={`px-4 py-2 rounded border ${
+            className={`px-4 py-2 rounded border text-xs ${
               activeService === service.key
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background hover:bg-muted border-border"
             }`}
           >
             {service.label}
-          </a>
+          </Link>
         ))}
 
         <TimeRangeSelector

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Plus, FolderGit2 } from "lucide-react";
 import { cn } from "@/lib/utils";

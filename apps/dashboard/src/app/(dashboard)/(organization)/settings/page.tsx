@@ -58,24 +58,34 @@ export default async function page() {
   const apiKeysResponse = await listAPIKeys();
 
   return (
-    <div className="flex h-full w-full flex-col items-center my-8 gap-y-8 max-w-5xl mx-auto px-4">
-      <div className="w-full">
-        <UserViewer
-          availableRoles={roles.map((r) => r.roleName!) || []}
-          users={users || []}
-          canEditUsers={true}
-          onRemoveUser={removeUser}
-          onRoleUpdate={updateUserRole}
-        />
-      </div>
-      <div className="w-full">
-        <APIKeysSection
-          initialKeys={apiKeysResponse.api_keys}
-          hasPermission={apiKeysResponse.hasPermission}
-        />
-      </div>
-      <div className="w-full">
-        <DeleteSection onDeleteTenant={deleteTenantAction} />
+    <div className="max-w-5xl  my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Settings</h1>
+            <p className="text-muted-foreground">
+              Manage and monitor your organizations settings
+            </p>
+          </div>
+        </div>
+        <div className="w-full">
+          <UserViewer
+            availableRoles={roles.map((r) => r.roleName!) || []}
+            users={users || []}
+            canEditUsers={true}
+            onRemoveUser={removeUser}
+            onRoleUpdate={updateUserRole}
+          />
+        </div>
+        <div className="w-full">
+          <APIKeysSection
+            initialKeys={apiKeysResponse.api_keys}
+            hasPermission={apiKeysResponse.hasPermission}
+          />
+        </div>
+        <div className="w-full">
+          <DeleteSection onDeleteTenant={deleteTenantAction} />
+        </div>
       </div>
     </div>
   );

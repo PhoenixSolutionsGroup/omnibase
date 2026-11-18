@@ -36,98 +36,93 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="mx-auto max-w-7xl space-y-6">
-          {/* Header Section */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Projects</h1>
-              <p className="mt-2 text-muted-foreground">
-                Manage and monitor all your projects
-              </p>
-            </div>
-            {projects.length > 0 && (
-              <Button
-                onClick={() => router.push("/projects/new")}
-                className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                <Plus className="h-4 w-4" />
-                Create Project
-              </Button>
-            )}
+    <div className="max-w-5xl my-8 mx-auto">
+      <div className="mx-16 space-y-4">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">People</h1>
+            <p className="text-muted-foreground">
+              Manage and monitor your team members roles
+            </p>
           </div>
-
-          {/* Projects Table or Empty State */}
-          {projects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card py-16">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Rocket className="h-8 w-8 text-primary" />
-              </div>
-              <h2 className="mt-6 text-xl font-semibold">Get Started</h2>
-              <p className="my-2 max-w-sm text-center text-muted-foreground">
-                Create your first project to start building with OmniBase
-              </p>
-              <Button
-                onClick={() => router.push("/projects/new")}
-                size="lg"
-                className="text-sm"
-              >
-                <Plus className="h-4 w-4" />
-                Create Your First Project
-              </Button>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-border bg-card">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Project Name</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {projects.map((project) => (
-                    <TableRow
-                      key={project.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() =>
-                        router.push(`/projects/${project.id}/main/dashboard`)
-                      }
-                    >
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                            <Building2 className="h-4 w-4 text-primary" />
-                          </div>
-                          {project.name}
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(project.created_at)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(
-                              `/projects/${project.id}/main/dashboard`,
-                            );
-                          }}
-                        >
-                          View →
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+          {projects.length > 0 && (
+            <Button
+              onClick={() => router.push("/projects/new")}
+              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" />
+              Create Project
+            </Button>
           )}
         </div>
+
+        {/* Projects Table or Empty State */}
+        {projects.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card py-16">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <Rocket className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="mt-6 text-xl font-semibold">Get Started</h2>
+            <p className="my-2 max-w-sm text-center text-muted-foreground">
+              Create your first project to start building with OmniBase
+            </p>
+            <Button
+              onClick={() => router.push("/projects/new")}
+              size="lg"
+              className="text-sm"
+            >
+              <Plus className="h-4 w-4" />
+              Create Your First Project
+            </Button>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Project Name</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {projects.map((project) => (
+                  <TableRow
+                    key={project.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() =>
+                      router.push(`/projects/${project.id}/main/dashboard`)
+                    }
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+                          <Building2 className="h-4 w-4 text-primary" />
+                        </div>
+                        {project.name}
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(project.created_at)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/projects/${project.id}/main/dashboard`);
+                        }}
+                      >
+                        View →
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { SwitchActiveTenant } from "@omnibase/shadcn";
 import type { GetTenantByIDRow as Tenant } from "@omnibase/core-js";
 
@@ -38,7 +37,7 @@ export function OrganizationDropdown({
       onTenantChange={onTenantChange}
       formAction={formAction}
       placeholder="Select organization..."
-      className="w-fit border-none bg-transparent shadow-none hover:bg-accent"
+      className="w-fit border-none bg-transparent shadow-none hover:bg-accent gap-2"
       // TODO: Uncomment after publishing @omnibase/shadcn with onCreateTenant support
       // onCreateTenant={onCreateTenant}
       // createTenantLabel={createTenantLabel}

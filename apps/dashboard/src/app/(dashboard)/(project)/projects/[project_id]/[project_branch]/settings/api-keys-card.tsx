@@ -195,10 +195,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                 Manage and rotate your project's API keys
               </CardDescription>
             </div>
-            <Button
-              onClick={() => setIsRotateModalOpen(true)}
-              className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors"
-            >
+            <Button onClick={() => setIsRotateModalOpen(true)}>
               <RotateCw className="h-4 w-4" />
               Rotate Keys
             </Button>
@@ -251,7 +248,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                           toggleReveal(secretKey, item.encryptedField)
                         }
                         disabled={isLoading}
-                        className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="disabled:opacity-50 disabled:cursor-not-allowed"
                         title={isRevealed ? "Hide" : "Reveal"}
                       >
                         {isLoading ? (
@@ -273,7 +270,7 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
                         )
                       }
                       disabled={item.sensitive && !isRevealed}
-                      className="rounded px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Copy
                     </Button>
