@@ -41,9 +41,9 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">People</h1>
+            <h1 className="text-xl font-bold tracking-tight">Projects</h1>
             <p className="text-muted-foreground">
-              Manage and monitor your team members roles
+              Manage and monitor your projects
             </p>
           </div>
           {projects.length > 0 && (

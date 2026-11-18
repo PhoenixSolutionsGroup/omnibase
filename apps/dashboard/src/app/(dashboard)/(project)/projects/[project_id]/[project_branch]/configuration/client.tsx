@@ -26,7 +26,6 @@ import {
   Copy,
 } from "lucide-react";
 import { Project } from "../dashboard/project-provisioning-dashboard";
-import { WorkerDomains } from "./worker-domains";
 import { toast } from "sonner";
 import { useState } from "react";
 import {
@@ -36,7 +35,6 @@ import {
   fetchDatabaseConnectionString,
   fetchStorageCredentials,
 } from "../settings/actions";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface ConfigurationClientProps {
@@ -544,8 +542,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
             </Card>
           ))}
         </div>
-
-        <WorkerDomains branchId={project.id} />
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import { UserInvite, RoleCreator } from "@omnibase/shadcn";
 import { getAllProjects } from "@/utils/get-project";
 import { getOmnibaseConfiguration } from "@/lib/server";
