@@ -16,6 +16,7 @@ import {
   Globe,
   PanelLeft,
   House,
+  Rocket,
 } from "lucide-react";
 import { ProjectOption } from "./project-dropdown";
 import { Separator } from "@/components/ui/separator";
@@ -117,6 +118,11 @@ export const getProjectNavigationItems = (
     title: "Usage",
     href: `/projects/${projectId}/${projectBranch}/usage`,
     icon: BarChart3,
+  },
+  {
+    title: "Deployments",
+    href: `/projects/${projectId}/${projectBranch}/deployments`,
+    icon: Rocket,
   },
   {
     title: "Configuration",
