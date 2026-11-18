@@ -456,13 +456,13 @@ export function ProjectDashboardClient({
                           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                         )}
                         {service.status === "healthy" && (
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         )}
                         {service.status === "unhealthy" && (
-                          <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                          <AlertTriangle className="h-5 w-5 text-warning" />
                         )}
                         {service.status === "error" && (
-                          <XCircle className="h-5 w-5 text-red-500" />
+                          <XCircle className="h-5 w-5 text-destructive" />
                         )}
                         <div>
                           <div className="flex items-center gap-2">
