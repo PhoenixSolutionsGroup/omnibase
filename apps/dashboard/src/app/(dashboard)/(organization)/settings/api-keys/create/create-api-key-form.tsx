@@ -11,12 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { PermissionsSelectorTree } from "@omnibase/shadcn";
 import type { NamespaceDefinitionResponse } from "@omnibase/core-js";
 import { createAPIKey, type Permission } from "../../actions";
 import Link from "next/link";
+import { Alert } from "@/components/ui/alert";
 
 interface NamespaceMapEntry {
   id: string;
@@ -57,6 +58,7 @@ export function CreateAPIKeyForm({
   const [isCreating, setIsCreating] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   // The tree looks up objects by lower-cased namespace key.
   const lowerNamespaceMap = useMemo(() => {
@@ -120,6 +122,7 @@ export function CreateAPIKeyForm({
     if (createdKey) {
       navigator.clipboard.writeText(createdKey);
       toast.success("API key copied to clipboard");
+      setIsCopied(true);
     }
   };
 
@@ -137,14 +140,15 @@ export function CreateAPIKeyForm({
             <div className="flex items-center justify-between gap-2">
               <code className="text-sm break-all">{createdKey}</code>
               <Button size="sm" variant="outline" onClick={handleCopyKey}>
+                {isCopied ? <Check /> : <Copy />}
                 Copy
               </Button>
             </div>
           </div>
-          <div className="rounded-md bg-yellow-50 dark:bg-yellow-950 p-3 text-sm text-yellow-800 dark:text-yellow-200">
+          <Alert color="warning">
             Make sure to copy your API key now. You won't be able to see it
             again!
-          </div>
+          </Alert>
           <div className="flex justify-end">
             <Link
               href="/settings"

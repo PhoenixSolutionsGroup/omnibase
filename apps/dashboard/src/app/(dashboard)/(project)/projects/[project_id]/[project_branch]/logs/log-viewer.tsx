@@ -287,10 +287,7 @@ export function LogViewer({
               <>
                 <tr key={index} className="hover:bg-muted/50 transition-colors">
                   <td className="px-4 py-2 w-8">
-                    <Button
-                      onClick={() => toggleRow(index)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
+                    <Button onClick={() => toggleRow(index)}>
                       {expandedRows.has(index) ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
