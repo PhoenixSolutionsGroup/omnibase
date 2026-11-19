@@ -57,7 +57,7 @@ const TIME_RANGES: { value: TimeRange; label: string; hours: number }[] = [
 ];
 
 async function fetchWorkers(branchId: string): Promise<Worker[]> {
-  const response = await fetch(`/api/v1/project_branches/${branchId}/workers`, {
+  const response = await fetch(`/api/project_branches/${branchId}/workers`, {
     method: "GET",
     credentials: "include",
   });

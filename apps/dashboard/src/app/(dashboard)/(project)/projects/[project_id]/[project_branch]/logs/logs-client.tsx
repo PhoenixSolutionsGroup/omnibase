@@ -135,7 +135,7 @@ export function LogsClient({
   }, [projectId, activeService, limit, timeRange]);
 
   return (
-    <div className="max-w-5xl  my-8 mx-auto">
+    <div className="max-w-7xl my-8 mx-auto">
       <div className="mx-16 space-y-4">
         <div className="flex flex-col md:flex-row items-start justify-between gap-3">
           <div>
