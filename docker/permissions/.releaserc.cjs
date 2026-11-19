@@ -18,7 +18,7 @@ module.exports = {
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/exec', {
-      publishCmd: 'DOCKER_CONTEXT=../.. DOCKERFILE=docker/permissions/Dockerfile ../../scripts/release-docker.sh ${nextRelease.version}'
+      publishCmd: 'DOCKER_BUILD_CONTEXT=../.. DOCKERFILE=Dockerfile ../../scripts/release-docker.sh ${nextRelease.version}'
     }],
     ['@semantic-release/git', {
       assets: ['CHANGELOG.md'],

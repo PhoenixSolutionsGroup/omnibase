@@ -35,6 +35,7 @@ jobs:
       api: ${{ steps.select.outputs.api }}
       docker: ${{ steps.select.outputs.docker }}
       npm: ${{ steps.select.outputs.npm }}
+      dry: ${{ steps.select.outputs.dry }}
     steps:
       - name: Resolve selection
         id: select
@@ -44,7 +45,7 @@ jobs:
           SEL=$(echo "${PACKAGES:-all}" | tr -d '[:space:]')
           [ -z "$SEL" ] && SEL=all
 
-          DOCKER='[{"path":"docker/auth","name":"auth","image":"phoenixsolutionsgroup/omnibase-auth"},{"path":"docker/permissions","name":"permissions","image":"phoenixsolutionsgroup/omnibase-permissions"}]'
+          DOCKER='[{"path":"docker/auth","name":"auth","image":"phoenixsolutionsgroup/omnibase-auth","dockerfile":"Dockerfile","build_context":"."},{"path":"docker/permissions","name":"permissions","image":"phoenixsolutionsgroup/omnibase-permissions","dockerfile":"Dockerfile","build_context":"../.."}]'
           NPM='[{"package":"sdk/framework/react","name":"react"},{"package":"sdk/framework/nextjs","name":"nextjs"},{"package":"sdk/component/shadcn","name":"shadcn"},{"package":"packages/cli","name":"cli"},{"package":"packages/mcp-server","name":"mcp-server"}]'
           KNOWN="api auth permissions react nextjs shadcn cli mcp-server"
 
@@ -58,16 +59,91 @@ jobs:
           fi
 
           filter='if $sel == "all" then . else map(select(.name as $n | $sel | split(",") | index($n))) end'
+          DOCKER_JSON=$(jq -c --arg sel "$SEL" "$filter" <<< "$DOCKER")
+          NPM_JSON=$(jq -c --arg sel "$SEL" "$filter" <<< "$NPM")
+          if [ "$SEL" = "all" ] || [[ ",$SEL," == *",api,"* ]]; then
+            API=true
+            API_JSON='[{"kind":"api","name":"api","path":"apps/api"}]'
+          else
+            API=false
+            API_JSON='[]'
+          fi
+          DRY=$(jq -c -n --argjson api "$API_JSON" --argjson docker "$DOCKER_JSON" --argjson npm "$NPM_JSON" \
+            '$api + ($docker | map(. + {kind:"docker"})) + ($npm | map(. + {kind:"npm"}))')
           {
-            if [ "$SEL" = "all" ] || [[ ",$SEL," == *",api,"* ]]; then
-              echo "api=true"
-            else
-              echo "api=false"
-            fi
-            echo "docker=$(jq -c --arg sel "$SEL" "$filter" <<< "$DOCKER")"
-            echo "npm=$(jq -c --arg sel "$SEL" "$filter" <<< "$NPM")"
+            echo "api=$API"
+            echo "docker=$DOCKER_JSON"
+            echo "npm=$NPM_JSON"
+            echo "dry=$DRY"
           } >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
+
+
+  # ============================================
+  # Dry run every selected package before releasing
+  # ============================================
+  dry-run:
+    name: Dry run ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    needs: [check-tests, select]
+    if: needs.select.outputs.dry != '[]'
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        include: ${{ fromJSON(needs.select.outputs.dry) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Install dependencies (skip lifecycle scripts)
+        run: bun install --ignore-scripts
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Dry run API release
+        if: matrix.kind == 'api'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DRY_RUN: "1"
+        run: ./scripts/release-api-publish.sh 0.0.0-dryrun
+
+      - name: Dry run Docker release
+        if: matrix.kind == 'docker'
+        working-directory: ${{ matrix.path }}
+        env:
+          DOCKER_IMAGE: ${{ matrix.image }}
+          DOCKERFILE: ${{ matrix.dockerfile }}
+          DOCKER_BUILD_CONTEXT: ${{ matrix.build_context }}
+          DRY_RUN: "1"
+        run: ../../scripts/release-docker.sh 0.0.0-dryrun
+
+      - name: Dry run npm release
+        if: matrix.kind == 'npm'
+        working-directory: ${{ matrix.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          bun run --cwd "$GITHUB_WORKSPACE/sdk/core/js" build
+          npm pkg set version=0.0.0-dryrun
+          bun run build
+          bun pm pack --dry-run
 
   # ============================================
   # Release API (Docker + Core SDKs)
@@ -75,9 +151,10 @@ jobs:
   release-api:
     name: Release API
     runs-on: ubuntu-latest
-    needs: [check-tests, select]
+    needs: [check-tests, select, dry-run]
     if: |
       needs.check-tests.result == 'success' &&
+      (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
       needs.select.outputs.api == 'true'
     outputs:
       core_js_version: ${{ steps.corejs.outputs.version }}
@@ -173,10 +250,11 @@ jobs:
   release-docker:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [check-tests, select, release-api]
+    needs: [check-tests, select, release-api, dry-run]
     if: |
       !cancelled() &&
       needs.check-tests.result == 'success' &&
+      (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
       needs.select.outputs.docker != '[]' &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped')
     strategy:
@@ -261,10 +339,11 @@ jobs:
   release-npm:
     name: Release ${{ matrix.name }}
     runs-on: ubuntu-latest
-    needs: [check-tests, select, release-api, release-docker]
+    needs: [check-tests, select, release-api, release-docker, dry-run]
     if: |
       !cancelled() &&
       needs.check-tests.result == 'success' &&
+      (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
       needs.select.outputs.npm != '[]' &&
       (needs.release-api.result == 'success' || needs.release-api.result == 'skipped') &&
       (needs.release-docker.result == 'success' || needs.release-docker.result == 'skipped')

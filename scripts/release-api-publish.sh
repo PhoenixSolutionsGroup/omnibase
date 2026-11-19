@@ -21,6 +21,19 @@ echo "========================================"
 echo "Publishing API release v$VERSION"
 echo "========================================"
 
+dry_run() {
+  jq --arg v "$VERSION" '.version = $v' "$CORE_JS_DIR/package.json" > "$CORE_JS_DIR/package.json.tmp"
+  mv "$CORE_JS_DIR/package.json.tmp" "$CORE_JS_DIR/package.json"
+
+  echo "DRY_RUN: validating npm publish of $PACKAGE@$VERSION"
+  (cd "$CORE_JS_DIR" && npm publish --dry-run --access public)
+
+  echo "DRY_RUN: validating docker build of $IMAGE:$VERSION"
+  docker buildx build --call=check --file apps/api/Dockerfile .
+
+  echo "DRY_RUN: skipping go tag, docker build and docker push"
+}
+
 npm_published() {
   npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1
 }
@@ -99,6 +112,11 @@ publish_docker() {
   docker push "$IMAGE:$VERSION"
   docker push "$IMAGE:latest"
 }
+
+if [ "${DRY_RUN:-0}" = "1" ]; then
+  dry_run
+  exit 0
+fi
 
 publish_npm
 publish_go_tag
