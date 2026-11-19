@@ -1,3 +1,10 @@
+## [0.22.2](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.1...api-v0.22.2) (2026-11-19)
+
+
+### Bug Fixes
+
+* **docs:** correct services directory in docs ([7f83b9a](https://github.com/PhoenixSolutionsGroup/omnibase/commit/7f83b9a2dc971060d937936c3b51b6a781c39e01))
+
 ## [0.22.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.0...api-v0.22.1) (2026-11-19)
 
 
