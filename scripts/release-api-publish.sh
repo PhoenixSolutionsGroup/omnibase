@@ -1,16 +1,19 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-VERSION=$1
+VERSION=${1:-}
 
 if [ -z "$VERSION" ]; then
   echo "Error: Version argument required"
   exit 1
 fi
 
-# Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+CORE_JS_DIR="$PROJECT_ROOT/sdk/core/js"
+PACKAGE="@omnibase/core-js"
+IMAGE="phoenixsolutionsgroup/omnibase-api"
+GO_TAG="sdk/core/go/v$VERSION"
 
 cd "$PROJECT_ROOT"
 
@@ -18,43 +21,94 @@ echo "========================================"
 echo "Publishing API release v$VERSION"
 echo "========================================"
 
-# Publish JavaScript SDK to npm. Stamp the real version here (not committed
-# to git) so the published package carries $VERSION while the tracked source
-# keeps its placeholder.
-echo "Publishing @omnibase/core-js@$VERSION to npm..."
-cd sdk/core/js
-jq --arg v "$VERSION" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
-npm publish --access public
-cd "$PROJECT_ROOT"
+npm_published() {
+  npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1
+}
 
-# Tag and push Go SDK
-echo "Tagging Go SDK with sdk/core/go/v$VERSION..."
-if git rev-parse "sdk/core/go/v$VERSION" >/dev/null 2>&1; then
-  echo "Tag sdk/core/go/v$VERSION already exists, skipping"
-else
-  git tag "sdk/core/go/v$VERSION"
-  git push origin "sdk/core/go/v$VERSION"
-fi
+publish_npm() {
+  jq --arg v "$VERSION" '.version = $v' "$CORE_JS_DIR/package.json" > "$CORE_JS_DIR/package.json.tmp"
+  mv "$CORE_JS_DIR/package.json.tmp" "$CORE_JS_DIR/package.json"
 
-# Build Docker image (context = repo root so Dockerfile can COPY sdk/core/go)
-echo "Building Docker image phoenixsolutionsgroup/omnibase-api:$VERSION..."
-docker build \
-  -f apps/api/Dockerfile \
-  -t phoenixsolutionsgroup/omnibase-api:$VERSION \
-  -t phoenixsolutionsgroup/omnibase-api:latest \
-  --build-arg VERSION=$VERSION \
-  .
+  if npm_published; then
+    echo "$PACKAGE@$VERSION already exists on npm, skipping"
+    return
+  fi
 
-# Push Docker image
-echo "Pushing Docker image..."
-docker push phoenixsolutionsgroup/omnibase-api:$VERSION
-docker push phoenixsolutionsgroup/omnibase-api:latest
+  echo "Publishing $PACKAGE@$VERSION to npm..."
+  local log status
+  log=$(mktemp)
+
+  set +e
+  (cd "$CORE_JS_DIR" && npm publish --access public) 2>&1 | tee "$log"
+  status=${PIPESTATUS[0]}
+  set -e
+
+  if [ "$status" -eq 0 ]; then
+    rm -f "$log"
+    echo "Published $PACKAGE@$VERSION"
+    return
+  fi
+
+  if npm_published; then
+    rm -f "$log"
+    echo "$PACKAGE@$VERSION is on npm despite the reported error, continuing"
+    return
+  fi
+
+  if grep -q "TLOG_CREATE_ENTRY_ERROR" "$log"; then
+    echo "Transparency log already has an entry for $PACKAGE@$VERSION, retrying without provenance"
+    rm -f "$log"
+    (cd "$CORE_JS_DIR" && npm publish --access public --provenance=false)
+    echo "Published $PACKAGE@$VERSION without provenance"
+    return
+  fi
+
+  rm -f "$log"
+  echo "Error: failed to publish $PACKAGE@$VERSION" >&2
+  exit 1
+}
+
+publish_go_tag() {
+  echo "Tagging Go SDK with $GO_TAG..."
+  if git ls-remote --exit-code --tags origin "refs/tags/$GO_TAG" >/dev/null 2>&1; then
+    echo "Tag $GO_TAG already exists on origin, skipping"
+    return
+  fi
+
+  if ! git rev-parse -q --verify "refs/tags/$GO_TAG" >/dev/null; then
+    git tag "$GO_TAG"
+  fi
+  git push origin "$GO_TAG"
+}
+
+publish_docker() {
+  echo "Building Docker image $IMAGE:$VERSION..."
+  if docker manifest inspect "$IMAGE:$VERSION" >/dev/null 2>&1; then
+    echo "Image $IMAGE:$VERSION already exists, skipping"
+    return
+  fi
+
+  docker build \
+    -f apps/api/Dockerfile \
+    -t "$IMAGE:$VERSION" \
+    -t "$IMAGE:latest" \
+    --build-arg VERSION="$VERSION" \
+    .
+
+  echo "Pushing Docker image..."
+  docker push "$IMAGE:$VERSION"
+  docker push "$IMAGE:latest"
+}
+
+publish_npm
+publish_go_tag
+publish_docker
 
 echo "========================================"
 echo "Publish complete!"
 echo "========================================"
 echo ""
 echo "Published:"
-echo "  - npm: @omnibase/core-js@$VERSION"
+echo "  - npm: $PACKAGE@$VERSION"
 echo "  - Go:  github.com/phoenixsolutionsgroup/omnibase/sdk/core/go@v$VERSION"
-echo "  - Docker: phoenixsolutionsgroup/omnibase-api:$VERSION"
+echo "  - Docker: $IMAGE:$VERSION"
