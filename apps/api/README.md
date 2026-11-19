@@ -25,8 +25,7 @@ Go REST API for OmniBase, built with Gin framework and GORM.
 │   ├── models/          # GORM data models
 │   ├── routes/          # Route registration
 │   │   └── v1/          # Version 1 routes
-│   ├── service/         # Business logic layer
-│   │   └── v1/
+│   ├── services/        # Business logic layer
 │   └── static/          # Templates and static assets
 ├── docs/                # OpenAPI 3.1 specification
 │   ├── paths/           # Endpoint definitions

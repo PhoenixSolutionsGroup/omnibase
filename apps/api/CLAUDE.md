@@ -123,8 +123,7 @@ internal/
 ├── models/         # GORM models with TableName() methods
 ├── routes/         # Route registration
 │   └── v1/            # Version 1 routes
-├── service/        # Business logic layer
-│   └── v1/
+├── services/       # Business logic layer
 └── logger/         # Structured slog logging
 ```
 
