@@ -3,8 +3,6 @@
 import { Client } from "pg";
 import { getProjectBranch } from "@/utils/get-project";
 import { fetchDatabaseConnectionString } from "../settings/actions";
-import { getOmnibaseProjectConfiguration } from "@/lib/server";
-import { V1TenantsLifecycleApi } from "@omnibase/core-js";
 
 export interface TableColumn {
   name: string;
@@ -340,30 +338,15 @@ export async function fetchTenantUsers(
   }
 }
 
+
 export async function getTenantJWT(
-  projectId: string,
-  projectBranch: string,
-  tenantId: string,
-  userId: string
+  _projectId: string,
+  _projectBranch: string,
+  _tenantId: string,
+  _userId: string
 ): Promise<{ success: boolean; token?: string; error?: string }> {
-  const project = await getProjectBranch(projectId, projectBranch);
-  if (!project) {
-    return { success: false, error: "Project not found" };
-  }
-
-  try {
-    const config = await getOmnibaseProjectConfiguration(project);
-    const tenantsApi = new V1TenantsLifecycleApi(config);
-
-    const response = await tenantsApi.getTenantJWT();
-
-    if (response.token) {
-      return { success: true, token: response.token };
-    }
-
-    return { success: false, error: "No token returned" };
-  } catch (error: any) {
-    console.error("Error getting tenant JWT:", error.message);
-    return { success: false, error: error.message };
-  }
+  return {
+    success: false,
+    error: "PostgREST tokens are no longer issued to clients",
+  };
 }

@@ -24,7 +24,6 @@ var _ MappedNullable = &CreateTenantResponse{}
 type CreateTenantResponse struct {
 	Message string `json:"message"`
 	Tenant TenantPayload `json:"tenant"`
-	Token string `json:"token"`
 }
 
 type _CreateTenantResponse CreateTenantResponse
@@ -33,11 +32,10 @@ type _CreateTenantResponse CreateTenantResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateTenantResponse(message string, tenant TenantPayload, token string) *CreateTenantResponse {
+func NewCreateTenantResponse(message string, tenant TenantPayload) *CreateTenantResponse {
 	this := CreateTenantResponse{}
 	this.Message = message
 	this.Tenant = tenant
-	this.Token = token
 	return &this
 }
 
@@ -97,30 +95,6 @@ func (o *CreateTenantResponse) SetTenant(v TenantPayload) {
 	o.Tenant = v
 }
 
-// GetToken returns the Token field value
-func (o *CreateTenantResponse) GetToken() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Token
-}
-
-// GetTokenOk returns a tuple with the Token field value
-// and a boolean to check if the value has been set.
-func (o *CreateTenantResponse) GetTokenOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Token, true
-}
-
-// SetToken sets field value
-func (o *CreateTenantResponse) SetToken(v string) {
-	o.Token = v
-}
-
 func (o CreateTenantResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -133,7 +107,6 @@ func (o CreateTenantResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
 	toSerialize["tenant"] = o.Tenant
-	toSerialize["token"] = o.Token
 	return toSerialize, nil
 }
 
@@ -144,7 +117,6 @@ func (o *CreateTenantResponse) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"message",
 		"tenant",
-		"token",
 	}
 
 	allProperties := make(map[string]interface{})

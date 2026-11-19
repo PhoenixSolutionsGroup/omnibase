@@ -61,14 +61,8 @@ OMNIBASE_API_URL=http://localhost:8080
 NEXT_PUBLIC_OMNIBASE_API_URL=http://localhost:8080
 
 # --- PostgREST ---
-OMNIBASE_POSTGREST_URL=http://localhost:8001
-NEXT_PUBLIC_OMNIBASE_POSTGREST_URL=http://localhost:8001
-
-# Static `{"role":"anon_user"}` JWT signed with the default dev JWT_SIGNING_KEY
-# below. If you override JWT_SIGNING_KEY, you MUST regenerate this (see note
-# under "Secrets" further down) or PostgREST will reject it.
-OMNIBASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbl91c2VyIn0.it2eXd3QUMdEJ-BfHGE7phoVNhiJMYqwLF2qWVwiUZU
-NEXT_PUBLIC_OMNIBASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbl91c2VyIn0.it2eXd3QUMdEJ-BfHGE7phoVNhiJMYqwLF2qWVwiUZU
+OMNIBASE_POSTGREST_URL=http://localhost:8080/api/v1/rest
+NEXT_PUBLIC_OMNIBASE_POSTGREST_URL=http://localhost:8080/api/v1/rest
 
 # --- Auth / cookies ---
 # The dashboard hosts /auth/* (login, callback, etc.), so it's the "website"
@@ -127,7 +121,7 @@ This brings up:
 | REST API | http://localhost:8080 |
 | Auth | http://localhost:4433 (public), :4434 (admin) |
 | Permissions | internal only |
-| PostgREST | http://localhost:8001 |
+| PostgREST | http://localhost:8080/api/v1/rest |
 | Postgres | localhost:5432 |
 | PgBouncer | localhost:6432 |
 | Adminer | http://localhost:8081 |
@@ -154,4 +148,4 @@ curl http://localhost:8080/health
 ```
 
 Then open http://localhost:8787 — the dashboard should load without `OMNIBASE_API_URL`
-or `OMNIBASE_ANON_KEY` undefined-env errors.
+undefined-env errors.

@@ -31,12 +31,6 @@ export interface AcceptResponse {
      * @memberof AcceptResponse
      */
     tenantId: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AcceptResponse
-     */
-    token: string;
 }
 
 /**
@@ -45,7 +39,6 @@ export interface AcceptResponse {
 export function instanceOfAcceptResponse(value: object): value is AcceptResponse {
     if (!('message' in value) || value['message'] === undefined) return false;
     if (!('tenantId' in value) || value['tenantId'] === undefined) return false;
-    if (!('token' in value) || value['token'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +54,6 @@ export function AcceptResponseFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'message': json['message'],
         'tenantId': json['tenant_id'],
-        'token': json['token'],
     };
 }
 
@@ -78,7 +70,6 @@ export function AcceptResponseToJSONTyped(value?: AcceptResponse | null, ignoreD
         
         'message': value['message'],
         'tenant_id': value['tenantId'],
-        'token': value['token'],
     };
 }
 

@@ -6,13 +6,12 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Message** | **string** |  | 
 **Tenant** | [**TenantPayload**](TenantPayload.md) |  | 
-**Token** | **string** |  | 
 
 ## Methods
 
 ### NewCreateTenantResponse
 
-`func NewCreateTenantResponse(message string, tenant TenantPayload, token string, ) *CreateTenantResponse`
+`func NewCreateTenantResponse(message string, tenant TenantPayload, ) *CreateTenantResponse`
 
 NewCreateTenantResponse instantiates a new CreateTenantResponse object
 This constructor will assign default values to properties that have it defined,
@@ -65,26 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *CreateTenantResponse) SetTenant(v TenantPayload)`
 
 SetTenant sets Tenant field to given value.
-
-
-### GetToken
-
-`func (o *CreateTenantResponse) GetToken() string`
-
-GetToken returns the Token field if non-nil, zero value otherwise.
-
-### GetTokenOk
-
-`func (o *CreateTenantResponse) GetTokenOk() (*string, bool)`
-
-GetTokenOk returns a tuple with the Token field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetToken
-
-`func (o *CreateTenantResponse) SetToken(v string)`
-
-SetToken sets Token field to given value.
 
 
 

@@ -2,7 +2,6 @@ import { createOryMiddleware } from "@ory/nextjs/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "../auth";
 import { tenantCheckMiddleware } from "./tenant_check";
-import { postgrestJWTCheckMiddleware } from "./postgrest";
 
 /**
  * Configuration options for the OmniBase middleware
@@ -55,24 +54,20 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
 /**
  * Creates a Next.js middleware function with authentication and tenant checking
  *
- * This middleware combines Ory authentication with OmniBase tenant validation
- * and PostgREST JWT management. It intercepts incoming requests to verify user
- * authentication via Ory, optionally checks if authenticated users belong to a
- * tenant, and ensures PostgREST JWT tokens are available for database access.
+ * This middleware combines Ory authentication with OmniBase tenant validation.
+ * It intercepts incoming requests to verify user authentication via Ory and
+ * optionally checks if authenticated users belong to a tenant.
  *
  * The middleware performs the following operations in order:
  * 1. Retrieves the current user session
  * 2. Validates tenant membership for configured paths (if enabled)
- * 3. Ensures PostgREST JWT token is available for database access
- * 4. Delegates remaining authentication to Ory middleware
- * 5. Merges cookies from all middleware operations
+ * 3. Delegates remaining authentication to Ory middleware
  *
  * Path matching supports both exact matches and wildcard patterns:
  * - Exact: '/dashboard' matches only '/dashboard'
  * - Prefix: '/dashboard' also matches '/dashboard/settings'
  * - Wildcard: '/api/*' matches all paths starting with '/api/'
  *
- * @param api_url - The OmniBase API URL (typically from NEXT_PUBLIC_OMNIBASE_API_URL)
  * @param config - Configuration object for middleware behavior (optional)
  * @param config.tenant_check - Enable tenant membership validation (default: true)
  * @param config.tenant_check_paths - Paths requiring tenant membership (default: ['/'])
@@ -85,9 +80,7 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
  * // middleware.ts - Basic usage with default configuration
  * import { createOmniBaseMiddleware } from '@omnibase/nextjs/middleware';
  *
- * export const middleware = createOmniBaseMiddleware(
- *   process.env.NEXT_PUBLIC_OMNIBASE_API_URL!
- * );
+ * export const middleware = createOmniBaseMiddleware();
  *
  * export const config = {
  *   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
@@ -99,7 +92,6 @@ const defaultConfig: OmnibaseMiddlewareConfig = {
  * @group Middleware
  */
 export const createOmniBaseMiddleware = (
-  api_url: string,
   config: OmnibaseMiddlewareConfig = defaultConfig
 ) => {
   const oryMiddleware = createOryMiddleware({});
@@ -109,18 +101,6 @@ export const createOmniBaseMiddleware = (
     const tenantResponse = tenantCheckMiddleware(req, session, config);
     if (tenantResponse.status !== 200) return tenantResponse;
 
-    const jwtResponse = await postgrestJWTCheckMiddleware(
-      req,
-      session,
-      api_url
-    );
-    if (jwtResponse.status !== 200) return jwtResponse;
-
-    const oryResponse = await oryMiddleware(req);
-    jwtResponse.cookies.getAll().forEach((cookie) => {
-      oryResponse.cookies.set(cookie.name, cookie.value, cookie);
-    });
-
-    return oryResponse;
+    return oryMiddleware(req);
   };
 };

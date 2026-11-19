@@ -8,7 +8,6 @@ Name | Type
 ------------ | -------------
 `message` | string
 `tenant` | [TenantPayload](TenantPayload.md)
-`token` | string
 
 ## Example
 
@@ -19,7 +18,6 @@ import type { CreateTenantResponse } from '@omnibase/core-js'
 const example = {
   "message": null,
   "tenant": null,
-  "token": null,
 } satisfies CreateTenantResponse
 
 console.log(example)

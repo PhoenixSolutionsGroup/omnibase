@@ -7,7 +7,6 @@
 Name | Type
 ------------ | -------------
 `message` | string
-`token` | string
 
 ## Example
 
@@ -17,7 +16,6 @@ import type { SwitchActiveResponse } from '@omnibase/core-js'
 // TODO: Update the object below with actual values
 const example = {
   "message": null,
-  "token": null,
 } satisfies SwitchActiveResponse
 
 console.log(example)

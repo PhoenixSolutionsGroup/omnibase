@@ -76,7 +76,6 @@ docs/IdentityCredentials.md
 docs/IdentityName.md
 docs/InvoiceLineItemResponse.md
 docs/InvoiceResponse.md
-docs/JWTResponse.md
 docs/ListRolesByTenantRow.md
 docs/ListStripeWebhooksRow.md
 docs/ListSystemTemplatesResponse.md
@@ -256,7 +255,6 @@ src/models/IdentityCredentials.ts
 src/models/IdentityName.ts
 src/models/InvoiceLineItemResponse.ts
 src/models/InvoiceResponse.ts
-src/models/JWTResponse.ts
 src/models/ListRolesByTenantRow.ts
 src/models/ListStripeWebhooksRow.ts
 src/models/ListSystemTemplatesResponse.ts

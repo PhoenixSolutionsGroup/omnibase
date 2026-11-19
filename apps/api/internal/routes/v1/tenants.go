@@ -31,7 +31,7 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 	repo := repository.New(d.Pool)
 	perms := permissions.New(cfg.PermissionsConfig.ReadURL, cfg.PermissionsConfig.WriteURL)
 	authSvc := auth.New(auth.Deps{AdminURL: cfg.AuthConfig.AuthAdminURL})
-	tenantsSvc := tenants.New(tenants.Deps{Repo: repo, Auth: authSvc, SigningKey: cfg.Database.SigningKey})
+	tenantsSvc := tenants.New(tenants.Deps{Repo: repo, Auth: authSvc})
 	rbacSvc := rbac.New(rbac.Deps{Repo: repo, Perms: perms})
 	emailSvc, err := email.New(email.Deps{
 		Repo:          repo,
@@ -119,12 +119,6 @@ func SetUpTenantRoutes(_ *gin.RouterGroup, api huma.API, d Deps) {
 		Errors:  []int{400, 401, 404, 409},
 		Summary: "Delete the current tenant", Tags: lifecycleTag,
 	}, authn.AuthSessionOrBackendKey, tenantPermission("delete_tenant"), lifecycleHandler.DeleteTenant)
-
-	register(api, d.Auth, huma.Operation{
-		OperationID: "getTenantJWT", Method: http.MethodGet, Path: "/api/v1/tenants/jwt",
-		Errors:  []int{400, 401, 403},
-		Summary: "Get JWT for the current tenant", Tags: lifecycleTag,
-	}, authn.AuthSessionOrBackendKey, nil, lifecycleHandler.GetJWT)
 
 	register(api, d.Auth, huma.Operation{
 		OperationID: "switchActiveTenant", Method: http.MethodPut, Path: "/api/v1/tenants/switch-active",

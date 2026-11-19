@@ -115,6 +115,7 @@ func StartAPI(t *testing.T, env *Env) string {
 			"JWT_SIGNING_KEY":       "test-jwt-signing-key-for-integration-tests",
 			"JWT_SECRET":            ServiceKey,
 			"API_SERVICE_KEY":       ServiceKey,
+			"POSTGREST_URL":         env.PostgRESTURL,
 			"ENCRYPTION_MASTER_KEY": "integration-test-master-key-32by",
 			"S3_ENDPOINT":           env.RustFSURL,
 			"S3_PUBLIC_ENDPOINT":    env.RustFSURL,

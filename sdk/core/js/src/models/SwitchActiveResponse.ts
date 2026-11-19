@@ -25,12 +25,6 @@ export interface SwitchActiveResponse {
      * @memberof SwitchActiveResponse
      */
     message: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SwitchActiveResponse
-     */
-    token: string;
 }
 
 /**
@@ -38,7 +32,6 @@ export interface SwitchActiveResponse {
  */
 export function instanceOfSwitchActiveResponse(value: object): value is SwitchActiveResponse {
     if (!('message' in value) || value['message'] === undefined) return false;
-    if (!('token' in value) || value['token'] === undefined) return false;
     return true;
 }
 
@@ -53,7 +46,6 @@ export function SwitchActiveResponseFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'message': json['message'],
-        'token': json['token'],
     };
 }
 
@@ -69,7 +61,6 @@ export function SwitchActiveResponseToJSONTyped(value?: SwitchActiveResponse | n
     return {
         
         'message': value['message'],
-        'token': value['token'],
     };
 }
 

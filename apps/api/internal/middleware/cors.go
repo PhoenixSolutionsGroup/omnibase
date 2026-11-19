@@ -43,7 +43,8 @@ func CORS(allowedOrigins []string) gin.HandlerFunc {
 			}
 		}
 
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, apikey, Prefer, Range, Accept-Profile, Content-Profile, X-Session-Token, X-Service-Key, X-App-Key, X-User-Id, X-Tenant-Id, X-Client-Info")
+		c.Header("Access-Control-Expose-Headers", "Content-Range, Preference-Applied, Location")
 		c.Header("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
 		if c.Request.Method == "OPTIONS" {

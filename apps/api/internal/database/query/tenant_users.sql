@@ -46,15 +46,17 @@ WHERE tenant_id = $1 AND user_id = $2;
 DELETE FROM auth.tenant_users
 WHERE tenant_id = $1 AND user_id = $2;
 
--- name: DeactivateAllUserTenants :exec
-UPDATE auth.tenant_users
-SET is_active = false
-WHERE user_id = $1;
-
--- name: ActivateUserTenant :exec
+-- name: SetActiveUserTenant :exec
+WITH deactivated AS (
+    UPDATE auth.tenant_users
+    SET is_active = false
+    WHERE auth.tenant_users.user_id = $1 AND auth.tenant_users.tenant_id <> $2
+    RETURNING 1
+)
 UPDATE auth.tenant_users
 SET is_active = true
-WHERE user_id = $1 AND tenant_id = $2;
+WHERE auth.tenant_users.user_id = $1 AND auth.tenant_users.tenant_id = $2
+  AND (SELECT count(*) FROM deactivated) >= 0;
 
 -- name: CreateTenantUser :one
 INSERT INTO auth.tenant_users (id, tenant_id, user_id, role, is_active)

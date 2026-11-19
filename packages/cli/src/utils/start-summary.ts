@@ -15,7 +15,7 @@ export const CONTROL_PLANE_SERVICES: SummaryEntry[] = [
   { name: "  Auth", url: `${API_URL}/api/v1/auth` },
   { name: "  Permissions", url: `${API_URL}/api/v1/permissions` },
   { name: "  Database", url: `${API_URL}/api/v1/database` },
-  { name: "Data API (PostgREST)", url: "http://localhost:8001" },
+  { name: "  Data API (PostgREST)", url: `${API_URL}/api/v1/rest` },
   { name: "PostgreSQL", url: "localhost:5432" },
   { name: "PgBouncer", url: "localhost:6432" },
   { name: "Adminer (DB UI)", url: "http://localhost:8081" },

@@ -55,6 +55,10 @@ export type Project = Omit<
   branch_name: string;
   name: string;
   tenant_id: string;
+  api_url: string | null;
+  postgrest_url: string | null;
+  database_host: string | null;
+  database_pooler_host: string | null;
 };
 
 interface ProjectProvisioningDashboardProps {

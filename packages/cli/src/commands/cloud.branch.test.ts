@@ -76,7 +76,8 @@ describe("buildBranchEnv", () => {
   test("derives branch API and dashboard URLs from the branch host", () => {
     const env = buildBranchEnv({
       apiUrl: "https://my-project-abc.omnibase-projects.app",
-      postgrestUrl: "https://my-project-abc.omnibase-projects.app/rest/v1",
+      postgrestUrl:
+        "https://my-project-abc.omnibase-projects.app/api/v1/rest",
       serviceKey: "svc_key",
       managedHostingUrl: "https://api.omnibase.tech",
       workerDomain: "omnibase-workers.app",
@@ -90,7 +91,7 @@ describe("buildBranchEnv", () => {
       "https://my-project-abc.omnibase-projects.app",
     );
     expect(env.OMNIBASE_POSTGREST_URL).toBe(
-      "https://my-project-abc.omnibase-projects.app/rest/v1",
+      "https://my-project-abc.omnibase-projects.app/api/v1/rest",
     );
     expect(env.NEXT_PUBLIC_WEBSITE_URL).toBe(
       "https://my-project-abc-dashboard.omnibase-workers.app",

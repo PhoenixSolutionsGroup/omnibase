@@ -152,8 +152,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       // Database
       if (project.postgrest_url)
         envVars.push(`OMNIBASE_POSTGREST_URL=${project.postgrest_url}`);
-      if (project.database_anon_key)
-        envVars.push(`OMNIBASE_ANON_KEY=${project.database_anon_key}`);
       if (project.database_host)
         envVars.push(`OMNIBASE_DATABASE_HOST=${project.database_host}`);
       if (project.database_port)
@@ -342,13 +340,6 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
       // TODO: Possibly add 'provider' here that shows database provider
       items: [
         { label: "PostgREST URL", value: project.postgrest_url },
-        { label: "Anon Key", value: project.database_anon_key },
-        {
-          label: "PostgREST Service Key",
-          value: project.database_service_key_encrypted,
-          sensitive: true,
-          encryptedField: "postgrest_service_key",
-        },
         { label: "Database Host", value: project.database_host },
         { label: "Database Port", value: project.database_port?.toString() },
         { label: "Database Name", value: project.database_name },

@@ -1,6 +1,16 @@
 import { createServerClient } from "@/lib/server";
 import { cache } from "react";
 
+function withUrls<T extends { host: string | null }>(branch: T) {
+  return {
+    ...branch,
+    api_url: branch.host ? `https://${branch.host}` : null,
+    postgrest_url: branch.host ? `https://${branch.host}/api/v1/rest` : null,
+    database_host: branch.host,
+    database_pooler_host: branch.host,
+  };
+}
+
 export const getProjectBranch = cache(
   async (projectId: string, branchName: string) => {
     const db = await createServerClient();
@@ -18,7 +28,7 @@ export const getProjectBranch = cache(
 
     const { project, name, ...branch } = data;
     return {
-      ...branch,
+      ...withUrls(branch),
       name: project.name,
       tenant_id: project.tenant_id,
       branch_name: name,
@@ -51,7 +61,7 @@ export const getProjectBranches = cache(
     }
 
     return data.map(({ project, name, ...branch }) => ({
-      ...branch,
+      ...withUrls(branch),
       name: project.name,
       tenant_id: project.tenant_id,
       branch_name: name,
@@ -73,7 +83,7 @@ export const getAllProjectBranches = cache(async () => {
   }
 
   return data.map(({ project, name, ...branch }) => ({
-    ...branch,
+    ...withUrls(branch),
     name: project.name,
     tenant_id: project.tenant_id,
     branch_name: name,

@@ -49,6 +49,21 @@ services:
       postgres:
         condition: service_healthy
 
+  postgrest:
+    image: postgrest/postgrest:v14.3
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/db
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon_user
+      PGRST_JWT_SECRET: test-jwt-signing-key-for-integration-tests
+      PGRST_SERVER_PORT: "3000"
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+    ports:
+      - target: 3000
+        protocol: tcp
+
   auth-migrate:
     image: phoenixsolutionsgroup/omnibase-auth:latest
     environment:

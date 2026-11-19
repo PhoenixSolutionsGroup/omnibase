@@ -13,6 +13,7 @@ import (
 	"api/internal/logger"
 	"api/internal/middleware"
 	v1_routes "api/internal/routes/v1"
+	"api/internal/services/sessioncache"
 	namespaces "api/permissions"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -92,7 +93,17 @@ func New(cfg *config.Config) *gin.Engine {
 	r.GET("/health", healthHandler.HealthLive)
 	r.GET("/health/ready", healthHandler.HealthReady)
 
-	BuildAPI(r, v1_routes.Deps{Cfg: cfg, Pool: pool, DB: db})
+	sessionCache := sessioncache.New(sessioncache.Deps{
+		TTL:        cfg.SessionCacheConfig.TTL,
+		MaxEntries: cfg.SessionCacheConfig.MaxEntries,
+	})
+
+	BuildAPI(r, v1_routes.Deps{
+		Cfg:  cfg,
+		Pool: pool,
+		DB:   db,
+		Auth: middleware.NewAuthMiddleware(cfg, db, sessionCache),
+	})
 
 	logger.Logger.Debug("Setting up auth proxy fallback routes")
 	authProxyHandler := proxy.New(proxy.Deps{

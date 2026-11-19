@@ -5,13 +5,12 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Message** | **string** |  | 
-**Token** | **string** |  | 
 
 ## Methods
 
 ### NewSwitchActiveResponse
 
-`func NewSwitchActiveResponse(message string, token string, ) *SwitchActiveResponse`
+`func NewSwitchActiveResponse(message string, ) *SwitchActiveResponse`
 
 NewSwitchActiveResponse instantiates a new SwitchActiveResponse object
 This constructor will assign default values to properties that have it defined,
@@ -44,26 +43,6 @@ and a boolean to check if the value has been set.
 `func (o *SwitchActiveResponse) SetMessage(v string)`
 
 SetMessage sets Message field to given value.
-
-
-### GetToken
-
-`func (o *SwitchActiveResponse) GetToken() string`
-
-GetToken returns the Token field if non-nil, zero value otherwise.
-
-### GetTokenOk
-
-`func (o *SwitchActiveResponse) GetTokenOk() (*string, bool)`
-
-GetTokenOk returns a tuple with the Token field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetToken
-
-`func (o *SwitchActiveResponse) SetToken(v string)`
-
-SetToken sets Token field to given value.
 
 
 

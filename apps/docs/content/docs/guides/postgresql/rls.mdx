@@ -40,6 +40,23 @@ SELECT auth.has_any_relation('StorageObject', 'object-uuid', ARRAY['owner', 'can
 
 ---
 
+## Database Roles
+
+PostgREST runs every request as one of two roles:
+
+| Role | Used when | Access |
+|------|-----------|--------|
+| `anon_user` | No session, app key, or service key | Public/read-only access |
+| `authenticated` | Valid session or app key with an active tenant | Member of `anon_user`; user-scoped access |
+
+`authenticated` inherits `anon_user`, so existing `GRANT ... TO anon_user` and `TO anon_user` policies keep applying to logged-in users. Use `TO authenticated` when a policy must only apply to logged-in users, and grant writes to `authenticated`:
+
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO authenticated;
+```
+
+---
+
 ## Writing Custom RLS Policies
 
 ### 1. Create Your Table
@@ -59,7 +76,7 @@ CREATE TABLE projects (
 
 ```sql
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user, authenticated;
 ```
 
 ### 3. Add a Policy
@@ -67,6 +84,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON projects TO anon_user;
 ```sql
 CREATE POLICY tenant_isolation ON projects
   FOR ALL
+  TO anon_user, authenticated
   USING (tenant_id = auth.active_tenant_id()::uuid)
   WITH CHECK (tenant_id = auth.active_tenant_id()::uuid);
 ```

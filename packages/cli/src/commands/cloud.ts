@@ -722,7 +722,7 @@ export function buildBranchEnv(input: BranchEnvInput): Record<string, string> {
     input.dashboardUrl ?? `https://${composedSlug}-dashboard.${workerDomain}`
   ).replace(/\/+$/, "");
   const postgrestUrl = (
-    input.postgrestUrl ?? `${apiUrl}/rest/v1`
+    input.postgrestUrl ?? `${apiUrl}/api/v1/rest`
   ).replace(/\/+$/, "");
 
   return {

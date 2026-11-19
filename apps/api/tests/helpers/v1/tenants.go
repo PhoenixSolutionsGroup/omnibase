@@ -100,31 +100,13 @@ func ListUserTenants(t *testing.T, client *sdk.APIClient, userID string) []sdk.U
 	return out.Tenants
 }
 
-func GetTenantJWT(t *testing.T, client *sdk.APIClient, userID, tenantID string) string {
-	t.Helper()
-	out, resp, err := client.V1TenantsLifecycleAPI.GetTenantJWT(helpers.CtxWithUserTenant(userID, tenantID)).
-		Execute()
-	helpers.EnsureOK(t, resp, err, "getTenantJWT")
-	require.NotNil(t, out)
-	return out.Token
-}
-
-func GetTenantJWTRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {
-	t.Helper()
-	_, resp, err := client.V1TenantsLifecycleAPI.GetTenantJWT(helpers.CtxWithUserTenant(userID, tenantID)).
-		Execute()
-	return resp, err
-}
-
-func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) string {
+func SwitchActiveTenant(t *testing.T, client *sdk.APIClient, userID, tenantID string) {
 	t.Helper()
 	req := sdk.SwitchActiveRequest{TenantId: tenantID}
-	out, resp, err := client.V1TenantsLifecycleAPI.SwitchActiveTenant(helpers.CtxWithUser(userID)).
+	_, resp, err := client.V1TenantsLifecycleAPI.SwitchActiveTenant(helpers.CtxWithUser(userID)).
 		SwitchActiveRequest(req).
 		Execute()
 	helpers.EnsureOK(t, resp, err, "switchActiveTenant")
-	require.NotNil(t, out)
-	return out.Token
 }
 
 func SwitchActiveTenantRaw(t *testing.T, client *sdk.APIClient, userID, tenantID string) (*http.Response, error) {

@@ -39,63 +39,6 @@ func (_m *MockQuerier) EXPECT() *MockQuerier_Expecter {
 	return &MockQuerier_Expecter{mock: &_m.Mock}
 }
 
-// ActivateUserTenant provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) ActivateUserTenant(ctx context.Context, arg repository.ActivateUserTenantParams) error {
-	ret := _mock.Called(ctx, arg)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ActivateUserTenant")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.ActivateUserTenantParams) error); ok {
-		r0 = returnFunc(ctx, arg)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockQuerier_ActivateUserTenant_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ActivateUserTenant'
-type MockQuerier_ActivateUserTenant_Call struct {
-	*mock.Call
-}
-
-// ActivateUserTenant is a helper method to define mock.On call
-//   - ctx context.Context
-//   - arg repository.ActivateUserTenantParams
-func (_e *MockQuerier_Expecter) ActivateUserTenant(ctx any, arg any) *MockQuerier_ActivateUserTenant_Call {
-	return &MockQuerier_ActivateUserTenant_Call{Call: _e.mock.On("ActivateUserTenant", ctx, arg)}
-}
-
-func (_c *MockQuerier_ActivateUserTenant_Call) Run(run func(ctx context.Context, arg repository.ActivateUserTenantParams)) *MockQuerier_ActivateUserTenant_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 repository.ActivateUserTenantParams
-		if args[1] != nil {
-			arg1 = args[1].(repository.ActivateUserTenantParams)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockQuerier_ActivateUserTenant_Call) Return(err error) *MockQuerier_ActivateUserTenant_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockQuerier_ActivateUserTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.ActivateUserTenantParams) error) *MockQuerier_ActivateUserTenant_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // AddUserToRole provides a mock function for the type MockQuerier
 func (_mock *MockQuerier) AddUserToRole(ctx context.Context, arg repository.AddUserToRoleParams) error {
 	ret := _mock.Called(ctx, arg)
@@ -860,63 +803,6 @@ func (_c *MockQuerier_CreateTenantUser_Call) Return(authTenantUser repository.Au
 }
 
 func (_c *MockQuerier_CreateTenantUser_Call) RunAndReturn(run func(ctx context.Context, arg repository.CreateTenantUserParams) (repository.AuthTenantUser, error)) *MockQuerier_CreateTenantUser_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// DeactivateAllUserTenants provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) DeactivateAllUserTenants(ctx context.Context, userID string) error {
-	ret := _mock.Called(ctx, userID)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeactivateAllUserTenants")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = returnFunc(ctx, userID)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockQuerier_DeactivateAllUserTenants_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeactivateAllUserTenants'
-type MockQuerier_DeactivateAllUserTenants_Call struct {
-	*mock.Call
-}
-
-// DeactivateAllUserTenants is a helper method to define mock.On call
-//   - ctx context.Context
-//   - userID string
-func (_e *MockQuerier_Expecter) DeactivateAllUserTenants(ctx any, userID any) *MockQuerier_DeactivateAllUserTenants_Call {
-	return &MockQuerier_DeactivateAllUserTenants_Call{Call: _e.mock.On("DeactivateAllUserTenants", ctx, userID)}
-}
-
-func (_c *MockQuerier_DeactivateAllUserTenants_Call) Run(run func(ctx context.Context, userID string)) *MockQuerier_DeactivateAllUserTenants_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 string
-		if args[1] != nil {
-			arg1 = args[1].(string)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockQuerier_DeactivateAllUserTenants_Call) Return(err error) *MockQuerier_DeactivateAllUserTenants_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockQuerier_DeactivateAllUserTenants_Call) RunAndReturn(run func(ctx context.Context, userID string) error) *MockQuerier_DeactivateAllUserTenants_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -3341,6 +3227,63 @@ func (_c *MockQuerier_RemoveUserFromRole_Call) Return(err error) *MockQuerier_Re
 }
 
 func (_c *MockQuerier_RemoveUserFromRole_Call) RunAndReturn(run func(ctx context.Context, arg repository.RemoveUserFromRoleParams) error) *MockQuerier_RemoveUserFromRole_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SetActiveUserTenant provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) SetActiveUserTenant(ctx context.Context, arg repository.SetActiveUserTenantParams) error {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SetActiveUserTenant")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.SetActiveUserTenantParams) error); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_SetActiveUserTenant_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetActiveUserTenant'
+type MockQuerier_SetActiveUserTenant_Call struct {
+	*mock.Call
+}
+
+// SetActiveUserTenant is a helper method to define mock.On call
+//   - ctx context.Context
+//   - arg repository.SetActiveUserTenantParams
+func (_e *MockQuerier_Expecter) SetActiveUserTenant(ctx any, arg any) *MockQuerier_SetActiveUserTenant_Call {
+	return &MockQuerier_SetActiveUserTenant_Call{Call: _e.mock.On("SetActiveUserTenant", ctx, arg)}
+}
+
+func (_c *MockQuerier_SetActiveUserTenant_Call) Run(run func(ctx context.Context, arg repository.SetActiveUserTenantParams)) *MockQuerier_SetActiveUserTenant_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 repository.SetActiveUserTenantParams
+		if args[1] != nil {
+			arg1 = args[1].(repository.SetActiveUserTenantParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockQuerier_SetActiveUserTenant_Call) Return(err error) *MockQuerier_SetActiveUserTenant_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_SetActiveUserTenant_Call) RunAndReturn(run func(ctx context.Context, arg repository.SetActiveUserTenantParams) error) *MockQuerier_SetActiveUserTenant_Call {
 	_c.Call.Return(run)
 	return _c
 }

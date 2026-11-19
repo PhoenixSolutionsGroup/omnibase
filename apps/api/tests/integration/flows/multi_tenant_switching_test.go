@@ -34,7 +34,6 @@ func TestMultiTenantSwitching(t *testing.T) {
 
 	t2Resp := h.CreateTenant(t, client, userID, "Tenant Two "+id, email)
 	t2 := t2Resp.Tenant
-	t2Token := t2Resp.Token
 
 	t.Run("both tenants in list", func(t *testing.T) {
 		tenants := h.ListUserTenants(t, client, userID)
@@ -49,29 +48,14 @@ func TestMultiTenantSwitching(t *testing.T) {
 		assertActive(t, h.ListUserTenants(t, client, userID), t1.Id, false)
 	})
 
-	t1SwitchToken := h.SwitchActiveTenant(t, client, userID, t1.Id)
-
-	t.Run("switch to tenant1 returns different token", func(t *testing.T) {
-		assert.NotEmpty(t, t1SwitchToken)
-		assert.NotEqual(t, t2Token, t1SwitchToken)
-	})
+	h.SwitchActiveTenant(t, client, userID, t1.Id)
 
 	t.Run("after switch: tenant1 active, tenant2 inactive", func(t *testing.T) {
 		assertActive(t, h.ListUserTenants(t, client, userID), t1.Id, true)
 		assertActive(t, h.ListUserTenants(t, client, userID), t2.Id, false)
 	})
 
-	t.Run("get tenant1 jwt after switch", func(t *testing.T) {
-		token := h.GetTenantJWT(t, client, userID, t1.Id)
-		assert.NotEmpty(t, token)
-	})
-
-	t2SwitchToken := h.SwitchActiveTenant(t, client, userID, t2.Id)
-
-	t.Run("switch back to tenant2 returns different token from tenant1", func(t *testing.T) {
-		assert.NotEmpty(t, t2SwitchToken)
-		assert.NotEqual(t, t1SwitchToken, t2SwitchToken)
-	})
+	h.SwitchActiveTenant(t, client, userID, t2.Id)
 
 	t.Run("final state: tenant2 active, tenant1 inactive", func(t *testing.T) {
 		assertActive(t, h.ListUserTenants(t, client, userID), t2.Id, true)

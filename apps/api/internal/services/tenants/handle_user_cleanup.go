@@ -28,7 +28,7 @@ func (s *Service) HandleUserCleanup(ctx context.Context, userID uuid.UUID) error
 	if err != nil {
 		return fmt.Errorf("%w: %w", HandleUserCleanupError, err)
 	}
-	if _, err := s.SetActive(ctx, userID, firstTenant); err != nil {
+	if err := s.SetActive(ctx, userID, firstTenant); err != nil {
 		return fmt.Errorf("%w: %w", HandleUserCleanupError, err)
 	}
 	return nil

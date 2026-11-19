@@ -8,7 +8,6 @@ Method | HTTP request | Description
 [**DeleteTenant**](V1TenantsLifecycleAPI.md#DeleteTenant) | **Delete** /api/v1/tenants | Delete the current tenant
 [**GetTenantByID**](V1TenantsLifecycleAPI.md#GetTenantByID) | **Get** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
 [**GetTenantByStripeCustomerID**](V1TenantsLifecycleAPI.md#GetTenantByStripeCustomerID) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-[**GetTenantJWT**](V1TenantsLifecycleAPI.md#GetTenantJWT) | **Get** /api/v1/tenants/jwt | Get JWT for the current tenant
 [**SwitchActiveTenant**](V1TenantsLifecycleAPI.md#SwitchActiveTenant) | **Put** /api/v1/tenants/switch-active | Switch the active tenant
 
 
@@ -261,65 +260,6 @@ Name | Type | Description  | Notes
 ### Authorization
 
 [ServiceKeyAuth](../README.md#ServiceKeyAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json, application/problem+json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## GetTenantJWT
-
-> JWTResponse GetTenantJWT(ctx).Execute()
-
-Get JWT for the current tenant
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	openapiclient "github.com/phoenixsolutionsgroup/omnibase/sdk/core/go"
-)
-
-func main() {
-
-	configuration := openapiclient.NewConfiguration()
-	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.V1TenantsLifecycleAPI.GetTenantJWT(context.Background()).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V1TenantsLifecycleAPI.GetTenantJWT``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `GetTenantJWT`: JWTResponse
-	fmt.Fprintf(os.Stdout, "Response from `V1TenantsLifecycleAPI.GetTenantJWT`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetTenantJWTRequest struct via the builder pattern
-
-
-### Return type
-
-[**JWTResponse**](JWTResponse.md)
-
-### Authorization
-
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
 
 ### HTTP request headers
 

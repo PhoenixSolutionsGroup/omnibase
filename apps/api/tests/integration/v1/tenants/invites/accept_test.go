@@ -35,9 +35,8 @@ func TestInvitesAccept(t *testing.T) {
 	invite := h.CreateInvite(t, client, ownerID, tenant.Id, invitedEmail, "member")
 	acceptResp := h.AcceptInvite(t, client, invitedID, invite.Token)
 
-	t.Run("accept returns tenant_id + token", func(t *testing.T) {
+	t.Run("accept returns tenant_id", func(t *testing.T) {
 		assert.Equal(t, tenant.Id, acceptResp.TenantId)
-		assert.NotEmpty(t, acceptResp.Token)
 	})
 
 	t.Run("invited user appears in tenant users list", func(t *testing.T) {
@@ -62,11 +61,6 @@ func TestInvitesAccept(t *testing.T) {
 			}
 		}
 		require.True(t, found, "tenant should appear in invited user's list")
-	})
-
-	t.Run("invited user can generate tenant JWT", func(t *testing.T) {
-		token := h.GetTenantJWT(t, client, invitedID, tenant.Id)
-		assert.NotEmpty(t, token)
 	})
 
 	t.Run("invited user gets role permissions (view_users)", func(t *testing.T) {

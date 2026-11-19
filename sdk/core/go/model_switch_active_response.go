@@ -23,7 +23,6 @@ var _ MappedNullable = &SwitchActiveResponse{}
 // SwitchActiveResponse struct for SwitchActiveResponse
 type SwitchActiveResponse struct {
 	Message string `json:"message"`
-	Token string `json:"token"`
 }
 
 type _SwitchActiveResponse SwitchActiveResponse
@@ -32,10 +31,9 @@ type _SwitchActiveResponse SwitchActiveResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSwitchActiveResponse(message string, token string) *SwitchActiveResponse {
+func NewSwitchActiveResponse(message string) *SwitchActiveResponse {
 	this := SwitchActiveResponse{}
 	this.Message = message
-	this.Token = token
 	return &this
 }
 
@@ -71,30 +69,6 @@ func (o *SwitchActiveResponse) SetMessage(v string) {
 	o.Message = v
 }
 
-// GetToken returns the Token field value
-func (o *SwitchActiveResponse) GetToken() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Token
-}
-
-// GetTokenOk returns a tuple with the Token field value
-// and a boolean to check if the value has been set.
-func (o *SwitchActiveResponse) GetTokenOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Token, true
-}
-
-// SetToken sets field value
-func (o *SwitchActiveResponse) SetToken(v string) {
-	o.Token = v
-}
-
 func (o SwitchActiveResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -106,7 +80,6 @@ func (o SwitchActiveResponse) MarshalJSON() ([]byte, error) {
 func (o SwitchActiveResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
-	toSerialize["token"] = o.Token
 	return toSerialize, nil
 }
 
@@ -116,7 +89,6 @@ func (o *SwitchActiveResponse) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"message",
-		"token",
 	}
 
 	allProperties := make(map[string]interface{})

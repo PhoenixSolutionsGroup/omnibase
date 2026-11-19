@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	SetActiveError    = errors.New("Failed to set active tenant")
+	SetActiveError       = errors.New("Failed to set active tenant")
 	NotTenantMemberError = errors.New("User is not a member of this tenant")
 )
 
-func (s *Service) SetActive(ctx context.Context, userID, tenantID uuid.UUID) (string, error) {
+func (s *Service) SetActive(ctx context.Context, userID, tenantID uuid.UUID) error {
 	logger.Logger.Debug("Setting active tenant", "user_id", userID, "tenant_id", tenantID)
 
 	if _, err := s.repo.GetTenantUser(ctx, repository.GetTenantUserParams{
@@ -25,24 +25,16 @@ func (s *Service) SetActive(ctx context.Context, userID, tenantID uuid.UUID) (st
 		UserID:   userID.String(),
 	}); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return "", NotTenantMemberError
+			return NotTenantMemberError
 		}
-		return "", fmt.Errorf("%w: %w", SetActiveError, err)
+		return fmt.Errorf("%w: %w", SetActiveError, err)
 	}
 
-	if err := s.repo.DeactivateAllUserTenants(ctx, userID.String()); err != nil {
-		return "", fmt.Errorf("%w: %w", SetActiveError, err)
-	}
-	if err := s.repo.ActivateUserTenant(ctx, repository.ActivateUserTenantParams{
+	if err := s.repo.SetActiveUserTenant(ctx, repository.SetActiveUserTenantParams{
 		UserID:   userID.String(),
 		TenantID: tenantID.String(),
 	}); err != nil {
-		return "", fmt.Errorf("%w: %w", SetActiveError, err)
+		return fmt.Errorf("%w: %w", SetActiveError, err)
 	}
-
-	token, err := s.CreateJWT(ctx, userID, tenantID)
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return nil
 }

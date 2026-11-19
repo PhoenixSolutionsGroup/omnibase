@@ -19,7 +19,6 @@ type SwitchActiveRequest struct {
 }
 
 type SwitchActiveResponse struct {
-	Token   string `json:"token"   example:"eyJhbGciOiJIUzI1NiIs..."`
 	Message string `json:"message" example:"Successfully switched tenants"`
 }
 
@@ -42,8 +41,7 @@ func (h *Handler) SwitchActive(ctx context.Context, in *SwitchActiveInput) (*Swi
 		return nil, huma.Error400BadRequest("Invalid tenant_id")
 	}
 
-	token, err := h.tenants.SetActive(ctx, in.UserID, tenantUuid)
-	if err != nil {
+	if err := h.tenants.SetActive(ctx, in.UserID, tenantUuid); err != nil {
 		if errors.Is(err, tenants.NotTenantMemberError) {
 			return nil, huma.Error404NotFound("Tenant not found or you don't have access to it")
 		}
@@ -51,7 +49,6 @@ func (h *Handler) SwitchActive(ctx context.Context, in *SwitchActiveInput) (*Swi
 	}
 
 	return &SwitchActiveOutput{Body: SwitchActiveResponse{
-		Token:   token,
 		Message: "Successfully switched tenants",
 	}}, nil
 }

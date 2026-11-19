@@ -118,7 +118,6 @@ All URIs are relative to *https://api.omnibase.tech*
 *V1TenantsLifecycleApi* | [**deleteTenant**](docs/V1TenantsLifecycleApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete the current tenant
 *V1TenantsLifecycleApi* | [**getTenantByID**](docs/V1TenantsLifecycleApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
 *V1TenantsLifecycleApi* | [**getTenantByStripeCustomerID**](docs/V1TenantsLifecycleApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-*V1TenantsLifecycleApi* | [**getTenantJWT**](docs/V1TenantsLifecycleApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get JWT for the current tenant
 *V1TenantsLifecycleApi* | [**switchActiveTenant**](docs/V1TenantsLifecycleApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch the active tenant
 *V1TenantsRolesApi* | [**createRole**](docs/V1TenantsRolesApi.md#createroleoperation) | **POST** /api/v1/tenants/roles | Create a role
 *V1TenantsRolesApi* | [**deleteRole**](docs/V1TenantsRolesApi.md#deleterole) | **DELETE** /api/v1/tenants/roles/{role_id} | Delete a role
@@ -212,7 +211,6 @@ All URIs are relative to *https://api.omnibase.tech*
 - [IdentityName](docs/IdentityName.md)
 - [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
 - [InvoiceResponse](docs/InvoiceResponse.md)
-- [JWTResponse](docs/JWTResponse.md)
 - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
 - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
 - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)

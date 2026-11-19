@@ -10,22 +10,6 @@ import (
 	"time"
 )
 
-const activateUserTenant = `-- name: ActivateUserTenant :exec
-UPDATE auth.tenant_users
-SET is_active = true
-WHERE user_id = $1 AND tenant_id = $2
-`
-
-type ActivateUserTenantParams struct {
-	UserID   string `json:"user_id"`
-	TenantID string `json:"tenant_id"`
-}
-
-func (q *Queries) ActivateUserTenant(ctx context.Context, arg ActivateUserTenantParams) error {
-	_, err := q.db.Exec(ctx, activateUserTenant, arg.UserID, arg.TenantID)
-	return err
-}
-
 const countOwnersByTenant = `-- name: CountOwnersByTenant :one
 SELECT COUNT(*) FROM auth.tenant_users
 WHERE tenant_id = $1 AND role = 'owner'
@@ -70,17 +54,6 @@ func (q *Queries) CreateTenantUser(ctx context.Context, arg CreateTenantUserPara
 		&i.JoinedAt,
 	)
 	return i, err
-}
-
-const deactivateAllUserTenants = `-- name: DeactivateAllUserTenants :exec
-UPDATE auth.tenant_users
-SET is_active = false
-WHERE user_id = $1
-`
-
-func (q *Queries) DeactivateAllUserTenants(ctx context.Context, userID string) error {
-	_, err := q.db.Exec(ctx, deactivateAllUserTenants, userID)
-	return err
 }
 
 const deleteTenantUser = `-- name: DeleteTenantUser :exec
@@ -280,6 +253,29 @@ func (q *Queries) ListTenantsForUser(ctx context.Context, userID string) ([]List
 		return nil, err
 	}
 	return items, nil
+}
+
+const setActiveUserTenant = `-- name: SetActiveUserTenant :exec
+WITH deactivated AS (
+    UPDATE auth.tenant_users
+    SET is_active = false
+    WHERE auth.tenant_users.user_id = $1 AND auth.tenant_users.tenant_id <> $2
+    RETURNING 1
+)
+UPDATE auth.tenant_users
+SET is_active = true
+WHERE auth.tenant_users.user_id = $1 AND auth.tenant_users.tenant_id = $2
+  AND (SELECT count(*) FROM deactivated) >= 0
+`
+
+type SetActiveUserTenantParams struct {
+	UserID   string `json:"user_id"`
+	TenantID string `json:"tenant_id"`
+}
+
+func (q *Queries) SetActiveUserTenant(ctx context.Context, arg SetActiveUserTenantParams) error {
+	_, err := q.db.Exec(ctx, setActiveUserTenant, arg.UserID, arg.TenantID)
+	return err
 }
 
 const updateTenantUserRole = `-- name: UpdateTenantUserRole :exec

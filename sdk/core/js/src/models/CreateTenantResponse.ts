@@ -39,12 +39,6 @@ export interface CreateTenantResponse {
      * @memberof CreateTenantResponse
      */
     tenant: TenantPayload;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTenantResponse
-     */
-    token: string;
 }
 
 /**
@@ -53,7 +47,6 @@ export interface CreateTenantResponse {
 export function instanceOfCreateTenantResponse(value: object): value is CreateTenantResponse {
     if (!('message' in value) || value['message'] === undefined) return false;
     if (!('tenant' in value) || value['tenant'] === undefined) return false;
-    if (!('token' in value) || value['token'] === undefined) return false;
     return true;
 }
 
@@ -69,7 +62,6 @@ export function CreateTenantResponseFromJSONTyped(json: any, ignoreDiscriminator
         
         'message': json['message'],
         'tenant': TenantPayloadFromJSON(json['tenant']),
-        'token': json['token'],
     };
 }
 
@@ -86,7 +78,6 @@ export function CreateTenantResponseToJSONTyped(value?: CreateTenantResponse | n
         
         'message': value['message'],
         'tenant': TenantPayloadToJSON(value['tenant']),
-        'token': value['token'],
     };
 }
 
