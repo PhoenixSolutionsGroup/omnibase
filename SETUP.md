@@ -60,10 +60,6 @@ Copy this in as a starting point:
 OMNIBASE_API_URL=http://localhost:8080
 NEXT_PUBLIC_OMNIBASE_API_URL=http://localhost:8080
 
-# --- PostgREST ---
-OMNIBASE_POSTGREST_URL=http://localhost:8080/api/v1/rest
-NEXT_PUBLIC_OMNIBASE_POSTGREST_URL=http://localhost:8080/api/v1/rest
-
 # --- Auth / cookies ---
 # The dashboard hosts /auth/* (login, callback, etc.), so it's the "website"
 # as far as the auth service is concerned. omnibase start runs it on :8787.
