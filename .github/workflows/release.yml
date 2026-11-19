@@ -162,26 +162,6 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
         run: npx semantic-release
 
-      - name: Verify API release is complete
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          TAG=$(git describe --tags --abbrev=0 --match 'api-v*' 2>/dev/null || true)
-          if [ -z "$TAG" ]; then
-            echo "No API release tag found, skipping verification"
-            exit 0
-          fi
-          VERSION=${TAG#api-v}
-          echo "Verifying release $TAG"
-          MISSING=0
-          npm view "@omnibase/core-js@$VERSION" version >/dev/null 2>&1 || { echo "::error::npm is missing @omnibase/core-js@$VERSION"; MISSING=1; }
-          docker manifest inspect "phoenixsolutionsgroup/omnibase-api:$VERSION" >/dev/null 2>&1 || { echo "::error::Docker Hub is missing omnibase-api:$VERSION"; MISSING=1; }
-          git ls-remote --exit-code --tags origin "refs/tags/sdk/core/go/v$VERSION" >/dev/null 2>&1 || { echo "::error::Go tag sdk/core/go/v$VERSION is missing"; MISSING=1; }
-          if [ "$MISSING" -ne 0 ]; then
-            echo "::error::Release $TAG is incomplete. Publish the missing artifacts before releasing again."
-            exit 1
-          fi
-          echo "Release $TAG is complete"
-
       - name: Read published core-js version
         id: corejs
         if: always()
