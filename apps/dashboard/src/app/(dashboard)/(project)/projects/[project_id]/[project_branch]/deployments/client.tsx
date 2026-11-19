@@ -247,15 +247,6 @@ export function DeploymentClient({
                     {currentWorker.worker_url}
                   </span>
                 </span>
-                <span className="text-muted-foreground">
-                  Version: <span className="text-foreground">a1f9c2e</span>
-                </span>
-                <span className="text-muted-foreground">
-                  Deployed: <span className="text-foreground">2h ago</span>
-                </span>
-                <span className="text-muted-foreground">
-                  Path: <span className="text-foreground">./workers/api</span>
-                </span>
               </div>
             </Alert>
 
