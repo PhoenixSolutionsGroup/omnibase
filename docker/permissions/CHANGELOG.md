@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.4.0...permissions-v0.5.0) (2026-11-19)
+
+
+### Features
+
+* **cli:** pin service versions in omnibase init and drop docker-compose sync ([985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906)), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
+* **permissions:** add email send and template management permissions ([2f2cd52](https://github.com/PhoenixSolutionsGroup/omnibase/commit/2f2cd528291ed4e61f0cd71a10230e40ec65e962))
+* **permissions:** API owns required namespaces and validates projects ([1e94d44](https://github.com/PhoenixSolutionsGroup/omnibase/commit/1e94d44e4c1837ffb2e1043594e65df1f05fd192))
+
 # [0.4.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/permissions-v0.3.0...permissions-v0.4.0) (2026-05-30)
 
 
