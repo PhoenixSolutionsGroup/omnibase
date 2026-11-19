@@ -4,10 +4,10 @@ import { Configuration } from "@omnibase/core-js";
 import { PostgrestClient } from "@supabase/postgrest-js";
 import { cookies } from "next/headers";
 
-const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
+const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!.replace(/\/+$/, "");
 const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL!;
 
-const OMNIBASE_POSTGREST_URL = process.env.OMNIBASE_POSTGREST_URL!;
+const OMNIBASE_POSTGREST_URL = `${OMNIBASE_API_URL}/api/v1/rest`;
 
 export const createServerClient = async () => {
   const cookieStore = await cookies();
