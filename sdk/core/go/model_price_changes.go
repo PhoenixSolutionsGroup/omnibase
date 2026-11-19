@@ -3,7 +3,7 @@ Omnibase REST API
 
 Self-hostable Backend-as-a-Service providing database management, authentication, payments, storage, and email services.
 
-API version: 0.0.0-dev
+API version: 0.21.0
 Contact: support@omnibase.dev
 */
 
