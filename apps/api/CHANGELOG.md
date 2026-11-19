@@ -1,3 +1,10 @@
+## [0.22.1](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.22.0...api-v0.22.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* **api:** correct required go version in readme ([62c66e6](https://github.com/PhoenixSolutionsGroup/omnibase/commit/62c66e64b303888b32545b6b27d8032fda4268e5))
+
 # [0.22.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/api-v0.21.0...api-v0.22.0) (2026-11-19)
 
 
