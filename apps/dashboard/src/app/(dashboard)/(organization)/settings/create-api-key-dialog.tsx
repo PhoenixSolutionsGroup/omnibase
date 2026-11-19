@@ -243,21 +243,11 @@ export function CreateAPIKeyDialog({
               <PermissionsSelectorTree
                 definitions={definitions} // back to the original, drop sortedDefinitions
                 namespaceMap={lowerNamespaceMap}
-                defaultNamespace="project"
-                value={selectedPermissions}
-                onChange={setSelectedPermissions}
-                disabled={isCreating}
-                showPreview
-              />
-
-              {/* <PermissionsSelectorTree
-                definitions={definitions}
-                namespaceMap={lowerNamespaceMap}
                 value={selectedPermissions}
                 onChange={setSelectedPermissions}
                 disabled={isCreating}
                 showPreview={false}
-              /> */}
+              />
             </div>
 
             <DialogFooter>

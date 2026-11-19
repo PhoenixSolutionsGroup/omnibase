@@ -91,7 +91,7 @@ export function SwitchActiveTenant({
       onValueChange={handleTenantChange}
       disabled={isLoading}
     >
-      <SelectTrigger className={cn("max-w-64", className)}>
+      <SelectTrigger className={cn("mx-4 max-w-64", className)}>
         <SelectValue placeholder={placeholder}>
           {currentTenant ? currentTenant.name : placeholder}
         </SelectValue>
