@@ -67,23 +67,6 @@ func TestPerf_TenantLifecycle(t *testing.T) {
 		perf.Attack(t, "listTenantUsers", tgt, perf.Thresholds{MaxErrorRate: 0.01})
 	})
 
-	t.Run("getTenantJWT", func(t *testing.T) {
-		var i uint64
-		tgt := func(tgt *vegeta.Target) error {
-			n := atomic.AddUint64(&i, 1)
-			pair := tenants[int(n)%len(tenants)]
-			tgt.Method = http.MethodGet
-			tgt.URL = apiURL + "/api/v1/tenants/jwt"
-			tgt.Header = http.Header{
-				"X-Service-Key": {testenv.ServiceKey},
-				"X-User-Id":     {pair.UserID},
-				"X-Tenant-Id":   {pair.TenantID},
-			}
-			return nil
-		}
-		perf.Attack(t, "getTenantJWT", tgt, perf.Thresholds{MaxErrorRate: 0.01})
-	})
-
 	t.Run("listTenants", func(t *testing.T) {
 		var i uint64
 		tgt := func(tgt *vegeta.Target) error {

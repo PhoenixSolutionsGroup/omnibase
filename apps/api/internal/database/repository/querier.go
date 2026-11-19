@@ -11,7 +11,6 @@ import (
 )
 
 type Querier interface {
-	ActivateUserTenant(ctx context.Context, arg ActivateUserTenantParams) error
 	AddUserToRole(ctx context.Context, arg AddUserToRoleParams) error
 	CountOwnersByTenant(ctx context.Context, tenantID string) (int64, error)
 	CountRecentEmailSends(ctx context.Context, arg CountRecentEmailSendsParams) (int64, error)
@@ -24,7 +23,6 @@ type Querier interface {
 	CreateTenantInvite(ctx context.Context, arg CreateTenantInviteParams) (AuthTenantInvite, error)
 	CreateTenantSettings(ctx context.Context, arg CreateTenantSettingsParams) error
 	CreateTenantUser(ctx context.Context, arg CreateTenantUserParams) (AuthTenantUser, error)
-	DeactivateAllUserTenants(ctx context.Context, userID string) error
 	DeleteEmailTemplateByType(ctx context.Context, arg DeleteEmailTemplateByTypeParams) (int64, error)
 	DeleteRoleByIDAndTenant(ctx context.Context, arg DeleteRoleByIDAndTenantParams) error
 	DeleteStaleStripeWebhooks(ctx context.Context, keepStripeIds []string) (int64, error)
@@ -63,6 +61,7 @@ type Querier interface {
 	MarkStorageObjectPublic(ctx context.Context, id uuid.UUID) error
 	RecordEmailSend(ctx context.Context, arg RecordEmailSendParams) (EmailHistory, error)
 	RemoveUserFromRole(ctx context.Context, arg RemoveUserFromRoleParams) error
+	SetActiveUserTenant(ctx context.Context, arg SetActiveUserTenantParams) error
 	UpdateRolePermissions(ctx context.Context, arg UpdateRolePermissionsParams) (UpdateRolePermissionsRow, error)
 	UpdateStripeWebhook(ctx context.Context, arg UpdateStripeWebhookParams) error
 	UpdateTenantEnterpriseID(ctx context.Context, arg UpdateTenantEnterpriseIDParams) error

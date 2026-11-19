@@ -294,7 +294,7 @@ export type LogoutFlowReturnType = {
  *
  * Fetches logout flow data from Ory Kratos and provides a server action that handles
  * the complete logout process. This includes clearing session cookies (ory_kratos_session,
- * ory_kratos_continuity, omnibase_postgrest_jwt) and calling the Ory logout endpoint.
+ * ory_kratos_continuity) and calling the Ory logout endpoint.
  *
  * The returned action should be called from a form or button to execute the logout
  * and redirect the user to the specified return URL.
@@ -343,7 +343,6 @@ export const getLogoutFlow = async ({
       action: async () => {
         "use server";
         const cookieStore = await cookies();
-        cookieStore.delete("omnibase_postgrest_jwt");
         cookieStore.delete("ory_kratos_continuity");
         cookieStore.delete("ory_kratos_session");
 

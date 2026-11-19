@@ -230,26 +230,21 @@ export type Database = {
       project_branches: {
         Row: {
           api_service_key_encrypted: string | null
-          api_url: string | null
           cluster_id: string | null
           created_at: string
-          database_anon_key: string | null
           database_connection_string_encrypted: string | null
-          database_host: string | null
           database_name: string | null
           database_password_encrypted: string | null
-          database_pooler_host: string | null
           database_port: number | null
-          database_service_key_encrypted: string | null
           database_username: string | null
           deprovisioned_at: string | null
           email_deployment_id: string | null
           error_message: string | null
+          host: string | null
           id: string
           last_activity_at: string | null
           name: string
           namespace: string | null
-          postgrest_url: string | null
           project_id: string
           ses_config_set: string | null
           ses_tenant_id: string | null
@@ -267,26 +262,21 @@ export type Database = {
         }
         Insert: {
           api_service_key_encrypted?: string | null
-          api_url?: string | null
           cluster_id?: string | null
           created_at?: string
-          database_anon_key?: string | null
           database_connection_string_encrypted?: string | null
-          database_host?: string | null
           database_name?: string | null
           database_password_encrypted?: string | null
-          database_pooler_host?: string | null
           database_port?: number | null
-          database_service_key_encrypted?: string | null
           database_username?: string | null
           deprovisioned_at?: string | null
           email_deployment_id?: string | null
           error_message?: string | null
+          host?: string | null
           id?: string
           last_activity_at?: string | null
           name: string
           namespace?: string | null
-          postgrest_url?: string | null
           project_id: string
           ses_config_set?: string | null
           ses_tenant_id?: string | null
@@ -304,26 +294,21 @@ export type Database = {
         }
         Update: {
           api_service_key_encrypted?: string | null
-          api_url?: string | null
           cluster_id?: string | null
           created_at?: string
-          database_anon_key?: string | null
           database_connection_string_encrypted?: string | null
-          database_host?: string | null
           database_name?: string | null
           database_password_encrypted?: string | null
-          database_pooler_host?: string | null
           database_port?: number | null
-          database_service_key_encrypted?: string | null
           database_username?: string | null
           deprovisioned_at?: string | null
           email_deployment_id?: string | null
           error_message?: string | null
+          host?: string | null
           id?: string
           last_activity_at?: string | null
           name?: string
           namespace?: string | null
-          postgrest_url?: string | null
           project_id?: string
           ses_config_set?: string | null
           ses_tenant_id?: string | null

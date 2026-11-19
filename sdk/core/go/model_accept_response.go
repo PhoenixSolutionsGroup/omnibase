@@ -24,7 +24,6 @@ var _ MappedNullable = &AcceptResponse{}
 type AcceptResponse struct {
 	Message string `json:"message"`
 	TenantId string `json:"tenant_id"`
-	Token string `json:"token"`
 }
 
 type _AcceptResponse AcceptResponse
@@ -33,11 +32,10 @@ type _AcceptResponse AcceptResponse
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAcceptResponse(message string, tenantId string, token string) *AcceptResponse {
+func NewAcceptResponse(message string, tenantId string) *AcceptResponse {
 	this := AcceptResponse{}
 	this.Message = message
 	this.TenantId = tenantId
-	this.Token = token
 	return &this
 }
 
@@ -97,30 +95,6 @@ func (o *AcceptResponse) SetTenantId(v string) {
 	o.TenantId = v
 }
 
-// GetToken returns the Token field value
-func (o *AcceptResponse) GetToken() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Token
-}
-
-// GetTokenOk returns a tuple with the Token field value
-// and a boolean to check if the value has been set.
-func (o *AcceptResponse) GetTokenOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Token, true
-}
-
-// SetToken sets field value
-func (o *AcceptResponse) SetToken(v string) {
-	o.Token = v
-}
-
 func (o AcceptResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -133,7 +107,6 @@ func (o AcceptResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["message"] = o.Message
 	toSerialize["tenant_id"] = o.TenantId
-	toSerialize["token"] = o.Token
 	return toSerialize, nil
 }
 
@@ -144,7 +117,6 @@ func (o *AcceptResponse) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"message",
 		"tenant_id",
-		"token",
 	}
 
 	allProperties := make(map[string]interface{})

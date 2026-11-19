@@ -39,6 +39,7 @@ type Env struct {
 	MailpitSMTP   string
 	MailpitWeb    string
 	RustFSURL     string
+	PostgRESTURL  string
 	APIURL        string
 
 	stack compose.ComposeStack
@@ -156,6 +157,10 @@ func Start(t *testing.T) *Env {
 	t0 = time.Now()
 	env.RustFSURL = httpURL(t, ctx, stack, "rustfs", "9000/tcp")
 	phase("endpoint rustfs", t0)
+
+	t0 = time.Now()
+	env.PostgRESTURL = httpURL(t, ctx, stack, "postgrest", "3000/tcp")
+	phase("endpoint postgrest", t0)
 
 	if stressMode() {
 		t0 = time.Now()

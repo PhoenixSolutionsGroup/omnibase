@@ -21,7 +21,6 @@ import type {
   ErrorModel,
   GetTenantByIDRow,
   GetTenantByStripeCustomerIDRow,
-  JWTResponse,
   SwitchActiveRequest,
   SwitchActiveResponse,
 } from '../models/index';
@@ -38,8 +37,6 @@ import {
     GetTenantByIDRowToJSON,
     GetTenantByStripeCustomerIDRowFromJSON,
     GetTenantByStripeCustomerIDRowToJSON,
-    JWTResponseFromJSON,
-    JWTResponseToJSON,
     SwitchActiveRequestFromJSON,
     SwitchActiveRequestToJSON,
     SwitchActiveResponseFromJSON,
@@ -238,47 +235,6 @@ export class V1TenantsLifecycleApi extends runtime.BaseAPI {
      */
     async getTenantByStripeCustomerID(requestParameters: GetTenantByStripeCustomerIDRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetTenantByStripeCustomerIDRow> {
         const response = await this.getTenantByStripeCustomerIDRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Get JWT for the current tenant
-     */
-    async getTenantJWTRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<JWTResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Service-Key"] = await this.configuration.apiKey("X-Service-Key"); // ServiceKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-App-Key"] = await this.configuration.apiKey("X-App-Key"); // AppKeyAuth authentication
-        }
-
-        if (this.configuration && this.configuration.apiKey) {
-            headerParameters["X-Session-Token"] = await this.configuration.apiKey("X-Session-Token"); // SessionTokenAuth authentication
-        }
-
-
-        let urlPath = `/api/v1/tenants/jwt`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => JWTResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * Get JWT for the current tenant
-     */
-    async getTenantJWT(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<JWTResponse> {
-        const response = await this.getTenantJWTRaw(initOverrides);
         return await response.value();
     }
 

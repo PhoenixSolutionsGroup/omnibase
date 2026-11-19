@@ -169,13 +169,6 @@ export function ApiKeysCard({ project, onRotateKeys }: ApiKeysCardProps) {
   };
 
   const keys: KeyItem[] = [
-    { label: "Anon Key", value: project.database_anon_key },
-    {
-      label: "Database Service Key",
-      value: project.database_service_key_encrypted,
-      sensitive: true,
-      encryptedField: "db_service_key",
-    },
     {
       label: "API Service Key",
       value: project.api_service_key_encrypted,

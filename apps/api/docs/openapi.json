@@ -30,17 +30,10 @@
               "550e8400-e29b-41d4-a716-446655440000"
             ],
             "type": "string"
-          },
-          "token": {
-            "examples": [
-              "eyJhbGciOiJIUzI1NiIs..."
-            ],
-            "type": "string"
           }
         },
         "required": [
           "tenant_id",
-          "token",
           "message"
         ],
         "type": "object"
@@ -1212,14 +1205,10 @@
           },
           "tenant": {
             "$ref": "#/components/schemas/TenantPayload"
-          },
-          "token": {
-            "type": "string"
           }
         },
         "required": [
           "tenant",
-          "token",
           "message"
         ],
         "type": "object"
@@ -2017,21 +2006,6 @@
           "amount_due",
           "currency",
           "customer_id"
-        ],
-        "type": "object"
-      },
-      "JWTResponse": {
-        "additionalProperties": false,
-        "properties": {
-          "token": {
-            "examples": [
-              "eyJhbGciOiJIUzI1NiIs..."
-            ],
-            "type": "string"
-          }
-        },
-        "required": [
-          "token"
         ],
         "type": "object"
       },
@@ -3821,16 +3795,9 @@
               "Successfully switched tenants"
             ],
             "type": "string"
-          },
-          "token": {
-            "examples": [
-              "eyJhbGciOiJIUzI1NiIs..."
-            ],
-            "type": "string"
           }
         },
         "required": [
-          "token",
           "message"
         ],
         "type": "object"
@@ -11557,101 +11524,6 @@
         "summary": "Accept a tenant invite",
         "tags": [
           "V1TenantsInvites"
-        ]
-      }
-    },
-    "/api/v1/tenants/jwt": {
-      "get": {
-        "operationId": "getTenantJWT",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JWTResponse"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "400": {
-            "content": {
-              "application/problem+json": {
-                "example": {
-                  "title": "Bad Request",
-                  "status": 400,
-                  "detail": "The request could not be processed."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Bad Request"
-          },
-          "401": {
-            "content": {
-              "application/problem+json": {
-                "example": {
-                  "title": "Unauthorized",
-                  "status": 401,
-                  "detail": "Authentication required."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Unauthorized"
-          },
-          "403": {
-            "content": {
-              "application/problem+json": {
-                "example": {
-                  "title": "Forbidden",
-                  "status": 403,
-                  "detail": "Insufficient permissions."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Forbidden"
-          },
-          "500": {
-            "content": {
-              "application/problem+json": {
-                "example": {
-                  "title": "Internal Server Error",
-                  "status": 500,
-                  "detail": "Internal server error."
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "SessionTokenAuth": []
-          },
-          {
-            "CookieAuth": []
-          },
-          {
-            "ServiceKeyAuth": []
-          },
-          {
-            "AppKeyAuth": []
-          }
-        ],
-        "summary": "Get JWT for the current tenant",
-        "tags": [
-          "V1TenantsLifecycle"
         ]
       }
     },

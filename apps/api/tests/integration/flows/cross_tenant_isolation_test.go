@@ -58,15 +58,6 @@ func TestCrossTenantIsolation(t *testing.T) {
 		require.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})
 
-	t.Run("user_A_cannot_get_tenant_B_JWT", func(t *testing.T) {
-		_, resp, err := client.V1TenantsLifecycleAPI.
-			GetTenantJWT(helpers.CtxWithUserTenant(userA, tenantB)).
-			Execute()
-		require.Error(t, err)
-		require.NotNil(t, resp)
-		require.Equal(t, http.StatusForbidden, resp.StatusCode)
-	})
-
 	t.Run("user_A_cannot_list_tenant_B_roles", func(t *testing.T) {
 		_, resp, err := client.V1TenantsRolesAPI.
 			ListRoles(helpers.CtxWithUserTenant(userA, tenantB)).

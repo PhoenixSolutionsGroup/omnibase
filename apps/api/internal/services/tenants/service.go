@@ -6,21 +6,18 @@ import (
 )
 
 type Service struct {
-	repo       repository.Querier
-	auth       *auth.Service
-	signingKey string
+	repo repository.Querier
+	auth *auth.Service
 }
 
 type Deps struct {
-	Repo       repository.Querier
-	Auth       *auth.Service
-	SigningKey string
+	Repo repository.Querier
+	Auth *auth.Service
 }
 
 func New(deps Deps) *Service {
 	return &Service{
-		repo:       deps.Repo,
-		auth:       deps.Auth,
-		signingKey: deps.SigningKey,
+		repo: deps.Repo,
+		auth: deps.Auth,
 	}
 }

@@ -25,7 +25,6 @@ type CreateTenantRequest struct {
 
 type CreateTenantResponse struct {
 	Tenant  TenantPayload `json:"tenant"`
-	Token   string        `json:"token"`
 	Message string        `json:"message"`
 }
 
@@ -105,7 +104,7 @@ func (h *Handler) CreateTenant(ctx context.Context, in *CreateTenantInput) (*Cre
 		TenantID: tenantID.String(),
 		UserID:   userIDStr,
 		Role:     "owner",
-		IsActive: true,
+		IsActive: false,
 	}); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
@@ -118,8 +117,7 @@ func (h *Handler) CreateTenant(ctx context.Context, in *CreateTenantInput) (*Cre
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
-	token, err := h.tenants.SetActive(ctx, userID, tenantID)
-	if err != nil {
+	if err := h.tenants.SetActive(ctx, userID, tenantID); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", CreateTenantError, err).Error())
 	}
 
@@ -139,7 +137,6 @@ func (h *Handler) CreateTenant(ctx context.Context, in *CreateTenantInput) (*Cre
 			CreatedAt:          row.CreatedAt,
 			UpdatedAt:          row.UpdatedAt,
 		},
-		Token:   token,
 		Message: "Tenant created successfully",
 	}}, nil
 }

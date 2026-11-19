@@ -143,7 +143,6 @@ Class | Method | HTTP request | Description
 *V1TenantsLifecycleAPI* | [**DeleteTenant**](docs/V1TenantsLifecycleAPI.md#deletetenant) | **Delete** /api/v1/tenants | Delete the current tenant
 *V1TenantsLifecycleAPI* | [**GetTenantByID**](docs/V1TenantsLifecycleAPI.md#gettenantbyid) | **Get** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID
 *V1TenantsLifecycleAPI* | [**GetTenantByStripeCustomerID**](docs/V1TenantsLifecycleAPI.md#gettenantbystripecustomerid) | **Get** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID
-*V1TenantsLifecycleAPI* | [**GetTenantJWT**](docs/V1TenantsLifecycleAPI.md#gettenantjwt) | **Get** /api/v1/tenants/jwt | Get JWT for the current tenant
 *V1TenantsLifecycleAPI* | [**SwitchActiveTenant**](docs/V1TenantsLifecycleAPI.md#switchactivetenant) | **Put** /api/v1/tenants/switch-active | Switch the active tenant
 *V1TenantsRolesAPI* | [**CreateRole**](docs/V1TenantsRolesAPI.md#createrole) | **Post** /api/v1/tenants/roles | Create a role
 *V1TenantsRolesAPI* | [**DeleteRole**](docs/V1TenantsRolesAPI.md#deleterole) | **Delete** /api/v1/tenants/roles/{role_id} | Delete a role
@@ -238,7 +237,6 @@ Class | Method | HTTP request | Description
  - [IdentityName](docs/IdentityName.md)
  - [InvoiceLineItemResponse](docs/InvoiceLineItemResponse.md)
  - [InvoiceResponse](docs/InvoiceResponse.md)
- - [JWTResponse](docs/JWTResponse.md)
  - [ListRolesByTenantRow](docs/ListRolesByTenantRow.md)
  - [ListStripeWebhooksRow](docs/ListStripeWebhooksRow.md)
  - [ListSystemTemplatesResponse](docs/ListSystemTemplatesResponse.md)

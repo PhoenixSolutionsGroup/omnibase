@@ -39,10 +39,6 @@ func TestCreateTenant_Lifecycle(t *testing.T) {
 		require.NotNil(t, tenant.StripeCustomerId)
 		assert.NotEmpty(t, *tenant.StripeCustomerId)
 	})
-	t.Run("tenant create returns jwt token", func(t *testing.T) {
-		assert.NotEmpty(t, tenantResp.Token)
-	})
-
 	t.Run("list tenant users contains creator as owner", func(t *testing.T) {
 		users := h.ListTenantUsers(t, client, userID, tenant.Id)
 		var found bool
@@ -53,11 +49,6 @@ func TestCreateTenant_Lifecycle(t *testing.T) {
 			}
 		}
 		assert.True(t, found, "creator should be in tenant users list")
-	})
-
-	t.Run("get tenant jwt", func(t *testing.T) {
-		token := h.GetTenantJWT(t, client, userID, tenant.Id)
-		assert.NotEmpty(t, token)
 	})
 
 	t.Run("list tenants contains new tenant as active", func(t *testing.T) {

@@ -6,13 +6,12 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Message** | **string** |  | 
 **TenantId** | **string** |  | 
-**Token** | **string** |  | 
 
 ## Methods
 
 ### NewAcceptResponse
 
-`func NewAcceptResponse(message string, tenantId string, token string, ) *AcceptResponse`
+`func NewAcceptResponse(message string, tenantId string, ) *AcceptResponse`
 
 NewAcceptResponse instantiates a new AcceptResponse object
 This constructor will assign default values to properties that have it defined,
@@ -65,26 +64,6 @@ and a boolean to check if the value has been set.
 `func (o *AcceptResponse) SetTenantId(v string)`
 
 SetTenantId sets TenantId field to given value.
-
-
-### GetToken
-
-`func (o *AcceptResponse) GetToken() string`
-
-GetToken returns the Token field if non-nil, zero value otherwise.
-
-### GetTokenOk
-
-`func (o *AcceptResponse) GetTokenOk() (*string, bool)`
-
-GetTokenOk returns a tuple with the Token field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetToken
-
-`func (o *AcceptResponse) SetToken(v string)`
-
-SetToken sets Token field to given value.
 
 
 

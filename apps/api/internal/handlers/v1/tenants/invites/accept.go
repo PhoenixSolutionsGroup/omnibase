@@ -27,7 +27,6 @@ type AcceptRequest struct {
 
 type AcceptResponse struct {
 	TenantID string `json:"tenant_id" example:"550e8400-e29b-41d4-a716-446655440000"`
-	Token    string `json:"token" example:"eyJhbGciOiJIUzI1NiIs..."`
 	Message  string `json:"message" example:"Successfully joined organization"`
 }
 
@@ -73,7 +72,7 @@ func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, e
 		TenantID: invite.TenantID,
 		UserID:   in.UserID.String(),
 		Role:     invite.Role,
-		IsActive: true,
+		IsActive: false,
 	}); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
@@ -86,8 +85,7 @@ func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, e
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
-	token, err := h.tenants.SetActive(ctx, in.UserID, tenantUuid)
-	if err != nil {
+	if err := h.tenants.SetActive(ctx, in.UserID, tenantUuid); err != nil {
 		return nil, huma.Error500InternalServerError(fmt.Errorf("%w: %w", AcceptError, err).Error())
 	}
 
@@ -98,7 +96,6 @@ func (h *Handler) Accept(ctx context.Context, in *AcceptInput) (*AcceptOutput, e
 	logger.Logger.Info("Accepted invite", "user_id", in.UserID, "tenant_id", tenantUuid, "role", invite.Role)
 	return &AcceptOutput{Body: AcceptResponse{
 		TenantID: invite.TenantID,
-		Token:    token,
 		Message:  "Successfully joined organization",
 	}}, nil
 }

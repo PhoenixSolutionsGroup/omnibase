@@ -8,7 +8,6 @@ All URIs are relative to *https://api.omnibase.tech*
 | [**deleteTenant**](V1TenantsLifecycleApi.md#deletetenant) | **DELETE** /api/v1/tenants | Delete the current tenant |
 | [**getTenantByID**](V1TenantsLifecycleApi.md#gettenantbyid) | **GET** /api/v1/tenants/by-id/{tenant_id} | Get tenant by ID |
 | [**getTenantByStripeCustomerID**](V1TenantsLifecycleApi.md#gettenantbystripecustomerid) | **GET** /api/v1/tenants/by-stripe-customer/{stripe_customer_id} | Get tenant by Stripe customer ID |
-| [**getTenantJWT**](V1TenantsLifecycleApi.md#gettenantjwt) | **GET** /api/v1/tenants/jwt | Get JWT for the current tenant |
 | [**switchActiveTenant**](V1TenantsLifecycleApi.md#switchactivetenant) | **PUT** /api/v1/tenants/switch-active | Switch the active tenant |
 
 
@@ -310,77 +309,6 @@ example().catch(console.error);
 | **401** | Unauthorized |  -  |
 | **404** | Not Found |  -  |
 | **422** | Unprocessable Entity |  -  |
-| **500** | Internal Server Error |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
-
-## getTenantJWT
-
-> JWTResponse getTenantJWT()
-
-Get JWT for the current tenant
-
-### Example
-
-```ts
-import {
-  Configuration,
-  V1TenantsLifecycleApi,
-} from '@omnibase/core-js';
-import type { GetTenantJWTRequest } from '@omnibase/core-js';
-
-async function example() {
-  console.log("🚀 Testing @omnibase/core-js SDK...");
-  const config = new Configuration({ 
-    // To configure API key authorization: ServiceKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: CookieAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: AppKeyAuth
-    apiKey: "YOUR API KEY",
-    // To configure API key authorization: SessionTokenAuth
-    apiKey: "YOUR API KEY",
-  });
-  const api = new V1TenantsLifecycleApi(config);
-
-  try {
-    const data = await api.getTenantJWT();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**JWTResponse**](JWTResponse.md)
-
-### Authorization
-
-[ServiceKeyAuth](../README.md#ServiceKeyAuth), [CookieAuth](../README.md#CookieAuth), [AppKeyAuth](../README.md#AppKeyAuth), [SessionTokenAuth](../README.md#SessionTokenAuth)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`, `application/problem+json`
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **400** | Bad Request |  -  |
-| **401** | Unauthorized |  -  |
-| **403** | Forbidden |  -  |
 | **500** | Internal Server Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

@@ -10,7 +10,6 @@ import {
   TenantCreator,
   VerificationForm,
 } from "@omnibase/shadcn";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { setSessionTokenAction } from "@/app/auth/actions";
@@ -95,7 +94,7 @@ export default function page({ params, searchParams }: any) {
 
                     const config = await getOmnibaseConfiguration();
                     const client = new V1TenantsLifecycleApi(config);
-                    const created = await client.createTenant({
+                    await client.createTenant({
                       createTenantRequest: {
                         name: organizationName,
                         billingEmail: billingEmail,
@@ -103,9 +102,6 @@ export default function page({ params, searchParams }: any) {
                       },
                     });
 
-                    const c = await cookies();
-
-                    c.set("omnibase_postgrest_jwt", created.token);
                     redirect("/");
                   },
                   async joinOrganizationAction(formData) {
@@ -118,14 +114,12 @@ export default function page({ params, searchParams }: any) {
 
                     const config = await getOmnibaseConfiguration();
                     const client = new V1TenantsInvitesApi(config);
-                    const accepted = await client.acceptInvite({
+                    await client.acceptInvite({
                       acceptRequest: {
                         token,
                       },
                     });
 
-                    const c = await cookies();
-                    c.set("omnibase_postgrest_jwt", accepted.token);
                     redirect("/");
                   },
                 }}

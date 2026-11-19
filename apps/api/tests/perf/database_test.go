@@ -56,23 +56,6 @@ func TestPerf_DatabaseConnections(t *testing.T) {
 		}
 		perf.Attack(t, "listTenants", tgt, perf.Thresholds{MaxErrorRate: 0.01})
 	})
-
-	t.Run("getTenantJWT", func(t *testing.T) {
-		var i uint64
-		tgt := func(tgt *vegeta.Target) error {
-			n := atomic.AddUint64(&i, 1)
-			seed := seeds[int(n)%len(seeds)]
-			tgt.Method = http.MethodGet
-			tgt.URL = apiURL + "/api/v1/tenants/jwt"
-			tgt.Header = http.Header{
-				"X-Service-Key": {testenv.ServiceKey},
-				"X-User-Id":     {seed.UserID},
-				"X-Tenant-Id":   {seed.TenantID},
-			}
-			return nil
-		}
-		perf.Attack(t, "getTenantJWT", tgt, perf.Thresholds{MaxErrorRate: 0.01})
-	})
 }
 
 type dbSeed struct {

@@ -8,7 +8,6 @@ Name | Type
 ------------ | -------------
 `message` | string
 `tenantId` | string
-`token` | string
 
 ## Example
 
@@ -19,7 +18,6 @@ import type { AcceptResponse } from '@omnibase/core-js'
 const example = {
   "message": null,
   "tenantId": null,
-  "token": null,
 } satisfies AcceptResponse
 
 console.log(example)

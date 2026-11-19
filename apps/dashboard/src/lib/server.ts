@@ -8,17 +8,19 @@ const OMNIBASE_API_URL = process.env.OMNIBASE_API_URL!;
 const MANAGED_HOSTING_API_URL = process.env.MANAGED_HOSTING_API_URL!;
 
 const OMNIBASE_POSTGREST_URL = process.env.OMNIBASE_POSTGREST_URL!;
-const OMNIBASE_ANON_KEY = process.env.OMNIBASE_ANON_KEY!;
 
 export const createServerClient = async () => {
   const cookieStore = await cookies();
-  const jwtCookie = cookieStore.get("omnibase_postgrest_jwt")?.value;
-  const key = jwtCookie || OMNIBASE_ANON_KEY;
+  const sessionToken = cookieStore.get("omnibase_session_token")?.value;
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
 
   return new PostgrestClient<Database>(OMNIBASE_POSTGREST_URL, {
-    headers: {
-      Authorization: `Bearer ${key}`,
-    },
+    headers: sessionToken
+      ? { "X-Session-Token": sessionToken }
+      : { Cookie: cookieHeader },
   });
 };
 
