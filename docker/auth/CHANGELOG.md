@@ -1,3 +1,11 @@
+# [0.5.0](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.4...auth-v0.5.0) (2026-11-19)
+
+
+### Features
+
+* **cli:** pin service versions in omnibase init and drop docker-compose sync ([985c217](https://github.com/PhoenixSolutionsGroup/omnibase/commit/985c217b47108762402eb82bc1b9eba9317b7906)), closes [#154](https://github.com/PhoenixSolutionsGroup/omnibase/issues/154)
+* **email:** scope templates to tenants and split system/send endpoints ([ca5c762](https://github.com/PhoenixSolutionsGroup/omnibase/commit/ca5c7622b721af6a2932bdcfc2c6a97900488429))
+
 ## [0.4.4](https://github.com/PhoenixSolutionsGroup/omnibase/compare/auth-v0.4.3...auth-v0.4.4) (2026-10-29)
 
 
