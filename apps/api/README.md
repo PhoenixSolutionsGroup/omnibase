@@ -4,7 +4,7 @@ Go REST API for OmniBase, built with Gin framework and GORM.
 
 ## Tech Stack
 
-- **Go 1.24+** with Gin framework
+- **Go 1.25+** with Gin framework
 - **PostgreSQL** with GORM ORM and Row-Level Security
 - **Ory Kratos/Keto** for authentication and permissions
 - **Stripe** for payment processing
@@ -38,7 +38,7 @@ Go REST API for OmniBase, built with Gin framework and GORM.
 
 ### Prerequisites
 
-- Go 1.24+
+- Go 1.25+
 - PostgreSQL database
 - Required environment variables (see Configuration)
 
