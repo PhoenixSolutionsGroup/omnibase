@@ -1,0 +1,98 @@
+# RecordUsageRequest
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**IdempotencyKey** | Pointer to **string** |  | [optional] 
+**MeterEventName** | **string** |  | 
+**Value** | **string** |  | 
+
+## Methods
+
+### NewRecordUsageRequest
+
+`func NewRecordUsageRequest(meterEventName string, value string, ) *RecordUsageRequest`
+
+NewRecordUsageRequest instantiates a new RecordUsageRequest object
+This constructor will assign default values to properties that have it defined,
+and makes sure properties required by API are set, but the set of arguments
+will change when the set of required properties is changed
+
+### NewRecordUsageRequestWithDefaults
+
+`func NewRecordUsageRequestWithDefaults() *RecordUsageRequest`
+
+NewRecordUsageRequestWithDefaults instantiates a new RecordUsageRequest object
+This constructor will only assign default values to properties that have it defined,
+but it doesn't guarantee that properties required by API are set
+
+### GetIdempotencyKey
+
+`func (o *RecordUsageRequest) GetIdempotencyKey() string`
+
+GetIdempotencyKey returns the IdempotencyKey field if non-nil, zero value otherwise.
+
+### GetIdempotencyKeyOk
+
+`func (o *RecordUsageRequest) GetIdempotencyKeyOk() (*string, bool)`
+
+GetIdempotencyKeyOk returns a tuple with the IdempotencyKey field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetIdempotencyKey
+
+`func (o *RecordUsageRequest) SetIdempotencyKey(v string)`
+
+SetIdempotencyKey sets IdempotencyKey field to given value.
+
+### HasIdempotencyKey
+
+`func (o *RecordUsageRequest) HasIdempotencyKey() bool`
+
+HasIdempotencyKey returns a boolean if a field has been set.
+
+### GetMeterEventName
+
+`func (o *RecordUsageRequest) GetMeterEventName() string`
+
+GetMeterEventName returns the MeterEventName field if non-nil, zero value otherwise.
+
+### GetMeterEventNameOk
+
+`func (o *RecordUsageRequest) GetMeterEventNameOk() (*string, bool)`
+
+GetMeterEventNameOk returns a tuple with the MeterEventName field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMeterEventName
+
+`func (o *RecordUsageRequest) SetMeterEventName(v string)`
+
+SetMeterEventName sets MeterEventName field to given value.
+
+
+### GetValue
+
+`func (o *RecordUsageRequest) GetValue() string`
+
+GetValue returns the Value field if non-nil, zero value otherwise.
+
+### GetValueOk
+
+`func (o *RecordUsageRequest) GetValueOk() (*string, bool)`
+
+GetValueOk returns a tuple with the Value field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetValue
+
+`func (o *RecordUsageRequest) SetValue(v string)`
+
+SetValue sets Value field to given value.
+
+
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
