@@ -321,7 +321,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "API Endpoints",
       description: "Core API service URLs",
-      icon: <Globe className="h-5 w-5" />,
+      icon: <Globe className="h-4 w-4" />,
       // TODO: Possibly add `provider` here that shows deployment type/name
       items: [
         { label: "API URL", value: project.api_url },
@@ -336,7 +336,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "Database",
       description: "Database connection information",
-      icon: <Database className="h-5 w-5" />,
+      icon: <Database className="h-4 w-4" />,
       // TODO: Possibly add 'provider' here that shows database provider
       items: [
         { label: "PostgREST URL", value: project.postgrest_url },
@@ -361,7 +361,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
     {
       title: "Storage",
       description: "Object storage configuration",
-      icon: <Cloud className="h-5 w-5" />,
+      icon: <Cloud className="h-4 w-4" />,
       // TODO: Possibly add 'provider' here that shows storage provider
       items: [
         { label: "Storage Bucket Name", value: project.storage_bucket_name },
