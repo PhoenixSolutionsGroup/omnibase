@@ -501,6 +501,7 @@ export function ConfigurationClient({ project }: ConfigurationClientProps) {
                               }
                               disabled={isLoading}
                               title={isRevealed ? "Hide" : "Reveal"}
+                              variant="ghost"
                             >
                               {isLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
