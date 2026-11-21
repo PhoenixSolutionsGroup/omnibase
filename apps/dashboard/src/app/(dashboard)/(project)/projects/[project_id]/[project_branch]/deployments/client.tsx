@@ -169,11 +169,13 @@ export function DeploymentClient({
 
         {loading && (
           <div className="space-y-4">
-            <Alert className="flex gap-4">
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
+            <Alert>
+              <div className="flex gap-4 items-center">
+                <span>-</span>
+                <span className="text-muted-foreground">
+                  Worker URL: <span className="text-foreground">-</span>
+                </span>
+              </div>
             </Alert>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

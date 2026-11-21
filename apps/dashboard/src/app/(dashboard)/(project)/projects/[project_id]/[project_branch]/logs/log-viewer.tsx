@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatTimestamp } from "@/lib/date";
+import { SeverityBadge } from "@/components/SeverityBadge";
 
 interface Log {
   timestamp: string;
@@ -56,62 +58,6 @@ const getServiceNameBadge = (serviceName?: string) => {
   return (
     <span
       className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium border whitespace-nowrap ${config.className}`}
-    >
-      {config.label}
-    </span>
-  );
-};
-
-// GCP Cloud Logging severity levels with subtle styling
-const getSeverityBadge = (severity?: string) => {
-  if (!severity) return null;
-
-  const severityUpper = severity.toUpperCase();
-
-  const severityConfig: Record<string, { label: string; className: string }> = {
-    DEFAULT: {
-      label: "DEFAULT",
-      className: "bg-gray-100 text-gray-700 border-gray-200",
-    },
-    DEBUG: {
-      label: "DEBUG",
-      className: "bg-blue-50 text-blue-700 border-blue-200",
-    },
-    INFO: {
-      label: "INFO",
-      className: "bg-green-50 text-green-700 border-green-200",
-    },
-    NOTICE: {
-      label: "NOTICE",
-      className: "bg-cyan-50 text-cyan-700 border-cyan-200",
-    },
-    WARNING: {
-      label: "WARNING",
-      className: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    },
-    ERROR: {
-      label: "ERROR",
-      className: "bg-red-50 text-red-700 border-red-200",
-    },
-    CRITICAL: {
-      label: "CRITICAL",
-      className: "bg-red-100 text-red-800 border-red-300",
-    },
-    ALERT: {
-      label: "ALERT",
-      className: "bg-purple-50 text-purple-700 border-purple-200",
-    },
-    EMERGENCY: {
-      label: "EMERGENCY",
-      className: "bg-purple-100 text-purple-800 border-purple-300",
-    },
-  };
-
-  const config = severityConfig[severityUpper] || severityConfig.DEFAULT;
-
-  return (
-    <span
-      className={`inline-flex items-center justify-center w-20 px-2 py-0.5 rounded text-xs font-medium border ${config.className}`}
     >
       {config.label}
     </span>
@@ -254,33 +200,18 @@ export function LogViewer({
     return () => clearInterval(interval);
   }, [logs, projectId, serviceType]);
 
-  const formatTimestamp = (timestamp: string) => {
-    try {
-      return new Date(timestamp).toLocaleString("en-AU", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-    } catch {
-      return timestamp;
-    }
-  };
-
   return (
     <div className="border rounded-lg overflow-hidden bg-background">
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
             <TableHead className="w-12 px-4" />
+            <TableHead className="w-42 px-3">Timestamp</TableHead>
             <TableHead className="w-24 px-0">Severity</TableHead>
             {serviceType === "all" && (
-              <TableHead className="px-2">Service</TableHead>
+              <TableHead className="px-2 w-24">Service</TableHead>
             )}
-            <TableHead className="w-56 px-3">Timestamp</TableHead>
+
             <TableHead className="px-4">Message</TableHead>
           </TableRow>
         </TableHeader>
@@ -316,23 +247,23 @@ export function LogViewer({
                       )}
                     </Button>
                   </TableCell>
-                  <TableCell className="px-0 py-2">
-                    {getSeverityBadge(log.severity)}
-                  </TableCell>
-                  {serviceType === "all" && (
-                    <TableCell className="px-2 py-2">
-                      {getServiceNameBadge(log.service_name)}
-                    </TableCell>
-                  )}
                   <TableCell className="px-3 py-2">
-                    <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
+                    <span className="text-muted-foreground">
                       {formatTimestamp(log.timestamp)}
                     </span>
                   </TableCell>
+
+                  <TableCell className="px-0 py-2">
+                    <SeverityBadge severity={log.severity} variant="badge" />
+                  </TableCell>
+                  {serviceType === "all" && (
+                    <TableCell className="px-2 py-2 w-24">
+                      {getServiceNameBadge(log.service_name)}
+                    </TableCell>
+                  )}
+
                   <TableCell className="px-4 py-2 max-w-0">
-                    <span className="text-sm font-mono truncate block">
-                      {log.message || "(no message)"}
-                    </span>
+                    <span>{log.message || "(no message)"}</span>
                   </TableCell>
                 </TableRow>
                 {expandedRows.has(index) && (

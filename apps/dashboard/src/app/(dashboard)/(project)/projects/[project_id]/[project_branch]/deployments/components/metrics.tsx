@@ -256,7 +256,7 @@ function ChartAreaInteractive({
   return (
     <Card className="pt-0">
       <CardHeader className="flex items-center gap-2 pt-5 sm:flex-row">
-        <div className="grid flex-1 gap-1">
+        <div className="grid flex-1">
           <CardTitle>Requests per hour</CardTitle>
           <CardDescription>
             Showing total visitors for the selected time period
@@ -267,7 +267,7 @@ function ChartAreaInteractive({
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-62.5 w-full"
+          className="aspect-auto h-62 w-full"
         >
           <AreaChart data={chartData}>
             <defs>
@@ -387,15 +387,25 @@ export default function Metrics({
     <div className="space-y-4">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-        {kpis.map((kpi) => (
-          <Card key={kpi.header}>
-            <CardContent className="flex flex-col">
-              <span>{kpi.header}</span>
-              <span className="text-xl">{kpi.title}</span>
-              <span>{kpi.subtitle}</span>
-            </CardContent>
-          </Card>
-        ))}
+        {kpis.length <= 0
+          ? [0, 1, 2, 3].map((i) => (
+              <Card key={i}>
+                <CardContent className="flex flex-col">
+                  <span>-</span>
+                  <span className="text-xl">-</span>
+                  <span>-</span>
+                </CardContent>
+              </Card>
+            ))
+          : kpis.map((kpi) => (
+              <Card key={kpi.header}>
+                <CardContent className="flex flex-col">
+                  <span>{kpi.header}</span>
+                  <span className="text-xl">{kpi.title}</span>
+                  <span>{kpi.subtitle}</span>
+                </CardContent>
+              </Card>
+            ))}
       </div>
       {/* Chart */}
       <ChartAreaInteractive
