@@ -105,6 +105,11 @@ export const getProjectNavigationItems = (
     icon: Database,
   },
   {
+    title: "PostgreSQL",
+    href: `/projects/${projectId}/${projectBranch}/postgresql`,
+    icon: Database,
+  },
+  {
     title: "Stripe",
     href: `/projects/${projectId}/${projectBranch}/stripe-settings`,
     icon: CreditCard,
