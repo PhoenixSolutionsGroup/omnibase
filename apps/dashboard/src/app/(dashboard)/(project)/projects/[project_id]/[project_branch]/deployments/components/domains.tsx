@@ -179,7 +179,7 @@ export default function Domains({ projectId, workerName }: DomainProps) {
   return (
     <Card className="pt-0 gap-0">
       <CardHeader className="flex items-center gap-2 pt-5 pb-4 sm:flex-row">
-        <div className="grid flex-1 gap-1">
+        <div className="grid flex-1">
           <CardTitle>Domains</CardTitle>
           <CardDescription>
             Custom domains routed to{" "}

@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { listAPIKeys, revokeAPIKey } from "./actions";
-import Link from "next/link";
 import { toast } from "sonner";
 import {
   Table,
@@ -20,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Plus, Copy, Trash } from "lucide-react";
+import { MoreHorizontal, Copy, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +27,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import type { NamespaceDefinitionResponse } from "@omnibase/core-js";
+import { CreateAPIKeyDialog } from "./create-api-key-dialog";
 
 interface APIKey {
   id: string;
@@ -40,17 +40,38 @@ interface APIKey {
   is_active: boolean;
 }
 
+interface NamespaceMapEntry {
+  id: string;
+  label: string;
+}
+
 interface APIKeysSectionProps {
   initialKeys: APIKey[];
   hasPermission: boolean;
+  definitions: NamespaceDefinitionResponse[];
+  namespaceMap: Record<string, NamespaceMapEntry[]>;
 }
 
 export function APIKeysSection({
   initialKeys,
   hasPermission,
+  definitions,
+  namespaceMap,
 }: APIKeysSectionProps) {
   const [apiKeys, setApiKeys] = useState<APIKey[]>(initialKeys ?? []);
   const [canViewKeys, setCanViewKeys] = useState(hasPermission);
+
+  const refreshKeys = async () => {
+    try {
+      const response = await listAPIKeys();
+      setApiKeys(response.api_keys);
+      setCanViewKeys(response.hasPermission);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to refresh API keys",
+      );
+    }
+  };
 
   const handleRevokeAPIKey = async (keyId: string, keyName: string) => {
     if (!confirm(`Are you sure you want to revoke the API key "${keyName}"?`)) {
@@ -59,12 +80,7 @@ export function APIKeysSection({
 
     try {
       await revokeAPIKey(keyId);
-
-      // Refresh the list
-      const response = await listAPIKeys();
-      setApiKeys(response.api_keys);
-      setCanViewKeys(response.hasPermission);
-
+      await refreshKeys();
       toast.success("API key revoked successfully");
     } catch (error) {
       toast.error(
@@ -93,14 +109,12 @@ export function APIKeysSection({
                 : "You don't have permission to view or manage API keys"}
             </CardDescription>
           </div>
-          {canViewKeys && apiKeys.length > 0 && (
-            <Link
-              href="/settings/api-keys/create"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create New Key
-            </Link>
+          {canViewKeys && (
+            <CreateAPIKeyDialog
+              definitions={definitions}
+              namespaceMap={namespaceMap}
+              onCreated={refreshKeys}
+            />
           )}
         </div>
       </CardHeader>
@@ -116,15 +130,6 @@ export function APIKeysSection({
               Create an API key to authenticate your requests to the platform
               programmatically.
             </p>
-            <Button>
-              <Link
-                href="/settings/api-keys/create"
-                className="flex items-center"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create API Key
-              </Link>
-            </Button>
           </div>
         ) : (
           <Table className="overflow-visible">

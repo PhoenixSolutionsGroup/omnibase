@@ -4,6 +4,8 @@ import { UnifiedLayoutClient } from "@/components/layout-client";
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { V1AuthApi } from "@omnibase/core-js";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { SIDEBAR_COOKIE } from "@/lib/sidebar-constant";
 
 export const metadata: Metadata = {
   title: "OmniBase Dashboard",
@@ -31,8 +33,16 @@ export default async function ProjectLayout({ children }: { children: any }) {
   const tenants = tenantItems.map((t) => t.tenant);
   const currentTenantId = activeTenantItem.tenant.id;
 
+  const cookieStore = await cookies();
+  const defaultSidebarCollapsed: boolean =
+    cookieStore.get(SIDEBAR_COOKIE)?.value === "true";
+
   return (
-    <UnifiedLayoutClient tenants={tenants} currentTenantId={currentTenantId}>
+    <UnifiedLayoutClient
+      tenants={tenants}
+      currentTenantId={currentTenantId}
+      defaultSidebarCollapsed={defaultSidebarCollapsed}
+    >
       {children}
     </UnifiedLayoutClient>
   );

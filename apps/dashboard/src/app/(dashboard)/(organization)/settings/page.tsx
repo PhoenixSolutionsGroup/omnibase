@@ -1,6 +1,5 @@
 import { getOmnibaseConfiguration } from "@/lib/server";
 import { UserViewer } from "@omnibase/shadcn";
-import React from "react";
 import { DeleteSection } from "./delete-section";
 import { APIKeysSection } from "./api-keys-section";
 import { listAPIKeys } from "./actions";
@@ -11,6 +10,7 @@ import {
   V1TenantsRolesApi,
   V1TenantsUsersApi,
 } from "@omnibase/core-js";
+import { getAllProjects } from "@/utils/get-project";
 
 async function removeUser(user_id: string) {
   "use server";
@@ -47,6 +47,17 @@ export default async function page() {
   const usersClient = new V1TenantsUsersApi(config);
   const rolesClient = new V1TenantsRolesApi(config);
 
+  const client = new V1TenantsRolesApi(config);
+  const definitions = await client.listRoleDefinitions({ subject: "ApiKey" });
+  const projects = await getAllProjects();
+
+  const namespaceMap: Record<string, { id: string; label: string }[]> = {
+    Project:
+      projects?.map((p) => ({
+        id: p.id,
+        label: p.name,
+      })) || [],
+  };
   let users: UserResponse[] = [];
   let roles: ListRolesByTenantRow[] = [];
   try {
@@ -81,6 +92,8 @@ export default async function page() {
           <APIKeysSection
             initialKeys={apiKeysResponse.api_keys}
             hasPermission={apiKeysResponse.hasPermission}
+            definitions={definitions}
+            namespaceMap={namespaceMap}
           />
         </div>
         <div className="w-full">

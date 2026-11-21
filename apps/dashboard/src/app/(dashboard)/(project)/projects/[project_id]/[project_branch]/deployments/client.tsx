@@ -169,11 +169,13 @@ export function DeploymentClient({
 
         {loading && (
           <div className="space-y-4">
-            <Alert className="flex gap-4">
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
-              <Skeleton className="h-6 w-42" />
+            <Alert>
+              <div className="flex gap-4 items-center">
+                <span>-</span>
+                <span className="text-muted-foreground">
+                  Worker URL: <span className="text-foreground">-</span>
+                </span>
+              </div>
             </Alert>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -241,21 +243,17 @@ export function DeploymentClient({
               <div className="flex gap-4 items-center">
                 <StatusBadge {...state} variant="dot" />
                 <span>{currentWorker.name}</span>
-                <span className="text-muted-foreground">
-                  Worker URL:{" "}
-                  <span className="text-foreground">
+                <div className="text-muted-foreground">
+                  <span> Worker URL: </span>
+                  <a
+                    href={currentWorker.worker_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
                     {currentWorker.worker_url}
-                  </span>
-                </span>
-                <span className="text-muted-foreground">
-                  Version: <span className="text-foreground">a1f9c2e</span>
-                </span>
-                <span className="text-muted-foreground">
-                  Deployed: <span className="text-foreground">2h ago</span>
-                </span>
-                <span className="text-muted-foreground">
-                  Path: <span className="text-foreground">./workers/api</span>
-                </span>
+                  </a>
+                </div>
               </div>
             </Alert>
 
