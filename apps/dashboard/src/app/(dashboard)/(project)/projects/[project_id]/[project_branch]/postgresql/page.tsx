@@ -17,11 +17,5 @@ export default async function Page({ params }: PageProps) {
     return <div>Project not found</div>;
   }
 
-  return (
-    <PostgreSQLClient
-      projectStatus={project.status}
-      branchName={project.branch_name}
-      branchId={project.id}
-    />
-  );
+  return <PostgreSQLClient branchId={project.id} />;
 }

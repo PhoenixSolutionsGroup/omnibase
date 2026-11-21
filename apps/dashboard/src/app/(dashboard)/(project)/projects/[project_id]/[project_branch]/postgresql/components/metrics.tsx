@@ -287,7 +287,7 @@ export function Metrics({ projectBranchId, startTime, endTime }: MetricsProps) {
                 className="shrink-0 rounded-lg"
                 unoptimized
               />
-              <p className="text-muted-foreground">{error}!!!!</p>
+              <p className="text-muted-foreground">{error}</p>
             </div>
           </CardContent>
         </Card>

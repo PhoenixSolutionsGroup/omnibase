@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Logs } from "lucide-react";
-import { SlowestQueries } from "./components/slowest-queries";
 import { Metrics } from "./components/metrics";
 import {
   Select,
@@ -11,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Logs from "./components/logs";
 
 interface PostgreSQLClientProps {
-  projectStatus: string;
-  branchName: string;
   branchId: string;
 }
 
@@ -78,10 +75,11 @@ export function PostgreSQLClient({ branchId }: PostgreSQLClientProps) {
             endTime={endTime}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* <SlowestQueries />
-            <Logs /> */}
-          </div>
+          <Logs
+            projectBranchId={branchId}
+            startTime={startTime}
+            endTime={endTime}
+          />
         </div>
       </div>
     </div>

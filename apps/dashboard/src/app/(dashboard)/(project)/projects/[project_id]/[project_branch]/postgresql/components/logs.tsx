@@ -20,7 +20,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 
 interface LogsProps {
-  projectId: string;
+  projectBranchId: string;
   startTime: string;
   endTime: string;
 }
@@ -64,7 +64,7 @@ function getSeverity(status: string): SeverityType {
 }
 
 async function fetchLogs(
-  projectId: string,
+  projectBranchId: string,
   range: { startTime: string; endTime: string },
   severity?: string,
 ): Promise<PostgresLogsResponse> {
@@ -76,7 +76,7 @@ async function fetchLogs(
   if (severity) params.set("severity", severity);
 
   const response = await fetch(
-    `/api/v1/project_branches/${projectId}/postgresql/logs?${params}`,
+    `/api/project_branches/${projectBranchId}/postgresql/logs?${params}`,
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch logs: ${response.status}`);
@@ -85,7 +85,11 @@ async function fetchLogs(
   return (await response.json()) as PostgresLogsResponse;
 }
 
-export default function Logs({ projectId, startTime, endTime }: LogsProps) {
+export default function Logs({
+  projectBranchId,
+  startTime,
+  endTime,
+}: LogsProps) {
   const [logs, setLogs] = React.useState<LogEntry[]>([]);
   const [typeFilter, setTypeFilter] = React.useState<string>("all");
 
@@ -93,7 +97,7 @@ export default function Logs({ projectId, startTime, endTime }: LogsProps) {
     let cancelled = false;
     const severity = typeFilter === "errors" ? "error" : undefined;
 
-    fetchLogs(projectId, { startTime, endTime }, severity)
+    fetchLogs(projectBranchId, { startTime, endTime }, severity)
       .then((res) => {
         if (!cancelled) setLogs(res.data.logs);
       })
@@ -104,14 +108,13 @@ export default function Logs({ projectId, startTime, endTime }: LogsProps) {
     return () => {
       cancelled = true;
     };
-  }, [projectId, startTime, endTime, typeFilter]);
+  }, [projectBranchId, startTime, endTime, typeFilter]);
 
   return (
     <Card className="pt-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle>Logs</CardTitle>
-          <CardDescription>PostgreSQL logs</CardDescription>
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger
