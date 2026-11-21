@@ -142,7 +142,7 @@ export default function Logs({
   return (
     <Card className="pt-0 gap-0">
       <CardHeader className="flex items-center pt-5 pb-4 sm:flex-row">
-        <div className="grid flex-1 gap-1">
+        <div className="grid flex-1">
           <CardTitle>Logs</CardTitle>
           <CardDescription>Live tail of api-worker invocations</CardDescription>
         </div>

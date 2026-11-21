@@ -1,8 +1,17 @@
 "use client";
 
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface Log {
   timestamp: string;
@@ -135,6 +144,8 @@ export function LogViewer({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true); // Always show button initially
 
+  const colCount = serviceType === "all" ? 5 : 4;
+
   const toggleRow = (index: number) => {
     setExpandedRows((prev) => {
       const next = new Set(prev);
@@ -261,64 +272,74 @@ export function LogViewer({
 
   return (
     <div className="border rounded-lg overflow-hidden bg-background">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted border-b">
-            <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium"></th>
-              <th className="px-0 py-2 text-left text-sm font-medium">
-                Severity
-              </th>
-              {serviceType === "all" && (
-                <th className="px-2 py-2 text-left text-sm font-medium">
-                  Service
-                </th>
-              )}
-              <th className="px-3 py-2 text-left text-sm font-medium w-56">
-                Timestamp
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium">
-                Message
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {logs.map((log, index) => (
-              <>
-                <tr key={index} className="hover:bg-muted/50 transition-colors">
-                  <td className="px-4 py-2 w-8">
-                    <Button onClick={() => toggleRow(index)}>
+      <Table>
+        <TableHeader className="bg-muted">
+          <TableRow>
+            <TableHead className="w-12 px-4" />
+            <TableHead className="w-24 px-0">Severity</TableHead>
+            {serviceType === "all" && (
+              <TableHead className="px-2">Service</TableHead>
+            )}
+            <TableHead className="w-56 px-3">Timestamp</TableHead>
+            <TableHead className="px-4">Message</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {logs.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={colCount}
+                className="px-4 py-8 text-center text-muted-foreground"
+              >
+                No logs found
+              </TableCell>
+            </TableRow>
+          ) : (
+            logs.map((log, index) => (
+              <React.Fragment key={index}>
+                <TableRow>
+                  <TableCell className="px-4 py-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => toggleRow(index)}
+                      aria-expanded={expandedRows.has(index)}
+                      aria-label={
+                        expandedRows.has(index) ? "Collapse log" : "Expand log"
+                      }
+                    >
                       {expandedRows.has(index) ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </Button>
-                  </td>
-                  <td className="px-0 py-2">
+                  </TableCell>
+                  <TableCell className="px-0 py-2">
                     {getSeverityBadge(log.severity)}
-                  </td>
+                  </TableCell>
                   {serviceType === "all" && (
-                    <td className="px-2 py-2">
+                    <TableCell className="px-2 py-2">
                       {getServiceNameBadge(log.service_name)}
-                    </td>
+                    </TableCell>
                   )}
-                  <td className="px-3 py-2 w-56">
+                  <TableCell className="px-3 py-2">
                     <span className="text-sm text-muted-foreground font-mono whitespace-nowrap">
                       {formatTimestamp(log.timestamp)}
                     </span>
-                  </td>
-                  <td className="px-4 py-2">
+                  </TableCell>
+                  <TableCell className="px-4 py-2 max-w-0">
                     <span className="text-sm font-mono truncate block">
                       {log.message || "(no message)"}
                     </span>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
                 {expandedRows.has(index) && (
-                  <tr key={`${index}-expanded`}>
-                    <td
-                      colSpan={serviceType === "all" ? 5 : 4}
-                      className="px-4 pb-3 bg-muted/30"
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell
+                      colSpan={colCount}
+                      className="px-4 pb-3 bg-muted/30 whitespace-normal"
                     >
                       {/* Raw Log Line */}
                       {log.metadata?.raw_line && (
@@ -353,14 +374,14 @@ export function LogViewer({
                           {JSON.stringify(log, null, 2)}
                         </pre>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 )}
-              </>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </React.Fragment>
+            ))
+          )}
+        </TableBody>
+      </Table>
 
       {/* Load More Button */}
       {logs.length > 0 && hasMore && (
@@ -373,13 +394,6 @@ export function LogViewer({
           >
             {loading ? "Loading..." : "Load More Historical"}
           </Button>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {logs.length === 0 && (
-        <div className="px-4 py-8 text-center text-muted-foreground">
-          No logs found
         </div>
       )}
     </div>
