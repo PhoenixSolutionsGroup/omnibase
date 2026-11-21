@@ -243,12 +243,17 @@ export function DeploymentClient({
               <div className="flex gap-4 items-center">
                 <StatusBadge {...state} variant="dot" />
                 <span>{currentWorker.name}</span>
-                <span className="text-muted-foreground">
-                  Worker URL:{" "}
-                  <span className="text-foreground">
+                <div className="text-muted-foreground">
+                  <span> Worker URL: </span>
+                  <a
+                    href={currentWorker.worker_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
                     {currentWorker.worker_url}
-                  </span>
-                </span>
+                  </a>
+                </div>
               </div>
             </Alert>
 
